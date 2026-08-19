@@ -14,7 +14,7 @@ The first survey dedicated specifically to memory in LLM-based agents; formally 
 
 ## Relevance to the project
 
-The backbone citation and taxonomy source for the whole deliverable; its "narrow vs. broad" memory definitions and operation taxonomy map directly onto a controlled update mechanism for legal workflows. Also the source survey behind the [visual synthesis](../literature-review/visual-synthesis/) and the project's Sources→Forms→Operations vocabulary.
+The backbone citation and taxonomy source for the whole deliverable; its "narrow vs. broad" memory definitions and operation taxonomy map directly onto a controlled update mechanism for legal workflows. Also the source survey behind [mind map 1](../literature-review/visual-synthesis/README.md#1-memory-in-llm-based-agents) and the project's Sources→Forms→Operations vocabulary.
 
 ---
 Source review: [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md)

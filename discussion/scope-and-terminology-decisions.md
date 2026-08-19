@@ -8,7 +8,7 @@ A running log of scoping/terminology calls made during the literature review, ea
 
 **Decision:** the project's vocabulary (Objetivo, Sub 2.2, Sub 3.2 — "instruções, exemplos e contexto operacional armazenados na memória") is textual/non-parametric. Parametric memory-editing methods (MEND, KnowledgeEditor, PersonalityEdit, APP, MAC) are **out of implementation scope**.
 
-**Where they still belong:** as "alternative considered and rejected" in the Sub 2.2 architecture document — not simply dropped from the review. See [`../literature-review/visual-synthesis/README.md`](../literature-review/visual-synthesis/README.md) page 8 for the Fine-Tuning vs. Knowledge Editing framing this decision is reacting to.
+**Where they still belong:** as "alternative considered and rejected" in the Sub 2.2 architecture document — not simply dropped from the review. See the "Parametric Form" branch (Fine-tuning vs. Knowledge Editing) in mind map 1 of [`../literature-review/visual-synthesis/README.md`](../literature-review/visual-synthesis/README.md) for the framing this decision is reacting to.
 
 ## 2. What "reinforcement learning" means in this project's title
 

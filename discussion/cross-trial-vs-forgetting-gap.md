@@ -21,7 +21,7 @@ This is a central finding for the Sub-1.1 deliverable (Entregável 1): **the mod
 
 ## Reading correction this depends on
 
-Table 1 (memory sources) answers *where content comes from*, not *how content gets updated* — which is what the project's Objetivo actually asks. The right axis for everything downstream is **operations** (Table 3: writing/management/reading — merging, reflection, forgetting), not source. This reframing is what made the gap visible in the first place; see [`../literature-review/visual-synthesis/README.md`](../literature-review/visual-synthesis/README.md) pages 5–11 for the Sources→Forms→Operations structure.
+Table 1 (memory sources) answers *where content comes from*, not *how content gets updated* — which is what the project's Objetivo actually asks. The right axis for everything downstream is **operations** (Table 3: writing/management/reading — merging, reflection, forgetting), not source. This reframing is what made the gap visible in the first place; see the "Implementation Strategies" branch (Sources → Forms → Operations) in mind map 1 of [`../literature-review/visual-synthesis/README.md`](../literature-review/visual-synthesis/README.md).
 
 ## Status
 
