@@ -1,6 +1,6 @@
 # Papers & Frameworks — Atomic Notes
 
-One short note per source cited in the [literature review](../literature-review/), extracted faithfully from [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md) (Sub 1.1) and [`deep-agents.md`](../literature-review/deep-agents.md) (Sub 1.2). 36 sources indexed below. Use [`_TEMPLATE.md`](_TEMPLATE.md) when adding a new one — see also [`reading-queue.md`](reading-queue.md) for sources named but not yet fully reviewed.
+One short note per source. Most are extracted faithfully from [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md) (Sub 1.1) and [`deep-agents.md`](../literature-review/deep-agents.md) (Sub 1.2); a few (ExpeL, SCM, Retroformer) were added later directly from verified arXiv/proceedings pages, clearing items off the reading queue — each note's footer says which. 39 sources indexed below. Use [`_TEMPLATE.md`](_TEMPLATE.md) when adding a new one — see also [`reading-queue.md`](reading-queue.md) for sources still named but not yet fully reviewed.
 
 
 ## Surveys
@@ -35,11 +35,14 @@ One short note per source cited in the [literature review](../literature-review/
 | Note | Year | Status |
 |---|---|---|
 | [Reflexion: Language Agents with Verbal Reinforcement Learning](reflexion-2023.md) | 2023 | Peer-reviewed |
+| [ExpeL: LLM Agents Are Experiential Learners](expel-2024.md) | 2023/2024 | Peer-reviewed (AAAI 2024) |
 | [Voyager: An Open-Ended Embodied Agent with Large Language Models](voyager-2023.md) | 2023 | Peer-reviewed (TMLR) |
 | [MemoryBank: Enhancing Large Language Models with Long-Term Memory](memorybank-2023.md) | 2023/2024 | Peer-reviewed |
+| [SCM: Enhancing Large Language Model with Self-Controlled Memory Framework](scm-2023.md) | 2023/2025 | Peer-reviewed (DASFAA 2025) |
 | [A-MEM: Agentic Memory for LLM Agents](a-mem-2025.md) | 2025 | Peer-reviewed |
 | [Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory](mem0-2025.md) | 2025 | Peer-reviewed |
 | [Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning](memory-r1-2025.md) | 2025 | Preprint |
+| [Retroformer: Retrospective Large Language Agents with Policy Gradient Optimization](retroformer-2024.md) | 2023/2024 | Peer-reviewed (ICLR 2024) |
 | [DMF: A Deterministic Memory Framework for Conversational AI Agents](dmf-2026.md) | 2026 | Preprint |
 | [ReasoningBank: Scaling Agent Self-Evolving with Reasoning Memory](reasoningbank-2025.md) | 2025 | Peer-reviewed (ICLR 2026) |
 | [Memp: Exploring Agent Procedural Memory](memp-2025.md) | 2025 | Peer-reviewed (ACL Findings) |

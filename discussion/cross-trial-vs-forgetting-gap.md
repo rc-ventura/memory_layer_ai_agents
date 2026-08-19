@@ -8,8 +8,10 @@ Cross-referencing Table 1 (cross-trial ✓) against Table 3 (Forgetting ✓) of 
 
 | Has **cross-trial** ✓ | Has **forgetting** ✓ |
 |---|---|
-| Retroformer, ExpeL, Synapse, GITM, Reflexion, MetaGPT | MemoryBank, TiM, Generative Agents, RecAgent, S³ |
+| [Retroformer](../papers/retroformer-2024.md), [ExpeL](../papers/expel-2024.md), Synapse, GITM, [Reflexion](../papers/reflexion-2023.md), MetaGPT | [MemoryBank](../papers/memorybank-2023.md), TiM, [Generative Agents](../papers/generative-agents-2023.md), RecAgent, S³ |
 | **6 models** | **5 models** |
+
+*(Synapse, GITM, MetaGPT, TiM, RecAgent, S³ remain unreviewed — see [`../papers/reading-queue.md`](../papers/reading-queue.md).)*
 
 **The intersection of these two sets is empty.** No model in the surveyed corpus has both cross-trial learning and controlled forgetting. This was confirmed exhaustively over the whole corpus, not observed as a tendency in a partial sample.
 
@@ -23,4 +25,4 @@ Table 1 (memory sources) answers *where content comes from*, not *how content ge
 
 ## Status
 
-Registered as an explicit finding, citing the full table (not the earlier 4-model sample observation), in the Sub-1.1 deliverable. Reading priorities were set directly off this gap — see [`../papers/reading-queue.md`](../papers/reading-queue.md) for the resulting priority order (ExpeL, MemoryBank, Generative Agents, SCM, Retroformer).
+Registered as an explicit finding, citing the full table (not the earlier 4-model sample observation), in the Sub-1.1 deliverable. Reading priorities were set directly off this gap — see [`../papers/reading-queue.md`](../papers/reading-queue.md); the top-5 priority order (ExpeL, MemoryBank, Generative Agents, SCM, Retroformer) was fully cleared on 19/08/2026.

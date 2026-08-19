@@ -6,15 +6,15 @@ Source: diary entry [18/08/2026](../research-diary/diario_campo_2026-08.md#18082
 
 ## Priority reading list (as of 18/08/2026)
 
-Ranked by the diary's own priority order; #2 and #3 are already covered (linked) because they turned out to already have full entries from the bibliographic review.
+Ranked by the diary's own priority order. **All five are now cleared** (as of 19/08/2026) — #2 and #3 already had full entries from the bibliographic review; #1, #4, and #5 were added directly from verified arXiv/proceedings pages.
 
-| Priority | Model | Why it's queued | Status |
+| Priority | Model | Why it was queued | Status |
 |---|---|---|---|
-| 1 | **ExpeL** | Success/failure insight-extraction protocol → feeds the operation vocabulary for Sub 3.2 | Not yet reviewed |
+| 1 | **ExpeL** | Success/failure insight-extraction protocol → feeds the operation vocabulary for Sub 3.2 | ✅ Reviewed 19/08/2026 — see [`expel-2024.md`](expel-2024.md) |
 | 2 | **MemoryBank** | Ebbinghaus-style decay, fills the forgetting gap | ✅ Already reviewed — see [`memorybank-2023.md`](memorybank-2023.md) |
 | 3 | **Generative Agents** | Reflection trigger + recency/importance/relevance score | ✅ Already reviewed — see [`generative-agents-2023.md`](generative-agents-2023.md) |
-| 4 | **SCM** | Dedicated memory controller — maps directly onto the "controlado" in the project's title | Not yet reviewed |
-| 5 | **Retroformer** | The corpus's only case of literal RL — anchor for Sub 1.3 | Not yet reviewed |
+| 4 | **SCM** | Dedicated memory controller — maps directly onto the "controlado" in the project's title | ✅ Reviewed 19/08/2026 — see [`scm-2023.md`](scm-2023.md) |
+| 5 | **Retroformer** | The corpus's only case of literal RL — anchor for Sub 1.3 | ✅ Reviewed 19/08/2026 — see [`retroformer-2024.md`](retroformer-2024.md) |
 
 ## Named in the cross-trial × forgetting gap analysis, not yet reviewed
 

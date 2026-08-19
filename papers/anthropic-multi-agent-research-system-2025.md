@@ -5,6 +5,7 @@
 - **Authors:** Anthropic
 - **Year:** 2025 (published June 2025; feature launched April 2025)
 - **Venue:** Anthropic engineering blog
+- **Link:** https://www.anthropic.com/engineering/built-multi-agent-research-system
 - **Tags:** orchestrator-worker, sub-agents, plan-persistence
 
 ## Core contribution
@@ -16,4 +17,4 @@ Orchestrator-worker pattern — a LeadResearcher plans, spawns subagents in para
 The canonical sub-agent orchestration reference; the "save the plan to memory to survive context overflow" pattern is directly transferable to long legal-research tasks.
 
 ---
-Source review: [`deep-agents.md`](../literature-review/deep-agents.md)
+Source review: [`deep-agents.md`](../literature-review/deep-agents.md) (the review named the source but did not include a URL; the link above was found and verified separately on 19/08/2026, at anthropic.com/engineering — not claude.com/blog).
