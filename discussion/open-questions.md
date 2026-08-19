@@ -1,0 +1,11 @@
+> **Type:** Running list of open items · Update in place; move an item to the relevant decision log once resolved.
+
+# Open questions
+
+Items flagged as unresolved in the diary or the literature review, kept in one place so they don't get lost. When one closes, move the resolution into [`scope-and-terminology-decisions.md`](scope-and-terminology-decisions.md) (or wherever it belongs) and delete it from here.
+
+- **Which sense of "RL" does the mechanism actually implement?** The Plano's title says "aprendizado por reforço," but the corpus spans verbal/no-fine-tuning reflection (Reflexion) and literal RL (Retroformer, Memory-R1). Needs an explicit statement somewhere in Sub 1.3 or 1.7. See [`scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title`](scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title). **Not yet done.**
+- **Is the diary's weekly-synthesis cadence right?** The diary system (episodic daily entries + weekly synthesis) was designed but not yet stress-tested. Run it for at least a full week of real use before treating the cadence as settled; also reassess whether the monthly `.docx` export for the coordinator should instead be biweekly, given how closely the coordinator tracks progress. See [`../research-diary/README.md`](../research-diary/README.md).
+- **Reference Accuracy metric (Sub 3.6) is blocked**, not undecided — waiting on Sub 1.4 (target legal flow) and Sub 1.5 (correctness criteria) to close before gold-standard annotation can start. See [`scope-and-terminology-decisions.md#5-reference-accuracy-metric--scope-sub-36`](scope-and-terminology-decisions.md#5-reference-accuracy-metric--scope-sub-36).
+- **Reading queue not yet cleared:** ExpeL, SCM, and Retroformer are the top-3 unread priorities as of 18/08/2026 — see [`../papers/reading-queue.md`](../papers/reading-queue.md).
+- **Coordinator vs. tutor channel ambiguity** — the diary's `canal` field (pessoal / informal-coordenador / formal-tutor) was introduced specifically to track this, but the underlying process question (when does informal coordinator direction need formal tutor sign-off?) is a project-governance question, not just a logging one. Worth a explicit check-in with Luis Felipe once Macroatividade 1 nears its deliverable.
