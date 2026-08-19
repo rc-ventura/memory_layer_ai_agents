@@ -25,4 +25,4 @@ Table 1 (memory sources) answers *where content comes from*, not *how content ge
 
 ## Status
 
-Registered as an explicit finding, citing the full table (not the earlier 4-model sample observation), in the Sub-1.1 deliverable. Reading priorities were set directly off this gap — see [`../papers/reading-queue.md`](../papers/reading-queue.md); the top-5 priority order (ExpeL, MemoryBank, Generative Agents, SCM, Retroformer) was fully cleared on 19/08/2026.
+Registered as an explicit finding, citing the full table (not the earlier 4-model sample observation), in the Sub-1.1 deliverable. Reading priorities were set directly off this gap — see [`../papers/reading-queue.md`](../papers/reading-queue.md). The top-5 priority order (ExpeL, MemoryBank, Generative Agents, SCM, Retroformer) all have Claude-verified notes as of 19/08/2026, but **none have actually been read by Rafael yet** — that's a separate, still-open step tracked on the reading checklist.
