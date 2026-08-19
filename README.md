@@ -12,7 +12,7 @@ This repo *is* the study/lab notebook for that work: bibliographic review, per-s
 
 ```
 docs/                   Work plan (Plano de Trabalho) and the sub-activity map used to tag everything else
-literature-review/      The two report-grade bibliographic reviews (Sub 1.1, Sub 1.2) + a 15-page visual synthesis
+literature-review/      The two report-grade bibliographic reviews (Sub 1.1, Sub 1.2) + two survey mind maps
 papers/                 One atomic note per paper/framework cited (36 so far) + a reading queue
 discussion/             Cross-cutting synthesis: findings, framework comparisons, scope decisions, open questions
 research-diary/         Daily episodic log + weekly synthesis, one file per month, in progress

@@ -1,29 +1,145 @@
-# Visual Synthesis — "The Memory Mechanism of LLM-Based Agents"
+# Visual Resources — Mind Maps
 
-**File:** [`agent-memory-blueprint.pdf`](agent-memory-blueprint.pdf) (15 pages)
-**Generated with:** Gemini Notebook, synthesized from *"A Survey on the Memory Mechanism of Large Language Model based Agents"* (Zhang et al., 2024 — see the full entry in [`../memory-in-ai-agents.md`](../memory-in-ai-agents.md#theme-4-highlighted-first--survey--review-papers-on-memory-in-llm-agents) and the atomic note at [`../../papers/zhang-2025-memory-survey.md`](../../papers/zhang-2025-memory-survey.md)).
-**Logged:** diary entry [18/08/2026](../../research-diary/diario_campo_2026-08.md#18082026), Sub-atividade 1.1.
+Two mind maps of the field's anchor surveys, kept as lightweight Mermaid diagrams (a few KB of text, renders natively on GitHub) instead of the earlier 17MB PDF export. Each is a redrawn recreation of a mind map shared in conversation — faithful to the structure and labels shown, but not a pixel copy of an original image file. If a branch/label looks off to you, it's worth a quick correction rather than assuming it's exactly right.
 
-A slide-style infographic companion to the Zhang et al. taxonomy — useful as a quick-reference/teaching aid distinct from the prose review. Page-by-page index below (one line per page, so it's searchable without opening the PDF):
+## 1. Memory in LLM-Based Agents
 
-| # | Title | Content |
-|---|---|---|
-| 1 | *The Memory Mechanism of LLM-Based Agents* | Cover page. Subtitle: "A Comprehensive Survey on the Architecture of Artificial Cognition." |
-| 2 | From Stateless Generators to Evolving Agents | Contrasts static LLMs (isolated tasks, no adaptation) with evolving agents (autonomous exploration, feedback-driven learning) — memory as the transition mechanism. |
-| 3 | Expanding the Scope of Artificial Memory | Narrow sense (current trial: the sequential ξₜ = {a₁,o₁,…,aₜ₋₁,oₜ₋₁} history) vs. broad sense (lifespan & external: accumulation across past trials + injected external knowledge). |
-| 4 | The Three Pillars of Agent Cognition | Cognitive Psychology, Self-Evolution, Application Necessity — the three motivations for memory, framed as pillars supporting "Autonomous Intelligence." |
-| 5 | Deconstructing the Memory Architecture | Master diagram: Sources (inside-trial / cross-trial / external) → Forms (textual / parametric) → Operations (reading / writing / management). This is the same three-part taxonomy behind the mind-map shared with the coordinator. |
-| 6 | Three Streams of Artificial Experience | Detail on Sources: inside-trial information (immediate, narrow), cross-trial information (long-term experiential data, common patterns, failed strategies), external knowledge (real-time facts via APIs) — all feeding the "Agent Memory Pool." |
-| 7 | Storing Memories as Explicit Natural Language | Detail on textual form: Complete Interactions (full concatenation), Recent Interactions (sliding window / locality), Retrieved Interactions (vector/SQL similarity search), External Knowledge (tool-injected text). |
-| 8 | Encoding Memories Implicitly into Model Weights | Detail on parametric form: Fine-Tuning (SFT — powerful, costly, risks catastrophic forgetting) vs. Knowledge Editing (targeted, lower-overhead, precise online updates). |
-| 9 | Evaluating Memory Storage Paradigms | Textual vs. parametric compared on Effectiveness, Efficiency, and Interpretability — textual wins interpretability, parametric wins read-cost. |
-| 10 | The Agent-Environment Interaction Loop | Formalizes Write / Manage / Read as equations: mₜᵏ = W({aₜᵏ,oₜᵏ}), Mₜᵏ = P(Mₜ₋₁ᵏ, mₜᵏ), M̂ₜᵏ = R(Mₜᵏ, cₜ₊₁ᵏ). |
-| 11 | Abstracting Raw Data into Intelligence | Detail on Management: Merging (reduce redundancy), Reflection (abstract high-level rules from raw observations), Forgetting (discard unimportant/outdated content). |
-| 12 | Proving the Efficacy of Artificial Memory | Evaluation framework: Direct (Subjective — coherence/rationality; Objective — correctness/F1/cost) vs. Indirect (Conversation consistency, Multi-Source QA, Long-Context retrieval & summarization). |
-| 13 | Memory at Work Across Industries | Applications: Social Simulation & Role-Playing, Personal Assistants, Open-World Games, Code Generation, Recommendation Systems, Expert Systems (Med/Fin). |
-| 14 | Navigating the Frontiers of Agent Cognition | Future directions: Parametric Advances, Multi-Agent Systems (sync/asymmetry), Lifelong Learning (overlap/temporality/selective forgetting), Humanoid Agents (aligning memory flaws with human psychology). |
-| 15 | Closing | Elie Wiesel quote on memory and civilization; closing statement: "Memory is the architecture of artificial experience." |
+Synthesizes *"A Survey on the Memory Mechanism of Large Language Model based Agents"* (Zhang et al., 2024/2025 — see [`../memory-in-ai-agents.md`](../memory-in-ai-agents.md#theme-4-highlighted-first--survey--review-papers-on-memory-in-llm-agents) and the atomic note at [`../../papers/zhang-2025-memory-survey.md`](../../papers/zhang-2025-memory-survey.md)). Logged: diary entry [18/08/2026](../../research-diary/diario_campo_2026-08.md#18082026), Sub-atividade 1.1.
 
-## Reading note
+```mermaid
+graph LR
+  A["Memory in LLM-based Agents"]
 
-This deck maps directly onto the **Sources → Forms → Operations** structure used throughout [`../memory-in-ai-agents.md`](../memory-in-ai-agents.md) and the [sub-activity map](../../docs/sub-activity-map.md). Pages 5–12 in particular are a faster way to re-orient on the taxonomy than re-reading the prose review, which is why it's kept as a first-class artifact here rather than just an attachment.
+  A --> B["Concept and Definitions"]
+  A --> C["Necessity of Memory"]
+  A --> D["Implementation Strategies"]
+  A --> E["Evaluation Framework"]
+  A --> F["Memory-enhanced Applications"]
+  A --> G["Future Directions"]
+
+  D --> D1["Memory Sources"]
+  D1 --> D1a["Inside-trial (Interaction steps)"]
+  D1 --> D1b["Cross-trial (Past experiences)"]
+  D1 --> D1c["External Knowledge (Tools/Wikis)"]
+
+  D --> D2["Memory Forms"]
+  D2 --> D2a["Textual Form"]
+  D2a --> D2a1["Complete Interactions"]
+  D2a --> D2a2["Recent (Cache-based)"]
+  D2a --> D2a3["Retrieved (Similarity-based)"]
+  D2 --> D2b["Parametric Form"]
+  D2b --> D2b1["Fine-tuning (Domain expertise)"]
+  D2b --> D2b2["Knowledge Editing (Facts/Traits)"]
+
+  D --> D3["Memory Operations"]
+  D3 --> D3a["Writing"]
+  D3a --> D3a1["Raw storage"]
+  D3a --> D3a2["Summarization"]
+  D3 --> D3b["Management"]
+  D3b --> D3b1["Merging redundant info"]
+  D3b --> D3b2["Reflection (High-level)"]
+  D3b --> D3b3["Forgetting (Unimportant)"]
+  D3 --> D3c["Reading"]
+  D3c --> D3c1["Context retrieval"]
+  D3c --> D3c2["Similarity matching"]
+
+  E --> E1["Direct Evaluation"]
+  E1 --> E1a["Subjective (Coherence, Rationality)"]
+  E1 --> E1b["Objective (Correctness, F1-score, Latency)"]
+  E --> E2["Indirect Evaluation"]
+  E2 --> E2a["Conversation consistency"]
+  E2 --> E2b["QA performance"]
+  E2 --> E2c["Task success rate (Minecraft, Code)"]
+
+  F --> F1["Social Simulation (Role-playing)"]
+  F --> F2["Personal Assistant (Contextual chat)"]
+  F --> F3["Open-world Games (Skill learning)"]
+  F --> F4["Expert Systems"]
+  F --> F5["Code Generation & Recommendation"]
+```
+
+**Reading note:** this maps directly onto the **Sources → Forms → Operations** structure used throughout [`../memory-in-ai-agents.md`](../memory-in-ai-agents.md) and the [sub-activity map](../../docs/sub-activity-map.md) — the "Implementation Strategies" branch above is the same taxonomy behind [the cross-trial × forgetting gap finding](../../discussion/cross-trial-vs-forgetting-gap.md).
+
+## 2. Memory in the Age of AI Agents
+
+Synthesizes *"Memory in the Age of AI Agents"* (Hu, Liu, et al., Dec 2025, arXiv:2512.13564 — see [`../../papers/memory-in-the-age-of-ai-agents-2025.md`](../../papers/memory-in-the-age-of-ai-agents-2025.md)), the survey behind the project's three-axis vocabulary: **Forms, Functions, Dynamics**.
+
+```mermaid
+graph LR
+  A["Memory in the Age of AI Agents"]
+
+  A --> P["Preliminaries"]
+  A --> FO["Forms (Representational Units)"]
+  A --> FU["Functions (Why Agents Need Memory)"]
+  A --> DY["Dynamics (Operational Lifecycle)"]
+  A --> RF["Resources and Frontiers"]
+
+  P --> P1["Definitions"]
+  P1 --> P1a["LLM-based Agent Systems"]
+  P1 --> P1b["Agent Memory Systems"]
+  P --> P2["Conceptual Comparisons"]
+  P2 --> P2a["vs. LLM Memory (Model Internal Dynamics)"]
+  P2 --> P2b["vs. RAG (Static Knowledge Access)"]
+  P2 --> P2c["vs. Context Engineering (Resource Management)"]
+
+  FO --> FO1["Token-level Memory"]
+  FO1 --> FO1a["Flat (1D)"]
+  FO1a --> FO1a1["Dialogue"]
+  FO1a --> FO1a2["Preference"]
+  FO1a --> FO1a3["Profile"]
+  FO1a --> FO1a4["Experience"]
+  FO1a --> FO1a5["Multimodal"]
+  FO1 --> FO1b["Planar (2D)"]
+  FO1b --> FO1b1["Tree Structures"]
+  FO1b --> FO1b2["Graph Structures"]
+  FO1 --> FO1c["Hierarchical (3D)"]
+  FO1c --> FO1c1["Pyramid Structures"]
+  FO1c --> FO1c2["Multi-Layer Graphs"]
+  FO --> FO2["Parametric Memory"]
+  FO2 --> FO2a["Internal Parametric"]
+  FO2 --> FO2b["External Parametric"]
+  FO --> FO3["Latent Memory"]
+  FO3 --> FO3a["Generate"]
+  FO3 --> FO3b["Reuse"]
+  FO3 --> FO3c["Transform"]
+
+  FU --> FU1["Factual Memory"]
+  FU1 --> FU1a["User Factual"]
+  FU1 --> FU1b["Environment Factual"]
+  FU --> FU2["Experiential Memory"]
+  FU2 --> FU2a["Case-based"]
+  FU2 --> FU2b["Strategy-based"]
+  FU2 --> FU2c["Skill-based"]
+  FU2 --> FU2d["Hybrid"]
+  FU --> FU3["Working Memory"]
+  FU3 --> FU3a["Single-turn"]
+  FU3 --> FU3b["Multi-turn"]
+
+  DY --> DY1["Memory Formation"]
+  DY1 --> DY1a["Semantic Summarization"]
+  DY1 --> DY1b["Knowledge Distillation"]
+  DY1 --> DY1c["Structured Construction"]
+  DY1 --> DY1d["Latent Representation"]
+  DY1 --> DY1e["Parametric Internalization"]
+  DY --> DY2["Memory Evolution"]
+  DY2 --> DY2a["Consolidation"]
+  DY2 --> DY2b["Updating"]
+  DY2 --> DY2c["Forgetting"]
+  DY --> DY3["Memory Retrieval"]
+  DY3 --> DY3a["Timing and Intent"]
+  DY3 --> DY3b["Query Construction"]
+  DY3 --> DY3c["Retrieval Strategies"]
+  DY3 --> DY3d["Post-Retrieval Processing"]
+
+  RF --> RF1["Current Resources"]
+  RF1 --> RF1a["Benchmarks and Datasets"]
+  RF1 --> RF1b["Open-Source Frameworks"]
+  RF --> RF2["Research Frontiers"]
+  RF2 --> RF2a["Automated Memory Management"]
+  RF2 --> RF2b["RL-Memory Integration"]
+  RF2 --> RF2c["Multimodal Memory"]
+  RF2 --> RF2d["Shared Multi-Agent Memory"]
+  RF2 --> RF2e["Trustworthy Memory"]
+```
+
+**Reading note:** the **Dynamics → Memory Evolution (Consolidation / Updating / Forgetting)** branch is exactly the project's sub-topic — see [`../../papers/memory-in-the-age-of-ai-agents-2025.md`](../../papers/memory-in-the-age-of-ai-agents-2025.md) for why this survey's axis maps onto the project. **Research Frontiers → RL-Memory Integration** is the direct link to Sub 1.3.

@@ -14,7 +14,7 @@ A very large, recent survey proposing a three-axis taxonomy — Forms (token-lev
 
 ## Relevance to the project
 
-The most current map of the field; its "Dynamics → evolution (consolidation & forgetting)" axis is exactly the project's sub-topic, and it lists RL-integration and trustworthiness as frontiers.
+The most current map of the field; its "Dynamics → evolution (consolidation & forgetting)" axis is exactly the project's sub-topic, and it lists RL-integration and trustworthiness as frontiers. See [mind map 2](../literature-review/visual-synthesis/README.md#2-memory-in-the-age-of-ai-agents) for the full Forms/Functions/Dynamics/Resources-and-Frontiers taxonomy.
 
 ---
 Source review: [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md)
