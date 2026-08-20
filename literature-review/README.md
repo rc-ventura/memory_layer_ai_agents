@@ -12,7 +12,7 @@ Both documents are **living reviews** — Sub 1.1 and Sub 2.1 of the [work plan]
 ## Structure
 
 - `memory-in-ai-agents.md`, `deep-agents.md` — the two review reports (TL;DR → Key Findings → Details by theme → Recommendations → Caveats), each carrying peer-review status inline per source.
-- [`visual-synthesis/`](visual-synthesis/) — two mind maps (Mermaid diagrams) of the field's anchor surveys: Zhang et al. (ACM TOIS 2025) and Hu/Liu et al. ("Memory in the Age of AI Agents," 2025), logged in the [research diary on 18/08/2026](../research-diary/diario_campo_2026-08.md).
+- [`visual-synthesis/`](visual-synthesis/) — two mind maps of the field's anchor surveys: Zhang et al. (ACM TOIS 2025) and Hu/Liu et al. ("Memory in the Age of AI Agents," 2025), logged in the [research diary on 18/08/2026](../research-diary/diario_campo_2026-08.md). Each ships as a rendered PNG plus its editable Mermaid source.
 - `sources/` — the original `.docx` deliverables these reviews were converted from, kept for provenance.
 
 ## How this relates to `papers/` and `discussion/`
