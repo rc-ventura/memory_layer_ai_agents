@@ -91,3 +91,35 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Finalizar a leitura hoje (20/08). Depois de terminar, atualizar o campo "Read by Rafael" na nota do paper e no reading queue.
 
 **Tags:** memory-in-the-age-of-ai-agents, topologias-de-memoria, taxonomia, memento, sage, leitura-fundamental
+
+### Leitura — survey "Memory in the Age of AI Agents" finalizado
+
+**Tipo:** leitura — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Finalizei hoje a leitura do survey "Memory in the Age of AI Agents" (Hu, Liu et al.), iniciada ontem (19/08).
+
+**Decisão/próximo passo:** Amanhã (21/08), montar um mind map dos dois surveys (Zhang et al., ACM TOIS 2025, e este) e mapear os conceitos principais a partir deles, usando a taxonomia de conceitos deste survey como referência para balizar o relatório do Entregável M1.
+
+**Tags:** memory-in-the-age-of-ai-agents, zhang-survey, mind-map, taxonomia, entregavel-m1
+
+### Decisão — natureza do RL do mecanismo definida com o tutor
+
+**Tipo:** decisão — **Sub-atividade:** 1.3 — **Canal:** formal-tutor
+
+**Registro objetivo:** Definido com o tutor: o RL do mecanismo não será via fine-tuning supervisionado (SFT), e sim um ajuste de harness — RL a partir de sinal thumbs up/thumbs down do usuário como entrada.
+
+**Decisão/próximo passo:** Analisar todos os modelos de trabalho do corpus (reading list) para identificar quais possuem RL usando PE (prompt engineering) — ou seja, ajuste de comportamento via engenharia de prompt/harness em vez de gradiente de política ou fine-tuning.
+
+**Tags:** rl, harness, thumbs-up-thumbs-down, sft, sub-1.3, governanca
+
+### Achado — mapeamento dos fluxos jurídicos concluído
+
+**Tipo:** achado — **Sub-atividade:** 1.4 — **Canal:** pessoal
+
+**Registro objetivo:** Concluído o mapeamento de todos os fluxos jurídicos importantes do projeto. A transcrição da sessão de mapeamento será anexada (ainda pendente de anexar).
+
+**Reflexão:** Com o mapeamento fechado, dá para repesquisar a partir dos fluxos, triangulando três pontos — o plano de trabalho, os papers já lidos ou na fila de leitura, e os próprios fluxos mapeados — para repriorizar a reading queue a partir dessa triangulação.
+
+**Decisão/próximo passo:** Anexar a transcrição do mapeamento dos fluxos jurídicos ao repositório. Usar a triangulação (fluxos × plano de trabalho × papers) para repriorizar a reading queue.
+
+**Tags:** fluxos-juridicos, sub-1.4, triangulacao, reading-queue, transcricao-pendente
