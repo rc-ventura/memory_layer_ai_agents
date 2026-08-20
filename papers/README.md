@@ -1,6 +1,6 @@
 # Papers & Frameworks — Atomic Notes
 
-One short note per source. Most are extracted faithfully from [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md) (Sub 1.1) and [`deep-agents.md`](../literature-review/deep-agents.md) (Sub 1.2); a few (ExpeL, SCM, Retroformer) were added later directly from verified arXiv/proceedings pages, clearing items off the reading queue — each note's footer says which. 39 sources indexed below. Use [`_TEMPLATE.md`](_TEMPLATE.md) when adding a new one — see also [`reading-queue.md`](reading-queue.md) for sources still named but not yet fully reviewed.
+One short note per source. Most are extracted faithfully from [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md) (Sub 1.1) and [`deep-agents.md`](../literature-review/deep-agents.md) (Sub 1.2); a few (ExpeL, SCM, Retroformer, RMM) were added later directly from verified arXiv/proceedings pages — each note's footer says which. 40 sources indexed below. Use [`_TEMPLATE.md`](_TEMPLATE.md) when adding a new one — see also [`reading-queue.md`](reading-queue.md) for sources still named but not yet fully reviewed.
 
 **"Lido" column:** ☐ = not yet read by Rafael (every note's own "Note existing ≠ read" caveat still applies, see [`reading-queue.md`](reading-queue.md#a-note-about-what-reviewed-means-here)). When you finish reading one, flip it here to `✅ DD/MM/AAAA` and update the same note's **Read by Rafael** field in its own file — the two should always agree. Nothing below is checked yet; every single one is still ☐.
 
@@ -45,6 +45,7 @@ One short note per source. Most are extracted faithfully from [`memory-in-ai-age
 | [Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory](mem0-2025.md) | 2025 | Peer-reviewed | ☐ |
 | [Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning](memory-r1-2025.md) | 2025 | Preprint | ☐ |
 | [Retroformer: Retrospective Large Language Agents with Policy Gradient Optimization](retroformer-2024.md) | 2023/2024 | Peer-reviewed (ICLR 2024) | ☐ |
+| [In Prospect and Retrospect: Reflective Memory Management for Long-term Personalized Dialogue Agents (RMM)](rmm-2025.md) | 2025 | Peer-reviewed (ACL 2025) | ☐ |
 | [DMF: A Deterministic Memory Framework for Conversational AI Agents](dmf-2026.md) | 2026 | Preprint | ☐ |
 | [ReasoningBank: Scaling Agent Self-Evolving with Reasoning Memory](reasoningbank-2025.md) | 2025 | Peer-reviewed (ICLR 2026) | ☐ |
 | [Memp: Exploring Agent Procedural Memory](memp-2025.md) | 2025 | Peer-reviewed (ACL Findings) | ☐ |
