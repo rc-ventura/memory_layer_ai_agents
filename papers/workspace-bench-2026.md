@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.2 · **Status:** Preprint (no confirmed peer-reviewed venue yet) · **Theme:** Deep-agent ecosystem & orchestration
+> **Sub-atividade:** 1.2 · **Status:** Preprint (no confirmed peer-reviewed venue yet) · **Theme:** Deep-agent ecosystem & orchestration · **Read by Rafael:** not yet
 
 # Workspace-Bench 1.0: Benchmarking AI Agents on Workspace Tasks with Large-Scale File Dependencies
 

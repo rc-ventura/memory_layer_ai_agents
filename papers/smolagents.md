@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Industry (open-source repo) · **Theme:** Frameworks (industry)
+> **Sub-atividade:** 1.1 · **Status:** Industry (open-source repo) · **Theme:** Frameworks (industry) · **Read by Rafael:** not yet
 
 # smolagents
 

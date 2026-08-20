@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.2 · **Status:** Preprint · **Theme:** Deep-agent ecosystem & orchestration
+> **Sub-atividade:** 1.2 · **Status:** Preprint · **Theme:** Deep-agent ecosystem & orchestration · **Read by Rafael:** not yet
 
 # The Landscape of Emerging AI Agent Architectures for Reasoning, Planning, and Tool Calling: A Survey
 

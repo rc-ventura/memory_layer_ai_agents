@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.2 · **Status:** Preprint · **Theme:** Deep-agent ecosystem & orchestration
+> **Sub-atividade:** 1.2 · **Status:** Preprint · **Theme:** Deep-agent ecosystem & orchestration · **Read by Rafael:** not yet
 
 # A Taxonomy of Architecture Options for Foundation Model-based Agents
 

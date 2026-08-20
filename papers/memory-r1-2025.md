@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Update, consolidation & forgetting
+> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Update, consolidation & forgetting · **Read by Rafael:** not yet
 
 # Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning
 

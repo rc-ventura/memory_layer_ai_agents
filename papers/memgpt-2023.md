@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint (widely cited) · **Theme:** Architectures: short-term vs. long-term
+> **Sub-atividade:** 1.1 · **Status:** Preprint (widely cited) · **Theme:** Architectures: short-term vs. long-term · **Read by Rafael:** not yet
 
 # MemGPT: Towards LLMs as Operating Systems
 

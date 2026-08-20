@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed (TMLR) · **Theme:** Update, consolidation & forgetting
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed (TMLR) · **Theme:** Update, consolidation & forgetting · **Read by Rafael:** not yet
 
 # Voyager: An Open-Ended Embodied Agent with Large Language Models
 

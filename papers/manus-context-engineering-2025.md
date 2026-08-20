@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.2 · **Status:** Industry (blog) · **Theme:** Deep-agent ecosystem & orchestration
+> **Sub-atividade:** 1.2 · **Status:** Industry (blog) · **Theme:** Deep-agent ecosystem & orchestration · **Read by Rafael:** not yet
 
 # Context Engineering for AI Agents: Lessons from Building Manus
 

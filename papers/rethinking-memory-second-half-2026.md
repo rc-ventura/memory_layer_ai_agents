@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Surveys
+> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Surveys · **Read by Rafael:** not yet
 
 # Rethinking Memory Mechanisms of Foundation Agents in the Second Half: A Survey
 

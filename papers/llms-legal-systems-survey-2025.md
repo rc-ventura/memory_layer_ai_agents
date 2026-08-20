@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Legal / juridical application
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Legal / juridical application · **Read by Rafael:** not yet
 
 # Large Language Models in Legal Systems: A Survey
 

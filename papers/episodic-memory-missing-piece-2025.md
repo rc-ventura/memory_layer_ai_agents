@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint (position paper) · **Theme:** Episodic vs. semantic memory
+> **Sub-atividade:** 1.1 · **Status:** Preprint (position paper) · **Theme:** Episodic vs. semantic memory · **Read by Rafael:** not yet
 
 # Position: Episodic Memory is the Missing Piece for Long-Term LLM Agents
 

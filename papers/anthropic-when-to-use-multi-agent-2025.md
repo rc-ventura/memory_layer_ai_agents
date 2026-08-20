@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.2 · **Status:** Industry (blog) · **Theme:** Deep-agent ecosystem & orchestration
+> **Sub-atividade:** 1.2 · **Status:** Industry (blog) · **Theme:** Deep-agent ecosystem & orchestration · **Read by Rafael:** not yet
 
 # When to Use Multi-Agent Systems (and When Not To)
 

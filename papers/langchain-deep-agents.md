@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Industry (blog + open-source repo + docs) · **Theme:** Frameworks (industry)
+> **Sub-atividade:** 1.1 · **Status:** Industry (blog + open-source repo + docs) · **Theme:** Frameworks (industry) · **Read by Rafael:** not yet
 
 # LangChain Deep Agents (`deepagents`)
 

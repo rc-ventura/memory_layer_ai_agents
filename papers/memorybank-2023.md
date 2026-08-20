@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Update, consolidation & forgetting
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Update, consolidation & forgetting · **Read by Rafael:** not yet
 
 # MemoryBank: Enhancing Large Language Models with Long-Term Memory
 
