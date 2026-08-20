@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1, 1.3 · **Status:** Peer-reviewed (ICLR 2024) · **Theme:** Update, consolidation & forgetting
+> **Sub-atividade:** 1.1, 1.3 · **Status:** Peer-reviewed (ICLR 2024) · **Theme:** Update, consolidation & forgetting · **Read by Rafael:** not yet
 
 # Retroformer: Retrospective Large Language Agents with Policy Gradient Optimization
 
@@ -17,4 +17,4 @@ A principled framework for reinforcing large language agents by learning a separ
 Priority #5 in the [reading queue](reading-queue.md), and the diary's own anchor for Sub 1.3: the corpus's **only case of literal RL** (policy-gradient optimization against a reward signal), as opposed to [Reflexion](reflexion-2023.md)'s verbal self-critique or [Memory-R1](memory-r1-2025.md)'s PPO/GRPO over discrete memory operations. See [`../discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title`](../discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title) — Retroformer is direct evidence for what "genuinely RL" looks like among the corpus's cross-trial-learning models (it's one of the six with cross-trial ✓ in [the forgetting-gap finding](../discussion/cross-trial-vs-forgetting-gap.md)).
 
 ---
-Source: verified directly against the arXiv abstract, ICLR 2024 poster page, and OpenReview listing (not from the original bibliographic review docx) — added 19/08/2026 at the user's request, clearing the #5 reading-queue item.
+Source: verified directly against the arXiv abstract, ICLR 2024 poster page, and OpenReview listing (not from the original bibliographic review docx) — added 19/08/2026 at the user's request. This is bibliographic verification, not a substitute for Rafael's own reading — this item on the [reading checklist](reading-queue.md) stays open until he's actually read it.
