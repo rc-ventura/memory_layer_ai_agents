@@ -108,7 +108,7 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Registro objetivo:** Definido com o tutor: o RL do mecanismo não será via fine-tuning supervisionado (SFT), e sim um ajuste de harness — RL a partir de sinal thumbs up/thumbs down do usuário como entrada.
 
-**Decisão/próximo passo:** Analisar todos os modelos de trabalho do corpus (reading list) para identificar quais possuem RL usando PE (sigla como registrada por Rafael — confirmar expansão exata do termo antes de usar no relatório do Entregável M1).
+**Decisão/próximo passo:** Analisar todos os modelos de trabalho do corpus (reading list) para identificar quais possuem RL usando PE (prompt engineering) — ou seja, ajuste de comportamento via engenharia de prompt/harness em vez de gradiente de política ou fine-tuning.
 
 **Tags:** rl, harness, thumbs-up-thumbs-down, sft, sub-1.3, governanca
 

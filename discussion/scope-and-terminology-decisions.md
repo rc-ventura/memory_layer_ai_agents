@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 / 1.3 / 3.6 · **Type:** Decision log · **Logged:** [18/08/2026](../research-diary/diario_campo_2026-08.md)
+> **Sub-atividade:** 1.1 / 1.3 / 3.6 · **Type:** Decision log · **Logged:** [18/08/2026](../research-diary/diario_campo_2026-08.md), updated [20/08/2026](../research-diary/diario_campo_2026-08.md)
 
 # Scope and terminology decisions
 
@@ -16,7 +16,9 @@ A running log of scoping/terminology calls made during the literature review, ea
 
 **Retroformer** and **Memory-R1** ([`../papers/memory-r1-2025.md`](../papers/memory-r1-2025.md)) are the corpus's genuine literal-RL cases (PPO/GRPO fine-tuning against a reward signal).
 
-**Open item:** the Plano needs to explicitly state, somewhere in Sub 1.3 or 1.7, which sense of "RL" the mechanism actually implements. **Not yet done** — see [`open-questions.md`](open-questions.md).
+**Resolved 20/08/2026 (with tutor, formal channel):** the mechanism's own RL is **not SFT**. It is a **harness adjustment** — RL driven by an explicit user signal (thumbs up / thumbs down) as the input reward. This settles which sense of "RL" the Plano's title refers to for Sub 1.3/1.7: closer to Reflexion's verbal/no-gradient family than to Retroformer/Memory-R1's literal policy-gradient fine-tuning, but with a structured binary reward instead of free-text self-critique.
+
+**New open item this decision creates:** audit every model in the reading corpus for which ones implement RL via **PE (prompt engineering)** — i.e., behavior adjustment through prompt/harness engineering rather than policy-gradient fine-tuning — since that is the family the project's own mechanism now belongs to. See [`open-questions.md`](open-questions.md).
 
 ## 3. Cross-trial vs. cross-agent
 
