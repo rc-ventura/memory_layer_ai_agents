@@ -77,3 +77,17 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Marcar Reference Accuracy como métrica pronta pra implementar assim que Sub 1.4 e Sub 1.5 fecharem — bloqueada por elas, não por falta de decisão de escopo.
 
 **Tags:** reference-accuracy, sub-3.6, escopo, dependencia-1.4-1.5
+
+---
+
+## 20/08/2026
+
+**Tipo:** leitura — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Comecei ontem (19/08) a ler "Memory in the Age of AI Agents" (Hu, Liu et al., arXiv:2512.13564), investigando conceitos relacionados a memória, principalmente topologias de memória. O artigo está se mostrando interessante porque propõe uma taxonomia de conceitos, servindo como artigo fundamental para o relatório. Descobri alguns modelos interessantes citados nele, como Memento e SAGE. Pretendo finalizar a leitura hoje, dia 20/08.
+
+**Reflexão:** Esse survey já estava catalogado no repo (nota em `papers/memory-in-the-age-of-ai-agents-2025.md` e mind map 2 em `literature-review/visual-synthesis/`), mas só a partir de verificação de abstract, não de leitura própria — essa é a primeira leitura de fato dele. Achado colateral interessante: Memento e SAGE, citados dentro desse survey, já são as prioridades #1 e #2 do reading queue do projeto, encontrados por um caminho independente (o cruzamento cross-trial × forgetting do corpus Zhang et al.) — é uma segunda confirmação, vinda de fonte diferente, de que esses dois merecem prioridade.
+
+**Decisão/próximo passo:** Finalizar a leitura hoje (20/08). Depois de terminar, atualizar o campo "Read by Rafael" na nota do paper e no reading queue.
+
+**Tags:** memory-in-the-age-of-ai-agents, topologias-de-memoria, taxonomia, memento, sage, leitura-fundamental
