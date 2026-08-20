@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.2 · **Status:** Peer-reviewed (WWW 2026 Oral) · **Theme:** Deep-agent ecosystem & orchestration
+> **Sub-atividade:** 1.2 · **Status:** Peer-reviewed (WWW 2026 Oral) · **Theme:** Deep-agent ecosystem & orchestration · **Read by Rafael:** not yet
 
 # DeepAgent: A General Reasoning Agent with Scalable Toolsets
 

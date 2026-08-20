@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.2 · **Status:** Preprint · **Theme:** Deep-agent ecosystem & orchestration
+> **Sub-atividade:** 1.2 · **Status:** Preprint · **Theme:** Deep-agent ecosystem & orchestration · **Read by Rafael:** not yet
 
 # Always-On Agents: A Survey of Persistent Memory, State, and Governance in LLM Agents
 

@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Surveys
+> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Surveys · **Read by Rafael:** not yet
 
 # From Storage to Experience: A Survey on the Evolution of LLM Agent Memory Mechanisms
 

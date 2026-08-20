@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint (industry research) · **Theme:** Legal / juridical application
+> **Sub-atividade:** 1.1 · **Status:** Preprint (industry research) · **Theme:** Legal / juridical application · **Read by Rafael:** not yet
 
 # LAW: Legal Agentic Workflows for Custody and Fund Services Contracts
 

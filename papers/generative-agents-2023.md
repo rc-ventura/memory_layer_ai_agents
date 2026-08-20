@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Episodic vs. semantic memory
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Episodic vs. semantic memory · **Read by Rafael:** not yet
 
 # Generative Agents: Interactive Simulacra of Human Behavior
 

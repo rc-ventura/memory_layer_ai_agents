@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed (Nature) / foundational preprint · **Theme:** Architectures: short-term vs. long-term
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed (Nature) / foundational preprint · **Theme:** Architectures: short-term vs. long-term · **Read by Rafael:** not yet
 
 # Neural Turing Machines / Hybrid Computing Using a Neural Network with Dynamic External Memory (Differentiable Neural Computer)
 

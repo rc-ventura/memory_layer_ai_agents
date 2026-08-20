@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Episodic vs. semantic memory
+> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Episodic vs. semantic memory · **Read by Rafael:** not yet
 
 # Episodic Memory in AI Agents Poses Risks That Should Be Studied and Mitigated
 

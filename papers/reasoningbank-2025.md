@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed (ICLR 2026) · **Theme:** Update, consolidation & forgetting
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed (ICLR 2026) · **Theme:** Update, consolidation & forgetting · **Read by Rafael:** not yet
 
 # ReasoningBank: Scaling Agent Self-Evolving with Reasoning Memory
 

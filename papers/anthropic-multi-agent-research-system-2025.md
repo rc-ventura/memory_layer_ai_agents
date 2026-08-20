@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.2 · **Status:** Industry (engineering blog) · **Theme:** Deep-agent ecosystem & orchestration
+> **Sub-atividade:** 1.2 · **Status:** Industry (engineering blog) · **Theme:** Deep-agent ecosystem & orchestration · **Read by Rafael:** not yet
 
 # How We Built Our Multi-Agent Research System
 

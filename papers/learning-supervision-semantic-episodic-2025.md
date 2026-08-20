@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Episodic vs. semantic memory
+> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Episodic vs. semantic memory · **Read by Rafael:** not yet
 
 # Learning from Supervision with Semantic and Episodic Memory: A Reflective Approach to Agent Adaptation
 

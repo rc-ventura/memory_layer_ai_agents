@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Update, consolidation & forgetting
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Update, consolidation & forgetting · **Read by Rafael:** not yet
 
 # Reflexion: Language Agents with Verbal Reinforcement Learning
 

@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Architectures: short-term vs. long-term
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed · **Theme:** Architectures: short-term vs. long-term · **Read by Rafael:** not yet
 
 # Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks
 
