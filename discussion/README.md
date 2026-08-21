@@ -8,6 +8,7 @@ Cross-cutting synthesis that goes beyond any single source — findings from cro
 | [`framework-comparison-hermes-smolagents-deepagents.md`](framework-comparison-hermes-smolagents-deepagents.md) | The three-way Hermes Agent / smolagents / LangChain Deep Agents comparison — not found together in any existing source, spanning both literature reviews. |
 | [`scope-and-terminology-decisions.md`](scope-and-terminology-decisions.md) | Decision log: non-parametric memory scope, what "RL" means in the project's title, cross-trial vs. cross-agent, a benchmark-dating correction, and the Reference Accuracy metric's scope. |
 | [`open-questions.md`](open-questions.md) | Items flagged but not yet resolved — kept in one place instead of scattered across diary entries. |
+| [`thumbs-feedback-reliability.md`](thumbs-feedback-reliability.md) | Is thumbs up/down a reliable RL signal? General RLHF literature on feedback noise, annotator disagreement, sycophancy, and reward overoptimization — and what it implies for Sub 1.5's acerto/erro criteria. |
 
 ## Relationship to the rest of the repo
 

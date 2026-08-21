@@ -60,7 +60,13 @@ GraphRAG (Edge et al.) ou G-Memory viram leitura ativa **somente se** o fluxo ju
 
 Um survey de fev/2026 com seção dedicada a forgetting, e um paper de dez/2025 catalogando seis políticas de forgetting distintas — registrados aqui porque existem e porque confirmam que o campo publicou mais coisa relevante a essa lacuna específica nos últimos meses do que em todo 2024. Sem título/arXiv ID confirmado ainda — não têm pergunta pendente amarrada a eles. Viram candidatos quando (e se) a parte de desenhar o mecanismo de forgetting propriamente dito (Sub 2.2/3.2) começar.
 
-## Other candidates surfaced, not urgent (20/08/2026)
+## Surfaced from RLHF-literature search, tied to an open decision (20/08/2026)
+
+Found while checking whether thumbs up/thumbs down (the mechanism's chosen RL signal — see [`../discussion/scope-and-terminology-decisions.md#2`](../discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title)) is a reliable training signal. Unlike the "not urgent" section below, this one **is** tied to an open decision — Sub 1.5's acerto/erro criteria. See [`../discussion/thumbs-feedback-reliability.md`](../discussion/thumbs-feedback-reliability.md) for the full synthesis.
+
+- **Casper et al. — "Open Problems and Fundamental Limitations of Reinforcement Learning from Human Feedback"** (2023, arXiv:2307.15217). Verified via web search this session (title/authors/abstract-level claims), not fetched from arXiv directly (egress to arxiv.org is blocked in this environment) and not read. Taxonomizes RLHF problems into feedback quality, reward model, and policy buckets — the single broadest reference for the noisy-human-feedback question, more directly relevant to Sub 1.3/1.5 than most of the checklist above.
+
+
 
 Found while Rafael was reading "Memory in the Age of AI Agents" (arXiv:2512.13564) — real, verified, relevant, but not blocking any specific open decision the way the checklist items above are. No specific question is attached because none is needed yet; promote to a full atomic note whenever convenient, no particular urgency.
 
