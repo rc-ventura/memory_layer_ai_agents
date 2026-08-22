@@ -9,6 +9,7 @@ Cross-cutting synthesis that goes beyond any single source — findings from cro
 | [`scope-and-terminology-decisions.md`](scope-and-terminology-decisions.md) | Decision log: non-parametric memory scope, what "RL" means in the project's title, cross-trial vs. cross-agent, a benchmark-dating correction, and the Reference Accuracy metric's scope. |
 | [`open-questions.md`](open-questions.md) | Items flagged but not yet resolved — kept in one place instead of scattered across diary entries. |
 | [`thumbs-feedback-reliability.md`](thumbs-feedback-reliability.md) | Is thumbs up/down a reliable RL signal? General RLHF literature on feedback noise, annotator disagreement, sycophancy, and reward overoptimization — and what it implies for Sub 1.5's acerto/erro criteria. |
+| [`checkpoint-2026-08-20-reflections.md`](checkpoint-2026-08-20-reflections.md) | Reflections on the 20/08 tutor checkpoint meeting: primary-source confirmation of the harness-not-retraining decision, real-world grounding for the cross-agent scope narrowing, and two new open items on business-rule/MCP boundaries and dual signal-capture design. |
 
 ## Relationship to the rest of the repo
 

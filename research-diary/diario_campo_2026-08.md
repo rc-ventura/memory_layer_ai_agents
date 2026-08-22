@@ -116,10 +116,10 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Tipo:** achado — **Sub-atividade:** 1.4 — **Canal:** pessoal
 
-**Registro objetivo:** Concluído o mapeamento de todos os fluxos jurídicos importantes do projeto. A transcrição da sessão de mapeamento será anexada (ainda pendente de anexar).
+**Registro objetivo:** Concluído o mapeamento de todos os fluxos jurídicos importantes do projeto. A transcrição da sessão de mapeamento (reunião de checkpoint com o tutor) foi anexada em `docs/checkpoint-2026-08-20-tutor-kickoff.md` (fonte: `docs/sources/Checkpoint_Tutor_2026-08-20.docx`), com reflexões em `discussion/checkpoint-2026-08-20-reflections.md`.
 
 **Reflexão:** Com o mapeamento fechado, dá para repesquisar a partir dos fluxos, triangulando três pontos — o plano de trabalho, os papers já lidos ou na fila de leitura, e os próprios fluxos mapeados — para repriorizar a reading queue a partir dessa triangulação.
 
-**Decisão/próximo passo:** Anexar a transcrição do mapeamento dos fluxos jurídicos ao repositório. Usar a triangulação (fluxos × plano de trabalho × papers) para repriorizar a reading queue.
+**Decisão/próximo passo:** Transcrição anexada (ver acima). Próximo passo: usar a triangulação (fluxos × plano de trabalho × papers) para repriorizar a reading queue.
 
-**Tags:** fluxos-juridicos, sub-1.4, triangulacao, reading-queue, transcricao-pendente
+**Tags:** fluxos-juridicos, sub-1.4, triangulacao, reading-queue, checkpoint-tutor
