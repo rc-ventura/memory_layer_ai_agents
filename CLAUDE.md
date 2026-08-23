@@ -1,47 +1,22 @@
 # Instructions for Claude working in this repo
 
-Repo overview, folder purposes, and general conventions are in [`README.md`](README.md) — read that first. This file only covers working rules established during actual sessions, that aren't obvious from the folder structure alone.
+This file is an index, not a rulebook — each doc below is the actual source of truth. Update the doc, not this file, when a convention changes; add a link here only when something new needs a home.
 
-## Language
+## Where things live
 
-- `research-diary/` — always Portuguese. Personal artifact, never touch this rule.
-- `docs/` — an official artifact (the work plan) or a summary derived from one specific source in Portuguese (e.g., a meeting transcript) stays in **Portuguese**, verbatim in spirit even when it's a written summary, not a transcript copy.
-- `discussion/` — **English by default**, for consistency across the folder (cross-links between notes rely on this). Write a specific note in Portuguese only if Rafael explicitly asks for that note — it's a per-file override, not a folder-wide change. Don't infer the override from context; ask if unsure.
+- **Repo structure, folder purposes, language convention** → [`README.md`](README.md)
+- **Diary: entry schema, weekly-file cadence, when to log** → [`research-diary/README.md`](research-diary/README.md)
+- **Work plan, sub-activity map, meeting-record pattern** → [`docs/README.md`](docs/README.md)
+- **When something becomes a `discussion/` note vs. staying in the diary's `Reflexão` field** → [`discussion/README.md`](discussion/README.md)
+- **Citation verification discipline (verified vs. read, WebSearch not WebFetch for arXiv)** → [`papers/reading-queue.md`](papers/reading-queue.md)
+- **The project's RL terminology — non-parametric/harness, not SFT, not policy-gradient** → [`discussion/scope-and-terminology-decisions.md#2`](discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title)
+- **Open items across the project** → [`discussion/open-questions.md`](discussion/open-questions.md)
 
-## When a reflection belongs in the diary vs. in `discussion/`
+## Session-specific operational notes
 
-- Stays in the diary's `Reflexão` field: a note tied to one day, not meant to be found or cited again later.
-- Becomes a `discussion/` file: it cross-references multiple sources, produces a decision or a new open question, or other documents will need to link to it. If you're creating a `discussion/` note, also update whatever it resolves or corroborates (`open-questions.md`, `scope-and-terminology-decisions.md`, the relevant decision entry) and add it to `discussion/README.md`'s index — don't leave the loop half-closed.
+Only create or edit a `research-diary/` entry when Rafael explicitly asks (the `diario-campo` skill's own trigger rules already cover this).
 
-## Citation discipline
-
-- Never fabricate an arXiv ID, author list, or date. This repo's own convention (`papers/reading-queue.md`) already distinguishes **verified** (bibliographic facts checked against a primary or citing source) from **read** (Rafael actually read it) — never conflate the two when adding or citing a paper.
-- `arxiv.org` direct fetch (`WebFetch`) is blocked by this environment's network egress. Use `WebSearch` instead to verify titles/authors/dates/claims — it works and has been reliable for this.
-
-## The project's RL terminology — keep this precise
-
-The mechanism (decided 20/08/2026 with the tutor, primary source in [`docs/checkpoint-2026-08-20-tutor-kickoff.md`](docs/checkpoint-2026-08-20-tutor-kickoff.md)) is **non-parametric, harness-level RL** — closer to a contextual bandit or Reflexion's "verbal RL" than to policy-gradient RL. It updates memory/harness content from a reward signal (thumbs up/down, batched), not model weights. Never describe it as "just prompt engineering" (it has the trial→reward→update structure of RL) and never conflate it with Retroformer/Memory-R1-style policy-gradient fine-tuning (a different family, useful only as contrast). Full reasoning in [`discussion/scope-and-terminology-decisions.md#2`](discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title).
-
-## Meeting records — the established pattern
-
-When a new meeting (tutor, infra, colleague) gets transcribed and needs to enter the repo, follow the pattern set by the 20/08 tutor checkpoint:
-
-1. Source transcript → `docs/sources/<slug>.docx` (or original format), untouched.
-2. Factual summary → `docs/<slug>.md`, Portuguese, no analysis — just what was said/shown.
-3. Cross-cutting reflections → `discussion/<slug>-reflections.md`, English by default, connecting the meeting to the work plan, existing decisions, and open questions — and updating those files with backlinks, per the rule above.
-4. Close the loop in `research-diary/`: if a prior entry flagged the meeting/transcript as pending, update that entry rather than only adding a new one.
-
-The infra meeting with Fed/Yoshio (21/08) is still pending this treatment — transcript not yet attached.
-
-## Diary logging
-
-Only create or edit a `research-diary/` entry when Rafael explicitly asks (the `diario-campo` skill's own trigger rules already cover this — don't log passing mentions of work as diary entries).
-
-**File convention, one file per week starting 24/08/2026:** `diario_campo_AAAA-MM-DD.md`, named by the Monday that opens the week (e.g. `diario_campo_2026-08-24.md`). The file *is* the week — entries accumulate Monday through Sunday, and the weekly synthesis (`## Síntese da Semana`) is appended at the bottom of that same file when the week closes, not inserted mid-file. Reading a past week = open its file, read the synthesis at the bottom. Starting a new week = open the new file, check the previous file's "Itens em aberto" for what's pending going in. `diario_campo_2026-08.md` (17–23/08) is the one file under the older monthly convention (weekly syntheses inserted inside a month-spanning file) — it stays as-is, not retroactively split. Full detail in [`research-diary/README.md`](research-diary/README.md).
-
-## Git workflow note specific to this project
-
-This branch (`claude/rl-user-feedback-flows-sbynzm`) has been merged mid-session more than once while work continued. Before pushing, check whether it's already merged:
+This branch has been merged mid-session more than once while work continued. Before pushing:
 
 ```
 git fetch origin main

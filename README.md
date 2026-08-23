@@ -15,7 +15,7 @@ docs/                   Work plan (Plano de Trabalho), the sub-activity map, and
 literature-review/      The two report-grade bibliographic reviews (Sub 1.1, Sub 1.2) + two survey mind maps
 papers/                 One atomic note per paper/framework cited (36 so far) + a reading queue
 discussion/             Cross-cutting synthesis: findings, framework comparisons, scope decisions, open questions
-research-diary/         Daily episodic log + weekly synthesis, one file per month, in progress
+research-diary/         Daily episodic log + weekly synthesis, one file per week (see research-diary/README.md), in progress
 ```
 
 Each folder has its own `README.md` with more detail. Suggested entry points depending on what you're after:
@@ -24,6 +24,7 @@ Each folder has its own `README.md` with more detail. Suggested entry points dep
 - **Looking up one specific paper?** → [`papers/README.md`](papers/README.md) (indexed table)
 - **Want the "why," the decisions, the gaps found?** → [`discussion/`](discussion/)
 - **Want to know what happened this week?** → [`research-diary/`](research-diary/)
+- **Want the work plan or a meeting record?** → [`docs/README.md`](docs/README.md)
 
 ## How the pieces relate
 
@@ -44,4 +45,4 @@ The diary is where new findings first land; the strongest ones get distilled int
 
 ## A note on language
 
-Source documents that are official or personal artifacts (the work plan, the research diary) are kept verbatim in their original Portuguese. Everything written to connect them — this README, folder READMEs, discussion notes, paper-note scaffolding — defaults to English, matching the language the two bibliographic reviews were authored in. Say the word if you'd rather have the connective material in Portuguese instead; it's a straightforward pass to redo.
+Source documents that are official or personal artifacts (the work plan, the research diary, meeting summaries derived from one specific source — see [`docs/README.md`](docs/README.md)) are kept verbatim in their original Portuguese. Everything written to connect them — this README, folder READMEs, discussion notes, paper-note scaffolding — defaults to English, matching the language the two bibliographic reviews were authored in. `discussion/` notes follow this English default too, but Rafael can override it per note (see [`discussion/README.md`](discussion/README.md)) — that's a per-file exception, not a folder-wide change.
