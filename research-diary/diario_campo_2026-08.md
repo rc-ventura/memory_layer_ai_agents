@@ -123,3 +123,25 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Transcrição anexada (ver acima). Próximo passo: usar a triangulação (fluxos × plano de trabalho × papers) para repriorizar a reading queue.
 
 **Tags:** fluxos-juridicos, sub-1.4, triangulacao, reading-queue, checkpoint-tutor
+
+---
+
+## 21/08/2026
+
+**Tipo:** leitura — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Dei sequência à finalização do trabalho sobre os surveys de memória de agentes de IA (Zhang et al. + "Memory in the Age of AI Agents"), como planejado na entrada anterior.
+
+**Tags:** leitura-priorizada, zhang-survey, memory-in-the-age-of-ai-agents
+
+### Reunião — arquiteturas de agente com Fed, Yoshio e o tutor
+
+**Tipo:** reunião — **Sub-atividade:** 1.6 — **Canal:** formal-tutor
+
+**Registro objetivo:** Reunião com Fed, Yoshio e o tutor (Luis Felipe) sobre as arquiteturas de agente da plataforma. Fed está prototipando a memória dos agentes com GraphRAG, usando LangChain/grafo. André está trabalhando na memória dos agentes com o framework Hermes — reunião com ele ainda não realizada, fica como próximo passo.
+
+**Reflexão:** Fed já estar construindo memória com GraphRAG é um dado concreto a mais além do que já constava no checkpoint de 20/08 (onde ele só era citado como "figuraça técnica" a conhecer) — isso já motivou a ativação da trilha de leitura de GraphRAG no `reading-queue.md` nesta mesma sessão. André usando Hermes é relevante pro Sub 1.6 (agentes mínimos comparando abordagens de memória): tendo as duas implementações reais (GraphRAG do Fed vs. Hermes do André) dá pra comparar contra o que já foi mapeado na literatura, em vez de só teorizar.
+
+**Decisão/próximo passo:** Anexar a transcrição/notas dessa reunião (Fed/Yoshio/Luiz) ao repositório — ainda pendente. Agendar e realizar a reunião com o André sobre a memória dos agentes Hermes.
+
+**Tags:** reuniao-infra, fed, yoshio, andre, hermes, graphrag, langchain, arquitetura-agentes, sub-1.6, transcricao-pendente
