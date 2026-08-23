@@ -116,10 +116,42 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Tipo:** achado — **Sub-atividade:** 1.4 — **Canal:** pessoal
 
-**Registro objetivo:** Concluído o mapeamento de todos os fluxos jurídicos importantes do projeto. A transcrição da sessão de mapeamento será anexada (ainda pendente de anexar).
+**Registro objetivo:** Concluído o mapeamento de todos os fluxos jurídicos importantes do projeto. A transcrição da sessão de mapeamento (reunião de checkpoint com o tutor) foi anexada em `docs/checkpoint-2026-08-20-tutor-kickoff.md` (fonte: `docs/sources/Checkpoint_Tutor_2026-08-20.docx`), com reflexões em `discussion/checkpoint-2026-08-20-reflections.md`.
 
 **Reflexão:** Com o mapeamento fechado, dá para repesquisar a partir dos fluxos, triangulando três pontos — o plano de trabalho, os papers já lidos ou na fila de leitura, e os próprios fluxos mapeados — para repriorizar a reading queue a partir dessa triangulação.
 
-**Decisão/próximo passo:** Anexar a transcrição do mapeamento dos fluxos jurídicos ao repositório. Usar a triangulação (fluxos × plano de trabalho × papers) para repriorizar a reading queue.
+**Decisão/próximo passo:** Transcrição anexada (ver acima). Próximo passo: usar a triangulação (fluxos × plano de trabalho × papers) para repriorizar a reading queue.
 
-**Tags:** fluxos-juridicos, sub-1.4, triangulacao, reading-queue, transcricao-pendente
+**Tags:** fluxos-juridicos, sub-1.4, triangulacao, reading-queue, checkpoint-tutor
+
+---
+
+## 21/08/2026
+
+**Tipo:** leitura — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Dei sequência à finalização do trabalho sobre os surveys de memória de agentes de IA (Zhang et al. + "Memory in the Age of AI Agents"), como planejado na entrada anterior.
+
+**Tags:** leitura-priorizada, zhang-survey, memory-in-the-age-of-ai-agents
+
+### Reunião — arquiteturas de agente com Fed, Yoshio e o tutor
+
+**Tipo:** reunião — **Sub-atividade:** 1.6 — **Canal:** formal-tutor
+
+**Registro objetivo:** Reunião com Fed, Yoshio e o tutor (Luis Felipe) sobre as arquiteturas de agente da plataforma. Fed está prototipando a memória dos agentes com GraphRAG, usando LangChain/grafo. André está trabalhando na memória dos agentes com o framework Hermes — reunião com ele ainda não realizada, fica como próximo passo.
+
+**Reflexão:** Fed já estar construindo memória com GraphRAG é um dado concreto a mais além do que já constava no checkpoint de 20/08 (onde ele só era citado como "figuraça técnica" a conhecer) — isso já motivou a ativação da trilha de leitura de GraphRAG no `reading-queue.md` nesta mesma sessão. André usando Hermes é relevante pro Sub 1.6 (agentes mínimos comparando abordagens de memória): tendo as duas implementações reais (GraphRAG do Fed vs. Hermes do André) dá pra comparar contra o que já foi mapeado na literatura, em vez de só teorizar.
+
+**Decisão/próximo passo:** Anexar a transcrição/notas dessa reunião (Fed/Yoshio/Luiz) ao repositório — ainda pendente. Agendar e realizar a reunião com o André sobre a memória dos agentes Hermes.
+
+**Tags:** reuniao-infra, fed, yoshio, andre, hermes, graphrag, langchain, arquitetura-agentes, sub-1.6, transcricao-pendente
+
+---
+
+## Síntese da Semana — 17/08 a 23/08/2026
+
+**Achados centrais:** A semana fechou o achado empírico central do projeto e a maior pendência de terminologia que ele carregava desde o início. No dia 18, o cruzamento exaustivo da Tabela 1 × Tabela 3 do Zhang et al. sobre os 27 modelos do corpus (não só a amostra de 4) confirmou que cross-trial learning e forgetting controlado nunca coexistem no mesmo modelo — é a justificativa central do Entregável 1. Na mesma sessão fecharam três decisões estruturais: memória não-paramétrica confirmada (métodos de memory editing tipo MEND ficam fora de escopo, mas citáveis como "alternativa rejeitada"); Reflexion identificado como provável origem do "RL" do título, mas sem gradiente (RL literal fica só com Retroformer/Memory-R1); e a distinção cross-trial (fronteira de tempo) x cross-agent (fronteira de identidade), que estreitou o escopo da preocupação de confidencialidade pra handoffs entre agentes especializados. No dia 20, a leitura do segundo survey (Hu, Liu et al.) terminou e corroborou, por caminho independente, a prioridade de Memento e SAGE já definida a partir do Zhang et al. Mas o achado mais importante da semana veio da reunião de checkpoint com o tutor, no mesmo dia: pela primeira vez com fonte primária citável, ficou definido que o RL do mecanismo é ajuste de harness via sinal thumbs up/thumbs down em lote — não SFT, não RL de política — e o Sub 1.4 (mapeamento dos fluxos jurídicos) fechou junto, com a esteira jurídica completa explicada (cadastro → subsídios → contestação → escritório terceirizado), a arquitetura de agentes sem comunicação cross-agent, e o padrão de regras de negócio via MCP fora da memória do agente. Isso motivou, ainda na mesma sessão, uma revisão da literatura de RLHF (Christiano, Stiennon, Sharma, Gao, Casper) sobre confiabilidade de feedback humano binário — risco de sycophancy especialmente relevante pro caso jurídico — que convergiu, por caminho independente, com o próprio modelo mental do tutor de gatilho em lote (~100 casos). A reunião de 21/08 com Fed, Yoshio e o tutor acrescentou dois pontos de dado concreto: Fed já prototipando memória de agente com GraphRAG/LangChain, André trabalhando com Hermes — motivando duas reordenações da reading queue na semana (Memento/Mem-α/SCM subindo por causa do enquadramento RL não-paramétrico/bandit; trilha de GraphRAG ativada por causa do Fed).
+
+**Decisões tomadas:** Memória não-paramétrica confirmada; Reflexion ≠ RL literal; distinção cross-trial × cross-agent formalizada; desenho do próprio diário de campo fechado (camada episódica + síntese semanal, arquivo mensal, export docx, esquema de campos); Reference Accuracy adicionada como quarta métrica do Sub 3.6 (escopo restrito, bloqueada por Sub 1.4/1.5); RL do mecanismo definido formalmente com o tutor como ajuste de harness via thumbs up/down, não SFT; trilha de leitura de GraphRAG (Lewis, Gao, Edge, Peng) ativada.
+
+**Itens em aberto:** O mind map dos dois surveys, prometido pra 21/08, não foi feito. A auditoria de quais modelos do corpus implementam RL via PE (prompt engineering) segue pendente. A triangulação fluxos × plano × papers pra repriorizar a reading queue foi só parcialmente tocada. O achado cross-trial × forgetting ainda precisa ser formalmente registrado no relatório do Entregável 1. Sub 1.5 (critérios de acerto/erro) continua aberto — agora com uma pista concreta de escala (lote de ~100 casos) mas sem mecanismo de agregação definido, o que também mantém Sub 3.6/Reference Accuracy parcialmente bloqueada. Dois itens novos ficaram sem decisão: se o mecanismo deve excluir explicitamente fatos já servidos por tools MCP de regra de negócio, e se a captura de sinal (Sub 3.1) precisa de dois desenhos — um por modo de interação (copiloto vs. sistêmico/Kafka). Ainda falta verificar se Reflexion/Retroformer/Memory-R1 dizem algo sobre confiabilidade do próprio sinal de feedback. A transcrição da reunião de 21/08 (Fed/Yoshio/Luiz) não foi anexada ao repositório, e a reunião com o André sobre a memória Hermes ainda não aconteceu. Por fim, esta é a primeira semana completa de uso real do diário — a decisão de 18/08 previa reavaliar a cadência semanal da síntese e a periodicidade do export após uma semana rodando; essa reavaliação em si é um item em aberto agora.
