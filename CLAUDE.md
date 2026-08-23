@@ -37,6 +37,8 @@ The infra meeting with Fed/Yoshio (21/08) is still pending this treatment — tr
 
 Only create or edit a `research-diary/` entry when Rafael explicitly asks (the `diario-campo` skill's own trigger rules already cover this — don't log passing mentions of work as diary entries).
 
+**File convention, one file per week starting 24/08/2026:** `diario_campo_AAAA-MM-DD.md`, named by the Monday that opens the week (e.g. `diario_campo_2026-08-24.md`). The file *is* the week — entries accumulate Monday through Sunday, and the weekly synthesis (`## Síntese da Semana`) is appended at the bottom of that same file when the week closes, not inserted mid-file. Reading a past week = open its file, read the synthesis at the bottom. Starting a new week = open the new file, check the previous file's "Itens em aberto" for what's pending going in. `diario_campo_2026-08.md` (17–23/08) is the one file under the older monthly convention (weekly syntheses inserted inside a month-spanning file) — it stays as-is, not retroactively split. Full detail in [`research-diary/README.md`](research-diary/README.md).
+
 ## Git workflow note specific to this project
 
 This branch (`claude/rl-user-feedback-flows-sbynzm`) has been merged mid-session more than once while work continued. Before pushing, check whether it's already merged:
