@@ -43,3 +43,15 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Finalizar a leitura de "From Storage to Experience"; depois, montar a síntese de conceitos/taxonomias/técnicas cruzando os três surveys, como subsídio direto para o relatório M1.
 
 **Tags:** from-storage-to-experience, sintese-taxonomias, entregavel-m1, pendencia, sub-1.1
+
+### Reunião — transcrição da reunião de infra (21/08) anexada e processada
+
+**Tipo:** reunião — **Sub-atividade:** 2.5 — **Canal:** pessoal
+
+**Registro objetivo:** Anexei e processei a transcrição da reunião de infra dos agentes com Yoshio, Fed e o tutor (21/08, pendente desde então). Resumo filtrado em [`docs/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoint-2026-08-21-infra-arquitetura.md), reflexões em [`discussion/checkpoint-2026-08-21-infra-reflections.md`](../discussion/checkpoint-2026-08-21-infra-reflections.md). Mapeei a arquitetura até onde a memória entra (Gateway → Manager ECS → coordenadores → agentes filhos, cada um em seu próprio ECS; MCP; Postgres único + Redis; modo síncrono vs. API "Yoda" assíncrona via Kafka) e os três mecanismos de memória que já coexistem na plataforma hoje, sem coordenação entre si: checkpoints LangGraph do Manager (do Fed), dump de memória por execução do Small Agent, e a memória nativa do Hermes (ainda não detalhada).
+
+**Reflexão:** Achado forte: o Fed confirmou de próprio punho que o esquecimento no mecanismo dele "tá bem simples, a gente não consegue entrar muito no detalhe" — é a lacuna cross-trial × forgetting do Zhang et al. confirmada dentro da própria plataforma, não só na literatura. Também corrigi um erro meu: o que o Fed está construindo é LangGraph (checkpoints de estado), não GraphRAG — atualizei o motivo da trilha de leitura de GraphRAG no `reading-queue.md` pra refletir isso (o vínculo com o trabalho do Fed era mais fraco do que eu tinha registrado).
+
+**Decisão/próximo passo:** Fecha a pendência de anexar a transcrição de 21/08. Novo item aberto: decidir se o mecanismo (M3) deve conviver, unificar ou substituir os três mecanismos de memória já existentes.
+
+**Tags:** infra, yoshio, fed, langgraph, kafka, yoda, arquitetura, sub-2.5, transcricao-anexada, pendencia-fechada
