@@ -80,6 +80,22 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 ---
 
+## 19/08/2026
+
+*(Entrada registrada retroativamente em 23/08, a partir do relato feito na entrada de 20/08 — não havia registro próprio deste dia até então.)*
+
+**Tipo:** leitura — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Comecei a ler "Memory in the Age of AI Agents" (Hu, Liu et al., arXiv:2512.13564), investigando conceitos relacionados a memória, principalmente topologias de memória.
+
+**Reflexão:** O artigo está se mostrando interessante porque propõe uma taxonomia de conceitos, servindo como artigo fundamental para o relatório. Descobri alguns modelos interessantes citados nele, como Memento e SAGE.
+
+**Decisão/próximo passo:** Continuar e finalizar a leitura amanhã (20/08).
+
+**Tags:** memory-in-the-age-of-ai-agents, topologias-de-memoria, leitura-fundamental, memento, sage, entrada-retroativa
+
+---
+
 ## 20/08/2026
 
 **Tipo:** leitura — **Sub-atividade:** 1.1 — **Canal:** pessoal
