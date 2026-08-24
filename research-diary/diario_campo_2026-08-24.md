@@ -19,3 +19,15 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Considerar a abordagem de memória via tool calls integrada ao loop nativo do agente como candidata prioritária para os POCs mínimos do Sub 1.6, frente a um módulo externo separado.
 
 **Tags:** memory-in-the-age-of-ai-agents, tool-based-memory, loop-nativo, sub-1.6, arquitetura, achado
+
+### Achado — comparação galho a galho entre os mind maps do Zhang et al. e do Hu/Liu et al.
+
+**Tipo:** achado — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Fiz a comparação pendente desde 21/08 entre as taxonomias dos dois surveys âncora, usando os dois mind maps já existentes no repo (`literature-review/visual-synthesis/`). Resultado registrado em [`discussion/zhang-vs-hu-taxonomy-reconciliation.md`](../discussion/zhang-vs-hu-taxonomy-reconciliation.md): os dois convergem fortemente no eixo operacional/de ciclo de vida (Writing/Management/Reading do Zhang ≈ Formation/Evolution/Retrieval do Hu) — inclusive "forgetting" aparece com o mesmo nome nos dois, exatamente no achado central do projeto. Divergem na moldura classificatória: Sources (Zhang) não tem equivalente no Hu, Functions (Hu) não tem equivalente no Zhang, e "Forms" corta diferente nos dois (Zhang mistura estrutura com recência/recuperação; Hu separa isso em galhos distintos).
+
+**Reflexão:** Não é "incomensurável" como eu tinha repetido antes nesta sessão (herdado sem verificar de um export de memória externo, não de algo já registrado neste repo) — é convergência real na parte que mais importa, e divergência real só na moldura ao redor. A recomendação prática: usar a Operations do Zhang como vocabulário principal do relatório M1, citando a Dynamics do Hu quando precisar de mais granularidade (ex.: "Consolidation" em vez de só "management").
+
+**Decisão/próximo passo:** Fecha o item "mind map dos dois surveys" que estava pendente desde 21/08.
+
+**Tags:** zhang-survey, memory-in-the-age-of-ai-agents, mind-map, taxonomia, entregavel-m1, pendencia-fechada

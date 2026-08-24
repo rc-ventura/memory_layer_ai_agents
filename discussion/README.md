@@ -10,6 +10,7 @@ Cross-cutting synthesis that goes beyond any single source — findings from cro
 | [`open-questions.md`](open-questions.md) | Items flagged but not yet resolved — kept in one place instead of scattered across diary entries. |
 | [`thumbs-feedback-reliability.md`](thumbs-feedback-reliability.md) | Is thumbs up/down a reliable RL signal? General RLHF literature on feedback noise, annotator disagreement, sycophancy, and reward overoptimization — and what it implies for Sub 1.5's acerto/erro criteria. |
 | [`checkpoint-2026-08-20-reflections.md`](checkpoint-2026-08-20-reflections.md) | Reflections on the 20/08 tutor checkpoint meeting: primary-source confirmation of the harness-not-retraining decision, real-world grounding for the cross-agent scope narrowing, and two new open items on business-rule/MCP boundaries and dual signal-capture design. |
+| [`zhang-vs-hu-taxonomy-reconciliation.md`](zhang-vs-hu-taxonomy-reconciliation.md) | Branch-by-branch comparison of the two anchor surveys' mind maps: they converge strongly on the operational/lifecycle axis (forgetting is named identically in both) and diverge on classificatory framing (origin vs. purpose, how finely "form" is split) — not incommensurable, just needs a bridging paragraph. |
 
 ## When something belongs here vs. staying in the diary's `Reflexão` field
 
