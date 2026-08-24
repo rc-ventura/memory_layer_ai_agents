@@ -9,8 +9,8 @@ One short note per source. Most are extracted faithfully from [`memory-in-ai-age
 
 | Note | Year | Status | Lido |
 |---|---|---|---|
-| [A Survey on the Memory Mechanism of Large Language Model-based Agents](zhang-2025-memory-survey.md) | 2024/2025 | Peer-reviewed (journal) | ☐ |
-| [Memory in the Age of AI Agents](memory-in-the-age-of-ai-agents-2025.md) | Dec 2025 | Preprint | ☐ |
+| [A Survey on the Memory Mechanism of Large Language Model-based Agents](zhang-2025-memory-survey.md) | 2024/2025 | Peer-reviewed (journal) | ✅ 24/08/2026 |
+| [Memory in the Age of AI Agents](memory-in-the-age-of-ai-agents-2025.md) | Dec 2025 | Preprint | ✅ 20/08/2026 |
 | [From Storage to Experience: A Survey on the Evolution of LLM Agent Memory Mechanisms](from-storage-to-experience-2026.md) | 2026 | Preprint | ☐ |
 | [Rethinking Memory Mechanisms of Foundation Agents in the Second Half: A Survey](rethinking-memory-second-half-2026.md) | 2026 (v1 Jan 14, 2026) | Preprint | ☐ |
 

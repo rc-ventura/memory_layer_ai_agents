@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Surveys · **Read by Rafael:** not yet
+> **Sub-atividade:** 1.1 · **Status:** Preprint · **Theme:** Surveys · **Read by Rafael:** ✅ 20/08/2026
 
 # Memory in the Age of AI Agents
 

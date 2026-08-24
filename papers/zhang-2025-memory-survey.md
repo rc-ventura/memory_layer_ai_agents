@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed (journal) · **Theme:** Surveys · **Read by Rafael:** not yet
+> **Sub-atividade:** 1.1 · **Status:** Peer-reviewed (journal) · **Theme:** Surveys · **Read by Rafael:** ✅ 24/08/2026
 
 # A Survey on the Memory Mechanism of Large Language Model-based Agents
 

@@ -158,9 +158,9 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Reflexão:** Fed já estar construindo memória com GraphRAG é um dado concreto a mais além do que já constava no checkpoint de 20/08 (onde ele só era citado como "figuraça técnica" a conhecer) — isso já motivou a ativação da trilha de leitura de GraphRAG no `reading-queue.md` nesta mesma sessão. André usando Hermes é relevante pro Sub 1.6 (agentes mínimos comparando abordagens de memória): tendo as duas implementações reais (GraphRAG do Fed vs. Hermes do André) dá pra comparar contra o que já foi mapeado na literatura, em vez de só teorizar.
 
-**Decisão/próximo passo:** Anexar a transcrição/notas dessa reunião (Fed/Yoshio/Luiz) ao repositório — ainda pendente. Agendar e realizar a reunião com o André sobre a memória dos agentes Hermes.
+**Decisão/próximo passo:** ~~Anexar a transcrição/notas dessa reunião (Fed/Yoshio/Luiz) ao repositório~~ — feito em 24/08 (ver `docs/checkpoint-2026-08-21-infra-arquitetura.md` e a entrada de 24/08 desta semana). Agendar e realizar a reunião com o André sobre a memória dos agentes Hermes — ainda pendente.
 
-**Tags:** reuniao-infra, fed, yoshio, andre, hermes, graphrag, langchain, arquitetura-agentes, sub-1.6, transcricao-pendente
+**Tags:** reuniao-infra, fed, yoshio, andre, hermes, langgraph, langchain, arquitetura-agentes, sub-1.6, transcricao-anexada
 
 ---
 

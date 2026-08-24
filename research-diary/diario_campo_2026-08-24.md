@@ -19,3 +19,39 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Considerar a abordagem de memória via tool calls integrada ao loop nativo do agente como candidata prioritária para os POCs mínimos do Sub 1.6, frente a um módulo externo separado.
 
 **Tags:** memory-in-the-age-of-ai-agents, tool-based-memory, loop-nativo, sub-1.6, arquitetura, achado
+
+### Achado — comparação galho a galho entre os mind maps do Zhang et al. e do Hu/Liu et al.
+
+**Tipo:** achado — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Fiz a comparação pendente desde 21/08 entre as taxonomias dos dois surveys âncora, usando os dois mind maps já existentes no repo (`literature-review/visual-synthesis/`). Resultado registrado em [`discussion/zhang-vs-hu-taxonomy-reconciliation.md`](../discussion/zhang-vs-hu-taxonomy-reconciliation.md): os dois convergem fortemente no eixo operacional/de ciclo de vida (Writing/Management/Reading do Zhang ≈ Formation/Evolution/Retrieval do Hu) — inclusive "forgetting" aparece com o mesmo nome nos dois, exatamente no achado central do projeto. Divergem na moldura classificatória: Sources (Zhang) não tem equivalente no Hu, Functions (Hu) não tem equivalente no Zhang, e "Forms" corta diferente nos dois (Zhang mistura estrutura com recência/recuperação; Hu separa isso em galhos distintos).
+
+**Reflexão:** Não é "incomensurável" como eu tinha repetido antes nesta sessão (herdado sem verificar de um export de memória externo, não de algo já registrado neste repo) — é convergência real na parte que mais importa, e divergência real só na moldura ao redor. A recomendação prática: usar a Operations do Zhang como vocabulário principal do relatório M1, citando a Dynamics do Hu quando precisar de mais granularidade (ex.: "Consolidation" em vez de só "management").
+
+**Decisão/próximo passo:** Fecha o item "mind map dos dois surveys" que estava pendente desde 21/08.
+
+**Tags:** zhang-survey, memory-in-the-age-of-ai-agents, mind-map, taxonomia, entregavel-m1, pendencia-fechada
+
+### Decisão — pendência: terceiro survey + síntese de conceitos/taxonomias/técnicas para o M1
+
+**Tipo:** decisão — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Fica registrado como pendência: finalizar a leitura do terceiro survey sobre memória ("From Storage to Experience", Luo et al., 2026, arXiv:2605.06716) e, a partir dos três surveys (Zhang et al., Hu/Liu et al. e este), criar uma síntese de conceitos, taxonomias e técnicas para balizar o relatório do Entregável M1.
+
+**Reflexão:** Isso dá sequência natural à comparação Zhang×Hu feita hoje mais cedo (`discussion/zhang-vs-hu-taxonomy-reconciliation.md`) — em vez de comparar os três dois a dois, a ideia discutida foi construir uma síntese unificada (um "quarto mapa", de autoria própria) usando o eixo operacional como espinha dorsal, e não apenas redesenhar os três lado a lado.
+
+**Decisão/próximo passo:** Finalizar a leitura de "From Storage to Experience"; depois, montar a síntese de conceitos/taxonomias/técnicas cruzando os três surveys, como subsídio direto para o relatório M1.
+
+**Tags:** from-storage-to-experience, sintese-taxonomias, entregavel-m1, pendencia, sub-1.1
+
+### Reunião — transcrição da reunião de infra (21/08) anexada e processada
+
+**Tipo:** reunião — **Sub-atividade:** 2.5 — **Canal:** pessoal
+
+**Registro objetivo:** Anexei e processei a transcrição da reunião de infra dos agentes com Yoshio, Fed e o tutor (21/08, pendente desde então). Resumo filtrado em [`docs/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoint-2026-08-21-infra-arquitetura.md), reflexões em [`discussion/checkpoint-2026-08-21-infra-reflections.md`](../discussion/checkpoint-2026-08-21-infra-reflections.md). Mapeei a arquitetura até onde a memória entra (Gateway → Manager ECS → coordenadores → agentes filhos, cada um em seu próprio ECS; MCP; Postgres único + Redis; modo síncrono vs. API "Yoda" assíncrona via Kafka) e os três mecanismos de memória que já coexistem na plataforma hoje, sem coordenação entre si: checkpoints LangGraph do Manager (do Fed), dump de memória por execução do Small Agent, e a memória nativa do Hermes (ainda não detalhada).
+
+**Reflexão:** Achado forte: o Fed confirmou de próprio punho que o esquecimento no mecanismo dele "tá bem simples, a gente não consegue entrar muito no detalhe" — é a lacuna cross-trial × forgetting do Zhang et al. confirmada dentro da própria plataforma, não só na literatura. Também corrigi um erro meu: o que o Fed está construindo é LangGraph (checkpoints de estado), não GraphRAG — atualizei o motivo da trilha de leitura de GraphRAG no `reading-queue.md` pra refletir isso (o vínculo com o trabalho do Fed era mais fraco do que eu tinha registrado).
+
+**Decisão/próximo passo:** Fecha a pendência de anexar a transcrição de 21/08. Novo item aberto: decidir se o mecanismo (M3) deve conviver, unificar ou substituir os três mecanismos de memória já existentes.
+
+**Tags:** infra, yoshio, fed, langgraph, kafka, yoda, arquitetura, sub-2.5, transcricao-anexada, pendencia-fechada
