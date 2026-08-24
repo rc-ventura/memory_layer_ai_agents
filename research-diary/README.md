@@ -50,4 +50,4 @@ The workflow this diary was originally designed under (see the `diario-campo` sk
 ## Files
 
 - [`diario_campo_2026-08.md`](diario_campo_2026-08.md) — August 2026, 17–23/08 (the last week under the monthly-file convention; complete, with its synthesis).
-- `diario_campo_2026-08-24.md` — week of 24–30/08, first file under the new weekly-file convention (not yet created).
+- [`diario_campo_2026-08-24.md`](diario_campo_2026-08-24.md) — week of 24–30/08 (current, in progress), first file under the new weekly-file convention.
