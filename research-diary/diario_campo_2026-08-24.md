@@ -50,8 +50,20 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Registro objetivo:** Anexei e processei a transcrição da reunião de infra dos agentes com Yoshio, Fed e o tutor (21/08, pendente desde então). Resumo filtrado em [`docs/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoint-2026-08-21-infra-arquitetura.md), reflexões em [`discussion/checkpoint-2026-08-21-infra-reflections.md`](../discussion/checkpoint-2026-08-21-infra-reflections.md). Mapeei a arquitetura até onde a memória entra (Gateway → Manager ECS → coordenadores → agentes filhos, cada um em seu próprio ECS; MCP; Postgres único + Redis; modo síncrono vs. API "Yoda" assíncrona via Kafka) e os três mecanismos de memória que já coexistem na plataforma hoje, sem coordenação entre si: checkpoints LangGraph do Manager (do Fed), dump de memória por execução do Small Agent, e a memória nativa do Hermes (ainda não detalhada).
 
-**Reflexão:** Achado forte: o Fed confirmou de próprio punho que o esquecimento no mecanismo dele "tá bem simples, a gente não consegue entrar muito no detalhe" — é a lacuna cross-trial × forgetting do Zhang et al. confirmada dentro da própria plataforma, não só na literatura. Também corrigi um erro meu: o que o Fed está construindo é LangGraph (checkpoints de estado), não GraphRAG — atualizei o motivo da trilha de leitura de GraphRAG no `reading-queue.md` pra refletir isso (o vínculo com o trabalho do Fed era mais fraco do que eu tinha registrado).
+**Reflexão:** Achado forte: o Fed confirmou de próprio punho que o esquecimento no mecanismo dele "tá bem simples, a gente não consegue entrar muito no detalhe" — é a lacuna cross-trial × forgetting do Zhang et al. confirmada dentro da própria plataforma, não só na literatura.
 
 **Decisão/próximo passo:** Fecha a pendência de anexar a transcrição de 21/08. Novo item aberto: decidir se o mecanismo (M3) deve conviver, unificar ou substituir os três mecanismos de memória já existentes.
 
 **Tags:** infra, yoshio, fed, langgraph, kafka, yoda, arquitetura, sub-2.5, transcricao-anexada, pendencia-fechada
+
+### Correção — Fed está mesmo construindo GraphRAG, confirmado no código
+
+**Tipo:** achado — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** A entrada anterior de hoje registrou uma correção baseada só na transcrição verbal da reunião (Fed descreveu algo que soava mais como checkpoints do LangGraph do que GraphRAG). Fui direto no código do Fed e confirmei que o componente GraphRAG existe de fato.
+
+**Reflexão:** A correção anterior foi precipitada — parti só da descrição verbal da reunião, sem checar a fonte mais forte (o código). Provavelmente os dois convivem: LangGraph como orquestração/estado da conversa, GraphRAG como camada de conteúdo/retrieval por cima. Revertido o motivo da trilha de leitura no `reading-queue.md` de volta pra forte (Fed construindo GraphRAG de fato, não só hipótese), e ajustada a nota em `discussion/checkpoint-2026-08-21-infra-reflections.md#3`.
+
+**Decisão/próximo passo:** Ao processar transcrições de reunião no futuro, tratar descrição verbal como indício, não como confirmação — preferir checar código/artefato direto quando disponível antes de corrigir um registro já feito.
+
+**Tags:** graphrag, langgraph, fed, correcao, verificacao, sub-1.1
