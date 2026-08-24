@@ -14,7 +14,9 @@ The diary serves three audiences at once, and every entry keeps serving all thre
 
 ## File convention
 
-One file per calendar month: `diario_campo_AAAA-MM.md` (e.g. `diario_campo_2026-08.md`). A new month starts a new file with a standard header (project name, project number, one-line description of the episodic/semantic scheme).
+**One file per week, starting 24/08/2026.** `diario_campo_AAAA-MM-DD.md`, where `DD-MM-AAAA` is the Monday that opens the week (e.g. `diario_campo_2026-08-24.md` for the week of 24–30/08). A new week starts a new file with a standard header (project name, project number, one-line description of the episodic/semantic scheme, and the week's date range). The file *is* the week: entries accumulate through the week and the file closes with its own [weekly synthesis](#weekly-synthesis-the-semantic-layer) at the bottom — no more inserting a synthesis mid-file.
+
+**Before 24/08/2026:** one file per calendar month (`diario_campo_AAAA-MM.md`), with weekly syntheses inserted at each week boundary inside that file. `diario_campo_2026-08.md` is the only file under this older convention — it stays as-is, not retroactively split into weekly files.
 
 ## Entry schema
 
@@ -33,11 +35,11 @@ Each entry (one `##` block per date; `###` for a second-or-later entry on the sa
 
 ## Weekly synthesis (the semantic layer)
 
-Whenever a new entry crosses into a new Monday–Sunday week, the previous week gets a `## Síntese da Semana — DD/MM a DD/MM/AAAA` block (Achados centrais / Decisões tomadas / Itens em aberto) inserted right after that week's last entry — generated automatically, not on request.
+Whenever a new entry would start a new Monday–Sunday week, the closing week gets a `## Síntese da Semana — DD/MM a DD/MM/AAAA` block (Achados centrais / Decisões tomadas / Itens em aberto) appended at the bottom of that week's file — generated automatically, not on request. The point of reading a past week is now: open its file, read the synthesis at the bottom. The point of starting a new week is: open the new (near-empty) file, check the previous file's "Itens em aberto" to know what's still pending going in.
 
 ## Monthly close-out
 
-At the start of a new calendar month (or on request), once every week of the closing month has its synthesis: export a clean `.docx` for the coordinator — cover (month/year, project number, entry count) + weekly syntheses as the main body + the full episodic log as an appendix.
+At the start of a new calendar month (or on request), once every week that falls (even partially) in the closing month has its weekly file and synthesis: export a clean `.docx` for the coordinator — cover (month/year, project number, entry count) + the weekly syntheses of every week touching that month, in order, as the main body + the full episodic log (from those same weekly files) as an appendix. A week that spans a month boundary counts toward the month containing its Monday.
 
 ## On persistence — read this if you're picking the diary back up in a new session
 
@@ -47,4 +49,5 @@ The workflow this diary was originally designed under (see the `diario-campo` sk
 
 ## Files
 
-- [`diario_campo_2026-08.md`](diario_campo_2026-08.md) — August 2026 (current, in progress).
+- [`diario_campo_2026-08.md`](diario_campo_2026-08.md) — August 2026, 17–23/08 (the last week under the monthly-file convention; complete, with its synthesis).
+- [`diario_campo_2026-08-24.md`](diario_campo_2026-08-24.md) — week of 24–30/08 (current, in progress), first file under the new weekly-file convention.

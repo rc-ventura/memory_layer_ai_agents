@@ -10,6 +10,8 @@ Source: diary entry [18/08/2026](../research-diary/diario_campo_2026-08.md#18082
 
 So: nothing in this file is "done" in the reading sense until Rafael says he read it. The checklist below reflects that — every item is unchecked, regardless of whether a note already exists.
 
+**How to verify:** never fabricate an arXiv ID, author list, or date. `arxiv.org` direct fetch (`WebFetch`) is blocked by this environment's network egress — use `WebSearch` instead to confirm title/authors/date/headline claims; it's been reliable for this. Always keep "verified" (bibliographic facts checked) and "read" (Rafael actually read it) distinct — never conflate the two.
+
 ## ☐ Full priority checklist — nothing read yet
 
 All open items, ranked. **Ranking criterion** (so the order is arguable, not asserted): risco ao achado central do Entregável 1 > ganho direto de design pro mecanismo > risco de escopo/arquitetura a sinalizar antes de adotar > leitura complementar/de fechamento de quadro. **📝 = nota já existe** (verificada por Claude, não é leitura); marque o checkbox só quando Rafael efetivamente ler.
