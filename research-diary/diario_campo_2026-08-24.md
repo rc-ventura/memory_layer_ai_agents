@@ -31,3 +31,15 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Fecha o item "mind map dos dois surveys" que estava pendente desde 21/08.
 
 **Tags:** zhang-survey, memory-in-the-age-of-ai-agents, mind-map, taxonomia, entregavel-m1, pendencia-fechada
+
+### Decisão — pendência: terceiro survey + síntese de conceitos/taxonomias/técnicas para o M1
+
+**Tipo:** decisão — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Fica registrado como pendência: finalizar a leitura do terceiro survey sobre memória ("From Storage to Experience", Luo et al., 2026, arXiv:2605.06716) e, a partir dos três surveys (Zhang et al., Hu/Liu et al. e este), criar uma síntese de conceitos, taxonomias e técnicas para balizar o relatório do Entregável M1.
+
+**Reflexão:** Isso dá sequência natural à comparação Zhang×Hu feita hoje mais cedo (`discussion/zhang-vs-hu-taxonomy-reconciliation.md`) — em vez de comparar os três dois a dois, a ideia discutida foi construir uma síntese unificada (um "quarto mapa", de autoria própria) usando o eixo operacional como espinha dorsal, e não apenas redesenhar os três lado a lado.
+
+**Decisão/próximo passo:** Finalizar a leitura de "From Storage to Experience"; depois, montar a síntese de conceitos/taxonomias/técnicas cruzando os três surveys, como subsídio direto para o relatório M1.
+
+**Tags:** from-storage-to-experience, sintese-taxonomias, entregavel-m1, pendencia, sub-1.1
