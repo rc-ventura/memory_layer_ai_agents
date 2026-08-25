@@ -55,3 +55,15 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Fecha a pendência de anexar a transcrição de 21/08. Novo item aberto: decidir se o mecanismo (M3) deve conviver, unificar ou substituir os três mecanismos de memória já existentes.
 
 **Tags:** infra, yoshio, fed, langgraph, kafka, yoda, arquitetura, sub-2.5, transcricao-anexada, pendencia-fechada
+
+### Leitura — sprint de sub-agentes sobre os papers da fila (SAGE, Memento, Mem-α, ExpeL, MemoryBank, Generative Agents, SCM, Retroformer, Casper et al.)
+
+**Tipo:** leitura — **Sub-atividade:** 1.1 — **Canal:** pessoal
+
+**Registro objetivo:** Numa conversa com o Claude sobre como o framework de memória (arquitetura "knowledge as infra") deveria ficar, pedi para ele disparar sub-agentes em paralelo pra ler de fato o texto completo (não só verificar metadado bibliográfico) dos papers prioritários da fila — SAGE, Memento, Mem-α, ExpeL, MemoryBank, Generative Agents, SCM, Retroformer e Casper et al. (confiabilidade de RLHF binário). Deixamos de fora Synapse/MetaGPT/TiM/RecAgent/S³ porque só servem pra completude do corpus, não pro desenho. **Importante: essa é leitura feita pelo Claude via sub-agentes, não leitura minha** — os achados estão registrados em [`../discussion/reading-sprint-2026-08-24-queue-papers.md`](../discussion/reading-sprint-2026-08-24-queue-papers.md), com essa distinção marcada explicitamente no topo do arquivo. 8 dos 9 sub-agentes retornaram relatório completo; o do Casper et al. ainda está pendente no momento deste registro.
+
+**Reflexão:** O achado mais forte foi negativo, no bom sentido: nenhum dos 8 papers lidos combina as cinco coisas que o mecanismo do projeto precisa — memória não-paramétrica, sinal de correção externo/humano, atualização controlada em lote, versionamento/rollback, e esquecimento com delete de verdade. Cada um resolve um pedaço só (MemoryBank e SAGE têm decaimento tipo Ebbinghaus mas sem hard-delete de verdade; ExpeL e SCM têm lógica de atualização mas sem trilha de auditoria; Memento tem escrita explícita mas nunca descarta nada). Isso é uma confirmação bem mais concreta do achado central (interseção vazia cross-trial × forgetting) do que a tabela do survey — agora em nível de mecanismo, não só de checkmark. Também resolveu duas dúvidas de escopo: Mem-α é confirmadamente paramétrico (mesmo bucket do Retroformer/Memory-R1, fora de escopo), e SAGE não ameaça o achado central (reivindica cross-trial mas não isola isso experimentalmente — vira uma ressalva de uma frase no M1, não uma reformulação).
+
+**Decisão/próximo passo:** Atualizar `cross-trial-vs-forgetting-gap.md`, `scope-and-terminology-decisions.md` e `open-questions.md` com essas resoluções, e anotar (sem marcar como lido por mim) os itens correspondentes em `papers/reading-queue.md`. Minha própria leitura desses papers continua em aberto na fila — isso não substitui ela.
+
+**Tags:** sub-agentes, sage, memento, mem-alpha, expel, memorybank, generative-agents, scm, retroformer, casper, leitura-por-claude, sub-1.1, arquitetura-framework
