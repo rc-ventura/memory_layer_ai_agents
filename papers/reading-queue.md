@@ -35,26 +35,94 @@ risco ao achado central do Entregável 1 > ganho direto de design pro mecanismo 
 
 **Tier 2 — em seguida (refinam componentes específicos):**
 
-- [ ] **7. SAGE** 🔎 (arXiv:2409.00872) — protege o [achado central](../discussion/cross-trial-vs-forgetting-gap.md) (ainda vale confirmar pessoalmente — é o caso mais "por pouco" do corpus) e dá o mecanismo de promoção STM→LTM, mais rico que o decay simples do MemoryBank. *Detalhe → [rodada 2](#priority-reading-list--rodada-2-19082026).* Não ameaça o achado central, mas é o caso mais "por pouco"; ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#sage-arxiv240900872--does-it-threaten-the-central-finding).
-- [ ] **8. SCM** 📝🔎 (arXiv:2304.13343) — precedente mais próximo do Commit Gate, mesmo revisado: é gating por julgamento de LLM (não regra fixa, como se assumia antes do sprint), mapeia pro "controlado" do título do projeto. Sem discard nenhum; ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#scm-arxiv230413343-dasfaa-2025--the-explicit-controller-candidate).
-- [ ] **9. Generative Agents** 📝🔎 (arXiv:2304.03442) — gatilho adaptativo do Update Engine (threshold cumulativo de importância/severidade em vez de N fixo). Gatilho é threshold de 150, não N fixo, candidato a substituir o gatilho de "100 casos"; ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#generative-agents-arxiv230403442--the-adaptive-trigger-candidate).
-- [ ] **10. Mem0** 📝🔎 (arXiv:2504.19413) — não é peça de arquitetura pra adotar, é o ponto de comparação/diferenciação explícito da ambição "knowledge as infra" (Sub 5.3): muito provável que o tutor ou a plataforma pergunte "por que não usar direto o Mem0?". Já lido por completo (25/08/2026): Algoritmo 1 confirma que o forgetting é só por contradição lógica, nunca por obsolescência temporal — sem decay, sem versionamento, sem gate humano; ver [`../papers/mem0-2025.md`](../papers/mem0-2025.md#full-text-confirmation-24082026-claude-read-directly-from-the-pdf-not-rafael-read).
-- [ ] **11. RMM — "In Prospect and Retrospect"** (arXiv:2503.08026, Tan et al., Google, ACL 2025) — **adicionado 25/08/2026**, verificado via busca (título/autores/resultados confirmados; não lido em texto completo ainda, nem por Claude nem por Rafael). Prospective Reflection resume em três granularidades ao mesmo tempo (utterance/turn/session) — refina o componente A além do que SAGE/MemoryBank cobrem sozinhos. Retrospective Reflection é RL *online* sobre a política de retrieval usando sinal de **atribuição** (a resposta gerada citou o trecho recuperado?) — um terceiro padrão de desenho de sinal no corpus, além do reward automático do Memento e do fine-tuning de peso do Mem-α, mas ainda auto-referencial (sem sinal externo/humano). Resultado: +10% de acurácia sobre baseline sem memória no LongMemEval, Recall@5 até 69,8%.
+- [ ] **7. SCM** 📝🔎 (arXiv:2304.13343) — precedente mais próximo do Commit Gate, mesmo revisado: é gating por julgamento de LLM (não regra fixa, como se assumia antes do sprint), mapeia pro "controlado" do título do projeto. Sem discard nenhum; ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#scm-arxiv230413343-dasfaa-2025--the-explicit-controller-candidate).
+- [ ] **8. Generative Agents** 📝🔎 (arXiv:2304.03442) — gatilho adaptativo do Update Engine (threshold cumulativo de importância/severidade em vez de N fixo). Gatilho é threshold de 150, não N fixo, candidato a substituir o gatilho de "100 casos"; ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#generative-agents-arxiv230403442--the-adaptive-trigger-candidate).
+- [ ] **9. Mem0** 📝🔎 (arXiv:2504.19413) — não é peça de arquitetura pra adotar, é o ponto de comparação/diferenciação explícito da ambição "knowledge as infra" (Sub 5.3): muito provável que o tutor ou a plataforma pergunte "por que não usar direto o Mem0?". Já lido por completo (25/08/2026): Algoritmo 1 confirma que o forgetting é só por contradição lógica, nunca por obsolescência temporal — sem decay, sem versionamento, sem gate humano; ver [`../papers/mem0-2025.md`](../papers/mem0-2025.md#full-text-confirmation-24082026-claude-read-directly-from-the-pdf-not-rafael-read).
+- [ ] **10. RMM — "In Prospect and Retrospect"** (arXiv:2503.08026, Tan et al., Google, ACL 2025) — **adicionado 25/08/2026**, verificado via busca (título/autores/resultados confirmados; não lido em texto completo ainda, nem por Claude nem por Rafael). Prospective Reflection resume em três granularidades ao mesmo tempo (utterance/turn/session) — refina o componente A. Retrospective Reflection é RL *online* sobre a política de retrieval usando sinal de **atribuição** (a resposta gerada citou o trecho recuperado?) — um terceiro padrão de desenho de sinal no corpus, além do reward automático do Memento e do fine-tuning de peso do Mem-α, mas ainda auto-referencial (sem sinal externo/humano). Resultado: +10% de acurácia sobre baseline sem memória no LongMemEval, Recall@5 até 69,8%.
+- [ ] **11. DMF** 🔎 (arXiv:2606.03463) — **adicionado 25/08/2026, texto completo lido por Claude via PDF+`pdftotext` no mesmo dia**. Já tinha nota em [`dmf-2026.md`](dmf-2026.md), nunca tinha entrado na checklist numerada. Ler como **referência de princípio, não pra adotar a implementação inteira**: são 8 camadas (pipeline NLP via spaCy específico de idioma, motor de embedding, Scoring Engine, TemporalMemory, backend vetorial, camada de projeção de "cartão" estruturado, pilha de retrieval, fachada de API) — e os pesos do Survival Score (η, κ, λ, δ, ponto médio do sigmoide) são **calibrados manualmente pelos autores**, não aprendidos por um método principiado; a seção "Calibration" do paper é um exemplo de cálculo manual, não um procedimento de ajuste. Adaptar isso pra português jurídico exigiria construir um adaptador de regras do zero — engenharia real, não plug-and-play. O que vale reaproveitar é o **princípio** (score de importância determinístico e auditável na escrita, combinando poucos canais já estruturados do próprio pipeline — não um valor fixo tipo MemoryBank, nem julgamento de LLM tipo Mem0) — ver a versão enxuta proposta em [`../discussion/knowledge-as-infra-architecture-hypothesis.md`](../discussion/knowledge-as-infra-architecture-hypothesis.md#a-memory-store--continuous-non-parametric-per-case).
 
-**Tier 3 — background, menor urgência agora (escopo já resolvido, servem de contraste):**
+**Tier 3 — background, menor urgência agora:**
 
-- [ ] **12. Mem-α** 🔎 (arXiv:2509.25911) — resolvido como paramétrico/fora de escopo (GRPO no próprio Qwen3-4B, mesmo bucket do Retroformer/Memory-R1); serve só de pano de fundo pro Sub 1.3, não pra arquitetura. *Detalhe → [rodada 2](#priority-reading-list--rodada-2-19082026).* Ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#mem-α-arxiv250925911--resolved-parametric-out-of-scope).
-- [ ] **13. Retroformer** 📝🔎 (arXiv:2308.02151) — mesma situação: confirmado fora de escopo (modelo separado M_r treinado via PPO), mecanismo de crítica estruturalmente idêntico ao Reflexion (baseline sem treino) — uma ideia secundária reaproveitável sem gradiente. Ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#retroformer-arxiv230802151-iclr-2024--confirmed-contrast-case-with-one-reusable-idea).
+- [ ] **12. SAGE** 🔎 (arXiv:2409.00872) — **revertido 25/08/2026: a downgrade abaixo não se sustenta mais — tratar com urgência de Tier 2, apesar da posição física nesta lista.** Motivo do reverso: (a) "só uma convenção de nome" estava errado — o gate de promoção STM→LTM do SAGE (`MemorySyntax`: `R(I,τ)=e^(−τ/S)` contra dois limiares θ1>θ2 — `R≥θ1` mantém em STM, `θ2≤R<θ1` promove a LTM, `R<θ2` descarta — com `S(Iₜ)=H(Iₜ)/f(t)` entropy-weighted e capacity-constrained, Apêndice A.1) é um mecanismo real de **formação seletiva**, relevante pro componente A independente de o Weibull ter vindo do SSGM; (b) o mecanismo "Checker"/iterative-feedback, antes chamado de "analisado e descartado", nunca teve de fato uma análise registrada neste repo — a referência abaixo a uma "análise do Checker" era um ponteiro solto, sem conteúdo correspondente. **Ainda não sabemos** se o Checker é um mecanismo de consolidação (toca conteúdo de memória) ou um refinamento de política via recompensa (não toca memória, ficaria fora de escopo mesmo) — só uma leitura de verdade resolve isso. Ver a seção nova em [`../discussion/knowledge-as-infra-architecture-hypothesis.md#g-consolidation--an-open-gap-in-evolution-not-yet-a-designed-component-added-25082026`](../discussion/knowledge-as-infra-architecture-hypothesis.md#g-consolidation--an-open-gap-in-evolution-not-yet-a-designed-component-added-25082026). **O que continua valendo do texto original**: confirmar pessoalmente a ressalva do achado central (reivindica cross-trial mas não isola isso experimentalmente) segue pendente, mas agora é secundária ao valor de design do gate STM→LTM e do Checker. Ver também [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#sage-arxiv240900872--does-it-threaten-the-central-finding).
+- [ ] **13. Mem-α** 🔎 (arXiv:2509.25911) — resolvido como paramétrico/fora de escopo (GRPO no próprio Qwen3-4B, mesmo bucket do Retroformer/Memory-R1); serve só de pano de fundo pro Sub 1.3, não pra arquitetura. *Detalhe → [rodada 2](#priority-reading-list--rodada-2-19082026).* Ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#mem-α-arxiv250925911--resolved-parametric-out-of-scope).
+- [ ] **14. Retroformer** 📝🔎 (arXiv:2308.02151) — mesma situação: confirmado fora de escopo (modelo separado M_r treinado via PPO), mecanismo de crítica estruturalmente idêntico ao Reflexion (baseline sem treino) — uma ideia secundária reaproveitável sem gradiente. Ver [síntese](../discussion/reading-sprint-2026-08-24-queue-papers.md#retroformer-arxiv230802151-iclr-2024--confirmed-contrast-case-with-one-reusable-idea).
+- [ ] **15. Voyager** (arXiv:2305.16291, TMLR 2024) — **adicionado 25/08/2026**. Já tinha nota em [`voyager-2023.md`](voyager-2023.md), nunca tinha entrado na fila numerada. Não é candidato de v1 — é o arquétipo do tipo (b) de self-improvement que mapeamos como fora de escopo (biblioteca de skill *executável* que cresce, com autoverificação antes do commit — o análogo em código do nosso Commit Gate em texto). Vale ler pra: (1) ter referência concreta se o roteiro de expansão (Sub 5.3) avançar pra skill executável, (2) fundamentar por escrito por que ficamos fora do tipo (b) por enquanto, (3) checar se a autoverificação deles é empírica (roda o código e testa) ou autorreferente (LLM julgando o próprio código) — determina se é mais um caso do risco tipo Casper ou não. Ver [`../discussion/knowledge-as-infra-architecture-hypothesis.md`](../discussion/knowledge-as-infra-architecture-hypothesis.md) pra onde essa fronteira foi traçada.
 
 **Corpus completion — só pra alegação de "corpus completo" do M1, nem verificados ainda:**
 
-- [ ] **14. Synapse** — completa o quadro cross-trial ✓ do corpus Zhang et al., sem nota ainda.
-- [ ] **15. MetaGPT** — idem, cross-trial ✓, sem nota ainda.
-- [ ] **16. TiM** — completa o quadro forgetting ✓ do corpus, sem nota ainda.
-- [ ] **17. RecAgent** — idem, forgetting ✓, sem nota ainda.
-- [ ] **18. S³** — idem, forgetting ✓, sem nota ainda.
+- [ ] **16. Synapse** — completa o quadro cross-trial ✓ do corpus Zhang et al., sem nota ainda.
+- [ ] **17. MetaGPT** — idem, cross-trial ✓, sem nota ainda.
+- [ ] **18. TiM** — completa o quadro forgetting ✓ do corpus, sem nota ainda.
+- [ ] **19. RecAgent** — idem, forgetting ✓, sem nota ainda.
+- [ ] **20. S³** — idem, forgetting ✓, sem nota ainda.
 
 **Fora do checklist ativo, por design:** GraphRAG/G-Memory/LegalGraphRAG (bloqueados por Sub 1.4 — ver [condicional](#priority-reading-list--rodada-2-19082026) e a entrada do LegalGraphRAG na seção logo abaixo), o survey de forgetting fev/2026 e o catálogo de políticas dez/2025 (sem arXiv ID confirmado ainda), e GITM (já descartado — ver [downgraded](#downgraded--deprioritized-18082026-session)).
+
+## Guia de leitura por componente da arquitetura (25/08/2026)
+
+**Corte diferente do checklist acima — mesmo corpus, outro critério de agrupamento.** O checklist Tier 1–3 ordena por urgência de defensabilidade (o que Rafael precisa ter lido pra defender uma escolha já em uso > o que refina um componente > background). Esta seção reorganiza os mesmos itens pelos seis componentes de [`../discussion/knowledge-as-infra-architecture-hypothesis.md`](../discussion/knowledge-as-infra-architecture-hypothesis.md) — útil quando o objetivo é "entender como cada peça da arquitetura funciona", não "o que ler primeiro pra defender o desenho". Um paper que aparece em mais de um componente (SSGM, Mem0, Casper, Generative Agents) não é reexplicado — só referenciado de novo com o foco daquele componente específico.
+
+**A. Memory Store — escrita, armazenamento, score de importância:**
+
+| Paper | Status | Onde focar |
+|---|---|---|
+| MemoryBank (arXiv:2305.10250) | 📝🔎 | A fórmula `R = e^(−Δt/S)` — curta, fundação de todo decaimento no mecanismo. Confirmar que **não há hard-delete** documentado. |
+| DMF (arXiv:2606.03463) | 🔎 | Não ler pra copiar a implementação (8 camadas, pesos calibrados à mão) — ler a seção Survival Score/Calibration só pelo **princípio**: score determinístico e auditável combinando poucos canais já estruturados, nem valor fixo (MemoryBank) nem julgamento de LLM (Mem0). |
+| Mem0 (arXiv:2504.19413) | 🔎 (Claude leu completo) | O Algoritmo 1 (Apêndice B) — mostra que ADD/UPDATE/DELETE é 100% julgamento de LLM a cada mensagem, sem decay algum. Contraponto que sustenta a diferenciação do produto inteiro. |
+| SAGE (arXiv:2409.00872) | 🔎, revertido 25/08/2026 — não descartar | O gate de promoção STM→LTM (`MemorySyntax`, θ1/θ2, `S(Iₜ)=H(Iₜ)/f(t)` entropy-weighted, capacity-constrained, Apêndice A.1) — sinal de formação seletiva real, em tensão não resolvida com a escrita incondicional já decidida neste desenho. |
+
+**A2. Memory Store — mecânica de retrieval:**
+
+| Paper | Status | Onde focar |
+|---|---|---|
+| SSGM (arXiv:2603.11768) | 🔎 | A fórmula `Ct = {μ ∈ Top-K(qt, Mt-1) \| ACL(μ,uid) ∧ (w(Δτμ) ≥ θfresh)}` — o filtro que `recall_memory` usa. |
+| Generative Agents (arXiv:2304.03442) | 📝🔎 | A fórmula de scoring da memory stream (relevância + importância + recência) — rankeia os sobreviventes do filtro do SSGM. |
+
+**B. Signal Capture (dual path):**
+
+| Paper | Status | Onde focar |
+|---|---|---|
+| Casper et al. (arXiv:2307.15217) | 🔎 | Os 5 riscos já extraídos: concordância entre anotadores de só 63–77%, sem tamanho mínimo de lote especificado, sicofância que piora (não melhora) com tamanho do modelo/RLHF — base pra defender por que thumbs 👍👎 sozinho não basta. |
+
+**C. Update Engine (gatilho em lote + extração de insight):**
+
+| Paper | Status | Onde focar |
+|---|---|---|
+| ExpeL (arXiv:2308.10144) | 📝🔎 | O protocolo ADD/EDIT/UPVOTE/DOWNVOTE — vocabulário pronto pro Sub 3.2. Notar que o próprio ExpeL comita via self-vote, sem gate humano — a lacuna que o Commit Gate fecha. |
+| Generative Agents | 📝🔎 | A seção do gatilho de reflexão (threshold cumulativo de importância, threshold 150 no original — não validado, precisa de calibração própria). |
+| Memento (arXiv:2508.16153) | 🔎 | O mais denso — precisa da leitura do próprio Rafael, não só do resumo do sub-agente, por ser o candidato mais provável a virar referência formal pro tutor/plataforma. Focar em: a memória episódica é escrita/descartada de forma explícita, ou implícita dentro do loop de RL? O reward vem de sinal externo ou só de correctness fim-a-fim? Cuidado: aparece como "AgentFly" em indexação secundária — confirmar versão antes de citar. |
+
+**D. Commit Gate (checagem de contradição + qualidade de sinal — sem precedente direto no corpus):**
+
+| Paper | Status | Onde focar |
+|---|---|---|
+| SSGM | 🔎 | A seção do Write Validation Gate (Truth Maintenance System, checagem NLI `ΔM ∧ M_core ⊨ ⊥`) — mais rigoroso que o `Contradicts(f,M)→DELETE` do Mem0, é o formalismo direto por trás do componente D. |
+| SCM (arXiv:2304.13343) | 📝🔎 | O precedente mais próximo de um "controlador de memória" — mas gate por julgamento de LLM, sem discard nenhum. |
+| When Rules Learn (arXiv:2606.17220) | 🔎 | Único paper do domínio jurídico real — ler como caso de cautela, não de arquitetura: votação de auto-consistência em dois estágios (`n=7`, `δ=0.5`) eliminando regras, mesma LLM votando nas próprias regras, sem sinal externo — o risco do Casper acontecendo em produção jurídica. |
+| Casper et al. | 🔎 | Releitura com foco na checagem anti-sicofância e em erro correlacionado (não só volume insuficiente) — informa a "checagem de qualidade de sinal" do Commit Gate. |
+
+**E. Forgetting (decay + hard-delete real):**
+
+| Paper | Status | Onde focar |
+|---|---|---|
+| MemoryBank | 📝🔎 | A fórmula de decay e a ausência de hard-delete. |
+| SSGM | 🔎 | A fórmula Weibull `w(Δτ) = exp(−(Δτ/η)^κ)` e o princípio de Reversible Reconciliation (log episódico imutável + camada derivada mutável, recuperável por replay) — resolve o rollback do Sub 3.4. |
+| SAGE (arXiv:2409.00872) | 🔎, revertido 25/08/2026 — não descartar | A fórmula de decay em si já foi lida (Weibull real veio do SSGM). O que falta ler é o mecanismo "Checker" — ver a tabela de Consolidation abaixo, é lá que ele pode render mais. |
+
+**F. Integração/MCP (loop-nativo, agnóstico de framework):** menos dependente de paper acadêmico — já coberto em [`framework-comparison-hermes-smolagents-deepagents.md`](../discussion/framework-comparison-hermes-smolagents-deepagents.md). O achado relevante já lido é Hu/Liu §7.2.2 (tool call dentro do loop do agente); o post da LangChain sobre "loop engineering" é confirmação de indústria, não fonte primária.
+
+**Consolidation (gap — Evolution→Consolidation no eixo Dynamics do Hu/Liu, sem componente dedicado no desenho de seis peças; ver [`../discussion/knowledge-as-infra-architecture-hypothesis.md#g-consolidation--an-open-gap-in-evolution-not-yet-a-designed-component-added-25082026`](../discussion/knowledge-as-infra-architecture-hypothesis.md#g-consolidation--an-open-gap-in-evolution-not-yet-a-designed-component-added-25082026)):**
+
+| Paper | Status | Onde focar |
+|---|---|---|
+| SAGE — mecanismo "Checker" (arXiv:2409.00872) | 🔎, revertido — não descartar | Ambíguo: consolidação de memória, ou refinamento de política via recompensa que não toca memória? Só resolve com leitura completa da seção do Checker — nunca foi de fato analisada aqui apesar de uma referência antiga apontar para uma análise inexistente. |
+| Mem0 — operação UPDATE (arXiv:2504.19413) | 🔎 (Claude leu completo) | Merge de um fato novo contra os `s=10` mais similares, via julgamento de LLM — única ideia de consolidação já confirmada no corpus. Candidato a adaptar (gated, tipo Commit Gate), não a copiar direto — mesmo risco de auto-referência já flagado em outros componentes. |
+| A-Mem (arXiv:2502.12110) | 📝 (nota bibliográfica, não lido) | O passo de "memory evolution" — notas Zettelkasten linkadas, refinadas retroativamente quando uma nova nota entra, em vez de merge-ou-descarte. Reporta 85–93% de redução de token vs. MemGPT/MemoryBank/ReadAgent no LoCoMo. |
+| ReasoningBank (arXiv:2509.25140) | 📝 (nota bibliográfica, não lido) | Único paper do corpus que nomeia o próprio loop como retrieve→construct→**consolidate** — leitura natural por causa do nome, ainda não aprofundada. |
+| Memp (arXiv:2508.06433) | 📝 (nota bibliográfica, não lido) | O estudo de estratégias de Update (regimento que "corrige e deprecia" memória procedural) — mais perto de Updating+Forgetting, mas pode informar tratamento de redundância. |
+| MemGPT (arXiv:2310.08560) | 📝 (nota bibliográfica) | Só como contraponto de cautela — a nota já registra que a compressão é "append-then-summarize, not homeostatic", sem critério principiado. |
+
+**Ordem sugerida se for ler em sequência única** (cobertura por componente por página, não só urgência): SSGM (D+E) → Memento (C, mais denso, mais precisa da leitura própria) → MemoryBank (A+E, rápido) → ExpeL (C) → Casper et al. (B+D, único com entregável travado nele) → When Rules Learn (D, único do domínio jurídico real) → **SAGE completo (A+Consolidation, reincluído 25/08/2026 — não é mais background)**. Tier 2 (SCM, Generative Agents, Mem0, RMM, DMF) refina peças específicas depois disso, sem mudar a arquitetura como os itens acima.
 
 ## Notes that already exist (📝 verified, not read)
 
@@ -69,6 +137,8 @@ Items 4–8 above already have a full atomic note in `papers/` — the bibliogra
 | **Retroformer** | [`retroformer-2024.md`](retroformer-2024.md) | The corpus's only case of literal RL — anchor for Sub 1.3 |
 
 ## Priority reading list — rodada 2 (19/08/2026)
+
+**Desatualizada quanto à prioridade numérica — mantida só pelo conteúdo (onde focar a leitura, pergunta específica que cada um resolve), não pela coluna "Prioridade" abaixo.** A ordem real está na checklist numerada no topo do arquivo, reorganizada em 25/08/2026 (SAGE, citado aqui como "1", foi rebaixado ao Tier 3 — ver o item 12 acima e o motivo explícito registrado lá).
 
 Consolidado e ordenado por urgência — não por ordem de descoberta. Verificação rápida feita antes de entrar aqui: os três arXiv IDs abaixo foram confirmados contra a página do arXiv (título e tema batem com o que está descrito; Memento tem uma ressalva de título, ver a linha dele) — **isso é verificação, não leitura**, ver a seção acima.
 
