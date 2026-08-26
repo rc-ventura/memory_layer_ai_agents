@@ -1,0 +1,58 @@
+INFOGRAPHIC: "Knowledge as Infra — Memory Layer Architecture (hypothesis)"
+
+Style: modern clean technical infographic, flat vector with subtle isometric depth, dark-navy background, crisp thin connecting arrows, short legible labels rendered sharply and spelled correctly. Engineering-diagram aesthetic. Color-coded legend bottom-left. This is a HYPOTHESIS — not a locked architecture — state that visibly.
+
+Title (top, centered): "Knowledge as Infra — A Working Architecture for the Memory Mechanism". Subtitle: "Hypothesis — graduates to a decision only after Sub 1.6 POCs and Sub 1.7 implicit-vs-explicit comparison".
+
+=== TOP: the Agent + MCP bridge ===
+A robot icon node: "Agent (Hermes / Manager / Small Agent / future ones)".
+Below it, a green rounded bridge labeled "MCP — agnostic integration, called inside the agent's own loop" containing two tool cards:
+  • "recall_memory()" — magnifying glass — "agent calls this inside its own reasoning trace (not silent injection)"
+  • "propose_memory_update()" — pencil — "Update Engine's gated candidate"
+Arrow: Agent → recall_memory (labeled "tool call, per case").
+Small node to the side: "Pipeline-stage completion (system trigger, not a tool)" — with a note: "episodic ADD is deliberately NOT an MCP tool — system trigger, by design".
+
+=== CENTER-LEFT: HOT PATH — light-blue lane ===
+Header: "HOT PATH — per case · cheap · reversible · no LLM call". Left-to-right rounded blue nodes:
+1. "Pipeline-stage completion (system trigger)" → "automatic episodic write"
+2. "Write Transform — score S · embedding · chunking · 0 LLM calls" (tag: ← DMF-lite, deterministic)
+3. "MEMORY STORE" — the visual centerpiece, larger — a database icon with TWO internal layers drawn:
+     • top layer: "Episodic traces (append-only, immutable — source of truth)"
+     • bottom layer: "Strategy layer (mutable, derived — Strategy-based Memory, not executable skill)"
+   (tag: ← SSGM Reversible Reconciliation; Hu/Liu episodic-to-semantic continuum)
+4. "Decay / STM→LTM promotion" — fading clock — tag "← SAGE · MemoryBank · SSGM Weibull w(Δτ)=exp(−(Δτ/η)^κ)"
+5. Decision diamond: "R < θ2 ?" → yes → "hard-delete + logged reason" (trash icon) — tag "← this project's contribution (real delete, none of the 8 papers have it)"
+recall_memory reads from the Memory Store (arrow labeled "embedding top-K → freshness/ACL gate → relevance+importance rank", tags ← SSGM · Generative Agents).
+
+=== CENTER-RIGHT: COLD PATH — amber lane ===
+Header: "COLD PATH — batched · controlled · gated · LLM calls live here". Left-to-right amber nodes:
+6. "Signal Capture (dual path)" — split icon — two sub-branches feeding one ledger:
+     • "Copilot 👍👎 (human, chat)" — tag "transport not documented (inference, not decision)"
+     • "Systemic (Yoda / Kafka, ex-post from case outcome)" — tag "confirmed real infra"
+   (tag: ← Casper; neither path is an MCP tool — both are triggers external to the agent's loop)
+7. "Signal Ledger" — book icon — "separate store from Memory Store; signals never become episodic traces"
+8. "Update Engine" — engine/gears — "severity-weighted cumulative trigger (NOT flat N); ExpeL-style comparison of success/failure CASES" — tag "← Generative Agents (push for monitoring, pull for generation); ExpeL (proposal, not commit)"
+   Dashed READ-ONLY arrow from Memory Store → Update Engine labeled "read: case content for flagged signals (needs the case, not just the signal)".
+9. "COMMIT GATE" — gate/shield icon — second visual emphasis, slightly larger — "signal-quality check: agreement rate, correlated-error risk, anti-sycophancy · NLI contradiction check (ΔM ∧ M_core ⊨ ⊥) · versioned commit + rollback (Sub 3.4)" — tag "← Casper · SSGM Write Validation Gate · THE actual contribution — no candidate paper has this combination".
+PROMINENT arrow: Commit Gate → UP into Memory Store's strategy layer, labeled "versioned commit (diffable, rollback-able) — writes ONLY to strategy layer, never to agent system prompt".
+Arrow: Update Engine → propose_memory_update (the MCP tool) → Commit Gate.
+
+=== FLOATING (dashed gray border, bottom-right): OPEN GAP ===
+"G — Consolidation (not yet designed)" — merge/question icon — "merges/deduplicates overlapping memory. Updating (C) and Forgetting (E) are designed; Consolidation is not. Candidates: A-Mem · ReasoningBank · Mem0 UPDATE (adapt, don't copy)."
+
+=== BOTTOM STRIP: "Worked example — consignado case" ===
+Numbered horizontal micro-flow, 6 framed steps:
+① Agent calls recall_memory → gets strategy "prioritize contestação when biometric signature validated; check prescriptive deadline first" + past episodes
+② Case logged into Memory Store regardless of outcome
+③ Reviewer 👎 on related case ("right argument, wrong deadline cited")
+④ Months later, unrelated case's adverse outcome via Kafka — no human involved
+⑤ Three deadline-related errors cross severity threshold (well before 100 cases) → Update Engine proposes tightening the skill
+⑥ Commit Gate checks correlated-error risk → commits new versioned skill (rollback pointer to old); unrelated stale "grande causa" skill, unused 90 days, decays past θ2 → hard-deleted with logged reason
+
+=== LEGEND (bottom-left) ===
+• Blue = Hot path (per-case, cheap, reversible)
+• Amber = Cold path (batched, controlled, gated)
+• Green = MCP integration (agnostic, loop-native)
+• Dashed gray = open gap / hypothesis, not yet designed
+
+Visual emphasis: Memory Store = largest node (centerpiece); Commit Gate = second emphasis (the project's actual contribution — the piece none of the 8 read papers have). Make the "versioned commit" arrow looping from Commit Gate back UP into the strategy layer visually prominent — it shows the closed control loop. The two framing tensions this design resolves should be implied by the layout: (1) "agnostic module" vs "loop-native" collapse because MCP is both; (2) "RL after ~100 cases" vs "memory update" are different cadences — continuous writes (hot) vs batched gated updates (cold). Keep every label short so text renders crisply in the image.
