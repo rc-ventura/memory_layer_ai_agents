@@ -16,6 +16,18 @@ This file is an index, not a rulebook — each doc below is the actual source of
 
 Only create or edit a `research-diary/` entry when Rafael explicitly asks (the `diario-campo` skill's own trigger rules already cover this).
 
+### Branch naming convention
+
+Every branch starts with the creation date in ISO 8601, then a short slug:
+
+```
+YYYY-MM-DD-short-slug
+```
+
+- Date first → `git branch` lists branches in chronological order.
+- `short-slug` = lowercase, hyphenated, brief (what the branch is for, not a full sentence).
+- Examples: `2026-08-27-memorybank-reading`, `2026-08-26-architecture-infographic`, `2026-08-24-reading-sprint`.
+
 This branch has been merged mid-session more than once while work continued. Before pushing:
 
 ```
