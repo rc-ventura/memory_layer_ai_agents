@@ -41,6 +41,10 @@ Whenever a new entry would start a new Monday–Sunday week, the closing week ge
 
 At the start of a new calendar month (or on request), once every week that falls (even partially) in the closing month has its weekly file and synthesis: export a clean `.docx` for the coordinator — cover (month/year, project number, entry count) + the weekly syntheses of every week touching that month, in order, as the main body + the full episodic log (from those same weekly files) as an appendix. A week that spans a month boundary counts toward the month containing its Monday.
 
+## Second semantic layer — monthly rollup (`summarization/`)
+
+`summarization/sintese_AAAA-MM.md` is a derived, regenerable month-level digest: the weekly syntheses of every week whose Monday falls in that month, consolidated into one file — a real month-level distillation (central findings, decisions, still-open items, per-sub-activity counts) sitting on top of the verbatim weekly syntheses. It does **not** duplicate the episodic log and does **not** replace the coordinator `.docx` export — it's the cheap, in-repo semantic layer above the weekly one. Generated and refreshed by the `sintese-diario` skill; safe to regenerate any time the understanding of a past week changes.
+
 ## On persistence — read this if you're picking the diary back up in a new session
 
 The workflow this diary was originally designed under (see the `diario-campo` skill) assumed an **ephemeral** execution environment with no persistent filesystem between sessions — the only durable storage was re-uploading the month's file to a Claude Project's Project Files after every update, with a manual reminder to do so baked into the skill's instructions.
@@ -51,3 +55,4 @@ The workflow this diary was originally designed under (see the `diario-campo` sk
 
 - [`diario_campo_2026-08.md`](diario_campo_2026-08.md) — August 2026, 17–23/08 (the last week under the monthly-file convention; complete, with its synthesis).
 - [`diario_campo_2026-08-24.md`](diario_campo_2026-08-24.md) — week of 24–30/08 (current, in progress), first file under the new weekly-file convention.
+- [`summarization/`](summarization/) — month-level rollups (`sintese_AAAA-MM.md`), one per calendar month, consolidating that month's weekly syntheses. Derived/regenerable; maintained by the `sintese-diario` skill.
