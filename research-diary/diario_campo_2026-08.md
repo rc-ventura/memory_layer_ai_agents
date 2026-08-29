@@ -132,7 +132,7 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Tipo:** achado — **Sub-atividade:** 1.4 — **Canal:** pessoal
 
-**Registro objetivo:** Concluído o mapeamento de todos os fluxos jurídicos importantes do projeto. A transcrição da sessão de mapeamento (reunião de checkpoint com o tutor) foi anexada em `docs/checkpoint-2026-08-20-tutor-kickoff.md` (fonte: `docs/sources/Checkpoint_Tutor_2026-08-20.docx`), com reflexões em `discussion/checkpoint-2026-08-20-reflections.md`.
+**Registro objetivo:** Concluído o mapeamento de todos os fluxos jurídicos importantes do projeto. A transcrição da sessão de mapeamento (reunião de checkpoint com o tutor) foi anexada em `docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md` (fonte: `docs/sources/Checkpoint_Tutor_2026-08-20.docx`), com reflexões em `discussion/checkpoint-2026-08-20-reflections.md`.
 
 **Reflexão:** Com o mapeamento fechado, dá para repesquisar a partir dos fluxos, triangulando três pontos — o plano de trabalho, os papers já lidos ou na fila de leitura, e os próprios fluxos mapeados — para repriorizar a reading queue a partir dessa triangulação.
 
@@ -158,7 +158,7 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Reflexão:** Fed já estar construindo memória com GraphRAG é um dado concreto a mais além do que já constava no checkpoint de 20/08 (onde ele só era citado como "figuraça técnica" a conhecer) — isso já motivou a ativação da trilha de leitura de GraphRAG no `reading-queue.md` nesta mesma sessão. André usando Hermes é relevante pro Sub 1.6 (agentes mínimos comparando abordagens de memória): tendo as duas implementações reais (GraphRAG do Fed vs. Hermes do André) dá pra comparar contra o que já foi mapeado na literatura, em vez de só teorizar.
 
-**Decisão/próximo passo:** ~~Anexar a transcrição/notas dessa reunião (Fed/Yoshio/Luiz) ao repositório~~ — feito em 24/08 (ver `docs/checkpoint-2026-08-21-infra-arquitetura.md` e a entrada de 24/08 desta semana). Agendar e realizar a reunião com o André sobre a memória dos agentes Hermes — ainda pendente.
+**Decisão/próximo passo:** ~~Anexar a transcrição/notas dessa reunião (Fed/Yoshio/Luiz) ao repositório~~ — feito em 24/08 (ver `docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md` e a entrada de 24/08 desta semana). Agendar e realizar a reunião com o André sobre a memória dos agentes Hermes — ainda pendente.
 
 **Tags:** reuniao-infra, fed, yoshio, andre, hermes, langgraph, langchain, arquitetura-agentes, sub-1.6, transcricao-anexada
 

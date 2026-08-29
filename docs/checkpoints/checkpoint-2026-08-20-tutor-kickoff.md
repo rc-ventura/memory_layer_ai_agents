@@ -1,10 +1,10 @@
 # Reunião de checkpoint com o tutor — 20/08/2026
 
-*Resumo da primeira reunião de checkpoint substantiva entre Rafael Coelho Ventura (bolsista) e Luis Felipe Chary de Lima (tutor), 20/08/2026, ~45 min. Fonte: [`sources/Checkpoint_Tutor_2026-08-20.docx`](sources/Checkpoint_Tutor_2026-08-20.docx) (transcrição automática da reunião, preservada como fonte primária). Esta é a transcrição referenciada como "pendente de anexar" na [entrada de 20/08 do diário de campo](../research-diary/diario_campo_2026-08.md#20082026) para o Sub 1.4 (mapeamento dos fluxos jurídicos) — já está anexada. Mantido em português, no idioma original da reunião, por decisão explícita do bolsista.*
+*Resumo da primeira reunião de checkpoint substantiva entre Rafael Coelho Ventura (bolsista) e Luis Felipe Chary de Lima (tutor), 20/08/2026, ~45 min. Fonte: [`../sources/Checkpoint_Tutor_2026-08-20.docx`](../sources/Checkpoint_Tutor_2026-08-20.docx) (transcrição automática da reunião, preservada como fonte primária). Esta é a transcrição referenciada como "pendente de anexar" na [entrada de 20/08 do diário de campo](../../research-diary/diario_campo_2026-08.md#20082026) para o Sub 1.4 (mapeamento dos fluxos jurídicos) — já está anexada. Mantido em português, no idioma original da reunião, por decisão explícita do bolsista.*
 
 ## Por que essa reunião importa
 
-Aqui o tutor explica a Rafael o fluxo jurídico real ("esteira jurídica") em que o mecanismo do projeto vai atuar e, de passagem, sem que ninguém perguntasse diretamente, descreve com as próprias palavras que tipo de "aprendizado por reforço" ele espera. Essa segunda parte é o ponto central: é a fonte real por trás da decisão de 20/08 já registrada em [`../discussion/scope-and-terminology-decisions.md#2`](../discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title) (ajuste de harness via sinal do usuário, não SFT) — ver a nota de reflexões para o trecho exato.
+Aqui o tutor explica a Rafael o fluxo jurídico real ("esteira jurídica") em que o mecanismo do projeto vai atuar e, de passagem, sem que ninguém perguntasse diretamente, descreve com as próprias palavras que tipo de "aprendizado por reforço" ele espera. Essa segunda parte é o ponto central: é a fonte real por trás da decisão de 20/08 já registrada em [`../../discussion/scope-and-terminology-decisions.md#2`](../../discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title) (ajuste de harness via sinal do usuário, não SFT) — ver a nota de reflexões para o trecho exato.
 
 ## O fluxo jurídico ("esteira jurídica")
 
@@ -57,4 +57,4 @@ O número de agentes está crescendo rápido — algo como 2 em produção até 
 
 ## Não resolvido nesta reunião
 
-Ver [`../discussion/checkpoint-2026-08-20-reflections.md`](../discussion/checkpoint-2026-08-20-reflections.md) para o que isso muda ou abre em relação ao plano de trabalho, e [`../discussion/open-questions.md`](../discussion/open-questions.md) para os itens que essa reunião adiciona.
+Ver [`../../discussion/checkpoint-2026-08-20-reflections.md`](../../discussion/checkpoint-2026-08-20-reflections.md) para o que isso muda ou abre em relação ao plano de trabalho, e [`../../discussion/open-questions.md`](../../discussion/open-questions.md) para os itens que essa reunião adiciona.

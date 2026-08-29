@@ -11,7 +11,7 @@ This repo *is* the study/lab notebook for that work: bibliographic review, per-s
 ## Structure
 
 ```
-docs/                   Work plan (Plano de Trabalho), the sub-activity map, and checkpoint-meeting records
+docs/                   Work plan (Plano de Trabalho), the sub-activity map, checkpoint-meeting records (checkpoints/), and the monthly institution reports (reports/)
 literature-review/      The two report-grade bibliographic reviews (Sub 1.1, Sub 1.2) + two survey mind maps
 papers/                 One atomic note per paper/framework cited (36 so far) + a reading queue
 discussion/             Cross-cutting synthesis: findings, framework comparisons, scope decisions, open questions

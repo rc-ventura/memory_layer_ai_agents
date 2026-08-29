@@ -2,7 +2,7 @@
 
 # Reflections on the 21/08 infra checkpoint — what it confirms, corrects, and opens
 
-Source: [`../docs/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoint-2026-08-21-infra-arquitetura.md) (filtered summary) and [`../docs/sources/Infra_dos_agentes_2026-08-21.docx`](../docs/sources/Infra_dos_agentes_2026-08-21.docx) (transcript). This is the meeting flagged as pending since [21/08](../research-diary/diario_campo_2026-08.md#21082026) — attached now.
+Source: [`../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md) (filtered summary) and [`../docs/sources/Infra_dos_agentes_2026-08-21.docx`](../docs/sources/Infra_dos_agentes_2026-08-21.docx) (transcript). This is the meeting flagged as pending since [21/08](../research-diary/diario_campo_2026-08.md#21082026) — attached now.
 
 ## 1. Cross-trial vs. cross-agent gets a sharper, first-hand confirmation
 
@@ -38,4 +38,4 @@ Auth today is informal: a user token is passed forward through every layer (prox
 
 ## Not investigated here
 
-Repository-level details (which repo holds which agent, exact folder layout) are logistics for whenever Rafael actually starts building, not research findings — kept in the [docs summary](../docs/checkpoint-2026-08-21-infra-arquitetura.md) rather than analyzed here.
+Repository-level details (which repo holds which agent, exact folder layout) are logistics for whenever Rafael actually starts building, not research findings — kept in the [docs summary](../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md) rather than analyzed here.

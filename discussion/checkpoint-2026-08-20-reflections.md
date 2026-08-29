@@ -2,7 +2,7 @@
 
 # Reflections on the 20/08 tutor checkpoint — what it confirms, and what it opens
 
-Source: [`../docs/checkpoint-2026-08-20-tutor-kickoff.md`](../docs/checkpoint-2026-08-20-tutor-kickoff.md) (factual summary, kept in Portuguese at Rafael's request) and [`../docs/sources/Checkpoint_Tutor_2026-08-20.docx`](../docs/sources/Checkpoint_Tutor_2026-08-20.docx) (transcript). This is the meeting the [20/08 diary entry](../research-diary/diario_campo_2026-08.md#20082026) flagged as "fluxos jurídicos mapeados, transcrição pendente de anexar" — it's attached now, closing that pending item.
+Source: [`../docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md`](../docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md) (factual summary, kept in Portuguese at Rafael's request) and [`../docs/sources/Checkpoint_Tutor_2026-08-20.docx`](../docs/sources/Checkpoint_Tutor_2026-08-20.docx) (transcript). This is the meeting the [20/08 diary entry](../research-diary/diario_campo_2026-08.md#20082026) flagged as "fluxos jurídicos mapeados, transcrição pendente de anexar" — it's attached now, closing that pending item.
 
 ## 1. The tutor independently confirms the harness-not-retraining decision — with the exact vocabulary
 
@@ -32,4 +32,4 @@ The work plan's Objetivos motivate the mechanism abstractly ("evitar depender de
 
 ## Not investigated here
 
-Infra facts from the meeting (AWS services, the container platform, the ~130-repo monorepo, the agent-config database as a possible memory store) are logistics for the upcoming "Fed" infra meeting, not research findings — kept in the [docs summary](../docs/checkpoint-2026-08-20-tutor-kickoff.md) rather than analyzed here. Nothing in this note has been cross-checked yet against Reflexion/Retroformer/Memory-R1's own assumptions — that remains the open item tracked since the thumbs-feedback-reliability note.
+Infra facts from the meeting (AWS services, the container platform, the ~130-repo monorepo, the agent-config database as a possible memory store) are logistics for the upcoming "Fed" infra meeting, not research findings — kept in the [docs summary](../docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md) rather than analyzed here. Nothing in this note has been cross-checked yet against Reflexion/Retroformer/Memory-R1's own assumptions — that remains the open item tracked since the thumbs-feedback-reliability note.

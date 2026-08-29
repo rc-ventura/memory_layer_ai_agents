@@ -163,4 +163,4 @@ Corte do [`reading-queue.md`](../papers/reading-queue.md) → "Guia de leitura p
 - Entrada de diário que originou isto: [26/08/2026](../research-diary/diario_campo_2026-08-24.md#26082026)
 - Achados de texto completo dos papers: [`reading-sprint-2026-08-24-queue-papers.md`](reading-sprint-2026-08-24-queue-papers.md)
 - Gaps rastreados: [`open-questions.md`](open-questions.md) (itens sobre granularidade do trigger e os cinco gaps de storage-mechanics)
-- Infra confirmada: [`../docs/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoint-2026-08-21-infra-arquitetura.md) · reflexões: [`checkpoint-2026-08-21-infra-reflections.md`](checkpoint-2026-08-21-infra-reflections.md)
+- Infra confirmada: [`../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md) · reflexões: [`checkpoint-2026-08-21-infra-reflections.md`](checkpoint-2026-08-21-infra-reflections.md)

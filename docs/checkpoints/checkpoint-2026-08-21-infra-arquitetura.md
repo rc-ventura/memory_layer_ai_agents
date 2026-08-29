@@ -1,6 +1,6 @@
 # Reunião de infra dos agentes — 21/08/2026
 
-*Resumo filtrado da reunião entre Rafael Coelho Ventura, Rafael Yoshio Gomes Nomachi ("Yoshio", engenheiro de infra que conduziu a apresentação), Federico Carlos Amorin Criado ("Fed") e o tutor Luis Felipe Chary de Lima, 21/08/2026, ~53 min. Fonte: [`sources/Infra_dos_agentes_2026-08-21.docx`](sources/Infra_dos_agentes_2026-08-21.docx) (transcrição automática). Filtrado deliberadamente para o que é relevante ao plano de trabalho — a reunião cobriu bem mais detalhe de infra genérica (frontend Angular, nomes de repositório específicos, etc.) que não entra aqui. Mantido em português, seguindo o padrão do checkpoint de 20/08.*
+*Resumo filtrado da reunião entre Rafael Coelho Ventura, Rafael Yoshio Gomes Nomachi ("Yoshio", engenheiro de infra que conduziu a apresentação), Federico Carlos Amorin Criado ("Fed") e o tutor Luis Felipe Chary de Lima, 21/08/2026, ~53 min. Fonte: [`../sources/Infra_dos_agentes_2026-08-21.docx`](../sources/Infra_dos_agentes_2026-08-21.docx) (transcrição automática). Filtrado deliberadamente para o que é relevante ao plano de trabalho — a reunião cobriu bem mais detalhe de infra genérica (frontend Angular, nomes de repositório específicos, etc.) que não entra aqui. Mantido em português, seguindo o padrão do checkpoint de 20/08.*
 
 ## Arquitetura, no nível necessário para entender onde a memória entra
 
@@ -28,4 +28,4 @@ Fluxo de uma mensagem no chat: **frontend → API Gateway → proxy (Lambda)**, 
 
 ## Não investigado aqui
 
-Ver [`../discussion/checkpoint-2026-08-21-infra-reflections.md`](../discussion/checkpoint-2026-08-21-infra-reflections.md) para o que essa reunião confirma, corrige ou abre em relação ao que já estava registrado no repo.
+Ver [`../../discussion/checkpoint-2026-08-21-infra-reflections.md`](../../discussion/checkpoint-2026-08-21-infra-reflections.md) para o que essa reunião confirma, corrige ou abre em relação ao que já estava registrado no repo.
