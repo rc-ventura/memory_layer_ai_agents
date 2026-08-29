@@ -8,7 +8,7 @@
 
 Tudo abaixo é **hipótese de arquitetura**, não decisão. O que está na coluna "fechado" são escolhas que **eu** tomei ao desenhar o componente A, com fundamentação bibliográfica — não coisas que o Luis Felipe já ratificou. Parte do objetivo da reunião é justamente submeter essas escolhas. Elas só viram decisão de fato depois dos POCs mínimos do Sub 1.6 e da comparação implícito-vs-explícito do Sub 1.7.
 
-**Nenhum dos papers citados foi lido por mim ainda** — são 🔎 (Claude leu texto completo via sub-agente e extraiu mecanismo/fórmula) ou 📝 (só verificação bibliográfica). Não apresentar como leitura própria na reunião.
+**Nenhum dos papers citados foi lido por mim ainda** — são 🔎 (um agente sem provider definido leu texto completo via sub-agente e extraiu mecanismo/fórmula) ou 📝 (só verificação bibliográfica). Não apresentar como leitura própria na reunião.
 
 ## Como enquadrar (abertura de ~3 min)
 
@@ -127,7 +127,7 @@ Para cada escolha de design do componente A, o trabalho que decide de outro jeit
 
 ## 4. Leituras recomendadas para o componente A
 
-Corte do [`reading-queue.md`](../papers/reading-queue.md) → "Guia de leitura por componente" (seções A e A2). **Status:** 📝 = nota bibliográfica verificada (não lido) · 🔎 = Claude leu texto completo via sub-agente · **nenhum lido por mim ainda**.
+Corte do [`reading-queue.md`](../papers/reading-queue.md) → "Guia de leitura por componente" (seções A e A2). **Status:** 📝 = nota bibliográfica verificada (não lido) · 🔎 = um agente sem provider definido leu texto completo via sub-agente · **nenhum lido por mim ainda**.
 
 | Paper | Status | Tier | Onde focar |
 |---|---|---|---|

@@ -58,7 +58,7 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Tipo:** decisão — **Sub-atividade:** transversal — **Canal:** pessoal
 
-**Registro objetivo:** Desenhei com o Claude o esquema do diário de campo pessoal de pesquisa. Decisões fechadas: (a) camada episódica diária + camada semântica via síntese semanal automática toda vez que uma semana se encerra; (b) arquivo corrido por mês (`diario_campo_AAAA-MM.md`); (c) export limpo em docx no fechamento do mês, para o coordenador acompanhar; (d) esquema de campos por entrada — tipo, sub-atividade (mapeada contra o Plano de Trabalho), canal (pessoal / informal-coordenador / formal-tutor), registro objetivo, reflexão opcional, decisão/próximo passo opcional, tags.
+**Registro objetivo:** Desenhei com um agente sem provider definido o esquema do diário de campo pessoal de pesquisa. Decisões fechadas: (a) camada episódica diária + camada semântica via síntese semanal automática toda vez que uma semana se encerra; (b) arquivo corrido por mês (`diario_campo_AAAA-MM.md`); (c) export limpo em docx no fechamento do mês, para o coordenador acompanhar; (d) esquema de campos por entrada — tipo, sub-atividade (mapeada contra o Plano de Trabalho), canal (pessoal / informal-coordenador / formal-tutor), registro objetivo, reflexão opcional, decisão/próximo passo opcional, tags.
 
 **Reflexão:** O campo "canal" resolve de forma direta uma ambiguidade que já estava registrada como pendência do projeto — separar direção informal do coordenador de validação formal do tutor. Também virou uma aplicação prática da própria teoria do projeto: separar registro episódico bruto de síntese semântica destilada, exatamente como o Plano propõe fazer no mecanismo de memória do agente (Sub 2.2).
 

@@ -15,7 +15,7 @@ docs/                   Work plan (Plano de Trabalho), the sub-activity map, and
 literature-review/      The two report-grade bibliographic reviews (Sub 1.1, Sub 1.2) + two survey mind maps
 papers/                 One atomic note per paper/framework cited (36 so far) + a reading queue
 discussion/             Cross-cutting synthesis: findings, framework comparisons, scope decisions, open questions
-research-diary/         Daily episodic log + weekly synthesis, one file per week (see research-diary/README.md), in progress
+research-diary/         Daily episodic log (one file per week) + monthly digest in summarization/ (see research-diary/README.md), in progress
 ```
 
 Each folder has its own `README.md` with more detail. Suggested entry points depending on what you're after:
@@ -34,7 +34,7 @@ The four content folders sit at different altitudes over the same material:
 literature-review/  →  report-grade deliverables, prose, organized by theme (what gets submitted)
 papers/              →  one atomic note per source, organized for lookup (what gets cited)
 discussion/          →  synthesis across sources/reviews/diary (what gets decided)
-research-diary/       →  raw episodic + weekly-semantic log (what actually happened, day by day)
+research-diary/       →  raw episodic log + monthly digest (what actually happened, day by day)
 ```
 
 The diary is where new findings first land; the strongest ones get distilled into `discussion/`; sources cited along the way get an atomic note in `papers/`; and the two `literature-review/` reports are the polished, submittable form of Sub 1.1 and Sub 1.2 — refined continuously, not written once.

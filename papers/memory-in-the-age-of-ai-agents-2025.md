@@ -16,7 +16,7 @@ A very large, recent survey proposing a three-axis taxonomy — Forms (token-lev
 
 The most current map of the field; its "Dynamics → evolution (consolidation & forgetting)" axis is exactly the project's sub-topic, and it lists RL-integration and trustworthiness as frontiers. See [mind map 2](../literature-review/visual-synthesis/README.md#2-memory-in-the-age-of-ai-agents) for the full Forms/Functions/Dynamics/Resources-and-Frontiers taxonomy.
 
-## Full-text confirmation (25/08/2026, Claude-read directly from the PDF, not Rafael-read — even though Rafael's own earlier read is marked ✅ above)
+## Full-text confirmation (25/08/2026, agent-read directly from the PDF, not Rafael-read — even though Rafael's own earlier read is marked ✅ above)
 
 Downloaded the full 107-page PDF and grep'd it directly (`pdftotext`) to resolve a specific question: does §4.1 Factual Memory subdivide into episodic/semantic, as the redrawn mind map's simplified "User Factual / Environment Factual" leaves ambiguous? Confirmed precisely — both are true, at different levels:
 

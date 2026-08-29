@@ -19,7 +19,7 @@ The canonical forgetting/decay mechanism; a legal agent needs controlled decay s
 
 ## §2.1 "Memory Storage: The Warehouse of MemoryBank" — verbatim excerpt (p.3)
 
-Added 27/08/2026. Quoted **verbatim** from the paper (arXiv:2305.10250, p.3). This specific passage is on record; the rest of the paper is still 🔎 (Claude-read via sub-agent), not Rafael-read. Reflection kept in the separate section below.
+Added 27/08/2026. Quoted **verbatim** from the paper (arXiv:2305.10250, p.3). This specific passage is on record; the rest of the paper is still 🔎 (agent-read via sub-agent), not Rafael-read. Reflection kept in the separate section below.
 
 > Memory storage, the warehouse of MemoryBank, is a robust data repository holding a meticulous array of information. As shown in Fig. 1, it stores daily conversations records, summaries of past events, and evolving assessments of user personalities, thereby constructing a dynamic and multi-layered memory landscape.
 >
