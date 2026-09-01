@@ -19,7 +19,7 @@ When a new meeting (tutor, infra, colleague) gets transcribed and needs to enter
 3. Cross-cutting reflections → [`../discussion/<slug>-reflections.md`](../discussion/), English by default — connecting the meeting to the work plan, existing decisions, and open questions, and updating those files with backlinks (see [`../discussion/README.md`](../discussion/README.md)).
 4. Close the loop in the [research diary](../research-diary/): if a prior entry flagged the meeting/transcript as pending, update that entry rather than only adding a new one.
 
-Meetings recorded so far: `checkpoints/checkpoint-2026-08-20-tutor-kickoff.md` and `checkpoints/checkpoint-2026-08-21-infra-arquitetura.md`. Still pending this treatment: the meeting on the Hermes framework's native agent memory.
+Meetings recorded so far: `checkpoints/checkpoint-2026-08-20-tutor-kickoff.md`, `checkpoints/checkpoint-2026-08-21-infra-arquitetura.md`, and `checkpoints/checkpoint-2026-08-28-tutor.md`. Still pending this treatment: the meeting on the Hermes framework's native agent memory.
 
 ## Language
 

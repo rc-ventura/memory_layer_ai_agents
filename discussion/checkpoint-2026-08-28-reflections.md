@@ -1,0 +1,53 @@
+> **Sub-atividade:** 1.3 / 1.7 / 2.2 / 3.1 · **Type:** Cross-cutting reflection on a primary source · **Logged:** [28/08/2026](../research-diary/diario_campo_2026-08-24.md)
+
+# Reflections on the 28/08 tutor checkpoint — what it confirms, tensions, and opens
+
+Source: [`../docs/checkpoints/checkpoint-2026-08-28-tutor.md`](../docs/checkpoints/checkpoint-2026-08-28-tutor.md) (factual summary, Portuguese) and [`../docs/sources/Checkpoint_Tutor_08-28-26.docx`](../docs/sources/Checkpoint_Tutor_08-28-26.docx) (auto-transcript, ~42 of 53 min captured, with some speaker-label noise). This is the first checkpoint where Rafael presented the whole [architecture hypothesis](knowledge-as-infra-architecture-hypothesis.md) and the tutor reacted component by component — so most of what follows is about how the tutor's independent reasoning lands against a design he was seeing laid out for the first time. None of it is a formal sign-off; the design's own bar (Sub 1.6/1.7 POC validation) is unchanged.
+
+## 1. Components C and D move from "my hypothesis" to "hypothesis the tutor reacted well to"
+
+The [component-A meeting prep](component-a-tutor-meeting-prep.md) names components D (Commit Gate) and E (Forgetting) as "where the differentiation is," and is explicit that these are Rafael's design choices, not things the tutor has ratified. This meeting is the first informal read on that:
+
+- **Update Engine (C).** The tutor, reasoning from operational cost rather than from the reading corpus, independently rejects the event-per-case trigger as a known-bad path ("o lance do evento toda hora") and describes: a **scheduled** batch scan (daily-to-weekly), **deterministic heuristics as the first filter** (trace length, tool-call count, thumbs distribution — outlier vs. within-distribution), then the LLM curator over the survivors, structured as **coordinator + map-reduce workers**. This is the same shape as the architecture doc's cold path ("push for monitoring, pull for generation," severity-weighted trigger, batched) and as the SAGE-style promotion-gate lean already recorded in [`open-questions.md`](open-questions.md) — arrived at from the operational side. The **map-reduce structure** is a genuine elaboration the doc doesn't have (it treats the cold-path LLM call as singular).
+- **Commit Gate / governance layer (D).** Rafael pitched the governance layer (memory change enters as a tool → gate with parameters + score → accept/reject → review loop → record of how the curator LLM is behaving) and the tutor's response was *"faz bastante sentido… o ponto é a gente ter como controlar isso — e tem."* First tutor-side endorsement of the piece the project is treating as its actual contribution.
+
+This is the **third independent convergence** on the harness-adjustment / batched-update shape — after the tutor's own 20/08 words (`checkpoint-2026-08-20-reflections.md#1`, #3) and the LangChain "loop engineering" mapping (`framework-comparison-hermes-smolagents-deepagents.md`). When the operational side and the literature side keep landing in the same place, the design stops being research pushed against the grain of the project's needs.
+
+## 2. The 13-month problem — the most actionable finding, and it isn't in the docs
+
+The tutor makes a distinction the architecture doc's component B flattens: **outcome-signal latency is agent-type-dependent.**
+
+- **Cadastro:** a usable signal exists in ~1–2 months — not thumbs and not a case outcome, but *"someone went in and manually changed information the agent had passed"* / a reclassification, detectable as a diff on the record. This is effectively a **third systemic-mode signal type**, distinct from the two the docs name (thumbs, Kafka case-outcome): downstream human correction detected via the database.
+- **Contestação:** *"a gente só vai saber se deu certo um ano depois, ou mais"* — process median 13 months. The online Kafka outcome signal is close to useless for contestação on the fellowship's horizon; a continuous daily signal only starts ~mid-2027, and even then it's about past cases.
+
+Consequences for the design: (a) the **deterministic trace-shape signal becomes the primary near-term signal**, because outcome signals are delayed or absent — which independently reinforces the "deterministic heuristics as first filter" lean; (b) component B needs an explicit **per-agent-type signal-latency model**, not one systemic path; (c) the tutor's preferred collection mode is **actively querying the existing trace database** for "cases that now have an outcome I haven't used yet," which folds into the `open-questions.md` "reuse vs. build the Signal Ledger" question — the tutor leans hard toward reuse — and adds a concrete requirement: a **trace ID + a consumed-list** so the same case isn't used for multiple updates.
+
+## 3. Thumbs up/down: second convergence with `thumbs-feedback-reliability.md`, plus an asymmetry prior
+
+[`thumbs-feedback-reliability.md`](thumbs-feedback-reliability.md) concluded, from the RLHF literature, that a single thumbs signal should be a *candidate for review*, aggregated, not an automatic trigger. The tutor reaches the same conclusion from the operational side — *"o thumb é mais um sinal para compor"* — and adds a concrete prior the architecture doc doesn't state explicitly: **the signal is asymmetric.** Thumbs-up is near-worthless (*"muito mais comum sempre darem up"*); thumbs-down is strong (*"pra dar down, deu ruim mesmo"*). This is consistent with Casper et al.'s sycophancy finding (approval tracks fluency, not correctness — a confident wrong answer gets thumbs-up) and is worth recording as a fixed design assumption for component B, separate from the v2 adaptive "path weighting" already mapped. It does **not** close the open item (still need to check what Reflexion/Retroformer/Memory-R1 assume about feedback quality), but it de-risks the direction.
+
+## 4. New tension: cross-agent *reusable* memory is back on the table
+
+The architecture doc's scope-boundary line reads: *"Explicitly out of scope: … cross-agent memory sharing (not needed — Itaú's own pipeline agents don't talk to each other, confirmed twice)."* That decision was about **case-substance handoffs between specialized agents in a flow** (`scope-and-terminology-decisions.md#3`). This meeting introduces something the blanket phrasing doesn't cover: the tutor explicitly wants a **class of operational memory reusable across agent *types*** — his own example is an AWS API change that broke a query, discovered by one agent, that any other agent should be able to find before hitting the same wall. Combined with Rafael's "mega brain with granularity" (a shared pool partitioned by domain + RBAC), this is cross-agent *knowledge* sharing via a common store — not direct agent-to-agent messaging, but also not what "out of scope" currently reads as.
+
+Recommended reconciliation: **narrow the scope line** to "cross-agent *case-substance* memory sharing is out of scope," and record the **operational/reusable memory class** as an open item — tutor-interested, not decided, and in direct interaction with the ACL/granularity gap (meeting-prep §2.6), which this meeting also gives partial input on: the tutor's access model is **domain-scoped + credentials/RBAC**, agent passes a domain, leaning per-squad/domain rather than per-case.
+
+## 5. A third trigger path for the curator: human-initiated
+
+The tutor reacted most enthusiastically ("nunca tinha pensado nisso") to a path the architecture doc's component C doesn't have: an **operator-facing interface that triggers the curator on specific cases/agents** when a real-world incident happens (*"abriram um incidente em pagamentos… vai lá, puxa os traces desses casos e conserta"*). Component C currently has one trigger (severity-weighted cumulative). This meeting argues for **three**: scheduled batch (the tutor's default), severity-weighted (the doc's), and human-initiated (new). All three feed the same deterministic-filter → map-reduce curator → Commit Gate path.
+
+## 6. Retraining: third primary-source reinforcement, now with an opex argument
+
+`scope-and-terminology-decisions.md#2` records the harness-not-SFT decision as settled since 20/08. This meeting reinforces it a third time and adds a cost argument the decision log doesn't have: the tutor considered fine-tuning small per-agent models and rejected it on **inference opex** — keeping GPUs running is more expensive than API calls, even quantized and with frozen weights — and notes 1 year with two people is too little to build a real RL pipeline. His framing: *"descartado totalmente? Acho que não"* — deprioritized with a clear rationale, not formally closed forever. Worth adding as a citable reinforcement, not a new decision.
+
+## 7. Sequencing: the tutor unbound Rafael from the plano's ordering
+
+The Plano front-loads theoretical work in the first three months. The tutor was explicit that he won't hold Rafael to that ordering (*"não vou me balizar pelo planejamento… quero chegar numa solução, independente da ordem"*) and that developing-while-reading, backtracking when a technique breaks "na ponta," is how he works. This ratifies (informal channel) the decision Rafael already acted on at the end of August — starting component-A prototyping mid-Macroatividade-1 — and matches what the [August monthly report](../docs/reports/relatorio-mensal-2026-08.md) already stated ("a prototipagem dessa validação foi iniciada ao fim do mês"). Relevant to the standing `open-questions.md` "coordinator vs. tutor channel" item: this is informal steering, not a formal plan amendment.
+
+## 8. What this meeting did *not* do
+
+The [component-A meeting prep](component-a-tutor-meeting-prep.md)'s 8-question checklist was not run — the conversation stayed at the level of validating the overall direction. So the five component-A write-path gaps (schema, substrate, vector-storage category, chunking, what a trace contains) and the ACL gap remain open. What changed is that they now have a **path to being answered**: the tutor will provide the real trace database for Rafael to inspect directly — which is also the enabler for the Sub 1.4 "signal-collection points" mapping, pulled earlier than the cronograma placed it.
+
+## Not investigated here
+
+The congress/publishing logistics (tutor's role at Itaú vs. the ICT, NeurIPS history, October congress in Cuiabá) are context, not research — kept in the [checkpoint summary](../docs/checkpoints/checkpoint-2026-08-28-tutor.md) only. The mechanism-vs-Mem0 differentiation framing (component D + E) wasn't tested against a direct "why not use Mem0" question this time — that remains a likely tutor question for a future meeting, per the meeting prep.
