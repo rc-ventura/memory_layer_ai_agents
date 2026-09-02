@@ -1,8 +1,8 @@
-> **Sub-atividade:** 1.4 / 2.2 / 2.5 / 3.1 · **Type:** Cross-cutting reflection on a primary source · **Logged:** [24/08/2026](../research-diary/diario_campo_2026-08-24.md#24082026)
+> **Sub-atividade:** 1.4 / 2.2 / 2.5 / 3.1 · **Type:** Cross-cutting reflection on a primary source · **Logged:** [24/08/2026](../research-diary/Ago/diario_campo_2026-08-24.md#24082026)
 
 # Reflections on the 21/08 infra checkpoint — what it confirms, corrects, and opens
 
-Source: [`../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md) (filtered summary) and [`../docs/sources/Infra_dos_agentes_2026-08-21.docx`](../docs/sources/Infra_dos_agentes_2026-08-21.docx) (transcript). This is the meeting flagged as pending since [21/08](../research-diary/diario_campo_2026-08.md#21082026) — attached now.
+Source: [`../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md) (filtered summary) and [`../docs/sources/Infra_dos_agentes_2026-08-21.docx`](../docs/sources/Infra_dos_agentes_2026-08-21.docx) (transcript). This is the meeting flagged as pending since [21/08](../research-diary/Ago/diario_campo_2026-08.md#21082026) — attached now.
 
 ## 1. Cross-trial vs. cross-agent gets a sharper, first-hand confirmation
 

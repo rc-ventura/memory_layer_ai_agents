@@ -1,8 +1,8 @@
-> **Sub-atividade:** 1.4 / 1.5 / 2.2 / 2.5 · **Type:** Cross-cutting reflection on a primary source · **Logged:** [20/08/2026](../research-diary/diario_campo_2026-08.md#20082026)
+> **Sub-atividade:** 1.4 / 1.5 / 2.2 / 2.5 · **Type:** Cross-cutting reflection on a primary source · **Logged:** [20/08/2026](../research-diary/Ago/diario_campo_2026-08.md#20082026)
 
 # Reflections on the 20/08 tutor checkpoint — what it confirms, and what it opens
 
-Source: [`../docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md`](../docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md) (factual summary, kept in Portuguese at Rafael's request) and [`../docs/sources/Checkpoint_Tutor_2026-08-20.docx`](../docs/sources/Checkpoint_Tutor_2026-08-20.docx) (transcript). This is the meeting the [20/08 diary entry](../research-diary/diario_campo_2026-08.md#20082026) flagged as "fluxos jurídicos mapeados, transcrição pendente de anexar" — it's attached now, closing that pending item.
+Source: [`../docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md`](../docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md) (factual summary, kept in Portuguese at Rafael's request) and [`../docs/sources/Checkpoint_Tutor_2026-08-20.docx`](../docs/sources/Checkpoint_Tutor_2026-08-20.docx) (transcript). This is the meeting the [20/08 diary entry](../research-diary/Ago/diario_campo_2026-08.md#20082026) flagged as "fluxos jurídicos mapeados, transcrição pendente de anexar" — it's attached now, closing that pending item.
 
 ## 1. The tutor independently confirms the harness-not-retraining decision — with the exact vocabulary
 

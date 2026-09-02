@@ -14,9 +14,21 @@ The diary serves three audiences at once, and every entry keeps serving all thre
 
 ## File convention
 
-**One file per week, starting 24/08/2026.** `diario_campo_AAAA-MM-DD.md`, where `DD-MM-AAAA` is the Monday that opens the week. **The diary week runs Monday–Friday (5 working days)** — Saturday and Sunday are not part of it (e.g. `diario_campo_2026-08-24.md` covers the week of 24–28/08). A new week starts a new file with a standard header (project name, project number, one-line description of the scheme, and the week's date range). The weekly file *is* the week and holds **only** episodic entries — the week's distilled reflection lives in the [monthly digest](#the-monthly-digest-summarization), not at the bottom of the weekly file.
+**One file per week, starting 24/08/2026.** `diario_campo_AAAA-MM-DD.md`, where `AAAA-MM-DD` is the Monday that opens the week. **The diary week runs Monday–Friday (5 working days)** — Saturday and Sunday are not part of it (e.g. `diario_campo_2026-08-24.md` covers the week of 24–28/08). A new week starts a new file with a standard header (project name, project number, one-line description of the scheme, and the week's date range). The weekly file *is* the week and holds **only** episodic entries — the week's distilled reflection lives in the [monthly digest](#the-monthly-digest-summarization), not at the bottom of the weekly file.
 
-**Before 24/08/2026:** one file per calendar month (`diario_campo_AAAA-MM.md`), with weekly syntheses inserted at each week boundary inside that file. `diario_campo_2026-08.md` is the only file under this older convention — it stays as-is (synthesis included), not retroactively split.
+### Month folders (from 09/2026)
+
+Weekly files are grouped into **one folder per calendar month**, named with the **Portuguese 3-letter month abbreviation, title case**:
+
+| Jan | Fev | Mar | Abr | Mai | Jun | Jul | Ago | Set | Out | Nov | Dez |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 |
+
+So `research-diary/Ago/diario_campo_2026-08-24.md`, `research-diary/Set/diario_campo_2026-09-07.md`, and so on. The monthly digest is nested the same way: `research-diary/summarization/Ago/sintese_2026-08.md`.
+
+**Which month folder a week goes in — the Wednesday rule.** A Mon–Fri week belongs to the month that contains its **Wednesday** (equivalently: the month holding the majority of its 5 weekdays). A week that straddles a month boundary therefore goes to whichever month owns ≥3 of its days. Example: the week of **31/08–04/09** (Mon 31/08, then 01–04/09) has its Wednesday on 02/09, so it belongs to **September** → `research-diary/Set/diario_campo_2026-08-31.md`. The **file name keeps the opening Monday** (2026-08-31) even though the folder is `Set/` — name = the Monday, folder = the month the week belongs to.
+
+**Before 24/08/2026:** one file per calendar month (`diario_campo_AAAA-MM.md`), with weekly syntheses inserted at each week boundary inside that file. `diario_campo_2026-08.md` is the only file under this older convention — it lives in its month folder (`Ago/`), stays as-is (synthesis included), and is never retroactively split.
 
 ## Entry schema
 
@@ -39,9 +51,9 @@ When an entry (or a digest record) states that an **AI agent** did something rat
 
 ## The monthly digest (`summarization/`)
 
-The semantic layer is **one file per month**: `summarization/sintese_AAAA-MM.md`, holding **up to 4 records — one per week**. Each record is that week's reflection, drawn from the week's episodic entries and only *organized* here (the interpretation was already done in the entries themselves). Format per record: a heading `### Semana N · DD–DD/MM/AAAA · N registros`, a short paragraph of what happened, then `**Decidido:**` and `**Em aberto:**` lines. It is deliberately short — built to be read quickly, week by week.
+The semantic layer is **one file per month**: `summarization/<Mês>/sintese_AAAA-MM.md` (e.g. `summarization/Ago/sintese_2026-08.md`), holding **up to 4 records — one per week**. Each record is that week's reflection, drawn from the week's episodic entries and only *organized* here (the interpretation was already done in the entries themselves). Format per record: a heading `### Semana N · DD–DD/MM/AAAA · N registros`, a short paragraph of what happened, then `**Decidido:**` and `**Em aberto:**` lines. It is deliberately short — built to be read quickly, week by week.
 
-An entry logged on a Saturday or Sunday still belongs to the week that just closed on Friday (that Monday's file); it doesn't open a new one. A week whose Monday falls in a given month counts toward that month (so a week spanning a month boundary goes to the month of its Monday).
+An entry logged on a Saturday or Sunday still belongs to the week that just closed on Friday (that Monday's file); it doesn't open a new one. A week counts toward the month that owns its **Wednesday** (the [Wednesday rule](#month-folders-from-092026)), so a week spanning a month boundary goes to whichever month holds the majority of its weekdays — and its record appears in that month's digest, numbered by chronological order among the weeks assigned to that month.
 
 The digest is derived and regenerable — safe to rebuild any time the understanding of a past week changes. It does **not** duplicate the episodic log and does **not** replace the coordinator `.docx` export. Generated and refreshed by the `sintese-diario` skill.
 
@@ -51,6 +63,7 @@ At the start of a new calendar month (or on request), once the monthly digest ho
 
 ## Files
 
-- [`diario_campo_2026-08.md`](diario_campo_2026-08.md) — August 2026, week 17–23/08 (last file under the monthly-file convention; keeps its embedded `## Síntese da Semana`).
-- [`diario_campo_2026-08-24.md`](diario_campo_2026-08-24.md) — week of 24–28/08, first file under the weekly-file convention; episodic entries only.
-- [`summarization/`](summarization/) — one monthly digest per calendar month (`sintese_AAAA-MM.md`), ≤4 condensed weekly records. Derived/regenerable; maintained by the `sintese-diario` skill.
+- [`Ago/diario_campo_2026-08.md`](Ago/diario_campo_2026-08.md) — August 2026, week 17–23/08 (last file under the monthly-file convention; keeps its embedded `## Síntese da Semana`).
+- [`Ago/diario_campo_2026-08-24.md`](Ago/diario_campo_2026-08-24.md) — week of 24–28/08, first file under the weekly-file convention; episodic entries only.
+- [`Set/diario_campo_2026-08-31.md`](Set/diario_campo_2026-08-31.md) — week of 31/08–04/09; in `Set/` by the Wednesday rule (Wed 02/09). Episodic entries only.
+- [`summarization/`](summarization/) — one monthly digest per calendar month, nested in a month folder (`summarization/<Mês>/sintese_AAAA-MM.md`), ≤4 condensed weekly records. Derived/regenerable; maintained by the `sintese-diario` skill.

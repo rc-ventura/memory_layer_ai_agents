@@ -15,7 +15,7 @@ Hierarchical event-based memory with an updating mechanism inspired by the Ebbin
 
 ## Relevance to the project
 
-The canonical forgetting/decay mechanism; a legal agent needs controlled decay so superseded law fades while durable doctrine is reinforced. Priority-reading anchor #2 in the [18/08/2026 diary entry](../research-diary/diario_campo_2026-08.md#18082026) — "resolve o buraco de forgetting."
+The canonical forgetting/decay mechanism; a legal agent needs controlled decay so superseded law fades while durable doctrine is reinforced. Priority-reading anchor #2 in the [18/08/2026 diary entry](../research-diary/Ago/diario_campo_2026-08.md#18082026) — "resolve o buraco de forgetting."
 
 ## §2.1 "Memory Storage: The Warehouse of MemoryBank" — verbatim excerpt (p.3)
 

@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 · **Type:** Achado (finding) · **Logged:** [18/08/2026](../research-diary/diario_campo_2026-08.md#achado--lacuna-cross-trial--forgetting-confirmada-no-corpus-completo)
+> **Sub-atividade:** 1.1 · **Type:** Achado (finding) · **Logged:** [18/08/2026](../research-diary/Ago/diario_campo_2026-08.md#achado--lacuna-cross-trial--forgetting-confirmada-no-corpus-completo)
 
 # The cross-trial × forgetting gap
 

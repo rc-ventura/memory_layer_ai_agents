@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 / 1.6 / 1.7 / 2.2 · **Type:** agent-conducted literature sprint (via 9 parallel sub-agents) · **Logged:** [24/08/2026](../research-diary/diario_campo_2026-08-24.md#24082026)
+> **Sub-atividade:** 1.1 / 1.6 / 1.7 / 2.2 · **Type:** agent-conducted literature sprint (via 9 parallel sub-agents) · **Logged:** [24/08/2026](../research-diary/Ago/diario_campo_2026-08-24.md#24082026)
 
 # Reading sprint on the queue's architecture-relevant papers — what full-text reading changes
 

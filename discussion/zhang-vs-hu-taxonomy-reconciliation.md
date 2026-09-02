@@ -1,8 +1,8 @@
-> **Sub-atividade:** 1.1 · **Type:** Cross-cutting literature synthesis · **Logged:** [24/08/2026](../research-diary/diario_campo_2026-08-24.md#24082026)
+> **Sub-atividade:** 1.1 · **Type:** Cross-cutting literature synthesis · **Logged:** [24/08/2026](../research-diary/Ago/diario_campo_2026-08-24.md#24082026)
 
 # Do the two anchor surveys' taxonomies actually reconcile?
 
-This is the "mind map dos dois surveys" comparison that had been pending since [21/08](../research-diary/diario_campo_2026-08.md#21082026) — cross-referencing [Zhang et al.'s mind map](../literature-review/visual-synthesis/README.md#1-memory-in-llm-based-agents) (Sources → Forms → Operations) against [Hu/Liu et al.'s mind map](../literature-review/visual-synthesis/README.md#2-memory-in-the-age-of-ai-agents) (Forms → Functions → Dynamics), branch by branch, instead of assuming from axis names alone whether they conflict.
+This is the "mind map dos dois surveys" comparison that had been pending since [21/08](../research-diary/Ago/diario_campo_2026-08.md#21082026) — cross-referencing [Zhang et al.'s mind map](../literature-review/visual-synthesis/README.md#1-memory-in-llm-based-agents) (Sources → Forms → Operations) against [Hu/Liu et al.'s mind map](../literature-review/visual-synthesis/README.md#2-memory-in-the-age-of-ai-agents) (Forms → Functions → Dynamics), branch by branch, instead of assuming from axis names alone whether they conflict.
 
 **Caveat on what "verified" means here:** both mind maps are themselves redrawn recreations (see the visual-synthesis README's own note), not the primary paper text — this is a structural comparison at the mind-map level, useful for spotting real convergence/divergence, but not a substitute for close-reading either paper's actual prose if a specific branch needs to be cited precisely.
 
