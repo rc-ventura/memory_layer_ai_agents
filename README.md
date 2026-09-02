@@ -15,7 +15,7 @@ docs/                   Work plan (Plano de Trabalho), the sub-activity map, che
 literature-review/      The two report-grade bibliographic reviews (Sub 1.1, Sub 1.2) + two survey mind maps
 papers/                 One atomic note per paper/framework cited (36 so far) + a reading queue
 discussion/             Cross-cutting synthesis: findings, framework comparisons, scope decisions, open questions
-research-diary/         Daily episodic log (one file per week) + monthly digest in summarization/ (see research-diary/README.md), in progress
+research-diary/         Daily episodic log (one file per week, in per-month folders) + monthly digest in summarization/<Mês>/ (see research-diary/README.md), in progress
 ```
 
 Each folder has its own `README.md` with more detail. Suggested entry points depending on what you're after:

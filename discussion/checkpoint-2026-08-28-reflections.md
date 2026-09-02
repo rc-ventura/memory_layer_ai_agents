@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.3 / 1.7 / 2.2 / 3.1 · **Type:** Cross-cutting reflection on a primary source · **Logged:** [28/08/2026](../research-diary/diario_campo_2026-08-24.md)
+> **Sub-atividade:** 1.3 / 1.7 / 2.2 / 3.1 · **Type:** Cross-cutting reflection on a primary source · **Logged:** [28/08/2026](../research-diary/Ago/diario_campo_2026-08-24.md)
 
 # Reflections on the 28/08 tutor checkpoint — what it confirms, tensions, and opens
 

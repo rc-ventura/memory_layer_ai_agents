@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.3 / 1.5 · **Type:** Cross-cutting literature synthesis · **Logged:** [20/08/2026](../research-diary/diario_campo_2026-08.md#20082026)
+> **Sub-atividade:** 1.3 / 1.5 · **Type:** Cross-cutting literature synthesis · **Logged:** [20/08/2026](../research-diary/Ago/diario_campo_2026-08.md#20082026)
 
 # Is thumbs up/thumbs down a reliable RL signal, or does it introduce noise?
 

@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.6 / 2.2 / 2.3 · **Type:** Preparação de reunião (tutor) — destila [`knowledge-as-infra-architecture-hypothesis.md`](knowledge-as-infra-architecture-hypothesis.md) (componente A) + a entrada de [26/08/2026](../research-diary/diario_campo_2026-08-24.md#26082026) + o [reading sprint](reading-sprint-2026-08-24-queue-papers.md) · **Idioma:** português por decisão explícita (override por-arquivo, ver [`README.md`](README.md)) · **Logged:** 27/08/2026
+> **Sub-atividade:** 1.6 / 2.2 / 2.3 · **Type:** Preparação de reunião (tutor) — destila [`knowledge-as-infra-architecture-hypothesis.md`](knowledge-as-infra-architecture-hypothesis.md) (componente A) + a entrada de [26/08/2026](../research-diary/Ago/diario_campo_2026-08-24.md#26082026) + o [reading sprint](reading-sprint-2026-08-24-queue-papers.md) · **Idioma:** português por decisão explícita (override por-arquivo, ver [`README.md`](README.md)) · **Logged:** 27/08/2026
 
 # Componente A (Memory Store) — briefing para a reunião com o tutor
 
@@ -161,7 +161,7 @@ Corte do [`reading-queue.md`](../papers/reading-queue.md) → "Guia de leitura p
 ## Links
 
 - Arquitetura completa: [`knowledge-as-infra-architecture-hypothesis.md`](knowledge-as-infra-architecture-hypothesis.md) — seção A + "Write-path status snapshot for component A"
-- Entrada de diário que originou isto: [26/08/2026](../research-diary/diario_campo_2026-08-24.md#26082026)
+- Entrada de diário que originou isto: [26/08/2026](../research-diary/Ago/diario_campo_2026-08-24.md#26082026)
 - Achados de texto completo dos papers: [`reading-sprint-2026-08-24-queue-papers.md`](reading-sprint-2026-08-24-queue-papers.md)
 - Gaps rastreados: [`open-questions.md`](open-questions.md) (itens sobre granularidade do trigger e os cinco gaps de storage-mechanics)
 - Infra confirmada: [`../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md`](../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md) · reflexões: [`checkpoint-2026-08-21-infra-reflections.md`](checkpoint-2026-08-21-infra-reflections.md)

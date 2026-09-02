@@ -4,7 +4,7 @@ Visual syntheses that accompany the project's literature reviews and architectur
 
 ## 1. Memory in LLM-Based Agents
 
-Synthesizes *"A Survey on the Memory Mechanism of Large Language Model based Agents"* (Zhang et al., 2024/2025 — see [`../memory-in-ai-agents.md`](../memory-in-ai-agents.md#theme-4-highlighted-first--survey--review-papers-on-memory-in-llm-agents) and the atomic note at [`../../papers/zhang-2025-memory-survey.md`](../../papers/zhang-2025-memory-survey.md)). Logged: diary entry [18/08/2026](../../research-diary/diario_campo_2026-08.md#18082026), Sub-atividade 1.1.
+Synthesizes *"A Survey on the Memory Mechanism of Large Language Model based Agents"* (Zhang et al., 2024/2025 — see [`../memory-in-ai-agents.md`](../memory-in-ai-agents.md#theme-4-highlighted-first--survey--review-papers-on-memory-in-llm-agents) and the atomic note at [`../../papers/zhang-2025-memory-survey.md`](../../papers/zhang-2025-memory-survey.md)). Logged: diary entry [18/08/2026](../../research-diary/Ago/diario_campo_2026-08.md#18082026), Sub-atividade 1.1.
 
 ![Mind map: Memory in LLM-based Agents](memory-in-llm-based-agents.png)
 

@@ -14,7 +14,7 @@ Introduces the "memory stream" (a chronological episodic log of observations) re
 
 ## Relevance to the project
 
-The canonical operationalization of episodic vs. semantic for LLM agents; the recency/importance/relevance scoring is a direct model for a signal-driven retrieval/update policy in a legal agent. Priority-reading anchor named in the [18/08/2026 diary entry](../research-diary/diario_campo_2026-08.md#18082026).
+The canonical operationalization of episodic vs. semantic for LLM agents; the recency/importance/relevance scoring is a direct model for a signal-driven retrieval/update policy in a legal agent. Priority-reading anchor named in the [18/08/2026 diary entry](../research-diary/Ago/diario_campo_2026-08.md#18082026).
 
 ---
 Source review: [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md)

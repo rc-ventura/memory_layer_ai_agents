@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.1 / 1.3 / 3.6 · **Type:** Decision log · **Logged:** [18/08/2026](../research-diary/diario_campo_2026-08.md), updated [20/08/2026](../research-diary/diario_campo_2026-08.md)
+> **Sub-atividade:** 1.1 / 1.3 / 3.6 · **Type:** Decision log · **Logged:** [18/08/2026](../research-diary/Ago/diario_campo_2026-08.md), updated [20/08/2026](../research-diary/Ago/diario_campo_2026-08.md)
 
 # Scope and terminology decisions
 
