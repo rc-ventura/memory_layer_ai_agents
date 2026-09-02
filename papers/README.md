@@ -48,6 +48,7 @@ One short note per source. Most are extracted faithfully from [`memory-in-ai-age
 | [DMF: A Deterministic Memory Framework for Conversational AI Agents](dmf-2026.md) | 2026 | Preprint | ☐ |
 | [ReasoningBank: Scaling Agent Self-Evolving with Reasoning Memory](reasoningbank-2025.md) | 2025 | Peer-reviewed (ICLR 2026) | ☐ |
 | [Memp: Exploring Agent Procedural Memory](memp-2025.md) | 2025 | Peer-reviewed (ACL Findings) | ☐ |
+| [SAGE: Self-evolving Agents with Reflective and Memory-augmented Abilities](sage-2026.md) | 2024 (v2 2025) | Preprint | ☐ |
 
 ## Frameworks (industry)
 

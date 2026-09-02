@@ -31,3 +31,49 @@ Sobre o signal ledger: comecei conflando "banco de traces" com "signal ledger" e
 **Decisão/próximo passo:** (1) Levar ao `open-questions.md` a questão "quem é dono do gate de admissão da LTM — mecanismo determinístico separado ou o Update Engine/curador?", ligando às sub-perguntas de 27/08 sobre o score e a cadência de avaliação do gate. (2) Tratar o gate seletivo STM→LTM como **necessário, não opcional** (lean de 27/08 agora com respaldo do tutor) — mas ainda dependente de calibração de θ1/θ2 no Sub 1.6/1.7. (3) Ler os artigos que sustentam o ajuste de infra, na ordem: SSGM (#1 — governance gate + rollback), SAGE (#19, urgência Tier 2 — a mecânica do promotion gate STM→LTM), DMF (#11 — o princípio do score determinístico) e DarwinMem (#42 — seleção por utilidade + poda, adicionado hoje). (4) Aguardar o tutor fornecer o banco de traces para validar as suposições de schema/conteúdo do trace e o que serve de sinal.
 
 **Tags:** reuniao, tutor, mega-brain, memory-layer, mcp, gate-seletivo, stm-ltm, promotion-gate, sage, dmf, darwinmem, add-tool, update-engine, curador, governance-layer, signal-ledger, banco-de-traces, human-feedback-negativo, trigger, componente-a, componente-b, componente-c, open-questions, checkpoint-28-08, sub-2.2, sub-2.6
+
+## 01/09/2026
+
+**Tipo:** leitura — **Sub-atividade:** 2.1 — **Canal:** pessoal
+
+**Registro objetivo:** Concluiu a leitura própria do SSGM (#1 da fila) e começou hoje a leitura do SAGE (#19 da fila). Avaliou o SSGM como um artigo muito esclarecedor e uma referência forte para a pesquisa. Abriu o SAGE especificamente para embasar a definição do limiar de promoção de conteúdo dos episodic logs para a LTM (o θ1 do gate STM→LTM).
+
+**Reflexão:** A dupla SSGM→SAGE segue exatamente a ordem de leitura que ficou como próximo passo no registro de 31/08 (SSGM #1 → SAGE #19 → DMF #11 → DarwinMem #42), a lista que sustenta o ajuste de infra discutido no checkpoint com o tutor de 28/08. O SSGM já constava como "leitura finalizada" no digest da Semana 2, mas ali foi leitura de sprint por agente; a leitura própria agora fecha parte do item em aberto "leitura própria dos papers do sprint (o dos agentes não substitui)" do digest de 24–28/08, e a avaliação independente do Rafael confirma o valor da referência. O SAGE é o artigo com urgência Tier 2 no reading-queue justamente pela mecânica θ1/θ2 do promotion gate — insumo direto para a questão aberta de 31/08 sobre quem é dono do gate de admissão da LTM (mecanismo determinístico separado vs. Update Engine/curador) e para a calibração de θ1 prevista no Sub 1.6/1.7.
+
+**Decisão/próximo passo:** Terminar a leitura do SAGE e extrair dele a mecânica de limiar (θ1/θ2) para o gate de promoção STM→LTM, alimentando a questão aberta sobre propriedade do gate de admissão. Seguir depois a ordem de 31/08: DMF (#11) e DarwinMem (#42).
+
+**Tags:** leitura, ssgm, sage, promotion-gate, stm-ltm, limiar-ltm, theta1, theta2, episodic-log, ltm, gate-de-admissao, reading-queue, checkpoint-28-08, sub-2.1
+
+### Observação livre — mecanismo de promoção de traces: promover uma "janela" do log cru?
+
+**Tipo:** observação livre — **Sub-atividade:** 2.2 — **Canal:** pessoal
+
+**Registro objetivo:** Continua elaborando o mecanismo de promoção de traces do log cru para a camada recuperável (case-episodic) do memory layer. Hoje existe um banco de traces crus. A opção em consideração: promover uma *janela* de traces crus, transformando-a numa unidade case-episodic armazenada no memory layer. Levanta a ressalva de que uma janela carregaria muito ruído. Registra que uma estratégia simples pode ser aceitável nesta fase.
+
+**Reflexão:** A preocupação com ruído é a mesma premissa do tutor no checkpoint de 28/08 ("a maioria dos traces pode não ser nada") e a estimativa documentada de que ~90% dos casos "é o beabá". O enquadramento "janela" provavelmente precisa virar "stage" ou "caso" (`case_id`): janela deslizante vem de memória conversacional (MemGPT), mas o pipeline jurídico é de stages discretas com evento Kafka, não conversa contínua — a unidade natural de corte é a stage (trigger per-stage, working assumption de 26/08) ou o caso inteiro. Duas bifurcações de desenho ficaram explícitas nesta rodada de conversa: (a) a unidade promovida é o trace cru/estruturado ou um derivado sumarizado por janela — sumarizar no caminho de promoção poria um LLM onde o design hoje quer só um gate determinístico, e sumarização já é o papel da camada 3 (strategy layer); (b) a regra `R = e^(−τ/S) ≥ θ1` está fazendo dois trabalhos ao mesmo tempo — decidir a *entrada* (log → case-episodic) e a *permanência/rebaixamento* dentro da camada recuperável — mas `τ`-desde-recall e o reforço `S→S+1` só existem depois da promoção; fica mais limpo separar entrada (limiar sobre o `S` de nascimento, importância DMF-lite) de rebaixamento (`R ≥ θ1`). "Estratégia simples" é coerente com o "política estática por design" já documentado para o v1.
+
+**Decisão/próximo passo:** Consolidar as duas bifurcações no `discussion/promotion-policy-log-to-ltm.md` como itens explícitos (hoje o doc assume "promove o trace cru" e funde entrada com permanência numa regra só). A escolha entre elas depende de inspecionar o banco de traces real do tutor — o que um trace contém e se os campos do score DMF-lite existem. Fechar antes do Sub 2.2 travar.
+
+**Tags:** promocao-de-traces, log-episodico, case-episodic, memory-layer, gate-de-promocao, ruido, janela, stage, trace-cru, sumarizacao, entrada-vs-permanencia, r-theta1, s-dmf-lite, politica-estatica, promotion-policy, componente-a, sub-2.2
+
+### Observação livre — arquitetura de memória em 3 camadas: janela → reflexão (camada 2 tipada) → meta-reflexão (strategy layer)
+
+**Tipo:** observação livre — **Sub-atividade:** 2.2 — **Canal:** pessoal
+
+**Registro objetivo:** A partir da leitura do SAGE (em andamento) e da restrição do tutor de 28/08 (não armazenar episodic traces na memória do agente sem filtro, sob risco de ruído), consolidou uma proposta de arquitetura de memória em 3 camadas:
+
+- **Camada 1** — logs crus, o banco de traces que já existe.
+- **Camada 2** — de uma janela de contexto dos logs crus (inicialmente determinística e simples: N turnos, sem heurística aprofundada), o Update Engine gera uma primeira reflexão, produzindo significado semântico. A camada 2 é **tipada** (reflexão + log cru), enriquecida com métricas de ciclo de vida (algoritmos de decaimento, força de retrieval), indexada para retrieval do agente, e mantém referência cruzada à camada 1. Um retrieval já traz o significado semântico e também o log cru.
+- **Camada 3 (strategy layer)** — o Update Engine gera a strategy layer após um sinal de qualidade; é uma segunda reflexão (meta-reflexão). Mantém referência cruzada aos logs crus da camada 1, para permitir reconsolidação — reajustar/refazer a strategy layer (ex.: corrigir semantic drift) re-executando a reflexão sobre a camada 1.
+
+Pediu análise de consistência contra a conversa antes de gravar.
+
+**Reflexão:** Cruzado com o que foi discutido e documentado hoje no `discussion/promotion-policy-log-to-ltm.md`: a proposta bate quase 1:1 com as subseções "Camada 2 tipada — exemplar + reflexão" e "Provenância entre camadas" adicionadas hoje — camada 2 tipada com o mesmo ciclo de vida nos dois tipos, camada 3 como meta-reflexão, referência cruzada camada 3 → camada 1 direto para a Reversible Reconciliation do SSGM (a camada 1 é a âncora durável porque a camada 2 decai / é evictada). Fundamento na literatura: Generative Agents (árvore de reflexão no mesmo stream recuperável) e SAGE (promove os `r`, não a trajetória crua).
+
+Uma tensão a resolver: nesta proposta a janela vai direto ao Update Engine, **sem gate determinístico antes** — a reflexão do Update Engine passa a ser o único filtro de ruído. Isso diverge da convergência de mais cedo hoje ("tem que haver um gate de promoção"; lean por um filtro booleano determinístico como 1ª etapa). Consequências: (a) a LLM roda sobre janelas não filtradas, inclusive o ~90% "beabá" — o filtro determinístico de anomalia existe no desenho justamente como 1ª etapa para a LLM só rodar no que sobra; (b) todo item recuperável passa a ser mediado por LLM, regressão de auditabilidade frente ao caminho determinístico. Alternativa: janela → filtro determinístico barato (anomalia / sinal erro→recuperação) → Update Engine.
+
+Notas menores: "N turnos" é enquadramento de memória conversacional; o pipeline é de stages Kafka discretas, então a unidade natural de janela é a stage ou o caso, não turnos. O caminho da camada 3 no desenho documentado ainda tem o Commit Gate (D) NLI antes do commit — não mencionado no resumo. A proveniência para replay completo precisa incluir os IDs do Signal Ledger consumidos, não só os trace-IDs da camada 1 (uma strategy acionada por padrão de 👎 não se reconstrói só com replay do log cru).
+
+**Decisão/próximo passo:** Decidir se o v1 tem um filtro determinístico antes do Update Engine (preserva um caminho auditável, corta custo de LLM) ou se a reflexão do Update Engine é o único filtro (mais simples). Trocar "janela de N turnos" por "janela por stage/caso". Terminar a leitura do SAGE. A viabilidade do enriquecimento determinístico (score DMF-lite) segue dependente de inspecionar o banco de traces real do tutor.
+
+**Tags:** arquitetura-3-camadas, memory-layer, camada-2-tipada, reflexao, meta-reflexao, strategy-layer, update-engine, janela-de-contexto, gate-de-promocao, ruido, referencia-cruzada, provenancia, reconciliacao-reversivel, semantic-drift, ssgm, sage, generative-agents, signal-ledger, commit-gate, promotion-policy, sub-2.2
