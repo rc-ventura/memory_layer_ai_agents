@@ -127,6 +127,114 @@ O DMF-lite foi desenhado pra **importância no write** (quanto este caso importa
 ### 9. Dono do gate — mecanismo separado ou o Update Engine?
 Item registrado em 31/08 no [`open-questions.md`](open-questions.md). Lean documentado: **mecanismo determinístico separado** (`R ≥ θ1`, sem LLM, no caminho quente/morno), distinto do Update Engine (LLM, lote, cold path). Colar (9) no Update Engine poria uma chamada de LLM no caminho de admissão — granularidade e custo errados. A linguagem "curador" da reunião de 28/08 borrou os dois; precisa de decisão explícita.
 
+## Estratégias de promoção em consideração (added 01/09/2026)
+
+Rodada de conversa de 01/09 (diário [01/09/2026](../research-diary/diario_campo_2026-08-31.md)). **Posição do Rafael (01/09): tem que haver um gate de promoção — "não podemos armazenar ruído" (requisito do tutor, 28/08).** Isso descarta a Estratégia 1 (promover sem filtro) como mecanismo primário do v1. O que fica em aberto não é *se* há gate, mas *qual o critério* dele.
+
+O esqueleto acima assume um critério — `R ≥ θ1` com `S` DMF-lite. Ele depende de dois fatos ainda não verificados: (i) se os campos estruturados pro `S` existem no banco de traces / nos eventos Kafka — **a checar analisando o trace real** (item 1); (ii) `θ1` só calibra com traces anotados (Sub 1.6/1.7). Enquanto isso não fecha, um critério booleano mais simples (Estratégia 2) é o candidato do v1.
+
+### Formato de armazenamento (comum a todas as estratégias)
+
+O que a promoção grava na camada 2 **não é resumo** (resumir é papel da camada 3). É um **envelope estruturado**: conteúdo cru *verbatim* + campos de metadado calculados de forma determinística no write — `case_id`, `stage`, timestamp, `S` inicial, estado de decay (`R`, `τ`, `last_recall_at`), flag de desfecho, nº de tool calls, contagem de 👎, FK pro Signal Ledger, ACL/domínio. Zero LLM. Preserva o exemplar (auditoria, *reversible reconciliation*) e carrega os campos que o retrieval do SSGM (`ACL(μ,uid)`, freshness gate) e o ranking (Generative Agents) precisam.
+
+Bifurcação que isto resolve (levantada 01/09): promover **trace cru puro** vs. **derivado sumarizado por janela**. Resolução proposta: envelope estruturado (cru + campos), **nunca sumarizado** no caminho de promoção.
+
+### Camada 2 tipada — exemplar + reflexão (alternativa, added 01/09/2026)
+
+Rodada de 01/09 (diário). Alternativa ao desenho "camada 2 = só exemplar episódico": a camada 2 recuperável passa a ser **um store só, com entradas tipadas**:
+
+- **`exemplar`** — trace concreto promovido, envelope estruturado (cru *verbatim* + campos), admitido pelo **gate determinístico** (Estratégia 2 / `R ≥ θ1`). É o Case-based Experiential.
+- **`reflexão`** — output do **Update Engine** sobre uma janela de traces: o que ele identificou e destilou, gravado direto como **memória semântica** recuperável. Mais perto de Strategy-based, mas em granularidade **local** (por episódio/janela), não a regra transversal da camada 3.
+
+A camada 3 (strategy layer) continua sendo a destilação de **segunda ordem** — reflexão sobre reflexões/traces, com o Commit Gate (D) NLI.
+
+**Ambos os tipos carregam o mesmo ciclo de vida** (confirmado pelo Rafael, 01/09): `S` inicial, decay `R = e^(−τ/S)`, reforço `S→S+1` no recall, cap + eviction. O tipo muda só a *origem* (gate determinístico vs. Update Engine) e o *conteúdo* (cru vs. destilado), não a mecânica de esquecimento.
+
+**Fundamento (papers do repo):**
+
+- **Generative Agents** (Park et al. 2023) — árvore de reflexão: observações → reflexões → reflexões de 2ª ordem, todas no mesmo *memory stream* recuperável. Precedente direto de "exemplar + reflexão num store só, tipados".
+- **SAGE** (arXiv:2409.00872) — promove os `r` (self-reflection results) pra LTM, não a trajetória crua.
+- **ExpeL** — extração de insights/regras cross-trajectory (a destilação de 2ª ordem → strategy).
+- **A-MEM** — notas semânticas que evoluem quando entra nota nova.
+- **Learning from Supervision with Semantic and Episodic Memory (2025)** — adaptação reflexiva com as duas memórias.
+
+**Por que tipada e não só-reflexão** (dois custos de ir 100% reflexão, no jurídico):
+
+1. **Perde o raciocínio por precedente** — recuperar o caso concreto parecido e adaptar é como o jurídico raciocina; a reflexão abstrata não substitui o exemplar (ver item 4).
+2. **Põe o LLM no caminho de escrita de toda memória recuperável** — hoje a promoção de `exemplar` é determinística, zero LLM, auditável (diferencial vs. Mem0 + requisito de auditoria). Manter o tipo `exemplar` preserva esse caminho; o tipo `reflexão` aceita o LLM porque já é cold path (Update Engine).
+
+**Em aberto:** se o `recall_memory` mistura os dois tipos no mesmo ranking ou o agente pede um tipo ("caso parecido" vs. "lição"); e se o `S` inicial de uma `reflexão` (que nasce curada) deve ser maior que o de um `exemplar`.
+
+### Provenância entre camadas — precondição da reconciliação reversível (added 01/09/2026)
+
+Ponto do Rafael (01/09): pra manter a **Reversible Reconciliation** do SSGM (recuperar de drift ou commit ruim por *replay* do log imutável, não por diffs mantidos à mão — ver [`component-a-tutor-meeting-prep.md`](component-a-tutor-meeting-prep.md)), a cadeia de derivação entre as três camadas tem que ser **explícita e navegável**:
+
+- **Camada 1** — imutável, append-only, IDs estáveis. É a **âncora durável**.
+- **Camada 2** — cada entrada guarda `source_trace_ids` → camada 1. `exemplar`: 1:1 (ou 1:N se a janela/caso cobre várias stage-traces). `reflexão`: N:1 (as N traces que o Update Engine analisou).
+- **Camada 3** — cada entrada guarda `derived_from` → camada 2 **e** `source_trace_ids` → camada 1 (denormalizado).
+
+**Por que a camada 3 referencia a camada 1 direto, não só via camada 2:** entradas da camada 2 **decaem e são evictadas** (forget-by-disuse + cap). Cadeia só-transitiva (3→2→1) quebra quando a entrada da camada 2 some. A camada 1 nunca é apagada, então o `source_trace_ids` denormalizado na camada 3 é o que garante que a lineage sobrevive.
+
+**Provenância inclui os sinais, não só os traces:** uma `reflexão` / entrada de strategy disparada por um padrão de 👎 ou por um desfecho adverso só é reproduzível por replay se a proveniência guardar **os IDs do Signal Ledger consumidos** junto com os `source_trace_ids`. Replay do log cru sozinho não reconstrói uma strategy acionada por sinal.
+
+**O que destrava:** pegar uma entrada da strategy layer → ver de quais entradas da camada 2 e de quais traces + sinais da camada 1 ela derivou → re-rodar a destilação (score recalibrado, embedding novo, ou depois de um trace ter sido corrigido) e **reconstruir/reajustar a strategy layer** sem manter diffs. Mesmo princípio do "transform re-executável sobre log imutável" (26/08), estendido à camada 3.
+
+### Gate de governança nos dois caminhos de escrita (added 01/09/2026)
+
+Ponto do Rafael (01/09): **os dois writes gerados pelo Update Engine** — a 1ª reflexão (→ camada 2) e a 2ª reflexão / strategy (→ camada 3) — passam por `propose_memory` + gate de governança. É o **Write Validation Gate trigger-agnóstico do SSGM (P1)**: valida a escrita independente do que a disparou (ver §"O que o SSGM contribui aqui").
+
+**Mesma camada de governança, mecanismos diferentes por destino:**
+
+| | Gate da camada 2 (1ª reflexão) | Gate da camada 3 (2ª reflexão / strategy) |
+|---|---|---|
+| Via | `propose_memory` | `propose_memory` |
+| Checa | *grounding* (a reflexão bate com o trace cru que referencia?), dedup (near-duplicate de entrada já existente?), ACL/PII | **Commit Gate (D)** que já existe: NLI `∆M ∧ M_core ⊨ ⊥` + qualidade do sinal |
+| Racional | reflexão episódica concreta raramente contradiz o núcleo — o risco dela é alucinação ou duplicata | regra transversal *pode* contradizer o núcleo — o risco dela é inconsistência |
+
+**Assimetria de gatilho 👍/👎:**
+
+- **Filtro determinístico → camada 2** (1ª etapa, antes do Update Engine): usa 👍 **e** 👎 — um 👍 marca um exemplar positivo que vale ser recuperável.
+- **Gatilho → camada 3** (passo da strategy): **ponderado pro negativo** — 👎, desfecho adverso, severidade cumulativa, ou **N casos similares acumulados** viram candidatos a regra. Destila-se regra corretiva de falha, não do que já deu certo. Bate com o registro de [31/08](../research-diary/diario_campo_2026-08-31.md): trigger do Update Engine = feedback negativo, não o positivo.
+- **Nuance de 31/08 preservada:** o *gatilho* da camada 3 é negativo, mas o Update Engine, quando roda, **lê sucesso E falha** como contexto da reflexão (contraste ExpeL-style). Trigger ≠ input.
+
+### Estratégia 1 — janela sem filtro ("promote-all + forget-by-disuse")
+
+**Status (01/09): descartada como mecanismo primário do v1** — armazenar ruído e contar com o decay pra limpar vai contra o requisito "não armazenar ruído". Mantida aqui como contraste e como possível *piso* opcional (ver "Como compõem").
+
+Pega uma **janela X** de traces (lote por tempo ou por contagem — é gatilho de *quando* rodar o promote+embed, não critério de seleção), promove todos como envelope estruturado, aplica as métricas de decay. Traces que não fazem sentido **decaem e são evictados** pelo cap; isso abre espaço pra próxima janela. Próximo de MemoryBank; respaldo no "forgetting-by-design" do SSGM (esquecimento *é* o filtro).
+
+- **A favor:** nenhum score a calibrar; um mecanismo a menos; degrada de forma graciosa.
+- **Contra:** poluição de retrieval na janela de ruído fresco (um exemplar irrelevante servido ao agente jurídico é risco de qualidade, não só ineficiência); decay-como-filtro só limpa se o padrão de recall distinguir sinal de ruído (não testado); passa a depender forte do cap + eviction (item 5, não desenhado); é a resposta "sim, gravamos ruído e ele decai" pra objeção do tutor de 28/08 — tem que ir explícito pra ele.
+
+### Estratégia 2 — promoção dirigida por sinal (eval determinístico)
+
+Em vez de promover a janela inteira, promove só traces com um **aspecto X** detectável de forma determinística. Candidato do Rafael: **erro-seguido-de-recuperação** — o trace registra um erro (tool call com status de erro, retry, guardrail falho, 👎) e *depois* uma conclusão positiva (stage final ok / desfecho favorável / sem 👎 no output final). Alta densidade de aprendizado por trace, contrastivo (o que deu errado × o que consertou). É o mesmo tipo de filtro heurístico determinístico já previsto como 1ª etapa do Update Engine (§"Dois filtros de ruído") — a novidade é **apontá-lo também pro caminho de promoção** (→ camada 2), não só pra reflexão (→ camada 3).
+
+- **A favor:** seleção barata, booleana, sem threshold contínuo a calibrar; sinais estruturais (erro de tool call, retry) provavelmente já existem no banco, ao contrário dos campos DMF-lite; responde à objeção do tutor de forma direta ("analisei o trace e isto vale persistir"); sem poluição — promove uma fatia pequena e caracterizável.
+- **Contra:** captura só um tipo de trace útil — perde o exemplar limpo de caso raro (instrutivo sem erro) e o erro-que-continuou-errado (cautelar, ver item 4); "conclusão positiva" costuma ser assíncrona (desfecho vem meses depois) → o eval roda em lote depois, não no write; viés de seleção — a memória recuperável vira um museu de erros-e-correções (pode ser o sinal certo, ou enviesar o agente; ver item 4).
+
+### Como compõem
+
+Com a Estratégia 1 fora como mecanismo primário, a escolha do v1 é sobre **o critério do gate**:
+
+- **(a) filtro booleano por sinal** (Estratégia 2: erro→recuperação, erro de tool call, 👎-seguido-de-correção) — barato, sem calibração, sinais estruturais provavelmente já no banco;
+- **(b) score contínuo + limiar** (`S` DMF-lite, `R ≥ θ1`) — depende dos campos existirem e da calibração de `θ1`;
+- **(c) os dois:** (a) decide a *admissão*; (b) fornece o `S` inicial (quão grudento) pro ciclo de vida na camada 2.
+
+Lean pro primeiro POC: **(a)**. Migrar pra (c) quando a análise do banco de traces confirmar que os campos do `S` existem. A Estratégia 1 só volta como *piso* opcional se um teste de cobertura mostrar o agente perdendo casos úteis sem sinal de anomalia.
+
+**Decidido (01/09):** o v1 tem um filtro determinístico **antes** do Update Engine (a janela não vai crua pra reflexão). Critério = **(a)**, concretizado pela **família do filtro de anomalia** já definida como 1ª etapa do Update Engine (§"Dois filtros de ruído, não um"): tamanho do trace, nº de tool calls, distribuição de 👎, outlier vs. distribuição. Isso **unifica os dois filtros num só** — o mesmo filtro determinístico serve o caminho de promoção (→ camada 2) e o de reflexão (→ camada 3). O sinal **erro→recuperação** entra como **sub-sinal de prioridade** dentro dele (recebe `S` inicial mais alto), não como o filtro inteiro — um filtro só-erro→recuperação perderia o exemplar limpo de caso raro e o erro-que-continuou-errado (cautelar, item 4). Consequência boa: com o filtro antes do Update Engine, `R ≥ θ1` fica sendo **só a regra de rebaixamento** dentro da camada 2 — a bifurcação entrada-vs-permanência se resolve sozinha.
+
+Falta travar: (i) quais desses sinais existem de fato no banco de traces (bloqueio recorrente — precisa do dado do tutor); (ii) o predicado exato (OR booleano de sinais? limiar de contagem?); (iii) o split imediato (sinais estruturais, disponíveis no write) vs. atrasado (erro→recuperação precisa do desfecho, que é assíncrono).
+
+### Escotilha de escape (comum)
+
+A camada 1 fica **consultável diretamente** (por ID / por query) — não só substrato de auditoria/reflexão. Se a promoção ou o decay derrubaram algo que depois faz falta, o agente ainda desenterra do log cru. É isso que torna o esquecimento agressivo seguro.
+
+### Bifurcação ainda aberta: entrada vs. permanência
+
+A regra `R = e^(−τ/S) ≥ θ1` está fazendo dois trabalhos: decidir **entrada** (log → camada 2) e **permanência/rebaixamento** dentro da camada 2. Mas `τ`-desde-recall e o reforço `S→S+1` só existem *depois* da promoção. Proposta de limpeza: **entrada** = decisão das Estratégias 1/2 (janela ou sinal), não `R`; **`R ≥ θ1`** = só regra de rebaixamento dentro da camada 2. Alinha com o lean do item 2 ("reforço é permanência, não entrada").
+
 ## Contrastes — de onde vem cada peça e onde divergimos
 
 | Trabalho | O que faz na promoção | O que a gente pega / muda |
