@@ -1,6 +1,6 @@
 # Reunião de checkpoint com o tutor — 28/08/2026
 
-*Terceira reunião de checkpoint entre Rafael Coelho Ventura (bolsista) e Luis Felipe Chary de Lima (tutor), 28/08/2026, 53 min agendados. Fonte: [`../sources/Checkpoint_Tutor_08-28-26.docx`](../sources/Checkpoint_Tutor_08-28-26.docx) (transcrição automática, preservada como fonte primária). A transcrição cobre ~42 dos 53 min — a captura parou antes do fim — e tem trechos de atribuição de fala imprecisa (em um ponto, a fala sobre o Plano de Trabalho aparece rotulada de forma inconsistente); onde isso afeta o sentido, está sinalizado. Mantido em português, no idioma da reunião, seguindo o padrão dos checkpoints de [20/08](checkpoint-2026-08-20-tutor-kickoff.md) e [21/08](checkpoint-2026-08-21-infra-arquitetura.md).*
+*Terceira reunião de checkpoint entre Rafael Coelho Ventura (bolsista) e o tutor ([TUTOR]), 28/08/2026, 53 min agendados. Fonte: [`../sources/Checkpoint_Tutor_08-28-26.docx`](../sources/Checkpoint_Tutor_08-28-26.docx) (transcrição automática, preservada como fonte primária). A transcrição cobre ~42 dos 53 min — a captura parou antes do fim — e tem trechos de atribuição de fala imprecisa (em um ponto, a fala sobre o Plano de Trabalho aparece rotulada de forma inconsistente); onde isso afeta o sentido, está sinalizado. Mantido em português, no idioma da reunião, seguindo o padrão dos checkpoints de [20/08](checkpoint-2026-08-20-tutor-kickoff.md) e [21/08](checkpoint-2026-08-21-infra-arquitetura.md).*
 
 ## Por que essa reunião importa
 
@@ -18,7 +18,7 @@ O tutor abre dizendo que enxerga "2 tipos de memória":
 
 Rafael relata que vinha acompanhando o time da LangChain falando sobre a era do "conhecimento como infraestrutura" (*knowledge as infrastructure*) e propõe:
 
-- Um **banco de memórias como um grande cérebro / infraestrutura**, onde todos os agentes em execução possam consultar — **com granularidade**. O agente de cadastro, ao chamar a ferramenta MCP, passaria um **domínio** e **credenciais** (mencionado como *RBAC*), de modo a acessar **apenas** as memórias relacionadas a cadastro; o de cálculo, apenas cálculo; o de contestação consulta apenas a memória de contestação de **todas as execuções de agentes de contestação** que rodaram e geraram memória. Como uma "nuvem de conhecimento do Itaú".
+- Um **banco de memórias como um grande cérebro / infraestrutura**, onde todos os agentes em execução possam consultar — **com granularidade**. O agente de cadastro, ao chamar a ferramenta MCP, passaria um **domínio** e **credenciais** (mencionado como *RBAC*), de modo a acessar **apenas** as memórias relacionadas a cadastro; o de cálculo, apenas cálculo; o de contestação consulta apenas a memória de contestação de **todas as execuções de agentes de contestação** que rodaram e geraram memória. Como uma "nuvem de conhecimento do [EMPRESA]".
 - Dentro dessa infraestrutura, **outro agente faz a curadoria**.
 
 Retorno do tutor: *"a ideia do mega cérebro eu gosto… não vou bloquear, nem quero enviesar muito o que você está propondo. Só endireitar um pouquinho."* E, mais adiante: *"vale a gente tentar ver o que fazer."*
@@ -92,7 +92,7 @@ Resposta do tutor:
 
 - Rafael observa que o Plano de Trabalho concentra os 3 primeiros meses em atividade mais teórica e diz querer **já ter algo para testar** nesse período, em paralelo — não só na Macroatividade 3. Menciona que há "uma POC que começava" cedo no cronograma.
 - O tutor: *"não vou me balizar pelo planejamento e dizer 'hoje era para fazer isso'. Quero chegar numa solução, independente da ordem em que a gente faça as coisas — vai de você."* Acrescenta que já perguntaram a ele se o projeto vai "fazer só a memória" e que não quer bloquear o Rafael. Descreve o próprio jeito de trabalhar como "muito mais motivado pelo problema que eu já tenho do que ficar querendo adiantar todas as coisas", e concorda 100% em ir "fazendo teste de desenvolvimento" e voltar a pesquisar se alguma técnica "der pau na ponta".
-- Rafael reforça a dimensão do escopo: a entrega final é *"um framework reutilizável para o Itaú"*, "uma parada grande", *"dá para fazer um artigo científico, até dissertação de mestrado"*.
+- Rafael reforça a dimensão do escopo: a entrega final é *"um framework reutilizável para o [EMPRESA]"*, "uma parada grande", *"dá para fazer um artigo científico, até dissertação de mestrado"*.
 
 ## Próximo passo combinado
 
@@ -100,7 +100,7 @@ O tutor vai **atrás da base de traces** para o Rafael conseguir consultá-la e 
 
 ## Logística (contexto, não pesquisa)
 
-O tutor é do Itaú (não do Instituto/ICT); o trabalho dele é inovador mas ele não publica — o foco é trazer eficiência para a esteira ("os caras não estão nem aí se publiquei ou não, é a parada funcionando"). Publicar seria "um plus"; menciona a possibilidade de patente e que está tentando abrir conversa com o pessoal do ICT. Vai a um congresso em outubro (Cuiabá — conseguiu publicar um paper e vai apresentar); nos dois anos anteriores foi ao NeurIPS (San Diego, Vancouver). Semana seguinte à reunião ele começaria o deploy de um modelo em GPU (trabalho dele, não do projeto).
+O tutor é do [EMPRESA] (não do Instituto/ICT); o trabalho dele é inovador mas ele não publica — o foco é trazer eficiência para a esteira ("os caras não estão nem aí se publiquei ou não, é a parada funcionando"). Publicar seria "um plus"; menciona a possibilidade de patente e que está tentando abrir conversa com o pessoal do ICT. Vai a um congresso em outubro (Cuiabá — conseguiu publicar um paper e vai apresentar); nos dois anos anteriores foi ao NeurIPS (San Diego, Vancouver). Semana seguinte à reunião ele começaria o deploy de um modelo em GPU (trabalho dele, não do projeto).
 
 ## Não investigado aqui
 

@@ -1,4 +1,4 @@
-# Mapa de Sub-atividades — Plano de Trabalho (Nº 1335844346)
+# Mapa de Sub-atividades — Plano de Trabalho (Nº [ANONIMIZADO])
 
 Use este mapa para taguear o campo **Sub-atividade** de cada entrada do diário. Ao tentar classificar, procure palavras-chave da coluna "Sinais" na mensagem do usuário. Se nada bater com confiança razoável, use `transversal` (atividade de gestão/governança que não pertence a uma sub-atividade específica) ou `não classificado (confirmar)` — nunca invente uma sub-atividade que não está nesta lista.
 
@@ -24,7 +24,7 @@ Use este mapa para taguear o campo **Sub-atividade** de cada entrada do diário.
 | 2.3 | Construção do protótipo conceitual (POC) | "protótipo", "POC do mecanismo" |
 | 2.4 | Testes locais do POC em sandbox | "teste local", "sandbox", "refinei o POC" |
 | 2.5 | Pontos de integração com a plataforma do INTERESSADO | "API da plataforma", "contrato de integração", "observabilidade" |
-| 2.6 | Revisão de arquitetura com tutor/área da plataforma | "revisão com Luis Felipe", "validação com a área da plataforma" |
+| 2.6 | Revisão de arquitetura com tutor/área da plataforma | "revisão com [TUTOR]", "validação com a área da plataforma" |
 
 ## Macroatividade 3 — Desenvolvimento e implantação (fim: 31/03/2027)
 

@@ -6,7 +6,7 @@
 
 ## Antes de mais nada — o que é "fechado" aqui
 
-Tudo abaixo é **hipótese de arquitetura**, não decisão. O que está na coluna "fechado" são escolhas que **eu** tomei ao desenhar o componente A, com fundamentação bibliográfica — não coisas que o Luis Felipe já ratificou. Parte do objetivo da reunião é justamente submeter essas escolhas. Elas só viram decisão de fato depois dos POCs mínimos do Sub 1.6 e da comparação implícito-vs-explícito do Sub 1.7.
+Tudo abaixo é **hipótese de arquitetura**, não decisão. O que está na coluna "fechado" são escolhas que **eu** tomei ao desenhar o componente A, com fundamentação bibliográfica — não coisas que o [TUTOR] já ratificou. Parte do objetivo da reunião é justamente submeter essas escolhas. Elas só viram decisão de fato depois dos POCs mínimos do Sub 1.6 e da comparação implícito-vs-explícito do Sub 1.7.
 
 **Nenhum dos papers citados foi lido por mim ainda** — são 🔎 (um agente sem provider definido leu texto completo via sub-agente e extraiu mecanismo/fórmula) ou 📝 (só verificação bibliográfica). Não apresentar como leitura própria na reunião.
 

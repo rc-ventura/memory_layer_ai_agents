@@ -1,6 +1,6 @@
 # Reunião de checkpoint com o tutor — 20/08/2026
 
-*Resumo da primeira reunião de checkpoint substantiva entre Rafael Coelho Ventura (bolsista) e Luis Felipe Chary de Lima (tutor), 20/08/2026, ~45 min. Fonte: [`../sources/Checkpoint_Tutor_2026-08-20.docx`](../sources/Checkpoint_Tutor_2026-08-20.docx) (transcrição automática da reunião, preservada como fonte primária). Esta é a transcrição referenciada como "pendente de anexar" na [entrada de 20/08 do diário de campo](../../research-diary/Ago/diario_campo_2026-08.md#20082026) para o Sub 1.4 (mapeamento dos fluxos jurídicos) — já está anexada. Mantido em português, no idioma original da reunião, por decisão explícita do bolsista.*
+*Resumo da primeira reunião de checkpoint substantiva entre Rafael Coelho Ventura (bolsista) e o tutor ([TUTOR]), 20/08/2026, ~45 min. Fonte: [`../sources/Checkpoint_Tutor_2026-08-20.docx`](../sources/Checkpoint_Tutor_2026-08-20.docx) (transcrição automática da reunião, preservada como fonte primária). Esta é a transcrição referenciada como "pendente de anexar" na [entrada de 20/08 do diário de campo](../../research-diary/Ago/diario_campo_2026-08.md#20082026) para o Sub 1.4 (mapeamento dos fluxos jurídicos) — já está anexada. Mantido em português, no idioma original da reunião, por decisão explícita do bolsista.*
 
 ## Por que essa reunião importa
 
@@ -40,7 +40,7 @@ Duas formas de acionar os agentes hoje:
 
 ## Regras de negócio ficam fora do agente, via MCP
 
-Regras que mudam com frequência e são de propriedade da área de negócio — ex.: o limiar de "grande causa" (causa de alto valor), hoje R$500.000 mas ajustável a qualquer momento — **não** ficam codificadas na memória ou no contexto do agente. Elas são expostas como tools MCP controladas pela área de negócio (ex.: uma tool `is_grande_causa(valor)` retornando `true`/`false`), para que a área possa mudar a regra sem exigir deploy de nenhum agente. MCP é a camada de integração padrão no Itaú tanto para ferramentas internas (acesso a banco de dados, documentos) quanto para esse padrão de desacoplamento de regra de negócio.
+Regras que mudam com frequência e são de propriedade da área de negócio — ex.: o limiar de "grande causa" (causa de alto valor), hoje R$500.000 mas ajustável a qualquer momento — **não** ficam codificadas na memória ou no contexto do agente. Elas são expostas como tools MCP controladas pela área de negócio (ex.: uma tool `is_grande_causa(valor)` retornando `true`/`false`), para que a área possa mudar a regra sem exigir deploy de nenhum agente. MCP é a camada de integração padrão no [EMPRESA] tanto para ferramentas internas (acesso a banco de dados, documentos) quanto para esse padrão de desacoplamento de regra de negócio.
 
 ## O problema, na formulação do próprio tutor
 
@@ -48,7 +48,7 @@ O número de agentes está crescendo rápido — algo como 2 em produção até 
 
 ## Notas de logística e infraestrutura (para a próxima reunião de infra)
 
-- Uma reunião separada foi marcada com "Fed" (descrito como um engenheiro muito técnico e especializado) mais Adriano e Yoshio, para cobrir: um desenho completo da arquitetura, os serviços AWS usados (toda a plataforma roda em AWS), o serviço de containers em que os agentes rodam, arquitetura Kafka/eventos, chamada síncrona vs. assíncrona, tools MCP de regra de negócio, e a estrutura dos repositórios.
+- Uma reunião separada foi marcada com "[ENGENHEIRO-2]" (descrito como um engenheiro muito técnico e especializado) mais [ENGENHEIRO-3] e [ENGENHEIRO-1], para cobrir: um desenho completo da arquitetura, os serviços AWS usados (toda a plataforma roda em AWS), o serviço de containers em que os agentes rodam, arquitetura Kafka/eventos, chamada síncrona vs. assíncrona, tools MCP de regra de negócio, e a estrutura dos repositórios.
 - Existe um "monorepo" — um mapeamento assistido por um agente (sem provider definido) sobre cerca de 130 repositórios — que indexa onde cada agente vive, sua arquitetura, e seus pontos de entrada; o tutor ia mandar o link.
 - Existe um banco de dados dedicado à configuração dos agentes que poderia, em tese, também servir como local de armazenamento de memória — vale uma pergunta concreta na reunião de infra, ainda não confirmado como adequado.
 - Não há convenção formal rígida de commit/PR além de "não seja burro" (ex.: não subir cinco features num commit só); testes automáticos e checagens de segurança liberam o merge, mas só o PR final para produção exige aprovação humana — a revisão de time acontece de forma combinada, na conversa.

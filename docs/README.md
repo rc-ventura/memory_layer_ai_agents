@@ -7,7 +7,7 @@ Reference material this project is answerable to: the formal work plan, the sub-
 | [`work-plan.md`](work-plan.md) | The official Plano de Trabalho, kept verbatim in Portuguese. Source: [`sources/Plano_de_Trabalho_Rafael_Ventura.docx`](sources/Plano_de_Trabalho_Rafael_Ventura.docx). |
 | [`sub-activity-map.md`](sub-activity-map.md) | Macroatividade/sub-atividade signal table, used to tag [research diary](../research-diary/) entries. |
 | [`checkpoints/`](checkpoints/) | Factual summaries of transcribed meetings (tutor, infra, colleagues), Portuguese, matching the source language. One `.md` per meeting; cross-cutting analysis lives in [`../discussion/`](../discussion/). |
-| [`reports/`](reports/) | Monthly reports submitted to the fellowship institution (Inova Talentos / IPT Open), one file per month (`relatorio-mensal-AAAA-MM.md`) plus its short send-ready summary. Versioned record of what was actually submitted. |
+| [`reports/`](reports/) | Monthly reports submitted to the fellowship institution ([PROGRAMA-FOMENTO]), one file per month (`relatorio-mensal-AAAA-MM.md`) plus its short send-ready summary. Versioned record of what was actually submitted. |
 | `sources/` | Original artifacts (transcripts, the formal work-plan docx) behind the files above, untouched. |
 
 ## Meeting-record pattern

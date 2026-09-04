@@ -28,7 +28,7 @@ recall_memory reads from the Memory Store (arrow labeled "embedding top-K → fr
 Header: "COLD PATH — batched · controlled · gated · LLM calls live here". Left-to-right amber nodes:
 6. "Signal Capture (dual path)" — split icon — two sub-branches feeding one ledger:
      • "Copilot 👍👎 (human, chat)" — tag "transport not documented (inference, not decision)"
-     • "Systemic (Yoda / Kafka, ex-post from case outcome)" — tag "confirmed real infra"
+     • "Systemic ([API-INTERNA] / Kafka, ex-post from case outcome)" — tag "confirmed real infra"
    (tag: ← Casper; neither path is an MCP tool — both are triggers external to the agent's loop)
 7. "Signal Ledger" — book icon — "separate store from Memory Store; signals never become episodic traces"
 8. "Update Engine" — engine/gears — "severity-weighted cumulative trigger (NOT flat N); ExpeL-style comparison of success/failure CASES" — tag "← Generative Agents (push for monitoring, pull for generation); ExpeL (proposal, not commit)"
