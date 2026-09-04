@@ -1,6 +1,6 @@
 ---
 name: diario-campo
-description: "Registra, organiza e sintetiza o diário de campo pessoal de pesquisa de Rafael Coelho Ventura para o projeto Inova Talentos/IPT Open (Nº 1335844346, mecanismo de atualização de memória para agentes de IA em fluxos jurídicos). Use esta skill SEMPRE que a mensagem começar com 'diário:', 'diario:', 'registro de campo:', 'novo registro:', ou quando o usuário disser explicitamente 'registra isso no diário' / 'guarda isso no meu diário de campo'. Use também quando ele pedir para ver, revisar ou fechar/exportar o diário do mês ('como está meu diário desse mês', 'fecha o diário de agosto', 'exporta o diário pro Luis Felipe'). Para 'gera a síntese da semana' / 'sumariza o diário' / 'gera o digest mensal', a skill é `sintese-diario`, não esta. NÃO use para conversas normais de trabalho onde ele apenas menciona ter lido algo ou testado algo sem pedir explicitamente para registrar — isso evitaria logging não solicitado e ruído no arquivo."
+description: "Registra, organiza e sintetiza o diário de campo pessoal de pesquisa de Rafael Coelho Ventura para o projeto [PROGRAMA-FOMENTO] (Nº [ANONIMIZADO], mecanismo de atualização de memória para agentes de IA em fluxos jurídicos). Use esta skill SEMPRE que a mensagem começar com 'diário:', 'diario:', 'registro de campo:', 'novo registro:', ou quando o usuário disser explicitamente 'registra isso no diário' / 'guarda isso no meu diário de campo'. Use também quando ele pedir para ver, revisar ou fechar/exportar o diário do mês ('como está meu diário desse mês', 'fecha o diário de agosto', 'exporta o diário pro [TUTOR]'). Para 'gera a síntese da semana' / 'sumariza o diário' / 'gera o digest mensal', a skill é `sintese-diario`, não esta. NÃO use para conversas normais de trabalho onde ele apenas menciona ter lido algo ou testado algo sem pedir explicitamente para registrar — isso evitaria logging não solicitado e ruído no arquivo."
 ---
 
 # Diário de Campo — memória episódica/semântica pessoal do bolsista
@@ -46,7 +46,7 @@ Toda entrada tem campos obrigatórios e campos opcionais. Preencha o que puder i
 **Obrigatórios:**
 - **Tipo**: uma de `leitura | teste/POC | implementação | reunião | decisão | achado | observação livre`. Infira do verbo/contexto (ex.: "li o paper" → leitura; "testei" → teste/POC; "decidimos" → decisão).
 - **Sub-atividade**: consulte `references/sub_atividades.md` e casse pela tabela de sinais. Fallback: `transversal` (gestão/ferramentas) ou `não classificado (confirmar)` se genuinamente incerto.
-- **Canal**: `pessoal | informal-coordenador | formal-tutor`. Infira: menções a "coordenador" ou reunião de acompanhamento de escopo → `informal-coordenador`; menções a "Luis Felipe", "tutor", "sign-off", "aprovação formal" → `formal-tutor`; caso contrário → `pessoal`. Este campo existe especificamente para não misturar direção informal do coordenador com validação formal do tutor — uma ambiguidade que já está registrada como pendência do projeto.
+- **Canal**: `pessoal | informal-coordenador | formal-tutor`. Infira: menções a "coordenador" ou reunião de acompanhamento de escopo → `informal-coordenador`; menções a "[TUTOR]", "tutor", "sign-off", "aprovação formal" → `formal-tutor`; caso contrário → `pessoal`. Este campo existe especificamente para não misturar direção informal do coordenador com validação formal do tutor — uma ambiguidade que já está registrada como pendência do projeto.
 - **Registro objetivo**: o fato em si, reescrito de forma clara e sucinta a partir do texto bruto de Rafael — o componente episódico, o que de fato aconteceu.
 
 **Opcionais (inclua só se houver conteúdo real, nunca invente para preencher):**
@@ -87,7 +87,7 @@ Anexe a nova entrada ao final do arquivo semanal corrente, mantendo ordem cronol
 
 ## Semana de DD/MM a DD/MM/AAAA
 
-Projeto: Mecanismo de atualização de memória para agentes de IA generativa aplicado a fluxos jurídicos (Inova Talentos / IPT Open, Nº 1335844346)
+Projeto: Mecanismo de atualização de memória para agentes de IA generativa aplicado a fluxos jurídicos ([PROGRAMA-FOMENTO], Nº [ANONIMIZADO])
 
 *Registro pessoal de pesquisa, testes, leituras e decisões. Camada episódica (entradas diárias); a camada semântica é o digest mensal em `summarization/`. Uso: memória de trabalho pessoal + acompanhamento do coordenador + rastreabilidade para os Entregáveis do Plano de Trabalho.*
 

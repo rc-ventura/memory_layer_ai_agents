@@ -1,4 +1,4 @@
-# Mapa de Sub-atividades — Plano de Trabalho (Nº 1335844346)
+# Mapa de Sub-atividades — Plano de Trabalho (Nº [ANONIMIZADO])
 
 Tabela de referência derivada do [Plano de Trabalho](work-plan.md), usada para classificar o campo **Sub-atividade** de cada entrada do [diário de campo](../research-diary/). Mantida em português por ser a mesma nomenclatura do Plano.
 
@@ -25,7 +25,7 @@ Tabela de referência derivada do [Plano de Trabalho](work-plan.md), usada para 
 | 2.3 | Construção do protótipo conceitual (POC) | "protótipo", "POC do mecanismo" |
 | 2.4 | Testes locais do POC em sandbox | "teste local", "sandbox", "refinei o POC" |
 | 2.5 | Pontos de integração com a plataforma do INTERESSADO | "API da plataforma", "contrato de integração", "observabilidade" |
-| 2.6 | Revisão de arquitetura com tutor/área da plataforma | "revisão com Luis Felipe", "validação com a área da plataforma" |
+| 2.6 | Revisão de arquitetura com tutor/área da plataforma | "revisão com [TUTOR]", "validação com a área da plataforma" |
 
 ## Macroatividade 3 — Desenvolvimento e implantação (fim: 31/03/2027)
 

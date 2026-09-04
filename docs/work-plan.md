@@ -2,12 +2,12 @@
 
 *Documento oficial do programa, preservado no idioma original (português). Fonte: [`sources/Plano_de_Trabalho_Rafael_Ventura.docx`](sources/Plano_de_Trabalho_Rafael_Ventura.docx).*
 
-**Programa:** Inova Talentos – IPT Open
-**Razão Social:** Instituto Itaú de Ciência, Tecnologia e Inovação
-**Nº do Projeto:** 1335844346
+**Programa:** [PROGRAMA-FOMENTO]
+**Razão Social:** [INSTITUIÇÃO-FOMENTO]
+**Nº do Projeto:** [ANONIMIZADO]
 **Título do Projeto:** Mecanismo de atualização de memória para agentes de IA generativa com aprendizado por reforço aplicado a fluxos jurídicos
 **Nome do Bolsista:** Rafael Coelho Ventura
-**Nome do Tutor:** Luis Felipe Chary de Lima
+**Nome do Tutor:** [TUTOR]
 **Início do Projeto:** 07/08/2026
 **Término do Projeto:** 31/07/2027
 

@@ -2,7 +2,7 @@
 
 # Bibliographic Review — Memory in Generative AI Agents and Update Techniques (Sub-activity 1.1)
 
-Prepared for: Plano de Trabalho, IPT Open / Inova Talentos (Instituto Itaú de Ciência, Tecnologia e Inovação). Project: "Mecanismo de atualização de memória para agentes de IA generativa com aprendizado por reforço aplicado a fluxos jurídicos." Deliverable Sub-1.1: bibliographic review on memory in generative AI agents (short/long-term, episodic vs. semantic) and update techniques.
+Prepared for: Plano de Trabalho, [PROGRAMA-FOMENTO] ([INSTITUIÇÃO-FOMENTO]). Project: "Mecanismo de atualização de memória para agentes de IA generativa com aprendizado por reforço aplicado a fluxos jurídicos." Deliverable Sub-1.1: bibliographic review on memory in generative AI agents (short/long-term, episodic vs. semantic) and update techniques.
 
 ## TL;DR
 

@@ -1,10 +1,10 @@
 # Memory Layer for AI Agents — Research Repository
 
-Personal research repository for Rafael Coelho Ventura's Inova Talentos / IPT Open fellowship project (Instituto Itaú de Ciência, Tecnologia e Inovação, Nº 1335844346):
+Personal research repository for Rafael Coelho Ventura's [PROGRAMA-FOMENTO] fellowship project ([INSTITUIÇÃO-FOMENTO], Nº [ANONIMIZADO]):
 
 > **Mecanismo de atualização de memória para agentes de IA generativa com aprendizado por reforço aplicado a fluxos jurídicos**
 
-The project builds and validates a memory-update mechanism for generative AI agents in legal workflows — using performance signals (human review, user-area feedback) to adjust, in a controlled way, the instructions/examples/operational context stored in an agent's memory. Bolsista: Rafael Coelho Ventura. Tutor: Luis Felipe Chary de Lima. Aug 2026 – Jul 2027. Full details in [`docs/work-plan.md`](docs/work-plan.md).
+The project builds and validates a memory-update mechanism for generative AI agents in legal workflows — using performance signals (human review, user-area feedback) to adjust, in a controlled way, the instructions/examples/operational context stored in an agent's memory. Bolsista: Rafael Coelho Ventura. Tutor: [TUTOR]. Aug 2026 – Jul 2027. Full details in [`docs/work-plan.md`](docs/work-plan.md).
 
 This repo *is* the study/lab notebook for that work: bibliographic review, per-source notes, cross-cutting discussion, and a daily research diary — kept together and versioned instead of scattered across documents.
 

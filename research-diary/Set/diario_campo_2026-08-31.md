@@ -2,7 +2,7 @@
 
 ## Semana de 31/08 a 04/09/2026
 
-Projeto: Mecanismo de atualização de memória para agentes de IA generativa aplicado a fluxos jurídicos (Inova Talentos / IPT Open, Nº 1335844346)
+Projeto: Mecanismo de atualização de memória para agentes de IA generativa aplicado a fluxos jurídicos ([PROGRAMA-FOMENTO], Nº [ANONIMIZADO])
 
 *Registro pessoal de pesquisa, testes, leituras e decisões. Camada episódica (entradas diárias); a camada semântica é o digest mensal em `summarization/`. Uso: memória de trabalho pessoal + acompanhamento do coordenador + rastreabilidade para os Entregáveis do Plano de Trabalho.*
 
@@ -12,7 +12,7 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Tipo:** reunião — **Sub-atividade:** 2.2 / 2.6 — **Canal:** formal-tutor
 
-**Registro objetivo:** Registro da reunião de checkpoint com o tutor (Luis Felipe) de 28/08/2026, feito agora depois de cruzar o conteúdo com a documentação técnica já existente. Na reunião apresentei a hipótese de arquitetura inteira — o "mega brain" como memory layer agnóstico de framework, acessível por qualquer agente via uma tool MCP. Retorno geral: parte das ideias elogiada, parte não bloqueada mas desencorajada.
+**Registro objetivo:** Registro da reunião de checkpoint com o tutor ([TUTOR]) de 28/08/2026, feito agora depois de cruzar o conteúdo com a documentação técnica já existente. Na reunião apresentei a hipótese de arquitetura inteira — o "mega brain" como memory layer agnóstico de framework, acessível por qualquer agente via uma tool MCP. Retorno geral: parte das ideias elogiada, parte não bloqueada mas desencorajada.
 
 - **Gate seletivo STM→LTM.** O tutor desencorajou depender só de escrita incondicional de todo trace. Mesmo que não haja uma tool seletiva do que vira memória de longo prazo, é preciso ao menos um gate para que nem toda STM/trace vire LTM — a volumetria é grande demais e, nas palavras dele, a maioria dos traces "pode não ser nada", então persistir tudo é gravar ruído no mega brain. Precisamos de um mecanismo seletivo do tipo "analisei este trace e isto pode sim ser persistido no mega brain". Os artigos DMF e SAGE implementam algo parecido.
 - **Sem tool ADD de memória.** Continuo não achando interessante ter uma tool de ADD de memória; a escrita deve fluir por trigger de sistema.

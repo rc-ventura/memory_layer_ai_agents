@@ -51,7 +51,7 @@ A running log of scoping/terminology calls made during the literature review, ea
 
 ## 5. Reference Accuracy metric — scope (Sub 3.6)
 
-**Decision:** Reference Accuracy (F1 between what the mechanism retrieved and an annotated gold standard) enters Sub 3.6 as a **fourth metric**, in **restricted scope**: gold annotations built manually over cases from the project's own legal flow, **not** a generalizable LoCoMo/LongMemEval-style benchmark. A dedicated benchmark would be overengineering — it fights the project's own reframing (reusable library → integrated Itaú platform functionality) and doesn't fit Macroatividade 3's already-compressed timeline.
+**Decision:** Reference Accuracy (F1 between what the mechanism retrieved and an annotated gold standard) enters Sub 3.6 as a **fourth metric**, in **restricted scope**: gold annotations built manually over cases from the project's own legal flow, **not** a generalizable LoCoMo/LongMemEval-style benchmark. A dedicated benchmark would be overengineering — it fights the project's own reframing (reusable library → integrated [EMPRESA] platform functionality) and doesn't fit Macroatividade 3's already-compressed timeline.
 
 **Why it can't be implemented yet:** "what should have been retrieved" only exists once the target legal flow (Sub 1.4) and correctness criteria (Sub 1.5) are defined. Annotating a gold standard for a flow that hasn't been chosen yet cannot work.
 
