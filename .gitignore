@@ -2,3 +2,7 @@
 Thumbs.db
 *.swp
 ~$*
+
+# Traces crus de agentes: contêm nomes de clientes, números de processo e trechos
+# de documentos jurídicos em claro. Nunca versionar sem anonimização.
+*.csv.xz

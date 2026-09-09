@@ -1,0 +1,7 @@
+# Dados derivados do trace cru: contêm nomes de clientes, números de processo e
+# trechos de documentos jurídicos em claro. Regeneráveis executando o notebook.
+resultados/
+
+# Saídas brutas dos scripts de auditoria (audit_out*.txt): amostras de mensagens
+# do trace com possível PII. Regeneráveis rodando audit/scripts/audit_recompute*.py.
+audit/scripts/audit_out*.txt
