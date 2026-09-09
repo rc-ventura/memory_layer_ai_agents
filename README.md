@@ -16,6 +16,7 @@ literature-review/      The two report-grade bibliographic reviews (Sub 1.1, Sub
 papers/                 One atomic note per paper/framework cited (36 so far) + a reading queue
 discussion/             Cross-cutting synthesis: findings, framework comparisons, scope decisions, open questions
 research-diary/         Daily episodic log (one file per week, in per-month folders) + monthly digest in summarization/<Mês>/ (see research-diary/README.md), in progress
+analysis/               Empirical analyses of raw agent traces (executed notebooks + findings reports; derived data git-ignored — see analysis/README.md)
 ```
 
 Each folder has its own `README.md` with more detail. Suggested entry points depending on what you're after:

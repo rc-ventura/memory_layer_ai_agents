@@ -11,6 +11,7 @@ This file is an index, not a rulebook — each doc below is the actual source of
 - **Citation verification discipline (verified vs. read, WebSearch not WebFetch for arXiv)** → [`papers/reading-queue.md`](papers/reading-queue.md)
 - **The project's RL terminology — non-parametric/harness, not SFT, not policy-gradient** → [`discussion/scope-and-terminology-decisions.md#2`](discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title)
 - **Open items across the project** → [`discussion/open-questions.md`](discussion/open-questions.md)
+- **Raw-trace analyses (notebooks, findings reports, PII rules for derived data)** → [`analysis/README.md`](analysis/README.md)
 
 ## Session-specific operational notes
 
