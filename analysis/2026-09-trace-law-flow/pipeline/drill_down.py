@@ -24,7 +24,7 @@ def classify(m):
     if 'Could not index' in m: return 'Retorno é dict, agente indexa como lista'
     if 'does not support multiple positional' in m: return 'Argumento posicional onde só cabe nomeado'
     if 'unterminated' in m: return 'String não fechada (relatório longo em literal)'
-    if 'regex pattern' in m: return 'Resposta sem bloco de código [RESOLVIDO]'
+    if 'regex pattern' in m: return 'Resposta sem bloco de código [INATIVO desde dez/2025]'
     if 'IndentationError' in m: return 'Indentação inválida'
     if 'leading zeros' in m: return 'Data DD/MM interpolada como número'
     if 'forgot a comma' in m or 'never closed' in m or 'invalid decimal' in m: return 'Texto do documento colado em literal'

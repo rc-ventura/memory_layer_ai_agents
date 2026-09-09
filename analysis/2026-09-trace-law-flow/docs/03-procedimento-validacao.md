@@ -300,8 +300,24 @@ curl -sL --max-time 60 -o toolscan.pdf   https://arxiv.org/pdf/2411.13547
 Não commitar os PDFs no repo — manter como cópia de leitura local, fora do git.
 
 Marque o progresso de leitura na `reading-queue.md` com a mesma régua que o projeto já usa: 📝 (verificado
-bibliograficamente) < 🔎 (texto completo lido por agente — nível atual dos quatro fichamentos) < ✅ (lido por
-você). Promova pra ✅ conforme for lendo de fato.
+bibliograficamente) < 🔎 (texto completo lido por agente — nível de três dos quatro fichamentos) < ✅ (lido por
+você). Promova pra ✅ conforme for lendo de fato. **AgentDebug já está em ✅ (Rafael, 09/09/2026).**
+
+### Caveat do AgentDebug sobre juiz LLM para localização de step
+
+A lição do teste do reasoning-action mismatch (§1.6, "detector semântico → anotação de amostra ou juiz LLM,
+não regex") tem um limite que o AgentDebug quantifica. O framework dele é feito **para exatamente essa
+tarefa** — achar o step de causa-raiz e classificar módulo e tipo — e mesmo assim acerta **45% o passo e
+24,3% no critério estrito** (passo + módulo + tipo, Tabela 1), com dependência de **ordem de magnitude** no
+modelo analista (GPT-4.1 ~32% estrito, modelos menores ~2% — Figura 7b). Ao citar: usar a Tabela 1 — o box
+"Findings" reporta 50,0/42,5, inconsistente com a própria tabela; dar sempre os dois números.
+
+**Consequência para este pipeline:** um juiz LLM para localizar step / rotular causa é **gerador de
+candidatos a validar à mão**, nunca rotulador final. Reforça a ordem já adotada nos itens 1, 4 e 6 do
+[`04-roadmap.md`](04-roadmap.md): detector determinístico primeiro (tipo de exceção, AST do `code_action`,
+presença de texto no `model_input_messages`), juiz LLM só onde o determinístico comprovadamente não captura o
+fenômeno — e, mesmo aí, com concordância própria reportada (o AgentDebug chega a κ = 0,55 — *moderate*, não
+"substantial" — com 10 anotadores treinados, guia detalhado e 3 rodadas de piloto).
 
 ---
 
@@ -379,7 +395,7 @@ como o acima (o "como, na prática"). Um exemplo bom por achado é suficiente �
 - [ ] Auditei ~20 mensagens de erro reais contra a função `classify()`
 - [ ] Recomputei por fora pelo menos um número (ex.: % por família)
 - [x] Rodei o teste de robustez do achado 86,3%/11,9% — três heurísticas, corrigiu o número de 13,7% pra 11,9%
-- [ ] Li o trecho da taxonomia do AgentDebug e formei opinião sobre o mapeamento módulo → memória
+- [x] Li o AgentDebug (taxonomia, 5 módulos, Stages 1–3, erro crítico, re-rollout) e formei opinião sobre o mapeamento módulo → memória — ✅ 09/09/2026
 - [ ] Conferi as tabelas de distribuição do TRAIL que sustentam o "ponto cego"
 - [ ] Conferi a citação do MAST (§4, p. 7) no contexto original
 - [ ] Escolhi 1 caso concreto (via `drill_down.py caso`) para cada achado que vou apresentar

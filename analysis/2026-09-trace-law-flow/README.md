@@ -24,9 +24,12 @@ reincidencia entre execucoes, detectores de falha silenciosa, e candidatos a uni
 
 ## Fichamentos teoricos
 
-[`literature/`](literature/) — quatro papers de taxonomia de erro de agentes, lidos em texto
-completo (apendices incluidos) por subagentes em 08/09/2026. Nivel 🔎 (agente leu, nao Rafael leu).
-Ver o [`literature/README.md`](literature/README.md) para o indice e o que cada paper aporta.
+[`literature/`](literature/) — quatro papers de taxonomia de erro de agentes lidos em texto
+completo (apendices incluidos) por subagentes em 08/09/2026 (nivel 🔎, agente leu, nao Rafael leu;
+AgentDebug promovido a ✅ — Rafael leu, 09/09/2026),
+mais quatro fichamentos breves de 09/09/2026 para o proximo passo (escalar a analise, construir
+unidades de memoria) — tier mais fraco, so busca web. Ver o [`literature/README.md`](literature/README.md)
+para o indice e o que cada fonte aporta.
 
 ## Dados derivados
 

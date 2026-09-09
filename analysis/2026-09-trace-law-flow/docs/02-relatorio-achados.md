@@ -58,7 +58,7 @@ Números gerais: 840 execuções com memória preservada · 5.781 ActionSteps ·
 | **Geração de código** | 225 | 45,2% | String não fechada — relatório longo em literal (159) |
 | **Contrato de retorno da ferramenta** | 168 | 33,7% | Retorno é `dict`, agente indexa como lista (136) |
 | **Convenção de chamada de ferramenta** | 35 | 7,0% | Argumento posicional onde só cabe nomeado (12 ferramentas) |
-| **Protocolo do harness** | 33 | 6,6% | Resposta sem bloco de código — **incidente resolvido** |
+| **Protocolo do harness** | 33 | 6,6% | Resposta sem bloco de código — **inativo desde dez/2025** |
 | **Ambiente & sandbox** | 19 | 3,8% | Import não autorizado (11), módulo sem import (6) |
 | **Suposição sobre estado** | 8 | 1,6% | Variável de step que falhou |
 | **Infra / LLM upstream** | 7 | 1,4% | `AgentGenerationError` (6) |
@@ -126,7 +126,7 @@ Só famílias com amostra confiável (n ≥ 20 — o que sobrevive ao teste):
 | Assinatura | Duração mediana | n |
 |---|---:|---:|
 | Texto do documento colado em literal | 15,6s | 20 |
-| Resposta sem bloco de código [RESOLVIDO] | 15,6s | 33 |
+| Resposta sem bloco de código [INATIVO desde dez/2025] | 15,6s | 33 |
 | String não fechada | 15,3s | 159 |
 | Retorno é dict | 7,7s | 136 |
 | Sintaxe inválida | 7,6s | 39 |
@@ -325,9 +325,15 @@ causa-raiz, e não sintomas de superfície, é o que produz ganho).
 | 1 | **Contrato de retorno das ferramentas de documento** — `r['result'][0]`, nunca `r[0]` | semântica | 136 | 119 | 7 | 4,69M |
 | 2 | **Relatório longo nunca dentro de literal** — montar por variáveis, depois `final_answer` | procedural | 159 | 125 | 8 | 3,57M |
 | 3 | **Toda ferramenta exige argumento nomeado** — `f(arg=v)`, nunca posicional | procedural | 35 | 22 | 6 | 0,36M |
-| 4 | **Inventário do sandbox** — imports autorizados; `json`/`pandas` explícitos; sem `openpyxl` | semântica | 19 | 19 | 6 | 1,10M |
+| 4 | **Inventário do sandbox** — imports autorizados; `json`/`pandas` explícitos; sem `openpyxl` | semântica | 11 | 11 | 6 | 0,91M |
 | 5 | **Após erro, a variável não existe** — re-derivar, não reusar | experiencial-procedural | 8 | 7 | 4 | 0,30M |
-| — | `AgentGenerationError`/422 → **retry com backoff**, não memória | política de harness | 7 | 7 | 4 | 0,12M |
+| 6 | `AgentGenerationError`/422 → **retry com backoff**, não memória | harness | 6 | 6 | 3 | 0,02M |
+| 7 | **Protocolo do harness [INATIVO]** — gatilho de reabertura, não correção | harness | 33 | 24 | 3 | 0,81M |
+
+> Linhas 4 e 6 corrigidas em 2026-09-09: a tabela publicada trazia 19/19/6/1,10M e 7/7/4/0,12M, que não batiam
+> com uma reexecução completa do notebook contra o trace. Valor correto conferido em
+> `E[E.assinatura=='Import/ferramenta não autorizado']` e `E[E.assinatura=='Falha do LLM interno']` — ver
+> [`01-racionais.md`](01-racionais.md) §7 Passo 5.
 
 **Escopo de escrita:** os candidatos 1–3 são transversais (aparecem em vários papéis), mas a taxa de erro por
 papel indica que o *ganho* se concentra nos agentes de domínio. A chave de recuperação da unidade de memória
@@ -342,9 +348,21 @@ promissor como **memória semântica viva**: é minerável automaticamente dos p
 erros de contrato de retorno e consolidar o schema real observado. Isso é, literalmente, o mecanismo de
 atualização de memória alimentado por sinal de erro que o projeto propõe.
 
-**Rebaixado da v1:** "sempre emitir bloco de código" era candidato #3. Os 33 casos estão concentrados em dez/2025
-(31 deles) e **desaparecem a partir de mai/2026** — foi incidente já corrigido, não padrão persistente. Erro de
-triagem que só apareceu ao cruzar assinatura com mês.
+**Rebaixado da v1, reintegrado como linha 7 (harness) nesta sessão:** "sempre emitir bloco de código" era
+candidato de conteúdo #3 na v1. Os 33 casos estão concentrados em dez/2025 (31 deles, 21,0 erros/1k steps) e
+**desaparecem a partir de mai/2026** (0 em 3.461 steps; IC95% para zero eventos ≤ 0,87/1k, 24× abaixo do pico
+do incidente) — não é candidato de conteúdo, o agente não tem nada pra aprender aqui. Mas a v1→v2 tinha
+descartado o achado por completo, sem registro estruturado, enquanto o outro achado de harness da mesma
+triagem (linha 6, `AgentGenerationError`) virou linha formal na tabela mesmo sem ser memória de conteúdo. Regra
+aplicada de forma inconsistente entre os dois — corrigido aplicando a mesma régua aos dois: linha 7, mesmo
+`tipo="harness"`.
+
+Isso também não é "resolvido" — não sabemos a causa (o harness é infra de terceiro, fora do nosso controle) nem
+temos garantia de que não volta. É **inativo**, com gatilho de reabertura explícito como conteúdo da linha:
+**≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato** (limiar = teto do IC95% acima). Tratado como
+memória dormente, não deletada — teste de caso para a política de aposentar/reativar unidades de memória que o
+mecanismo do projeto precisa ter, não só criar. Passo a passo completo da construção desta tabela e do gráfico
+em [`01-racionais.md`](01-racionais.md) §7.
 
 ## 7 · O que a leitura dos papers refutou
 

@@ -7,13 +7,13 @@ executados, ver [`03-procedimento-validacao.md`](03-procedimento-validacao.md) �
 complementam: este é o "por quê", aquele é o "como, com que número".
 
 **O que este documento cobre — e o que não cobre.** Têm passo-a-passo próprio: o achado central (§3), o
-sucesso verificado por conteúdo (§4), os cinco cortes de custo/eficiência (§5) e a assinatura de erro por
-papel + duração (§6), além dos conceitos de robustez (§2). **Não têm** tratamento passo-a-passo próprio, só
-cobertura conceitual no §1: a recuperação 0/1.550, a reincidência entre execuções, o teste ToolScan IAN/IAV,
-os detectores silenciosos (Result-Ignore / RAC / Tool-Skip) e a tabela de candidatos — para esses, o caminho
-é a célula correspondente do notebook mais o [`02-relatorio-achados.md`](02-relatorio-achados.md). Essa
-assimetria foi apontada por auditoria independente em 08/09/2026; o §3 (o mais importante dos que faltavam)
-foi escrito em resposta.
+sucesso verificado por conteúdo (§4), os cinco cortes de custo/eficiência (§5), a assinatura de erro por
+papel + duração (§6) e a tabela de candidatos a memória (§7), além dos conceitos de robustez (§2). **Não têm**
+tratamento passo-a-passo próprio, só cobertura conceitual no §1: a recuperação 0/1.550, a reincidência entre
+execuções, o teste ToolScan IAN/IAV e os detectores silenciosos (Result-Ignore / RAC / Tool-Skip) — para esses,
+o caminho é a célula correspondente do notebook mais o [`02-relatorio-achados.md`](02-relatorio-achados.md).
+Essa assimetria foi apontada por auditoria independente em 08/09/2026; o §3 (o mais importante dos que
+faltavam) foi escrito em resposta, e o §7 em resposta a uma pergunta em sessão posterior sobre a mesma tabela.
 
 ---
 
@@ -493,6 +493,80 @@ poderia mudar a conclusão se variada. `3.1` já usava fonte autoritativa. `3.2`
 `3.6` (evolução mensal) são contagem/razão direta, sem corte de classificação — não há régua pra variar. `3.3`
 reusa o inventário de ferramentas já validado. `2.2` e `3.5` tinham corte de volume mínimo; `2.3` tinha corte
 de tamanho de amostra por família — os três testados, dois confirmados robustos, um corrigido.
+
+---
+
+## 7 · Os candidatos a unidade de memória — passo a passo
+
+Números completos em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6. Gráfico e tabela na célula do
+notebook logo após `CAND` (§9 do notebook).
+
+**Passo 1 — a lacuna.** Os 498 erros já estavam classificados por causa-raiz (assinatura) desde a taxonomia da
+seção 1. Mas uma assinatura crua ("Retorno é dict, agente indexa como lista", n=136) ainda não é uma unidade de
+memória: falta decidir se ela vira conteúdo pro agente aprender e, se sim, escrever esse conteúdo numa frase.
+
+**Passo 2 — a régua, importada da literatura.** O AgentDebug (§1 acima) propõe que **o módulo que produziu o
+erro roteia o tipo de memória**. Três rotas vêm direto de lá: `semântica` (um fato sobre o mundo — o schema de
+retorno de uma ferramenta), `procedural` (uma regra de como fazer — sempre argumento nomeado) e
+`experiencial-procedural` (uma lição de um episódio específico — depois de um erro, não reusar a variável). Uma
+quarta rota não vem da literatura, veio de aplicar a mesma lógica um passo adiante: quando o módulo que "errou"
+não é o agente, é a própria infraestrutura de execução (parser do harness, chamada ao LLM upstream), o rótulo é
+`harness` — memória que não ensina o agente a pensar diferente, vira política operacional (retry, circuit
+breaker) ou regra de monitoramento.
+
+**Passo 3 — a operação.** Uma lista fixa `CAND` no notebook mapeia cada assinatura escolhida →
+`(nome do candidato, tipo, conteúdo proposto)`. Para cada entrada, filtrar os 498 erros classificados (`E`) pela
+assinatura e agregar: quantos erros, quantas execuções únicas (`exec_id.nunique()`), quantos meses
+(`mes.nunique()`), quantos tokens somados (`tok_tot.sum()`). Isso não é reclassificação — é agregação sobre uma
+classificação que já existia.
+
+**Passo 4 — por que só 7 das ~12 assinaturas do gráfico de causa-raiz viraram candidato.** Não é volume: a 4ª
+maior assinatura em erros brutos, "argumento posicional" (n=35), virou candidato #3; a 3ª maior, "sintaxe
+inválida" (n=39), não virou nenhum. Olhando as sete que entraram contra as cinco que ficaram de fora ("sintaxe
+inválida", "tipo diferente do esperado", "texto do documento colado em literal", "objeto sem o atributo
+esperado", "módulo usado sem import"), o padrão observável é: as que entraram têm uma causa única e um conteúdo
+de memória escrevível numa frase; as de fora são sacos-de-gato de causas de prosa vazando no código de jeitos
+diferentes, sem um único conteúdo claro a propor. (Isso é leitura do padrão, não um critério documentado à
+época da triagem original — vale checar com quem fez a v1→v2 se a régua real foi essa.)
+
+**Passo 5 — o resultado, e uma correção encontrada ao reexecutar.** Ao reconstruir o gráfico desta seção, dois
+valores da tabela publicada não bateram com uma reexecução completa do notebook contra o trace real:
+`Inventário do sandbox` estava como 19/19/6/1,10M (correto: 11/11/6/0,91M) e a política de harness como
+7/7/4/0,12M (correto: 6/6/3/0,02M) — conferido direto:
+
+```python
+E[E.assinatura == 'Import/ferramenta não autorizado']  # 11 linhas, não 19
+E[E.assinatura == 'Falha do LLM interno']               # 6 linhas, não 7
+```
+
+Provavelmente resíduo de uma versão anterior do `classify()` que não foi re-sincronizada com a tabela de
+candidatos depois de algum ajuste — o notebook sempre foi a fonte autoritativa, a tabela em prosa só não tinha
+sido regerada. Corrigido nos dois documentos.
+
+**Passo 6 — a 7ª linha, adicionada em sessão posterior.** O candidato "protocolo do harness" (33 casos,
+incidente de dez/2025, ver §6 acima e `02-relatorio-achados.md` §6) tinha sido descartado por completo na
+v1→v2, sem registro estruturado — tratamento diferente do outro achado de harness da mesma triagem
+(`AgentGenerationError`), que virou linha formal mesmo sem ser memória de conteúdo. Aplicando a mesma régua do
+Passo 2 aos dois: a 7ª linha usa `tipo="harness"` igual à 6ª, e o "conteúdo proposto" não é uma correção de
+comportamento — é o gatilho de reabertura calculado em §6: **≥2 casos num mês, ou taxa > 1/1k steps, reabre o
+candidato** (limiar = teto do IC95% de zero eventos no regime pós-incidente).
+
+**Passo 7 — o gráfico.** Barra horizontal, ordenada por tokens desperdiçados (a mesma unidade de "custo" usada
+no resto do relatório), cor por `tipo` — paleta categórica de 4 cores em ordem fixa (semântica = azul,
+procedural = laranja, experiencial-procedural = verde, harness = âmbar), a mesma família já validada e usada em
+§2.2/§3.4 (`node scripts/validate_palette.js`, skill dataviz — todos os checks passam; o WARN de contraste do
+verde/âmbar no fundo claro é coberto por rótulo direto em cada barra, não é dispensável). Rótulo mostra tokens e
+número de erros lado a lado, porque tokens sozinho esconde que a linha 7 (33 erros) pesa menos em custo do que
+seu volume de erros sugeriria.
+
+**Passo 8 — a leitura.** Os candidatos 1–2 (semântica + procedural, os dois de maior volume) somam 59% dos
+erros e 59% dos tokens desperdiçados — a chamada mais forte da tabela pra memória semântica minerável sem LLM
+(§6 acima). As duas linhas de harness (6 e 7) ficam no outro extremo em tokens (0,83M somadas, menos que
+qualquer candidato de conteúdo) — pouco relevantes pelo critério de custo, mas cada uma captura um tipo de
+risco que os candidatos de conteúdo não cobrem: a linha 6, falha ativa e recorrente de infra (retry evita
+desperdício repetido); a linha 7, um padrão que sumiu e cuja reaparição precisa de vigilância, não de correção.
+Nenhuma das duas seria escrita como "o agente deveria saber X" — e é exatamente por isso que "tipo" não é
+cosmético: ele decide se o candidato vira prompt/exemplo pro agente ou vira regra do lado de fora dele.
 
 ---
 
