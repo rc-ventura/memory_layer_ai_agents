@@ -209,13 +209,15 @@ unidade de trabalho real**. São eixos independentes:
 
 | Papel | Tokens/chamada | Taxa de erro (§2.1, "quem erra") |
 |---|---:|---:|
-| **CalculoCivel** | **141.673** (11,6× a mediana por execução) | 29% |
+| **CalculoCivel** | **141.673** (11,6×) | 29% |
 | **CalculoTrabalhista** | **50.624** (4,2×) | 9% — não se destacava por erro |
 | ConversationAgent | 27.988 | 9% |
 | managerAgent | 18.775 | 8% |
 
-Razão agregada do dataset inteiro: 21.420 tokens/chamada; mediana da execução típica: 12.192 — a agregada é
-maior porque o custo é concentrado numa cauda de execuções caras (§3.4), que pesam mais na soma do que numa
+Razão agregada do dataset inteiro: 21.420 tokens/chamada; mediana (entre execuções) da razão tokens/chamada:
+12.192 — é dela que saem os múltiplos "11,6×" e "4,2×" da tabela, **não** do custo de uma execução inteira
+(que é da ordem de dezenas de milhares de tokens — ver `01-racionais.md` §3.5). A agregada é maior que a
+mediana porque o custo é concentrado numa cauda de execuções caras (§3.4), que pesam mais na soma do que numa
 mediana simples. `CalculoCivel` é o pior nos dois eixos ao mesmo tempo (erro **e** ineficiência), reforçando
 prioridade #1. `CalculoTrabalhista` só aparece como alvo relevante nesta métrica — a taxa de erro sozinha o
 esconderia.
@@ -267,6 +269,11 @@ Não há tendência de queda: a linha de base de nov–dez/2025 fica em 54–57 
 amostra confiável ficam acima disso — abril chega a quase o dobro. Sem melhora orgânica ao longo de 9 meses, o argumento "com o tempo o problema se resolve
 sozinho" não se sustenta — reforça que só um mecanismo ativo de memória endereçaria a recorrência já
 documentada em §4.
+
+**Ressalva:** "não há queda" é o que este corte sustenta. A *subida* em 2026 não é, sozinha, prova de
+regressão de eficiência — mediana mais alta pode ser mudança de carga (mais casos pesados, rota/agente novo:
+status 34 só a partir de abr/2026), não o mesmo trabalho ficando mais caro. Separar as duas coisas é o item 9
+de [`04-roadmap.md`](04-roadmap.md): decompor cada mês em erro × baseline limpo × trajetória.
 
 ## 4 · O resultado central: o agente lê o erro e reincide
 

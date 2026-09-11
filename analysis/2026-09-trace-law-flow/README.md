@@ -1,6 +1,6 @@
 # Análise do trace cru — esteira de agentes do fluxo juridico
 
-**Data:** 2026-09-08 · **Fonte:** `85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz` (1.000 execucoes, nov/2025-ago/2026)
+**Data:** 2026-09-08 · **Fonte:** `85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz` (1.000 execucoes, nov/2025-ago/2026) · **schema das 11 colunas + o campo de status:** [`docs/schema.md`](docs/schema.md)
 
 Analise empirica do primeiro trace cru da esteira juridica (1.000 execucoes, 5.781 steps,
 142,6 milhoes de tokens). Taxonomia de erros por causa-raiz, custo em tokens/latencia, propagacao,
