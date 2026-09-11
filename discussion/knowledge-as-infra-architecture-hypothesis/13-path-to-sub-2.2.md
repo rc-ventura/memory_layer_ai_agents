@@ -1,0 +1,5 @@
+<!-- Fragmento verbatim de ../knowledge-as-infra-architecture-hypothesis.md — versão canônica (mantém todos os links de entrada do repo). Índice: ./README.md — editar a canônica, não este fragmento. -->
+
+## What has to happen before this becomes Sub 2.2
+
+The Sub 1.6 minimal agents (native closed loop vs. transparent programmatic memory) should test this design's actual claims, not just assume them: does an explicit MCP tool-call recall achieve comparable effectiveness to Hermes' automatic native injection? Does the severity-weighted trigger behave sensibly against real annotated cases, or does it need the same kind of recalibration the source paper's own unvalidated threshold-150 would need? Does the Commit Gate's signal-quality check meaningfully reduce the correlated-error/sycophancy risks Casper et al. names, or is it security theater without real rater diversity? Sub 1.7's implicit-vs-explicit comparison is where this hypothesis either survives contact with a POC or gets revised — see [`open-questions.md`](../open-questions.md) for the new open item this creates.

@@ -191,8 +191,28 @@ elimina a explicação (ii) para a grande maioria dos casos: o agente **tinha** 
 
 ### Passo 5 — a segunda pergunta, agora que a primeira está respondida
 
-Dos 430 que comprovadamente leram o erro: quantos erraram de novo no step seguinte, e quantos erraram **na
-mesma causa**? Primeiro número: 76 (17,7%). Segundo número — e aqui mora a parte que precisou de correção.
+São **duas perguntas diferentes** sobre os mesmos 430 casos (os que comprovadamente leram a mensagem de erro
+do step `k`). O "de novo" da primeira pergunta quer dizer "houve erro no `k+1`", **não** "o mesmo erro" — a
+questão do "mesmo" é a segunda pergunta.
+
+1. **O step seguinte (`k+1`) também deu erro? — qualquer erro, não importa o tipo.** `76 de 430` (**17,7%**).
+   Os outros 354 se recuperaram: leram o erro e o `k+1` saiu limpo.
+2. **Desses 76, em quantos o erro do `k+1` era da _mesma causa_ que o do `k`?** Este é o número que sustenta
+   "o agente leu e reincidiu no mesmo problema" — e é o que precisou de correção (Passo 6). Resultado:
+   **51 (11,9% dos 430)**. Os 25 restantes (`76 − 51`) erraram no `k+1` com causa **diferente** — isso é
+   propagação de erro, não reincidência (a distinção e a análise ainda pendente estão em
+   [`04-roadmap.md`](04-roadmap.md), seção "Fundamentação emprestada do AgentDebug", item 2).
+
+```
+430  leram a mensagem de erro do step k
+ ├─ 354            → k+1 saiu limpo (recuperou)
+ └─  76  (17,7%)   → k+1 também deu erro
+        ├─ 51  (11,9% dos 430)  → mesma causa      ← reincidência: o número-manchete
+        └─ 25                    → causa diferente   ← propagação
+```
+
+O Passo 6 é só sobre o segundo número (o 51): "mesma causa" exige uma régua, e foi ela que precisou ser
+acertada.
 
 ### Passo 6 — o teste de robustez que corrigiu o segundo número
 
@@ -333,18 +353,37 @@ chamar nada). É uma chamada a uma ferramenta **declarada** no system prompt —
 90 nomes já usada e validada no teste de inventário (§2 acima). Reusar essa lista, em vez de reconstruir uma
 nova, é deliberado: evita reintroduzir o erro de confundir função auxiliar do agente com ferramenta real.
 
-**Passo 3 — a operação.** Para cada step, parsear `code_action` como árvore Python (`ast.parse`) e contar
-quantos nós `ast.Call` chamam um nome que está na lista das 90 ferramentas declaradas. Somar tokens e somar
-chamadas por papel; dividir soma de tokens pela soma de chamadas.
+**Passo 3 — a operação, sempre por papel.**
 
-**Passo 4 — o resultado.** `CalculoCivel`: 141.673 tokens/chamada (11,6× a mediana por execução).
-`CalculoTrabalhista`: 50.624 (4,2×). Cruzando com a taxa de erro já conhecida: `CalculoTrabalhista` tinha taxa
-de erro normal (9%) — a ineficiência por chamada é um problema que a taxa de erro sozinha nunca revelaria.
+1. **Por step, duas quantidades.** `tokens(step)` = `tok_in` + `tok_out` daquela chamada de LLM (o total do
+   step — mesma unidade "tokens" de §3.4/§3.6, dominada pelo contexto re-enviado). `n_calls(step)` = nº de nós
+   `ast.Call` no `code_action` (via `ast.parse`) cujo nome está na lista autoritativa de 90 ferramentas
+   declaradas — chamada a função auxiliar do próprio agente (`grab`, `get_meta`) ou indexação de dict **não**
+   contam.
+2. **Agrupar os steps por papel** — pelo `cod_idef_aget` da execução a que cada step pertence.
+3. **Por papel, somar as duas colunas** sobre *todos* os steps daquele papel: `Σtok(papel)` e `Σcham(papel)`.
+4. **Uma divisão por papel:** `métrica(papel) = Σtok(papel) / Σcham(papel)`. Sai **um número para cada papel**
+   (Passo 4) — **não** uma divisão única do dataset inteiro. (A divisão global, `Σtok(tudo) / Σcham(tudo)`, é
+   outra coisa — a "razão agregada" do Passo 5.)
+
+**Ressalva.** Steps sem nenhuma chamada de ferramenta (`n_calls = 0` — raciocínio puro, formatação) entram no
+numerador mas não no denominador. É proposital — o número cobra o overhead de contexto/raciocínio às chamadas
+("quantos tokens custa produzir uma invocação de ferramenta real deste papel") — mas infla o valor; a versão
+estrita (só steps com `n_calls ≥ 1`) daria menos.
+
+**Passo 4 — o resultado.** `CalculoCivel`: 141.673 tokens por chamada de ferramenta. `CalculoTrabalhista`:
+50.624. O múltiplo que dá escala a esses números é sempre contra a **mediana, entre execuções, da razão
+tokens/chamada** — o `12.192` do Passo 5, que é uma razão, **não** o custo de uma execução inteira (esse é da
+ordem de dezenas de milhares de tokens — ver §3.5): `CalculoCivel` gasta **11,6×** mais tokens por chamada que
+a execução mediana; `CalculoTrabalhista`, **4,2×**. Cruzando com a taxa de erro já conhecida:
+`CalculoTrabalhista` tinha taxa de erro normal (9%) — a ineficiência por chamada é um problema que a taxa de
+erro sozinha nunca revelaria.
 
 **Passo 5 — a correção de rótulo, achada ao revisar antes de publicar.** O primeiro número que calculei
 ("mediana geral: 21.420") estava **mal nomeado** — não era mediana, era razão agregada (soma de tudo / soma
 de tudo, dominada pelos papéis de maior volume). Recalculei a mediana de verdade (das razões por execução,
-uma de cada vez, depois tirando o valor central): 12.192. As duas medidas são legítimas — divergem porque o
+uma de cada vez, depois tirando o valor central): 12.192 — continua sendo **tokens por chamada**, não tokens
+por execução. As duas medidas são legítimas — divergem porque o
 custo é concentrado numa cauda (§3.4) — mas chamar a agregada de "mediana" seria erro de rótulo, não de
 cálculo. Corrigido em todos os três documentos.
 
@@ -379,6 +418,29 @@ com erro (`tok_erro`). Dividir `tok_erro / tok_total` dá o percentual; `tok_err
 Filtrar papéis com `tok_total >= 50.000` pra excluir ruído de papéis com volume irrelevante — essa é a única
 escolha embutida, e foi testada (ver abaixo).
 
+**O que conta como "uma execução", e por que o corte é 50.000.** Uma execução = uma linha do CSV = um
+atendimento completo da esteira a **um** pedido do usuário, da pergunta que entra até o `final_answer` que sai
+— dura minutos. Os 9 meses (nov/2025–ago/2026) são só a janela em que as 1.000 execuções foram coletadas, não
+a duração de uma. Dentro de **uma** execução atuam vários papéis: o `managerAgent` orquestra, delega ao
+`ConversationAgent`, que aciona agentes de domínio (`CalculoCivel`, `CadastroTrabalhista`…). O "custo de uma
+execução" é a soma dos tokens (entrada + saída, todos os steps) de **todos esses papéis juntos, dentro daquela
+execução**. A mediana desse custo, entre as 840 execuções, fica na casa das **dezenas de milhares** de tokens
+(`02-relatorio-achados.md` §3: 48 mil nas execuções sem erro; §3.6: mediana mensal de 54–95 mil).
+
+Esse é um recorte **diferente** do `tok_total` do filtro — e confundir os dois é o que torna o "50.000" opaco:
+
+| Soma | Junta o quê | Ordem de grandeza |
+|---|---|---|
+| **custo de uma execução** | todos os papéis, **dentro de 1 execução** (1 pedido) | ~dezenas de milhares (~50 mil) |
+| **`tok_total` de um papel** (o do filtro) | um só papel, **somando as 1.000 execuções / 9 meses** | `ConversationAgent` 76,8M · `CalculoCivel` 7,9M · papel raro < 10 mil |
+
+O corte de 50.000 toma emprestado o número "uma execução típica" (~50 mil) e o usa como **piso** sobre o
+`tok_total` do papel: se um papel, somando os 9 meses inteiros, gastou menos do que uma única execução típica
+custa, ele é marginal demais pra entrar num ranking de desperdício — o "% desperdiçado" dele sairia de uma
+base minúscula (tirar percentual de 2 jogadas de moeda). É um piso de relevância, redondo e aproximado de
+propósito; o que o sustenta não é o valor exato, e sim o teste do Passo 4 (10k / 50k / 100k não mexem nos
+primeiros colocados).
+
 **Passo 3 — o resultado, dois rankings.** Por percentual: `CalculoCivel` lidera (25,0%). Por volume absoluto:
 `ConversationAgent` lidera (7,5M tokens, quase 4× o desperdício absoluto de `CalculoCivel`), apesar de um
 percentual "saudável" (9,8%) — só porque processa um volume total muito maior (76,8M contra 7,9M).
@@ -412,6 +474,12 @@ confiável, o mesmo princípio do corte de amostra usado em §2.3 e §6 abaixo.
 **Passo 5 — a leitura.** Não há tendência de queda nos meses com amostra confiável. Ausência de melhora
 orgânica ao longo de 9 meses é o que sustenta a necessidade de um mecanismo ativo — se bastasse esperar, o
 padrão apareceria aqui, e não aparece.
+
+**Ressalva — o que "a mediana subiu" não diz sozinho.** Mediana mais alta em 2026 não distingue "o mesmo
+trabalho ficou mais caro" de "a carga mudou" (mais casos pesados, agente/rota nova — o status 34 só aparece a
+partir de abr/2026). A conclusão que se sustenta aqui é a **ausência de queda**; atribuir a subida a regressão
+de eficiência exige decompor cada mês em erro × baseline limpo × comprimento de trajetória —
+[`04-roadmap.md`](04-roadmap.md) item 9.
 
 ---
 

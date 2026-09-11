@@ -11,6 +11,7 @@ This file is an index, not a rulebook — each doc below is the actual source of
 - **Citation verification discipline (verified vs. read, WebSearch not WebFetch for arXiv)** → [`papers/reading-queue.md`](papers/reading-queue.md)
 - **The project's RL terminology — non-parametric/harness, not SFT, not policy-gradient** → [`discussion/scope-and-terminology-decisions.md#2`](discussion/scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title)
 - **Open items across the project** → [`discussion/open-questions.md`](discussion/open-questions.md)
+- **The working memory-mechanism architecture ("knowledge as infra")** → [`discussion/knowledge-as-infra-architecture-hypothesis.md`](discussion/knowledge-as-infra-architecture-hypothesis.md) is the canonical single file (all inbound links point here); [`discussion/knowledge-as-infra-architecture-hypothesis/`](discussion/knowledge-as-infra-architecture-hypothesis/README.md) is a per-section **verbatim** split for reading — edit the canonical, not the fragments
 - **Raw-trace analyses (notebooks, findings reports, PII rules for derived data)** → [`analysis/README.md`](analysis/README.md)
 
 ## Session-specific operational notes
