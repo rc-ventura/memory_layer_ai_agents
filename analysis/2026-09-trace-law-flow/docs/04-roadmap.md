@@ -27,7 +27,7 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item "Which parameters...
   should become adaptive"). Pertence a observabilidade/agent-evals como disciplina própria, ou a um v2 que
   relaxe a restrição de determinismo.
-- **Minerar o candidato 1 automaticamente** (schema de retorno sem LLM) — adiado, não é prioridade agora.
+- **Minerar automaticamente a unidade "Retorno das ferramentas de documento é dict"** (schema de retorno sem LLM; nº 2 na tabela refeita em 15/09, `02-relatorio-achados.md` §6) — adiado, não é prioridade agora.
 
 ## Analítico — em aberto, em ordem de valor
 
@@ -38,10 +38,49 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
 | 3 | **Segunda extração sem `LIMIT`** | O trace tem exatamente 1.000 linhas (provável `LIMIT`) — amostra, não população. Confirmar também com o time da esteira o que os status 1/2/3/34 realmente significam (hoje inferido por correlação). |
 | 4 | **Instruction Non-compliance** | Nossa taxonomia inteira é baseada em exceção; o TRAIL mostra que, na arquitetura idêntica à nossa, esse é o erro nº 1 (35,5%) e nunca levanta exceção. Escrever um detector determinístico por regra explícita do system prompt. |
 | 5 | **Resolver Tool-Skip de vez** | Nunca convergiu: deu 14 / 8 / 10 execuções em três rodadas, dependendo do inventário de ferramentas usado. Corrigir extraindo o inventário **por papel**, não a união de todos; depois testar robustez como os outros seis achados desta sessão. |
-| 6 | **Reasoning-action mismatch — versão determinística primeiro** | A versão por palavra-chave foi retirada por estar conceitualmente errada (comparava thought pré-execução com erro pós-execução) — isso não muda. Mas existe uma versão determinística diferente, já esboçada: comparar o nome de agente/ferramenta que o *thought* anuncia (regex) contra o que o `code_action` de fato chama (AST), no mesmo step — divergência = candidato, sem juiz. Só tentar juiz LLM/anotação manual se essa comparação estrutural não capturar o fenômeno. |
+| 6 | **Reasoning-action mismatch — versão determinística primeiro** | A versão por palavra-chave foi retirada por estar conceitualmente errada (comparava thought pré-execução com erro pós-execução) — isso não muda. Mas existe uma versão determinística diferente, já esboçada: comparar o nome de agente/ferramenta que o *thought* anuncia (regex) contra o que o `code_action` de fato chama (AST), no mesmo step — divergência = candidato, sem juiz. Só tentar juiz LLM/anotação manual se essa comparação estrutural não capturar o fenômeno. **Crédito adicionado 15/09/2026:** este é literalmente o detector *Tool Selection Errors* do TRAIL (fichamento `trail-2505.08638.md` §4, item #2 — inclusive o exemplo canônico da Figura 2 do paper é este mesmo mecanismo) — pendência de atribuição fechada, estava sem origem citada desde 14/09 (`../../../discussion/agentdebug-vs-trail-error-taxonomy.md`, seção "Left open"). |
 | 7 | **Erro estrutural de argumento de tool — determinístico** | Distinto do item 5 (ferramenta que faltou) e do item 6 (thought anuncia X, código chama Y): comparar a chamada real (AST do `code_action`) contra a **assinatura declarada no system prompt** de cada tool — nº de args, nomes, posicional-onde-era-nomeado, tipo incompatível, args trocados. "Camada 1.5": mais fundo que `TypeError`, mais raso que "por que o agente errou". 100% determinístico; o detector "argumento posicional" (n=35) já é um pedaço. **Não** cobre erro de *valor* ("mandou CPF no campo do CNPJ") — isso precisa de oráculo/juiz. Valor menor que os itens acima: o trace é dominado por erro no código gerado, não por chamada malformada de tool declarada. |
 | 8 | **Decompor o custo por chamada de ferramenta (§3.3) em alavancas** | O `141.673 tokens/chamada` do `CalculoCivel` mistura duas causas com consertos diferentes: **(a) contexto re-enviado** — os mesmos documentos/histórico entram no `tok_in` de cada step (alavanca: prompt caching, poda de histórico, sumarização) vs. **(b) trajetória longa** — muitos steps por chamada de ferramenta (alavanca: cortar passos de raciocínio/formatação). Medir por papel: `tok_in` médio por step × nº de steps por chamada de ferramenta; e, dentro do `tok_in`, a fração que é conteúdo repetido entre `model_input_messages` de steps consecutivos. Determinístico. **Não** é o split "in vs out" (esse seria quase plano — input já domina ~33:1, `01-racionais.md` §3.3). Não muda a tese (erro→memória) — é observabilidade/custo, valor operacional. |
 | 9 | **Decompor a subida mensal do §3.6 (erro × baseline limpo × trajetória)** | §3.6 mostra a mediana de tokens/execução subindo em 2026 (dez/2025 ~54k → abr 95k, mai 82k, jul 92k) e conclui "sem melhora orgânica" — mas mediana subir não distingue "o mesmo trabalho ficou mais caro" de "a carga mudou". Por mês (7 meses com `n ≥ ~20`): (1) taxa de erro (erros/1k steps ou % execuções com ≥1 erro); (2) **% dos tokens do mês gastos em steps com erro** (o "% desperdiçado" do §3.5, agora mensal); (3) **mediana de tokens/execução removendo os steps com erro** — baseline "limpo"; (4) mediana de steps/execução (trajetória). Se os meses caros também lideram (1)/(2) → gasto de token **é** sinal de desperdício por erro, memória ataca direto; se lideram (3)/(4) com erro normal → é carga/trajetória, alavanca é o item 8. **Não** é correlação estatística (7 pontos — é "o padrão bate ou não") e erro × trajetória são confundidos (erro gera retry que alonga a trajetória — §3: 7 vs. 5 steps). Determinístico; o dado já existe. Resolve a ressalva anexada ao §3.6. |
+| 10 | **`PlanningStep` — módulo de plano nativo do smolagents, hoje descartado por completo** | `txt_etap_memo` tem uma 3ª classe de step além de `TaskStep`/`ActionStep`: **`PlanningStep`**, gerada pelo `planning_interval` do smolagents, com um campo `plan` isolado — o texto bate literalmente com o template nativo do framework (*"Here are the facts I know and the plan of action that I will..."* para o plano inicial; *"I still need to solve the task I was given:"* para replanejamento). `classify()` e `drill_down.py caso()` filtram só `__class__ == "ActionStep"` — **todo `PlanningStep` é silenciosamente descartado hoje**, de toda análise já feita. Achado 14/09, censo em 200 execuções: só **2 papéis** o emitem — `RespostaBacen` (10 `PlanningStep` em 60 `ActionStep`) e `CalculoTrabalhista` (2 em 10); os outros 10 papéis, zero. Confirmar com o time se `planning_interval` está intencionalmente ligado só nesses dois. Próximo passo determinístico, sem LLM: comparar o `plan` de cada `PlanningStep` contra os `ActionStep`s seguintes do mesmo papel — deriva de plano, no espírito do *Goal Deviation* do TRAIL / módulo `planning` do AgentDebug, mas mais barato que os dois porque o campo já vem isolado pelo framework, não precisa de regex nem AST pra separar. `drill_down.py caso()` já ajustado (14/09) para incluir `PlanningStep` na trajetória impressa. |
+| 11 | **Gold-standard anotado por especialistas — pré-requisito pra confiar em qualquer juiz LLM** | Ideia de 15/09: taxonomia própria do corpus (em andamento) → guideline de anotação → **dois especialistas** anotam amostra → medir confiabilidade (Cohen's/Fleiss' kappa) → dataset curado. Serve pra calibrar/validar qualquer LLM-as-judge antes de virar sinal do Update Engine (nova memória/procedure ou proposta de mudança de harness v2) — inclusive o eval de consistência plano×execução do item 10, quando ele existir. TRAIL mede só 11% de acurácia conjunta pro melhor juiz LLM na tarefa de anotação exaustiva de erro — reforça calibrar antes de confiar. Amostra natural pro piloto: os 2 papéis do item 10 (`RespostaBacen`/`CalculoTrabalhista`). Detalhe e guardrails de escopo (treinar juiz promptado ≠ fine-tuning) em [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item "gold-standard...". |
+| 12 | **Restam 9 dos 12 detectores derivados do TRAIL a construir no notebook (fichamento §4)** | Ideia de 15/09; **atualizado 15/09 depois que a tabela do fichamento ganhou um 12º item** (`Tool Output Misinterpretation`, documentada como pendência Alto custo, não descartada — ver fichamento). Já implementados: item 1 ≈ detector #3 (*Language-only Hallucination*), item 4 = detector #4 (*Instruction Non-compliance*), item 6 = detector #2 (*Tool Selection Errors*, crédito fechado nesta sessão). **Faltam 9**, ranqueados por custo (fichamento `../literature/trail-2505.08638.md` §4): **Trivial/Baixo** — #1 Resource Abuse (reaproveita o hash de repetição dos 48/354 pares já achados), #7 Tool-related Hallucination (reaproveita o `ast.parse` do item 6), #8 Poor Information Retrieval, #11 Formatting Errors (a metade invisível); **Médio** — #5 Task Orchestration (grafo de delegação), #6 Context Handling Failures (pressão de janela + re-pergunta); **Alto, deixar por último** — #9 Incorrect Problem Identification, #10 Goal Deviation, #12 Tool Output Misinterpretation (os três marcados no fichamento como prováveis candidatos a precisar de juiz LLM, não puro determinístico). Cada detector novo segue o padrão já estabelecido nos itens 1–9: rodar, triangular com `drill_down.py` contra casos concretos antes de reportar, e então decidir se ajusta um achado existente, soma achado novo, ou refuta algo já reportado (ex.: candidato natural pra refutação — o Tool-Skip do item 5, "nunca convergiu"). |
+
+**Sub-achado do item 10 (censo já feito, 14/09):** o marcador `"Thought:"` dentro de `model_output` varia de
+**0% a 100%** por papel — `WorkflowManager` 0%, `ConversationAgent` 5,4%, `managerAgent` 9,0%, `OBFCivel` 50%,
+`RoteadorCivel` 70,6%, `RespostaBacen` 86,7%, `CadastroCivel` 91,7%, os outros 5 papéis de domínio em 100%.
+Hipótese a checar: os orquestradores (`managerAgent`/`ConversationAgent`/`WorkflowManager`) rodam backbone ou
+template de prompt diferente dos agentes de domínio — quase nunca seguem o padrão ReAct-com-código clássico do
+smolagents, enquanto os agentes de domínio seguem quase sempre. Confirmado também: **nenhuma tag XML de
+raciocínio** (`<think>`/`<plan>`/`<memory>`) existe em `model_output` — as únicas tags encontradas (`<table>`,
+`<td>`, `<page_2>`, `<nome>`, `<valor>`...) são markup de documento jurídico vazado no texto, não estrutura do
+agente. Ver [`../../../discussion/agentdebug-vs-trail-error-taxonomy.md`](../../../discussion/agentdebug-vs-trail-error-taxonomy.md).
+
+**2º sub-achado do item 10 (14/09, mesma tarde) — o que muda de verdade se a gente aplicar o AgentDebug de
+verdade, não por analogia, agora que `PlanningStep` é conhecido:**
+
+- **Módulo `planning` vira testável sem LLM — só pra `RespostaBacen`/`CalculoTrabalhista`.** Comparar o `plan`
+  de cada `PlanningStep` contra os `ActionStep`s que vêm depois no mesmo papel é agora um detector real (não
+  analogia), no espírito de *constraint ignorance* / *impossible action* / *inefficient plan* do AgentDebug —
+  mas só existe pros 2 papéis que emitem `PlanningStep`; os outros 10 continuam sem esse sinal.
+- **`error["type"]` é um eixo nativo do smolagents, não do nosso `classify()` — e já está na tabela `E`/`steps`
+  como coluna `err_type`, só nunca foi lido pelo valor.** A célula 3 do notebook já extrai `err_type` desde o
+  início, e ele é usado em 10 lugares diferentes do notebook — mas **só como `.notna()`** (booleano "teve erro
+  ou não"), nunca agrupado pelo conteúdo. Censo em amostra de 300 execuções: `AgentExecutionError` (170) vs.
+  `AgentParsingError` (23) — nenhum código no notebook jamais separou esses dois. É um corte real e
+  determinístico — `AgentParsingError` bate com a família `action`/`format_error` do AgentDebug (falhou **antes**
+  de rodar, no parsing do código, ex.: "Resposta sem bloco de código"); `AgentExecutionError` é tudo que falha
+  **durante** a execução (a maioria do nosso `classify()` de 15 assinaturas cai aqui, sem distinção). Mais
+  grosso que o `classify()` — não substitui —, mas **custo zero pra minerar**: é `E.groupby("err_type")`, a
+  coluna já existe, não precisa reler o trace nem extrair nada novo.
+- **Continua fora de alcance sem LLM:** os módulos `memory`/`reflection` do AgentDebug. `model_output` é um
+  blob só; não tem como separar "lembrou errado" de "interpretou mal o resultado anterior" sem rodar o Detector
+  Prompt (Fig. 14) — isso não é um gap novo, só confirma que parte do método é determinística (`planning`,
+  `action`/`error type`) e parte precisa de juiz (`memory`, `reflection`).
+- **Gráfico novo proposto, determinístico, sem LLM:** barras empilhadas ou lado a lado — "erros antes de rodar"
+  (`AgentParsingError`) vs. "erros durante a execução" (`AgentExecutionError`), por mês e/ou por papel, cruzando
+  com o `classify()` existente pra ver quais das 15 assinaturas caem em qual bucket. Ainda não gerado — próximo
+  passo quando alguém for mexer no item 10 de novo.
 
 **Sub-recorte do item 1 (priorização):** antes de rodar o check de groundedness em tudo, cruzar as **310
 execuções que tiveram erro e ainda entregaram resposta de conteúdo** (`01-racionais.md` §4 / `02-relatorio-achados.md`
@@ -74,7 +113,7 @@ Nota conceitual, registrada 09/09/2026. Os erros do relatório estão classifica
 - **Camada 1** — a categoria de *mecanismo* que o `classify()` produz ("retornou dict, agente indexou como lista"). Determinística, do texto do trace. **É o teto do v1.**
 - **Camada 2** — *por que* o agente escreveu aquele código (schema alucinado? visto-e-esquecido? o schema mudou? system prompt errado? ruído de sampling?). Precisa de LLM sobre os casos **ou** de um oráculo (a assinatura real da tool).
 
-Estado: camada 2 só existe como **hipótese escrita à mão** para as 7 assinaturas-candidato (o "conteúdo proposto" da tabela `CAND`, `01-racionais.md` §7) — não derivada, não validada. Para as ~5 assinaturas excluídas do §7, não existe (foram excluídas por não terem causa única). O achado central (86,3% leram / 11,9% reincidiram) é o único corte de camada 2 feito por método, e é sobre o *fenômeno* "reincidência", não por assinatura. A derivação por método é a fase "Construir os candidatos de memória de verdade" (abaixo).
+Estado (atualizado 15/09/2026): a triagem de `01-racionais.md` §7 desceu da assinatura para um **submecanismo por erro** (mensagem de exceção + linha rejeitada) — isso é camada 1 mais fina, ainda determinística, não camada 2. O "conteúdo proposto" das 10 unidades candidatas continua **hipótese escrita à mão** — não derivada, não validada. A antiga exclusão de ~5 assinaturas "sem causa única" foi refutada: medidas erro a erro, nenhuma era multi-causa. O achado central (86,3% leram / 11,9% reincidiram) é o único corte de camada 2 feito por método, e é sobre o *fenômeno* "reincidência", não por assinatura. A derivação por método é a fase "Construir os candidatos de memória de verdade" (abaixo).
 
 ## Fundamentação emprestada do AgentDebug (arXiv:2509.25370)
 
@@ -161,13 +200,27 @@ essas respostas recuperadas estão factualmente certas — essa é a pergunta de
 ## Fora da análise do trace em si
 
 - **Promover os fichamentos de 🔎 pra ✅** — [x] **`AgentDebug` promovido a ✅ em 09/09/2026** (leitura dirigida
-  em sessão — taxonomia, 5 módulos, Stages 1–3, erro crítico, re-rollout, o que adotar/não adotar). Faltam
-  **MAST, TRAIL e ToolScan** — ainda lidos só por subagente.
+  em sessão — taxonomia, 5 módulos, Stages 1–3, erro crítico, re-rollout, o que adotar/não adotar). [x] **`TRAIL`
+  promovido a ✅ em 15/09/2026** (leitura dirigida — taxonomia de 3 áreas/20 tipos-folha, blind spot ≥59% sem
+  exceção; a partir dela derivamos 11 análises executáveis próprias pela regra das 3 áreas, mais 1 adicionada
+  depois como pendência documentada (`Tool Output Misinterpretation`, Alto custo) = 12 linhas hoje na tabela
+  §4 do fichamento — não é o TRAIL que propõe essas ferramentas, ver correção 15/09 em
+  `../../../papers/reading-queue.md`). Faltam **MAST e ToolScan** — ainda lidos só por subagente.
 - **A reunião de apresentação ainda não aconteceu** — toda a sessão até aqui foi preparação.
 - **Construir os candidatos de memória de verdade**, reusando este pipeline — ainda não começado. É a fase de
-  derivar a **camada 2** (ver nota "Camadas de 'causa'" acima): hoje o "conteúdo proposto" da tabela `CAND`
-  (`01-racionais.md` §7) é hipótese à mão por assinatura. "De verdade" = derivar a camada 2 das 7 assinaturas-
-  candidato (LLM sobre os casos de cada assinatura **+** validação de amostra com concordância reportada —
-  disciplina do Commit Gate, não "roda o LLM e confia") e **não** forçar camada 2 nas assinaturas sem causa
-  única. Sequenciar para quando começar a construção, não antes — trace, assinaturas de tool e memória do time
+  derivar a **camada 2** (ver nota "Camadas de 'causa'" acima): hoje o "conteúdo proposto" das 10 unidades
+  candidatas (`01-racionais.md` §7, notebook §9) é hipótese à mão por unidade. "De verdade" = derivar a camada 2
+  de cada unidade candidata (LLM sobre as ocorrências de cada unidade **+** validação de amostra com concordância
+  reportada — disciplina do Commit Gate, não "roda o LLM e confia") e **não** forçar camada 2 no resíduo "erros
+  pontuais sem conteúdo único". Sequenciar para quando começar a construção, não antes — trace, assinaturas de tool e memória do time
   estão mais frescos nesse momento.
+
+  **Schema proposto, somando TRAIL + AgentDebug (15/09/2026, `01-racionais.md` §8):** nenhum dos dois papers
+  sozinho cobre o que falta — o TRAIL tem `impact` (severidade HIGH/MEDIUM/LOW) e o AgentDebug não; o AgentDebug
+  tem `correction_guidance` (a diretiva corretiva, Stage 2) e o TRAIL não. Campo a campo, o que cada unidade
+  candidata precisaria ganhar: `category` (já temos — a unidade da §7), `location` (já temos — `exec_id`/`role`/
+  `step`), `evidence` (parcial — `err_msg`, falta pra erros sem exceção), **`description`** (caso específico,
+  hoje escrito à mão, sem método — vira LLM validado nesta fase), **`impact`** (não temos — do TRAIL), e
+  **`correction_guidance`** (não temos — do AgentDebug Stage 2). **O candidato de memória de verdade é o
+  `correction_guidance` validado, não a unidade em si** — a unidade (§7) é o agrupamento que torna a derivação
+  tratável, não o conteúdo final.

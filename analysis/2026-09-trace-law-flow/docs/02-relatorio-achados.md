@@ -20,12 +20,16 @@ O trace confirma a premissa da pesquisa, mas o achado mais forte não é o que a
 498 (8,6%) erram, atingindo 37% das execuções — e **nenhuma execução termina em erro: 100% se recuperam**.
 Os erros são **custo, não falha**: uma execução com erro consome 3× mais tokens (mediana 146 mil vs 48 mil).
 
-Duas causas-raiz explicam **59% de tudo**: o agente monta relatórios jurídicos longos dentro de literais de
+Duas assinaturas de erro somam **59% de tudo**: o agente monta relatórios jurídicos longos dentro de literais de
 string Python (159 erros) e trata como lista o dicionário que as ferramentas de documento retornam (136 erros).
+Olhando o mecanismo de cada erro (§6, refeito em 15/09), a segunda assinatura se divide — 96 são de fato o
+dicionário indexado como lista, 37 são uma *string* tratada como dicionário — e as duas maiores unidades de
+memória somam 57% dos erros.
 
 O resultado decisivo para a tese: **86,3% das mensagens de erro entram comprovadamente no contexto do step
-seguinte — e, dessas, 11,9% caem de novo na mesma categoria de causa-raiz.** O agente relê a falha e reincide. Somado
-a isso, as assinaturas dominantes reaparecem em **8 dos 9 meses** da amostra, em execuções distintas. O sistema
+seguinte — e, dessas, 11,9% caem de novo na mesma categoria de erro** (13,5% comparando pelo mecanismo). O agente
+relê a falha e reincide. Somado a isso, o mecanismo mais frequente (texto longo dentro de literal) reaparece em
+**todos os 9 meses** com dado da amostra, em execuções distintas. O sistema
 não acumula nada entre execuções: repete o mesmo erro há dez meses. É o argumento empírico direto para uma
 camada de memória persistente — e ele não existia na v1.
 
@@ -68,8 +72,10 @@ Números gerais: 840 execuções com memória preservada · 5.781 ActionSteps ·
 497 dos 498 erros classificados. Os dois casos concretos que dominam:
 
 - **`{'result': [[...]]}` indexado como lista** (136 erros, 119 execuções, 7 meses, 4 papéis). O agente escreve
-  `docs[0][0]` ou `[d['hashDocumento'] for d in docs[0]]` sobre um dicionário. Uma única unidade de memória
-  semântica — o contrato de retorno dessas ferramentas — endereçaria **27% de todos os erros**.
+  `docs[0][0]` ou `[d['hashDocumento'] for d in docs[0]]` sobre um dicionário. *Corrigido em 15/09 (§6):* só 89
+  desses 136 são esse mecanismo; somados a 7 "objeto sem atributo", a unidade do contrato de retorno cobre **96
+  erros (19%)**, todos no `ConversationAgent`. Dos outros, 37 são uma string indexada por chave e 10 um campo
+  que não existe no retorno.
 - **Relatório dentro de literal** (159 erros). `final_answer("""# ANÁLISE DETALHADA...` com tabelas markdown e
   texto jurídico dentro; o literal quebra. **Testei e descartei a hipótese de truncamento por limite de tokens**:
   esses steps chegam a 3.894 tokens de saída enquanto steps normais vão a 9.657 — não há teto sendo batido.
@@ -95,23 +101,32 @@ de memória devem ser **escopadas por papel**, e os agentes de domínio são o a
 
 ### 2.2 · Cada papel de domínio erra de um jeito específico, não de uma amostra da média geral
 
-Normalizando por papel (% dos erros DAQUELE papel, não do total do dataset) — a única forma de ver o padrão
-de papéis de baixo volume, que a contagem bruta esconde:
+Normalizando por papel (% dos erros DAQUELE papel, não do total do dataset) e **por mecanismo** — o que o agente
+fez de errado (§6) —, não pela mensagem de erro. *Refeito em 15/09/2026: a versão por mensagem atribuía a causa
+errada a dois papéis.*
 
-| Papel | Assinatura dominante | % dos erros do papel | n |
+| Papel | Mecanismo dominante | % dos erros do papel | n |
 |---|---|---:|---:|
-| **CadastroTrabalhista** | Argumento posicional onde só cabe nomeado | **94%** | 18 |
-| **CalculoCivel** | Retorno é dict, agente indexa como lista | **76%** | 17 |
-| **RespostaBacen** | Retorno é dict, agente indexa como lista | 62% | 24 |
-| **managerAgent** | String não fechada | 56% (vs. 45% na média geral) | 180 |
-| ConversationAgent | Retorno é dict (45%) + String não fechada (24%) | mix, sem 1 dominante | 224 |
+| **CadastroTrabalhista** | Ferramentas só aceitam argumento nomeado | **94%** | 18 |
+| **CalculoCivel** | Retorno pode chegar como string | **76%** | 17 |
+| **managerAgent** | Texto longo nunca dentro de literal de string | 62% | 180 |
+| ConversationAgent | Retorno das ferramentas de documento é dict (43%) + texto longo em literal (29%) | mix, sem 1 dominante | 224 |
+| RespostaBacen | Campo inexistente (33%) = retorno como string (33%); +29% protocolo do harness | empate | 24 |
 
-`CadastroTrabalhista` é o caso mais acionável do relatório inteiro: **94% dos seus erros são uma única causa**
-(convenção de chamada de ferramenta). Uma unidade de memória procedural só pra esse papel — "sempre chame
-ferramenta com argumento nomeado" — endereçaria quase tudo que ele erra. `CalculoCivel` tem o mesmo padrão de
-concentração (76%) numa causa diferente (contrato de retorno). Isso confirma que cada papel de domínio tem
-uma **assinatura própria**, não uma amostra aleatória da distribuição geral — e reforça que a chave de
-recuperação da memória deve ser `(papel, assinatura)`, não uma memória global por tipo de erro.
+`CadastroTrabalhista` segue o caso mais acionável do relatório inteiro: **94% dos seus erros são uma única
+lição** — "sempre chame a ferramenta com argumento nomeado". A mudança está nos outros dois papéis de domínio:
+
+- **`CalculoCivel`** — por mensagem, seus 76% apareciam como "Retorno é dict". Por mecanismo, são **texto
+  tratado como dicionário**: a ferramenta de correção monetária devolve o resultado como string JSON. Conferido
+  com `drill_down.py` (execução `42891135…`): o agente faz `corr_mon["valor_corrigido"]`, quebra, e no step
+  seguinte corrige sozinho com `json.loads` — uma lição que se perde na próxima execução.
+- **`RespostaBacen`** — o "Retorno é dict" de 62% se desfaz em dois mecanismos. Um deles é concreto: a
+  ferramenta `validar_quebra_sigilo` devolve `vazamento_sigilo`, e o agente pede `quebra_sigilo` (execução
+  `1be966e7…`).
+
+O contrato das ferramentas de documento é exclusivo do `ConversationAgent`. A conclusão da seção se mantém e fica
+mais forte: cada papel de domínio tem um **mecanismo próprio**, não uma amostra da distribuição geral — a chave de
+recuperação da memória é `(papel, unidade)`. Robusto ao corte de volume mínimo (3, 5, 10, 15).
 
 ### 2.3 · Duração por família de erro — tokens e tempo às vezes divergem
 
@@ -282,7 +297,8 @@ de [`04-roadmap.md`](04-roadmap.md): decompor cada mês em erro × baseline limp
 | Steps com erro seguidos de outro step | 498 |
 | Mensagem de erro **presente no `model_input_messages` do step k+1** | **430 (86,3%)** |
 | Desses, erraram de novo no step seguinte | 76 (17,7%) |
-| Desses, na **mesma categoria de causa-raiz** | **51 (11,9%)** |
+| Desses, com a **mesma mensagem de erro** | **51 (11,9%)** |
+| Desses, no **mesmo mecanismo** (§6) | 58 (13,5%) |
 
 > **Nota de método:** "mesma categoria" é comparado pela taxonomia (`classify()`), não por prefixo/sufixo de
 > texto. Um teste de robustez comparando três heurísticas (prefixo de 45 caracteres, sufixo de 45 caracteres,
@@ -291,13 +307,20 @@ de [`04-roadmap.md`](04-roadmap.md): decompor cada mês em erro × baseline limp
 > em código diferente (dava só 4,3%). A categoria da taxonomia é o nível certo de granularidade, e é o mesmo
 > usado no resto do relatório. O "chegou ao contexto" (86,3%) é robusto ao método: prefixo e sufixo convergem
 > em 84,9%–86,3%.
+>
+> **Quarta régua (15/09/2026):** comparando pelo **mecanismo** (§6), são 58 (13,5%). As duas réguas concordam em
+> 65 das 76 repetições; as 11 divergências foram conferidas caso a caso com `drill_down.py`
+> ([`01-racionais.md`](01-racionais.md) §3 Passo 8). Ressalva: 20 dos 58 vêm do laço de dez/2025 ("explicação
+> solta no bloco de código"). A manchete continua 11,9%; por mecanismo o achado fica um pouco mais forte.
 
-E entre execuções: **"string não fechada" aparece em 125 execuções ao longo de 8 meses; "retorno é dict" em 119
-execuções ao longo de 7 meses.** Recorde de 10 repetições consecutivas da mesma assinatura num `managerAgent`.
+E entre execuções, por mecanismo: **"texto longo dentro de literal" aparece em 149 execuções, nos 9 meses com
+dado; "retorno das ferramentas de documento é dict", em 87 execuções ao longo de 6 meses; "retorno pode chegar
+como string", em 36 execuções ao longo de 7 meses.** Recorde: 10 erros seguidos no mesmo mecanismo num
+`managerAgent` (dez/2025).
 
 O feedback intra-trajetória existe, é lido, e demonstravelmente não corrige — nem dentro da execução, nem entre
 execuções. Este é o caso empírico para memória externa persistente, e é mensurável como métrica de RL
-não-paramétrico: *a assinatura S para o papel R voltou a ocorrer depois que a unidade de memória foi escrita?*
+não-paramétrico: *o mecanismo M voltou a ocorrer no papel R depois que a unidade de memória foi escrita?*
 
 ## 5 · O ponto cego, agora medido
 
@@ -323,46 +346,66 @@ maior impacto do TRAIL e o risco material da esteira.
 
 ## 6 · Candidatos a unidades de memória
 
-Triagem fundamentada no AgentDebug: **o módulo que produziu o erro roteia o tipo de memória**; e a política de
-escrita é **uma unidade por cascata, na raiz** — não uma por step com erro (a ablação deles confirma que focar
-causa-raiz, e não sintomas de superfície, é o que produz ganho).
+**Refeito em 15/09/2026** — passo a passo, critérios e ressalvas em [`01-racionais.md`](01-racionais.md) §7. A
+tabela anterior ligava uma assinatura regex a um candidato. Agora cada erro recebe um **submecanismo**
+determinístico (mensagem de exceção + linha rejeitada pelo parser); os submecanismos formam **unidades** (um
+conteúdo, numa frase); erros repetidos em sequência na mesma cascata contam **uma ocorrência**; e a triagem exige
+conteúdo único e recorrência (≥3 execuções e ≥2 meses). O **tipo** é a função do conteúdo em Hu et al. 2025
+(arXiv 2512.13564): *factual · ambiente* (§4.1.2) ou *experiencial · estratégia* (§4.2.2). O princípio de
+causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalização por cascata é nossa.
 
-| # | Candidato | Tipo | Erros | Execuções | Meses | Tokens |
-|---|---|---|---:|---:|---:|---:|
-| 1 | **Contrato de retorno das ferramentas de documento** — `r['result'][0]`, nunca `r[0]` | semântica | 136 | 119 | 7 | 4,69M |
-| 2 | **Relatório longo nunca dentro de literal** — montar por variáveis, depois `final_answer` | procedural | 159 | 125 | 8 | 3,57M |
-| 3 | **Toda ferramenta exige argumento nomeado** — `f(arg=v)`, nunca posicional | procedural | 35 | 22 | 6 | 0,36M |
-| 4 | **Inventário do sandbox** — imports autorizados; `json`/`pandas` explícitos; sem `openpyxl` | semântica | 11 | 11 | 6 | 0,91M |
-| 5 | **Após erro, a variável não existe** — re-derivar, não reusar | experiencial-procedural | 8 | 7 | 4 | 0,30M |
-| 6 | `AgentGenerationError`/422 → **retry com backoff**, não memória | harness | 6 | 6 | 3 | 0,02M |
-| 7 | **Protocolo do harness [INATIVO]** — gatilho de reabertura, não correção | harness | 33 | 24 | 3 | 0,81M |
+| # | Unidade | Tipo | Ocorr. | Erros | Execuções | Meses | Papéis | Tokens |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| 1 | **Texto longo nunca dentro de literal de string** — montar em variáveis, depois `final_answer` | experiencial · estratégia | 173 | 186 | 149 | 9 | 6 | 4,04M |
+| 2 | **Retorno das ferramentas de documento é dict** — `r['result'][0]`, nunca `r[0]` | factual · ambiente | 87 | 96 | 87 | 6 | 1 | 2,99M |
+| 3 | **Retorno pode chegar como string** — checar `str` antes de indexar ou `json.loads` | experiencial · estratégia | 42 | 47 | 36 | 7 | 7 | 2,11M |
+| 4 | **Explicação nunca solta no bloco de código** — ⚠️ 92% dos tokens em dez/2025 | experiencial · estratégia | 12 | 33 | 12 | 4 | 3 | 1,39M |
+| 5 | **Inventário do sandbox** — builtins e imports proibidos; `json`/`datetime` explícitos; sem `openpyxl` | factual · ambiente | 17 | 17 | 17 | 6 | 6 | 0,89M |
+| 6 | **Ferramentas só aceitam argumento nomeado** — `f(arg=v)`, nunca posicional | factual · ambiente | 24 | 35 | 22 | 6 | 7 | 0,36M |
+| 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 5 | 2 | 0,34M |
+| 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 3 | 2 | 0,29M |
+| 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
+| 10 | **Campo inexistente no retorno estruturado** — `quebra_sigilo` 7× | factual · ambiente | 10 | 10 | 10 | 3 | 2 | 0,19M |
+| — | **Protocolo do harness [INATIVO]** — gatilho de reabertura, não correção | não-memória | 33 | 33 | 24 | 3 | 4 | 0,81M |
+| — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 4 | 2 | 0,12M |
+| — | Erros pontuais sem conteúdo único — fora | — | 9 | 9 | 9 | 3 | 2 | 0,14M |
+| — | Retorno impresso colado de volta no código — fora, sem recorrência | experiencial · estratégia | 2 | 2 | 2 | 1 | 1 | 0,05M |
 
-> Linhas 4 e 6 corrigidas em 2026-09-09: a tabela publicada trazia 19/19/6/1,10M e 7/7/4/0,12M, que não batiam
-> com uma reexecução completa do notebook contra o trace. Valor correto conferido em
-> `E[E.assinatura=='Import/ferramenta não autorizado']` e `E[E.assinatura=='Falha do LLM interno']` — ver
-> [`01-racionais.md`](01-racionais.md) §7 Passo 5.
+As 10 candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens em steps com erro. Sensibilidade: com ≥5
+execuções e ≥3 meses, só a nº 9 deixa de passar.
 
-**Escopo de escrita:** os candidatos 1–3 são transversais (aparecem em vários papéis), mas a taxa de erro por
-papel indica que o *ganho* se concentra nos agentes de domínio. A chave de recuperação da unidade de memória
-deveria portanto ser `(papel, assinatura)` — não global. §2.2 confirma isso com números diretos: o candidato 3
-sozinho (argumento nomeado) é **94% de todos os erros do `CadastroTrabalhista`** — não é um entre vários
-problemas daquele papel, é praticamente o único. Escrever essa unidade escopada a `CadastroTrabalhista`
-provavelmente resolveria a maior parte do que esse papel específico erra, mesmo sendo só 7% dos 498 erros do
-dataset inteiro — o volume pequeno no agregado esconde que é *quase todo* o problema de um papel específico.
+**O que a triagem mudou** (detalhe em [`01-racionais.md`](01-racionais.md) §7 Passos 6–7):
 
-Os candidatos 1 e 2 sozinhos cobrem **59% dos erros e 59% dos tokens desperdiçados**. O candidato 1 é o mais
-promissor como **memória semântica viva**: é minerável automaticamente dos próprios traces, sem LLM — agregar os
-erros de contrato de retorno e consolidar o schema real observado. Isso é, literalmente, o mecanismo de
+- As cinco assinaturas que a versão anterior excluía como "várias causas" não eram multi-causa. Três eram a
+  mesma causa de um candidato já existente, escrita com outra exceção ("texto do documento colado" → nº 1,
+  "objeto sem atributo" → nº 2, "módulo sem import" → nº 5); duas escondiam causas novas ("sintaxe inválida" →
+  nº 4, "tipo diferente do esperado" → nº 7).
+- A nº 3 estava escondida dentro de "Retorno é dict": 37 dos 136 erros daquela assinatura são uma **string**
+  indexada por chave, não um dict.
+- O contrato de retorno das ferramentas de documento (nº 2) caiu de 136 para 96 erros, **todos no
+  `ConversationAgent`**.
+
+**Escopo de escrita:** a chave de recuperação da unidade deve ser `(papel, unidade)`, não global. Os números por
+papel sustentam isso com mais força do que a versão anterior: a nº 6 (argumento nomeado) é **17 dos 18 erros do
+`CadastroTrabalhista`**; a nº 3 (retorno como string) é **13 dos 17 do `CalculoCivel`**; no `RespostaBacen`, a
+nº 10 (`quebra_sigilo`) e a nº 3 somam 16 dos 24; e a nº 2 só existe no `ConversationAgent`. Uma unidade escopada
+ao papel resolveria quase tudo o que aquele papel erra, mesmo sendo pequena no agregado.
+
+As nºs 1 e 2 somam **57% dos erros e 50% dos tokens**. A nº 2 continua a mais promissora como **memória factual
+viva**: é minerável dos próprios traces, sem LLM — agregar os erros de contrato de retorno e consolidar o schema
+real observado, junto com a nº 10 (as chaves que de fato existem). Isso é, literalmente, o mecanismo de
 atualização de memória alimentado por sinal de erro que o projeto propõe.
 
-**Rebaixado da v1, reintegrado como linha 7 (harness) nesta sessão:** "sempre emitir bloco de código" era
+**Rebaixado da v1, reintegrado como linha de não-memória (09/09):** "sempre emitir bloco de código" era
 candidato de conteúdo #3 na v1. Os 33 casos estão concentrados em dez/2025 (31 deles, 21,0 erros/1k steps) e
 **desaparecem a partir de mai/2026** (0 em 3.461 steps; IC95% para zero eventos ≤ 0,87/1k, 24× abaixo do pico
 do incidente) — não é candidato de conteúdo, o agente não tem nada pra aprender aqui. Mas a v1→v2 tinha
 descartado o achado por completo, sem registro estruturado, enquanto o outro achado de harness da mesma
-triagem (linha 6, `AgentGenerationError`) virou linha formal na tabela mesmo sem ser memória de conteúdo. Regra
-aplicada de forma inconsistente entre os dois — corrigido aplicando a mesma régua aos dois: linha 7, mesmo
-`tipo="harness"`.
+triagem (a linha de retry, `AgentGenerationError`) virou linha formal na tabela mesmo sem ser memória de
+conteúdo. Regra aplicada de forma inconsistente entre os dois — corrigido aplicando a mesma régua aos dois:
+ambos `não-memória`. Na triagem de 15/09 o incidente reaparece por outro caminho: a nº 4 (explicação solta no
+código) é, em boa parte, a reação do agente a esse erro de protocolo — 7 das suas 12 ocorrências vêm logo
+depois dele.
 
 Isso também não é "resolvido" — não sabemos a causa (o harness é infra de terceiro, fora do nosso controle) nem
 temos garantia de que não volta. É **inativo**, com gatilho de reabertura explícito como conteúdo da linha:
@@ -404,10 +447,14 @@ Três afirmações da v1 não sobreviveram:
   reusável. O 11% do abstract é *joint accuracy* (categoria + localização); decomposto, a localização chega a 0,82.
   Como **já tenho a localização de graça**, o problema vira classificação — viável, desde que se mande **um step**
   por vez, não o trace inteiro (a performance é anticorrelacionada com o comprimento de entrada, r = −0,38).
-- **AgentDebug** — arXiv:2509.25370. Aporta o roteador módulo→tipo-de-memória, a política "uma unidade por
-  cascata", e o schema do registro de feedback (tipo, evidência, diretiva, proveniência, escopo do dano) como
-  schema da unidade de memória. **Não é precedente de memória persistente**: o Stage 3 é re-rollout intra-tarefa,
-  inaplicável a uma esteira com efeitos colaterais reais e desfecho esparso e atrasado.
+- **AgentDebug** — arXiv:2509.25370. Aporta o princípio de causa-raiz em vez de sintoma (ablação, p. 2 e p. 8 —
+  base da regra de cascata da §6, cuja operacionalização é nossa) e o schema do registro de feedback (tipo,
+  evidência, diretiva, proveniência, escopo do dano) como schema da unidade de memória. **Não propõe tipos de
+  memória nem roteamento módulo→tipo** (correção de 14/09). **Não é precedente de memória persistente**: o Stage 3
+  é re-rollout intra-tarefa, inaplicável a uma esteira com efeitos colaterais reais e desfecho esparso e atrasado.
+- **Memory in the Age of AI Agents** — Hu, Liu et al., arXiv:2512.13564 (lido por Rafael ✅ 20/08; trechos do §4
+  conferidos no PDF em 15/09). Dá a régua de tipo da §6: memória *factual de ambiente* (§4.1.2, p. 36) contra
+  memória *experiencial de estratégia* (§4.2.2, p. 40).
 - **ToolScan / SpecTool** — Kokane et al., Salesforce AI Research, **Building Trust Workshop @ ICLR 2025**,
   arXiv:2411.13547v2. O achado mais relevante para a tese é o **mecanismo de feedback (§5 do paper original)**: injetar no contexto
   o inventário correto de ferramentas/argumentos derivado do erro observado, medindo ganho de sucesso sem tocar em
@@ -440,8 +487,9 @@ Três afirmações da v1 não sobreviveram:
    [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md)). Maior impacto no TRAIL e maior
    risco material da esteira. A versão que exigiria juiz LLM (a citação está *certa*, não só presente) fica
    fora do v1 — é observabilidade/agent-evals.
-2. **Minerar o candidato 1 automaticamente** — consolidar o schema real de retorno a partir dos próprios erros,
-   sem LLM. É o protótipo direto do mecanismo do projeto.
+2. **Minerar automaticamente as unidades "Retorno das ferramentas de documento é dict" e "Campo inexistente no
+   retorno estruturado"** (§6, nºs 2 e 10) — consolidar o schema real de retorno a partir dos próprios erros, sem
+   LLM. É o protótipo direto do mecanismo do projeto.
 3. **Rodar os detectores nas execuções SEM erro — versão determinística primeiro** — o MAST mostra que os
    modos de verificação vivem lá, e 63% das minhas execuções estão fora da análise atual. Tentar primeiro o
    proxy determinístico (padrão de validação no `code_action` — `assert`/`if not`/`len(`/`try-except` antes de
@@ -452,8 +500,8 @@ Três afirmações da v1 não sobreviveram:
 6. **Resolver Tool-Skip de vez** — hoje marcado `[PROVISÓRIO]` no notebook: deu 14, 8 e 10 execuções conforme
    o inventário de ferramentas usado, nunca convergiu num número testado. Extrair as 90 ferramentas declaradas
    **por papel** (não a união de todos) do `model_input_messages[0]` e recomputar. O inventário por papel
-   também é insumo direto do candidato de memória nº 4 (hoje escrito a partir de observação, não da fonte
-   autoritativa).
+   também é insumo direto da unidade "Inventário do sandbox" e da "Ferramentas só aceitam argumento nomeado"
+   (§6, nºs 5 e 6 — hoje escritas a partir de observação, não da fonte autoritativa).
 7. **Reasoning-action mismatch — versão determinística primeiro** — o detector por palavra-chave foi retirado
    por estar conceitualmente errado (ver [`01-racionais.md`](01-racionais.md) §2), isso não muda. Mas existe
    uma versão estrutural, sem juiz: comparar o agente/ferramenta que o *thought* anuncia (regex) contra o que
