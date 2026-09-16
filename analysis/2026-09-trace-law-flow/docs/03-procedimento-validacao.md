@@ -128,6 +128,8 @@ contagens de steps/execuções/tokens. Nenhum embute uma decisão de "o que cont
 | §3.3 tokens por chamada, por papel | o que fazer com o step cujo código **não parseia** (sem árvore, sem como contar chamadas) | as duas contagens defensáveis: descartar o step inteiro × somar os tokens dele com `n_calls = 0` | ⚠️ **escolha fixada em 15/09** — contar os tokens. Inclusiva: 27.988 / 18.775 / agregada 22.280; exclusiva: 27.062 / 17.592 / 21.420. ✅ **robusto no que a seção conclui**: ranking, os múltiplos 11,6× e 4,2×, a mediana (12.192) e o destaque laranja do 8.9 são idênticos nas duas. Racional em [`01-racionais.md`](01-racionais.md) §3.3, Ressalva 2 |
 | §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 10 candidatas muda de lado (marcada limítrofe) |
 | `submecanismo()` — base das análises por mecanismo | ordem das regras e o limiar de 15% de stopwords | 6 casos abertos com `drill_down.py` (15/09) | ⚠️ **conferido por amostra, não testado por variação** — os 6 casos batem; variar as regras ainda não foi feito |
+| §9 dos racionais, Passo 1 — de qual ferramenta vem cada erro (nº2: 94,8%; nº10: 70%) | a regra de rastreio da variável (AST; comando → step → steps anteriores) | conferência manual de todos os casos fora da dominante + amostra de 4 da dominante (16/09) | ⚠️ **conferido por amostra, não testado por variação** — as atribuições conferem; 5 (nº2) e 1 (nº10) ficam não resolvidos; o veredito da nº2 resiste ao pior caso (ver §1.7) |
+| §9 dos racionais, Passo 2 — schema lido da mensagem | o método de leitura do objeto impresso | `ast.literal_eval` × regex tolerante | ✅ **robusto** — 89/89 e 7/7 concordam (ver §1.7) |
 
 ### O método por trás de cada teste — o racional
 
@@ -279,6 +281,70 @@ Somado a isso, `final_answer` repetido pode ser comportamento do harness, não d
 
 **125 é o número conservador** (inventário declarado, sem `final_answer`) e é o que ficou no notebook e no
 relatório. Continua sendo um indício útil, mas deve ser apresentado com a definição explícita ao lado.
+
+### 1.7 · Mineração das unidades nº2/nº10 (racionais §9) — como foi rodado, conferido, e onde desviou do pré-registro
+
+Resultados em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.1; o porquê de cada passo e de cada régua em
+[`01-racionais.md`](01-racionais.md) §9. Estado: Passos 1 e 2 de 8.
+
+**Pré-registro.** O método foi commitado antes de rodar (`cb032ad`); o adendo ao Passo 3 (conserto silencioso com
+`.get` / `try-except`) também, antes de o Passo 3 rodar (`ae8264b`). As emendas feitas depois de um passo rodar
+estão datadas no próprio §9 dos racionais.
+
+**Como reproduzir.** No Jupyter: rodar o notebook até o fim — as células da §11 só dependem da §1 (explosão em
+steps), da §2 (`classify()`) e da célula "Do sintoma ao mecanismo". Nesta rodada a §11 foi executada fora do
+Jupyter, só com essas células mais as da §11 (`uv run --python 3.13 --with pandas --with numpy --with matplotlib`),
+para não regravar os CSVs de `resultados/`. **As saídas da §11 ainda não estão salvas no notebook.**
+
+**Sanidade do ambiente.** Com pandas 3.0.5, as células reproduziram os números já publicados das duas unidades (nº2:
+96 erros / 87 ocorrências; nº10: 10 / 10), e a chave `(exec_id, role, idx)` é única em `RAW` — é por ela que a
+atribuição acha o código de cada step.
+
+**Desvios do pré-registro — os três, com o efeito de cada um.**
+
+1. **O texto do Passo 1 dizia "96 (nº2) e 10 (nº10) ocorrências"** — são 96 **erros**; a nº2 tem 87 ocorrências.
+   Rodado nos dois níveis; o veredito é o mesmo. O texto dos racionais foi corrigido; a versão original está no
+   commit `cb032ad`.
+2. **O parser da mensagem foi corrigido depois da primeira rodada**, em dois formatos que ele não lia:
+   `KeyError: 'x'. Maybe you meant one of these indexes instead: [...]` (a regex capturava a frase inteira, não só a
+   chave) e o erro de colunas do pandas (`are in the [columns]`). Os limiares não mudaram. Efeito só na nº10 —
+   antes: `validar_quebra_sigilo` 7, `get_available_documents` 1, não resolvido 2; depois: 7, 1,
+   `extrair_evidencias` 1, não resolvido 1. Veredito "divide" nas duas rodadas.
+3. **A regra de destino de cada sub-unidade foi acrescentada depois do Passo 1** (candidata / documentar e monitorar
+   / bucket de consulta). Não muda nenhum resultado atual; foi testada com dados sintéticos (abaixo).
+
+**Conferência manual da atribuição (Passo 1).** Abertos um a um, com o comando que falhou e o nó que pediu (strings
+longas e sequências de ≥5 dígitos mascaradas): todos os casos fora da função dominante (5 da nº2), os 10 da nº10, e
+uma amostra de 4 atribuições "em step anterior" da nº2 — nas 4, a linha achada no step anterior é a chamada
+`docs = get_available_documents(...)` (ou `docs_info = ...`). O que a conferência mostrou:
+
+- **nº10:** as 7 atribuições a `validar_quebra_sigilo` conferem — a variável indexada é `quebra`,
+  `validacao_sigilo`, `sigilo_val`, `quebra_obj` ou `valid_quebra`, e em todas a origem é essa chamada. A de
+  `extrair_evidencias` é a execução `95344639…`, já descrita em `01-racionais.md` §3 Passo 8; a de
+  `get_available_documents` indexa um item de metadado (`doc['metadado'][0]`).
+- **nº2:** os 5 fora da dominante são "dict iterado como lista" com o `.get` falhando dentro de função auxiliar ou
+  `lambda` escrita pelo agente. Em 2 deles o único `.get` casado no comando é de um dicionário do próprio agente
+  (`prioridade`, `priority`), não o objeto que falhou — por isso ficam **não resolvidos**, em vez de atribuídos a
+  algo errado. 1 é atribuído à função auxiliar `meta_map`. Pior caso (os 5 contra a dominante): 91/96 = 94,8%,
+  acima dos 90%.
+
+**Teste de robustez do Passo 2 — dois métodos de leitura.** `ast.literal_eval` × regex tolerante sobre o mesmo
+objeto impresso: resolvem e concordam (chaves de topo contidas no regex, e mesma 1ª chave) em **89/89** (nº2) e
+**7/7** (nº10). Checagem de sanidade: a chave pedida existe no objeto lido em **0/88** e **0/7** — como tem de ser,
+é o erro. Os 3 objetos de nível de documento da nº2 foram cruzados com o pedido: `[0]` em 2, fatia em 1.
+
+**Teste sintético da regra de destino.** Duas unidades inventadas, rodadas pela mesma célula: (i) dominante com
+70,6% (12 casos, 5 execuções, 3 meses) e cinco funções de 5,9% cada → veredito (c); a dominante sai **candidata** e
+as cinco vão para o **bucket de consulta**; (ii) divisão 60/40 com as duas funções recorrentes → veredito (b), **duas
+candidatas**. Foi este teste que mostrou o defeito da primeira versão da emenda (a unidade (c) inteira no bucket,
+inclusive uma dominante recorrente) — ver `01-racionais.md` §9. As unidades reais seguem iguais: nº2 (a), nº10 (b),
+bucket vazio.
+
+**PII.** As células da §11 imprimem só nome de função, contagens, nomes de chave e tipos; chave com cara de dado vira
+`<chave-dado>`. Nenhum valor retornado pelas ferramentas sai na tela.
+
+**Ainda não feito:** a verificação por amostragem do Passo 6 (conferir o schema derivado contra o trace cru com
+`drill_down.py caso`, 5 casos por unidade) — a conferência acima é da **regra de atribuição**, não do schema final.
 
 ---
 
@@ -434,3 +500,4 @@ como o acima (o "como, na prática"). Um exemplo bom por achado é suficiente �
 - [ ] Conferi a citação do MAST (§4, p. 7) no contexto original
 - [ ] Escolhi 1 caso concreto (via `drill_down.py caso`) para cada achado que vou apresentar
 - [ ] Revisei a saída de cada `caso` antes de copiar qualquer trecho para o slide (PII)
+- [ ] Rodei a §11 do notebook (mineração nº2/nº10) no Jupyter e salvei as saídas

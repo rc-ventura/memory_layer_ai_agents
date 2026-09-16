@@ -39,7 +39,9 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   transforma a comparação de bases num teste de replicação do próprio schema minerado, não só dos números
   agregados — ver [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item
   "Second trace extraction". Produz a primeira unidade de memória `factual · ambiente` derivada e validada
-  contra o dado (não hipótese à mão), no schema de `01-racionais.md` §8.
+  contra o dado (não hipótese à mão), no schema de `01-racionais.md` §8. **Em andamento (16/09): Passos 1–2 de 8
+  feitos** — método em `01-racionais.md` §9, resultados em `02-relatorio-achados.md` §6.1, validação em
+  `03-procedimento-validacao.md` §1.7.
 
 ## Analítico — em aberto, em ordem de valor
 

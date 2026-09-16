@@ -420,6 +420,62 @@ memória dormente, não deletada — teste de caso para a política de aposentar
 mecanismo do projeto precisa ter, não só criar. Passo a passo completo da construção desta tabela e do gráfico
 em [`01-racionais.md`](01-racionais.md) §7.
 
+### 6.1 · Mineração das unidades nº2 e nº10 — o schema real, derivado do trace (16/09/2026)
+
+Passos 1 e 2 de 8 rodados. Método e réguas em [`01-racionais.md`](01-racionais.md) §9; como foi rodado, conferido e
+onde desviou do pré-registro em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.7; código no
+notebook, §11. **Nenhum candidato de memória foi escrito ainda** — isto é a base factual para escrevê-los.
+
+**De qual ferramenta vem cada erro (Passo 1).**
+
+| Unidade | Função de origem | Erros | Ocorrências | Execuções | Meses | Papel | Destino |
+|---|---|---:|---:|---:|---:|---|---|
+| nº2 | `get_available_documents` | 91 | 86 | 86 | 6 | `ConversationAgent` | candidata |
+| nº2 | não resolvido / função auxiliar do agente | 5 | 1 | 1 | 1 | `ConversationAgent` | documentar — atribuição a refazer |
+| nº10 | `validar_quebra_sigilo` | 7 | 7 | 7 | 3 | `RespostaBacen` | candidata |
+| nº10 | `extrair_evidencias` | 1 | 1 | 1 | 1 | `RespostaBacen` | documentar e monitorar (2ª extração) |
+| nº10 | `get_available_documents` | 1 | 1 | 1 | 1 | `ConversationAgent` | documentar e monitorar (2ª extração) |
+| nº10 | não resolvido | 1 | 1 | 1 | 1 | `ConversationAgent` | documentar — atribuição a refazer |
+
+- **nº2 — uma ferramenta só (regra (a)).** `get_available_documents` em 91/96 erros (94,8%) e 86/87 ocorrências
+  (98,9%) — o plural "ferramentas" do nome da unidade era imprecisão de texto. Os 5 erros restantes são "dict
+  iterado como lista" com o `.get` falhando dentro de função auxiliar escrita pelo agente: 4 não resolvidos e 1
+  atribuído à própria função auxiliar (`meta_map`); juntos são 1 ocorrência. Mesmo contando os 5 contra, 94,8% ≥
+  90%.
+- **nº10 — divide (regra (b)).** `validar_quebra_sigilo` tem 7/10 (70%); as outras três origens têm 1 caso cada —
+  exatamente 10%, no limite frágil da régua. A unidade passa a ser `(RespostaBacen, validar_quebra_sigilo)`; o
+  "conteúdo proposto" atual misturava esse fato com uma regra genérica ("na dúvida, inspecionar `r.keys()`").
+- **Bucket de consulta:** vazio — nenhuma função ficou abaixo de 10% da sua unidade sem passar na triagem.
+
+**O schema real (Passo 2).** Lido do objeto que a própria mensagem de erro imprime — só estrutura, nunca valores.
+Os dois métodos de leitura concordaram em todos os casos (teste em `03-procedimento-validacao.md` §1.7).
+
+- **`get_available_documents`** — `{'result': [[{hashDocumento: str, tipoExtracaoOcr: str, metadado:
+  [{nomeMetadado: str, valorMetadado: str}]}, …]]}`. Em 86 dos 89 erros com valor na mensagem, o objeto indexado
+  é o retorno inteiro e o agente pediu `[0]` — confirma pelo dado o conteúdo escrito à mão (`r['result'][0]`, nunca
+  `r[0]`). Nos outros 3, o objeto é um documento de dentro da lista, indexado por `[0]` (2) ou por fatia (1): o
+  agente tratou um documento único como lista, um nível abaixo da mesma estrutura (o padrão "desce um nível
+  demais" de `01-racionais.md` §3 Passo 8). A forma interna de `metadado` só aparece nesses 3. Em 1 caso os
+  documentos trazem dois campos a mais (`iuDocsId`, `iuDocsTenantId`) — se é mudança ao longo do tempo é pergunta
+  do Passo 4, ainda não rodado. 2 dos 91 erros não trazem valor na mensagem (os de `.get`). O `thought` do step
+  cita o nome da ferramenta em só 5/91: em 90 casos ela foi chamada num step anterior.
+- **`validar_quebra_sigilo`** — `{vazamento_sigilo: str, justificativa: str}` em 7/7. O agente pediu
+  `quebra_sigilo` em 7/7, e o `thought` do step cita `quebra_sigilo` literalmente em 7/7: ele já esperava a chave
+  errada antes de escrever o código.
+
+**Sub-unidades documentadas — o que ficou fora da memória, e por quê.** Não viram memória agora (1 caso não é
+recorrência), mas não foram descartadas.
+
+| Unidade | Papel | Função | O que aconteceu | Schema lido (Passo 2) | Destino |
+|---|---|---|---|---|---|
+| nº10 | `RespostaBacen` | `extrair_evidencias` | pediu `informacoes_evidencias` | `{dados_evidencias: [{4 campos}]}` — a própria mensagem do smolagents sugeriu `dados_evidencias` | monitorar na 2ª extração |
+| nº10 | `ConversationAgent` | `get_available_documents` | pediu `nom_docm_juri_mode` a um item de metadado, como se os metadados fossem um dicionário por nome | `{nomeMetadado, valorMetadado}` | monitorar na 2ª extração; candidato a entrar no conteúdo da nº2 (mesma ferramenta) |
+| nº10 | `ConversationAgent` | não resolvido | colunas inexistentes num DataFrame montado pelo agente | não lido (o objeto é um DataFrame) | atribuição a refazer |
+| nº2 | `ConversationAgent` | não resolvido / `meta_map` (5 erros) | `.get` dentro de função auxiliar escrita pelo agente | sem valor na mensagem | atribuição a refazer |
+
+**Ainda não feito:** Passos 3 a 8 — autocorreção do agente, estabilidade no tempo, decisão de status, verificação
+por amostragem com `drill_down.py`, e o registro final no schema de `01-racionais.md` §8.
+
 ## 7 · O que a leitura dos papers refutou
 
 Três afirmações da v1 não sobreviveram:
@@ -495,7 +551,7 @@ Três afirmações da v1 não sobreviveram:
    fora do v1 — é observabilidade/agent-evals.
 2. **Minerar automaticamente as unidades "Retorno das ferramentas de documento é dict" e "Campo inexistente no
    retorno estruturado"** (§6, nºs 2 e 10) — consolidar o schema real de retorno a partir dos próprios erros, sem
-   LLM. É o protótipo direto do mecanismo do projeto.
+   LLM. É o protótipo direto do mecanismo do projeto. **Em andamento (16/09): Passos 1–2 de 8 feitos — §6.1.**
 3. **Rodar os detectores nas execuções SEM erro — versão determinística primeiro** — o MAST mostra que os
    modos de verificação vivem lá, e 63% das minhas execuções estão fora da análise atual. Tentar primeiro o
    proxy determinístico (padrão de validação no `code_action` — `assert`/`if not`/`len(`/`try-except` antes de

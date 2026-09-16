@@ -8,8 +8,8 @@ complementam: este é o "por quê", aquele é o "como, com que número".
 
 **O que este documento cobre — e o que não cobre.** Têm passo-a-passo próprio: o achado central (§3), o
 sucesso verificado por conteúdo (§4), os cinco cortes de custo/eficiência (§5), a assinatura de erro por
-papel + duração (§6), a tabela de candidatos a memória (§7) e as três etiquetas de um erro — sintoma, mecanismo,
-motivo (§8) —, além dos conceitos de robustez (§2). **Não têm**
+papel + duração (§6), a tabela de candidatos a memória (§7), as três etiquetas de um erro — sintoma, mecanismo,
+motivo (§8) — e a mineração do schema real das unidades nº2/nº10 (§9), além dos conceitos de robustez (§2). **Não têm**
 tratamento passo-a-passo próprio, só cobertura conceitual no §1: a recuperação 0/1.550, a reincidência entre
 execuções, o teste ToolScan IAN/IAV e os detectores silenciosos (Result-Ignore / RAC / Tool-Skip) — para esses,
 o caminho é a célula correspondente do notebook mais o [`02-relatorio-achados.md`](02-relatorio-achados.md).
@@ -924,16 +924,26 @@ inteiro.
 
 ---
 
-## 9 · Minerar as unidades nº2/nº10 — passo a passo (pré-registro, antes de rodar)
+## 9 · Minerar as unidades nº2/nº10 — o schema real a partir do próprio trace, passo a passo
 
-Registrado em 16/09/2026, **antes de tocar no dado** — protocolo pré-registrado (decisão por número, não por
-gráfico), reabrindo a linha que estava "adiada, não é prioridade" desde 08/09 em `04-roadmap.md` (ver também
-[`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item "Second trace
-extraction"). Escopo: **nº2** (`U_contrato_dict`, submecanismo `dict_indexado_por_posicao` /
-`dict_iterado_como_lista`, 96 erros / 87 execuções / 6 meses, 100% `ConversationAgent`) e **nº10**
-(`U_campo_inexistente`, submecanismo `campo_inexistente_no_retorno`, 10 erros / 10 execuções / 3 meses,
-dominante em `RespostaBacen`). Objetivo: substituir o "conteúdo proposto" hoje escrito à mão em
-`candidatos_memoria.csv` pelo conteúdo derivado e checado contra o próprio trace, no schema de §8.
+Números em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.1; como foi rodado, conferido e onde desviou
+do pré-registro em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.7; código no notebook, §11.
+
+**Por que esta análise.** A tabela de candidatos (§7) tem, para cada unidade, um "conteúdo proposto" escrito à
+mão a partir de alguns casos lidos. Nas unidades *factual · ambiente* esse conteúdo é um fato sobre uma
+ferramenta — e fato sobre ferramenta dá pra derivar do próprio trace e checar contra ele, sem LLM. As duas
+escolhidas são as que carregam o schema de retorno de uma ferramenta: **nº2** ("Retorno das ferramentas de
+documento é dict", submecanismos `dict_indexado_por_posicao` e `dict_iterado_como_lista`) e **nº10** ("Campo
+inexistente no retorno estruturado", submecanismo `campo_inexistente_no_retorno`). A meta é trocar o texto
+escrito à mão por conteúdo derivado e checado, no schema do §8. A análise estava "adiada, não é prioridade" em
+`04-roadmap.md` desde 08/09; foi reaberta em 16/09 para rodar **antes** da segunda extração, de modo que a base
+nova sirva de teste de replicação do próprio schema minerado (ver
+[`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item "Second trace extraction").
+
+**Por que pré-registrado.** Os oito passos e as réguas de decisão foram escritos e commitados antes de olhar o
+dado. O motivo é o mesmo de todo teste de robustez deste documento (§2): se a régua é escolhida depois de ver o
+resultado, fica impossível saber se o número fala do dado ou da régua. Regras acrescentadas depois de algum passo
+rodar ficam marcadas com data e com a indicação de que não mudaram o resultado já obtido.
 
 **Passo 1 — "ferramenta não é unidade": testar a premissa antes de escrever a lição.** O §7 Passo 1 já provou,
 um nível acima, que agrupar por sintoma esconde causas diferentes: a mensagem "Could not index" sozinha
@@ -949,9 +959,15 @@ outra que devolve `{'conteudo': [...]}` —, uma lição única ("acesse sempre 
 dominante e **atrapalha ativamente** a outra, porque a chave certa é diferente. Memória confiante e errada numa
 fração dos casos é pior do que nenhuma memória.
 
-**Operação:** para cada uma das 96 (nº2) e 10 (nº10) ocorrências, olhar o `code_action` daquele step (já
-disponível em `RAW`) e identificar qual função foi chamada logo antes da linha que quebrou — o código de
-verdade, não a mensagem de erro. Contar, por unidade, quantas ocorrências vêm de cada função.
+**Operação:** para cada erro das duas unidades, olhar o `code_action` daquele step (já disponível em `RAW`) e
+identificar qual função produziu o objeto que quebrou — o código de verdade, não a mensagem de erro. Na prática: a
+mensagem traz o comando que falhou e o que foi pedido (`KeyError: 0`, `KeyError: 'quebra_sigilo'`,
+`has no attribute get`); acha-se no comando, por AST, o nó que pediu exatamente isso, e segue-se a variável até a
+chamada que a criou — no próprio comando, antes dele no mesmo step, ou em steps anteriores do mesmo papel, porque o
+namespace Python persiste entre steps. Quando a variável não tem origem rastreável (ex.: o erro acontece dentro de
+uma função auxiliar que o próprio agente escreveu), o caso fica **não resolvido** — nunca atribuído por palpite.
+Contar, por unidade, quantos erros e quantas ocorrências vêm de cada função: erro é o que a regra lê; ocorrência
+(cascata deduplicada, §7 Passo 4) é o que a triagem de recorrência conta — por isso os dois níveis são reportados.
 
 **Decisão:** ≥90% das ocorrências da mesma função → confirma "uma coisa só", sigo com essa confiança. Uma
 segunda função com peso ≥10% → a unidade se divide, uma lição por ferramenta, não uma lição genérica.
@@ -959,53 +975,41 @@ segunda função com peso ≥10% → a unidade se divide, uma lição por ferram
 unidade inteira é 100% `ConversationAgent` e `get_available_documents` sozinha já domina o trace inteiro (730
 chamadas, `02-relatorio-achados.md` linha 48) — mas quem decide é a contagem, não essa expectativa.
 
-**Resultado do Passo 1 (rodado em 16/09/2026, depois do commit do pré-registro `cb032ad` — notebook §11.1).**
-*Nota de execução, sem alterar o texto pré-registrado acima:* o Passo 1 diz "96 (nº2) e 10 (nº10) ocorrências",
-mas 96 são **erros** — a nº2 tem 87 ocorrências (cascatas deduplicadas). Rodei nos dois níveis; o veredito é o
-mesmo. Depois da primeira rodada, o parser da mensagem foi corrigido em dois formatos que ele não lia
-(`KeyError` seguido de "Maybe you meant…"; erro de colunas do pandas) — os limiares não mudaram, e o veredito da
-nº10 foi "divide" antes e depois da correção.
+**Por que a regra dos 10% é frágil com amostra pequena — e por que o destino não depende dela.** A régua tem duas
+metades: **(a)** a função dominante cobre ≥90% dos casos → "uma ferramenta só"; **(b)** uma segunda função cobre
+≥10% → a unidade se divide. Percentual sobre amostra pequena vira com um caso só: numa unidade de 10 erros, **um
+único caso vale 10%** e já dispara (b); com 11 erros, o mesmo caso valeria 9,1% e não dispararia. Foi o que
+aconteceu na nº10 (números em `02-relatorio-achados.md` §6.1). Dois fatos tiram o peso dessa fragilidade: se a
+dominante fica longe de 90%, (a) falha de qualquer jeito, então a unidade não é "uma ferramenta só"
+independentemente de (b); e uma função de 1 caso nunca passa na triagem de recorrência (≥3 execuções e ≥2 meses),
+então disparar (b) com um caso só não transforma esse caso em memória. Por isso (a) e (b) descrevem a **forma** da
+unidade, e o **destino** de cada pedaço é decidido pela triagem — abaixo.
 
-- **nº2 — uma ferramenta só.** `get_available_documents` em 91/96 erros (94,8%) e 86/87 ocorrências (98,9%),
-  100% `ConversationAgent`, 6 meses — a expectativa declarada se confirmou, e o plural "ferramentas" do relatório
-  era imprecisão de texto. 5 erros ficaram **não resolvidos**, todos "dict iterado como lista": o `.get` falha
-  dentro de uma função auxiliar escrita pelo próprio agente, que a regra não segue. Mesmo contando os 5 contra,
-  94,8% ≥ 90%.
-- **nº10 — divide.** `validar_quebra_sigilo` 7/10 (70%; `RespostaBacen`, 7 execuções, 3 meses — passa na
-  triagem de recorrência); `extrair_evidencias` 1 (`RespostaBacen`: pediu `informacoes_evidencias`, o retorno
-  tinha `dados_evidencias`); `get_available_documents` 1 (`ConversationAgent`: campo de metadado inexistente);
-  1 não resolvido (`ConversationAgent`: colunas inexistentes num DataFrame montado pelo agente). A unidade da
-  nº10 passa a ser `(RespostaBacen, validar_quebra_sigilo)`. O "conteúdo proposto" atual misturava esse fato com
-  uma regra genérica ("na dúvida, inspecionar `r.keys()`") — exatamente o que este passo existia pra pegar.
+**Emenda à régua (16/09/2026, decidida depois do Passo 1 rodar, sem mudar o resultado dele): o destino de cada
+sub-unidade.** O pré-registro dizia como dividir a unidade, mas não o que fazer com cada pedaço, nem com o caso em
+que nem (a) nem (b) se cumprem — **(c)**: dominante abaixo de 90% e o resto espalhado em funções abaixo de 10% cada.
+Uma primeira versão da emenda mandava a unidade (c) inteira para um bucket; um teste com dados sintéticos mostrou o
+problema — uma dominante de 70%, recorrente, viraria candidata numa unidade (b) e ficaria sem memória numa unidade
+(c), só porque o resto estava mais espalhado. A regra ficou uniforme, igual para (a), (b) e (c), aplicada a cada
+sub-unidade `(unidade, função)`, nesta ordem:
 
-**A regra dos 10% com amostra pequena — o que é frágil e o que não é.** A regra pré-registrada tem duas metades:
-**(a)** a função dominante cobre ≥90% dos casos → "uma ferramenta só"; **(b)** uma segunda função cobre ≥10% → a
-unidade se divide. Com só 10 erros, **um único caso vale 10%**: `extrair_evidencias` e `get_available_documents`
-têm 1 caso cada, e cada um bate exatamente no limite de (b). Isso é frágil — se a nº10 tivesse 11 erros, o mesmo
-caso único valeria 9,1% e (b) não dispararia; percentual sobre amostra pequena vira com um caso só. O que **não**
-é frágil: (a) falha com folga (a dominante tem 70%, longe de 90%), então a nº10 não é "uma ferramenta só" de
-jeito nenhum; e as origens minoritárias têm 1 caso cada, então nenhuma passaria na triagem de recorrência (≥3
-execuções e ≥2 meses) mesmo que (b) não tivesse disparado. O resultado prático — memória só para
-`validar_quebra_sigilo`, o resto monitorado — é o mesmo nos dois cenários. **Lacuna da regra, registrada e não
-corrigida retroativamente:** o pré-registro não diz o que fazer quando nem (a) nem (b) se cumprem (dominante
-abaixo de 90% e o resto espalhado em funções abaixo de 10% cada); o código trata esse caso como "inconclusivo".
-Antes de reaplicar a regra na segunda extração, fixar esse terceiro caso — e considerar exigir também um mínimo
-absoluto de casos em (b), não só percentual.
+1. **Passa na triagem de recorrência → candidata.** Mesma régua do §7, pelo mesmo motivo: memória entre execuções
+   só se justifica se o problema volta. Vale para a dominante e para qualquer outra função que passe (ex.: 60/40,
+   as duas recorrentes → duas candidatas).
+2. **Não passa, e cobre ≥10% das ocorrências da unidade → documentada e monitorada.** Não é descarte: ficar fora
+   por falta de recorrência numa amostra de 1.000 linhas, com provável `LIMIT` (`04-roadmap.md` item 3), não prova
+   que o problema não recorre. Mesma lógica do protocolo do harness [INATIVO] (`02-relatorio-achados.md` §6):
+   dormente, com gatilho de reabertura explícito — **na segunda extração, reaplicar a triagem a cada
+   `(unidade, papel, função)`; se passar em ≥3 execuções e ≥2 meses, na base nova ou nas duas somadas depois do
+   dedup por `cod_idef_exeo`, vira candidata.** É o caso frágil: a dominante vira memória, as funções de 1 caso
+   ficam monitoradas.
+3. **Não passa, e cobre menos de 10% → bucket de consulta.** Uma fatia pequena de uma unidade não justifica gatilho
+   próprio, mas também não some: fica listada caso a caso, sem memória, para abrir com
+   `drill_down.py caso <exec_id> <role>` — mesma ideia do balde "Não classificado" da `classify()`.
 
-**Causas pequenas: documentadas e monitoradas, não descartadas.** As sub-unidades de 1 caso e os não resolvidos
-não viram memória agora — um caso não é evidência de recorrência, e a triagem do §7 (≥3 execuções e ≥2 meses)
-continua valendo sem mudança. Mas **ficar fora por falta de recorrência numa amostra de 1.000 linhas não é o mesmo
-que não recorrer**: a base atual tem provável `LIMIT` (`04-roadmap.md` item 3). Ficam registradas com a mesma
-lógica do protocolo do harness [INATIVO] (§6 do relatório) — dormentes, com gatilho de reabertura explícito:
-**na segunda extração, reaplicar a mesma triagem a cada sub-unidade `(unidade, papel, função)`; se passar em ≥3
-execuções e ≥2 meses — na base nova, ou nas duas somadas depois do dedup por `cod_idef_exeo` —, vira candidata.**
-
-| Unidade | Papel | Função de origem | O que aconteceu | Estado |
-|---|---|---|---|---|
-| nº10 | `RespostaBacen` | `extrair_evidencias` | pediu `informacoes_evidencias`; o retorno tem `dados_evidencias` | monitorar na 2ª extração |
-| nº10 | `ConversationAgent` | `get_available_documents` | campo de metadado inexistente (`nom_docm_juri_mode`) | monitorar na 2ª extração |
-| nº10 | `ConversationAgent` | não resolvido | colunas inexistentes num DataFrame montado pelo agente | monitorar; atribuição a refazer |
-| nº2 | `ConversationAgent` | não resolvido (5 erros) | `.get` dentro de função auxiliar escrita pelo agente | monitorar; atribuição a refazer |
+A fatia é medida em **ocorrências**, o mesmo nível que a triagem conta. Casos **não resolvidos** (sem função
+atribuída) não entram nessa escada — não há função para triar: ficam documentados, com a atribuição a refazer.
+Implementado no notebook §11.1 (coluna `destino` e tabela `BUCKET_CONSULTA`).
 
 **Passo 2 — extrair o schema real da própria mensagem de erro, e reforçar com o `thought` (só por presença de
 texto, nunca por interpretação).** O formato do smolagents (`Could not index {valor} with {chave}`) embute o
@@ -1026,6 +1030,16 @@ ferramenta antes do código quebrar — mesmo mecanismo do detector determiníst
 ferramenta?) — isso exige julgamento sobre texto livre, não é achar uma string, e cai fora da escada de degraus
 inteira (ver Passo 7).
 
+**O que exatamente a mensagem mostra, e o que se tira dela.** O objeto impresso é o que foi **indexado**, não
+necessariamente o retorno inteiro da ferramenta: se o agente já tinha descido um nível (pegou um documento de
+dentro da lista e o indexou como se fosse lista), o que aparece é esse pedaço. Por isso cada objeto lido é
+descrito pela sua **forma** (chaves e tipos, até três níveis), e a leitura de cada caso diz em que nível da
+estrutura ele está — não se soma cegamente tudo num schema só. **Só estrutura sai deste passo** — nomes de chave e
+tipos, nunca valores: o objeto de uma ferramenta de documento pode trazer texto de peça, nome e número de processo.
+Pelo mesmo motivo, uma chave com cara de dado (sequência longa de dígitos, texto livre) é mascarada como
+`<chave-dado>`. A checagem de sanidade embutida é barata e diz se a leitura faz sentido: a chave que o agente pediu
+**não** pode existir no objeto lido — se existisse, não teria havido erro.
+
 **Passo 3 — cruzar com a autocorreção do próprio agente.** Reaproveita o que já está calculado em §3 (430/498
 leram o erro no contexto seguinte). Para as ocorrências de nº2/nº10 especificamente, pegar o `code_action` do
 step seguinte na mesma execução e checar se ele acessa a mesma variável com uma chave/índice diferente do que
@@ -1042,15 +1056,33 @@ erro trocando o primeiro pelo segundo: o código passa a rodar, mas ele não apr
 erro. Neste caso concreto seria pior que o erro — como `quebra_sigilo` nunca existe, a leitura sempre devolveria
 `"NÃO"`, e o agente afirmaria "não houve quebra de sigilo" qualquer que fosse a resposta da ferramenta em
 `vazamento_sigilo`: erro silencioso numa resposta regulatória. **É um risco a vigiar, não algo já observado no
-trace.** Regra — o conserto no step seguinte é classificado em três tipos:
+trace.**
+
+**O padrão é escolha do agente, não `"NÃO"` (emenda de 16/09/2026, antes de rodar).** O exemplo usa `"NÃO"`, mas o
+segundo parâmetro de `chave.get("campo", segundo_parametro)` é o que o agente quiser — `None`, `""`, `0`, `[]`,
+`"SIM"`, outra variável — e é **ele** que decide qual erro silencioso acontece: `"NÃO"` afirma ausência de quebra,
+`"SIM"` afirmaria o contrário, `None` empurra o vazio pra frente (e pode ou não quebrar mais adiante). Por isso o
+tipo 2 abaixo registra também **o segundo parâmetro**: o literal, quando é uma constante curta; o tipo do nó
+(`Name`, `Call`…), quando não é; ou "sem padrão" (equivale a `None`).
+
+Regra — o conserto no step seguinte é classificado em três tipos:
 
 1. **Troca de chave** — a mesma variável passa a ser lida por uma chave/índice diferente (ex.:
    `["vazamento_sigilo"]`, `["result"][0]`), com ou sem `.get` → conta como confirmação (ou contradição) do
    Passo 2.
 2. **Conserto silencioso** — a mesma chave errada continua, mas protegida por `.get(...)` (com ou sem padrão) ou
-   por um `try/except` que engole o erro → **não** confirma nada; contado à parte, como sinal suspeito.
+   por um `try/except` que engole o erro → **não** confirma nada; contado à parte, como sinal suspeito, com o
+   segundo parâmetro registrado.
 3. **Sem conserto comparável** — o step seguinte não lê mais a variável, ou o agente mudou de estratégia → sem
    evidência para aquele caso (ausência, não contradição).
+
+**Monitoramento além do Passo 3 (candidato a detector — registrado, não rodado).** O Passo 3 só olha o step
+seguinte a um erro. Mas, com o schema real da ferramenta em mãos (Passo 2), o mesmo padrão vira um detector de
+falha silenciosa para o trace inteiro, inclusive em steps que nunca levantaram exceção: toda leitura
+`x.get("campo", padrão)` em que `x` vem de uma ferramenta de schema conhecido (atribuição do Passo 1) e `"campo"`
+**não existe** nesse schema devolve sempre o padrão — erro sem exceção, invisível hoje (o ponto cego registrado em
+`../../../discussion/open-questions.md`). Determinístico: AST + o schema minerado. Entra como candidato ao lado dos
+detectores silenciosos do roadmap (itens 2 e 13), não como parte deste pré-registro.
 
 **Passo 4 — checar estabilidade entre ocorrências e ao longo do tempo, por ferramenta — e o subproduto que isso
 gera de graça.** As chaves reais são as mesmas nas N ocorrências, nos M meses cobertos? **Se sim** → fato
