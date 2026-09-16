@@ -1040,6 +1040,17 @@ Pelo mesmo motivo, uma chave com cara de dado (sequência longa de dígitos, tex
 `<chave-dado>`. A checagem de sanidade embutida é barata e diz se a leitura faz sentido: a chave que o agente pediu
 **não** pode existir no objeto lido — se existisse, não teria havido erro.
 
+**Addendum ao Passo 2 (16/09/2026, pré-registrado antes de rodar): a informação já estava no prompt?** O `thought`
+diz o que o agente pensou; o system prompt (`sysprompt`, já extraído em `RAW` — a primeira mensagem do contexto,
+onde as ferramentas são declaradas) diz o que ele **recebeu**. São fontes diferentes e a pergunta é diferente:
+não "o agente esperava essa chave" (Passo 2), mas "essa chave já estava disponível pra ele checar, antes de
+escrever o código". Isso importa direto para o Passo 7 — se a chave certa já está descrita no prompt e o agente
+mesmo assim erra, a lacuna não é de informação ausente (que memória resolveria de cara); se não está, é.
+**Operação:** para cada erro, checar por presença literal de texto (regex, sem interpretação) se o `sysprompt`
+daquele step contém (a) a(s) chave(s) reais do schema minerado no Passo 2 e (b) a chave errada que o agente usou.
+Reporta-se a contagem, não se decide nada a partir dela — é insumo para a leitura do Passo 7, não um novo critério
+de status.
+
 **Passo 3 — cruzar com a autocorreção do próprio agente.** Reaproveita o que já está calculado em §3 (430/498
 leram o erro no contexto seguinte). Para as ocorrências de nº2/nº10 especificamente, pegar o `code_action` do
 step seguinte na mesma execução e checar se ele acessa a mesma variável com uma chave/índice diferente do que
