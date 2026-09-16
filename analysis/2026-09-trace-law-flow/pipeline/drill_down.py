@@ -44,13 +44,17 @@ Uso:
            caso.json`. Mesma ressalva de PII: o arquivo gerado não deve ser
            commitado nem sair do ambiente local.
 
-Requer o trace cru (85cb11b5-....csv.xz) na raiz do repo. Nunca commitar a saída
-deste script — ela reproduz nomes de clientes e números de processo em claro.
+Requer o trace cru (85cb11b5-....csv.xz) em `../data/` (a pasta canônica é
+`analysis/2026-09-trace-law-flow/data/`; resolvido pelo caminho do próprio
+script, não pelo diretório corrente — corrigido 16/09/2026, auditoria M2).
+Nunca commitar a saída deste script — ela reproduz nomes de clientes e
+números de processo em claro.
 """
 import sys, os, json, re, random
 import pandas as pd
 
-TRACE = "../../../85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"
+TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
+                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
 
 def classify(m):
     # Nomes sincronizados com classify() do notebook (§2) — renomeados 15/09/2026 (grupo 1:

@@ -299,7 +299,7 @@ decisão de arquitetura em uso agora vem antes do que só refina um componente.
 
 | Ordem | Paper | Por que essa prioridade | O que checar especificamente |
 |---|---|---|---|
-| 1 | **AgentDebug** — arXiv:2509.25370 | A tabela "módulo → tipo de memória" é inferência minha em cima do paper, não frase literal — é o tipo de claim que vira decisão de design e exige leitura própria | A seção da taxonomia (17 tipos / 5 módulos); formar opinião própria sobre se o roteamento faz sentido |
+| 1 | **AgentDebug** — arXiv:2509.25370 | A taxonomia de 5 módulos é a base da política de escrita por cascata e do schema de candidato a memória (`01-racionais.md` §8) — vale conferir a fonte primária antes de decidir arquitetura em cima dela | A seção da taxonomia (17 tipos / 5 módulos, Tabela 2); conferir que o paper **não** propõe tipos de memória nem roteamento módulo→tipo (overclaim já corrigido 14/09, checar que a leitura própria confirma) |
 | 2 | **TRAIL** — arXiv:2505.08638 | Sustenta os números do "ponto cego" que quantificam quanto do relatório é "o que vemos" vs "o que não vemos" | As tabelas de distribuição por categoria; o split SWE-Bench (arquitetura igual à nossa) |
 | 3 | **MAST** — arXiv:2503.13657 | Checagem pontual, rápida | O trecho do §4, p. 7, que põe explicitamente falhas de limitação de modelo fora do escopo |
 | 4 | **ToolScan** — arXiv:2411.13547 | Menor prioridade — entra no relatório pra *refutar* uma afirmação errada da v1, não pra fundamentar algo novo | Os 7 tipos (IAC/IAV/IAN/IAT/RAC/IFN/IFE) contra o que está em [`literature/tool-use-errors.md`](../literature/tool-use-errors.md) |
@@ -429,7 +429,7 @@ como o acima (o "como, na prática"). Um exemplo bom por achado é suficiente �
 - [ ] Auditei ~20 mensagens de erro reais contra a função `classify()`
 - [ ] Recomputei por fora pelo menos um número (ex.: % por família)
 - [x] Rodei o teste de robustez do achado 86,3%/11,9% — três heurísticas, corrigiu o número de 13,7% pra 11,9%
-- [ ] Li o trecho da taxonomia do AgentDebug e formei opinião sobre o mapeamento módulo → memória
+- [ ] Li o trecho da taxonomia do AgentDebug (5 módulos) e conferi que o paper não propõe roteamento módulo → tipo de memória (é a nossa correção de 14/09, não uma citação do paper)
 - [ ] Conferi as tabelas de distribuição do TRAIL que sustentam o "ponto cego"
 - [ ] Conferi a citação do MAST (§4, p. 7) no contexto original
 - [ ] Escolhi 1 caso concreto (via `drill_down.py caso`) para cada achado que vou apresentar

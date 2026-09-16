@@ -5,7 +5,10 @@ import csv, json, lzma, re, sys, ast
 from collections import Counter, defaultdict
 
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
-TRACE = "/Users/rafaelventura/ICT-ITAU/memory_layer_ai_agents/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"
+import os
+# Caminho canônico corrigido 16/09/2026 (auditoria M2): ../../data/ a partir deste script.
+TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
+                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
 
 def classify_sig(m):
     if 'Could not index' in m: return 'Retorno é dict'

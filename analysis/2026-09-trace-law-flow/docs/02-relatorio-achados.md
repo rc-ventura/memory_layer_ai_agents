@@ -329,7 +329,8 @@ não-paramétrico: *o mecanismo M voltou a ocorrer no papel R depois que a unida
 
 ## 5 · O ponto cego, agora medido
 
-O TRAIL classifica seus 841 erros por visibilidade a exceção de runtime: **≥59% são estruturalmente invisíveis**
+Classificando as categorias do TRAIL por visibilidade a exceção de runtime — mapeamento nosso, não uma medida
+que o paper publica — **≥59% dos 841 erros do dataset deles caem em tipos que a nossa regex não pegaria**,
 e apenas **3,3%** são integralmente capturáveis pelo método que usei. Mais grave: no split SWE-Bench do TRAIL —
 que usa CodeAct + interpretador Python + `final_answer` + allowlist, **arquitetonicamente idêntico à esteira** —
 o erro nº 1 não é sintaxe, é **Instruction Non-compliance (35,5%)**, que meu regex quase não vê. E das 304 falhas

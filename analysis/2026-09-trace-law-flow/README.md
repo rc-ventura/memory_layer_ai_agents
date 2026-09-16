@@ -30,5 +30,10 @@ Ver o [`literature/README.md`](literature/README.md) para o indice e o que cada 
 
 ## Dados derivados
 
-`resultados/` — CSVs derivados do trace cru (**git-ignored**: contem nomes de clientes, numeros
-de processo e trechos de documentos em claro). Regenerar rodando o notebook.
+`pipeline/resultados/` — CSVs derivados do trace cru (**git-ignored**: contem nomes de clientes, numeros
+de processo e trechos de documentos em claro). Regenerar rodando o notebook (escreve nessa pasta, nao na raiz
+da analise — uma copia orfa em `resultados/` na raiz existiu ate 16/09/2026 e foi removida por auditoria, ver
+`audit/2026-09-16-auditoria-independente.md` M1).
+
+`data/` — o trace cru (`85cb11b5-....csv.xz`, **git-ignored**). `pipeline/drill_down.py` e os scripts de
+`audit/scripts/` resolvem o caminho relativo ao proprio arquivo, nao ao diretorio corrente.

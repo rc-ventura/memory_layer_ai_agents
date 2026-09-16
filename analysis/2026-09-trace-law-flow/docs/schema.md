@@ -4,7 +4,8 @@
 de clientes, nºs de processo, trechos de documentos em claro); ver `.gitignore` da raiz (`*.csv.xz`, `*.csv`) e
 o desta pasta. Nunca versionar sem anonimização.
 
-**Cobertura:** 1.000 execuções, nov/2025–ago/2026 · 5.781 steps · 142,6M tokens. **Provável `LIMIT 1000`** na
+**Cobertura:** 1.000 execuções, nov/2025–ago/2026 · 5.781 `ActionStep` (+ 2.569 `TaskStep` e 46 `PlanningStep`,
+ver §Estrutura de `txt_etap_memo` abaixo) · 142,6M tokens. **Provável `LIMIT 1000`** na
 query de origem — amostra, não população (`04-roadmap.md` item 3).
 
 ## Granularidade
@@ -29,6 +30,80 @@ query de origem — amostra, não população (`04-roadmap.md` item 3).
 | 10 | `anomesdia` | AAAAMMDD (int) | dado |
 
 ⚠️ Nomes das colunas 3 e 6 são leitura da abreviação, não confirmados com a esteira.
+
+## Estrutura de `txt_etap_memo` — os steps (medido em 16/09/2026, direto no trace)
+
+O campo `txt_etap_memo` é o dump da *working memory* estilo **smolagents**: um dict `{papel: [steps]}`, onde a
+chave é o papel (`managerAgent`, `ConversationAgent`, agentes de domínio…) e a lista contém os passos na ordem
+em que aconteceram. Cada passo tem um discriminador `"__class__"`. **Nada aqui é derivado pelo nosso pipeline
+— é o que o sistema persistiu em produção**; o `drill_down.py` apenas formata (`[THOUGHT]`, `[CÓDIGO]`…) o
+conteúdo cru destes campos.
+
+**Censo (840 execuções com memória):** `TaskStep` **2.569** · `ActionStep` **5.781** · `PlanningStep` **46**.
+
+```json
+{
+  "managerAgent": [
+    {"__class__": "TaskStep", "task": "Responda a pergunta: 'PROMPT: ...'", "task_images": null},
+    {"__class__": "ActionStep", "step_number": 1, "model_input_messages": [...], "model_output": "Thought: ...",
+     "model_output_message": {...}, "code_action": "...", "observations": "...", "error": null, ...},
+    {"__class__": "PlanningStep", "plan": "Here are the facts I know and the plan of action...", ...},
+    {"__class__": "ActionStep", "step_number": 2, ...}
+  ],
+  "ConversationAgent": [ ... ]
+}
+```
+
+### TaskStep — a tarefa recebida
+
+Só carrega o texto da tarefa que abriu a trajetória daquele papel: `task` (str, sempre), `task_images` (null).
+Não tem custo/duração — as métricas vivem no `ActionStep`.
+
+### ActionStep — o passo de trabalho (a unidade de toda a análise)
+
+Presença medida campo a campo (n = 5.781):
+
+| Campo | Presença | Tipo | O que é |
+|---|---:|---|---|
+| `__class__`, `step_number`, `is_final_answer`, `model_input_messages`, `timing` | 100% | str/int/bool/list/dict | sempre presentes |
+| `model_output`, `model_output_message` | 99,9% | str/dict | saída crua do LLM: texto ("Thought: ... <code>...") + a mensagem estruturada |
+| `code_action` | 99,3% | str | código extraído do bloco `<code>` — dos 39 steps sem ele, 33 são exatamente os `AgentParsingError` (resposta sem bloco de código) |
+| `token_usage`, `tool_calls` | 99,9% / 99,3% | dict/list | `{input_tokens, output_tokens, total_tokens}`; calls com `{id, type, function}` estilo OpenAI |
+| `observations` | 94,0% | str | o que o interpretador/harness devolveu (logs + último retorno) |
+| `action_output` | 56,1% | str | saída do passo — 3.243 steps têm, e 79% deles (2.563) são steps de `is_final_answer` |
+| `error` | **8,6% (498)** | dict | **só presente quando o step falhou**: `{"type": ..., "message": ...}` |
+
+Detalhes medidos:
+
+- **`error.type` é nativo do smolagents**, não da nossa `classify()` — e só tem dois valores neste trace:
+  `AgentExecutionError` (465, falha *durante* a execução do código) e `AgentParsingError` (33, falha *antes* de
+  rodar — é justamente a família "resposta sem bloco de código"). Eixo determinístico a custo zero, ainda pouco
+  explorado (`04-roadmap.md` item 10).
+- **`model_output` ≠ prefixo "Thought:"** — o campo existe em todo step, mas o *invólucro textual* depende do
+  template de prompt do papel (censo em `04-roadmap.md` item 10: 0% `WorkflowManager` · 9,0% `managerAgent` ·
+  86,7% `RespostaBacen` · 100% em vários de domínio). Em alguns casos é um JSON `{"thought": ..., "code": ...}`
+  no lugar do formato ReAct. Não confundir com o campo `plan` do `PlanningStep`, abaixo.
+- **`model_input_messages`** é o contexto exato que o step recebeu: lista de mensagens `{role, content, ...}`,
+  começando por `role: "system"` (que **declara as ferramentas** como assinaturas `def nome(...)` — a fonte
+  autoritativa do inventário de 90) e depois `role: "user"`/histórico com o echo dos erros anteriores. É este
+  campo que torna o achado 86,3% verificável textualmente (`03-procedimento-validacao.md` §1.5). `content` é
+  lista de blocos `{"type": "text", "text": ...}`.
+- **`timing`** = `{start_time, end_time, duration}` (timestamp real, segundos) em 100% dos steps — matéria-prima
+  de span já coletada (ver discussão OTel/Datadog em `literature/trail-2505.08638.md`).
+- Exemplo real anonimizável (o caso-vitrine `2a407143…`, step 3): `model_output` começa literalmente com
+  `"Thought: Ocorreu um erro porque a resposta anterior não estava dentro de um bloco <code>..."` —
+  o autodiagnóstico do agente está gravado no trace, não é inferência.
+
+### PlanningStep — o plano nativo do smolagents (raro: 46 no trace inteiro)
+
+Emitido pelo `planning_interval` do smolagents, num **campo separado** (`plan`) — não é o `"Thought:"` do
+`model_output`. Aparece em 3 papéis: `RespostaBacen` (35), `CalculoTrabalhista` (9) e `null` (2 — artefato de
+serialização de papel, ver `04-roadmap.md`). Campos (100% dos 46): `plan` (str — abre com
+*"Here are the facts I know and the plan of action…"*, template nativo do framework), `model_input_messages`,
+`model_output_message` (com `content` = o plano estruturado: "1. Facts survey…"), `timing`, `token_usage`.
+**Não tem** `code_action`/`observations`/`error` — planeja, não executa. As versões antigas do pipeline o
+descartavam em silêncio; `drill_down.py caso` e o notebook já o incluem (`04-roadmap.md` item 10).
+
 
 ## `cod_idef_stat_exeo_aget` (o campo "status")
 

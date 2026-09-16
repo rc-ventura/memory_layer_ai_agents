@@ -6,8 +6,15 @@ from collections import Counter, defaultdict
 from statistics import median
 
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
-REPO = "/Users/rafaelventura/ICT-ITAU/memory_layer_ai_agents"
-TRACE = f"{REPO}/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"
+import os
+# Caminhos canônicos corrigidos 16/09/2026 (auditoria M1+M2): BASE é a pasta
+# analysis/2026-09-trace-law-flow/ (2 níveis acima de audit/scripts/), não a raiz do repo —
+# o REPO antigo (raiz) apontava pra analysis/2026-09-trace-law-flow/resultados/, a cópia
+# obsoleta de 08/09 que a auditoria de 16/09 achou (M1) e que foi removida. Os CSVs derivados
+# vivem em pipeline/resultados/, a única pasta que o notebook de fato escreve.
+BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
+                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
 
 # 1) colunas via pandas (notebook diz 12)
 import pandas as pd
@@ -68,14 +75,16 @@ print(f"2. réplica-exata §3.3 → razão agregada: {tt_/cc_:,.0f} (notebook 22
 print(f"   regra antiga, pré-15/09 (descarta step sem parse) → razão agregada: {te_/ce_:,.0f} (era 21.420)")
 print(f"   ferramentas distintas citadas em msgs 'positional': {len(pos_tools)} (relatório diz 12) → {sorted(pos_tools)}")
 
-# 3) CSVs derivados
+# 3) CSVs derivados — pipeline/resultados/, não a cópia obsoleta que existiu na raiz da análise
+#    até 16/09/2026 (M1: 4 dos 5 arquivos em comum divergiam; erros_mecanismo.csv e
+#    triagem_assinaturas.csv nem existiam lá — sinal de que estava desatualizada, não só duplicada)
 for nome in ["erros_classificados", "execucoes", "payoff_assinaturas", "reincidencia", "candidatos_memoria"]:
-    p = f"{REPO}/analysis/2026-09-trace-law-flow/resultados/{nome}.csv"
+    p = f"{BASE}/pipeline/resultados/{nome}.csv"
     with open(p) as fh: n = sum(1 for _ in fh)
-    print(f"3. resultados/{nome}.csv: {n-1} linhas de dados")
+    print(f"3. pipeline/resultados/{nome}.csv: {n-1} linhas de dados")
 
 # 4) integridade do notebook: imagens embutidas por célula, ordem de execução, erros
-nb = json.load(open(f"{REPO}/analysis/2026-09-trace-law-flow/pipeline/analise_trace_esteira_juridica.ipynb"))
+nb = json.load(open(f"{BASE}/pipeline/analise_trace_esteira_juridica.ipynb"))
 execseq = []
 for i, c in enumerate(nb["cells"]):
     if c["cell_type"] != "code": continue
