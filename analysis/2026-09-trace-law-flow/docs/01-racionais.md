@@ -1033,8 +1033,10 @@ inteira (ver Passo 7).
 **O que exatamente a mensagem mostra, e o que se tira dela.** O objeto impresso é o que foi **indexado**, não
 necessariamente o retorno inteiro da ferramenta: se o agente já tinha descido um nível (pegou um documento de
 dentro da lista e o indexou como se fosse lista), o que aparece é esse pedaço. Por isso cada objeto lido é
-descrito pela sua **forma** (chaves e tipos, até três níveis), e a leitura de cada caso diz em que nível da
-estrutura ele está — não se soma cegamente tudo num schema só. **Só estrutura sai deste passo** — nomes de chave e
+descrito pela sua **forma** (chaves e tipos), e a leitura de cada caso diz em que nível da estrutura ele está —
+não se soma cegamente tudo num schema só. Uma lista pode ter elementos de tipos diferentes, e por isso a forma
+descreve **todos** os tipos presentes, não só o do primeiro elemento; um dicionário de contagens por valor é
+resumido como `{<campo>: {<valor>: int}}`, porque as chaves dele são dado, não schema. **Só estrutura sai deste passo** — nomes de chave e
 tipos, nunca valores: o objeto de uma ferramenta de documento pode trazer texto de peça, nome e número de processo.
 Pelo mesmo motivo, uma chave com cara de dado (sequência longa de dígitos, texto livre) é mascarada como
 `<chave-dado>`. A checagem de sanidade embutida é barata e diz se a leitura faz sentido: a chave que o agente pediu
@@ -1049,7 +1051,12 @@ mesmo assim erra, a lacuna não é de informação ausente (que memória resolve
 **Operação:** para cada erro, checar por presença literal de texto (regex, sem interpretação) se o `sysprompt`
 daquele step contém (a) a(s) chave(s) reais do schema minerado no Passo 2 e (b) a chave errada que o agente usou.
 Reporta-se a contagem, não se decide nada a partir dela — é insumo para a leitura do Passo 7, não um novo critério
-de status.
+de status. A presença é medida em três formas, da mais frouxa à mais estrita — palavra solta, entre aspas, e **como
+chave de JSON** (`'chave':`) —, porque um nome pode aparecer no prompt como prosa ou como valor de exemplo sem estar
+declarado como chave; só a forma estrita responde a pergunta, e a distância entre as três mostra quanto as frouxas
+enganariam. E como uma chave pode estar declarada para **outra** ferramenta, registra-se também se ela aparece
+dentro do bloco `def ferramenta(...)` da própria ferramenta (acrescentado ao rodar, não pré-registrado): é o que
+separa "o prompt fala desta chave" de "o prompt diz que esta ferramenta devolve esta chave".
 
 **Passo 3 — cruzar com a autocorreção do próprio agente.** Reaproveita o que já está calculado em §3 (430/498
 leram o erro no contexto seguinte). Para as ocorrências de nº2/nº10 especificamente, pegar o `code_action` do
@@ -1086,6 +1093,20 @@ Regra — o conserto no step seguinte é classificado em três tipos:
    segundo parâmetro registrado.
 3. **Sem conserto comparável** — o step seguinte não lê mais a variável, ou o agente mudou de estratégia → sem
    evidência para aquele caso (ausência, não contradição).
+
+**O que a regra não previu, e por que foi tratado assim (16/09/2026, ao rodar).** A pergunta do Passo 3 é "o que o
+agente fez com o **objeto** que quebrou" — e o nome da variável nem sempre continua apontando para esse objeto:
+
+- **Reatribuição.** Se o step seguinte faz `docs = docs['result'][0]` e depois lê `docs[0]`, esse segundo acesso é
+  sobre outro objeto; contá-lo como "repetiu o erro" confundiria nome com objeto. Só contam as leituras antes da
+  reatribuição e as do lado direito dela. Reatribuir **chamando a mesma ferramenta de novo** não corta: o objeto é
+  novo, mas o schema é o mesmo, e a pergunta continua válida.
+- **Guarda de tipo.** `docs['result'][0] if 'result' in docs else docs[0]` troca para a chave certa e mantém a antiga
+  num ramo condicionado ao tipo da própria variável. Conta como troca de chave — o caminho que roda é o novo —, mas
+  marcada à parte, porque a guarda é informação: o agente corrige sem confiar que a forma do retorno é estável.
+- **Nível da comparação.** A chave nova é comparada com o schema da **ferramenta** inteira, não só do pedaço que
+  quebrou: o agente pode corrigir lendo outro nível do mesmo retorno (ex.: quebrou num item de metadado, corrigiu
+  lendo o documento).
 
 **Monitoramento além do Passo 3 (candidato a detector — registrado, não rodado).** O Passo 3 só olha o step
 seguinte a um erro. Mas, com o schema real da ferramenta em mãos (Passo 2), o mesmo padrão vira um detector de

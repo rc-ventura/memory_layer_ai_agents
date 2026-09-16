@@ -422,7 +422,7 @@ em [`01-racionais.md`](01-racionais.md) §7.
 
 ### 6.1 · Mineração das unidades nº2 e nº10 — o schema real, derivado do trace (16/09/2026)
 
-Passos 1 e 2 de 8 rodados. Método e réguas em [`01-racionais.md`](01-racionais.md) §9; como foi rodado, conferido e
+Passos 1 a 3 de 8 rodados, mais o addendum ao Passo 2. Método e réguas em [`01-racionais.md`](01-racionais.md) §9; como foi rodado, conferido e
 onde desviou do pré-registro em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.7; código no
 notebook, §11. **Nenhum candidato de memória foi escrito ainda** — isto é a base factual para escrevê-los.
 
@@ -451,14 +451,17 @@ notebook, §11. **Nenhum candidato de memória foi escrito ainda** — isto é a
 Os dois métodos de leitura concordaram em todos os casos (teste em `03-procedimento-validacao.md` §1.7).
 
 - **`get_available_documents`** — `{'result': [[{hashDocumento: str, tipoExtracaoOcr: str, metadado:
-  [{nomeMetadado: str, valorMetadado: str}]}, …]]}`. Em 86 dos 89 erros com valor na mensagem, o objeto indexado
-  é o retorno inteiro e o agente pediu `[0]` — confirma pelo dado o conteúdo escrito à mão (`r['result'][0]`, nunca
-  `r[0]`). Nos outros 3, o objeto é um documento de dentro da lista, indexado por `[0]` (2) ou por fatia (1): o
-  agente tratou um documento único como lista, um nível abaixo da mesma estrutura (o padrão "desce um nível
-  demais" de `01-racionais.md` §3 Passo 8). A forma interna de `metadado` só aparece nesses 3. Em 1 caso os
-  documentos trazem dois campos a mais (`iuDocsId`, `iuDocsTenantId`) — se é mudança ao longo do tempo é pergunta
-  do Passo 4, ainda não rodado. 2 dos 91 erros não trazem valor na mensagem (os de `.get`). O `thought` do step
-  cita o nome da ferramenta em só 5/91: em 90 casos ela foi chamada num step anterior.
+  [{nomeMetadado: str, valorMetadado: str}]}, …], {<campo>: {<valor>: int}}]}`. `result` é uma lista de **dois**
+  elementos: na posição 0, a lista de documentos; na posição 1, um resumo com a contagem por valor de cada campo
+  (entre 4 e 25 campos, conforme a execução). Estrutura igual nos 86 erros em que o objeto indexado é o retorno
+  inteiro, e o agente pediu `[0]` — confirma pelo dado o conteúdo escrito à mão (`r['result'][0]`, nunca `r[0]`) e
+  mostra o que ele não dizia: `result[1]` não é documento. Nos outros 3, o objeto é um documento de dentro da
+  lista, indexado por `[0]` (2) ou por fatia (1): o agente tratou um documento único como lista, um nível abaixo da
+  mesma estrutura (o padrão "desce um nível demais" de `01-racionais.md` §3 Passo 8). Em 1 caso os documentos
+  trazem dois campos a mais, nulos (`iuDocsId`, `iuDocsTenantId`) — se é mudança ao longo do tempo é pergunta do
+  Passo 4. 2 dos 91 erros não trazem valor na mensagem (os de `.get`). O `thought` do step cita o nome da
+  ferramenta em só 5/91: em 90 casos ela foi chamada num step anterior. *Corrigido em 16/09: a primeira leitura
+  descrevia só o primeiro elemento de `result` (ver `03-procedimento-validacao.md` §1.7).*
 - **`validar_quebra_sigilo`** — `{vazamento_sigilo: str, justificativa: str}` em 7/7. O agente pediu
   `quebra_sigilo` em 7/7, e o `thought` do step cita `quebra_sigilo` literalmente em 7/7: ele já esperava a chave
   errada antes de escrever o código.
@@ -473,8 +476,66 @@ recorrência), mas não foram descartadas.
 | nº10 | `ConversationAgent` | não resolvido | colunas inexistentes num DataFrame montado pelo agente | não lido (o objeto é um DataFrame) | atribuição a refazer |
 | nº2 | `ConversationAgent` | não resolvido / `meta_map` (5 erros) | `.get` dentro de função auxiliar escrita pelo agente | sem valor na mensagem | atribuição a refazer |
 
-**Ainda não feito:** Passos 3 a 8 — autocorreção do agente, estabilidade no tempo, decisão de status, verificação
-por amostragem com `drill_down.py`, e o registro final no schema de `01-racionais.md` §8.
+**A chave certa já estava no system prompt? (addendum ao Passo 2).** Presença literal, na forma estrita — como
+chave de JSON (`'chave':`); as formas frouxas inflam com prosa e valores de exemplo (teste em
+`03-procedimento-validacao.md` §1.7).
+
+| Ferramenta | Chave | Real ou errada | Como chave no prompt | Declarada no bloco da própria ferramenta |
+|---|---|---|---:|---:|
+| `get_available_documents` | `result` | real | 0/91 | 0/91 |
+| `get_available_documents` | `metadado`, `nomeMetadado`, `valorMetadado` | real | 0/91 | 0/91 |
+| `get_available_documents` | `hashDocumento`, `tipoExtracaoOcr` | real | 91/91 | 0/91 |
+| `validar_quebra_sigilo` | `vazamento_sigilo` | real | 0/7 | 0/7 |
+| `validar_quebra_sigilo` | `justificativa` | real | 0/7 | 0/7 |
+| `validar_quebra_sigilo` | `quebra_sigilo` | **errada** | **7/7** | **7/7** |
+| `extrair_evidencias` | `dados_evidencias` | real | 0/1 | 0/1 |
+| `extrair_evidencias` | `informacoes_evidencias` | **errada** | **1/1** | **1/1** |
+
+Dois quadros diferentes:
+
+- **`get_available_documents` — a informação não está no prompt.** Nem o invólucro `result`, nem as duas posições,
+  nem a forma de `metadado` aparecem como chave em lugar nenhum do prompt. `hashDocumento` e `tipoExtracaoOcr`
+  aparecem, mas fora do bloco desta ferramenta — no formato de documento que outras ferramentas recebem como
+  argumento. É lacuna de informação: o tipo de buraco que uma memória factual tapa.
+- **`validar_quebra_sigilo` — o prompt declara o contrato errado.** O bloco da própria ferramenta diz que ela devolve
+  `{"quebra_sigilo": "SIM" ou "NÃO", "motivo": "justificativa"}`; ela devolve `{vazamento_sigilo, justificativa}`
+  nos 7 casos. O agente pediu exatamente a chave que o prompt declara — e `"justificativa"` só aparece no prompt
+  como valor de exemplo, não como chave. `extrair_evidencias` repete o padrão (declara `informacoes_evidencias`,
+  devolve `dados_evidencias`). Aqui o erro não nasce de informação ausente, e sim de documentação da ferramenta
+  divergente da implementação — falha do ambiente, não do agente.
+
+**O que o agente fez no step seguinte (Passo 3).**
+
+| Ferramenta | Erros | (1) Troca de chave | … dessas, com guarda de tipo | (2) Conserto silencioso | (3) Sem conserto comparável | Repetiu, sem guarda | Não aplicável |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `get_available_documents` (nº2) | 91 | 81 | 17 | 0 | 7 | 1 | 2 |
+| `validar_quebra_sigilo` (nº10) | 7 | 6 | 0 | 1 | 0 | 0 | 0 |
+
+- **nº2:** nas 81 trocas a chave nova é `result` (em 1, junto com chaves de documento), e todas batem com o schema do
+  Passo 2; o step seguinte roda sem erro em 72/81. Em 17 delas o agente mantém o acesso antigo num ramo alternativo
+  (`docs['result'][0] if 'result' in docs else docs[0]`): corrige, mas se protege dos dois formatos — não confia
+  que a forma do retorno é estável. Os 7 sem conserto comparável são, na maioria, steps que só inspecionam o objeto
+  (`print(type(...))`, `json.dumps`). 1 caso repete o acesso sem guarda e mesmo assim o step seguinte não tem
+  erro — não inspecionado. Os 2 "não aplicável" são erros de atributo ("dict iterado como lista"), fora da regra de
+  chave/índice.
+- **nº10:** 6/7 trocam para `vazamento_sigilo` (1 também lê `justificativa`), todos sem erro no step seguinte. O
+  caso restante é um conserto silencioso, e benigno: o agente chama a ferramenta de novo e escreve
+  `.get("quebra_sigilo", <var>.get("vazamento_sigilo"))` — a chave declarada pelo prompt com a chave real como
+  segundo parâmetro, um código que funciona com os dois contratos (a mesma proteção das 17 guardas da nº2).
+- **Dormentes:** `extrair_evidencias` troca para `dados_evidencias` (o step seguinte ainda erra, por outro motivo); o
+  caso de metadado de `get_available_documents` troca para `hashDocumento` / `tipoExtracaoOcr`.
+- **Nenhuma troca contradiz o schema do Passo 2.** São duas fontes independentes — o objeto que o erro imprime e o
+  código que o próprio agente escreveu depois — apontando a mesma chave.
+
+**O que isso muda para as duas candidatas.** A nº2 tem o que uma memória factual precisa: o fato, confirmado por duas
+fontes independentes, e ausente do prompt. A nº10 também tem o fato confirmado por duas fontes, mas a causa é o prompt
+declarar o contrato errado: uma memória dizendo "use `vazamento_sigilo`" contradiria o prompt, e ficaria errada no dia
+em que alguém corrigisse a ferramenta para bater com a documentação. O conserto na origem é na documentação da
+ferramenta — harness, não memória. **Decisão em aberto:** reclassificar a nº10 como não-memória · harness (como as
+linhas `H_` do §6) ou mantê-la como memória, sinalizando a divergência ao time da plataforma.
+
+**Ainda não feito:** Passos 4 a 8 — estabilidade no tempo, decisão de status, verificação por amostragem com
+`drill_down.py`, e o registro final no schema de `01-racionais.md` §8.
 
 ## 7 · O que a leitura dos papers refutou
 
@@ -551,7 +612,7 @@ Três afirmações da v1 não sobreviveram:
    fora do v1 — é observabilidade/agent-evals.
 2. **Minerar automaticamente as unidades "Retorno das ferramentas de documento é dict" e "Campo inexistente no
    retorno estruturado"** (§6, nºs 2 e 10) — consolidar o schema real de retorno a partir dos próprios erros, sem
-   LLM. É o protótipo direto do mecanismo do projeto. **Em andamento (16/09): Passos 1–2 de 8 feitos — §6.1.**
+   LLM. É o protótipo direto do mecanismo do projeto. **Em andamento (16/09): Passos 1–3 de 8 feitos — §6.1.**
 3. **Rodar os detectores nas execuções SEM erro — versão determinística primeiro** — o MAST mostra que os
    modos de verificação vivem lá, e 63% das minhas execuções estão fora da análise atual. Tentar primeiro o
    proxy determinístico (padrão de validação no `code_action` — `assert`/`if not`/`len(`/`try-except` antes de

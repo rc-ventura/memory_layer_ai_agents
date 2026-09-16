@@ -135,7 +135,9 @@ contagens de steps/execuções/tokens. Nenhum embute uma decisão de "o que cont
 | §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 10 candidatas muda de lado (marcada limítrofe) |
 | `submecanismo()` — base das análises por mecanismo | ordem das regras e o limiar de 15% de stopwords | 6 casos abertos com `drill_down.py` (15/09) | ⚠️ **conferido por amostra, não testado por variação** — os 6 casos batem; variar as regras ainda não foi feito |
 | §9 dos racionais, Passo 1 — de qual ferramenta vem cada erro (nº2: 94,8%; nº10: 70%) | a regra de rastreio da variável (AST; comando → step → steps anteriores) | conferência manual de todos os casos fora da dominante + amostra de 4 da dominante (16/09) | ⚠️ **conferido por amostra, não testado por variação** — as atribuições conferem; 5 (nº2) e 1 (nº10) ficam não resolvidos; o veredito da nº2 resiste ao pior caso (ver §1.7) |
-| §9 dos racionais, Passo 2 — schema lido da mensagem | o método de leitura do objeto impresso | `ast.literal_eval` × regex tolerante | ✅ **robusto** — 89/89 e 7/7 concordam (ver §1.7) |
+| §9 dos racionais, Passo 2 — schema lido da mensagem | o método de leitura do objeto impresso | `ast.literal_eval` × regex tolerante | ✅ **robusto** — 89/89 e 7/7 concordam (ver §1.7); a descrição da forma foi **corrigida** (listas mistas) |
+| §9 dos racionais, addendum ao Passo 2 — a chave está no system prompt | a forma de presença de texto | palavra solta × entre aspas × como chave (`'chave':`) | ❌ **formas frouxas não robustas** — `result` e `justificativa` aparecem só como prosa/valor; reportada a forma estrita (ver §1.7) |
+| §9 dos racionais, Passo 3 — tipo do conserto no step seguinte | o que conta como "o mesmo objeto" | abertura dos casos que contrariavam o esperado (19 "repetiu" sem erro seguinte) | ⚠️ **corrigido** — reatribuição e guarda de tipo; 1 caso não inspecionado (ver §1.7) |
 
 ### O método por trás de cada teste — o racional
 
@@ -291,11 +293,11 @@ relatório. Continua sendo um indício útil, mas deve ser apresentado com a def
 ### 1.7 · Mineração das unidades nº2/nº10 (racionais §9) — como foi rodado, conferido, e onde desviou do pré-registro
 
 Resultados em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.1; o porquê de cada passo e de cada régua em
-[`01-racionais.md`](01-racionais.md) §9. Estado: Passos 1 e 2 de 8.
+[`01-racionais.md`](01-racionais.md) §9. Estado: Passos 1 a 3 de 8, mais o addendum ao Passo 2.
 
 **Pré-registro.** O método foi commitado antes de rodar (`cb032ad`); o adendo ao Passo 3 (conserto silencioso com
-`.get` / `try-except`) também, antes de o Passo 3 rodar (`ae8264b`). As emendas feitas depois de um passo rodar
-estão datadas no próprio §9 dos racionais.
+`.get` / `try-except`) também, antes de o Passo 3 rodar (`ae8264b`), e a checagem do system prompt, antes de rodar
+(`2a07d6e`). As emendas feitas depois de um passo rodar estão datadas no próprio §9 dos racionais.
 
 **Como reproduzir.** No Jupyter: rodar o notebook até o fim — as células da §11 só dependem da §1 (explosão em
 steps), da §2 (`classify()`) e da célula "Do sintoma ao mecanismo". Nesta rodada a §11 foi executada fora do
@@ -346,11 +348,55 @@ candidatas**. Foi este teste que mostrou o defeito da primeira versão da emenda
 inclusive uma dominante recorrente) — ver `01-racionais.md` §9. As unidades reais seguem iguais: nº2 (a), nº10 (b),
 bucket vazio.
 
-**PII.** As células da §11 imprimem só nome de função, contagens, nomes de chave e tipos; chave com cara de dado vira
-`<chave-dado>`. Nenhum valor retornado pelas ferramentas sai na tela.
+**Correção da leitura do Passo 2 (16/09, depois de publicada).** A função `forma` descrevia só o **primeiro**
+elemento de listas com elementos de tipos diferentes. `result` tem dois — a lista de documentos e um resumo de
+contagens por campo — e o segundo não aparecia. Achado ao rodar a checagem do system prompt: a primeira versão dela
+descia em todos os níveis do objeto e trouxe chaves que não estavam no schema publicado; um mapa de caminhos (só
+estrutura) mostrou a posição 1 de `result` nos 86 retornos inteiros, sempre depois da lista de documentos. Corrigido:
+listas mistas descrevem todos os tipos; dicionário de contagem vira `{<campo>: {<valor>: int}}`; campos de registros
+mostram a forma de cada valor (a forma de `metadado` passou a aparecer nos 86, não só em 3). O teste de robustez
+(89/89, 7/7) não muda — ele compara chaves de topo.
+
+**Incidente de PII na primeira versão da checagem do system prompt.** Ao descer em todos os níveis, ela imprimiu na
+saída da sessão chaves que eram **dado**: valores categóricos (tipos de peça, UFs, canais) e hashes de documento de 32
+caracteres. Nomes, CPF/CNPJ e números de processo não saíram — a máscara de sequências de ≥5 dígitos segurou. Nada
+disso foi para documento nem para o notebook. Corrigido: as chaves reais vêm só do schema do Passo 2, e a `forma`
+mascara chave com cara de dado (hex longo, código em maiúsculas, ≥5 dígitos). Nome de variável também pode embutir
+identificador (um agente nomeou uma variável com um número longo): a célula do Passo 3 não imprime nomes de variável.
+
+**Teste de robustez da checagem do system prompt — três formas de presença.** Palavra solta, entre aspas e como chave
+de JSON (`'chave':`) divergem exatamente onde deviam: `result` aparece 91/91 como palavra (prosa dos exemplos
+genéricos do smolagents) e 0/91 como chave; `justificativa` aparece 7/7 entre aspas (como valor, em
+`"motivo": "justificativa"`) e 0/7 como chave; `quebra_sigilo`, `hashDocumento` e `tipoExtracaoOcr` batem nas três. A
+forma reportada no relatório é a estrita. **Extensão não pré-registrada**, motivada pelas janelas de contexto
+(redigidas) que mostraram onde cada chave fica no prompt: se a chave está declarada dentro do bloco
+`def ferramenta(...)` — o que separa "o prompt declara esta chave para esta ferramenta" de "a chave aparece no prompt".
+
+**Passo 3 — o que o pré-registro não previu, e como foi tratado.** (i) **Reatribuição:** a primeira rodada contou 19
+"repetiu o acesso errado" na nº2 — e nos 19 o step seguinte **não** teve erro, o que não combina com repetição. Abertos
+com as linhas redigidas: o agente reatribui a variável (`docs = docs['result'][0]`) e depois lê `docs[0]`, que já é
+outro objeto. Regra: só contam as leituras antes da reatribuição e as do lado direito dela. A primeira versão dessa
+regra também cortava quando o agente chamava **a mesma ferramenta** de novo com o mesmo nome — o que escondeu o
+conserto silencioso da nº10 (virou "não lê mais a variável"); corrigido: reatribuir com a mesma ferramenta não corta.
+(ii) **Guarda de tipo:** com a regra (i), 18 casos ainda tinham o acesso antigo, 0 com erro no step seguinte — 17
+dentro de um ramo guardado pelo tipo da própria variável (`x['result'][0] if 'result' in x else x[0]`), contados como
+troca de chave marcada "com guarda de tipo"; 1 sem guarda, não inspecionado. (iii) A chave nova é comparada com o
+schema da **ferramenta** (todas as sub-unidades dela), não do pedaço indexado: o caso de metadado da nº10 indexava um
+item `{nomeMetadado, valorMetadado}` e corrigiu lendo `hashDocumento` no documento. (iv) O `.get` da nº10 foi aberto:
+o segundo parâmetro é `<var>.get('vazamento_sigilo')`.
+
+**Rodada no Jupyter (16/09).** Rodado no kernel "Python (memory-layer-ai-agents)" até a §11.2, sem erro: as saídas das
+§1–§10 reproduzem as já publicadas (na célula do achado central o Jupyter só juntou duas saídas de texto numa; no
+gráfico 8.10 a imagem foi redesenhada, com o mesmo texto). A saída salva da §11.2 foi limpa, porque era do código
+anterior à correção acima; as §11.2–§11.4 ainda precisam ser rodadas no Jupyter para salvar saídas.
+
+**PII.** As células da §11 imprimem só nome de função, contagens, nomes de chave e tipos, e o segundo parâmetro do
+`.get` como estrutura; chave com cara de dado vira `<chave-dado>`. Nenhum valor retornado pelas ferramentas sai na
+tela.
 
 **Ainda não feito:** a verificação por amostragem do Passo 6 (conferir o schema derivado contra o trace cru com
-`drill_down.py caso`, 5 casos por unidade) — a conferência acima é da **regra de atribuição**, não do schema final.
+`drill_down.py caso`, 5 casos por unidade) — as conferências acima são das **regras**, não do schema final; e o 1 caso
+de "repetiu sem guarda" da nº2.
 
 ---
 
