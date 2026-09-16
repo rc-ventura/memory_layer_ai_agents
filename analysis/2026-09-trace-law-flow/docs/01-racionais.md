@@ -959,6 +959,42 @@ segunda função com peso ≥10% → a unidade se divide, uma lição por ferram
 unidade inteira é 100% `ConversationAgent` e `get_available_documents` sozinha já domina o trace inteiro (730
 chamadas, `02-relatorio-achados.md` linha 48) — mas quem decide é a contagem, não essa expectativa.
 
+**Resultado do Passo 1 (rodado em 16/09/2026, depois do commit do pré-registro `cb032ad` — notebook §11.1).**
+*Nota de execução, sem alterar o texto pré-registrado acima:* o Passo 1 diz "96 (nº2) e 10 (nº10) ocorrências",
+mas 96 são **erros** — a nº2 tem 87 ocorrências (cascatas deduplicadas). Rodei nos dois níveis; o veredito é o
+mesmo. Depois da primeira rodada, o parser da mensagem foi corrigido em dois formatos que ele não lia
+(`KeyError` seguido de "Maybe you meant…"; erro de colunas do pandas) — os limiares não mudaram, e o veredito da
+nº10 foi "divide" antes e depois da correção.
+
+- **nº2 — uma ferramenta só.** `get_available_documents` em 91/96 erros (94,8%) e 86/87 ocorrências (98,9%),
+  100% `ConversationAgent`, 6 meses — a expectativa declarada se confirmou, e o plural "ferramentas" do relatório
+  era imprecisão de texto. 5 erros ficaram **não resolvidos**, todos "dict iterado como lista": o `.get` falha
+  dentro de uma função auxiliar escrita pelo próprio agente, que a regra não segue. Mesmo contando os 5 contra,
+  94,8% ≥ 90%.
+- **nº10 — divide.** `validar_quebra_sigilo` 7/10 (70%; `RespostaBacen`, 7 execuções, 3 meses — passa na
+  triagem de recorrência); `extrair_evidencias` 1 (`RespostaBacen`: pediu `informacoes_evidencias`, o retorno
+  tinha `dados_evidencias`); `get_available_documents` 1 (`ConversationAgent`: campo de metadado inexistente);
+  1 não resolvido (`ConversationAgent`: colunas inexistentes num DataFrame montado pelo agente). Cada função
+  minoritária tem exatamente 1/10 = 10%, no limite da regra — mas o veredito não depende disso: a dominante já
+  fica em 70%, abaixo dos 90%. A unidade da nº10 passa a ser `(RespostaBacen, validar_quebra_sigilo)`. O
+  "conteúdo proposto" atual misturava esse fato com uma regra genérica ("na dúvida, inspecionar `r.keys()`") —
+  exatamente o que este passo existia pra pegar.
+
+**Causas pequenas: documentadas e monitoradas, não descartadas.** As sub-unidades de 1 caso e os não resolvidos
+não viram memória agora — um caso não é evidência de recorrência, e a triagem do §7 (≥3 execuções e ≥2 meses)
+continua valendo sem mudança. Mas **ficar fora por falta de recorrência numa amostra de 1.000 linhas não é o mesmo
+que não recorrer**: a base atual tem provável `LIMIT` (`04-roadmap.md` item 3). Ficam registradas com a mesma
+lógica do protocolo do harness [INATIVO] (§6 do relatório) — dormentes, com gatilho de reabertura explícito:
+**na segunda extração, reaplicar a mesma triagem a cada sub-unidade `(unidade, papel, função)`; se passar em ≥3
+execuções e ≥2 meses — na base nova, ou nas duas somadas depois do dedup por `cod_idef_exeo` —, vira candidata.**
+
+| Unidade | Papel | Função de origem | O que aconteceu | Estado |
+|---|---|---|---|---|
+| nº10 | `RespostaBacen` | `extrair_evidencias` | pediu `informacoes_evidencias`; o retorno tem `dados_evidencias` | monitorar na 2ª extração |
+| nº10 | `ConversationAgent` | `get_available_documents` | campo de metadado inexistente (`nom_docm_juri_mode`) | monitorar na 2ª extração |
+| nº10 | `ConversationAgent` | não resolvido | colunas inexistentes num DataFrame montado pelo agente | monitorar; atribuição a refazer |
+| nº2 | `ConversationAgent` | não resolvido (5 erros) | `.get` dentro de função auxiliar escrita pelo agente | monitorar; atribuição a refazer |
+
 **Passo 2 — extrair o schema real da própria mensagem de erro, e reforçar com o `thought` (só por presença de
 texto, nunca por interpretação).** O formato do smolagents (`Could not index {valor} with {chave}`) embute o
 valor retornado de verdade — já confirmado no exemplo documentado (`1be966e7…`, step 7:
