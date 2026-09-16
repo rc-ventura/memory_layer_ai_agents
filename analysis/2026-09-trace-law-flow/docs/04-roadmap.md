@@ -27,7 +27,19 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item "Which parameters...
   should become adaptive"). Pertence a observabilidade/agent-evals como disciplina própria, ou a um v2 que
   relaxe a restrição de determinismo.
-- **Minerar automaticamente a unidade "Retorno das ferramentas de documento é dict"** (schema de retorno sem LLM; nº 2 na tabela refeita em 15/09, `02-relatorio-achados.md` §6) — adiado, não é prioridade agora.
+
+## Urgente — antes da segunda extração (revertido 2026-09-16)
+
+- [ ] **Minerar automaticamente as unidades nº2 ("Retorno das ferramentas de documento é dict") e nº10
+  ("Campo inexistente no retorno estruturado") na base atual.** Schema de retorno sem LLM — extrair da própria
+  mensagem de exceção (`Could not index {chaves reais} with {chave pedida}`) o schema real de cada ferramenta,
+  cruzando com os usos bem-sucedidos da mesma ferramenta no trace. **Estava listado como "adiado, não é
+  prioridade agora" desde 08/09 (reafirmado 15/09) — revertido em 16/09** depois de discussão de sequenciamento:
+  o custo é baixo (determinístico, regex, ~1 dia), e rodar isso **antes** da segunda extração (item 3 abaixo)
+  transforma a comparação de bases num teste de replicação do próprio schema minerado, não só dos números
+  agregados — ver [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item
+  "Second trace extraction". Produz a primeira unidade de memória `factual · ambiente` derivada e validada
+  contra o dado (não hipótese à mão), no schema de `01-racionais.md` §8.
 
 ## Analítico — em aberto, em ordem de valor
 

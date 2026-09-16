@@ -924,6 +924,165 @@ inteiro.
 
 ---
 
+## 9 · Minerar as unidades nº2/nº10 — passo a passo (pré-registro, antes de rodar)
+
+Registrado em 16/09/2026, **antes de tocar no dado** — protocolo pré-registrado (decisão por número, não por
+gráfico), reabrindo a linha que estava "adiada, não é prioridade" desde 08/09 em `04-roadmap.md` (ver também
+[`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item "Second trace
+extraction"). Escopo: **nº2** (`U_contrato_dict`, submecanismo `dict_indexado_por_posicao` /
+`dict_iterado_como_lista`, 96 erros / 87 execuções / 6 meses, 100% `ConversationAgent`) e **nº10**
+(`U_campo_inexistente`, submecanismo `campo_inexistente_no_retorno`, 10 erros / 10 execuções / 3 meses,
+dominante em `RespostaBacen`). Objetivo: substituir o "conteúdo proposto" hoje escrito à mão em
+`candidatos_memoria.csv` pelo conteúdo derivado e checado contra o próprio trace, no schema de §8.
+
+**Passo 1 — "ferramenta não é unidade": testar a premissa antes de escrever a lição.** O §7 Passo 1 já provou,
+um nível acima, que agrupar por sintoma esconde causas diferentes: a mensagem "Could not index" sozinha
+misturava três problemas (89 dict-como-lista, 37 string-como-dict, 10 campo inexistente) até a régua virar
+"submecanismo". O mesmo risco existe um nível abaixo, ainda não testado: um submecanismo pode misturar
+**ferramentas** diferentes que quebram do mesmo jeito. Pista concreta, não confirmada:
+`02-relatorio-achados.md` (linha 400) descreve a nº2 no plural — "**ferramentas** retornam
+`{'result': [[...]]}`" — sugerindo que mais de uma ferramenta do `ConversationAgent` pode compartilhar esse
+contrato quebrado, sem que isso já tenha sido contado.
+
+Por que importa de verdade: se a nº2 for, na real, duas ferramentas — uma que devolve `{'result': [...]}` e
+outra que devolve `{'conteudo': [...]}` —, uma lição única ("acesse sempre `r['result'][0]`") **acerta** para a
+dominante e **atrapalha ativamente** a outra, porque a chave certa é diferente. Memória confiante e errada numa
+fração dos casos é pior do que nenhuma memória.
+
+**Operação:** para cada uma das 96 (nº2) e 10 (nº10) ocorrências, olhar o `code_action` daquele step (já
+disponível em `RAW`) e identificar qual função foi chamada logo antes da linha que quebrou — o código de
+verdade, não a mensagem de erro. Contar, por unidade, quantas ocorrências vêm de cada função.
+
+**Decisão:** ≥90% das ocorrências da mesma função → confirma "uma coisa só", sigo com essa confiança. Uma
+segunda função com peso ≥10% → a unidade se divide, uma lição por ferramenta, não uma lição genérica.
+**Expectativa declarada antes de rodar** (previsão a testar, não a resposta): provável "uma coisa só", já que a
+unidade inteira é 100% `ConversationAgent` e `get_available_documents` sozinha já domina o trace inteiro (730
+chamadas, `02-relatorio-achados.md` linha 48) — mas quem decide é a contagem, não essa expectativa.
+
+**Passo 2 — extrair o schema real da própria mensagem de erro, e reforçar com o `thought` (só por presença de
+texto, nunca por interpretação).** O formato do smolagents (`Could not index {valor} with {chave}`) embute o
+valor retornado de verdade — já confirmado no exemplo documentado (`1be966e7…`, step 7:
+`{'vazamento_sigilo': 'NAO', 'justificativa': '...'}` pedindo `'quebra_sigilo'`). **Operação:** regex pra
+separar `{valor}` de `{chave}`; `ast.literal_eval(valor)` primeiro (nunca `eval` — não executa nada); se falhar
+(valor truncado, aspas quebradas — risco real na nº2, que pode carregar texto de documento), cair pra um regex
+tolerante que só puxa as chaves de topo (`r"'(\w+)':"`), sem tentar reconstruir o objeto inteiro. **Teste de
+robustez embutido** (mesmo espírito do prefixo-vs-sufixo do §3 Passo 6): rodar os dois métodos nas mesmas
+ocorrências e comparar quantos casos cada um resolve e se as chaves batem — divergência grande é sinal de regra
+errada, não de dado ruim.
+
+**O reforço do `thought`, e onde a linha determinístico/não-determinístico passa exatamente.** O `thought`
+daquele mesmo step pode confirmar, **por presença literal de texto**, se o agente já "esperava" aquela chave ou
+ferramenta antes do código quebrar — mesmo mecanismo do detector determinístico do item 6 do roadmap (regex no
+`thought` vs. AST no `code_action`, sem juiz). Isso **entra** como evidência extra pro `description`. O que
+**não entra** aqui: interpretar *por que* o agente achou que a chave era aquela (alucinou? confundiu com outra
+ferramenta?) — isso exige julgamento sobre texto livre, não é achar uma string, e cai fora da escada de degraus
+inteira (ver Passo 7).
+
+**Passo 3 — cruzar com a autocorreção do próprio agente.** Reaproveita o que já está calculado em §3 (430/498
+leram o erro no contexto seguinte). Para as ocorrências de nº2/nº10 especificamente, pegar o `code_action` do
+step seguinte na mesma execução e checar se ele acessa a mesma variável com uma chave/índice diferente do que
+falhou. Isso dá uma **segunda fonte independente** da chave certa — o `1be966e7…` já documenta isso: o próprio
+agente escreve o mapeamento `vazamento_sigilo → quebra_sigilo` num comentário no step seguinte. Onde essa
+correção existe, ela confirma (ou contradiz) o que o Passo 2 extraiu da mensagem de erro — uma terceira fonte
+determinística, independente das duas primeiras.
+
+**Passo 4 — checar estabilidade entre ocorrências e ao longo do tempo, por ferramenta — e o subproduto que isso
+gera de graça.** As chaves reais são as mesmas nas N ocorrências, nos M meses cobertos? **Se sim** → fato
+estável, memória factual de alta confiança. **Se não** (ex.: um mês mostra schema diferente) → não forço uma
+linha única; reporto "schema mudou em `<mês>`". **Subproduto, não escopo original deste passo:** esse mesmo
+teste de estabilidade, rodado uma vez pra minerar a unidade, produz de graça um **detector reaproveitável** —
+quando um schema historicamente estável quebra de repente, isso é sinal determinístico de **anomalia de
+ambiente** (a API da ferramenta mudou), não de comportamento do agente. É exatamente a distinção que
+[`../../../discussion/open-questions.md`](../../../discussion/open-questions.md) já registra em aberto
+("Should the deterministic anomaly filter... distinguish agent-behavior anomalies from environment/
+infrastructure anomalies"), hoje sem proxy proposto. Não é escopo desta mineração construir o filtro inteiro —
+mas o subproduto fica registrado como candidato a bloco de construção reutilizável pra aquele item.
+
+**Passo 5 — regra de decisão do que vira `status: derived-and-checked` vs. resíduo (pergunta diferente do Passo
+1).** O Passo 1 pergunta "estou agrupando a coisa certa?" (correção de **escopo**). Este passo pergunta "eu
+consegui *ler* o dado direito o suficiente pra confiar no que extraí?" (confiabilidade de **extração**) — são
+perguntas independentes: mesmo com o Passo 1 respondido "é uma ferramenta só", a extração ainda pode falhar
+caso a caso (mensagem truncada, aspas quebradas). **Regra:** ≥90% das ocorrências parseadas com sucesso no
+Passo 2 **e** nenhuma contradição de schema entre elas no Passo 4 → `status: derived-and-checked`. Abaixo
+disso, ou com contradição → `status: "parcial"`, cobertura exata reportada, resíduo sempre explicitado — nunca
+escondido, mesmo princípio já aplicado no roadmap ("não forçar camada 2 no resíduo").
+
+**Passo 6 — verificação humana por amostragem, antes de aceitar o candidato final.** Abrir manualmente uma
+amostra pequena (5 por unidade, incluindo ao menos 1 caso do resíduo não-parseado do Passo 5) via
+`drill_down.py caso()` e conferir se o schema derivado bate com o trace cru — mesma disciplina do item 12 do
+roadmap ("rodar, triangular com `drill_down.py` contra casos concretos antes de reportar"). Esta verificação
+não é opcional mesmo se o Passo 5 der 100% de cobertura sem contradição: cobertura alta garante que o método
+foi **consistente**, não que ele está **certo** — é possível estar consistentemente enganado (ex.: o regex do
+Passo 2 sempre pegando a chave errada de um jeito sistemático).
+
+**Passo 7 — o que este método produz é causa raiz, mas de um nível específico; o que ele não produz, e por
+quê.** O schema real da ferramenta (degrau 2 · descrição) e a instrução de ação (degrau 3 · correção) são
+causa raiz **da falha de execução**: o `KeyError` aconteceu porque faltava uma informação verificável (a chave
+certa), e essa informação, uma vez presente, fecha exatamente esse buraco. Isso não é definição nova para este
+passo — é a mesma que o pipeline usa desde a v2, já registrada na "Ressalva de método" do §7: *"Tudo aqui é
+classificado pelo que o trace **mostra** — a mensagem de exceção e a linha que falhou —, não pelo raciocínio
+do agente."* O AgentDebug, quando lê o *thought* pra decidir em qual módulo cognitivo o erro nasceu, responde
+uma pergunta diferente e mais funda — **por que** o agente escreveu aquele código (alucinou o schema? nunca
+leu a declaração da ferramenta? ruído de sampling?). Essa pergunta não é degrau 2 nem degrau 3 desta escada:
+cai nos módulos `memory`/`reflection` do AgentDebug, já registrados em `04-roadmap.md` (sub-achado do item 10)
+como **fora de alcance sem LLM** — não é um gap novo desta análise.
+
+**Degrau 2 → degrau 3: o mesmo fato, dois modos gramaticais.** Não são dois achados diferentes. Degrau 2
+narra o que aconteceu, modo indicativo, uso forense: "a ferramenta X devolve `{chaves reais}`; o agente pediu
+`{chave errada}`". Degrau 3 reformula a mesma informação como instrução de ação futura, modo imperativo — é o
+payload que vai pro contexto do agente: "ao ler o retorno de X, use `{chave real}`, não `{chave errada}`". Uma
+vez que os Passos 2–4 derivam o schema real e o padrão de acesso errado, ir de degrau 2 pra degrau 3 é reescrita
+quase mecânica, não pede dado novo — por isso os dois entram juntos no schema final (§8).
+
+**O que fica genuinamente de fora, sem correção proposta aqui.** A causa cognitiva (por que o agente errou, não
+só o que ele errou) exigiria uma de duas alavancas que o projeto já decidiu não usar em v1: mudança de
+harness/prompt (`../../../discussion/open-questions.md`, item "Update Engine as candidate to propose harness
+changes in v2" — adiado pro v2) ou treino/ajuste do modelo (fora de escopo do projeto inteiro,
+`scope-and-terminology-decisions.md#1`, mecanismo não-paramétrico). A memória factual não resolve isso porque
+não é esse o tipo de buraco que ela tapa. O teste que decide se ela é suficiente já está definido na
+arquitetura: replay contrafactual — "`M` voltou a ocorrer em `R` depois da escrita?" Se a reincidência cair
+depois da correção injetada, era buraco de informação; se persistir mesmo com o fato disponível no contexto, é
+sinal de que o problema é de harness, não de memória — dado empírico barato pra decidir se escala pro v2, não
+palpite.
+
+**Passo 8 — o schema final de saída.** "Unidade", pra fins deste schema, é a granularidade que sobra depois do
+Passo 1 — pode ser a linha original de `candidatos_memoria.csv` (se confirmado "uma ferramenta só") ou uma
+sub-unidade por ferramenta (se o Passo 1 dividir). Cada campo do schema de §8 tem uma origem específica, sem
+mistério:
+
+| Campo | Origem |
+|---|---|
+| `category` | a unidade em si — produção própria do projeto (§7) |
+| `location`, `evidence`, `impact` | **TRAIL** (Apêndice A.11 — anotação por span) |
+| `description`, `correction_guidance` | **AgentDebug** (Stage 1/2 — descrição do caso e diretiva corretiva) |
+| `occurrences`, `status`, `validation` | produção própria do projeto — a disciplina "derivado-e-checado vs. hipótese" (Commit Gate), não vem de nenhum paper |
+| `scope` (papel/ferramenta) | produção própria do projeto — achado empírico de `02-relatorio-achados.md` §6 ("a chave de recuperação da unidade deve ser (papel, unidade), não global") |
+
+**`location`/`evidence` são lista, não exemplo único.** A unidade só virou candidata por ter recorrência (≥3
+execuções/≥2 meses) — a evidência tem que carregar essa recorrência, não um caso isolado escolhido a dedo.
+Proposta: `location` = lista de `{exec_id, role, step}` (capada em ~10 amostras + contagem total para unidades
+grandes, como as 96 da nº2); `evidence` = 2–3 excertos representativos, **redigidos** (só chaves de topo, nunca
+o conteúdo de string dentro delas — mesma regra de PII já usada pelo `drill_down.py`, crítica aqui porque a nº2
+vem de ferramentas de documento).
+
+**`scope: {role, tool}` como campo de primeira classe, não enterrado dentro de `location`.** É o que decide de
+qual "prateleira" de memória o agente vai puxar depois — batendo direto com o `ACL(μ, uid)` ainda em aberto na
+arquitetura (`../../../discussion/open-questions.md`).
+
+**`impact`: `null` nesta rodada — decisão explícita, não omissão.** O `impact` do TRAIL é atribuído por
+anotador (humano ou juiz lendo o span), não por fórmula — "usar a metodologia do TRAIL" de verdade significaria
+rodar um juiz, o que este passo (determinístico, sem LLM) não faz. Preencher com uma proxy inventada agora
+(ex.: frequência ou custo em tokens) repetiria o erro que o próprio `impact` existe pra evitar — `01-racionais.md`
+§8 já avisa que confundir frequência com gravidade é exatamente essa armadilha. Fica `null`, pendente do item
+11 (gold-standard + juiz calibrado).
+
+**Ressalva final, residual — não é a lacuna do Passo 7, é outra.** Este método só cobre erros que já bateram em
+alguma regra de `submecanismo()`. Uma falha silenciosa nova, do mesmo tipo de problema (schema de retorno
+errado) mas sem exceção e sem match em nenhum detector existente, não aparece em nada disto — mesmo ponto cego
+já registrado em `../../../discussion/open-questions.md` (item "Second trace extraction").
+
+---
+
 ## Onde ver os números e o código de cada teste
 
 Este documento explica a lógica; [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.5–1.6 tem a
