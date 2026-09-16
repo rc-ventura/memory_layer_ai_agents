@@ -836,6 +836,31 @@ o que fazer diferente.
 | **2 · Diagnóstico — descrição** | O que aconteceu, *neste caso específico*? | a ferramenta `validar_quebra_sigilo` devolve `vazamento_sigilo`; o agente pediu `quebra_sigilo` | hoje: hipótese escrita à mão por unidade (§7, "conteúdo proposto"); "de verdade" ainda não construído (`04-roadmap.md`) |
 | **3 · Correção** | O que o agente deveria fazer diferente da próxima vez? | "ao ler o retorno de `validar_quebra_sigilo`, usar a chave `vazamento_sigilo`, não `quebra_sigilo`" | **não temos ainda** — é o que a unidade de memória precisa virar |
 
+**As duas lentes, antes de comparar campo a campo (adicionado 16/09/2026, a pedido do Rafael).** A tabela campo a
+campo abaixo compara o que cada *schema de saída* carrega — é uma comparação de **produto**. Antes dela, uma
+distinção mais estrutural, de **método**, que a comparação de campos não mostra por si só:
+
+- **AgentDebug analisa em nível de módulo cognitivo, com busca dirigida a um alvo causal.** A taxonomia nasce de
+  impor uma arquitetura modular ao próprio agente (tags `<memory>/<reflection>/<plan>/<action>` forçadas no
+  prompt, Fig. 17–19) — cada erro é rotulado pelo módulo interno em que nasceu. E o objetivo não é catalogar todo
+  erro; é achar **um** passo — o *critical error*, "the earliest step whose correction directly prevents the
+  final failure" (§3.2, já citado acima) — porque o racional do paper inteiro é que a propagação de erro é o
+  que mais compromete a confiabilidade do agente (Key Insight, verbatim, já citado no fichamento: *"Error
+  propagation is the primary bottleneck in LLM agent reliability. Early mistakes rarely remain confined;
+  instead, they cascade into subsequent steps..."*). Método: acha a raiz de uma cascata, não o inventário dela.
+- **TRAIL analisa em nível de sistema/observabilidade, com cobertura exaustiva.** O trace já chega estruturado
+  como spans OpenTelemetry/OpenInference — uma chamada de LLM ou de ferramenta por span (fichamento
+  `trail-2505.08638.md`, "O schema é reusável..."). A tarefa não busca uma raiz causal única: é produzir, para
+  **cada** span do trace inteiro, `category`+`location`+`evidence`+`description`+`impact` — um LLM-as-judge
+  que audita exaustivamente, sem hierarquia entre os erros achados além da escala de impacto. Método: cataloga
+  tudo que já aconteceu num trace já estruturado, não busca a causa de um fracasso.
+
+São lentes diferentes, e ambas fazem sentido pro projeto, sem que uma precise vencer a outra: o TRAIL responde
+**"quanto do que aconteceu no trace estamos vendo"** (cobertura, ponto cego — §4 do fichamento, os 59% de erros
+estruturalmente invisíveis à nossa `classify()`); o AgentDebug responde **"qual passo, corrigido, teria evitado
+a cascata"** (causa raiz, e daí a política de escrita "uma unidade de memória por cascata, na raiz" — §7 acima).
+A comparação campo a campo que segue é sobre o produto de cada método, não substitui esta distinção de método.
+
 **Onde TRAIL e AgentDebug entram — os dois cobrem o degrau 2, cada um com um campo a mais que o outro não tem:**
 
 | Campo | TRAIL (Apêndice A.11, por span) | AgentDebug (Stage 1, por módulo/passo) | AgentDebug (Stage 2, por trajetória) |

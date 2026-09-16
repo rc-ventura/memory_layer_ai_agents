@@ -69,7 +69,25 @@ Documentado em `01-racionais.md` §8.
 
 **Reflexão:** Ajuste no próprio entendimento: o TRAIL também lê o raciocínio do agente — a diferença para o AgentDebug está na pergunta (*que tipo de erro aconteceu* × *em que parte do raciocínio ele nasceu*), não no que cada um lê. Na numeração do `04-roadmap.md`, "camada 2" é o motivo, não o mecanismo.
 
-**Tags:** decisao, etiquetas-de-erro, sintoma, mecanismo, motivo, causa-raiz, trail, agentdebug, analogia-febre, quebra-sigilo, juiz-llm, gold-standard, sub-2.1, sub-2.2
+**Correção 15/09, mais tarde na mesma sessão (checado campo a campo contra os dois PDFs, a pedido do Rafael):** a equivalência "Etiqueta 2 = mecanismo = TRAIL; Etiqueta 3 = motivo = AgentDebug" não se sustentou. `01-racionais.md` §8, na versão final depois de três rodadas de correção, conclui o oposto: os dois papers ficam no **mesmo degrau** — diagnóstico, isto é rótulo reaproveitável + descrição do caso (`category`/`description` no TRAIL; `error_type`/`root_cause` no AgentDebug Stage 2) — nenhum "é" o mecanismo e o outro "é" o motivo. O que de fato distingue os dois é qual campo extra cada um carrega e o outro não tem: **TRAIL tem `impact`** (severidade HIGH/MEDIUM/LOW, ausente no AgentDebug); **AgentDebug tem `correction_guidance`** (diretiva corretiva, Stage 2 — o único dos dois que chega ao degrau 3, "correção"; TRAIL não tem equivalente). A tabela de "onde cada etiqueta vale" (sintoma/mecanismo/motivo, linhas acima) continua útil como guia prático de qual granularidade usar em cada análise do notebook — isso não mudou. O que mudou é só a atribuição "etiqueta = paper": não existe essa correspondência 1:1. Ver `01-racionais.md` §8 para a versão corrigida, com a tabela campo a campo e as citações verbatim que a sustentam.
+
+**Correção 16/09 — completando a de 15/09, não a desfazendo (a pedido do Rafael, que apontou que faltava a
+distinção mais estrutural).** A correção de 15/09 acima vale para **um** eixo — o que cada *schema de saída*
+carrega (produto): nisso, de fato, os dois ficam no mesmo degrau, e a diferença é campo a campo (`impact` só no
+TRAIL, `correction_guidance` só no AgentDebug). Mas existe um segundo eixo, de **método**, que essa correção não
+cobria e que não contradiz a primeira: **os dois usam lentes diferentes, e as duas fazem sentido para o
+projeto.** AgentDebug analisa em **nível de módulo cognitivo**, com busca dirigida a um alvo causal único — o
+*critical error*, o passo mais precoce cuja correção evitaria o fracasso da trajetória — porque seu racional
+central é que a **propagação de erro** é o que mais compromete a confiabilidade do agente. TRAIL analisa em
+**nível de sistema/observabilidade** — o trace já estruturado em spans OpenTelemetry/OpenInference — e audita
+exaustivamente todo span, sem buscar uma raiz única. Constroem a taxonomia de formas distintas por isso: os 5
+módulos do AgentDebug nascem de uma arquitetura cognitiva imposta ao agente (tags forçadas no prompt); as 3
+áreas/20 tipos do TRAIL nascem de observar erros num formato de trace já estruturado por infraestrutura, sem
+exigir nada do agente. Nenhuma lente é mais "certa" — uma dá cobertura (quanto do que aconteceu estamos vendo),
+a outra dá causa raiz (qual passo consertar primeiro). Documentado como novo parágrafo em `01-racionais.md` §8,
+antes da tabela campo a campo.
+
+**Tags:** decisao, etiquetas-de-erro, sintoma, mecanismo, motivo, causa-raiz, trail, agentdebug, analogia-febre, quebra-sigilo, juiz-llm, gold-standard, correcao, overclaim, lentes-distintas, nivel-de-modulo, nivel-de-sistema, opentelemetry, propagacao-de-erro, erro-critico, sub-2.1, sub-2.2
 
 ### Implementação — mecanismo aplicado às análises de repetição, triangulado com drill_down
 
