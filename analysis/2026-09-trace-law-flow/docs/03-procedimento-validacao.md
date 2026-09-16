@@ -20,16 +20,22 @@ envolvido, só verificação mecânica.
 
 ### 1.1 · Abra o notebook de verdade
 
-O venv criado para rodar a análise só tem as bibliotecas de execução (`nbformat`, `nbclient`, `matplotlib`),
-não uma interface pra navegar. Para abrir com código, saída e gráfico juntos:
+O ambiente Python do projeto é gerenciado por `uv`, a partir do `pyproject.toml` na raiz do repo (`.venv/`,
+git-ignored; `uv.lock` versionado para reprodutibilidade). Substituiu uma versão anterior baseada em
+`/tmp/trace_analysis/venv`, que não sobrevive entre sessões (16/09/2026).
 
 ```bash
-/tmp/trace_analysis/venv/bin/pip install jupyterlab
-/tmp/trace_analysis/venv/bin/jupyter lab pipeline/analise_trace_esteira_juridica.ipynb
+cd /Users/rafaelventura/ICT-ITAU/memory_layer_ai_agents   # raiz do repo, onde está o pyproject.toml
+uv sync                                                     # cria/atualiza .venv com pandas/numpy/matplotlib/jupyterlab
+uv run python -m ipykernel install --user --name memory-layer-ai-agents \
+    --display-name "Python (memory-layer-ai-agents)"        # só na 1ª vez por máquina
+uv run jupyter lab analysis/2026-09-trace-law-flow/pipeline/analise_trace_esteira_juridica.ipynb
 ```
 
-> Se `/tmp/trace_analysis/venv` não existir mais (`/tmp` não é garantido persistir entre sessões), recrie com:
-> `python3 -m venv --system-site-packages /tmp/trace_analysis/venv && /tmp/trace_analysis/venv/bin/pip install nbformat nbclient ipykernel matplotlib jupyterlab`
+No Jupyter, selecione o kernel **"Python (memory-layer-ai-agents)"** — não "Python (venv)" (kernel legado de
+outro projeto, `CrewAI/venv`, sem as libs desta análise; causa o `ModuleNotFoundError: matplotlib` se
+selecionado por engano). Para rodar uma célula fora do Jupyter, ad hoc: `uv run python -c "..."` a partir da
+raiz do repo já usa o mesmo ambiente.
 
 ### 1.2 · Para cada gráfico da seção 8, leia a célula de agregação logo acima
 
