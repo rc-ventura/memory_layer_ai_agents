@@ -226,16 +226,21 @@ unidade de trabalho real**. São eixos independentes:
 |---|---:|---:|
 | **CalculoCivel** | **141.673** (11,6×) | 29% |
 | **CalculoTrabalhista** | **50.624** (4,2×) | 9% — não se destacava por erro |
-| ConversationAgent | 27.062 | 9% |
-| managerAgent | 17.592 | 8% |
+| ConversationAgent | 27.988 | 9% |
+| managerAgent | 18.775 | 8% |
 
-Razão agregada do dataset inteiro: 21.420 tokens/chamada; mediana (entre execuções) da razão tokens/chamada:
+Razão agregada do dataset inteiro: 22.280 tokens/chamada; mediana (entre execuções) da razão tokens/chamada:
 12.192 — é dela que saem os múltiplos "11,6×" e "4,2×" da tabela, **não** do custo de uma execução inteira
 (que é da ordem de dezenas de milhares de tokens — ver `01-racionais.md` §3.5). A agregada é maior que a
 mediana porque o custo é concentrado numa cauda de execuções caras (§3.4), que pesam mais na soma do que numa
 mediana simples. `CalculoCivel` é o pior nos dois eixos ao mesmo tempo (erro **e** ineficiência), reforçando
 prioridade #1. `CalculoTrabalhista` só aparece como alvo relevante nesta métrica — a taxa de erro sozinha o
 esconderia.
+
+> **Regra de contagem (fixada em 15/09/2026).** Um step cujo código não parseia — a família de erro mais comum
+> deste trace — entra no numerador com seus tokens e contribui zero chamadas ao denominador. O custo é real e
+> continua sendo do papel, mesmo quando o trabalho não saiu; descartar o step esconderia justamente o custo da
+> falha mais frequente. Racional completo e o que a regra mudou em `01-racionais.md` §3.3, Ressalva 2.
 
 ### 3.4 · Concentração de custo — a cauda importa mais que a média
 

@@ -141,4 +141,8 @@ for role, (tk, ca) in per_role.items():
         print(f"    {role:22s} {tk/ca:10,.0f} tok/chamada  ({tk:,} tok / {ca:,} chamadas)")
 tot_t = sum(v[1] for v in vals); tot_c = sum(v[2] for v in vals)
 ratios = [tk/ca for tk, ca in exec_calls.values() if ca > 0]
-print(f"    razão agregada: {tot_t/tot_c:,.0f} (esperado 21.420) · mediana por exec: {median(ratios):,.0f} (esperado 12.192)")
+# `esperado` atualizado em 15/09/2026: este script sempre somou os tokens antes do try/except do parse (a regra
+# que virou oficial — docs/01-racionais.md §3.3, Ressalva 2), então seu agregado sempre foi 22.280; o 21.420 do
+# rótulo antigo vinha da célula pré-15/09. A mediana daqui sai 0 — `exec_calls` nunca recebe tokens, só chamadas;
+# o número válido para ela é o do audit_recompute4.py, que acumula os dois campos.
+print(f"    razão agregada: {tot_t/tot_c:,.0f} (esperado 22.280) · mediana por exec: {median(ratios):,.0f} (quebrada aqui — ver audit_recompute4.py)")

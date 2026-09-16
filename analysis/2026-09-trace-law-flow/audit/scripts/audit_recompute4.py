@@ -18,6 +18,7 @@ print(f"1. pandas vê {hdr.shape[1]} colunas: {list(hdr.columns)}")
 #    no nível de execução, tokens sempre contam e calls=0 se não parsear)
 INV = set()
 per_role = defaultdict(lambda: [0, 0])
+per_role_excl = defaultdict(lambda: [0, 0])   # regra pré-15/09/2026: descarta o step que não parseia
 per_exec = defaultdict(lambda: [0, 0])
 pos_tools = Counter()
 with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
@@ -44,18 +45,27 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
                 em = str((st.get("error") or {}).get("message") or "")
                 mt = re.search(r"tool (\w+) does not support multiple positional", em)
                 if mt: pos_tools[mt.group(1)] += 1
+                # REGRA OFICIAL desde 15/09/2026 (docs/01-racionais.md §3.3, Ressalva 2): o step entra sempre no
+                # numerador — os tokens são custo real do papel — e contribui zero ao denominador quando o código
+                # não parseia. Até 15/09 esta réplica seguia a célula antiga, que descartava o step do agregado
+                # POR PAPEL mas mantinha os tokens dele no agregado POR EXECUÇÃO; era essa inconsistência que
+                # fazia 21.420 e 12.192 baterem ao mesmo tempo. `per_role_excl` preserva a regra antiga para que
+                # as duas fiquem impressas lado a lado, em vez de a divergência sumir do registro.
                 try:
                     nc = sum(1 for n in ast.walk(ast.parse(code))
                              if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in INV)
+                    parseou = True
                 except Exception:
-                    per_exec[eid][0] += 0
-                    per_exec[eid][1] += tt
-                    continue
+                    nc, parseou = 0, False
                 per_role[role][0] += tt; per_role[role][1] += nc
                 per_exec[eid][0] += nc; per_exec[eid][1] += tt
+                if parseou:
+                    per_role_excl[role][0] += tt; per_role_excl[role][1] += nc
 tt_ = sum(v[0] for v in per_role.values()); cc_ = sum(v[1] for v in per_role.values())
 rats = [t/c for c, t in per_exec.values() if c > 0]
-print(f"2. réplica-exata §3.3 → razão agregada: {tt_/cc_:,.0f} (notebook 21.420) · mediana/exec: {median(rats):,.0f} (notebook 12.192)")
+te_ = sum(v[0] for v in per_role_excl.values()); ce_ = sum(v[1] for v in per_role_excl.values())
+print(f"2. réplica-exata §3.3 → razão agregada: {tt_/cc_:,.0f} (notebook 22.280) · mediana/exec: {median(rats):,.0f} (notebook 12.192)")
+print(f"   regra antiga, pré-15/09 (descarta step sem parse) → razão agregada: {te_/ce_:,.0f} (era 21.420)")
 print(f"   ferramentas distintas citadas em msgs 'positional': {len(pos_tools)} (relatório diz 12) → {sorted(pos_tools)}")
 
 # 3) CSVs derivados

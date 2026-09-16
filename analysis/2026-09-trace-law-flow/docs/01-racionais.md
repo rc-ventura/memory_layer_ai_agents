@@ -392,6 +392,7 @@ nova, é deliberado: evita reintroduzir o erro de confundir função auxiliar do
    contam.
 2. **Agrupar os steps por papel** — pelo `cod_idef_aget` da execução a que cada step pertence.
 3. **Por papel, somar as duas colunas** sobre *todos* os steps daquele papel: `Σtok(papel)` e `Σcham(papel)`.
+   *Todos* mesmo — inclusive os steps cujo código não parseia, que entram com `n_calls = 0` (Ressalva 2).
 4. **Uma divisão por papel:** `métrica(papel) = Σtok(papel) / Σcham(papel)`. Sai **um número para cada papel**
    (Passo 4) — **não** uma divisão única do dataset inteiro. (A divisão global, `Σtok(tudo) / Σcham(tudo)`, é
    outra coisa — a "razão agregada" do Passo 5.)
@@ -401,20 +402,65 @@ numerador mas não no denominador. É proposital — o número cobra o overhead 
 ("quantos tokens custa produzir uma invocação de ferramenta real deste papel") — mas infla o valor; a versão
 estrita (só steps com `n_calls ≥ 1`) daria menos.
 
-**Ressalva 2 — o que acontece quando o código nem parseia (corrigido 15/09/2026).** É um terceiro caso, diferente
-do de cima: o `code_action` tem erro de sintaxe e `ast.parse()` levanta exceção **antes** de contar qualquer
-chamada — não é raro, é a família de erro mais comum deste trace inteiro (`SyntaxError`, string não fechada,
-§2). A escolha do notebook, dentro do `try/except` do Passo 3: quando isso acontece, o step é **descartado por
-completo** — nem os tokens dele entram na soma do papel, só as chamadas ficam de fora. O racional: se não dá
-pra confirmar quantas chamadas de ferramenta aquele step de fato fez (o código nem é uma árvore válida pra
-percorrer), atribuir o custo dele a uma "chamada" mediria a coisa errada — inflaria o overhead por chamada sem
-uma chamada real por trás para justificar. A alternativa — manter os tokens do step na soma e só zerar as
-chamadas — é defensável (o step custou tokens de verdade, com ou sem sintaxe válida), mas responde outra
-pergunta: "custo total do papel dividido pelas chamadas que sobreviveram", não "custo por chamada real". Essa
-alternativa foi a que gerou os números publicados por engano nesta seção antes de hoje — `ConversationAgent`
-27.988 e `managerAgent` 18.775, contra os 27.062 e 17.592 que o notebook de fato calcula pela regra oficial
-(descartar o step inteiro). Não era erro de digitação, era duas contas diferentes sem rótulo — corrigido aqui e
-no relatório (`02-relatorio-achados.md` §3.3) pra bater com a conta oficial.
+**Ressalva 2 — o que acontece quando o código nem parseia (regra oficial fixada em 15/09/2026).** É um terceiro
+caso, diferente do de cima: o `code_action` tem erro de sintaxe e `ast.parse()` levanta exceção **antes** de
+contar qualquer chamada — não é raro, é a família de erro mais comum deste trace inteiro (`SyntaxError`, string
+não fechada, §2). Chamamos esses de **steps não parseáveis**: o texto que o agente emitiu não é uma árvore
+sintática válida, então não há como percorrer o código e contar invocações nele. Um step **parseável** é o caso
+normal — `ast.parse()` devolve a árvore, o `ast.walk()` conta as chamadas cujo nome está entre as 90
+ferramentas declaradas.
+
+> **Regra oficial:** o step **sempre** entra no numerador (os tokens que ele queimou são custo real do papel) e
+> contribui **zero** para o denominador (não dá pra contar chamadas numa árvore que não existe). Em código:
+> `except Exception: n_calls = 0`, com a soma de tokens fora do `try`.
+
+Três razões, em ordem de peso:
+
+1. **Consistência com a Ressalva 1.** Um step de raciocínio puro já entra no numerador com `n_calls = 0` — o
+   overhead é cobrado das chamadas reais, de propósito. Um step que não parseia está exatamente na mesma
+   situação do denominador (zero chamadas confirmadas); descartá-lo seria aplicar *duas* regras diferentes ao
+   mesmo caso, e era essa a inconsistência que o notebook carregava (a conta por papel descartava, a conta por
+   execução da mesma célula já somava).
+2. **É o que a métrica pergunta.** "Quanto custa a este papel produzir uma chamada de ferramenta real" inclui o
+   que ele gastou tentando e não conseguindo: o papel queimou os tokens, o trabalho não saiu. Descartar mede
+   outra coisa — o custo dos steps bem-comportados.
+3. **O descarte enviesa justamente onde dói — e isso é medido, não suposto.** Varrendo o trace cru por fora do
+   notebook: **224 dos 5.781 steps (3,9%) não parseiam**, e eles queimaram **5,50M tokens** (3,9% do
+   numerador). O número que decide a questão: **224 de 224 — 100% — têm o campo `error` preenchido no próprio
+   step**. Ou seja, a regra antiga não descartava uma amostra neutra de steps difíceis de contar; ela
+   descartava **exclusivamente falhas**. Uma métrica de custo que remove só os steps que deram errado responde
+   "quanto custa este papel quando dá certo", que é a pergunta oposta à desta análise.
+
+**O preço da escolha, declarado:** o número fica **maior**. A versão estrita (só steps com `n_calls ≥ 1` no
+numerador) daria menos. É o mesmo viés já assumido na Ressalva 1, agora aplicado de forma consistente aos dois
+casos de denominador-zero — não uma correção de erro, uma escolha de escopo entre duas contas defensáveis.
+
+**O que isso mudou.** Só os 7 papéis que têm steps não parseáveis; os outros 9 ficam idênticos ao dígito:
+
+| Papel | steps não parseáveis | tokens neles | exclusiva | **oficial** | Δ |
+|---|---:|---:|---:|---:|---:|
+| managerAgent | 141 | 2.889.647 | 17.592 | **18.775** | +6,7% |
+| ConversationAgent | 72 | 2.540.262 | 27.062 | **27.988** | +3,4% |
+| CadastroCivel | 5 | 26.162 | 3.249 | **3.618** | +11,3% |
+| RespostaBacen | 1 | 17.295 | 7.929 | **8.004** | +1,0% |
+| RoteadorCivel | 3 | 13.004 | 6.120 | **6.220** | +1,6% |
+| CadastroTrabalhista | 1 | 10.445 | 5.446 | **5.589** | +2,6% |
+| WorkflowManager | 1 | 5.565 | 6.661 | **6.678** | +0,3% |
+
+Razão agregada: 21.420 → **22.280**. Não mudaram: `CalculoCivel` (141.673) e
+`CalculoTrabalhista` (50.624) — o código deles parseia; a mediana por execução (12.192), que já era inclusiva; e
+portanto os múltiplos **11,6×** e **4,2×** e o destaque laranja do gráfico 8.9 (`ConversationAgent` já estava
+acima de 2× a mediana antes e depois).
+
+**Nota de auditoria.** Essa divergência aparecia como dois números na §3.3 (27.988/18.775 no relatório ×
+27.062/17.592 no notebook) e foi diagnosticada como *duas contas sem rótulo*, não erro de digitação. A origem
+está na auditoria independente de 08/09, que usou **dois** scripts com réguas diferentes sem notar:
+`audit_recompute3.py` soma os tokens **antes** do `try/except` do parse (inclusiva) e produziu os valores por
+papel; `audit_recompute4.py`, réplica fiel da célula da época, descartava o step do agregado por papel mas
+mantinha os tokens dele no agregado por execução — replicou a inconsistência da célula e por isso acertou
+21.420 e 12.192 simultaneamente. A linha 33 do relatório de auditoria marcou "idênticos ✅" juntando os dois,
+embora o log do primeiro script já imprimisse `22,280 (esperado 21.420)`. Com a regra unificada, notebook e
+auditoria convergem nos três valores — ver nota **N1** em `../audit/2026-09-08-auditoria-independente.md`.
 
 **Passo 4 — o resultado.** `CalculoCivel`: 141.673 tokens por chamada de ferramenta. `CalculoTrabalhista`:
 50.624. O múltiplo que dá escala a esses números é sempre contra a **mediana, entre execuções, da razão
@@ -425,7 +471,8 @@ a execução mediana; `CalculoTrabalhista`, **4,2×**. Cruzando com a taxa de er
 erro sozinha nunca revelaria.
 
 **Passo 5 — a correção de rótulo, achada ao revisar antes de publicar.** O primeiro número que calculei
-("mediana geral: 21.420") estava **mal nomeado** — não era mediana, era razão agregada (soma de tudo / soma
+("mediana geral: 21.420" — **22.280** desde que a Ressalva 2 fixou a regra de contagem) estava **mal nomeado**
+— não era mediana, era razão agregada (soma de tudo / soma
 de tudo, dominada pelos papéis de maior volume). Recalculei a mediana de verdade (das razões por execução,
 uma de cada vez, depois tirando o valor central): 12.192 — continua sendo **tokens por chamada**, não tokens
 por execução. As duas medidas são legítimas — divergem porque o

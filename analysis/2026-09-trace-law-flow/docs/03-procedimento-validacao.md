@@ -54,6 +54,15 @@ lógica. Exemplo já feito, com `csv.DictReader` puro (sem pandas, sem JSON sche
 quantas vezes a string `"Could not index"` aparece dentro do campo `error.message` de cada step. Resultado:
 **136 — bateu exato** com o número do relatório, por um código totalmente diferente.
 
+Segundo exemplo, e por que ele vale mais do que parece: `audit/scripts/audit_recompute3.py` recomputa os
+tokens por chamada de ferramenta (§3.3) com `csv.DictReader` + `ast` puros, sem pandas e sem o notebook. Ele foi
+escrito na auditoria independente de 08/09 e **sempre somou os tokens antes do `try/except` do parse** — a regra
+que só virou oficial em 15/09. Rodado hoje contra o notebook corrigido, os três números batem: 27.988, 18.775 e
+agregada 22.280. Antes de 15/09 não batiam, e a linha 33 daquele relatório marcou "idênticos ✅" porque comparou
+os valores por papel (inclusivos, do script) com o agregado (exclusivo, copiado do notebook) — é exatamente o
+tipo de divergência que um recomputo por fora existe pra pegar, e que só pega se os números forem conferidos
+**um a um**, não em bloco.
+
 **Armadilha a evitar:** um `grep` cru no arquivo inteiro (sem entrar no JSON) deu **580**, não 136. Isso não é
 erro — é porque a mensagem de erro fica ecoada no `model_input_messages` de vários steps seguintes (em média
 ~4,3× por erro), então contar "onde a string aparece no arquivo" mistura "o erro aconteceu aqui" com "o erro
@@ -116,6 +125,7 @@ contagens de steps/execuções/tokens. Nenhum embute uma decisão de "o que cont
 | §2.2 mecanismo por papel (94%/76%/62%; por mensagem, até 14/09, era 94%/76%/56%) | corte `role_vol >= 5` | cortes de 3, 5, 10, 15 | ✅ **robusto** — idêntico em todos (o corte só escolhe quais papéis aparecem) |
 | §2.3 duração "Falha do LLM interno" — 115s | corte de amostra mínima por família | `n >= 3, 10, 20, 50` | ❌ **NÃO robusto — retirado como número, virou hipótese** (só 6 pontos, variância de 3 ordens de magnitude) |
 | §3.5 desperdício % por papel | corte `tok_total >= 50.000` | cortes de 10k, 50k, 100k | ✅ **robusto** — ranking idêntico |
+| §3.3 tokens por chamada, por papel | o que fazer com o step cujo código **não parseia** (sem árvore, sem como contar chamadas) | as duas contagens defensáveis: descartar o step inteiro × somar os tokens dele com `n_calls = 0` | ⚠️ **escolha fixada em 15/09** — contar os tokens. Inclusiva: 27.988 / 18.775 / agregada 22.280; exclusiva: 27.062 / 17.592 / 21.420. ✅ **robusto no que a seção conclui**: ranking, os múltiplos 11,6× e 4,2×, a mediana (12.192) e o destaque laranja do 8.9 são idênticos nas duas. Racional em [`01-racionais.md`](01-racionais.md) §3.3, Ressalva 2 |
 | §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 10 candidatas muda de lado (marcada limítrofe) |
 | `submecanismo()` — base das análises por mecanismo | ordem das regras e o limiar de 15% de stopwords | 6 casos abertos com `drill_down.py` (15/09) | ⚠️ **conferido por amostra, não testado por variação** — os 6 casos batem; variar as regras ainda não foi feito |
 
