@@ -974,11 +974,23 @@ nº10 foi "divide" antes e depois da correção.
 - **nº10 — divide.** `validar_quebra_sigilo` 7/10 (70%; `RespostaBacen`, 7 execuções, 3 meses — passa na
   triagem de recorrência); `extrair_evidencias` 1 (`RespostaBacen`: pediu `informacoes_evidencias`, o retorno
   tinha `dados_evidencias`); `get_available_documents` 1 (`ConversationAgent`: campo de metadado inexistente);
-  1 não resolvido (`ConversationAgent`: colunas inexistentes num DataFrame montado pelo agente). Cada função
-  minoritária tem exatamente 1/10 = 10%, no limite da regra — mas o veredito não depende disso: a dominante já
-  fica em 70%, abaixo dos 90%. A unidade da nº10 passa a ser `(RespostaBacen, validar_quebra_sigilo)`. O
-  "conteúdo proposto" atual misturava esse fato com uma regra genérica ("na dúvida, inspecionar `r.keys()`") —
-  exatamente o que este passo existia pra pegar.
+  1 não resolvido (`ConversationAgent`: colunas inexistentes num DataFrame montado pelo agente). A unidade da
+  nº10 passa a ser `(RespostaBacen, validar_quebra_sigilo)`. O "conteúdo proposto" atual misturava esse fato com
+  uma regra genérica ("na dúvida, inspecionar `r.keys()`") — exatamente o que este passo existia pra pegar.
+
+**A regra dos 10% com amostra pequena — o que é frágil e o que não é.** A regra pré-registrada tem duas metades:
+**(a)** a função dominante cobre ≥90% dos casos → "uma ferramenta só"; **(b)** uma segunda função cobre ≥10% → a
+unidade se divide. Com só 10 erros, **um único caso vale 10%**: `extrair_evidencias` e `get_available_documents`
+têm 1 caso cada, e cada um bate exatamente no limite de (b). Isso é frágil — se a nº10 tivesse 11 erros, o mesmo
+caso único valeria 9,1% e (b) não dispararia; percentual sobre amostra pequena vira com um caso só. O que **não**
+é frágil: (a) falha com folga (a dominante tem 70%, longe de 90%), então a nº10 não é "uma ferramenta só" de
+jeito nenhum; e as origens minoritárias têm 1 caso cada, então nenhuma passaria na triagem de recorrência (≥3
+execuções e ≥2 meses) mesmo que (b) não tivesse disparado. O resultado prático — memória só para
+`validar_quebra_sigilo`, o resto monitorado — é o mesmo nos dois cenários. **Lacuna da regra, registrada e não
+corrigida retroativamente:** o pré-registro não diz o que fazer quando nem (a) nem (b) se cumprem (dominante
+abaixo de 90% e o resto espalhado em funções abaixo de 10% cada); o código trata esse caso como "inconclusivo".
+Antes de reaplicar a regra na segunda extração, fixar esse terceiro caso — e considerar exigir também um mínimo
+absoluto de casos em (b), não só percentual.
 
 **Causas pequenas: documentadas e monitoradas, não descartadas.** As sub-unidades de 1 caso e os não resolvidos
 não viram memória agora — um caso não é evidência de recorrência, e a triagem do §7 (≥3 execuções e ≥2 meses)
@@ -1021,6 +1033,24 @@ falhou. Isso dá uma **segunda fonte independente** da chave certa — o `1be966
 agente escreve o mapeamento `vazamento_sigilo → quebra_sigilo` num comentário no step seguinte. Onde essa
 correção existe, ela confirma (ou contradiz) o que o Passo 2 extraiu da mensagem de erro — uma terceira fonte
 determinística, independente das duas primeiras.
+
+**Adendo pré-execução ao Passo 3 (16/09/2026, registrado antes de rodar): nem todo conserto confirma a chave
+certa.** Em Python há dois jeitos de ler um campo de dicionário: `quebra["quebra_sigilo"]` **quebra**
+(`KeyError`) se a chave não existe — é o que aparece no trace; `quebra.get("quebra_sigilo", "NÃO")` **não
+quebra** — se a chave não existe, devolve em silêncio o valor padrão (`"NÃO"`). Um agente pode "consertar" o
+erro trocando o primeiro pelo segundo: o código passa a rodar, mas ele não aprendeu a chave certa, só calou o
+erro. Neste caso concreto seria pior que o erro — como `quebra_sigilo` nunca existe, a leitura sempre devolveria
+`"NÃO"`, e o agente afirmaria "não houve quebra de sigilo" qualquer que fosse a resposta da ferramenta em
+`vazamento_sigilo`: erro silencioso numa resposta regulatória. **É um risco a vigiar, não algo já observado no
+trace.** Regra — o conserto no step seguinte é classificado em três tipos:
+
+1. **Troca de chave** — a mesma variável passa a ser lida por uma chave/índice diferente (ex.:
+   `["vazamento_sigilo"]`, `["result"][0]`), com ou sem `.get` → conta como confirmação (ou contradição) do
+   Passo 2.
+2. **Conserto silencioso** — a mesma chave errada continua, mas protegida por `.get(...)` (com ou sem padrão) ou
+   por um `try/except` que engole o erro → **não** confirma nada; contado à parte, como sinal suspeito.
+3. **Sem conserto comparável** — o step seguinte não lê mais a variável, ou o agente mudou de estratégia → sem
+   evidência para aquele caso (ausência, não contradição).
 
 **Passo 4 — checar estabilidade entre ocorrências e ao longo do tempo, por ferramenta — e o subproduto que isso
 gera de graça.** As chaves reais são as mesmas nas N ocorrências, nos M meses cobertos? **Se sim** → fato
