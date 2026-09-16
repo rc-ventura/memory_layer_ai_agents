@@ -54,6 +54,15 @@ lógica. Exemplo já feito, com `csv.DictReader` puro (sem pandas, sem JSON sche
 quantas vezes a string `"Could not index"` aparece dentro do campo `error.message` de cada step. Resultado:
 **136 — bateu exato** com o número do relatório, por um código totalmente diferente.
 
+Segundo exemplo, e por que ele vale mais do que parece: `audit/scripts/audit_recompute3.py` recomputa os
+tokens por chamada de ferramenta (§3.3) com `csv.DictReader` + `ast` puros, sem pandas e sem o notebook. Ele foi
+escrito na auditoria independente de 08/09 e **sempre somou os tokens antes do `try/except` do parse** — a regra
+que só virou oficial em 15/09. Rodado hoje contra o notebook corrigido, os três números batem: 27.988, 18.775 e
+agregada 22.280. Antes de 15/09 não batiam, e a linha 33 daquele relatório marcou "idênticos ✅" porque comparou
+os valores por papel (inclusivos, do script) com o agregado (exclusivo, copiado do notebook) — é exatamente o
+tipo de divergência que um recomputo por fora existe pra pegar, e que só pega se os números forem conferidos
+**um a um**, não em bloco.
+
 **Armadilha a evitar:** um `grep` cru no arquivo inteiro (sem entrar no JSON) deu **580**, não 136. Isso não é
 erro — é porque a mensagem de erro fica ecoada no `model_input_messages` de vários steps seguintes (em média
 ~4,3× por erro), então contar "onde a string aparece no arquivo" mistura "o erro aconteceu aqui" com "o erro
@@ -71,6 +80,7 @@ reusa `classify.py` nem o notebook, código à parte, direto no trace cru):
 | Prefixo (45 primeiros chars) — método original | 86,3% | 13,7% |
 | Sufixo (45 últimos chars — o detalhe específico da exceção) | 84,9% | 4,3% |
 | **Categoria da taxonomia (`classify()`)** — método correto | — | **11,9%** |
+| Mecanismo (unidade da §7 dos racionais) — quarta régua, 15/09/2026 | — | 13,5% |
 
 O "chegou ao contexto" é robusto: os dois métodos convergem em ~85–86%. O "repetiu" **não era robusto**: caiu
 de 13,7% pra 4,3% trocando prefixo por sufixo. Investigando exemplos concretos (com `drill_down.py`), a causa
@@ -79,6 +89,14 @@ line..."), não o erro específico; sufixo era rigoroso demais e perdia repetiç
 diferente. O teste certo é comparar pela **categoria da taxonomia**, que é o nível de granularidade que o
 resto do relatório usa — deu **11,9% (51 casos)**, e foi o número que corrigiu o relatório e o notebook
 (commit desta correção: seção 5 do notebook, `same_sig` via `classify()`).
+
+**Quarta régua, 15/09/2026 — por mecanismo.** Depois que a triagem de candidatos passou a atribuir um mecanismo a
+cada erro ([`01-racionais.md`](01-racionais.md) §7), a mesma pergunta foi refeita um nível abaixo: `same_mec` na
+seção 5 do notebook. Deu **58 (13,5%)**. As duas réguas concordam em 65 das 76 repetições; as 11 divergências
+foram abertas com `drill_down.py caso`: 9 são mensagens diferentes para a mesma confusão (ex.: `docs[0][0]` e
+depois iterar um documento como lista, execução `cd794f02…`), 2 são a mesma mensagem para lições diferentes
+(campo inexistente e depois texto de erro indexado, execução `95344639…`). Não é a divergência de 3× do
+prefixo × sufixo — as réguas convergem. A manchete continua 11,9%; ressalva: 20 dos 58 vêm do laço de dez/2025.
 
 **A lição pra qualquer novo número que você for defender:** teste sempre com pelo menos duas heurísticas de
 correspondência diferentes antes de reportar como firme. Se divergirem muito, investigue exemplos concretos
@@ -98,15 +116,18 @@ contagens de steps/execuções/tokens. Nenhum embute uma decisão de "o que cont
 | Achado | Escolha arbitrária embutida | Teste | Veredicto |
 |---|---|---|---|
 | "Mensagem chegou ao contexto" — 86,3% | como comparar duas mensagens | prefixo vs sufixo | ✅ **robusto** (86,3% vs 84,9%) |
-| "Repetiu o mesmo erro" — 11,9% | idem | 3 heurísticas | ⚠️ **corrigido** de 13,7% → 11,9% (ver §1.5) |
+| "Repetiu o mesmo erro" — 11,9% | idem | 3 heurísticas + mecanismo (15/09) | ⚠️ **corrigido** de 13,7% → 11,9% (ver §1.5); por mecanismo 13,5% — ✅ converge |
 | `classify()` — base de toda a taxonomia | ordem das condições `if/elif` | ambiguidade de regras | ✅ **robusto, e a ordem é o mecanismo** (ver abaixo) |
 | Reasoning-action mismatch — 45 steps | a lista de palavras de "sucesso" | 3 listas de tamanhos diferentes | ❌ **NÃO robusto — não apresentar** (ver abaixo) |
 | Tool-Skip — 14 execuções | minha lista de 43 ferramentas | comparação com o system prompt | ❌ **inventário errado — refazer** (ver abaixo) |
 | Result-Ignore — 103 | definição de "ignorado" | 3 variações + troca de inventário | ✅ **robusto** (ver abaixo) |
 | RAC — 125 (era 461) | definição de "redundante" + inventário | 3 variações + troca de inventário | ⚠️ **corrigido** de 461 → 125 (ver abaixo) |
-| §2.2 assinatura por papel (94%/76%/56%) | corte `role_vol >= 5` | cortes de 3, 5, 10, 15 | ✅ **robusto** — idêntico em todos |
+| §2.2 mecanismo por papel (94%/76%/62%; por mensagem, até 14/09, era 94%/76%/56%) | corte `role_vol >= 5` | cortes de 3, 5, 10, 15 | ✅ **robusto** — idêntico em todos (o corte só escolhe quais papéis aparecem) |
 | §2.3 duração "Falha do LLM interno" — 115s | corte de amostra mínima por família | `n >= 3, 10, 20, 50` | ❌ **NÃO robusto — retirado como número, virou hipótese** (só 6 pontos, variância de 3 ordens de magnitude) |
 | §3.5 desperdício % por papel | corte `tok_total >= 50.000` | cortes de 10k, 50k, 100k | ✅ **robusto** — ranking idêntico |
+| §3.3 tokens por chamada, por papel | o que fazer com o step cujo código **não parseia** (sem árvore, sem como contar chamadas) | as duas contagens defensáveis: descartar o step inteiro × somar os tokens dele com `n_calls = 0` | ⚠️ **escolha fixada em 15/09** — contar os tokens. Inclusiva: 27.988 / 18.775 / agregada 22.280; exclusiva: 27.062 / 17.592 / 21.420. ✅ **robusto no que a seção conclui**: ranking, os múltiplos 11,6× e 4,2×, a mediana (12.192) e o destaque laranja do 8.9 são idênticos nas duas. Racional em [`01-racionais.md`](01-racionais.md) §3.3, Ressalva 2 |
+| §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 10 candidatas muda de lado (marcada limítrofe) |
+| `submecanismo()` — base das análises por mecanismo | ordem das regras e o limiar de 15% de stopwords | 6 casos abertos com `drill_down.py` (15/09) | ⚠️ **conferido por amostra, não testado por variação** — os 6 casos batem; variar as regras ainda não foi feito |
 
 ### O método por trás de cada teste — o racional
 
@@ -270,7 +291,7 @@ Nem todo achado depende de paper. Separe antes de investir tempo:
 | Taxonomia por causa-raiz, custo em tokens, funil de propagação, mapa de calor de reincidência, taxa por papel — **§2 a §6 do relatório, os 6 gráficos** | O "ponto cego" de 59% (§5) — número do *dataset do TRAIL*, não do nosso trace |
 | | "MAST não tem modo de falha para exceção" (§7) — depende do escopo lido corretamente |
 | | A correção da citação do ToolScan (§7) — depende da extração certa dos 7 tipos |
-| | Tabela "módulo → tipo de memória" (§6/§9) — **a que mais importa**, molda o desenho dos candidatos reais |
+| | Tipos da tabela de candidatos (§6 do relatório / §9 do notebook) — **a que mais importa**, molda o desenho dos candidatos reais. Desde 15/09/2026 vêm de Hu et al. 2025 (§4.1.2 e §4.2.2), não de um mapeamento módulo→tipo do AgentDebug |
 
 Dado que este pipeline vai virar a base dos candidatos de memória de verdade, a prioridade de leitura segue o
 critério que o projeto já usa em [`papers/reading-queue.md`](../../../papers/reading-queue.md): o que alimenta uma
@@ -278,7 +299,7 @@ decisão de arquitetura em uso agora vem antes do que só refina um componente.
 
 | Ordem | Paper | Por que essa prioridade | O que checar especificamente |
 |---|---|---|---|
-| 1 | **AgentDebug** — arXiv:2509.25370 | A tabela "módulo → tipo de memória" é inferência minha em cima do paper, não frase literal — é o tipo de claim que vira decisão de design e exige leitura própria | A seção da taxonomia (17 tipos / 5 módulos); formar opinião própria sobre se o roteamento faz sentido |
+| 1 | **AgentDebug** — arXiv:2509.25370 | A taxonomia de 5 módulos é a base da política de escrita por cascata e do schema de candidato a memória (`01-racionais.md` §8) — vale conferir a fonte primária antes de decidir arquitetura em cima dela | A seção da taxonomia (17 tipos / 5 módulos, Tabela 2); conferir que o paper **não** propõe tipos de memória nem roteamento módulo→tipo (overclaim já corrigido 14/09, checar que a leitura própria confirma) |
 | 2 | **TRAIL** — arXiv:2505.08638 | Sustenta os números do "ponto cego" que quantificam quanto do relatório é "o que vemos" vs "o que não vemos" | As tabelas de distribuição por categoria; o split SWE-Bench (arquitetura igual à nossa) |
 | 3 | **MAST** — arXiv:2503.13657 | Checagem pontual, rápida | O trecho do §4, p. 7, que põe explicitamente falhas de limitação de modelo fora do escopo |
 | 4 | **ToolScan** — arXiv:2411.13547 | Menor prioridade — entra no relatório pra *refutar* uma afirmação errada da v1, não pra fundamentar algo novo | Os 7 tipos (IAC/IAV/IAN/IAT/RAC/IFN/IFE) contra o que está em [`literature/tool-use-errors.md`](../literature/tool-use-errors.md) |
@@ -328,20 +349,26 @@ inteiro de uma vez.
 
 ### A ferramenta: [`drill_down.py`](../pipeline/drill_down.py)
 
-Dois comandos, sempre a partir desta pasta:
+Comandos, sempre a partir da pasta `pipeline/` (o caminho do trace dentro do script é relativo a ela):
 
 ```bash
-cd analysis/2026-09-trace-law-flow
+cd analysis/2026-09-trace-law-flow/pipeline
 
-# 1) do achado agregado, listar exec_id candidatos pra uma assinatura
-/tmp/trace_analysis/venv/bin/python pipeline/drill_down.py listar "Retorno é dict, agente indexa como lista"
+# 1a) do achado agregado, listar exec_id candidatos pra uma MENSAGEM de erro (etiqueta 1, sintoma)
+python3 drill_down.py listar "Falha ao indexar o retorno (Could not index)"
+
+# 1b) ou pra um MECANISMO (etiqueta 2) — lê resultados/erros_mecanismo.csv; rode o notebook antes
+python3 drill_down.py mecanismo "Retorno pode chegar como string"
 
 # 2) escolher um e ver a história completa daquela execução
-/tmp/trace_analysis/venv/bin/python pipeline/drill_down.py caso <exec_id> <role>
+python3 drill_down.py caso <exec_id> <role>
 ```
 
-O nome da assinatura tem que bater exatamente com um dos que aparecem no gráfico/tabela (mesmo texto usado no
-notebook e no relatório, de propósito — permite ir do gráfico até o caso sem traduzir nada).
+O nome tem que bater exatamente com o que aparece no gráfico/tabela — a assinatura para `listar`, o mecanismo
+(nome da unidade, igual ao da §6 do relatório) para `mecanismo`. Mesmo texto do notebook e do relatório, de
+propósito: permite ir do gráfico até o caso sem traduzir nada. Nome errado em `mecanismo` imprime a lista dos
+disponíveis. *(Até 15/09 esta seção mandava rodar a partir da pasta da análise, com um venv em `/tmp`; o caminho
+do trace no script só resolve a partir de `pipeline/`.)*
 
 **Cuidado com a saída:** o script imprime nome de pasta/processo em claro. Não exportar/printar fora do
 terminal local; para a reunião, copiar só o trecho relevante já revisado para o slide, nunca o terminal
@@ -365,6 +392,29 @@ reunião, isso vale mais que qualquer barra de gráfico: mostra que o problema n
 agente sabe o que errou), é a ausência de um mecanismo que traduza esse diagnóstico em comportamento
 diferente — o argumento direto para memória procedural.
 
+Por mecanismo ([`01-racionais.md`](01-racionais.md) §7), esses 10 erros seguidos são a maior cascata da unidade
+"Explicação nunca solta no bloco de código": começa logo depois do erro de protocolo do harness de dez/2025.
+
+### Exemplos já testados (15/09/2026) — quando a mensagem engana e o mecanismo acerta
+
+Abertos com `drill_down.py caso` para conferir a troca de régua de mensagem para mecanismo:
+
+- **`CalculoCivel`, execução `42891135…`** — mensagem "Retorno é dict"; mecanismo "retorno pode chegar como
+  string". No step 2 a ferramenta `calculo_correcoes_monetarias` imprime o resultado como texto JSON; no step 3 o
+  agente faz `corr_mon["valor_corrigido"]` e quebra (`string indices must be integers`); no step 4 corrige com
+  `isinstance(corr_mon, str)` + `json.loads`.
+- **`RespostaBacen`, execução `1be966e7…`** — mensagem "Retorno é dict"; mecanismo "campo inexistente no retorno".
+  No step 7 `validar_quebra_sigilo` devolve `{'vazamento_sigilo': …}` e o agente pede `quebra["quebra_sigilo"]`;
+  no step 8 escreve o mapeamento `vazamento_sigilo → quebra_sigilo`. Esse caso mostra as três etiquetas de um
+  erro de uma vez (sintoma, mecanismo e motivo — ver [`01-racionais.md`](01-racionais.md) §8).
+- **`ConversationAgent`, execução `008d142f…`** — `docs_civel[0]` sobre `{'result': [[...]]}` (dict por posição),
+  corrigido no step seguinte para `docs_civel['result'][0]`.
+- **`ConversationAgent`, execução `0adcc967…`** — `next(m['valorMetadado'] for m in ...)` dentro de uma list
+  comprehension quebra com `'list' object is not an iterator`; no step seguinte o agente troca por uma função
+  auxiliar com `for`.
+- Os dois pares em que mensagem e mecanismo discordam no §5 do notebook (`cd794f02…` e `95344639…`) estão
+  descritos em [`01-racionais.md`](01-racionais.md) §3 Passo 8.
+
 ### Formato recomendado por achado, na apresentação
 
 Para cada achado importante: **o gráfico agregado primeiro** (o "quantos"), seguido de **um `caso` real**
@@ -379,7 +429,7 @@ como o acima (o "como, na prática"). Um exemplo bom por achado é suficiente �
 - [ ] Auditei ~20 mensagens de erro reais contra a função `classify()`
 - [ ] Recomputei por fora pelo menos um número (ex.: % por família)
 - [x] Rodei o teste de robustez do achado 86,3%/11,9% — três heurísticas, corrigiu o número de 13,7% pra 11,9%
-- [ ] Li o trecho da taxonomia do AgentDebug e formei opinião sobre o mapeamento módulo → memória
+- [ ] Li o trecho da taxonomia do AgentDebug (5 módulos) e conferi que o paper não propõe roteamento módulo → tipo de memória (é a nossa correção de 14/09, não uma citação do paper)
 - [ ] Conferi as tabelas de distribuição do TRAIL que sustentam o "ponto cego"
 - [ ] Conferi a citação do MAST (§4, p. 7) no contexto original
 - [ ] Escolhi 1 caso concreto (via `drill_down.py caso`) para cada achado que vou apresentar

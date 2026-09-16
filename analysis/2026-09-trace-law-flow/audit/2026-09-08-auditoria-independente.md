@@ -30,7 +30,7 @@ dorsal do relatório bate **exatamente** com o raw trace por um caminho de códi
 | Assinaturas 159/136/35/33/39/20 + 1 não classificado | idênticas | ✅ |
 | Pareto 1%→16,8% · 5%→41,9% · 10%→54,6% | idênticos | ✅ |
 | Papel × assinatura: 94% / 76% / 62% / 56% / 45+24% | 94/76/62/56/45+24 | ✅ exatos |
-| Tokens/chamada: 141.673 · 50.624 · 27.988 · 18.775 · agregada 21.420 · mediana 12.192 | idênticos | ✅ |
+| Tokens/chamada: 141.673 · 50.624 · 27.988 · 18.775 · agregada 21.420 · mediana 12.192 | idênticos | ✅ *(ver nota **N1**, 15/09)* |
 | Desperdício: CalculoCivel 25,0% · ConversationAgent 7,5M (9,8%) · managerAgent 3,5M (7,6%) · RespostaBacen 21,3% | idênticos | ✅ |
 | Sucesso por conteúdo 840 → 834 (99,3%) → 310 (37,2%) | idênticos | ✅ |
 | Result-Ignore 103/3.053 (3,4%) · RAC 125 · Tool-Skip 10 | idênticos | ✅ |
@@ -44,6 +44,25 @@ O achado central ("o agente lê o erro e reincide") sobreviveu à verificação 
 caso citado existe, a sequência é real e as frases citadas em `03-procedimento-validacao.md` estão no
 trace palavra por palavra.
 
+> **Nota N1 (15/09/2026) — a linha de tokens/chamada juntou dois scripts com réguas diferentes.** Cada número
+> daquela linha foi de fato verificado contra um script, mas não contra o *mesmo* script: os valores **por
+> papel** vieram do `audit_recompute3.py`, que soma `token_usage` **antes** do `try/except` do `ast.parse`
+> (conta os tokens de steps cujo código não parseia); a **razão agregada e a mediana** vieram do
+> `audit_recompute4.py`, réplica fiel da célula da época, que **descartava** esses steps do agregado por papel
+> — e, fielmente, mantinha os tokens deles no agregado por execução. Foi essa inconsistência interna da célula
+> que a réplica reproduziu, e é por isso que ela acertou 21.420 e 12.192 ao mesmo tempo. O sinal estava no
+> próprio log: `audit_out3.txt` linha 45 imprime `razão agregada: 22,280 (esperado 21.420)` — os dois scripts
+> se contradiziam e o ✅ em bloco não pegou.
+>
+> Em 15/09 a regra inclusiva virou oficial (`docs/01-racionais.md` §3.3, Ressalva 2): o step não parseável
+> entra no numerador com seus tokens e contribui zero chamadas. Decisivo para a escolha: dos 224 steps não
+> parseáveis do trace, **224 (100%) têm erro registrado** — descartá-los removia da métrica de custo
+> exclusivamente as falhas. O notebook foi ajustado e os três valores agora convergem: **27.988 · 18.775 ·
+> 22.280**. Nada da tese muda; `CalculoCivel` (141.673), `CalculoTrabalhista` (50.624), a mediana (12.192) e os
+> múltiplos 11,6×/4,2× são idênticos nas duas réguas. Lição de método, registrada em
+> `docs/03-procedimento-validacao.md` §1.4: recomputo por fora só vale conferido valor a valor e **script a
+> script** — dois recomputos independentes que discordam entre si são um achado, não um detalhe.
+>
 > **Nota de reorganização (pós-auditoria):** os arquivos foram reorganizados em subpastas após esta
 > auditoria. Referências neste relatório foram atualizadas: `01-racionais.md` → `docs/01-racionais.md`,
 > `02-relatorio-achados.md` → `docs/02-relatorio-achados.md`, `03-procedimento-validacao.md` →

@@ -5,3 +5,8 @@ resultados/
 # Saídas brutas dos scripts de auditoria (audit_out*.txt): amostras de mensagens
 # do trace com possível PII. Regeneráveis rodando audit/scripts/audit_recompute*.py.
 audit/scripts/audit_out*.txt
+
+# Saída de `drill_down.py caso ... --json > caso.json`: dump cru de uma execução,
+# com nome de cliente/nº de processo em claro. Regenerável a qualquer momento
+# rodando o comando de novo — nunca precisa ser versionado.
+pipeline/caso*.json

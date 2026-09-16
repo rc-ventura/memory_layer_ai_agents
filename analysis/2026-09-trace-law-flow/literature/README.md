@@ -18,7 +18,7 @@ Toda a bibliografia foi conferida contra o próprio PDF — autoria, arXiv ID, d
 |---|---|---|
 | [`mast-2503.13657.md`](mast-2503.13657.md) | **MAST** — Cemri et al., UC Berkeley, NeurIPS 2025 D&B | Os 14 modos de falha. Mostra que o MAST **não tem modo para "o código levantou exceção"** — a família dominante do trace cai fora do escopo dele por construção. |
 | [`trail-2505.08638.md`](trail-2505.08638.md) | **TRAIL** — Patronus AI | Mede o **ponto cego**: ≥59% dos erros não levantam exceção. Traz o schema de anotação reusável e as 11 análises executáveis para abrir esse ponto cego. |
-| [`agentdebug-2509.25370.md`](agentdebug-2509.25370.md) | **AgentDebug** — arXiv:2509.25370 | O **roteador módulo→tipo de memória** e a política de escrita "uma unidade por cascata, na raiz". O paper metodologicamente mais próximo da tese — mas **não** é precedente de memória persistente. |
+| [`agentdebug-2509.25370.md`](agentdebug-2509.25370.md) | **AgentDebug** — arXiv:2509.25370 | A taxonomia de **5 módulos cognitivos** (memory/reflection/planning/action/system), a política de escrita "uma unidade por cascata, na raiz", e o schema do Stage 2 (`root_cause`+`correction_guidance`) como candidato à forma de uma unidade de memória. **Não propõe tipos de memória nem roteamento módulo→tipo** (overclaim corrigido 14/09 — ver `01-racionais.md` §1). O paper metodologicamente mais próximo da tese — mas **não** é precedente de memória persistente. |
 | [`tool-use-errors.md`](tool-use-errors.md) | **ToolScan/SpecTool** (Salesforce, ICLR 2025 WS) + **ToolFailBench** (ICML 2026 WS) | Os 7 erros de tool-use e os 4 modos silenciosos. Contém a **tabela de detectores executáveis** traduzidos para o paradigma CodeAgent. |
 
 ## Correções que estes fichamentos produziram no relatório

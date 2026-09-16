@@ -27,5 +27,15 @@ Downloaded the full 107-page PDF and grep'd it directly (`pdftotext`) to resolve
 
 **Consequence for this project's architecture:** [`knowledge-as-infra-architecture-hypothesis.md`](../discussion/knowledge-as-infra-architecture-hypothesis.md)'s Memory Store two-tier design (raw per-case records + a distilled rules layer) is precisely this survey's episodic→semantic continuum, with the Update Engine's ExpeL-style extraction playing the role of "reflection." The distilled layer is more accurately named **strategy-based** (§4.2's term) than "skill," which the survey reserves for executable procedures — a possible future addition, not the current design.
 
+## Uso no projeto — tipo dos candidatos a memória da análise de trace (15/09/2026; trechos do §4 conferidos no PDF por um agente, não é nova leitura do Rafael)
+
+A triagem de candidatos a unidade de memória em [`../analysis/2026-09-trace-law-flow/docs/01-racionais.md`](../analysis/2026-09-trace-law-flow/docs/01-racionais.md) §7 usa a taxonomia por função deste survey como régua de tipo, no lugar da analogia anterior com os módulos do AgentDebug. Trechos usados, com a página impressa do PDF:
+
+- Box "Three Primary Memory Functions" (p. 31): factual — *"What does the agent know?"*; experiential — *"How does the agent improve?"*.
+- §4.1.2 Environment factual memory (p. 36): *"entities and states external to the user, encompassing long documents, codebases, tools, and interaction traces"*.
+- §4.2.2 Strategy-based memory, *Insights* (p. 40): *"distilling discrete pieces of knowledge, such as granular decision rules and reflective heuristics, from past trajectories"*.
+
+Case-based (§4.2.1), skill-based (§4.2.3) e working memory (§4.3) foram considerados e não usados como tipos de triagem — motivo no §7 citado.
+
 ---
 Source review: [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md)
