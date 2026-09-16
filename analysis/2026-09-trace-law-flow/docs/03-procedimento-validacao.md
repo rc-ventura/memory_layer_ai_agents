@@ -345,7 +345,7 @@ Comandos, sempre a partir da pasta `pipeline/` (o caminho do trace dentro do scr
 cd analysis/2026-09-trace-law-flow/pipeline
 
 # 1a) do achado agregado, listar exec_id candidatos pra uma MENSAGEM de erro (etiqueta 1, sintoma)
-python3 drill_down.py listar "Retorno é dict, agente indexa como lista"
+python3 drill_down.py listar "Falha ao indexar o retorno (Could not index)"
 
 # 1b) ou pra um MECANISMO (etiqueta 2) — lê resultados/erros_mecanismo.csv; rode o notebook antes
 python3 drill_down.py mecanismo "Retorno pode chegar como string"

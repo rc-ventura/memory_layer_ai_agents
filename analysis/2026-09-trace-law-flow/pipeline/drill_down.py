@@ -14,8 +14,9 @@ Uso:
            use isto quando só quiser ver uma execução crua qualquer pra conferir
            com os próprios olhos, sem partir de um achado específico.
 
-    python drill_down.py listar "Retorno é dict, agente indexa como lista"
-        -> lista exec_id/role/mes candidatos pra essa assinatura
+    python drill_down.py listar "Falha ao indexar o retorno (Could not index)"
+        -> lista exec_id/role/mes candidatos pra essa assinatura (mensagem de erro/sintoma —
+           pra buscar por MECANISMO, que é mais específico, use `mecanismo` abaixo)
 
     python drill_down.py planos [n]
         -> lista exec_id/role/mes das execuções que têm PlanningStep (o módulo de
@@ -52,20 +53,22 @@ import pandas as pd
 TRACE = "../../../85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"
 
 def classify(m):
-    if 'Could not index' in m: return 'Retorno é dict, agente indexa como lista'
+    # Nomes sincronizados com classify() do notebook (§2) — renomeados 15/09/2026 (grupo 1:
+    # os 4 nomes antigos afirmavam uma causa só parcialmente verdadeira; ver 01-racionais.md §7).
+    if 'Could not index' in m: return 'Falha ao indexar o retorno (Could not index)'
     if 'does not support multiple positional' in m: return 'Argumento posicional onde só cabe nomeado'
     if 'unterminated' in m: return 'String não fechada (relatório longo em literal)'
     if 'regex pattern' in m: return 'Resposta sem bloco de código [INATIVO desde dez/2025]'
     if 'IndentationError' in m: return 'Indentação inválida'
     if 'leading zeros' in m: return 'Data DD/MM interpolada como número'
     if 'forgot a comma' in m or 'never closed' in m or 'invalid decimal' in m: return 'Texto do documento colado em literal'
-    if 'SyntaxError' in m: return 'Sintaxe inválida (prosa vazando no código)'
+    if 'SyntaxError' in m: return 'Sintaxe inválida'
     if 'is not defined' in m:
         v = re.search(r'variable `(\w+)`', m)
         if v and v.group(1) in {'json','pd','np','re','os','math','datetime'}: return 'Módulo usado sem import'
-        return 'Variável inexistente (estado perdido)'
+        return 'Variável não definida'
     if 'has no attribute' in m: return 'Objeto sem o atributo esperado'
-    if 'not allowed' in m or 'explicitly allowed' in m or 'is not permitted' in m: return 'Import/ferramenta não autorizado'
+    if 'not allowed' in m or 'explicitly allowed' in m or 'is not permitted' in m: return 'Função ou import bloqueado pelo sandbox'
     if 'ModuleNotFound' in m: return 'Módulo ausente no sandbox'
     if 'Forbidden' in m: return 'Operação proibida'
     if 'AgentGenerationError' in m or 'internally hosted' in m: return 'Falha do LLM interno'
@@ -75,7 +78,7 @@ def classify(m):
     if 'TypeError' in m: return 'Tipo diferente do esperado'
     if 'ValueError' in m: return 'Formato/valor inválido'
     if 'IndexError' in m: return 'Retorno vazio indexado'
-    return 'Não classificado'
+    return 'Erro não classificado'
 
 def tutorial():
     """Passo a passo guiado, pra quem tá usando o script pela 1ª vez sem saber

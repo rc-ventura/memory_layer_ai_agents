@@ -226,8 +226,8 @@ unidade de trabalho real**. São eixos independentes:
 |---|---:|---:|
 | **CalculoCivel** | **141.673** (11,6×) | 29% |
 | **CalculoTrabalhista** | **50.624** (4,2×) | 9% — não se destacava por erro |
-| ConversationAgent | 27.988 | 9% |
-| managerAgent | 18.775 | 8% |
+| ConversationAgent | 27.062 | 9% |
+| managerAgent | 17.592 | 8% |
 
 Razão agregada do dataset inteiro: 21.420 tokens/chamada; mediana (entre execuções) da razão tokens/chamada:
 12.192 — é dela que saem os múltiplos "11,6×" e "4,2×" da tabela, **não** do custo de uma execução inteira

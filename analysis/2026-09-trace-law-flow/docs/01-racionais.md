@@ -396,10 +396,25 @@ nova, é deliberado: evita reintroduzir o erro de confundir função auxiliar do
    (Passo 4) — **não** uma divisão única do dataset inteiro. (A divisão global, `Σtok(tudo) / Σcham(tudo)`, é
    outra coisa — a "razão agregada" do Passo 5.)
 
-**Ressalva.** Steps sem nenhuma chamada de ferramenta (`n_calls = 0` — raciocínio puro, formatação) entram no
+**Ressalva 1.** Steps sem nenhuma chamada de ferramenta (`n_calls = 0` — raciocínio puro, formatação) entram no
 numerador mas não no denominador. É proposital — o número cobra o overhead de contexto/raciocínio às chamadas
 ("quantos tokens custa produzir uma invocação de ferramenta real deste papel") — mas infla o valor; a versão
 estrita (só steps com `n_calls ≥ 1`) daria menos.
+
+**Ressalva 2 — o que acontece quando o código nem parseia (corrigido 15/09/2026).** É um terceiro caso, diferente
+do de cima: o `code_action` tem erro de sintaxe e `ast.parse()` levanta exceção **antes** de contar qualquer
+chamada — não é raro, é a família de erro mais comum deste trace inteiro (`SyntaxError`, string não fechada,
+§2). A escolha do notebook, dentro do `try/except` do Passo 3: quando isso acontece, o step é **descartado por
+completo** — nem os tokens dele entram na soma do papel, só as chamadas ficam de fora. O racional: se não dá
+pra confirmar quantas chamadas de ferramenta aquele step de fato fez (o código nem é uma árvore válida pra
+percorrer), atribuir o custo dele a uma "chamada" mediria a coisa errada — inflaria o overhead por chamada sem
+uma chamada real por trás para justificar. A alternativa — manter os tokens do step na soma e só zerar as
+chamadas — é defensável (o step custou tokens de verdade, com ou sem sintaxe válida), mas responde outra
+pergunta: "custo total do papel dividido pelas chamadas que sobreviveram", não "custo por chamada real". Essa
+alternativa foi a que gerou os números publicados por engano nesta seção antes de hoje — `ConversationAgent`
+27.988 e `managerAgent` 18.775, contra os 27.062 e 17.592 que o notebook de fato calcula pela regra oficial
+(descartar o step inteiro). Não era erro de digitação, era duas contas diferentes sem rótulo — corrigido aqui e
+no relatório (`02-relatorio-achados.md` §3.3) pra bater com a conta oficial.
 
 **Passo 4 — o resultado.** `CalculoCivel`: 141.673 tokens por chamada de ferramenta. `CalculoTrabalhista`:
 50.624. O múltiplo que dá escala a esses números é sempre contra a **mediana, entre execuções, da razão
@@ -626,7 +641,7 @@ analogia aos módulos do AgentDebug) fica no histórico do git.
 **Passo 1 — a lacuna: assinatura não é unidade de memória.** A §2 do relatório classifica os 498 erros por regex
 sobre a mensagem da exceção — isso é o **sintoma**. Uma unidade de memória é outra coisa: **um conteúdo,
 escrevível numa frase, que evitaria o erro na próxima execução**. Os dois não coincidem 1:1. Exemplo concreto: a
-assinatura "Retorno é dict, agente indexa como lista" (136 erros) junta três conteúdos diferentes — 89 são de
+assinatura "Falha ao indexar o retorno (Could not index)" (136 erros) junta três conteúdos diferentes — 89 são de
 fato um dict indexado por posição (`r[0]` em `{'result': [[...]]}`), 37 são uma **string** indexada por chave, e
 10 são um campo que não existe no dict (`r['quebra_sigilo']`). Uma memória por assinatura ensinaria a coisa
 errada para 47 desses 136 erros.
