@@ -114,3 +114,25 @@ Documentos atualizados: racionais §3 (Passo 8) e §6; relatório TL;DR, §2.2 e
 - nada foi commitado ainda.
 
 **Tags:** implementacao, notebook, mecanismo, reincidencia, 11-9-vs-13-5, drill-down, triangulacao, calculocivel, respostabacen, racionais, relatorio, procedimento-validacao, grupo-1-pendente, sub-2.2
+
+## 16/09/2026
+
+**Tipo:** achado — **Sub-atividade:** 2.1 / 2.2 — **Canal:** pessoal
+
+**Registro objetivo:** Retomou a mineração das unidades de memória, partindo de uma primeira análise de erros muito genérica, que fez sentido no início para conseguir agregar o volume de erros do trace. A partir dela, desenvolveu a metodologia de rodar análises independentes por script, com o `drill_down.py` disponível para investigar o trace cru por palavras-chave quando necessário. Numa segunda análise, roteou os erros para unidades de memória mais específicas — menos genéricas que a primeira. Exemplo concreto: um grupo genérico juntava erros de "serialização de lista" quando na verdade o objeto era um dict com chave e valor — grupo genérico porque escondia várias causas diferentes. Chegou à analogia que passou a organizar o trabalho: a primeira análise olhava o sintoma (ex.: "tenho febre"), e a febre é causada por vários mecanismos distintos; a segunda análise focou em separar por mecanismo. Constatou que alguns grupos de erro precisavam de subcategoria própria.
+
+**Reflexão:** Apesar de a segunda análise ir para o mais específico, continua achando que memórias mais gerais, na forma de regras, também têm valor — não é uma substituição de granularidade, é uma granularidade adicional.
+
+**Tags:** achado, mineracao-de-memoria, sintoma-vs-mecanismo, analogia-febre, drill-down, submecanismo, granularidade, sub-2.1, sub-2.2
+
+## 17/09/2026
+
+**Tipo:** achado — **Sub-atividade:** 2.1 / 2.2 — **Canal:** pessoal
+
+**Registro objetivo:** Concluindo essa abordagem, minerou as duas primeiras unidades de memória, nomeadas nº2 e nº10. A unidade nº2 trata do retorno das ferramentas de documento como dict; a nº10 trata de um campo inexistente no retorno estruturado. Investigou dois agentes — `ConversationAgent` e `RespostaBacen`. Ao aprofundar nos traces e nas derivações, encontrou que os erros da unidade nº2 vinham de o agente não entender o schema usado pela ferramenta, faltando indexar pelo campo `result`. Já a nº10 estava relacionada a uma ferramenta cujo contrato de retorno está incorreto — na verdade, o próprio prompt que o agente recebe induz o agente a usar um nome de campo que não é válido no contrato real da ferramenta. Chegou assim às duas primeiras unidades de memória mineradas.
+
+**Reflexão:** Ver as duas unidades saírem inteiras do trace — o schema real de retorno da ferramenta e o contrato induzido pelo prompt — confirma que a abordagem por mecanismo (e não por sintoma) chega a um conteúdo realmente ensinável, no formato de frase única que motivou a mudança de método em 16/09.
+
+**Decisão/próximo passo:** Uma vez fundamentada, essa metodologia (sintoma → mecanismo → unidade de memória, com mineração aprofundada caso a caso) passa a ser a base para as próximas análises do projeto.
+
+**Tags:** achado, mineracao-de-memoria, unidade-2, unidade-10, conversationagent, respostabacen, schema-de-retorno, contrato-de-ferramenta, campo-inexistente, prompt-induz-erro, sub-2.1, sub-2.2
