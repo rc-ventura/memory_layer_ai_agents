@@ -929,6 +929,23 @@ inteiro.
 Números em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.1; como foi rodado, conferido e onde desviou
 do pré-registro em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.7; código no notebook, §11.
 
+> **Em linguagem simples, antes do racional técnico.** Esta seção investiga dois erros que o agente comete ao ler a
+> resposta de uma ferramenta. **nº2:** o agente chama `get_available_documents` (busca documentos) e trata a
+> resposta errado — tenta `r[0]` quando o certo é `r['result'][0]`. **nº10:** o agente chama `validar_quebra_sigilo`
+> e pede o campo `quebra_sigilo`, mas a ferramenta devolve o campo com outro nome: `vazamento_sigilo`.
+>
+> A pergunta é: dá para transformar cada um desses erros numa **memória** — uma frase certa, derivada do próprio log,
+> que a próxima execução já recebe pronta, em vez de o agente ter que descobrir de novo?
+>
+> Os oito passos abaixo são o caminho até essa frase, cada um respondendo uma pergunta: o erro realmente vem de uma
+> ferramenta só, ou de várias misturadas (Passo 1)? o que a ferramenta devolve de verdade (Passo 2)? o agente já
+> tinha essa informação no prompt (addendum ao Passo 2)? o que o próprio agente fez para se corrigir (Passo 3)? isso
+> é sempre igual, ou muda com o tempo (Passo 4)? dá para confiar no resultado (Passo 5)? isso bate com o log bruto,
+> conferido à mão (Passo 6)? e, por fim, qual é a frase final (Passos 7–8)?
+>
+> O que vem a seguir é o racional técnico completo — cada decisão, cada régua e por que ela foi escolhida assim.
+> Quem só quer o resultado pode ir direto a `02-relatorio-achados.md` §6.1.
+
 **Por que esta análise.** A tabela de candidatos (§7) tem, para cada unidade, um "conteúdo proposto" escrito à
 mão a partir de alguns casos lidos. Nas unidades *factual · ambiente* esse conteúdo é um fato sobre uma
 ferramenta — e fato sobre ferramenta dá pra derivar do próprio trace e checar contra ele, sem LLM. As duas
@@ -944,6 +961,8 @@ nova sirva de teste de replicação do próprio schema minerado (ver
 dado. O motivo é o mesmo de todo teste de robustez deste documento (§2): se a régua é escolhida depois de ver o
 resultado, fica impossível saber se o número fala do dado ou da régua. Regras acrescentadas depois de algum passo
 rodar ficam marcadas com data e com a indicação de que não mudaram o resultado já obtido.
+
+**Evidência de cada passo.** Cada análise desta mineração tem uma pasta com os casos escolhidos por regra, o trace cru de cada um e uma visão derivada que só espelha o cru — como é montada, gerada e lida está em `03-procedimento-validacao.md`, "Evidência por análise".
 
 **Passo 1 — "ferramenta não é unidade": testar a premissa antes de escrever a lição.** O §7 Passo 1 já provou,
 um nível acima, que agrupar por sintoma esconde causas diferentes: a mensagem "Could not index" sozinha
@@ -1108,6 +1127,46 @@ agente fez com o **objeto** que quebrou" — e o nome da variável nem sempre co
   quebrou: o agente pode corrigir lendo outro nível do mesmo retorno (ex.: quebrou num item de metadado, corrigiu
   lendo o documento).
 
+**Evidência caso a caso — por que cinco logs, e como foram escolhidos (16/09/2026, depois do Passo 3; não
+pré-registrado).** O addendum ao Passo 2 mostrou que, nos 7 erros de `validar_quebra_sigilo`, o agente pediu
+`quebra_sigilo` e o bloco da ferramenta no prompt declara `quebra_sigilo`. Daí sai uma afirmação forte: **o prompt
+ensina um contrato errado, o agente segue o prompt, e a falha é da documentação da ferramenta, não do agente.** Forte
+porque muda o destino da unidade (conserto na origem, harness, em vez de memória) e porque aponta um defeito na
+plataforma de outro time. Dois números que coincidem não bastam para isso: não mostram que a chave veio do prompt, nem
+como o agente chegou na certa. Quem mostra é o log — o texto que o agente recebeu, o código que ele escreveu, o que a
+ferramenta devolveu e o que ele fez depois. O caminho, passo a passo:
+
+1. **Separar duas afirmações antes de procurar evidência.** "O prompt declara um contrato explícito diferente do real"
+   (`validar_quebra_sigilo` e `extrair_evidencias`: um JSON com outras chaves) não é a mesma afirmação que "o prompt
+   descreve o retorno de modo incompleto" (`get_available_documents`: "uma lista de documentos e um resumo", sem o
+   envelope `result`). A primeira se verifica lendo o bloco da ferramenta; a segunda depende de como o agente
+   interpreta uma frase. Cada uma recebe os seus logs e a sua conclusão, e é esperado que terminem com força diferente.
+2. **Ler o que o prompt diz, não só se a chave aparece.** O addendum conta presença de chave, e presença não diz o que
+   o prompt afirma sobre ela. Por isso a §11.3 passou a imprimir o texto literal com que o bloco descreve o retorno, e
+   `drill_down.py ferramenta <nome>` lista todas as variantes da declaração no trace inteiro: se o texto tivesse mudado
+   ao longo dos meses, a afirmação valeria só para uma parte do período.
+3. **Escolher os casos por regra, não a dedo.** Para cada ferramenta, o primeiro caso em ordem cronológica de cada
+   desfecho de correção do Passo 3 (troca sem guarda, troca com guarda de tipo, conserto com `.get`), no máximo dois
+   por ferramenta. Escolher "os mais claros" produziria exatamente a evidência que se quer ver. Os desfechos sem
+   conserto ficam de fora porque a pergunta inclui como o agente descobre e corrige.
+4. **Fazer as mesmas quatro perguntas a cada log.** (a) O que o bloco da ferramenta declara? (b) Que linha quebrou, e
+   que objeto a mensagem imprime? (c) A chave real já estava no contexto do agente antes do erro — no prompt ou num
+   `print` anterior — ou aparece pela primeira vez depois? (d) O que o `thought` e o código do step seguinte fazem? A
+   (c) é a que separa "não tinha a informação" de "tinha e errou mesmo assim", e é por ela que as duas afirmações do
+   item 1 terminam diferentes.
+5. **Dizer o que um log prova e o que não prova.** Um log mostra a sequência: o prompt diz X, o agente escreve X, a
+   ferramenta devolve Y, o agente lê Y e troca. Não prova que o prompt **causou** o erro — `quebra_sigilo` é também o
+   nome óbvio para o campo, e o log não mostra qual das duas menções do prompt (o bloco da ferramenta ou o modelo do
+   JSON final) o agente seguiu. Causa só se testa mudando a documentação, ou injetando a memória, e medindo de novo: o
+   replay contrafactual do Passo 7.
+6. **Separar o que vai para o documento do que fica local.** Os trechos citados em `03` são redigidos (valores
+   trocados pelo tipo, números e nomes de variável com número mascarados). O texto cru — o system prompt inteiro que o
+   agente recebeu e as mensagens que ele leu antes de corrigir — sai em JSON por `drill_down.py evidencia`, em
+   `resultados/` (git-ignored), para quem precisar conferir a fonte.
+
+Os cinco logs e as conferências de apoio estão em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.8;
+o que eles sustentam, em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.1.
+
 **Monitoramento além do Passo 3 (candidato a detector — registrado, não rodado).** O Passo 3 só olha o step
 seguinte a um erro. Mas, com o schema real da ferramenta em mãos (Passo 2), o mesmo padrão vira um detector de
 falha silenciosa para o trace inteiro, inclusive em steps que nunca levantaram exceção: toda leitura
@@ -1136,6 +1195,23 @@ caso a caso (mensagem truncada, aspas quebradas). **Regra:** ≥90% das ocorrên
 Passo 2 **e** nenhuma contradição de schema entre elas no Passo 4 → `status: derived-and-checked`. Abaixo
 disso, ou com contradição → `status: "parcial"`, cobertura exata reportada, resíduo sempre explicitado — nunca
 escondido, mesmo princípio já aplicado no roadmap ("não forçar camada 2 no resíduo").
+
+**Emenda ao Passo 5 (17/09/2026, depois da verificação humana do Passo 6 achar o caso `3f44a68b…`): confirmação
+indireta por `AttributeError`.** Duas leituras não esgotam o que a mensagem pode provar. Quando o erro é "dict
+iterado como lista" (`for d in objeto`, depois `.get()` numa das chaves — que vira uma string sem método `.get`), o
+smolagents formata como `Object <chave> has no attribute get`: não imprime o objeto inteiro, só a chave em que a
+iteração parou. Isso não é o mesmo nível de evidência do Passo 2 (não dá pra derivar a forma toda) — mas é
+evidência: se essa chave já é conhecida do schema, derivado de **outros** erros da mesma ferramenta, ela confirma
+(ou contradiria) o mesmo fato. **Regra, geral desde o início — não escrita para os 2 casos que a motivaram:** para
+qualquer erro do tipo `AttributeError` numa ferramenta com schema já derivado, extrair a chave da mensagem e checar
+se ela está no schema; se sim, conta como "lido ou confirmado" na cobertura do Passo 5, ao lado da leitura direta
+(reportado à parte, para não inflar silenciosamente o número); a leitura estrita (só objeto lido de fato) continua
+reportada, sem essa confirmação. **Por que não é circular:** o schema contra o qual se confere vem sempre de
+**outros** erros (os 89 lidos diretamente), nunca do próprio caso sendo confirmado — não tem como o método
+"confirmar" uma chave errada que ele mesmo inventou. **Efeito nos dois casos que motivaram a emenda:** cobertura por
+erro da nº2 sobe de 89/91 para 91/91; por ocorrência já era 100% (os dois estavam em execuções com outro erro lido);
+o status não muda. Números em `02-relatorio-achados.md` §6.1; código e verificação em
+`03-procedimento-validacao.md` §1.9.
 
 **Passo 6 — verificação humana por amostragem, antes de aceitar o candidato final.** Abrir manualmente uma
 amostra pequena (5 por unidade, incluindo ao menos 1 caso do resíduo não-parseado do Passo 5) via
@@ -1205,6 +1281,81 @@ rodar um juiz, o que este passo (determinístico, sem LLM) não faz. Preencher c
 (ex.: frequência ou custo em tokens) repetiria o erro que o próprio `impact` existe pra evitar — `01-racionais.md`
 §8 já avisa que confundir frequência com gravidade é exatamente essa armadilha. Fica `null`, pendente do item
 11 (gold-standard + juiz calibrado).
+
+### Execução dos Passos 4 a 8 (17/09/2026) — como cada um foi feito, e o que o pré-registro não fixava
+
+Números em `02-relatorio-achados.md` §6.1; conferência em `03-procedimento-validacao.md` §1.9; código no notebook,
+§11.5–§11.8; evidência em `resultados/evidencia/11.5_…` a `11.8_…`. Os passos rodam só nas **sub-unidades candidatas**
+do Passo 1 — `(ConversationAgent, get_available_documents)` na nº2 e `(RespostaBacen, validar_quebra_sigilo)` na nº10.
+As sub-unidades de 1 caso ficam como estavam (documentar e monitorar). Cada decisão abaixo que não estava escrita
+antes de rodar está marcada como tal.
+
+**Passo 4 — o schema é o mesmo em todos os meses?**
+
+1. **Separar os níveis antes de comparar.** O objeto que a mensagem imprime às vezes é o retorno inteiro
+   (`{result: …}`) e às vezes um documento de dentro dele (`{hashDocumento, metadado, tipoExtracaoOcr}`). Comparar os
+   dois chamaria de "mudança de schema" o que é só outro nível da mesma estrutura. O nível é dado pelas chaves de topo
+   do objeto lido. *(Não fixado no pré-registro.)*
+2. **Comparar cada forma com a mais comum do seu nível**, e não com a do primeiro mês: a mais comum é a melhor
+   estimativa do fato estável, e o primeiro mês pode ser justamente o ponto fora. *(Não fixado.)*
+3. **Dizer o que é "contradição".** O Passo 5 exige "nenhuma contradição de schema", sem definir o termo. Definição
+   adotada: **contradição** é faltar uma chave da forma comum ou um tipo mudar — o que tornaria falso o conteúdo da
+   memória. **Campos a mais** — a forma comum inteira está lá, mais alguma chave de tipo simples — é registrado, mas não
+   contradiz: a memória usa as chaves da forma comum, e uma chave extra nula não as torna falsas. **Esta definição foi
+   escrita depois de o Passo 2 já ter mostrado um retorno com dois campos a mais** (`iuDocsId`, `iuDocsTenantId`,
+   nulos), então não é cega. Por isso a leitura estrita — qualquer diferença conta — é calculada ao lado e levada ao
+   Passo 5.
+4. **Só os meses com erro são observados.** Um mês sem erro não diz nada sobre o schema: a ferramenta pode ter
+   devolvido qualquer coisa sem que ninguém a indexasse errado.
+5. **O subproduto fica registrado, não construído.** O detector de anomalia de ambiente (schema estável que quebra de
+   repente) continua como bloco para o item "Should the deterministic anomaly filter…" de `open-questions.md` —
+   pendência no roadmap.
+
+**Passo 5 — status.** A régua é a pré-registrada (≥90% das ocorrências com objeto lido e nenhuma contradição). Falta
+dizer quando uma **ocorrência** conta como lida, já que uma ocorrência pode ter vários erros: conta se **pelo menos um**
+dos seus erros teve o objeto lido — um objeto lido basta para saber o que a ferramenta devolveu naquela cascata.
+*(Não fixado.)* O status sai nas duas leituras do Passo 4; a adotada é a que não trata campos a mais como contradição,
+e a estrita fica ao lado, com o mesmo destaque. O resíduo (erros sem objeto lido) é listado caso a caso, com o motivo,
+e cada caso vai para a pasta de evidência.
+
+**Passo 6 — amostra para conferir contra o trace cru.**
+
+1. **Sortear, e com semente.** O pré-registro dizia "5 por unidade, incluindo ao menos 1 do resíduo", sem dizer como
+   escolher. Sorteio, para que a amostra não seja escolhida; semente fixa (`random.Random(20260917)`, a data da
+   rodada), para que seja a mesma em qualquer execução. Na nº10 não há resíduo, então a exigência de 1 caso do resíduo
+   não se aplica. *(Não fixado.)*
+2. **Três fontes por caso, e só duas independentes.** (1) O objeto que a mensagem de erro imprime tem a forma comum?
+   É o mesmo leitor do Passo 2 aplicado de novo — mede consistência, não acerto, e é justamente o risco que o Passo 6
+   existe para cobrir. (2) As chaves do schema aparecem no **log de `print`** que o agente recebeu? É outro texto,
+   produzido por outro caminho (o `print` do agente, não o formatador de erro do smolagents). (3) O conserto do
+   Passo 3 lê uma chave do schema? É o código que o próprio agente escreveu depois.
+3. **A verificação humana continua sendo o Passo 6.** O pré-registro diz "verificação humana", e uma leitura feita
+   por agente — mesmo abrindo o cru — não é isso. A tabela do notebook e a pasta `11.7_amostra_passo6/` existem para
+   deixar essa verificação curta: cada caso tem o cru e uma visão que aponta onde olhar. Enquanto ela não for feita, o
+   registro diz "verificação humana: pendente".
+
+**Passo 7 — `description` e `correction_guidance` por molde, não por redação livre.** O §9 já dizia que ir do degrau
+2 ao 3 é "reescrita quase mecânica". O molde fixo preenche: a forma comum (Passo 4), o pedido mais comum do agente
+(Passo 2), o acesso certo e a cláusula sobre o prompt (11.3). Redação livre — de pessoa ou de LLM — seria texto sem
+validação, exatamente o que a disciplina "derivado e checado" evita. Dois pontos do molde:
+
+- **O acesso certo vem do código que funcionou.** A primeira versão usava só a chave nova do Passo 3 e escreveu
+  "use `r['result']`" — que não resolve, porque os documentos estão em `r['result'][0]`. Agora o acesso é a cadeia
+  completa de índices que o próprio agente escreveu na variável que quebrou, contada só nos consertos de troca de chave
+  cujo step seguinte roda sem erro; vale a mais comum que começa pela chave nova. *(Corrigido ao rodar.)*
+- **A cláusula sobre o prompt sai do 11.3.** Se o bloco da ferramenta declara a chave errada em todos os prompts, a
+  `description` diz isso e a `correction_guidance` avisa que o prompt diz outra coisa; se o bloco não declara nenhuma
+  chave do retorno, a `description` diz isso.
+
+**Passo 8 — o registro.** Campos do §9 acima, com três escolhas de preenchimento:
+
+- **`location` alterna os meses** (o primeiro caso de cada mês, depois o segundo de cada mês…, até 10). A unidade é
+  candidata por recorrer entre meses; dez casos do mês com mais erros esconderiam isso. *(Não fixado.)*
+- **`evidence` são os 3 primeiros de `location`** — portanto de 3 meses diferentes —, só com estrutura: pedido e forma
+  do objeto indexado. *(Não fixado.)*
+- **O registro não decide o destino da nº10.** Quando a correção contradiz o system prompt, `validation.destino` diz
+  isso e deixa a decisão memória × harness em aberto. O registro também guarda o conteúdo que foi escrito à mão na §7
+  (`conteudo_escrito_a_mao_que_este_registro_substitui`), para a comparação ficar visível.
 
 **Ressalva final, residual — não é a lacuna do Passo 7, é outra.** Este método só cobre erros que já bateram em
 alguma regra de `submecanismo()`. Uma falha silenciosa nova, do mesmo tipo de problema (schema de retorno

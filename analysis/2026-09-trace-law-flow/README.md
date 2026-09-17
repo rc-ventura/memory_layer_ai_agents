@@ -20,7 +20,7 @@ reincidencia entre execucoes, detectores de falha silenciosa, e candidatos a uni
 | Arquivo | O que faz |
 |---|---|
 | [`analise_trace_esteira_juridica.ipynb`](pipeline/analise_trace_esteira_juridica.ipynb) | Notebook executavel — o pipeline reproduzivel com outputs embutidos |
-| [`drill_down.py`](pipeline/drill_down.py) | Script para triangular um numero agregado contra um caso concreto no trace cru |
+| [`drill_down.py`](pipeline/drill_down.py) | Script para triangular um numero agregado contra um caso concreto no trace cru. `ferramenta <nome>` mostra como o system prompt declara uma ferramenta no trace inteiro; `evidencia [<analise>]` completa as pastas de evidencia que o notebook grava (trace cru + visao derivada de cada caso) — ver `03-procedimento-validacao.md`, "Evidencia por analise" |
 
 ## Fichamentos teoricos
 
@@ -33,7 +33,11 @@ Ver o [`literature/README.md`](literature/README.md) para o indice e o que cada 
 `pipeline/resultados/` — CSVs derivados do trace cru (**git-ignored**: contem nomes de clientes, numeros
 de processo e trechos de documentos em claro). Regenerar rodando o notebook (escreve nessa pasta, nao na raiz
 da analise — uma copia orfa em `resultados/` na raiz existiu ate 16/09/2026 e foi removida por auditoria, ver
-`audit/2026-09-16-auditoria-independente.md` M1).
+`audit/2026-09-16-auditoria-independente.md` M1). `pipeline/resultados/evidencia/<secao>_<analise>/` — uma pasta por analise da §11 do notebook: `casos.csv` (casos
+escolhidos por regra), `leia-me.md`, `crus/` (a linha inteira do trace, sem alteracao — a fonte) e `derivados/` (tabelas
+e a visao de cada caso, que so espelha o cru). O notebook grava a parte estrutural; `drill_down.py evidencia` grava os
+crus e as visoes. Mesma regra: git-ignored, com PII. `pipeline/resultados/unidades_memoria.json` — os registros finais
+das unidades nº2/nº10 (§11.8).
 
 `data/` — o trace cru (`85cb11b5-....csv.xz`, **git-ignored**). `pipeline/drill_down.py` e os scripts de
 `audit/scripts/` resolvem o caminho relativo ao proprio arquivo, nao ao diretorio corrente.
