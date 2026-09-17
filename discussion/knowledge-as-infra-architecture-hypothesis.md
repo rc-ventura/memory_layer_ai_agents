@@ -194,6 +194,25 @@ Three inputs from the tutor (reflections [`checkpoint-2026-08-28-reflections.md#
 
 ### C. Update Engine (Cognition Layer) — the harness-adjustment layer, batched
 
+**First concrete empirical instance of the v2 harness-change signal, 17/09/2026.** The trace-law-flow analysis
+(`../analysis/2026-09-trace-law-flow/`) mined two candidate memory units end to end (`01-racionais.md` §9) and one
+of them — nº10, `validar_quebra_sigilo` — turned out to be **exactly** the "propose a harness change instead of a
+strategy unit" case this section only had as shape until now. What made it decidable, cheaply and deterministically
+(no LLM, no replay): the system prompt declares the **same field name** for the tool's return and for the final
+JSON's output field, the agent conflates the two, and the wrong value is measurable directly in the delivered
+payload — **9 of 21 delivered responses (43%, across 3 months) carry an invalid regulatory field, with zero
+exceptions raised anywhere in the log** (`02-relatorio-achados.md` §6.2). The pre-registered decision rule (≥1
+confirmed case reaching the final payload → harness, not memory) is the first real instance of a **diagnostic
+front-end producing a harness-change signal**, in the AgentDebug Stage-1/2 sense already mapped below — except it
+didn't need Stage 3's sandbox re-run to decide: comparing the declared contract against the real schema and the
+delivered payload was enough. Two loose ends this surfaces for the v2 design, not yet resolved: (1) the field that
+carries this decision (`validation.destino` — `memória` \| `harness` \| `em aberto`) exists today only as ad-hoc
+code in one analysis pipeline, not as a documented part of the memory-unit schema (fixed in
+`../analysis/2026-09-trace-law-flow/docs/01-racionais.md` §7 Passo 8's field-origin table, 17/09); (2) this case
+resolved without a replay harness at all — worth asking whether "contract self-contradiction, measured in the
+delivered payload" is a cheaper, complementary trigger to the sandboxed replay loop below, not a substitute for it
+(a subtler harness bug, without a same-name collision, might still need the full loop to surface).
+
 **Update 01/09/2026 — o Update Engine produz dois writes, não um.** Além da proposta de strategy descrita abaixo (2ª reflexão / meta-reflexão → camada 3, via Commit Gate D), ele produz uma **1ª reflexão** sobre a janela de traces filtrada → camada 2 (tipada: `exemplar` + `reflexão`), via um gate de governança mais leve (grounding/dedup/ACL). O filtro de anomalia descrito na nota de 28/08 abaixo é reposicionado como o **único gate determinístico**, *antes* do Engine, servindo os dois caminhos. Ver §"Consolidação 01/09/2026" e [`promotion-policy-log-to-ltm.md`](promotion-policy-log-to-ltm.md).
 
 **Note added 27/08/2026 — the Update Engine is the highest-intelligence-density component of the mechanism and warrants the most design care.** It's where the cold path's actual LLM call lives — the ExpeL-style comparison of success/failure cases that produces the natural-language insight. Every other component is either storage (A, B), gating (D), or deterministic mechanics (E); the Update Engine is the only one that *generates* content. Two consequences flow from this: (1) the reflection it produces is a **proposal, not a commit** — by design, because ExpeL's own self-vote loop (no human gate, silent overwrite) is exactly the gap the Commit Gate (component D) closes, not something to inherit; (2) it's the natural candidate for a **v2 self-improvement** scope expansion — proposing harness changes (prompt edits, grader rubric updates, tool-config adjustments), not just strategy-layer content. That v2 direction is explicitly out of scope for v1 (the Engine's output today is strategy content only — never system prompts, never trigger parameters, never signal-capture design; see "Scope clarification: what the Update Engine never touches" below), but is recorded as the forward path so the v1 design doesn't foreclose it. Any v2 harness-change proposals would go through the same Commit Gate as strategy content — versioned, gated, rollback-able — not silently applied (the same gap LangChain's own Loop 4 "hill-climbing" leaves open, per [`framework-comparison-hermes-smolagents-deepagents.md`](framework-comparison-hermes-smolagents-deepagents.md)). See also the open question on whether the Engine's reflection step should have access to a context source beyond the episodic traces it already reads — [`open-questions.md`](open-questions.md).

@@ -1263,6 +1263,18 @@ mistério:
 | `description`, `correction_guidance` | **AgentDebug** (Stage 1/2 — descrição do caso e diretiva corretiva) |
 | `occurrences`, `status`, `validation` | produção própria do projeto — a disciplina "derivado-e-checado vs. hipótese" (Commit Gate), não vem de nenhum paper |
 | `scope` (papel/ferramenta) | produção própria do projeto — achado empírico de `02-relatorio-achados.md` §6 ("a chave de recuperação da unidade deve ser (papel, unidade), não global") |
+| `validation.destino` | **campo novo, sub-produto da análise funda de 17/09 (§9, "Análise funda da nº10")** — `"memória"` \| `"harness"` \| `"em aberto"`. Existia como texto solto no código antes de 17/09 (`registro_final`); formalizado aqui depois que a nº10 foi o primeiro registro a receber um valor de verdade, não a frase genérica. Ver a nota abaixo sobre por que este campo importa pro v2. |
+
+**Por que `validation.destino` importa além desta análise (17/09/2026).** Até 16/09 o schema tratava toda
+unidade como candidata a memória — "harness" era só o oposto informal ("não é memória"). A nº10 é o primeiro caso
+em que esse rótulo foi **decidido por regra pré-registrada e evidência medida** (`02-relatorio-achados.md` §6.2), não
+por impressão: o prompt declara o mesmo nome de campo para o retorno da ferramenta e para a saída final, o agente
+confunde os dois, e isso mede-se direto no payload entregue, sem precisar do replay contrafactual que o Passo 7
+(acima) previa como o teste "de verdade". Ou seja: **existe hoje um caminho mais barato que o replay para produzir
+o sinal harness × memória** — comparar o contrato declarado no prompt com o schema real e com o que foi
+efetivamente entregue. Isso conecta direto com o "Update Engine" hipotetizado para o v2 do mecanismo de memória
+(`../../../discussion/knowledge-as-infra-architecture-hypothesis.md`, componente C, "v2 harness-change loop") — nota
+cruzada lá.
 
 **`location`/`evidence` são lista, não exemplo único.** A unidade só virou candidata por ter recorrência (≥3
 execuções/≥2 meses) — a evidência tem que carregar essa recorrência, não um caso isolado escolhido a dedo.
