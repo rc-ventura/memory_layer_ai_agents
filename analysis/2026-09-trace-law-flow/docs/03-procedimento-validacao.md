@@ -407,7 +407,11 @@ chamada no idx 5, o retorno nunca é impresso, o idx 7 lê `.get("quebra_sigilo"
 `final_answer` (idx 9, `final_answer(json_resposta, …)`) tem `'quebra_sigilo': ''`; **não** foi confirmado que
 `json_resposta` é exatamente esse objeto. (vi) O JSON fica em `pipeline/resultados/evidencia_chave_certa.json`,
 git-ignored pelo `.gitignore` da pasta; os trechos são redigidos (≥5 dígitos, hex ≥16, strings >60 caracteres), mas
-`thought` e logs podem conter texto de caso — tratar como os demais arquivos de `resultados/`.
+`thought` e logs podem conter texto de caso — tratar como os demais arquivos de `resultados/`. **É arquivo derivado,
+não log cru:** só `exec_id`, `role`, `step_number`, "step com erro" e os nomes de chave vêm direto do trace; o resto é
+classificação das regras do §11 ou recorte redigido — a origem de cada campo está na chave `como_ler` do próprio JSON.
+Para conferir no cru, use `step_number` (não `idx`): `drill_down.py caso` mostra o `step_number` do smolagents, e `idx`
+é a posição entre ActionSteps a partir de 0 — em 2 das 89 trocas a diferença não é +1.
 
 **PII.** As células da §11 imprimem só nome de função, contagens, nomes de chave e tipos, e o segundo parâmetro do
 `.get` como estrutura; chave com cara de dado vira `<chave-dado>`. Nenhum valor retornado pelas ferramentas sai na
