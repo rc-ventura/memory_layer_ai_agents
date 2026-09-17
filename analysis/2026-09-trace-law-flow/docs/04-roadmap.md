@@ -48,10 +48,17 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
      Resultado em `03-procedimento-validacao.md` §1.9. Os registros ainda dizem "verificação humana: pendente" — o
      texto do campo `validation.passo6_amostra` fica corrigido na próxima rodada do notebook (item cosmético, não
      muda `status` nem `description`/`correction_guidance`).
-  2. [ ] **Análise mais funda de `validar_quebra_sigilo`** (item logo abaixo) — antes de decidir a nº10, porque é ela
-     que diz se o prompt errado só custa retry ou também produz resposta errada sem erro.
-  3. [ ] **Decidir o destino da nº10** — memória ou não-memória · harness. O registro derivado deixa em aberto
-     (`validation.destino`): o prompt declara o contrato errado em dois lugares, na chave e na grafia do valor.
+  2. [x] **Análise mais funda de `validar_quebra_sigilo`** (17/09) — 9/21 respostas entregues (43%) com o campo
+     regulatório de quebra de sigilo inválido, sem nenhum erro registrado, medido no `action_output` (payload de
+     verdade, não inferência de código). Inclui retratação registrada de um achado errado da primeira rodada.
+     Resultado em `02-relatorio-achados.md` §6.2, conferência e retratação em `03-procedimento-validacao.md` §1.10,
+     racional em `01-racionais.md` §9. **Falta:** formalizar como §11.9 do notebook (hoje é protótipo fora dele) e
+     gerar `resultados/evidencia/11.9_leituras_quebra_sigilo/` pelo pipeline oficial.
+  3. [x] **Decidir o destino da nº10** (17/09) — **harness**. A regra fixada antes de rodar (≥1 caso confirmado
+     chegando à resposta final) foi atingida por 9 casos. `02-relatorio-achados.md` §6.1 já reflete
+     `validation.destino: harness` e o `impact` preenchido. **[ ] Falta:** `resultados/unidades_memoria.json` ainda
+     tem o registro antigo (`destino: em aberto`, `impact: null`) — atualiza junto da formalização da §11.9 (item 2
+     acima), pra sair do notebook já com o valor certo em vez de editado à mão.
   4. [ ] **Levar a divergência de documentação ao time da plataforma** — fora do trace, é harness:
      `validar_quebra_sigilo` (chave e valor), `extrair_evidencias` (chave) e `get_available_documents` (o envelope
      `result` não documentado). Evidência pronta em `03-procedimento-validacao.md` §1.8 (trechos redigidos; os crus
@@ -61,38 +68,35 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
      motivou rodar a mineração antes. Reaplicar também a triagem das sub-unidades dormentes (`extrair_evidencias`,
      `get_available_documents` na nº10).
 
-- [ ] **Análise mais funda: as leituras do retorno de `validar_quebra_sigilo` — quantas execuções leem, por qual
-  chave, e quais falham em silêncio.** Registrada em 17/09, **não rodada**.
-  - **A pergunta.** Hoje só se conhecem os 7 erros — as leituras que quebraram. O prompt com o contrato errado aparece
-    em 26 execuções (135 steps; `drill_down.py ferramenta validar_quebra_sigilo`). O que aconteceu nas outras? Cada
-    leitura do retorno cai em uma de cinco classes: (a) **chave real** direto (`vazamento_sigilo`/`justificativa`); (b)
-    **chave declarada, com erro** (os 7 já conhecidos); (c) **chave declarada, sem erro** — `.get("quebra_sigilo",
-    padrão)`, `try/except`, `"quebra_sigilo" in r` — que devolve o padrão em silêncio; (d) **objeto inteiro repassado**
-    sem ler chave (ex.: `"quebra_sigilo": quebra`, o dict todo dentro do JSON final — já visto no log 3); (e) **nunca
-    lido**. E, separado das chaves, a **grafia do valor**: comparações com o literal do prompt (`== "NÃO"`, `in ["NÃO"]`)
-    sem `'NAO'` — falsas sem exceção, porque a ferramenta devolveu `'NAO'` nos 6 casos negativos observados.
-  - **Por que importa.** Se (c) ou a comparação de grafia tiverem pelo menos um caso que chega ao `final_answer`, o
-    achado muda de natureza: de **custo** (retry, tokens) para **risco regulatório** — resposta ao Bacen com o campo de
-    sigilo vazio ou com um valor-padrão escolhido pelo agente. Isso decide a nº10 (harness, com urgência), dá o primeiro
-    sinal concreto de `impact` (hoje `null`) e é o argumento para o time da plataforma. A §11.5 revertida em 16/09 chegou
-    a apontar um caso provável de (c) (`dbc472b0…`, `.get("quebra_sigilo", "")`), nunca confirmado — **hipótese a
-    testar, não resultado**.
-  - **Mesmo processo das outras análises.** (1) **Pré-registrar** em `01-racionais.md` §9 e commitar **antes** de
-    rodar: as cinco classes, o que conta como leitura, a regra da grafia, o que se reporta — é a lição do revert de
-    16/09 (pergunta nascida dos resultados, com regras escritas depois). (2) **Rodar no notebook**, numa §11.9 com
-    título, o que faz, como ler e a tabela, reaproveitando as funções da §11: achar por AST cada
-    `x = validar_quebra_sigilo(...)`, seguir `x` no mesmo step e nos seguintes do papel (regra de reatribuição do Passo
-    3), classificar cada leitura e cada comparação de valor. Determinístico, sem LLM. (3) **Consequência**, só para (c) e
-    grafia: o campo chega ao JSON/`final_answer`, e com que categoria de valor (vazio, padrão, `SIM`/`NÃO`) — lida nos logs
-    de `print`, quando houver. (4) **Evidência** em `resultados/evidencia/11.9_leituras_quebra_sigilo/`: todas as
-    execuções de (c) e de grafia, mais o primeiro caso de cada outra classe; crus por `drill_down.py evidencia`. (5)
-    **Resultados** em `02-relatorio-achados.md` §6.1; **conferência** em `03-procedimento-validacao.md`, com cada caso de
-    (c) aberto no cru antes de ser reportado. (6) Pendências que sobrarem, aqui.
-  - **Limites já conhecidos.** 26 execuções, numa base com provável `LIMIT` — é contagem de casos, não taxa. O valor que
-    a ferramenta devolveu só é visível quando o agente imprimiu ou quando houve erro; sem isso, a classe (c) mostra que o
-    campo **pode** estar errado, não que está. Só `RespostaBacen`.
-  - **Extensão natural, depois:** o mesmo detector para toda ferramenta de schema conhecido — o "Monitoramento além do
-    Passo 3" de `01-racionais.md` §9.
+- [x] **Análise mais funda: as leituras do retorno de `validar_quebra_sigilo`.** Pré-registrada e rodada em 17/09.
+  **Resultado:** 9/21 respostas entregues (43%, 3 meses) com o campo regulatório de quebra de sigilo inválido, sem
+  nenhum erro registrado — medido no `action_output` (payload entregue), não inferido do código. Decidiu a nº10
+  como harness. Uma retratação no meio do processo (primeira rodada apontou caso errado, por não tratar `.get`
+  aninhado como cadeia) está registrada por escrito. Detalhe completo: `01-racionais.md` §9 ("Execução..."),
+  `02-relatorio-achados.md` §6.2, `03-procedimento-validacao.md` §1.10.
+  - **[ ] Falta:** formalizar como §11.9 do notebook — hoje o resultado publicado vem de um protótipo fora dele,
+    testado célula a célula mas não integrado ao pipeline reproduzível. Portar a régua de leitura-em-cadeia e a
+    medida direta (payload de `action_output`) pras funções da §11.0, gerar
+    `resultados/evidencia/11.9_leituras_quebra_sigilo/` pelo `drill_down.py evidencia` oficial.
+  - **Extensão natural, depois:** o mesmo detector (comparar payload entregue × schema real) para toda ferramenta de
+    schema conhecido — "Monitoramento além do Passo 3" de `01-racionais.md` §9. Começou nesta sessão para
+    `get_available_documents` e `extrair_evidencias`, item abaixo.
+
+- [ ] **Achado candidato em `get_available_documents`: mesma forma de leitura silenciosa, travada no limite de
+  PII.** Encontrado em 17/09 ao estender o método acima: `.get('documents')`/`.get('summary')` sobre o retorno —
+  chaves que não existem no schema real (só `result` existe) — em **2 execuções**, sem plano B, sem erro. Diferente
+  da nº10, esta ferramenta alimenta **texto livre** de resposta, não um campo estruturado único; confirmar exigiria
+  ler o texto da resposta contra o conteúdo real dos documentos, o que a regra de PII em vigor não permite
+  (`03-procedimento-validacao.md` §1.9–1.10). **Não decide nada sozinho** — a nº2 já está `derived-and-checked` — mas
+  é sinal de que o mesmo padrão de bug pode existir na ferramenta mais usada do trace (730 chamadas). Caminho
+  possível, não iniciado: um canal de confirmação que não exija ler conteúdo — ex. comparar a **contagem** de
+  documentos que a resposta menciona com a contagem que `get_available_documents` de fato devolveu, sem tocar no
+  texto. Detalhe em `01-racionais.md` §9, `02-relatorio-achados.md` §6.2, `03-procedimento-validacao.md` §1.10.
+
+- [x] **`extrair_evidencias` — checada e descartada para este aprofundamento (17/09).** Só 8 execuções declaram a
+  ferramenta, 1 erro conhecido; sem campo único mensurável no payload (o retorno se espalha em texto). Amostra
+  pequena demais para qualquer contagem valer como achado. Registro de que foi investigada, não esquecida — em
+  `01-racionais.md` §9 e `03-procedimento-validacao.md` §1.10.
 
 - [ ] **Análise mais funda: de onde vem o conhecimento do schema da nº2 (`get_available_documents`), e o agente sabe
   ou erra ao aplicar.** Registrada em 17/09, motivada por um achado da verificação humana do Passo 6

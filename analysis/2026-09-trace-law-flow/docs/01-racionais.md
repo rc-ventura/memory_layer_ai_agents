@@ -1467,6 +1467,163 @@ confirmar, isso também é resultado, e fica escrito como resultado.
 Literais de valor só saem quando curtos e sem dígitos longos, pela régua de `chave_segura()`/`segundo_parametro()` já
 em uso. É a lição dos dois incidentes de 16–17/09 (`03-procedimento-validacao.md` §1.7 e §1.9).
 
+### Execução da análise funda (17/09/2026) — o que apareceu, contado do começo
+
+Números completos em `02-relatorio-achados.md` §6.2; conferência, com a retratação descrita abaixo, em
+`03-procedimento-validacao.md` §1.10.
+
+#### A virada: existe uma medida direta, e o pré-registro não a tinha previsto
+
+O pré-registro mandava **ler o código** do agente e classificar as leituras do retorno. É uma medida indireta: do
+código eu infiro o valor. No meio da execução apareceu uma medida melhor, que estava no trace o tempo todo e que eu
+não tinha visto — **o payload que a esteira entregou**.
+
+Quando o agente chama a ferramenta que submete a resposta, o `action_output` daquele step guarda o `request`
+inteiro: um objeto de quatro campos (`id_reclamacao`, `resposta_orgao`, `resposta_cliente`, `quebra_sigilo`). O campo
+`quebra_sigilo` entregue está ali, literal. Não é inferência — é o que saiu.
+
+Essa medida **desmentiu a primeira versão desta análise**, e a retratação está registrada em
+`03-procedimento-validacao.md` §1.10. Vale a mesma regra do §2: achado errado é **retirado por escrito**, com o que
+o derrubou.
+
+#### A medida direta: o que foi entregue no campo de sigilo
+
+Das 26 execuções que declaram a ferramenta, **21 chegaram a entregar** um payload com o campo `quebra_sigilo`
+(5 nunca entregaram o campo). Nessas 21:
+
+| o que foi entregue no campo | execuções | meses |
+|---|---|---|
+| `'NAO'` ou `'SIM'` — o valor esperado | **12** | 4 |
+| **o objeto inteiro da ferramenta** (`{justificativa, vazamento_sigilo}`) | **7** | 2 |
+| um **texto de 203 caracteres** (não é `SIM`/`NAO`) | **1** | 1 |
+| **string vazia** (`''`) | **1** | 1 |
+
+**9 das 21 entregas — 43% — puseram no campo de sigilo algo que não é `SIM` nem `NAO`.** Em três meses diferentes
+(dez/2025, mai/2026, jun/2026). Nenhuma delas levantou exceção; nenhuma aparece em qualquer contagem de erro do
+pipeline, porque não há erro nenhum a contar.
+
+#### Os três jeitos de errar o mesmo campo
+
+1. **O objeto inteiro no lugar do valor (7 execuções).** O código é literalmente
+   `"quebra_sigilo": quebra_sigilo_obj` — o dicionário devolvido pela ferramenta vai inteiro para o campo que
+   deveria conter `SIM` ou `NAO`. É a classe (d) do pré-registro, que eu tinha classificado como "depende de quem
+   consome". Não depende: o consumidor recebeu um dicionário onde esperava duas letras.
+   Por que o agente faz isso tem uma explicação direta no prompt: **o campo do JSON de saída e o campo do retorno da
+   ferramenta têm o mesmo nome, `quebra_sigilo`**. O prompt declara os dois assim. Ao ver `quebra_sigilo` dos dois
+   lados, passar o objeto de um para o outro é a leitura mais natural da instrução.
+2. **O texto longo (1 execução).** Mesma confusão, um passo adiante: em vez do objeto, foi o texto da
+   justificativa.
+3. **O campo vazio (1 execução).** É o caso `dbc472b0…`, de dez/2025 — o único em que a leitura silenciosa do
+   pré-registro aconteceu em forma pura:
+
+   ```python
+   quebra_saida = quebra.get('quebra_sigilo', '')      # a chave não existe → devolve ''
+   json_resposta = { …, 'quebra_sigilo': quebra_saida }
+   final_answer(json_resposta)
+   ```
+
+   A chave pedida é a do prompt, não existe no retorno, e o `.get` com padrão `''` devolve string vazia sem
+   reclamar. O payload saiu com o campo de quebra de sigilo em branco. **É exatamente a hipótese que a §11.5
+   revertida em 16/09 tinha levantado** — agora confirmada, e confirmada pela via forte: não pelo formato do código,
+   mas pelo que foi entregue.
+
+#### O erro que a leitura estática me fez cometer
+
+A primeira versão desta análise apontou `8dd410c8…` como o caso confirmado: o agente teria trocado
+`r["quebra_sigilo"]` por `r.get("quebra_sigilo")` e entregue `None`. **Estava errado**, e o payload entregue
+mostrou: aquela execução entregou `'NAO'`, o valor certo.
+
+A causa do meu erro é instrutiva. O código de verdade era:
+
+```python
+'quebra_sigilo': new_quebra.get('vazamento_sigilo', new_quebra.get('quebra_sigilo'))
+```
+
+Uma **cadeia**: pede primeiro a chave certa; a chave errada é só o plano B, e o plano B nunca roda, porque o
+primeiro `.get` acerta. Meu classificador andava pela árvore sintática e via os dois `.get` como duas leituras
+independentes — contava o plano B como se fosse a leitura que valeu.
+
+Esse mesmo padrão de cadeia aparece em três execuções (`8dd410c8…`, `6b8e118d…`, `e2d4f9ea…`), e as três entregaram o
+valor certo. Numa quarta (`21a4fa6c…`) a cadeia está invertida — chave errada primeiro, chave certa como plano B — e
+mesmo assim entrega certo, porque o plano B salva.
+
+Duas lições ficam registradas:
+
+- **`.get` aninhado é uma cadeia, não duas leituras.** A régua de classificação precisa avaliar a cadeia inteira: se
+  qualquer chave dela existir, a leitura resolve. A §11.9 implementa assim.
+- **Leitura de código é proxy; payload entregue é fato.** Onde o trace guardar o resultado, a medida direta manda.
+  Passa a valer para as próximas análises deste tipo.
+
+#### O acento existe, mas está escondido atrás do erro de chave
+
+A outra metade da pergunta era a grafia: o prompt declara `"SIM"`/`"NÃO"`, a ferramenta devolve `'SIM'` e `'NAO'`
+(sem acento). Comparar `== "NÃO"` é sempre falso, e falso sem levantar exceção.
+
+Há **duas comparações divergentes, em duas execuções** — e as duas estão **na mesma linha em que o step falhou**: a
+linha é `if r["quebra_sigilo"] == "NÃO":`, a indexação errada estoura primeiro, e a comparação nunca chega a ser
+avaliada.
+
+> O erro da chave **blinda** o erro do acento. Enquanto a chave estiver errada, o acento nunca se manifesta.
+
+Daí a consequência prática: **corrigir só a chave torna o erro de grafia ativo — e ele é silencioso.** Os dois têm
+que ser corrigidos juntos. (Numa execução o agente escreveu sozinho `in ["NAO", "Nao", "NÃO", "Não"]`, cobrindo as
+quatro grafias: de novo, inconsistência, não incapacidade.)
+
+#### O que estes números decidem
+
+A regra de decisão estava fixada antes de rodar: **um caso confirmado de campo errado chegando à resposta final
+basta** para tratar a nº10 como problema de harness. Não há um caso — há **nove**, medidos no payload entregue, em
+três meses.
+
+1. A nº10 **deixa de ser candidata a memória** e passa a `harness`. O prompt declara o contrato errado em dois
+   lugares e usa **o mesmo nome** para o campo de saída e para o campo do retorno; memória aqui seria remendo sobre
+   instrução ambígua.
+2. O `impact`, até aqui `null`, ganha conteúdo medido: **9 de 21 respostas entregues (43%) com o campo regulatório
+   de quebra de sigilo inválido**, sem nenhum erro registrado. Não é custo de retry.
+3. Nasce um método reaproveitável, mais valioso que a nº10 em si: **comparar o que o agente entregou com o schema
+   que a ferramenta devolve** encontra falha que nenhum detector de exceção acha. Virou item de roadmap para as
+   demais ferramentas de contrato conhecido.
+
+#### As outras duas ferramentas com documentação divergente — por que uma foi mais longe e a outra não (17/09/2026)
+
+O escopo original (Escolha 2 do Rafael, acima) era só `validar_quebra_sigilo`. Depois que a medida direta apareceu
+— comparar o valor entregue com o schema real — ficou barato demais checar rapidamente as outras duas ferramentas
+com o mesmo tipo de divergência de documentação (`03-procedimento-validacao.md` §1.8): o motivo original do recorte
+(nenhuma delas travava a decisão da nº10) continua verdadeiro, mas não é mais motivo para não olhar, já que olhar
+não custa quase nada.
+
+**`get_available_documents` (nº2) — achado real, mas travado no limite de PII.** É a ferramenta mais chamada do
+trace (730 vezes). Vasculhando o mesmo padrão — `.get(chave, sem_padrão)` sobre o retorno — apareceram **2 execuções**
+com a mesma forma do bug da nº10:
+
+```python
+docs_by_protocolo = get_available_documents(...)
+documents = docs_by_protocolo.get('documents')   # 'documents' não é chave real — só 'result' é
+```
+
+`'documents'` e `'summary'` não são chaves do schema derivado no Passo 2 (só `result` é). Sem segundo argumento,
+o `.get` devolve `None` em silêncio, e esse `None` segue como argumento de outra chamada de ferramenta
+(`answer_question_using_documents(documents=None, …)`). O step terminou sem erro e marcado como final.
+
+Aqui a análise para onde a da nº10 conseguiu ir além: `validar_quebra_sigilo` tem um campo de saída único e
+nomeado (`quebra_sigilo`) que aparece **estruturado** no `action_output` — dava para comparar o valor sem ler texto.
+`get_available_documents` alimenta uma resposta em **texto livre**; para dizer se a resposta saiu errada eu
+precisaria ler esse texto e compará-lo com o conteúdo real dos documentos — exatamente o tipo de leitura de conteúdo
+que a regra de PII da sessão proíbe (`03-procedimento-validacao.md` §1.9, incidente de 17/09). O detector de resposta
+degenerada que já existe no pipeline (`DEGENERADO`, §17 do notebook) não acusou nada nos dois casos — o que não prova
+que a resposta saiu certa, só que não saiu obviamente vazia.
+
+**Fica como candidato, não confirmado**, com o limite declarado: mesma forma de bug da nº10, consequência não
+verificável sem violar a disciplina de PII. Registrado em `02-relatorio-achados.md` §6.2 e no roadmap, sem bloquear
+nada — a nº2 já está `derived-and-checked` e não muda de status por isso.
+
+**`extrair_evidencias` — verificada e descartada, não esquecida.** Só **8 execuções** declaram a ferramenta no
+prompt, com **1 erro conhecido** no total (`03-procedimento-validacao.md` §1.8, Log 3). Duas razões descartam o
+mesmo aprofundamento: a amostra é pequena demais para qualquer contagem valer como achado, e o retorno dela não
+alimenta um campo único e nomeado como `quebra_sigilo` — o conteúdo se espalha dentro do texto da resposta, então a
+mesma medida direta (comparar payload estruturado) não se aplica sem reintroduzir leitura de texto livre. Fica
+registrada como investigada, com o motivo de não ter avançado escrito — não como pendência esquecida.
+
 ---
 
 ## Onde ver os números e o código de cada teste

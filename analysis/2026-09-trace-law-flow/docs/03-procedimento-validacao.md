@@ -776,6 +776,76 @@ regex) falhou com aspas dentro do texto e mostrou na saída da sessão trechos d
 Nada foi para arquivo, notebook ou documento. A recontagem seguinte imprimiu só contagens e nomes de chave extraídos por
 regex — é o único jeito de ler o cru na sessão daqui em diante.
 
+### 1.10 · Análise funda de `validar_quebra_sigilo` — execução, retratação e conferência (17/09/2026)
+
+Pré-registro em [`01-racionais.md`](01-racionais.md) §9; resultado narrado, com a história caso a caso, na mesma
+seção, "Execução da análise funda" em diante; números em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.2.
+Evidência em `resultados/evidencia/11.9_leituras_quebra_sigilo/` (ver "Evidência por análise", abaixo).
+
+**Como reproduzir.** `uv run python drill_down.py evidencia 11.9_leituras_quebra_sigilo` depois de rodar a §11.9 do
+notebook. Nesta sessão o resultado abaixo foi obtido por um protótipo fora do notebook, testado célula a célula
+contra o trace; a formalização como §11.9 do notebook está pendente (`04-roadmap.md`).
+
+**Retratação — registrada por escrito, com o que a derrubou (mesma regra do §2).**
+
+A primeira rodada desta análise seguia o pré-registro à risca: ler o código, classificar cada leitura em uma das
+cinco classes, seguir a variável até o `final_answer`. Ela apontou `8dd410c8…` como o caso confirmado — o agente
+teria trocado `r["quebra_sigilo"]` por `r.get("quebra_sigilo")` no step final e entregado `None`.
+
+**Estava errado.** Rafael perguntou, no checkpoint, "o que você mediu no `final_answer` — algum campo vazio ou
+inventado?" — a pergunta certa, porque a resposta revelou que eu tinha inferido o valor do código, nunca olhado o
+valor de verdade. Fui buscá-lo: o `action_output` do step de submissão guarda o `request` inteiro, estruturado —
+inclusive o campo `quebra_sigilo` como foi entregue. Em `8dd410c8…` o valor entregue era `'NAO'`, o correto.
+
+**A causa do erro.** O código real da leitura "silenciosa" era uma cadeia:
+
+```python
+new_quebra.get('vazamento_sigilo', new_quebra.get('quebra_sigilo'))
+```
+
+Pede a chave **certa** primeiro; a errada é só o plano B, e o plano B nunca roda porque o primeiro `.get` acerta. O
+classificador do protótipo andava pela árvore sintática (AST) e via os dois `.get` como duas leituras independentes
+— contava o plano B como leitura que valeu, sem checar se ele chegou a ser avaliado.
+
+**A correção.** A régua de leitura passou a considerar `.get` aninhado como uma cadeia só: resolve pela primeira
+chave que existir no schema real; só conta como leitura da chave errada quando ela é a **única** no `.get`, ou
+quando é a **primeira** de uma cadeia cujo resultado nunca é sobrescrito por uma chave real depois. Reaplicada a
+todos os 7 casos de leitura silenciosa candidata, restaram os corretos.
+
+**A medida que substituiu a régua de código: o payload entregue.** Em vez de inferir o valor pelo caminho do código,
+a análise passou a medir **o que o `action_output` de cada step final guarda como `request.quebra_sigilo`** — fato,
+não inferência. Das 26 execuções que declaram a ferramenta, 21 entregaram um payload com o campo; 9 dessas 21 (43%)
+trazem algo que não é `SIM`/`NAO` — números completos em `02-relatorio-achados.md` §6.2.
+
+**Por que a medida direta é mais forte, e passa a valer daqui pra frente.** Ler código é inferência sobre o que
+*deveria* acontecer; ler o `action_output` é observação do que *aconteceu*. Onde o trace guarda o resultado de fato
+(como aqui, via o `request` estruturado), a medida direta substitui a leitura de código como fonte primária — a
+leitura de código continua útil para explicar o **porquê** (a cadeia de `.get`, o nome duplicado no prompt), não
+para decidir o **o quê**. Registrado como norma para as próximas análises deste tipo, não só como correção pontual.
+
+**Conferência dos 5 casos fora do padrão (7+1+1, agrupados por forma).** Os 7 casos de "objeto inteiro no lugar do
+valor" e o caso de "campo vazio" (`dbc472b0…`) foram conferidos contra o cru, estrutura apenas: o `action_output` de
+cada step final tem `request.quebra_sigilo` do tipo e forma reportados na tabela de §6.2; nenhum dos 9 tem
+`SIM`/`NAO` no campo. O caso de "texto de 203 caracteres" foi conferido pelo comprimento e pela ausência de match
+com `SIM`/`NAO`/`NAO ` normalizados — sem ler o conteúdo do texto.
+
+**A grafia — conferência de alcance.** As duas comparações divergentes (`== "NÃO"`) foram checadas contra a linha em
+que cada step falhou (extraída da própria mensagem de erro, `FALHOU` no notebook): as duas comparações estão na
+mesma linha da falha de chave — nunca avaliadas. Achado negativo, mas checado, não presumido.
+
+**O achado candidato em `get_available_documents` — por que fica travado no limite de PII.** Achadas 2 execuções com
+a mesma forma (`.get('documents')`/`.get('summary')`, chaves inexistentes no schema real, sem plano B), conferidas
+estruturalmente: o valor resultante (`None`) segue como argumento de outra chamada de ferramenta dentro do mesmo
+step, sem erro. Para confirmar se a resposta final saiu errada seria preciso ler o texto da resposta e compará-lo
+com o conteúdo real dos documentos — violaria a regra de PII em vigor desde os incidentes de 16–17/09 (acima). Fica
+travado como candidato por desenho, não por preguiça de investigar: o mesmo limite que protege PII aqui é o que
+impede confirmar. `extrair_evidencias` foi checada (8 execuções, 1 erro conhecido) e descartada por amostra — não
+há campo único mensurável no payload, e 8 casos não sustentam contagem nenhuma.
+
+**PII desta análise.** Todas as inspeções usaram `action_output.request.quebra_sigilo`/`documents`/`summary` só como
+**tipo e forma** (string curta, dict com quais chaves, comprimento de texto) — nunca o conteúdo de `resposta_orgao`,
+`resposta_cliente` ou da justificativa. Nenhum texto de caso apareceu na tela nesta análise.
+
 ---
 
 ## Frente 2 — Verificar a literatura (aqui sim precisa da sua leitura)

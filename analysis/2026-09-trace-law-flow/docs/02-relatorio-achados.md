@@ -654,7 +654,8 @@ derivaram; `description` e `correction_guidance` saem de um molde fixo. Registro
   - `correction_guidance`: "Ao ler o retorno de `validar_quebra_sigilo`, use `r['vazamento_sigilo']`. […] O system
     prompt declara `'quebra_sigilo'` para esta ferramenta; o retorno real não tem essa chave." — acesso escrito pelo
     agente em 6/6 consertos sem erro.
-  - `validation.destino`: **em aberto** — a correção contradiz o system prompt.
+  - `validation.destino`: **harness** (17/09, decidido — ver §6.2). `impact`: **9/21 respostas entregues (43%) com o
+    campo regulatório de quebra de sigilo inválido, sem nenhum erro registrado.**
 - **O que o registro substitui.** O "conteúdo proposto" da §6 era escrito à mão. O da nº2 dizia o mesmo que o derivado
   (`r['result'][0]`) — agora com a forma completa, incluindo que `result[1]` é um resumo e não documento. O da nº10
   misturava o fato com uma regra genérica ("na dúvida, inspecionar `r.keys()`"), que o registro derivado não tem.
@@ -668,16 +669,67 @@ sabemos se essa ausência é a causa completa do erro** — o agente às vezes j
 de observação própria, e erra mesmo assim (acima) —, mas isso não muda o que escrever: o schema certo já está
 derivado e validado, e não existe hoje nenhuma fonte confiável (prompt ou memória própria do agente) que substitua a
 memória. O conserto na origem — documentar o envelope `result` no bloco da
-ferramenta — é barato e não conflita com a memória. A nº10 também tem o fato confirmado por duas fontes, mas a causa é
-o prompt declarar o contrato errado, agora visto no texto e nos logs, na chave e na grafia do valor: uma memória
-dizendo "use `vazamento_sigilo`" contradiria o prompt em dois lugares, e ficaria errada no dia em que alguém corrigisse
-a ferramenta para bater com a documentação. O conserto na origem é na documentação da ferramenta — harness, não
-memória. **Decisão em aberto:** reclassificar a nº10 como não-memória · harness (como as linhas `H_` do §6) ou
-mantê-la como memória, sinalizando a divergência ao time da plataforma.
+ferramenta — é barato e não conflita com a memória. A nº10 **foi decidida como harness** (17/09) — ver §6.2.
 
-**Ainda não feito:** a decisão sobre o destino da nº10; e a análise mais funda de `validar_quebra_sigilo` — quantas
-execuções leem o retorno sem quebrar, e se alguma delas falha em
-silêncio (`04-roadmap.md`).
+### 6.2 · Análise funda de `validar_quebra_sigilo` — falha silenciosa medida no payload entregue (17/09/2026)
+
+Racional completo, com a história caso a caso, em [`01-racionais.md`](01-racionais.md) §9, subseções "Execução da
+análise funda" e seguintes. Conferência e a retratação registrada em
+[`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.10.
+
+**A pergunta.** Os 7 erros já conhecidos (§6.1) são as leituras que *quebraram* — visíveis, custam retry. Esta
+análise mede as que não quebram: o mesmo pedido de chave errada pode passar em silêncio e entregar um valor
+incorreto na resposta final, sem nenhum erro no log.
+
+**A medida usada.** Não o código do agente (proxy), e sim **o payload que a esteira entregou** — o `request` que a
+ferramenta de submissão recebe está guardado, estruturado, no `action_output` de cada step final. Onde o trace
+guarda o resultado de fato, a medida direta substitui a inferência por código.
+
+**O achado.** Das 26 execuções que declaram a ferramenta, 21 chegaram a entregar um payload com o campo
+`quebra_sigilo`:
+
+| o que foi entregue no campo | execuções | meses |
+|---|---|---|
+| `'NAO'` ou `'SIM'` — o valor esperado | 12 | 4 |
+| **o dicionário inteiro da ferramenta** (`{justificativa, vazamento_sigilo}`) | **7** | 2 |
+| um **texto de 203 caracteres** (a justificativa, não o valor) | **1** | 1 |
+| **string vazia** (`''`) | **1** | 1 |
+
+**9 de 21 respostas entregues (43%) trazem no campo regulatório de quebra de sigilo algo que não é `SIM` nem `NAO`**,
+em três meses (dez/2025, mai/2026, jun/2026) — sem nenhuma exceção registrada em nenhuma delas.
+
+**Por que o objeto inteiro vaza (7 casos, o mecanismo dominante).** O prompt usa **o mesmo nome**, `quebra_sigilo`,
+para o campo da resposta final e para o campo do retorno da ferramenta que ele (erradamente) descreve. Diante do
+mesmo nome nos dois lados, atribuir o objeto de um ao outro é a leitura mais natural da instrução — não é descuido do
+agente, é a instrução puxando pro erro.
+
+**O campo vazio (1 caso, `dbc472b0…`, dez/2025)** confirma a hipótese que a §11.5 revertida em 16/09 tinha levantado,
+sem prova então: `quebra.get('quebra_sigilo', '')` — chave errada, `.get` com padrão vazio, sem exceção, campo em
+branco na resposta.
+
+**A grafia do valor (`"NÃO"` declarado × `'NAO'` real, sem acento).** Duas comparações divergentes encontradas, nas
+duas o erro de chave já tinha estourado a execução **na mesma linha** — a comparação nunca chegou a ser avaliada.
+**O erro de chave blinda o erro de acento hoje; corrigir só a chave liga o segundo, que é silencioso.** Os dois
+precisam ser corrigidos juntos.
+
+**Retratação registrada.** A primeira rodada desta análise apontou um caso diferente como "confirmado", por ler
+código (`.get` aninhado) sem enxergar que era uma **cadeia** (chave certa com plano B na errada) — o classificador
+contava o plano B como leitura que valeu, mesmo nunca executando. A medida direta no payload desmentiu esse caso;
+corrigido antes de publicar. Detalhe completo em `03-procedimento-validacao.md` §1.10.
+
+**Decisão.** A regra fixada antes de rodar (≥1 caso confirmado chegando à resposta final → harness) foi atingida —
+e por 9 casos, não 1. **`validation.destino` da nº10: harness.** `impact`: os 43% acima. Registrado em §6.1.
+
+**Extensão a outras ferramentas com documentação divergente (mesma sessão).** `get_available_documents` (nº2,
+730 chamadas) tem a mesma forma de bug — `.get('documents')`/`.get('summary')`, chaves que não existem no schema real,
+sem plano B — em **2 execuções** achadas. Fica como **candidato**: essa ferramenta alimenta texto livre, não um
+campo estruturado único, então confirmar exigiria ler o conteúdo da resposta contra o conteúdo real dos documentos —
+fora do que a regra de PII desta análise permite. `extrair_evidencias` foi checada e descartada para este
+aprofundamento: só 8 execuções a declaram, 1 erro conhecido, amostra pequena demais e sem campo único mensurável.
+Detalhe em `01-racionais.md` §9.
+
+**Ainda não feito:** replicar esta análise na segunda extração; investigar o caso candidato de `get_available_documents`
+por um canal que não exija ler texto de resposta (`04-roadmap.md`).
 
 ## 7 · O que a leitura dos papers refutou
 
