@@ -1362,6 +1362,111 @@ alguma regra de `submecanismo()`. Uma falha silenciosa nova, do mesmo tipo de pr
 errado) mas sem exceção e sem match em nenhum detector existente, não aparece em nada disto — mesmo ponto cego
 já registrado em `../../../discussion/open-questions.md` (item "Second trace extraction").
 
+### Análise funda da nº10 — as leituras do retorno de `validar_quebra_sigilo` (pré-registro, 17/09/2026)
+
+> **Em linguagem simples, antes do racional técnico.** Os oito passos acima acharam os **erros**: 7 vezes o agente
+> pediu a chave `quebra_sigilo`, a ferramenta não tem esse campo, o programa quebrou e o agente se corrigiu. Erro
+> que quebra é erro barato — alguém vê, o agente tenta de novo, custa tokens.
+>
+> Esta análise pergunta a outra metade: **e quando não quebra?** O mesmo pedido errado pode passar em silêncio —
+> `r.get("quebra_sigilo", "")` devolve string vazia sem reclamar, um `try/except` engole a exceção, um
+> `if "quebra_sigilo" in r` simplesmente não entra. Nesses casos o agente segue em frente achando que leu o campo, e
+> pode escrever no JSON final de uma resposta ao Bacen um campo de sigilo vazio, ou com um valor-padrão que ele
+> mesmo escolheu.
+>
+> Se isso acontecer ao menos uma vez, o achado muda de natureza: deixa de ser **custo** (retry, tokens) e vira
+> **risco** (resposta errada, sem ninguém perceber). É essa diferença que decide o destino da nº10 — memória, ou
+> ticket pro time da plataforma.
+
+**Por que esta análise, e por que agora.** É o ataque direto à ressalva do parágrafo anterior: o método dos oito
+passos só enxerga erro que já bateu em alguma regra de `submecanismo()`, e uma leitura errada que **não** levanta
+exceção não aparece em lugar nenhum. Aqui a ressalva vira pergunta mensurável, para uma ferramenta só — a única em
+que o prompt declara o contrato errado nos dois lugares (bloco da ferramenta e molde do JSON final, 135/135 steps),
+inclusive na grafia do valor (`"NÃO"` declarado × `'NAO'` devolvido). Ela precisa rodar **antes** da decisão sobre a
+nº10, porque é ela que diz se o prompt errado custa retry ou produz resposta errada.
+
+**O universo.** As execuções cujo system prompt declara `validar_quebra_sigilo` — hoje 26 execuções e 135 steps pela
+contagem de `drill_down.py ferramenta validar_quebra_sigilo`, a reconferir no notebook. Dentro delas, cada
+`x = validar_quebra_sigilo(...)` achado por AST no `code_action` de cada step. Execução que declara a ferramenta e
+nunca a chama é contada à parte ("declarada, nunca chamada") e fica **fora** da classificação de leitura — não há
+retorno para ler. Determinístico, sem LLM, como todo o §11.
+
+**O que conta como leitura do retorno.** Mesma regra do Passo 3, já implementada em `acessos()` na §11.0: a partir da
+variável que recebeu a chamada, contam as leituras dela no mesmo step e nos steps seguintes do mesmo papel — o
+namespace Python persiste entre steps. Se o código reatribui a variável a outra coisa, contam só as leituras
+anteriores à reatribuição e as do lado direito dela; depois disso a variável já não é o retorno da ferramenta.
+Reatribuir chamando a **mesma** ferramenta não corta.
+
+**As cinco classes — a unidade de classificação é a leitura, não a execução.**
+
+| Classe | O que é | Como é reconhecida no código | O que significa |
+|---|---|---|---|
+| **(a) chave real** | lê o campo que existe | chave lida ∈ chaves reais derivadas no Passo 2 (`vazamento_sigilo`, `justificativa`) | correto |
+| **(b) chave declarada, com erro** | `r['quebra_sigilo']` sem proteção | chave ∈ declaradas-só-no-prompt **e** o erro daquele step pede exatamente essa chave | visível: custa retry |
+| **(c) chave declarada, sem erro** | `.get(chave, padrão)`, dentro de `try/except` que pega tudo, ou em ramo guardado por `in` | chave declarada-só-no-prompt **e** o step não tem erro pedindo essa chave | **silenciosa** — o alvo desta análise |
+| **(d) objeto inteiro repassado** | `{"quebra_sigilo": quebra}`, `json.dumps(quebra)` — o dict inteiro vai adiante | a variável aparece sem subscrito dentro de uma estrutura que segue para o JSON final | depende de quem consome |
+| **(e) chamado, nunca lido** | chamou e não usou o retorno | nenhum acesso à variável | sem efeito |
+
+A fronteira (b)/(c) é decidida pelo **erro do step**, não pela forma do acesso: mesma chave errada, o que muda é se
+levantou exceção. Isso reaproveita a leitura de erro já validada nos Passos 1–2, em vez de criar régua nova. Os
+sinais `protegido` / `padrão` / `guardado` que `acessos()` já devolve entram como **motivo** do silêncio na tabela de
+(c) — é o que explica *por que* não quebrou.
+
+**A régua da grafia do valor — separada das chaves.** Um acesso pode acertar a chave e ainda assim comparar com o
+literal errado. Conta como **grafia divergente** a comparação (`==`, `!=`, `in [...]`) entre uma variável derivada do
+retorno e um literal de string que (i) não está entre os valores observados no trace para aquele campo e (ii) vira um
+valor observado depois de normalizar caixa e acento. Hoje o valor observado é `'NAO'` nos 6 casos negativos vistos, e
+o prompt declara `"NÃO"` — comparação que é falsa sem levantar exceção nenhuma. A referência é o conjunto de valores
+**observados no trace**, não o que o prompt diz.
+
+**Rótulo da execução.** Cada leitura tem sua classe; a execução recebe a classe mais severa presente, na ordem
+**(c) > (d) > (b) > (a) > (e)**. O rótulo serve para dirigir a atenção humana, não para dizer o desfecho: o desfecho
+de (c), (d) e grafia é decidido caso a caso no passo seguinte.
+
+**Consequência — só para (c), (d) e grafia.** Para cada caso dessas classes, seguir se o valor lido chega ao
+`final_answer` / JSON final daquele papel, e com que **categoria** de valor (vazio, literal-padrão curto, `SIM`,
+`NAO`). O valor de verdade só é afirmável quando o trace mostra: houve `print` do objeto, ou houve erro que revelou a
+estrutura. Sem isso, o caso é **candidato**, não confirmado — e o relatório usa essas duas palavras, sem misturar.
+
+**O que será reportado.** (1) tabela por classe, com leituras e execuções; (2) tabela de grafia; (3) a lista completa
+dos casos (c), (d) e grafia, com `exec_id`, papel, `idx` e o que foi lido; (4) a separação candidato × confirmado;
+(5) a contagem "declarada no prompt, nunca chamada". Implementação numa **§11.9** do notebook, no mesmo molde das
+outras (título · o que faz · como ler · célula curta), reaproveitando `indexar_steps`, `acessos`, `resolve` e
+`registrar_evidencia` da §11.0.
+
+**Evidência.** Pasta `resultados/evidencia/11.9_leituras_quebra_sigilo/`, mesmo padrão das outras (`casos.csv`,
+`leia-me.md`, `crus/`, `derivados/`). Aqui entram **todos** os casos de (c), de (d) e de grafia — não uma amostra,
+porque são poucos e são exatamente o que sustenta o achado — mais o primeiro caso de cada outra classe, para
+comparação. Cada caso de (c) e de grafia é **aberto no cru antes de ser reportado**, com a disciplina do Passo 6.
+
+**A decisão que esta análise alimenta — fixada antes de ver o número.**
+
+- **≥1 caso confirmado** de (c) ou de grafia cujo valor chega ao `final_answer` → o prompt errado produz resposta
+  errada, não só retry: a nº10 é tratada como **harness, com urgência**, e `impact` deixa de ser `null`.
+- **Só candidatos, nenhum confirmado** → reportar como risco não confirmado; a nº10 continua em aberto e a pendência
+  passa a ser abrir esses casos na esteira real (replay), não no log.
+- **Nenhum caso** → o achado fecha como **custo**, e a nº10 pode seguir como memória.
+
+**As três escolhas que foram do Rafael (17/09/2026), não minhas.** Ficam nomeadas porque mudam a conclusão, não só
+a implementação: **(1)** o limiar que manda a nº10 pro harness é **um caso confirmado** chegando ao `final_answer` —
+não se aplica aqui a triagem de recorrência (≥3 execuções, ≥2 meses) que vale para memória, porque risco regulatório
+não precisa recorrer para existir; **(2)** o escopo é **só `validar_quebra_sigilo`** — `get_available_documents` e
+`extrair_evidencias` sofrem do mesmo tipo de leitura silenciosa, mas nenhuma delas trava a decisão da nº10 e ficam no
+roadmap; **(3)** a análise **segue o valor até o `final_answer`**, e não para na leitura — sem isso nenhum caso seria
+confirmado e a decisão sairia sem prova. As demais réguas desta subseção não foram escolha de ocasião: saem de
+disciplinas já fixadas no §2 e no §9 (referência vem do trace e não do prompt; candidato e confirmado não se
+misturam; hipótese não confirmada vira resultado escrito).
+
+**Limites, declarados antes de rodar.** São 26 execuções numa base com `LIMIT` provável — é contagem de casos, não
+taxa. Só `RespostaBacen`. O valor que a ferramenta devolveu só é visível quando o agente imprimiu ou quando houve
+erro; sem isso, (c) mostra que o campo **pode** estar errado, não que está. E a hipótese que motivou a pergunta
+(`dbc472b0…`, `.get("quebra_sigilo", "")`, vista na §11.5 revertida em 16/09) é **hipótese a testar**: se ela não se
+confirmar, isso também é resultado, e fica escrito como resultado.
+
+**PII.** Nada de texto de documento na tela: a análise reporta contagens, nomes de chave e categorias de valor.
+Literais de valor só saem quando curtos e sem dígitos longos, pela régua de `chave_segura()`/`segundo_parametro()` já
+em uso. É a lição dos dois incidentes de 16–17/09 (`03-procedimento-validacao.md` §1.7 e §1.9).
+
 ---
 
 ## Onde ver os números e o código de cada teste
