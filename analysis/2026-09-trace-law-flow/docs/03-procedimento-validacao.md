@@ -390,13 +390,32 @@ o segundo parâmetro é `<var>.get('vazamento_sigilo')`.
 gráfico 8.10 a imagem foi redesenhada, com o mesmo texto). A saída salva da §11.2 foi limpa, porque era do código
 anterior à correção acima; as §11.2–§11.4 ainda precisam ser rodadas no Jupyter para salvar saídas.
 
+**Evidência exploratória §11.5 — como foi feita e conferida.** Não pré-registrada: a pergunta ("tentativa e erro ou
+leitura?") surgiu dos resultados. (i) A primeira versão só perguntava se a chave aparecia no contexto do step do
+conserto — 80/80 — e a abertura dos casos mostrou que isso não diz de onde ela veio: o contexto carrega a conversa
+inteira, e o `'result'` vinha de um `print(docs)` anterior ao erro. Refeito mensagem por mensagem, comparando o
+contexto do step que quebrou (antes) com o do step que corrigiu (depois). (ii) Quando o conserto lê mais de uma chave
+nova, rastreia-se a que o prompt não sugere entre aspas e, no empate, a mais externa no objeto do erro —
+`justificativa` aparece no prompt como valor e daria um falso "visível antes". (iii) A busca por nomes alternativos
+olha só variáveis atribuídas diretamente da ferramenta, respeitando reatribuição (mesma regra do §11.4); uma lista fixa
+de nomes (`data`, `content`…) pegaria variáveis do próprio agente. (iv) A classe de cada leitura usa a linha real do nó
+no AST; a primeira versão pegava a primeira linha com o nome e classificou como "provável falha silenciosa" uma leitura
+protegida por `isinstance`, porque a linha achada era um comentário. (v) Abertos com linhas redigidas: 3 casos da nº2
+(print no step 0, erro no 1, conserto no 2), os 5 da nº10 em que a chave apareceu primeiro no erro (os `thought`
+descrevem a troca), todas as leituras fora do schema sem erro, e a execução `dbc472b0…` step a step — a ferramenta é
+chamada no idx 5, o retorno nunca é impresso, o idx 7 lê `.get("quebra_sigilo", "")`, e o JSON impresso antes do
+`final_answer` (idx 9, `final_answer(json_resposta, …)`) tem `'quebra_sigilo': ''`; **não** foi confirmado que
+`json_resposta` é exatamente esse objeto. (vi) O JSON fica em `pipeline/resultados/evidencia_chave_certa.json`,
+git-ignored pelo `.gitignore` da pasta; os trechos são redigidos (≥5 dígitos, hex ≥16, strings >60 caracteres), mas
+`thought` e logs podem conter texto de caso — tratar como os demais arquivos de `resultados/`.
+
 **PII.** As células da §11 imprimem só nome de função, contagens, nomes de chave e tipos, e o segundo parâmetro do
 `.get` como estrutura; chave com cara de dado vira `<chave-dado>`. Nenhum valor retornado pelas ferramentas sai na
-tela.
+tela. A §11.5 imprime contagens e `exec_id`/`role`/`idx`; os trechos redigidos vão só para o JSON git-ignored.
 
 **Ainda não feito:** a verificação por amostragem do Passo 6 (conferir o schema derivado contra o trace cru com
-`drill_down.py caso`, 5 casos por unidade) — as conferências acima são das **regras**, não do schema final; e o 1 caso
-de "repetiu sem guarda" da nº2.
+`drill_down.py caso`, 5 casos por unidade) — as conferências acima são das **regras**, não do schema final; o 1 caso
+de "repetiu sem guarda" da nº2; e confirmar a provável falha silenciosa `dbc472b0…` com `drill_down.py caso`.
 
 ---
 

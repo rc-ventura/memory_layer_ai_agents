@@ -1116,6 +1116,23 @@ falha silenciosa para o trace inteiro, inclusive em steps que nunca levantaram e
 `../../../discussion/open-questions.md`). Determinístico: AST + o schema minerado. Entra como candidato ao lado dos
 detectores silenciosos do roadmap (itens 2 e 13), não como parte deste pré-registro.
 
+**Evidência exploratória, não pré-registrada: de onde vem a chave certa (notebook §11.5).** O Passo 3 mostra *que* o
+agente troca para a chave certa, não *como* chega nela. Duas explicações dão o mesmo número e significam coisas
+opostas para a tese: se é tentativa e erro com nomes plausíveis (`resultado`, `data`, `documents`…), o agente
+descobre; se é leitura de algo que está no contexto, o agente copia — e aí importa **quando** aquilo entrou no
+contexto. A pergunta surgiu depois de rodar, dos próprios resultados; por isso não é critério de decisão, é leitura.
+Três testes, cada um separando as explicações de um jeito:
+
+- **(a) A chave certa já estava no contexto antes do erro, e em que mensagem** (system prompt, log de `print`, a
+  própria mensagem de erro)? Separa "não tinha a informação" de "tinha e errou mesmo assim". As mensagens são lidas
+  **uma a uma** porque o contexto do step seguinte carrega a conversa inteira: "a chave aparece no contexto", sozinho,
+  não diz de onde ela veio.
+- **(b) O `thought` do conserto cita a chave?** Presença de texto: liga o conserto à leitura, sem interpretar.
+- **(c) O agente alguma vez leu uma chave que não existe, numa variável que veio da ferramenta?** É a assinatura da
+  tentativa e erro — e também do erro silencioso, porque `.get` numa chave inexistente não quebra. Cada leitura é
+  classificada pelo que acontece na linha: quebrou; tem a chave real ao lado (fallback); está protegida por checagem
+  de tipo/chave; ou é `.get` solto (provável falha silenciosa).
+
 **Passo 4 — checar estabilidade entre ocorrências e ao longo do tempo, por ferramenta — e o subproduto que isso
 gera de graça.** As chaves reais são as mesmas nas N ocorrências, nos M meses cobertos? **Se sim** → fato
 estável, memória factual de alta confiança. **Se não** (ex.: um mês mostra schema diferente) → não forço uma

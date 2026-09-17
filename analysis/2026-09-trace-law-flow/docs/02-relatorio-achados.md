@@ -496,7 +496,8 @@ Dois quadros diferentes:
 - **`get_available_documents` — a informação não está no prompt.** Nem o invólucro `result`, nem as duas posições,
   nem a forma de `metadado` aparecem como chave em lugar nenhum do prompt. `hashDocumento` e `tipoExtracaoOcr`
   aparecem, mas fora do bloco desta ferramenta — no formato de documento que outras ferramentas recebem como
-  argumento. É lacuna de informação: o tipo de buraco que uma memória factual tapa.
+  argumento. É lacuna de informação **no prompt** — com uma nuance que a evidência exploratória abaixo acrescenta:
+  dentro da execução, o agente imprime o retorno antes de errar.
 - **`validar_quebra_sigilo` — o prompt declara o contrato errado.** O bloco da própria ferramenta diz que ela devolve
   `{"quebra_sigilo": "SIM" ou "NÃO", "motivo": "justificativa"}`; ela devolve `{vazamento_sigilo, justificativa}`
   nos 7 casos. O agente pediu exatamente a chave que o prompt declara — e `"justificativa"` só aparece no prompt
@@ -527,8 +528,50 @@ Dois quadros diferentes:
 - **Nenhuma troca contradiz o schema do Passo 2.** São duas fontes independentes — o objeto que o erro imprime e o
   código que o próprio agente escreveu depois — apontando a mesma chave.
 
+**De onde o agente tira a chave certa (evidência exploratória, não pré-registrada — notebook §11.5).** Se o prompt não
+informa o formato (nº2) ou informa errado (nº10), a chave certa vem de tentativa e erro com nomes plausíveis
+(`resultado`, `data`, `documents`…) ou de algo que o agente lê? Evidência caso a caso em
+`pipeline/resultados/evidencia_chave_certa.json` (git-ignored; cada caso traz `exec_id` / `role` / `idx` para abrir
+com `drill_down.py caso <exec_id> <role>`).
+
+| Troca de chave (Passo 3, tipo 1) | Casos | Chave certa já visível **antes** do erro | Chave certa impressa **na mensagem de erro** | `thought` do conserto cita a chave |
+|---|---:|---:|---:|---:|
+| `get_available_documents` → `result` (nº2)¹ | 81 | 81 (log de `print`) | 81 | 80 |
+| `validar_quebra_sigilo` → `vazamento_sigilo` (nº10) | 6 | 1 (log de `print`) | 6 | 6 |
+| `extrair_evidencias` → `dados_evidencias` | 1 | 0 | 1 | 1 |
+| `get_available_documents` → `hashDocumento` (caso de metadado da nº10) | 1 | 1 (log de `print` e prompt) | 1 | 1 |
+
+¹ Em 1 dos 81 a chave rastreada é `metadado` (o conserto lê várias chaves de uma vez).
+
+- **Não é tentativa e erro — é leitura.** Nas 89 trocas, a chave certa estava impressa por inteiro na mensagem de erro
+  que o agente recebeu (o smolagents imprime o objeto que não pôde indexar; nenhuma mensagem truncada), e o `thought`
+  do conserto a cita em 88. Ex. (nº2): *"O erro ocorreu porque o objeto retornado está em formato
+  {'result': [[...]], ...}, então a lista de documentos pode ser obtida…"*; (nº10): *"O resultado da ferramenta
+  validar_quebra_sigilo retornou a chave 'vazamento_sigilo' em vez de 'quebra_sigilo'."* Por isso é `result`, e não
+  `resultado`: o agente não escolhe um nome plausível, copia o que está escrito.
+- **Nomes inventados existem, mas são raros, sempre protegidos, e nunca levaram à chave certa.** Em todo o trace, 31
+  leituras de chave fora do schema em variável vinda dessas ferramentas, em 14 execuções. 22 são as chaves que o
+  próprio prompt declara (`quebra_sigilo`, `motivo`, `informacoes_evidencias`): 17 quebraram, 4 vêm com a chave real
+  como fallback, 1 é provável falha silenciosa (abaixo). Só 9 são nomes inventados (`documents` 5, `summary` 4), em
+  3 execuções, todas protegidas por checagem de tipo/chave — uma com um comentário que inventa o schema: *"A
+  ferramenta costuma retornar algo como {"documents": [...], "summary": ...}"*.
+- **nº2 — o agente tinha a estrutura na frente e errou mesmo assim.** Em 81/81, antes do erro, o agente tinha impresso
+  o retorno (`print(docs)`), e o log com `{'result': [[…` estava no contexto do step em que ele escreveu `docs[0]`. A
+  falta está no prompt, não no contexto da execução: o que faz o agente ler a estrutura é o erro, não o print. Isso
+  refina o "lacuna de informação" acima — dentro da execução, é mais atenção do que informação.
+- **nº10 — a chave real apareceu pela primeira vez na mensagem de erro** em 5 dos 6 casos: sem o erro, o agente não
+  tinha de onde tirá-la, porque o prompt declara a outra.
+- **Uma provável falha silenciosa, achada por este teste.** Execução `dbc472b0…` (`RespostaBacen`): o agente chama
+  `validar_quebra_sigilo`, nunca imprime o retorno, lê `quebra.get("quebra_sigilo", "")` — sem exceção nenhuma — e o
+  JSON montado e impresso logo antes do `final_answer` traz `'quebra_sigilo': ''`: o campo de quebra de sigilo vazio. O
+  retorno real dessa execução não aparece no trace; nos 7 casos em que aparece, a ferramenta devolveu
+  `vazamento_sigilo`. É o primeiro caso concreto do detector de falha silenciosa registrado em `01-racionais.md` §9
+  (monitoramento além do Passo 3), e ainda precisa ser confirmado com `drill_down.py caso`.
+
 **O que isso muda para as duas candidatas.** A nº2 tem o que uma memória factual precisa: o fato, confirmado por duas
-fontes independentes, e ausente do prompt. A nº10 também tem o fato confirmado por duas fontes, mas a causa é o prompt
+fontes independentes, e ausente do prompt. Mas a evidência exploratória mostra que o agente erra mesmo com o retorno
+impresso na frente; se uma memória com o schema, presente antes de o código ser escrito, evita o erro — ou se o
+problema é de atenção e ela não basta — é exatamente o que o replay contrafactual do Passo 7 testa. A nº10 também tem o fato confirmado por duas fontes, mas a causa é o prompt
 declarar o contrato errado: uma memória dizendo "use `vazamento_sigilo`" contradiria o prompt, e ficaria errada no dia
 em que alguém corrigisse a ferramenta para bater com a documentação. O conserto na origem é na documentação da
 ferramenta — harness, não memória. **Decisão em aberto:** reclassificar a nº10 como não-memória · harness (como as
