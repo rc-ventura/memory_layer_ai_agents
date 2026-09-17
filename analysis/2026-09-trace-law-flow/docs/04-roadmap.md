@@ -52,13 +52,15 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
      regulatório de quebra de sigilo inválido, sem nenhum erro registrado, medido no `action_output` (payload de
      verdade, não inferência de código). Inclui retratação registrada de um achado errado da primeira rodada.
      Resultado em `02-relatorio-achados.md` §6.2, conferência e retratação em `03-procedimento-validacao.md` §1.10,
-     racional em `01-racionais.md` §9. **Falta:** formalizar como §11.9 do notebook (hoje é protótipo fora dele) e
-     gerar `resultados/evidencia/11.9_leituras_quebra_sigilo/` pelo pipeline oficial.
+     racional em `01-racionais.md` §9. **Formalizada como §11.9 do notebook** (17/09) — mesmos números reproduzidos
+     dentro do pipeline oficial (a régua de leitura-em-cadeia achou de quebra um bug de escopo do detector de
+     grafia: sem restringir a comparação à variável que de fato vem da ferramenta, 2 comparações de uma execução
+     não relacionada — outro campo qualquer — entravam por engano; corrigido e reconferido). Evidência em
+     `resultados/evidencia/11.9_leituras_quebra_sigilo/` (13 casos, 122/122 trechos conferidos contra o cru).
   3. [x] **Decidir o destino da nº10** (17/09) — **harness**. A regra fixada antes de rodar (≥1 caso confirmado
-     chegando à resposta final) foi atingida por 9 casos. `02-relatorio-achados.md` §6.1 já reflete
-     `validation.destino: harness` e o `impact` preenchido. **[ ] Falta:** `resultados/unidades_memoria.json` ainda
-     tem o registro antigo (`destino: em aberto`, `impact: null`) — atualiza junto da formalização da §11.9 (item 2
-     acima), pra sair do notebook já com o valor certo em vez de editado à mão.
+     chegando à resposta final) foi atingida por 9 casos. **`resultados/unidades_memoria.json` regravado pela
+     própria §11.9** — `validation.destino: harness`, `impact` preenchido, `validation.passo_11_9` citando a
+     medida — não editado à mão.
   4. [ ] **Levar a divergência de documentação ao time da plataforma** — fora do trace, é harness:
      `validar_quebra_sigilo` (chave e valor), `extrair_evidencias` (chave) e `get_available_documents` (o envelope
      `result` não documentado). Evidência pronta em `03-procedimento-validacao.md` §1.8 (trechos redigidos; os crus
@@ -74,10 +76,10 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   como harness. Uma retratação no meio do processo (primeira rodada apontou caso errado, por não tratar `.get`
   aninhado como cadeia) está registrada por escrito. Detalhe completo: `01-racionais.md` §9 ("Execução..."),
   `02-relatorio-achados.md` §6.2, `03-procedimento-validacao.md` §1.10.
-  - **[ ] Falta:** formalizar como §11.9 do notebook — hoje o resultado publicado vem de um protótipo fora dele,
-    testado célula a célula mas não integrado ao pipeline reproduzível. Portar a régua de leitura-em-cadeia e a
-    medida direta (payload de `action_output`) pras funções da §11.0, gerar
-    `resultados/evidencia/11.9_leituras_quebra_sigilo/` pelo `drill_down.py evidencia` oficial.
+  - **[x] Formalizada como §11.9 do notebook** (17/09) — funções em §11.0 (`classificar_campo_final`,
+    `payload_entregue_qs`, `comparacoes_grafia_qs`), `registro_final` agora aceita um `desfecho` opcional e
+    `unidades_memoria.json` sai regravado já com `destino`/`impact` corretos. Números reproduzidos: 9/21 (43%),
+    3 meses.
   - **Extensão natural, depois:** o mesmo detector (comparar payload entregue × schema real) para toda ferramenta de
     schema conhecido — "Monitoramento além do Passo 3" de `01-racionais.md` §9. Começou nesta sessão para
     `get_available_documents` e `extrair_evidencias`, item abaixo.

@@ -846,6 +846,21 @@ há campo único mensurável no payload, e 8 casos não sustentam contagem nenhu
 **tipo e forma** (string curta, dict com quais chaves, comprimento de texto) — nunca o conteúdo de `resposta_orgao`,
 `resposta_cliente` ou da justificativa. Nenhum texto de caso apareceu na tela nesta análise.
 
+**Formalização como §11.9 do notebook (17/09) — um segundo bug achado ao portar.** Ao mover o protótipo pras funções
+de §11.0 (`classificar_campo_final`, `payload_entregue_qs`, `comparacoes_grafia_qs`) e rodar dentro do pipeline
+oficial, o detector de grafia (comparações `== "NÃO"`) apareceu com 3 execuções em vez de 2 — uma a mais que o já
+registrado. Aberto o caso extra (`8dd410c8…`): a comparação divergente não tinha nada a ver com `quebra_sigilo` —
+era sobre uma variável (`new_validade`) de outro campo qualquer, que por acaso está num step de uma execução que
+também chama `validar_quebra_sigilo`. O detector original olhava qualquer comparação de string no step, sem checar
+se a variável comparada vinha de fato do retorno da ferramenta. **Corrigido:** `comparacoes_grafia_qs` agora exige
+que o lado comparado se resolva (`base_deriva_de`, um nível de indireção) até uma variável que recebeu a chamada de
+`validar_quebra_sigilo` naquele papel — mesma disciplina de proveniência usada em `classificar_campo_final`.
+Reconferido: os 5 casos de grafia voltam a bater com o já publicado (2 execuções, `01-racionais.md` §9). Números
+decisivos — **9/21 (43%), 3 meses, `destino: harness`** — não mudaram: o bug estava isolado no detector de grafia,
+que é achado à parte, não usado no cálculo do impact. `resultados/unidades_memoria.json` regravado automaticamente
+pela própria célula (não editado à mão). Evidência: `resultados/evidencia/11.9_leituras_quebra_sigilo/` — 13 casos,
+122/122 trechos conferidos contra o cru (`drill_down.py evidencia 11.9_leituras_quebra_sigilo`).
+
 ---
 
 ## Frente 2 — Verificar a literatura (aqui sim precisa da sua leitura)
