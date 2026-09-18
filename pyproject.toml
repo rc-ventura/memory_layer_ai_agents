@@ -1,0 +1,12 @@
+[project]
+name = "memory-layer-ai-agents"
+version = "0.1.0"
+description = "Ambiente Python para os notebooks/scripts de analysis/ (não é um pacote publicado)"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+    "jupyterlab>=4.2",
+    "ipykernel>=6.29",
+]

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:b244c0faff1f8ee4aab1421bc9d68f89c056e617d839e0476729e3c3635d7a0a",
+  "claims": [
+    {
+      "id": "claim_1499082288084005b7ced44849f00531",
+      "statement": "The repository is Rafael Coelho Ventura's personal research repository for the [PROGRAMA-FOMENTO] fellowship project (Titled 'Mecanismo de atualização de memória para agentes de IA generativa com aprendizado por reforço aplicado a fluxos jurídicos'), and functions as the study/lab notebook for that work — bibliographic review, per-source notes, cross-cutting discussion, and a daily research diary kept together and versioned rather than scattered across documents.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L3-L9",
+          "version": "repo-lines-v1:sha256:65142d0492ef69963990e2efe5bdcb22a38fd70b8670a5817ae3c87715a4d414:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDllZDhlNDZiODk2M2E3OGU2YmIwMTA4MzQwMjc3NjRiNzNiMjQ1YTJlNWY4ZWIwMzc2NzFlMzhmMzg4YzllMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWE5MGI0ZDM2ZGY0ZmE4ZjNhMjMyNDJmZGE3MzY1Njc4Y2I5MTI3MGQ3MTgyMDY4ZGRlMWI2MWJmNWY3NzI4YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjY0MmJhYTBlMTljZTg1ZjhhMjNhZjJiMTViMDNjNjM0MjY4Yjc2NmRkYmZiODQ2MDIyMTA2ZmYzZTljNjA3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmUzMjI1NWRmOGZjMzAyMmU2MjU0NDYwMDVjM2Q4MzY4YTIzNTI0ZTMzNjBmZGM3Yzg2YTRmMzA5Y2NmZDczMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_778f3d877eb346d7a009732a64c47bed",
+      "statement": "The repository organizes its content into six top-level folders: docs/ (work plan, sub-activity map, meeting checkpoints, monthly institution reports), literature-review/ (the two report-grade bibliographic reviews plus survey mind maps), papers/ (one atomic note per cited paper/framework plus a reading queue), discussion/ (cross-cutting synthesis), research-diary/ (daily episodic log plus monthly digest), and analysis/ (empirical analyses of raw agent traces).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L13-L20",
+          "version": "repo-lines-v1:sha256:4b267582b755c9f5192c639474361cd05b08a1001458134eb757a0808ac96f6d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmUzMjI1NWRmOGZjMzAyMmU2MjU0NDYwMDVjM2Q4MzY4YTIzNTI0ZTMzNjBmZGM3Yzg2YTRmMzA5Y2NmZDczMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTA2Yjc3OWE2N2YyNGJjY2JmZTg3YzgxNDkwNDk0ZWFjMTVkYzZhNDMxZTYzMjMwMGYxMjVjMjI2MGYxYWE3ZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_eed9ae62c83544a5b91a16ab4a529c57",
+      "statement": "The four content folders sit at different altitudes over the same material: literature-review/ is the report-grade deliverables (what gets submitted), papers/ is one atomic note per source (what gets cited), discussion/ is synthesis across sources/reviews/diary (what gets decided), and research-diary/ is the raw episodic log plus monthly digest (what actually happened day by day) — findings land first in the diary, the strongest are distilled into discussion/, and cited sources get an atomic paper note.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L30-L41",
+          "version": "repo-lines-v1:sha256:b5e64f9e486391ddff487653ecdcb66d7415ba1123ae7d15474a246fd153b298:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1MjExY2JhNDllOTFkODhmZTQ5MTI5MmVmNWNiMGYzZDVlMDI5NmY1MzJkNmU1NTZjY2U3Y2I3MWQzOWZkNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZWUyNmRhZDA3Nzg4ZGJhOTljOGRhODY4ZTY2MzllNTU1ZjRlOTlkNGIwYTAzYzM5ZjBiYzNjNjQ5MzcxNTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxNzFlYTRiMjU3M2RiMGE5MDZjOGY1ZmMyMDMxMzc3MmIwMmEzNThhMmZiNDdmYWE5OWU1OGZlMGZhZjBhMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk5ZTJlNGVmMTM5YmM1ZDljNDc2ZGQ4MjJhYzIzOGNiYzg3N2MwMTIzODM5ZDU3Y2JkNDQ1YTM3OTlmODlkMzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3a708f74e1b246f8bed470348cddd79a",
+      "statement": "As of the README's writing, Macroatividade 1 (theoretical grounding and comparative exploration of memory approaches) is in progress with a target date of 30/10/2026, out of five macroatividades defined in the work plan.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L43-L45",
+          "version": "repo-lines-v1:sha256:7a38659503a66177c6bc8b3574ff7a977e89b41c0cc2e8cb56b2a766ca406d57:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTYwZGExY2UzNDQzN2Y1ZGEzYTcyOWY2ZTM0NDYyYTcxNTM5MjQ1ODZkOGVkYWIwYzc1ZjYzNGYzMTBkNzI4ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTYyNDgyOWQyMDU3NDYwYzI2YjQ4MmRkZDAyMGVmZjgwM2I1YzYwZTZhN2Q4NmIzNzA5ZWNjMmNhYzQ5MzMwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGIzZDM0ODVlNGFhZmI1YzQ5NmFhZDMzNDIzOGMzNTFkNjUyNzhlY2VjNjk4NTA1OTdhNDhkNDczOTAzMWNmNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmM1ZTkwYjQ0OGEwOWNhNTRjZmY0YTg2NTUwMjEyZWVlMzc2N2RkYmE5Zjg3Yjk1MmEzZDIwM2EwZDcwMTdhNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d36f04a7873a401ab86b97a42375439f",
+      "statement": "The repository's language convention keeps official or personal-artifact source documents (the work plan, the research diary, meeting summaries derived from one specific source) verbatim in their original Portuguese, while everything written to connect them (the root README, folder READMEs, discussion notes, paper-note scaffolding) defaults to English, matching the language the two bibliographic reviews were authored in — with discussion/ notes allowed a per-file Portuguese override on Rafael's explicit request.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L47-L49",
+          "version": "repo-lines-v1:sha256:3cfb61417577f2ea2eef074c1bba0c53ac66a1297952b18d4a8dccc58d7144a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGRiNmQxOGU3ZGY5ZTgxOTc5YzM2ODczMzI0NjU1OTAwNjYwNGE4Mzc5MTIxYWQ4ZjAzOTM4NDBmMTMzZDYxMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUwOGNlZDVmMzI3MjhkZmQyZGY1OWE5YmZjODEzZDY4MTExZWM5ZmIxMDM4MDRhMmQ0YWQ4ZGIxMjA4MjM2MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzdjY2M2M2JkNjNjYjI1ZTg4ZTY1YzhlMWZiMDY2MDQ5M2MzZmI2Y2YxMmFhOGU5MDJkNTU0NzNmMGViZDg4OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.1",
+    "at": "2026-09-18T11:27:06.172Z"
+  }
+}

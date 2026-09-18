@@ -1,6 +1,6 @@
 # Roadmap — o que falta
 
-**Atualizado:** 2026-09-08. Consolidação do que ficou em aberto ao longo da análise do primeiro trace.
+**Atualizado:** 2026-09-08 · revisado 2026-09-16 e 2026-09-17 (mineração nº2/nº10). Consolidação do que ficou em aberto ao longo da análise do primeiro trace.
 Prioridades e decisões de escopo confirmadas com o Rafael. Ver também
 [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md) para a versão canônica da
 discussão de escopo (groundedness determinístico vs. juiz) registrada no nível do projeto, não só desta pasta.
@@ -27,7 +27,132 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item "Which parameters...
   should become adaptive"). Pertence a observabilidade/agent-evals como disciplina própria, ou a um v2 que
   relaxe a restrição de determinismo.
-- **Minerar automaticamente a unidade "Retorno das ferramentas de documento é dict"** (schema de retorno sem LLM; nº 2 na tabela refeita em 15/09, `02-relatorio-achados.md` §6) — adiado, não é prioridade agora.
+
+## Urgente — antes da segunda extração (revertido 2026-09-16)
+
+- [ ] **Minerar automaticamente as unidades nº2 ("Retorno das ferramentas de documento é dict") e nº10
+  ("Campo inexistente no retorno estruturado") na base atual.** Schema de retorno sem LLM — extrair da própria
+  mensagem de exceção (`Could not index {chaves reais} with {chave pedida}`) o schema real de cada ferramenta,
+  cruzando com os usos bem-sucedidos da mesma ferramenta no trace. **Estava listado como "adiado, não é
+  prioridade agora" desde 08/09 (reafirmado 15/09) — revertido em 16/09** depois de discussão de sequenciamento:
+  o custo é baixo (determinístico, regex, ~1 dia), e rodar isso **antes** da segunda extração (item 3 abaixo)
+  transforma a comparação de bases num teste de replicação do próprio schema minerado, não só dos números
+  agregados — ver [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md), item
+  "Second trace extraction". Produz a primeira unidade de memória `factual · ambiente` derivada e validada
+  contra o dado (não hipótese à mão), no schema de `01-racionais.md` §8. **Feito (16–17/09): os 8 passos, com
+  saídas salvas no notebook, dois registros `derived-and-checked` e uma pasta de evidência com trace cru por análise**
+  — método em `06-racionais-mineracao-unidades-n2-n10.md` §9, resultados em `07-relatorio-mineracao-unidades-n2-n10.md` §6.1, validação em
+  `03-procedimento-validacao.md` §1.7–1.9. O que falta para fechar, em ordem:
+  1. [x] **Verificação humana do Passo 6** (17/09) — os 10 casos de `resultados/evidencia/11.7_amostra_passo6/`;
+     confirma os achados nos 10/10, sem divergência (1 nota não generalizável sobre `draft_resposta`/assunto).
+     Resultado em `03-procedimento-validacao.md` §1.9. Os registros ainda dizem "verificação humana: pendente" — o
+     texto do campo `validation.passo6_amostra` fica corrigido na próxima rodada do notebook (item cosmético, não
+     muda `status` nem `description`/`correction_guidance`).
+  2. [x] **Análise mais funda de `validar_quebra_sigilo`** (17/09) — 9/21 respostas entregues (43%) com o campo
+     regulatório de quebra de sigilo inválido, sem nenhum erro registrado, medido no `action_output` (payload de
+     verdade, não inferência de código). Inclui retratação registrada de um achado errado da primeira rodada.
+     Resultado em `07-relatorio-mineracao-unidades-n2-n10.md` §6.2, conferência e retratação em `03-procedimento-validacao.md` §1.10,
+     racional em `06-racionais-mineracao-unidades-n2-n10.md` §9. **Formalizada como §11.9 do notebook** (17/09) — mesmos números reproduzidos
+     dentro do pipeline oficial (a régua de leitura-em-cadeia achou de quebra um bug de escopo do detector de
+     grafia: sem restringir a comparação à variável que de fato vem da ferramenta, 2 comparações de uma execução
+     não relacionada — outro campo qualquer — entravam por engano; corrigido e reconferido). Evidência em
+     `resultados/evidencia/11.9_leituras_quebra_sigilo/` (13 casos, 122/122 trechos conferidos contra o cru).
+  3. [x] **Decidir o destino da nº10** (17/09) — **harness**. A regra fixada antes de rodar (≥1 caso confirmado
+     chegando à resposta final) foi atingida por 9 casos. **`resultados/unidades_memoria.json` regravado pela
+     própria §11.9** — `validation.destino: harness`, `impact` preenchido, `validation.passo_11_9` citando a
+     medida — não editado à mão.
+  4. [ ] **Levar a divergência de documentação ao time da plataforma** — fora do trace, é harness:
+     `validar_quebra_sigilo` (chave e valor), `extrair_evidencias` (chave) e `get_available_documents` (o envelope
+     `result` não documentado). Evidência pronta em `03-procedimento-validacao.md` §1.8 (trechos redigidos; os crus
+     não saem do ambiente local).
+  5. [ ] **Replicar na segunda extração** (item 3 da tabela abaixo): rodar a §11 inteira na base nova e comparar com os
+     registros de `resultados/unidades_memoria.json` — mesma forma comum, mesmo acesso certo? É o teste de replicação que
+     motivou rodar a mineração antes. Reaplicar também a triagem das sub-unidades dormentes (`extrair_evidencias`,
+     `get_available_documents` na nº10).
+
+- [x] **Análise mais funda: as leituras do retorno de `validar_quebra_sigilo`.** Pré-registrada e rodada em 17/09.
+  **Resultado:** 9/21 respostas entregues (43%, 3 meses) com o campo regulatório de quebra de sigilo inválido, sem
+  nenhum erro registrado — medido no `action_output` (payload entregue), não inferido do código. Decidiu a nº10
+  como harness. Uma retratação no meio do processo (primeira rodada apontou caso errado, por não tratar `.get`
+  aninhado como cadeia) está registrada por escrito. Detalhe completo: `06-racionais-mineracao-unidades-n2-n10.md` §9 ("Execução..."),
+  `07-relatorio-mineracao-unidades-n2-n10.md` §6.2, `03-procedimento-validacao.md` §1.10.
+  - **[x] Formalizada como §11.9 do notebook** (17/09) — funções em §11.0 (`classificar_campo_final`,
+    `payload_entregue_qs`, `comparacoes_grafia_qs`), `registro_final` agora aceita um `desfecho` opcional e
+    `unidades_memoria.json` sai regravado já com `destino`/`impact` corretos. Números reproduzidos: 9/21 (43%),
+    3 meses.
+  - **Extensão natural, depois:** o mesmo detector (comparar payload entregue × schema real) para toda ferramenta de
+    schema conhecido — "Monitoramento além do Passo 3" de `06-racionais-mineracao-unidades-n2-n10.md` §9. Começou nesta sessão para
+    `get_available_documents` e `extrair_evidencias`, item abaixo.
+
+- [x] **Achado candidato em `get_available_documents`: mesma forma de leitura silenciosa — fechado como §11.10
+  (17/09).** Uma exploração inicial (fora do notebook, sem pré-registro) tinha achado 3 casos a dedo e chamado 2 de
+  "confirmado", usando uma lista de palavras inventada sobre a saída do `ConversationAgent`. Formalizado como célula
+  do notebook (§11.10): universo completo de chamadas (não 3 a dedo), leituras rastreadas entre steps, cruzadas com
+  `DEGENERADO` (o detector já validado, não uma lista nova) na resposta **real** do `managerAgent`. Resultado: **4
+  ocorrências silenciosas confirmadas** (exaustivo, não amostra), **0/4 batendo `DEGENERADO`** — o mecanismo é real,
+  o "confirmado: chega a `final_answer` errado" da exploração anterior é **retirado**. `status`/`destino` da nº2 não
+  mudam; `impact` continua `null`. Detalhe em `06-racionais-mineracao-unidades-n2-n10.md` §9 ("Análise funda da nº2"),
+  `07-relatorio-mineracao-unidades-n2-n10.md` §6.3, `03-procedimento-validacao.md` §1.11. Evidência reconciliada em
+  `resultados/evidencia/11.10_leituras_get_available_documents/`.
+
+- [x] **"Guarda sobre chave fantasma" descarta documentos por inteiro — quantificado (17/09).** Um dos 3 casos da
+  exploração original (`15f6ad52…`) não é ".get sem plano B" — é um `if 'documents' in retorno` cuja condição a
+  chave real (`result`) nunca satisfaz, então o ramo que usaria os documentos reais nunca roda e eles somem por
+  inteiro (diferente de sobrar um valor errado). Rodado exaustivamente no mesmo universo de 635 papéis (detector de
+  AST dedicado, não deixado como menção solta): **1 ocorrência no trace inteiro** — o próprio `15f6ad52…`, nenhuma
+  outra —, abaixo do piso de recorrência de qualquer candidata a memória (≥3 execuções e ≥2 meses, §7 Passo 5). As
+  três checagens de dano (`DEGENERADO`, `None`/`null`, dict impresso — ver item abaixo) também não batem nela.
+  `status`/`destino`/`impact` da nº2 não mudam. `06-racionais-mineracao-unidades-n2-n10.md` §9, `07-relatorio-mineracao-unidades-n2-n10.md` §6.3,
+  `03-procedimento-validacao.md` §1.11.
+
+- [x] **`DEGENERADO` sozinho não bastava como sinal de dano — ampliado para três checagens (17/09).** `DEGENERADO`
+  só pega recusa **explícita**; um `.get` sem plano B devolve `None` em silêncio, que pode vazar pro texto final
+  como `None`/`null` literal, ou como o dict/objeto inteiro repassado (mesmo mecanismo da nº10, classe "objeto
+  inteiro repassado", §6.2) — nenhum dos dois soa como recusa. Adicionadas duas checagens estruturais (presença de
+  `None`/`null`; regex frouxo para "parece dict impresso") às 5 ocorrências dos dois mecanismos acima. Nenhuma bate
+  nenhuma das três. Não prova que a resposta está correta/completa — isso é *groundedness* (item 1 abaixo),
+  continua fora de escopo do v1.
+
+- [x] **`extrair_evidencias` — checada e descartada para este aprofundamento (17/09).** Só 8 execuções declaram a
+  ferramenta, 1 erro conhecido; sem campo único mensurável no payload (o retorno se espalha em texto). Amostra
+  pequena demais para qualquer contagem valer como achado. Registro de que foi investigada, não esquecida — em
+  `06-racionais-mineracao-unidades-n2-n10.md` §9 e `03-procedimento-validacao.md` §1.10.
+
+- [ ] **Análise mais funda: de onde vem o conhecimento do schema da nº2 (`get_available_documents`), e o agente sabe
+  ou erra ao aplicar.** Registrada em 17/09, motivada por um achado da verificação humana do Passo 6
+  (`03-procedimento-validacao.md` §1.9, caso `3f44a68b…`). **Não bloqueia a memória em si** — decisão explícita do
+  Rafael: o schema certo já está derivado e validado (Passos 1–8), e a `correction_guidance` já foi ajustada pra
+  cobrir os dois sentidos de erro sem depender da resposta a esta pergunta. É pesquisa sobre o mecanismo, separada do
+  conteúdo da memória.
+  - **A pergunta.** No caso resíduo, o agente sabia que `result` existia (citou no `thought`) mas errou a profundidade
+    (`docs['result'][0][0]` em vez de `[0]`), e mesmo depois de errar não sabia — teve que investigar com
+    `print(type(...))` no step seguinte. Isso não é "não sabe nada" (o prompt não declara, 0/91, confirmado até fora
+    do bloco da ferramenta — `07-relatorio-mineracao-unidades-n2-n10.md` §6.1); é sobre reter/aplicar o que o próprio agente já
+    observou dentro da execução (mesmo padrão dos logs 4–5 de `03` §1.8: "a estrutura estava na frente e errou mesmo
+    assim").
+  - **Por que não é escopo do que já foi feito.** Os Passos 1–8 respondem "qual é o schema certo" (degrau 2/3,
+    `06-racionais-mineracao-unidades-n2-n10.md` §9 Passo 7). Isso pergunta "por que o agente erra ao aplicar um schema que ele mesmo já viu" —
+    causa cognitiva, do tipo já registrado como fora de alcance sem LLM (mesma ressalva do Passo 7).
+  - **Mesmo processo, se for feita.** Pré-registrar as classes de leitura (sabia e aplicou certo / sabia e errou a
+    profundidade / nunca tinha visto) antes de rodar — mesmo motivo do revert de 16/09; determinístico (achar
+    `print()` do retorno da ferramenta nos steps anteriores do mesmo papel, comparar com o código que quebrou);
+    evidência em pasta própria; resultado em `02`; conferência em `03`.
+  - **Prioridade:** menor que os itens acima — não desbloqueia nada prático, só aprofunda o porquê.
+
+- [ ] **Evidência por análise para as §1–§10 do notebook.** A §11 tem, desde 17/09, uma pasta por análise com os casos
+  escolhidos por regra, o trace cru e a visão derivada (`03-procedimento-validacao.md`, "Evidência por análise"). As
+  análises anteriores — taxonomia, custo, achado central 86,3%/11,9%, reincidência, falhas silenciosas, candidatos —
+  ainda se triangulam só com `drill_down.py caso` e exemplos soltos no `03`. Fazer o mesmo, começando pelo achado
+  central (o número mais citado): regra de escolha por análise, `registrar_evidencia` no fim da célula,
+  `drill_down.py evidencia`.
+- [ ] **Detector de anomalia de ambiente — subproduto do Passo 4, registrado, não construído.** A forma comum de cada
+  ferramenta (Passo 4) vira linha de base: um retorno que contradiz a forma de uma ferramenta historicamente estável é
+  sinal determinístico de mudança de API, não de comportamento do agente. Testar primeiro na segunda extração. Liga com o
+  item "Should the deterministic anomaly filter…" de `../../../discussion/open-questions.md`.
+- [ ] **Replay contrafactual — o teste de suficiência da memória (`06-racionais-mineracao-unidades-n2-n10.md` §9 Passo 7).** Os registros dizem
+  o que fazer, não se basta dizer: injetar a `correction_guidance` (ou corrigir a documentação da ferramenta) e medir se
+  o erro volta. Não dá para fazer só com o trace — depende de rodar a esteira. Combinar com o time junto com o item 4
+  acima.
 
 ## Analítico — em aberto, em ordem de valor
 
@@ -186,6 +311,17 @@ essas respostas recuperadas estão factualmente certas — essa é a pergunta de
 
 ## Fechado nesta sessão
 
+- [x] **(17/09) Resíduo do Passo 5 fechado — confirmação indireta por `AttributeError`.** Achado da verificação
+  humana do Passo 6 (`3f44a68b…`): os 2 erros do resíduo já estavam classificados como nº2 desde o Passo 1 (mesma
+  `unidade`, mesma `funcao_origem`) — só o Passo 2 não conseguia ler a mensagem (`Object X has no attribute get`,
+  formato diferente de `Could not index`). Regra geral adicionada (checa a chave revelada contra o schema derivado de
+  **outros** erros da mesma ferramenta — nunca circular). Cobertura por erro da nº2: 89/91 → 91/91; `status` não
+  mudou. Ver `06-racionais-mineracao-unidades-n2-n10.md` §9 (emenda ao Passo 5), `07-relatorio-mineracao-unidades-n2-n10.md` §6.1, `03-procedimento-validacao.md`
+  §1.9.
+- [x] **`correction_guidance` da nº2/nº10 simplificada (17/09).** Tirado o contraste "não `r[0]`"/"não
+  `r['quebra_sigilo']`" — motivado por outro achado do Passo 6 (o mesmo caso `3f44a68b…` mostrou o erro **oposto**,
+  `r['result'][0][0]`, fundo demais). Agora a frase só afirma o caminho certo, cobrindo os dois sentidos.
+
 - [x] **Auditoria independente respondida** — 6 discrepâncias (S1–S6) verificadas uma a uma contra o dado
   (não contra o texto do parecer) e corrigidas; S3 mostrou-se pior que o relatado (1 linha errada **+ 2
   famílias omitidas**). O gap de bijeção também foi fechado: o achado central ganhou passo-a-passo próprio
@@ -225,3 +361,14 @@ essas respostas recuperadas estão factualmente certas — essa é a pergunta de
   **`correction_guidance`** (não temos — do AgentDebug Stage 2). **O candidato de memória de verdade é o
   `correction_guidance` validado, não a unidade em si** — a unidade (§7) é o agrupamento que torna a derivação
   tratável, não o conteúdo final.
+
+- [ ] **Separar um `memory_payload` do registro de auditoria dentro de `unidades_memoria.json` (17/09/2026,
+  aberto).** Hoje cada registro é só trilha de auditoria — proveniência do método (`validation.*`, `location`,
+  `evidence` com o rastro de cada passo), não algo pronto pra injetar no contexto do agente. Decisão desta sessão:
+  não vale criar um artefato/schema novo agora — o schema de produção da camada 2 (`S`, decay, embedding, ACL)
+  segue indefinido em todo o projeto (`../../../discussion/knowledge-as-infra-architecture-hypothesis.md`,
+  componente A, "Still open") — mas os **campos do futuro `memory_payload` já estão decididos**: `description`,
+  `correction_guidance` e `scope`, só nas unidades com `validation.destino` diferente de `harness`. Falta: gerar
+  esse sub-objeto dentro de `registro_final` (notebook, §11.0) a partir dos campos que já existem, sem duplicar
+  conteúdo à mão. Não é bloqueante com 2 registros só — roda quando a fase "Construir os candidatos de memória de
+  verdade" (acima) ou o Update Engine v1 precisarem consumir isto programaticamente.

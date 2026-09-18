@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4389f9cbf9d2add4ce2ad7b4dfb276418a81eacc3157bea262ab14c231c9810f",
+  "claims": [
+    {
+      "id": "claim_2d8afae496ab44c79026febbaed88745",
+      "statement": "The official Plano de Trabalho runs from 07/08/2026 to 31/07/2027 for bolsista Rafael Coelho Ventura under tutor [TUTOR], for project [PROGRAMA-FOMENTO] / [INSTITUIÇÃO-FOMENTO], project number [ANONIMIZADO].",
+      "evidence": [
+        {
+          "resource": "repo://docs/work-plan.md#L5-L13",
+          "version": "repo-lines-v1:sha256:76a97d23aa9bf4bc879dc9f64025c6ac2167ba9a45c623132ef5013f893bedd3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDljN2MwNDdhMzYyZThhNzc0YzIwY2NkMmFmMzFkYTRhYWQyODg3M2QzYmNhMWQwNDU4ZmYzZjMxNmVkZGM2ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDZkNzk1ZTJhMTQ5Y2Y2N2RmOGRjMWNkZDBiZWQ3OTdhMTAyMzc1NmJlZGE1ZTU5NTMwYTRkNmFkY2ViZTZhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDUxMmRkYWI0ODQ1MGE2NWFkNDgxMGMxY2FkZjdlM2Y4NDM3ZWFmYjUzNTE2NzQ0YmIyZGVkYWY0MGM0MDc3OCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4cc28a81aa0a4008be0d798a508e2805",
+      "statement": "Macroatividade 1 (deadline 30/10/2026 per the formal plan) comprises seven sub-activities (1.1 through 1.7, spanning initial literature review through Sub 1.6's minimal-agent POCs and Sub 1.7's implicit-vs-explicit learning comparison) and its Entregável 1 bundles a literature-review report, a preliminary feedback-signal specification, and a comparative report between memory approaches with minimal POCs.",
+      "evidence": [
+        {
+          "resource": "repo://docs/work-plan.md#L24-L36",
+          "version": "repo-lines-v1:sha256:3f8ba404088f4e59fc83327f42b10852ae0bc9f5428247dc674f13aac26e166a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNzlhY2JlNjEwMTk3YjA2MzFkNzdiNzdlZDRhMGJkMDE5ZDRjYjM5Yzk5M2QwZTU1OTUzZmZjMTk0YjQ5ZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0NWE5MjQ3NmZiZGIwZDBjYWIyOWI2MmM3YmYwNWE5YzNmNWQzNzgwYzUyOTYwMDgyY2FhMjJlYmE2OTFhMjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiMDhkNjg0MjExZWNhOGU4NjkzMWZjZGEyMjRmZWNmMDA4ZDc0MTEzZWJlODYyOWYyNWZkYTkyMjk0OWM4MGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1ODcxNDAzMjFlNzM2MmExYTU1N2Q1NGJiNWE0NzcwMzNiZDJiYmUzMzdlZmYxYTJmNzQxYWI4Y2Q3N2IxNzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_320c4bc8845e433d9cd161bb4c3bcb67",
+      "statement": "Macroatividade 2 (deadline 31/12/2026) covers architecture design, POC construction, local sandbox testing, platform integration point survey, and an architecture review with the tutor and platform team, delivering a technical architecture document, a locally tested documented POC, and an integration-point mapping.",
+      "evidence": [
+        {
+          "resource": "repo://docs/work-plan.md#L38-L49",
+          "version": "repo-lines-v1:sha256:4c102b0d002181bf1775363627c6f5138845778f9e4a14ed9e27c99f605031db:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2YTAwYjY2NzY5YWIyOWI0MDQ4M2ExNDBiZjgxMzA4NDFiMzlhZWU3YTgxNTgwMmM5YzdmYzY5MGVjYmUzMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyYWQwODA4ZjZmMzBmN2IzNTcyMjFlYWQ1NTliZjkxNDBiNzc5NzZjM2RmYmM1NjRlMjc0MmQ1NTgzNDVmZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0NTU0ZWY3NmYwMTM4YTk5ZmRlNTAzODFmZTA1ZWUyNDBiOGYwN2M0YzY4OGI1YmVkYjZlNzU5ZDYxNDFjZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhODcyMmM2NmU4N2MxMjcyMjFjM2FiMzZiMTM4YTRkMDE5ZDc5OTBkZGUwNzJiMTQ4MWQ5YjZjMmJmNTZjNjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_47ac8516f2bf4da3944c07c881628a6a",
+      "statement": "While the formal Plano de Trabalho dates Macroatividade 1's end at 30/10/2026, the project's own sub-activity-map records that the bolsista works internally with 30/11/2026 as the actual deadline.",
+      "evidence": [
+        {
+          "resource": "repo://docs/sub-activity-map.md#L5-L7",
+          "version": "repo-lines-v1:sha256:7b666197d6d344f5aea96f7ae984ca5c1b6bb2843d13e7273d6c95c3ab615fc0:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M4ZmU0NTg2OTFjYTRhNzMwZjk0NmE3M2VjZGIyZjA1YmQyMDU4ZTBhOTFhMzg0NjQ0YWIzMmYyZWNjYTE0ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQyOTcyOTAzM2FkNWZmYWY3ZDlhMjcwYjczMTk1NjkyZjhmZGQxNjM5ZTcxNTM2ODgzNGM5OWUzZTY0ZGNlNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzU3YWY5MzE4OGQyMDg3N2RjNmJhZTU1ZDMwYmUwMTU4MTM4NTFjNTQ5NDJiYjE5NzVmMjk4ZWExNmFmYWE0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzZhYjgzMzVjYWI3MjI3OGEwZTE4YTk0ZmMxYmQ0YzM1NDI4ZmY3YmQ5ZmMyOTUwZmVlMjExM2YxMjEzMTBmMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5d2b94c7f37d4d55baaf32a010348ba2",
+      "statement": "docs/sub-activity-map.md is a Portuguese reference table derived from the work plan, used solely to classify the Sub-atividade field of each research-diary entry, with each of the plan's sub-activities carrying keyword 'signals' that guide that classification.",
+      "evidence": [
+        {
+          "resource": "repo://docs/sub-activity-map.md#L1-L3",
+          "version": "repo-lines-v1:sha256:0c097e2bd3ea69dd3c260a9b90eaa818498520dd9abd1883410e65d4e96b25b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjA2OTk3Yjc0ZGIwMjNhZDdiNjVkM2ZkMDI1ZWRlZjcwMjExOGExZWY0NjE3YWY4NGI1MzE3ZmRmNWI4YjFhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODMyNzhiOWZkM2FjNTUxMjA5ZWY3NzRmMWUzMDhjNzIwZWMzNjIzODBkYzNhZDUwMDNhNjFiN2MwMTljNmRlMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGY0MTI5YzMxOGU3N2FkN2IwNmJhMGU5MGM0NDZhZjgwMTQ4YzcwNjc1OTcyYTk5ZjQwNzRhOWNlMmY2MTIxMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8a831e6b6c054785bb5a18db1fdddeb1",
+      "statement": "Three sub-activity categories exist outside the formal work-plan list, for deliberate diary use: 'transversal' (project management, tooling, meetings not mapping 1:1 to a sub-activity), 'governança' (informal-coordinator vs. formal-tutor distinction, or scope-change validation), and 'não classificado (confirmar)' (used when automatic classification lacks confidence, pending manual review).",
+      "evidence": [
+        {
+          "resource": "repo://docs/sub-activity-map.md#L61-L65",
+          "version": "repo-lines-v1:sha256:6d78f779f8005b12c3ad84c08eb477d234f7002a0e40f5958309ccc7b8490837:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmQxY2MyZTA2ZjA4NTlmODU4MjJmOGE2ZDAwYjQ0ZmE5NDAwOTcyZjhlYzRkODg2NjhkOGQ0YTJmM2U4NjU5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjQ1NTYzNGNmYTIxMjhkYWU5YjUzMjNkZTU2ZmE4OGJhYjM4MWJlMDVmMWUzOTk5YmNjN2YwOTk5YWJlNTQ2OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdhY2EyYWZhMzMyNGE0Mjc2YTc0NDAzY2ZhMzQ2MzA0ODA5OWU1NDkwMjc5Y2E5MzE2YTZjNDMyMGQwMzBkZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.1",
+    "at": "2026-09-18T11:27:06.172Z"
+  }
+}

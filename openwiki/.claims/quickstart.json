@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:020e1977ee671e34fa9a221778877b3c17d30be108bd01d5cc303fb724fc863a",
+  "claims": [
+    {
+      "id": "claim_5541f189b9e449a49d738f3064fb2713",
+      "statement": "The repository defines a project-scoped 'diario-campo' Claude Code skill that registers, organizes, and synthesizes the research diary, and is explicitly scoped to NOT trigger on ordinary work conversation that merely mentions reading or testing something without an explicit request to log it.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/diario-campo/SKILL.md",
+          "version": "repo-file-v1:sha256:60da92e4576bdd7464bc5c723266e34b37f2b7fa39a4a401381db6530fdb0bf8"
+        }
+      ]
+    },
+    {
+      "id": "claim_afbb48b71b894e5cb335fa8b04de7e1d",
+      "statement": "The repository defines a project-scoped 'sintese-diario' Claude Code skill that (re)generates the monthly digest at research-diary/summarization/<Mês>/sintese_AAAA-MM.md (up to 4 weekly records) and explicitly never writes into the weekly episodic files themselves.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/sintese-diario/SKILL.md",
+          "version": "repo-file-v1:sha256:392fbb6ba156cd637b8913e0f6142db683913193b6c4a29eaa23a39f9d0eee68"
+        }
+      ]
+    },
+    {
+      "id": "claim_be88d82d995e4f95a57e4595761b3280",
+      "statement": "The repository defines a project-scoped 'checkpoint-reuniao' Claude Code skill that automates the meeting-record pattern end to end (transcript extraction, factual Portuguese checkpoint summary, triangulation against the architecture hypothesis/open-questions/scope decisions/work plan, a discussion/ reflections note, and canonical-doc updates), and is explicitly required to present its result for approval before being considered closed.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/checkpoint-reuniao/SKILL.md",
+          "version": "repo-file-v1:sha256:419de0addc762a7052ab046c423e1cbf7f346f501b7e45d3be763ae4e328dd87"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.1",
+    "at": "2026-09-18T11:27:06.172Z"
+  }
+}

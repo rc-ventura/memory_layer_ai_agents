@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:2d0be9af76e2fb0e342717bbed64ba718d8b1b3ce5885ff26c58a23ed21eb7ad",
+  "claims": [
+    {
+      "id": "claim_61bcf96cd5864930bc41560bea599df9",
+      "statement": "The research diary is deliberately structured as a miniature application of the same memory theory the project studies: an episodic layer (raw daily entries, cheap to write) that is never rewritten or summarized in place, and a derived, regenerable semantic layer (periodic distilled synthesis).",
+      "evidence": [
+        {
+          "resource": "repo://research-diary/README.md#L7-L7",
+          "version": "repo-lines-v1:sha256:ebe16c2a601de1492faf2fecc6c097fb9af18730f279e97583e209ef399af71d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWJlMTZjMmE2MDFkZTE0OTJmYWYyZmVjYzZjMDk3ZmI5YWYxODczMGYyNzllOTc1ODNlMjA5ZWYzOTlhZjcxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWJlMTZjMmE2MDFkZTE0OTJmYWYyZmVjYzZjMDk3ZmI5YWYxODczMGYyNzllOTc1ODNlMjA5ZWYzOTlhZjcxZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjE2MTQ4MzJjMzhkMTQ5NjdmYzY5NDhhZjVjZDI5OGZmMTBhOWI4NDA2M2Q2ZmFhOTA4MjYxNTM3YTdiM2FjZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDY3NzgzODdlYjBmYjAyMDdlZTM2MTBlZmEwYzFhMzhhNzM2OWRkYWQyNWIwYzFkZWUzODI4ZDhiOWRmMDgwYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e386df35d3f747d7b7e76b2dfc57f9af",
+      "statement": "Starting 24/08/2026, the diary uses one file per week named diario_campo_AAAA-MM-DD.md (AAAA-MM-DD is the opening Monday), and the diary week runs Monday-Friday only (5 working days), holding only episodic entries.",
+      "evidence": [
+        {
+          "resource": "repo://research-diary/README.md#L17-L17",
+          "version": "repo-lines-v1:sha256:db1104cd0271192bff316943828ac496c61a40eddf984d7cde66e169559c7790:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGIxMTA0Y2QwMjcxMTkyYmZmMzE2OTQzODI4YWM0OTZjNjFhNDBlZGRmOTg0ZDdjZGU2NmUxNjk1NTljNzc5MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGIxMTA0Y2QwMjcxMTkyYmZmMzE2OTQzODI4YWM0OTZjNjFhNDBlZGRmOTg0ZDdjZGU2NmUxNjk1NTljNzc5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWQ1NTU1OTJhMmNhZDVjNTYyNDRmYTkyODQ4MGRhZWYwMDk1NDgzMzRjZmRlNTMxMzIxMjI0ODg0OWE1N2ZiYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWFjZWQzYjgxNDY3NjBhODFmMzI0ZDBmODdkY2NhZjVmODFmM2MzYTJjY2NiOGIyOWQ0ODU3YTRlYzYwNjU2MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_690459b133054e4c9b625f507e263486",
+      "statement": "Which calendar-month folder a week's diary file belongs to is decided by the 'Wednesday rule': a Monday-Friday week belongs to the month containing its Wednesday (equivalently, the month holding the majority of its 5 weekdays), while the file name always keeps the opening Monday's date regardless of which month folder it lands in.",
+      "evidence": [
+        {
+          "resource": "repo://research-diary/README.md#L29-L29",
+          "version": "repo-lines-v1:sha256:e2d259929932c75ae8ebcc1f8ffc4db550f2955264eac9e6a73a2bcb4f14a031:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTJkMjU5OTI5OTMyYzc1YWU4ZWJjYzFmOGZmYzRkYjU1MGYyOTU1MjY0ZWFjOWU2YTczYTJiY2I0ZjE0YTAzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTJkMjU5OTI5OTMyYzc1YWU4ZWJjYzFmOGZmYzRkYjU1MGYyOTU1MjY0ZWFjOWU2YTczYTJiY2I0ZjE0YTAzMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmZhOTY3YmY4YjZjNzhkYTdkYzMyYWZjNTljYmVlMGY4MTNkMDJjY2FmMzRmZDViOWE4Nzk2NGNjMTYwMGY4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzkyMjA1MTIxOTU1NzJlZGM2NzRhMjU2NTM4ZTk3ZDkzMTY3ODcyMTk3MTcxZWQxZjQ4NDA0NTA0ZjQwMGJjZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c282b04da867433e9e7ebeae31f222c9",
+      "statement": "Each diary entry requires four fields — Tipo (leitura/teste-POC/implementação/reunião/decisão/achado/observação livre), Sub-atividade (tagged against docs/sub-activity-map.md), Canal (pessoal/informal-coordenador/formal-tutor), and Registro objetivo — with Reflexão, Decisão/próximo passo, and Tags as optional fields used only when there is real content.",
+      "evidence": [
+        {
+          "resource": "repo://research-diary/README.md#L37-L46",
+          "version": "repo-lines-v1:sha256:73f57d8590f0731d280a17ba0dc30984ac9da25c5562f7c30b3215e0835a260f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiZGIwYWRiZTk4ZjA0NGM2MjNmOTc0YTY2MmVlYmI5NDMwYzViMmVjMDFiNDYzMDRmZmQ2YmZkNWFhYTE0NTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyODUwZWI1NTQxODJmMGZhN2UwMjA1NjJiZjUyZjAxOWI3NzNkZTJiZjdlZWE5N2Q5YzkyZTg2MmY0N2E4ODkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlMTU1YmEzOGVjZTVlODVlYzk1YzYxYjUzNzliY2Q0OWRiMmI1N2E5NGEyYzI1ZDNhZWViZmE2NTZjZDgzODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2NDBjMjRhZjkyMWY2YzcyYTJjNTdlMzMwZTllMWZlYjVlOGNlMTVjMzlhZDBmZjQzZDcxOWM3YmJiZmYwOWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7dfcecaf2a454d7f8e9156523e4e9053",
+      "statement": "A real diary entry (24/08/2026, on the Hu/Liu survey finding) demonstrates the required schema in practice: Tipo/Sub-atividade/Canal header line, a Registro objetivo paragraph, a Reflexão paragraph, a Decisão/próximo passo line, and a Tags line.",
+      "evidence": [
+        {
+          "resource": "repo://research-diary/Ago/diario_campo_2026-08-24.md#L11-L21",
+          "version": "repo-lines-v1:sha256:e09e85663b03374dbee1e7b74b36b7fa4d469a7d18c3ad00da413c8cd5454fd0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3ZGRmMzBmZmM2MmIxYTI3MWRlNzg0MWQ5OGU2NDYyZjA2MWQ2YjdlYzJiYzAzZTFhMTQzM2E4YWIwYzhlYjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5NTNiOWU2Y2NmMzMzMjY1NTk4ZWU5NTAzMGJiNDQyN2IyYzM5ZGJhYjg3NmNjODJmNmViMmZkZTVjYmE0ZDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlNTk2MDFkOTBlNDc0ZDQ1OTI1NzIzMzg5MjQxMjZkYmQ5MGQyZGVhZjcwYmRkMGJiYjE5YTZmMzFiOGIxOTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_05718169a62a4f2dbceb78d4509044ac",
+      "statement": "When a diary entry attributes work to an AI agent rather than to Rafael himself, the convention requires a generic, provider-agnostic reference ('an agent, no defined provider') and never names the specific assistant, model, or provider — this convention applies only to attributing work done for the diary, not to topical mentions of AI products as subject matter.",
+      "evidence": [
+        {
+          "resource": "repo://research-diary/README.md#L48-L50",
+          "version": "repo-lines-v1:sha256:6dc2225be2617f0cf8bcf1e87e1261ba27e9c661f94577359bee326f9a7acd73:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGYxY2FjYWU2OTBlZjc0MjlkMzgzYzc5ODUzYmQ1MDU0YWNmMjcxNGY2ZTI2YjYzMzM5ODIzODQ3N2M0ZmVmOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRmY2E5ODNhZDAxOTBkOTAwNjE4Njc1OGVhMzg2M2ExZmMzMzYwYTJlYTcyY2Y1Y2YwNWVjZmMyNGI4YmY4ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWUxNDNjY2I3YzEwZWQ4MmIzYzQ5ZWRmMTE3NTBhOTMwNzFjZTJkNjhiNjAyNTlmODE5NDkyZTRlMWU0YzIxZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTkxNWRmMDYzZmYyNjg4ZWU2ZjY0MWRhN2NjYzljZGUwZjk3ZWNhMzQxNWM4MjczMjZmNzZmMWEyNDAzOTAxOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f9a7dd1457c04d9db0f5778039ebefeb",
+      "statement": "The monthly digest (summarization/<Mês>/sintese_AAAA-MM.md) holds up to 4 records, one per week, each with a heading '### Semana N · DD–DD/MM/AAAA · N registros', a short paragraph, and '**Decidido:**'/'**Em aberto:**' lines; it is derived and regenerable and does not duplicate the episodic log.",
+      "evidence": [
+        {
+          "resource": "repo://research-diary/README.md#L52-L58",
+          "version": "repo-lines-v1:sha256:870ad604d30d897fed64cc4180ab4be2b98985ec90cead2c77da414f97e3762d:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQyOGNlMmIzZmM5OGVmZTAzYzA3NDdmM2RjNGQ3OTA1YjBiNTgzNDgwYzRmYjA0OWY2Mjk0MDAyNTEzOTUwZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGIyZWM3OGQ3NzIxZDdkODRlZjE1MzI1MDczMTM5ZTQxYmQ1MGY3OGZiMWQxNzkwZTE0ZDFiM2MxMDAxODQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjE2ZmYyMTIwNjJlN2U3YjI1NmZiMzk4MWNhNTY1YTM4NmYyMDVjODYwMGQ3YzEyYWNiMjdkZjJmMjZmMTU4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2M5MTY5ODI0YTdhOGMwM2I5YzEzNDdlOWU3YWRmZDlmZDliZTYwMDFkMjEzOWRhZjM5ZjRmZjdlMGM5OWJiZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7e77376634914d7491de6147ad2e36a8",
+      "statement": "At the start of a new calendar month, once the monthly digest holds every week of the closing month, a clean .docx is exported for the coordinator combining a cover page, the digest's weekly records as the main body, and the full episodic log from that month's weekly files as an appendix.",
+      "evidence": [
+        {
+          "resource": "repo://research-diary/README.md#L60-L62",
+          "version": "repo-lines-v1:sha256:d91d7846bed886773d1c0defdd218ff686cea995b0abc107371852ce9ad65e02:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjViMDgwNzc5NDEwM2IwOWZhZTdhZDczZjUwZmE0YzQwOTE2MmI0YWQ5OGMzYjdjMWQ3ZmE0YzdkZmNkNGQyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNjNDczODUwM2UxZDg3Y2EyYWQ4YmZhZTc0NGJiOGUwN2FmOWQ2ZDRjNGQ3OTZmOGY2MmY4MjEyMjFlYmE2OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzM3OGE4ZmFiYTgzMTdiOTUxNGRkOWMxMjhiODNkY2VlOGZlMGFiYmRkNzc3ZmQ3NjA0MzQ2NWEyNzc4NDE4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDIxZDE5MGRlZTBjOTA0MTUyYzAyY2U1ZWIwNTE5OTRmMmQxNzQzYTE2YTdlNmUxMzNhMTc3MzYwYjliNTNkMCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.1",
+    "at": "2026-09-18T11:27:06.172Z"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:3f9e164f1cc9ee11e06bdece09ba48a116fe35bf8ab7c7f7583985ffa3685c0f",
+  "claims": [
+    {
+      "id": "claim_3de9ef0f8f5b4135b5f156273d6f4681",
+      "statement": "The meeting-record pattern for a new transcribed meeting has four steps: the source transcript goes untouched into docs/sources/, a factual Portuguese summary with no analysis goes into docs/checkpoints/, cross-cutting reflections in English by default go into a discussion/<slug>-reflections.md note that updates whatever it resolves or corroborates, and any prior diary entry that flagged the meeting as pending gets updated rather than only appending a new entry.",
+      "evidence": [
+        {
+          "resource": "repo://docs/README.md#L13-L22",
+          "version": "repo-lines-v1:sha256:8323ab20239f40b52907fe167b24b3856f61f14dc768024c65a619181ffdcf79:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhNTM1MzJkZDBjYjNmMDNkNGRjYjRjNDgwMWI5NzEyMTFkMGVhODc5ZmYyYmRjYWUwZDQxN2M1OWQ3ZmIyNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjNzM5Zjg2YjM4NzllZjA0Nzc1NjU3NTBhYzg2YzBiYzdjNTFjYjllNDQ5YjI1MmJmYWU0YmZlM2FiMDIzYzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEzN2YzNjdmYzE1OGFkNmFlZjRlNzE0YTFjMTI5YTgyNmJhMGZiMmRmYzA4MjNlZTkxOTUzMzhjOGYxZmE4YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4ZjhmNzE5MmJjMmU2ZjRkNjcyMzkwNWFmY2U3M2EzNGI2YjBmYTJjMTFhNjlhNjQ3N2JmZjljMDFkZTEzNWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c899479215104d39880bc7641da4c384",
+      "statement": "docs/checkpoints/ meeting summaries stay in Portuguese, matching the language of the source transcript, which is a different rule from discussion/'s English-by-default convention.",
+      "evidence": [
+        {
+          "resource": "repo://docs/README.md#L24-L26",
+          "version": "repo-lines-v1:sha256:18d17d1a75e28fd086ffef026a797f307a73659e5d0197176175cb298e4101a9:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGQzODk1YmMwODY1ZTljYzk2MTAyMGI1N2ZlOWVlNjY3Y2JhNGY1MmEwZWQyMzZiOWQwNjNmNWIyMWIwZDQxZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjE4YjgzNTRkZjg5ODVlMDMzYTlhNmE4NWY1MzY3ODY1MzBlMDJkZDk4ZmNjYWMyZjc0YTExMzAwNTM5YzE5NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmY0NjA1MTU1NDhkY2ExY2I2MWFlYjM0ZTU5ODM2M2IzZmRkZmJkMGUxYWY5YTRhNmU1NDNiMGZjN2E5OWJiNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_92a732aacd0241e785dc1f80d41f11cd",
+      "statement": "The criterion for whether a reflection stays only in a diary entry's Reflexão field versus becoming a standing file in discussion/ is whether it cross-references multiple sources, produces a decision or a new open question, or will be linked to by other documents — and adding such a note requires also updating whatever it resolves (open-questions.md, scope-and-terminology-decisions.md, the relevant decision entry) and the discussion/README.md index table in the same change.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/README.md#L24-L27",
+          "version": "repo-lines-v1:sha256:cae9e62ac0654eafae4b4c404bd518561feae7b53d1659d1c83426c64d9b74bd:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWQxYzdmNjM4YzliOTVlM2VmM2NkZWJlY2ZkNzg3MGY0NWNjNjk1YWE0ODdjNDE3MjQ0OTVmYjAyNzk1ZmQ5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDNjM2VlZGFlNzFlNGM5NmI3OWI3NzQzOTc4YTIyYzhiMWU3YjBhYTE4ZjE4Njk0MGUzY2IwOTIyZmZlNTkxYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDE1MDkzZWFhYmRjNzc3NmYxYzA2NzRiMWFiZWNhYzQzYjQ5YzM5MDI5ZjVjYTA0NWEwNGY2N2U5MDc0NWExYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTE4NTkwZDM4NDYyNDVmZGEwNmVhMTM2ZDU4OTFjOWRhZWYxNTgxOTYxZGVhYmRkOGIxN2JmNTc5ZDRmZjIyMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_49a211487eca49e5b127dd97a7bdc531",
+      "statement": "discussion/ notes default to English for cross-link consistency across the folder; a specific note is written in Portuguese only on Rafael's explicit per-note request, which is a file-level exception, not a folder-wide convention change.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/README.md#L29-L29",
+          "version": "repo-lines-v1:sha256:c06b07614d9335116d792a9a9727f5720f3b16831210ea0da2c93ac1a8f20b94:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzA2YjA3NjE0ZDkzMzUxMTZkNzkyYTlhOTcyN2Y1NzIwZjNiMTY4MzEyMTBlYTBkYTJjOTNhYzFhOGYyMGI5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzA2YjA3NjE0ZDkzMzUxMTZkNzkyYTlhOTcyN2Y1NzIwZjNiMTY4MzEyMTBlYTBkYTJjOTNhYzFhOGYyMGI5NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODM4ZmU0NjY0ODlkMTMwN2NjYmUyNzYyMjhiZGQxNmI1NDE3MzEzNDYwNDllNDFhM2QwYWNmNTcwZjQ5YTQzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzBjYzczODY1ZjhjMDczYWU3YzI5NmQwMDdjNjQ5MmM4NmY2N2VmZGIzYTViMmE4YzA0MTMwMzVjMzFhM2IzNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_26de247402ad44c999f086f897e0506e",
+      "statement": "The 20/08/2026 tutor checkpoint summary (docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md) is explicitly kept in Portuguese, the meeting's original language, by the fellow's explicit decision — a concrete instance of the docs/checkpoints/ language rule.",
+      "evidence": [
+        {
+          "resource": "repo://docs/checkpoints/checkpoint-2026-08-20-tutor-kickoff.md#L3-L3",
+          "version": "repo-lines-v1:sha256:b1bf953784a093bd3ec686ba34dc84fdb7998058d6fe3022360c811ec5c4d051:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjFiZjk1Mzc4NGEwOTNiZDNlYzY4NmJhMzRkYzg0ZmRiNzk5ODA1OGQ2ZmUzMDIyMzYwYzgxMWVjNWM0ZDA1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjFiZjk1Mzc4NGEwOTNiZDNlYzY4NmJhMzRkYzg0ZmRiNzk5ODA1OGQ2ZmUzMDIyMzYwYzgxMWVjNWM0ZDA1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmU1MmRiY2Y0MTMxYzdhYmQzYmFiZDNiMWZlMTliNTM2MjFhNjgxM2I2OTAzMjc4ZWJkZWYzOTJmNDljYzBiZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjJkMzgxYzMwNTdiMjI3ZTE3MjdlM2MzZmU3YWZmM2U5NWNkMTM1MWI0N2M1MGUwNjQxNjFkZmU0MjIyNDg5NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_19098c4783bd44cfb452a0d53550c360",
+      "statement": "The discussion/checkpoint-2026-08-20-reflections.md note demonstrates the meeting-record pattern's analytical layer: it quotes the tutor's unprompted description of the memory mechanism ('corrija a memória... não retreinando') as the primary source for the project's harness-not-retraining scope decision, which previously lacked a citable primary source.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/checkpoint-2026-08-20-reflections.md#L7-L11",
+          "version": "repo-lines-v1:sha256:46e5b7de5a37b06a23552bba93f8a9be7414929195c27f067e0e32ba292a695f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzc1NmZhN2JjMTdhOGMxOTllMTk5NDBhNjYyZjE0YzE5ZjYyODQ2ZjUxNmViYzAwZjkxZTU1ZTdlMjQ3NGMwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTFhYTgxOThlNjRmNzVkOTcwMjc1NzM1MTVkOWMwNmQzNjdmNmM4Y2JhMmRhZGYxMDgxZmJmZjk4NTVmNWUwNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI2MTM3NWNjZGVjNDFlZjAxYmZkNzNjZjUyZWRhYjcyMDllZmQ0NGNiZjFhNGQwMjM3Y2NlNDgwZTgzYmY0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGNkNTVjYzY3YzZkMjhlODY3NmU0MDI4YmVhNGM0YTY4NWRiMmY3OGM2NjU5NmExN2MyNmRkMTc2M2Y1YTVmNCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.1",
+    "at": "2026-09-18T11:27:06.172Z"
+  }
+}

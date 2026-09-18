@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:e14a1aade4b465349eb8dc7feb22ad039361445259b3a70d354997214812f14a",
+  "claims": [
+    {
+      "id": "claim_d78b4f78b7cc4e67bafff8c5f0ea932e",
+      "statement": "The project's memory-update mechanism is scoped to non-parametric (textual) memory by design; parametric memory-editing methods (MEND, KnowledgeEditor, PersonalityEdit, APP, MAC) are out of implementation scope but retained as a rejected alternative in the Sub 2.2 architecture document.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/scope-and-terminology-decisions.md#L7-L11",
+          "version": "repo-lines-v1:sha256:df87ef116fa13b2c1f6f58f1a674a3bcd689d154dc1e38b868bd7769ec0a2955:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjc4ZTRlN2U5NTNkY2UxOTA1YmY1YjdmYTg5NDk1MmVhYTI5YjhlMDE3MDY1OTJkNmFkMTQ5NDUxMmY1ZDBmMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2U5YmYzNjE3ZDYwNjQ3ZDEyYzgwN2M5MTlkNjQyM2Q1N2U2ZDk0YWE5MzVjMzdmZjRlMmUzNzVmMjE0Y2I5NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDljZWZhMjViOWQwZjZlZDNhZjUzYjI0YjY2ZTE4NDZlZmZiN2I5MTcyM2VlNDVlMGIzODA2Nzg3NWRjNzUwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAwZTAyZGI1ODdiNmE4MjlmNzI3YWUyM2M2MTc2ZmY2MDkwZjg5MmUyZmY2NGY3MzMzY2FjMmZlNmI5NTAxNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5754d31b64154eea85af19b82ec6374c",
+      "statement": "The project resolved (20/08/2026, with the tutor, formal channel) that the mechanism's own 'reinforcement learning' is not SFT but a harness adjustment driven by an explicit binary user signal (thumbs up/down), placing it closer to Reflexion's verbal/no-gradient RL family than to Retroformer/Memory-R1's literal policy-gradient fine-tuning.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/scope-and-terminology-decisions.md#L13-L19",
+          "version": "repo-lines-v1:sha256:62cf6b5a4cc5b66768db425da645a125fc56ed82d6c2c67052756a89845339fd:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmZkOGZmZWNiZmQ0MTMyZTMwMDVhODE2M2Q1NzgyMDAxNGRhMTk5MGZjODZlOGY0ZGIxMDcyYzBiZTM3MzliZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWE1OGNmYjM3NTdmYzZmNDUyNjcxNTk2MGU2OTI4OGZmOTMxZGM3MzdhNjY5NWZmNGE0ZTc4NjY1YjA1YmUzOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjY5M2Q1MTQyNzgyNmYyNjhkZjVjYzQyNDdhMmU0M2ZmOWEyZTQ3Mjk5N2RlYmNiYWE5NTdmOWZkOTNmOTA2ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzRmMzA4NTM3MWMzZGViNTUyMjhjNGYzZmYzNWEzZWI3OTI2ODM4MWI3NGExNzM2Y2I3ZjgwMjhjNjc0MWYyNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_47efb740adbc4e2aa93775537ff235cb",
+      "statement": "Cross-trial and cross-agent are treated as distinct scope boundaries: cross-trial is a temporal boundary (same agent, separate invocations) while cross-agent is an identity boundary (distinct agents exchanging information via a protocol), narrowing the Macroatividade 2 confidentiality concern to handoffs between specialized agents within the same flow.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/scope-and-terminology-decisions.md#L31-L40",
+          "version": "repo-lines-v1:sha256:e80ddc1ae2f3e2fa659e96a4c82e8f77029ddd487e5d4af520713fb629b7d5e6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzNzA4YzU1ZTYyMmRjY2U4ZWU0N2NkY2ExOTAwZDE5YWY0Y2FhNTQ1OTY2NWM1YjU3NzU2MDk3MDdlMGRkNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNDE4Y2FkMzhlMjJiODM0M2EzYjJlNzZmNjMwNTM4ZDUwZjZkMWQ4NWM2MzhjNGYwY2Y1Y2RjZTc1MzFlMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiNTEwNTdhOGNlMjJjZGZmZDI1MmVhYjE3OTVjNTFkZTE3OThmNTdhMWZhNjUyNTA5OGI1MjVkMzE2ZGVlMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE4ZjAyZmI5ZTYyZWJhNGM3MGU4ZWRiNGU2NDdkN2FlYWFjZTFmZjdiZWNlMjU4NGNmNDE1ODI2YjQ2ZTYwZTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3b02e5475ecc43e2b7a3af8b6e22b32c",
+      "statement": "The project corrects Zhang et al.'s claim (§6.3) that no dedicated benchmark existed for direct evaluation of memory modules, noting LoCoMo and LongMemEval closed that gap within months, though both remain indirect (end-to-end QA accuracy) rather than pure Reference Accuracy evaluation.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/scope-and-terminology-decisions.md#L42-L48",
+          "version": "repo-lines-v1:sha256:e55563272beb2b4d8f9695c3ddf403671a4c89e452f5c06fe0cc5be59696bd29:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQyN2U0YWEwNGQ1MmUxZDhjMmZkNzZlMjU3N2UzNjIwMTllODJmNDFhZDQ1MWViYzRkZDdiNjIxODUxZGViZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWM3MjI1YmM5MmY0OGZiZGRiMjkyZmVmOWUxYWM5YTBiNzdhOGM4YzE5NGZjNDNhZTBkZjU0YmZkMmRiZWVlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWU5NzNiMGNjMTRkNzk5MmI1ZWFiNWIzMmIyYmE4NWRmZTAwODlkNTdmM2ZmNjk0YTI4YWU5NDBkNmFiZWIyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGIzYjJiM2VhZTRiOWQ0OGUxMTEyOGNhMzc3N2I0ZjEwMGRlNDdiMDkwMWRlNWIwNWY4YzY3NzVhOGUxNTE5NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7a3cb9c9262b43f1986a3438b2fc4943",
+      "statement": "The Reference Accuracy metric (Sub 3.6) is scoped to a manually annotated gold standard built over the project's own legal-flow cases rather than a generalizable LoCoMo/LongMemEval-style benchmark, and is explicitly blocked on Sub 1.4 (target flow) and Sub 1.5 (correctness criteria) closing first.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/scope-and-terminology-decisions.md#L52-L58",
+          "version": "repo-lines-v1:sha256:4e82ae9a1b308a49488b75e4dc7054045c2197a8c1aca4802adf349b08e8b872:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDU2ZWFjMjNhZWIyNDE1MjEyOGYwMzY2NzU5MTllYTA0ZWI5ZGRjYjk3YzExMTFlOTQ3Y2NhNDc2MWI4M2JiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMzNDAzYzFhODA2MmQ2ODVkMjQ5OGVkOTg2YTA1ZTRiOTk1MTE2MmQ3YzY2Yzc1ZmE0NTY5MTg0ZjVmZjRkZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGIzYjJiM2VhZTRiOWQ0OGUxMTEyOGNhMzc3N2I0ZjEwMGRlNDdiMDkwMWRlNWIwNWY4YzY3NzVhOGUxNTE5NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f5b11f533c2b4d45b5303e2c696dd257",
+      "statement": "discussion/open-questions.md is maintained as a running list of unresolved items; when an item resolves, its resolution is moved into scope-and-terminology-decisions.md (or the relevant document) and deleted from the open-questions list, so the two documents avoid keeping duplicate copies of the same fact.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/open-questions.md#L1-L5",
+          "version": "repo-lines-v1:sha256:ba6ea0e89bd66af75861feb93325f051c187ba7f4ee694097c43183861f06c40:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA1MGUzMjVlNjZjMGEzNDFjNjBmMTFhYmY1OTYzNzJkYzYwY2M5MDIzODVlMmY5ZjY3N2M4OTY4YjdjYTNkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGUzYWJkM2YxN2U2NjUwNTM4NzNkYTVkOTVjMDM0MTc2ZmIwY2U2ZWZkYmIzOGY4M2E2OWE0NWZiNTBiZDE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWUwZjc1NTkxYTVmNTA2ZmI5NGYzMTMzYTY4MDQ3NzlkM2Q3MjAwMWIwYTk3ZTY4ZjMyYzczNDBmZjhmNjI2MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8a6cd8d63e6e4903a8e72cec00886883",
+      "statement": "The project's insight-mining scope for output correctness/groundedness is split into three categories: (a) execution/procedural failure (deterministic, in scope), (b) groundedness-as-presence (a deterministic substring-match proxy, in scope), and (c) groundedness-as-semantic-correctness (requires an LLM-as-judge or human, explicitly out of v1 scope) — a working resolution not yet formally written into the decision log.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/open-questions.md#L120-L124",
+          "version": "repo-lines-v1:sha256:517e7404740aa0f9d9bdf32b659b809b57a13564b16d552d59a5842f5ffdafbd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDAxZTY2NzQxZTk2YWE5NmVkMzYyM2MxNmIwZmQ0ZTQ0ODRjYmY3MTBjZDBlMGQ4MTI1MWJkN2UzYWMzOTA5OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTk2ZDVmYzNiM2RiNTdkMjM2MjhmYTM5Yzk4OTIwMGUxMzRlMWVkN2I2YTM1YzMxNmU4ZmU2MTY4MTg4NjVmOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTU4ZDkwZDUyNjY4Yzk1NDA5OGYyMjI2Yzg2MTBkMmYwNzAwNWE2NDAzNmMwOTkzNzdiYmRkNGRmOWM0MjMzNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzU0NDdiNGM2NzZhZTVlYzViMzQzNjBlZTMwNTc5YTc4MzY1NzYxOTMwZDFiMDk0NWM4MDFiYjk1ODQ4MDQ1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_32260b764f424aeaa962b6889f19bb12",
+      "statement": "As of 18/09/2026, the analytical core shared between the trace-law-flow analysis folders now lives in pipeline/base_pipeline.py, making the byte-identical requirement between the original and a new isolated analysis folder trivially checkable (the new folder copies that one file instead of duplicating notebook cells).",
+      "evidence": [
+        {
+          "resource": "repo://discussion/open-questions.md#L128-L128",
+          "version": "repo-lines-v1:sha256:3644ce282904a7586192bea8c6ef8499b00a29a2240be4b239b46733d09a24e0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzY0NGNlMjgyOTA0YTc1ODYxOTJiZWE4YzZlZjg0OTliMDBhMjlhMjI0MGJlNGIyMzliNDY3MzNkMDlhMjRlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzY0NGNlMjgyOTA0YTc1ODYxOTJiZWE4YzZlZjg0OTliMDBhMjlhMjI0MGJlNGIyMzliNDY3MzNkMDlhMjRlMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzU0NDdiNGM2NzZhZTVlYzViMzQzNjBlZTMwNTc5YTc4MzY1NzYxOTMwZDFiMDk0NWM4MDFiYjk1ODQ4MDQ1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzdlNjg5ZmVkOTJiZDYxMTYyNDgyNTNhYTRiYWUwM2UzNGRhNGFhMjRiOGYxNDQwOGU1NjI1MTE4ZTQ2MWY2OCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.1",
+    "at": "2026-09-18T13:35:02.362Z"
+  }
+}

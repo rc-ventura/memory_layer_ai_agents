@@ -420,6 +420,16 @@ memória dormente, não deletada — teste de caso para a política de aposentar
 mecanismo do projeto precisa ter, não só criar. Passo a passo completo da construção desta tabela e do gráfico
 em [`01-racionais.md`](01-racionais.md) §7.
 
+### A continuação da §6: a mineração das unidades nº2 e nº10
+
+As subseções que fechavam esta seção — §6.1 (a mineração do schema real, em 8 passos pré-registrados), §6.2
+(análise funda de `validar_quebra_sigilo`) e §6.3 (análise funda de `get_available_documents`) — viraram um
+relatório próprio em 18/09/2026: [`07-relatorio-mineracao-unidades-n2-n10.md`](07-relatorio-mineracao-unidades-n2-n10.md). A
+numeração foi preservada lá; o racional correspondente está em
+[`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md) §9 e o pipeline no notebook
+[`mineracao_unidades_n2_n10.ipynb`](../pipeline/mineracao_unidades_n2_n10.ipynb).
+
+
 ## 7 · O que a leitura dos papers refutou
 
 Três afirmações da v1 não sobreviveram:
@@ -495,7 +505,9 @@ Três afirmações da v1 não sobreviveram:
    fora do v1 — é observabilidade/agent-evals.
 2. **Minerar automaticamente as unidades "Retorno das ferramentas de documento é dict" e "Campo inexistente no
    retorno estruturado"** (§6, nºs 2 e 10) — consolidar o schema real de retorno a partir dos próprios erros, sem
-   LLM. É o protótipo direto do mecanismo do projeto.
+   LLM. É o protótipo direto do mecanismo do projeto. **Feito (16–17/09): os 8 passos e a verificação humana do
+   Passo 6, com dois registros `derived-and-checked` —
+   [`07-relatorio-mineracao-unidades-n2-n10.md`](07-relatorio-mineracao-unidades-n2-n10.md) §6.1. Falta a decisão sobre a nº10.**
 3. **Rodar os detectores nas execuções SEM erro — versão determinística primeiro** — o MAST mostra que os
    modos de verificação vivem lá, e 63% das minhas execuções estão fora da análise atual. Tentar primeiro o
    proxy determinístico (padrão de validação no `code_action` — `assert`/`if not`/`len(`/`try-except` antes de

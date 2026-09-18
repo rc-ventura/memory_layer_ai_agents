@@ -8,8 +8,9 @@ complementam: este é o "por quê", aquele é o "como, com que número".
 
 **O que este documento cobre — e o que não cobre.** Têm passo-a-passo próprio: o achado central (§3), o
 sucesso verificado por conteúdo (§4), os cinco cortes de custo/eficiência (§5), a assinatura de erro por
-papel + duração (§6), a tabela de candidatos a memória (§7) e as três etiquetas de um erro — sintoma, mecanismo,
-motivo (§8) —, além dos conceitos de robustez (§2). **Não têm**
+papel + duração (§6), a tabela de candidatos a memória (§7), as três etiquetas de um erro — sintoma, mecanismo,
+motivo (§8) — além dos conceitos de robustez (§2). A mineração do schema real das unidades nº2/nº10 (o que era a
+§9) virou documento próprio: [`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md). **Não têm**
 tratamento passo-a-passo próprio, só cobertura conceitual no §1: a recuperação 0/1.550, a reincidência entre
 execuções, o teste ToolScan IAN/IAV e os detectores silenciosos (Result-Ignore / RAC / Tool-Skip) — para esses,
 o caminho é a célula correspondente do notebook mais o [`02-relatorio-achados.md`](02-relatorio-achados.md).
@@ -921,6 +922,19 @@ sintoma continuam publicados, corretos e citáveis como estão. O ajuste ainda p
 1") é só de rótulo: dar às 4 categorias da `classify()` que hoje afirmam uma causa só parcialmente verdadeira um
 nome que descreva 100% do que está dentro — não trocar o corte por sintoma pelo corte por mecanismo no relatório
 inteiro.
+
+---
+
+## A continuação: mineração das unidades nº2/nº10
+
+A análise que era a §9 deste documento — a mineração do schema real das unidades nº2 ("Retorno das ferramentas
+de documento é dict") e nº10 ("Campo inexistente no retorno estruturado") — virou documento próprio em
+18/09/2026: [`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md). Separada porque é uma
+análise distinta, não mais uma seção: pré-registrada (réguas fixadas antes de olhar o dado), com evidência por
+caso em `../pipeline/resultados/evidencia/11.*` e produto final (`unidades_memoria.json`). A numeração "§9" foi
+preservada lá — referências a "§9 dos racionais" seguem valendo, agora naquele arquivo. Os números dela estão em
+[`07-relatorio-mineracao-unidades-n2-n10.md`](07-relatorio-mineracao-unidades-n2-n10.md) e o pipeline no notebook
+[`mineracao_unidades_n2_n10.ipynb`](../pipeline/mineracao_unidades_n2_n10.ipynb).
 
 ---
 
