@@ -1,6 +1,16 @@
 # Dados derivados do trace cru: contêm nomes de clientes, números de processo e
 # trechos de documentos jurídicos em claro. Regeneráveis executando o notebook.
-resultados/
+# Exceção: os relatórios de auditoria independente são manuscritos e NÃO
+# regeneráveis — ficam versionados; só a evidência (crus/, derivados/, CSVs,
+# leia-me.md) fica fora do git. O git não re-inclui arquivo dentro de diretório
+# ignorado, por isso a abertura é granular, nível a nível.
+pipeline/resultados/*
+!pipeline/resultados/evidencia/
+pipeline/resultados/evidencia/*
+!pipeline/resultados/evidencia/relatorio_meta_*.md
+!pipeline/resultados/evidencia/*/
+pipeline/resultados/evidencia/*/*
+!pipeline/resultados/evidencia/*/relatorio_independente.md
 
 # Saídas brutas dos scripts de auditoria (audit_out*.txt): amostras de mensagens
 # do trace com possível PII. Regeneráveis rodando audit/scripts/audit_recompute*.py.

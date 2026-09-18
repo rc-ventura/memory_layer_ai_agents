@@ -53,45 +53,41 @@ In other words, the analyses try to answer a question of this form:
 
 ### The ladder from trace to memory
 
-```text
-                          ┌─────────────────────────────┐
-                          │ Literature                  │
-                          │ - tests external fit        │
-                          │ - suggests new analyses     │
-                          │ - gives conceptual language │
-                          └──────────────┬──────────────┘
-                                         │
-                                         │
-┌────────────────┐    ┌────────────────┐ │  ┌──────────────────────────┐
-│ Raw trace      │ -> │ Symptoms /     │-┼->│ Mechanisms / root-cause  │
-│ (source truth) │    │ aggregates     │ │  │ proxies                  │
-└────────────────┘    └────────────────┘ │  └──────────────────────────┘
-                                         │                │
-                                         │                v
-                          ┌──────────────┴──────────────┐ ┌──────────────────────────┐
-                          │ Validation                  │ │ Right unit of analysis   │
-                          │ - recomputation             │ │ error -> cascade ->      │
-                          │ - robustness tests          │ │ occurrence -> unit       │
-                          │ - case drill-down           │ └──────────────────────────┘
-                          │ - raw > derived             │                │
-                          │ - independent audits        │                v
-                          └─────────────────────────────┘ ┌──────────────────────────┐
-                                                          │ Reusable lesson /        │
-                                                          │ guidance                 │
-                                                          └──────────────────────────┘
-                                                                           │
-                                                                           v
-                                                          ┌──────────────────────────┐
-                                                          │ Candidate memory unit /  │
-                                                          │ operational decision     │
-                                                          └──────────────────────────┘
-                                                                           │
-                                                                           v
-                                                          ┌──────────────────────────┐
-                                                          │ Evidence pack            │
-                                                          │ + audit trail            │
-                                                          └──────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Ladder["The ladder — raw trace to memory unit"]
+        direction TB
+        Raw[("Raw trace<br/>(source of truth)")]
+        Sym["Symptoms /<br/>aggregates"]
+        Mec["Mechanisms /<br/>root-cause proxies"]
+        Unit["Right unit of analysis<br/>error → cascade → occurrence → unit"]
+        Lesson("Reusable lesson /<br/>guidance")
+        Memory("Candidate memory unit /<br/>operational decision")
+        Pack[("Evidence pack<br/>+ audit trail")]
+
+        Raw --> Sym --> Mec --> Unit --> Lesson --> Memory --> Pack
+    end
+
+    Lit["Literature<br/>tests external fit · suggests new analyses<br/>gives conceptual language"]
+    Val["Validation<br/>recomputation · robustness tests · case drill-down<br/>raw > derived · independent audits"]
+
+    Lit -.->|conceptual language,<br/>candidate mechanisms| Mec
+    Lit -.->|grounds| Val
+    Val -.->|recomputes| Sym
+    Val -.->|stress-tests| Mec
+    Val -.->|drills into| Unit
+    Val -.->|independently audits| Pack
+
+    classDef stage fill:#e8f0fe,stroke:#4285f4,stroke-width:1.5px,color:#1a1a1a
+    classDef output fill:#e6f4ea,stroke:#34a853,stroke-width:1.5px,color:#1a1a1a
+    classDef crosscut fill:#f3e5f5,stroke:#8e24aa,stroke-width:1.5px,color:#1a1a1a,stroke-dasharray: 3 2
+
+    class Raw,Sym,Mec,Unit stage
+    class Lesson,Memory,Pack output
+    class Lit,Val crosscut
 ```
+
+Solid arrows are the main pipeline (top to bottom); dashed arrows are the two cross-cutting practices — Literature feeds vocabulary/candidate mechanisms and grounds Validation, while Validation checks back into every stage from symptoms to the final evidence pack, per [validation depth matching claim strength](#5-let-validation-depth-match-claim-strength) below.
 
 ### What this means in practice
 

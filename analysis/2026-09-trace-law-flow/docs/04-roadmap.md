@@ -1,6 +1,6 @@
 # Roadmap — o que falta
 
-**Atualizado:** 2026-09-08 · revisado 2026-09-16 e 2026-09-17 (mineração nº2/nº10). Consolidação do que ficou em aberto ao longo da análise do primeiro trace.
+**Atualizado:** 2026-09-08 · revisado 2026-09-16, 2026-09-17 (mineração nº2/nº10) e 2026-09-18 (varredura de auditoria independente pendente; **auditorias §11.9/§11.10 executadas e fechadas no mesmo dia**). Consolidação do que ficou em aberto ao longo da análise do primeiro trace.
 Prioridades e decisões de escopo confirmadas com o Rafael. Ver também
 [`../../../discussion/open-questions.md`](../../../discussion/open-questions.md) para a versão canônica da
 discussão de escopo (groundedness determinístico vs. juiz) registrada no nível do projeto, não só desta pasta.
@@ -10,6 +10,44 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
 - [ ] **Criar branch e commitar todo o trabalho.** Hoje tudo (pasta `analysis/` inteira + edições em
   `.gitignore`, `CLAUDE.md`, `README.md`, `papers/reading-queue.md`) está direto no `main`, não versionado.
   Pela convenção do projeto: branch `2026-09-08-<slug>`, depois commit.
+
+## Urgente — auditoria independente pendente (varredura 2026-09-18)
+
+Das 10 pastas de evidência da §11 (mineração nº2/nº10, `pipeline/resultados/evidencia/`), as 10 agora têm
+`relatorio_independente.md` próprio, consolidados em `resultados/evidencia/relatorio_meta_11.1-11.10.md` (18/09,
+estende o `relatorio_meta_11.1-11.8.md` de 17/09) — o mesmo padrão de auditoria de terceiro (reabrir os
+`crus/` sem confiar no texto publicado) já usado nas duas auditorias de pipeline em `../audit/`. **As duas
+análises fundas que decidiram o *destino* de cada unidade — §11.9 e §11.10, ambas de 17/09, feitas depois do
+primeiro meta-relatório — passaram pelo tratamento em 18/09** (a varredura de 18/09 tinha flagrado a pendência;
+fechada no mesmo dia). A validação hoje registrada em `03-procedimento-validacao.md` §1.10/§1.11 é
+auto-conferência de quem fez a análise; os relatórios independentes abaixo são a segunda leitura, reabrindo o
+cru e recomputando o universo do zero (`audit/scripts/audit_recompute7.py` e `audit_recompute8.py`).
+Pela própria regra do projeto (`../../README.md`, "Let validation depth match claim strength"), alegação
+prescritiva/memory-bearing pedia o tratamento mais forte — e é exatamente o que essas duas são:
+`validar_quebra_sigilo` decidiu `validation.destino: harness` (9/21 = 43% de payloads inválidos) e
+`get_available_documents` confirmou 4 ocorrências silenciosas, ambas já regravadas em `resultados/unidades_memoria.json`.
+
+- [x] **`relatorio_independente.md` para `11.9_leituras_quebra_sigilo/`** (18/09) — recontagem independente no
+  CSV bruto reproduz 26 declaram / 21 entregam / **9 fora de SIM/NAO (43%)** idênticos, mesma decomposição e
+  mesmos meses; as duas retratações de §1.10 conferidas no cru (cadeia `.get` aninhada; escopo do detector de
+  grafia); **122/122 trechos conferem**. Duas ressalvas redacionais registradas no relatório (não mudam o
+  veredito): "sem nenhuma exceção registrada em nenhuma delas" é literalmente falso para 2/9 execuções — a tese
+  de silêncio do mecanismo se mantém, a redação deve ser corrigida no próximo rerun; e a narrativa "2 comparações
+  nunca avaliadas" omite 3 avaliadas-defensivas do `grafia.csv` (5 no total).
+- [x] **`relatorio_independente.md` para `11.10_leituras_get_available_documents/`** (18/09) — recomputação
+  independente das **597 leituras** sobre os 635 papéis com **diff zero** contra `leituras_universo_completo.csv`;
+  4 ocorrências silenciosas + 1 guarda de chave fantasma confirmadas no cru; **0/5** em `DEGENERADO`, `None`/`null`
+  e forma-dict na resposta real do `managerAgent`; **64/64 trechos conferem**. Notas de precisão no relatório: os
+  4 silenciosos são 3 mecanismos distintos (`.get` canônico; `x[0]` em retorno-string; fallback morto), e a
+  reconciliação "93≈91" se lê como 93 leituras / 85 steps únicos + 11 erros de forma/profundidade com a chave real.
+- [x] **Estender o meta-relatório** (18/09) — novo arquivo `resultados/evidencia/relatorio_meta_11.1-11.10.md`
+  cobrindo 11.1–11.10, com o veredito consolidado das duas auditorias novas e a decisão sobre `avulso/`.
+- [x] **`avulso/` — decidido: não precisa de relatório próprio** (18/09). Decisão documentada no meta-relatório
+  §"Decisão sobre avulso/": a pasta é scratch de apoio (4 pulls avulsos de `drill_down.py evidencia`), não unidade
+  de análise numerada — `aa3de754…` idx2 suplementa a trilha de resíduo já coberta por 11.6/11.7, e
+  `15f6ad52…`/`910fde1e…`/`ad9044ad…` são leftovers da exploração pré-retratação com cópias canônicas em 11.10.
+  Verificação executada nesta auditoria: **30/30 trechos conferem** nos 4 derivados (inclui os 11/11 de
+  `aa3de754…` já registrados em `03-procedimento-validacao.md`).
 
 ## Monitoramento — não é candidato ativo, mas tem gatilho de reabertura
 
