@@ -134,10 +134,10 @@ contagens de steps/execuções/tokens. Nenhum embute uma decisão de "o que cont
 | §3.3 tokens por chamada, por papel | o que fazer com o step cujo código **não parseia** (sem árvore, sem como contar chamadas) | as duas contagens defensáveis: descartar o step inteiro × somar os tokens dele com `n_calls = 0` | ⚠️ **escolha fixada em 15/09** — contar os tokens. Inclusiva: 27.988 / 18.775 / agregada 22.280; exclusiva: 27.062 / 17.592 / 21.420. ✅ **robusto no que a seção conclui**: ranking, os múltiplos 11,6× e 4,2×, a mediana (12.192) e o destaque laranja do 8.9 são idênticos nas duas. Racional em [`01-racionais.md`](01-racionais.md) §3.3, Ressalva 2 |
 | §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 10 candidatas muda de lado (marcada limítrofe) |
 | `submecanismo()` — base das análises por mecanismo | ordem das regras e o limiar de 15% de stopwords | 6 casos abertos com `drill_down.py` (15/09) | ⚠️ **conferido por amostra, não testado por variação** — os 6 casos batem; variar as regras ainda não foi feito |
-| §9 dos racionais, Passo 1 — de qual ferramenta vem cada erro (nº2: 94,8%; nº10: 70%) | a regra de rastreio da variável (AST; comando → step → steps anteriores) | conferência manual de todos os casos fora da dominante + amostra de 4 da dominante (16/09) | ⚠️ **conferido por amostra, não testado por variação** — as atribuições conferem; 5 (nº2) e 1 (nº10) ficam não resolvidos; o veredito da nº2 resiste ao pior caso (ver §1.7) |
-| §9 dos racionais, Passo 2 — schema lido da mensagem | o método de leitura do objeto impresso | `ast.literal_eval` × regex tolerante | ✅ **robusto** — 89/89 e 7/7 concordam (ver §1.7); a descrição da forma foi **corrigida** (listas mistas) |
-| §9 dos racionais, addendum ao Passo 2 — a chave está no system prompt | a forma de presença de texto | palavra solta × entre aspas × como chave (`'chave':`) | ❌ **formas frouxas não robustas** — `result` e `justificativa` aparecem só como prosa/valor; reportada a forma estrita (ver §1.7) |
-| §9 dos racionais, Passo 3 — tipo do conserto no step seguinte | o que conta como "o mesmo objeto" | abertura dos casos que contrariavam o esperado (19 "repetiu" sem erro seguinte) | ⚠️ **corrigido** — reatribuição e guarda de tipo; 1 caso não inspecionado (ver §1.7) |
+| §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 1 — de qual ferramenta vem cada erro (nº2: 94,8%; nº10: 70%) | a regra de rastreio da variável (AST; comando → step → steps anteriores) | conferência manual de todos os casos fora da dominante + amostra de 4 da dominante (16/09) | ⚠️ **conferido por amostra, não testado por variação** — as atribuições conferem; 5 (nº2) e 1 (nº10) ficam não resolvidos; o veredito da nº2 resiste ao pior caso (ver §1.7) |
+| §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 2 — schema lido da mensagem | o método de leitura do objeto impresso | `ast.literal_eval` × regex tolerante | ✅ **robusto** — 89/89 e 7/7 concordam (ver §1.7); a descrição da forma foi **corrigida** (listas mistas) |
+| §9 de `06-racionais-mineracao-unidades-n2-n10.md`, addendum ao Passo 2 — a chave está no system prompt | a forma de presença de texto | palavra solta × entre aspas × como chave (`'chave':`) | ❌ **formas frouxas não robustas** — `result` e `justificativa` aparecem só como prosa/valor; reportada a forma estrita (ver §1.7) |
+| §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 3 — tipo do conserto no step seguinte | o que conta como "o mesmo objeto" | abertura dos casos que contrariavam o esperado (19 "repetiu" sem erro seguinte) | ⚠️ **corrigido** — reatribuição e guarda de tipo; 1 caso não inspecionado (ver §1.7) |
 
 ### O método por trás de cada teste — o racional
 
@@ -290,21 +290,22 @@ Somado a isso, `final_answer` repetido pode ser comportamento do harness, não d
 **125 é o número conservador** (inventário declarado, sem `final_answer`) e é o que ficou no notebook e no
 relatório. Continua sendo um indício útil, mas deve ser apresentado com a definição explícita ao lado.
 
-### 1.7 · Mineração das unidades nº2/nº10 (racionais §9) — como foi rodado, conferido, e onde desviou do pré-registro
+### 1.7 · Mineração das unidades nº2/nº10 (`06-racionais-mineracao-unidades-n2-n10.md` §9) — como foi rodado, conferido, e onde desviou do pré-registro
 
-Resultados em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.1; o porquê de cada passo e de cada régua em
-[`01-racionais.md`](01-racionais.md) §9. Estado: os 8 passos rodados, mais o addendum ao Passo 2; saídas salvas no
+Resultados em [`07-relatorio-mineracao-unidades-n2-n10.md`](07-relatorio-mineracao-unidades-n2-n10.md) §6.1; o porquê de cada passo e de cada régua em
+[`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md) §9. Estado: os 8 passos rodados, mais o addendum ao Passo 2; saídas salvas no
 notebook. Esta seção cobre os Passos 1–3; os cinco logs do system prompt estão na §1.8; os Passos 4–8, na §1.9. A
 evidência de cada análise (pastas com o trace cru) está descrita em "Evidência por análise", no eixo comum de
 triangulação, abaixo.
 
 **Pré-registro.** O método foi commitado antes de rodar (`cb032ad`); o adendo ao Passo 3 (conserto silencioso com
 `.get` / `try-except`) também, antes de o Passo 3 rodar (`ae8264b`), e a checagem do system prompt, antes de rodar
-(`2a07d6e`). As emendas feitas depois de um passo rodar estão datadas no próprio §9 dos racionais.
+(`2a07d6e`). As emendas feitas depois de um passo rodar estão datadas no próprio §9 de `06-racionais-mineracao-unidades-n2-n10.md`.
 
-**Como reproduzir.** No Jupyter: rodar o notebook até o fim — as células da §11 só dependem da §1 (explosão em
-steps), da §2 (`classify()`) e da célula "Do sintoma ao mecanismo". Na linha de comando, a partir da raiz do repo:
-`uv run jupyter nbconvert --to notebook --execute --inplace analysis/2026-09-trace-law-flow/pipeline/analise_trace_esteira_juridica.ipynb`
+**Como reproduzir.** No Jupyter: rodar o notebook `pipeline/mineracao_unidades_n2_n10.ipynb` até o fim — as
+células da §11 só dependem do setup §0 (que reconstrói `RAW`, `EU`, `UNI`, `S` a partir do trace). Na linha de
+comando, a partir da raiz do repo:
+`uv run jupyter nbconvert --to notebook --execute --inplace analysis/2026-09-trace-law-flow/pipeline/mineracao_unidades_n2_n10.ipynb`
 (regrava os CSVs de `resultados/`, que são determinísticos e git-ignored).
 
 **Sanidade do ambiente.** Com pandas 3.0.5, as células reproduziram os números já publicados das duas unidades (nº2:
@@ -348,7 +349,7 @@ objeto impresso: resolvem e concordam (chaves de topo contidas no regex, e mesma
 70,6% (12 casos, 5 execuções, 3 meses) e cinco funções de 5,9% cada → veredito (c); a dominante sai **candidata** e
 as cinco vão para o **bucket de consulta**; (ii) divisão 60/40 com as duas funções recorrentes → veredito (b), **duas
 candidatas**. Foi este teste que mostrou o defeito da primeira versão da emenda (a unidade (c) inteira no bucket,
-inclusive uma dominante recorrente) — ver `01-racionais.md` §9. As unidades reais seguem iguais: nº2 (a), nº10 (b),
+inclusive uma dominante recorrente) — ver `06-racionais-mineracao-unidades-n2-n10.md` §9. As unidades reais seguem iguais: nº2 (a), nº10 (b),
 bucket vazio.
 
 **Correção da leitura do Passo 2 (16/09, depois de publicada).** A função `forma` descrevia só o **primeiro**
@@ -419,8 +420,8 @@ são o oposto — texto cru, com PII — e ficam em `resultados/`, git-ignored. 
 
 ### 1.8 · Cinco logs — o prompt declara um contrato, a ferramenta devolve outro, o agente descobre e corrige
 
-Sustenta a leitura do system prompt de [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.1. Por que logs, como
-foram escolhidos e o que eles podem provar: [`01-racionais.md`](01-racionais.md) §9, "Evidência caso a caso". Não é
+Sustenta a leitura do system prompt de [`07-relatorio-mineracao-unidades-n2-n10.md`](07-relatorio-mineracao-unidades-n2-n10.md) §6.1. Por que logs, como
+foram escolhidos e o que eles podem provar: [`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md) §9, "Evidência caso a caso". Não é
 pré-registrado e não substitui o Passo 6.
 
 **Regra de escolha.** Para cada ferramenta com erro atribuído no Passo 1, o primeiro caso na ordem (mês, `exec_id`,
@@ -549,7 +550,7 @@ como `def draft_resposta(reclamacao: string, assunto: string, informacoes_eviden
   descreve a estrutura real. Dois dos cinco consertos se protegem dos dois contratos (log 2: `.get` com a chave real de
   padrão e a lista de grafias; log 5: guarda de tipo).
 - **Sequência, não causa.** Os logs mostram prompt → código → retorno → troca. Não provam que a documentação certa
-  evitaria o erro; isso só o replay contrafactual testa (`01-racionais.md` §9 Passo 7).
+  evitaria o erro; isso só o replay contrafactual testa (`06-racionais-mineracao-unidades-n2-n10.md` §9 Passo 7).
 
 **Conferências de apoio, fora dos logs (16/09).** (i) Declaração de cada ferramenta no trace inteiro:
 `drill_down.py ferramenta <nome>` — números da tabela acima. (ii) Modelo do JSON final com
@@ -560,10 +561,10 @@ validar_quebra_sigilo>"` no system prompt): **7/7** steps com erro e **135/135**
 `==\s*["'](NÃO|SIM)["']`) em **3/7**. (ii) e (iii) foram contados por script de sessão, não versionado — as regras
 estão aqui para refazer.
 
-### 1.9 · Passos 4 a 8 (racionais §9) — como foi rodado, conferido, e onde desviou do pré-registro (17/09/2026)
+### 1.9 · Passos 4 a 8 (`06-racionais-mineracao-unidades-n2-n10.md` §9) — como foi rodado, conferido, e onde desviou do pré-registro (17/09/2026)
 
-Resultados em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.1; o porquê de cada decisão em
-[`01-racionais.md`](01-racionais.md) §9, "Execução dos Passos 4 a 8"; código no notebook, §11.5–§11.8; evidência nas
+Resultados em [`07-relatorio-mineracao-unidades-n2-n10.md`](07-relatorio-mineracao-unidades-n2-n10.md) §6.1; o porquê de cada decisão em
+[`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md) §9, "Execução dos Passos 4 a 8"; código no notebook `mineracao_unidades_n2_n10.ipynb`, §11.5–§11.8; evidência nas
 pastas `11.5_estabilidade/` a `11.8_registro_final/` (ver "Evidência por análise", abaixo).
 
 **Como reproduzir.** Rodar o notebook inteiro (comando na §1.7) e, em `pipeline/`, `uv run python drill_down.py
@@ -660,7 +661,7 @@ de token e durações, nenhuma é identificador. Reforça a regra de sempre: o n
   nenhum número já publicado.
 
 **Conclusão do Passo 6:** as duas fontes (nossa leitura automática + a verificação independente) concordam nos 10
-casos. Nada a corrigir nos achados de `02-relatorio-achados.md` §6.1.
+casos. Nada a corrigir nos achados de `07-relatorio-mineracao-unidades-n2-n10.md` §6.1.
 
 **Achado da verificação humana — o caso resíduo `3f44a68b…` revela um segundo sentido de erro na nº2.** Lendo o
 `model_output` do próprio step que quebrou (não o conserto seguinte): o `thought` diz *"A variável `docs` é um
@@ -680,7 +681,7 @@ não sabia — nem depois de errar — quantos níveis de profundidade tinha, e 
 
 **O que isso muda.** É o mesmo padrão "desce um nível demais" já documentado em `01-racionais.md` §3 Passo 8 (3 dos 91
 erros da nº2), só que este caso tem mensagem `AttributeError`, não `KeyError`/"Could not index" — por isso caiu no
-resíduo do Passo 5 em vez de ser lido pelo Passo 2. A `correction_guidance` da nº2 (`02-relatorio-achados.md` §6.1)
+resíduo do Passo 5 em vez de ser lido pelo Passo 2. A `correction_guidance` da nº2 (`07-relatorio-mineracao-unidades-n2-n10.md` §6.1)
 foi simplificada por causa disso: em vez de contrastar com **um** erro específico ("use `r['result'][0]`, não
 `r[0]`"), agora só afirma o caminho certo ("use `r['result'][0]`") — cobre tanto o erro de menos (dominante, 88/91)
 quanto este de mais, sem escolher um dos dois pra citar.
@@ -778,8 +779,8 @@ regex — é o único jeito de ler o cru na sessão daqui em diante.
 
 ### 1.10 · Análise funda de `validar_quebra_sigilo` — execução, retratação e conferência (17/09/2026)
 
-Pré-registro em [`01-racionais.md`](01-racionais.md) §9; resultado narrado, com a história caso a caso, na mesma
-seção, "Execução da análise funda" em diante; números em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6.2.
+Pré-registro em [`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md) §9; resultado narrado, com a história caso a caso, na mesma
+seção, "Execução da análise funda" em diante; números em [`07-relatorio-mineracao-unidades-n2-n10.md`](07-relatorio-mineracao-unidades-n2-n10.md) §6.2.
 Evidência em `resultados/evidencia/11.9_leituras_quebra_sigilo/` (ver "Evidência por análise", abaixo).
 
 **Como reproduzir.** `uv run python drill_down.py evidencia 11.9_leituras_quebra_sigilo` depois de rodar a §11.9 do
@@ -815,7 +816,7 @@ todos os 7 casos de leitura silenciosa candidata, restaram os corretos.
 **A medida que substituiu a régua de código: o payload entregue.** Em vez de inferir o valor pelo caminho do código,
 a análise passou a medir **o que o `action_output` de cada step final guarda como `request.quebra_sigilo`** — fato,
 não inferência. Das 26 execuções que declaram a ferramenta, 21 entregaram um payload com o campo; 9 dessas 21 (43%)
-trazem algo que não é `SIM`/`NAO` — números completos em `02-relatorio-achados.md` §6.2.
+trazem algo que não é `SIM`/`NAO` — números completos em `07-relatorio-mineracao-unidades-n2-n10.md` §6.2.
 
 **Por que a medida direta é mais forte, e passa a valer daqui pra frente.** Ler código é inferência sobre o que
 *deveria* acontecer; ler o `action_output` é observação do que *aconteceu*. Onde o trace guarda o resultado de fato
@@ -855,7 +856,7 @@ também chama `validar_quebra_sigilo`. O detector original olhava qualquer compa
 se a variável comparada vinha de fato do retorno da ferramenta. **Corrigido:** `comparacoes_grafia_qs` agora exige
 que o lado comparado se resolva (`base_deriva_de`, um nível de indireção) até uma variável que recebeu a chamada de
 `validar_quebra_sigilo` naquele papel — mesma disciplina de proveniência usada em `classificar_campo_final`.
-Reconferido: os 5 casos de grafia voltam a bater com o já publicado (2 execuções, `01-racionais.md` §9). Números
+Reconferido: os 5 casos de grafia voltam a bater com o já publicado (2 execuções, `06-racionais-mineracao-unidades-n2-n10.md` §9). Números
 decisivos — **9/21 (43%), 3 meses, `destino: harness`** — não mudaram: o bug estava isolado no detector de grafia,
 que é achado à parte, não usado no cálculo do impact. `resultados/unidades_memoria.json` regravado automaticamente
 pela própria célula (não editado à mão). Evidência: `resultados/evidencia/11.9_leituras_quebra_sigilo/` — 13 casos,
@@ -865,7 +866,7 @@ pela própria célula (não editado à mão). Evidência: `resultados/evidencia/
 retratação (17/09/2026)
 
 Pré-registro e racional completos em [`01-racionais.md`](01-racionais.md), "Análise funda da nº2"; resultado em
-[`02-relatorio-achados.md`](02-relatorio-achados.md) §6.3; código no notebook, §11.10.
+[`07-relatorio-mineracao-unidades-n2-n10.md`](07-relatorio-mineracao-unidades-n2-n10.md) §6.3; código no notebook `mineracao_unidades_n2_n10.ipynb`, §11.10.
 
 **Ponto de partida — o que já existia e por que não bastava.** Uma sessão anterior no mesmo dia tinha gerado a
 pasta `resultados/evidencia/11.10_leituras_get_available_documents/` **fora do notebook, sem pré-registro**: 3
@@ -1030,9 +1031,11 @@ inteiro sem checar antes.
 Toda afirmação da mineração nº2/nº10 vem de código, e código pode errar de um jeito consistente: o mesmo leitor
 aplicado a 91 erros dá o mesmo número 91 vezes, certo ou não. Por isso cada afirmação tem de poder ser levada ao trace
 cru por uma pessoa, sem depender do código que a produziu. Até 16/09 isso existia só para os cinco logs da §1.8, numa
-pasta solta. Agora vale para cada análise da §11 do notebook, sempre do mesmo jeito:
+pasta solta. Agora vale para cada análise da §11 do notebook `mineracao_unidades_n2_n10.ipynb`, sempre do mesmo jeito:
 
-1. **Uma pasta por análise**, com o número da seção do notebook — quem lê a análise acha a evidência pelo mesmo número.
+1. **Uma pasta por análise**, com o número da seção do notebook — quem lê a análise acha a evidência pelo mesmo
+   número. Cada notebook de análise é dono de um intervalo de seções (este, §11.x; o próximo passe, §12.x) —
+   número nunca reutilizado, pasta nunca renomeada.
 2. **Os casos saem de uma regra escrita**, não da escolha de quem argumenta. A regra fica no notebook e no `leia-me.md`
    da pasta (ex.: "o primeiro caso de cada mês em cada nível, mais todos os que diferem"). Escolher "os mais claros"
    fabrica a evidência que se quer ver.
@@ -1140,7 +1143,7 @@ como o acima (o "como, na prática"). Um exemplo bom por achado é suficiente �
 - [ ] Conferi a citação do MAST (§4, p. 7) no contexto original
 - [ ] Escolhi 1 caso concreto (via `drill_down.py caso`) para cada achado que vou apresentar
 - [ ] Revisei a saída de cada `caso` antes de copiar qualquer trecho para o slide (PII)
-- [x] Rodei a §11 do notebook (mineração nº2/nº10) e salvei as saídas — 16/09, `nbconvert` (§1.7)
+- [x] Rodei a §11 do notebook `mineracao_unidades_n2_n10.ipynb` (mineração nº2/nº10) e salvei as saídas — 16/09, `nbconvert` (§1.7)
 - [ ] Li os cinco logs da §1.8 e abri pelo menos um caso de `resultados/evidencia/11.4_conserto/` (PII — só local)
 - [x] Fiz a verificação humana do Passo 6 — os 10 casos de `resultados/evidencia/11.7_amostra_passo6/` (§1.9, 17/09) — confirma os achados, 1 nota adicional não generalizável
-- [ ] Decidi o destino da nº10 (memória × não-memória · harness) — `02-relatorio-achados.md` §6.1
+- [ ] Decidi o destino da nº10 (memória × não-memória · harness) — `07-relatorio-mineracao-unidades-n2-n10.md` §6.1

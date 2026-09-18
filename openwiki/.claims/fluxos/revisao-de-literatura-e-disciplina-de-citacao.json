@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:52b9d8416a4c969930c26e3f9b123cc279797fd7af3b68e2b43f44e8b370b228",
+  "claims": [
+    {
+      "id": "claim_c06a136cc42543a4a0ae0d736af6d5ca",
+      "statement": "literature-review/'s two review reports are living documents, not one-time deliverables — Sub 1.1 and Sub 2.1 of the work plan call for continuous refinement, and adding a new source to either review requires also adding its atomic note under papers/ and updating that index.",
+      "evidence": [
+        {
+          "resource": "repo://literature-review/README.md#L10-L10",
+          "version": "repo-lines-v1:sha256:6fb6cc975f200c39e0576b980f2f1ce0ef948289fb8f8a4deaa8a0fefe4c697d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmZiNmNjOTc1ZjIwMGMzOWUwNTc2Yjk4MGYyZjFjZTBlZjk0ODI4OWZiOGY4YTRkZWFhOGEwZmVmZTRjNjk3ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmZiNmNjOTc1ZjIwMGMzOWUwNTc2Yjk4MGYyZjFjZTBlZjk0ODI4OWZiOGY4YTRkZWFhOGEwZmVmZTRjNjk3ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWYwMTY3YmVhOWE4NWM0MjBjZTA1NjlhMTFiMGUzNmNjNGE2NzJkMWEyNzE4ZmQwNjJkMmQ0OGRkOWFhMDQ2OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmUzMjI1NWRmOGZjMzAyMmU2MjU0NDYwMDVjM2Q4MzY4YTIzNTI0ZTMzNjBmZGM3Yzg2YTRmMzA5Y2NmZDczMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_eb86328dd4044bde808eac7a7912d50f",
+      "statement": "papers/ holds one short atomic note per source (39 indexed), mostly extracted from the two literature-review reports, with a few (ExpeL, SCM, Retroformer) added later directly from verified arXiv/proceedings pages; new notes follow papers/_TEMPLATE.md.",
+      "evidence": [
+        {
+          "resource": "repo://papers/README.md#L3-L3",
+          "version": "repo-lines-v1:sha256:2d6a039ae39c44054fea35a510f0e403fc53a63cdcdba6ea422946d89d4029ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQ2YTAzOWFlMzljNDQwNTRmZWEzNWE1MTBmMGU0MDNmYzUzYTYzY2RjZGJhNmVhNDIyOTQ2ZDg5ZDQwMjllYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQ2YTAzOWFlMzljNDQwNTRmZWEzNWE1MTBmMGU0MDNmYzUzYTYzY2RjZGJhNmVhNDIyOTQ2ZDg5ZDQwMjllYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjM5NGNiY2NiNmU5ZjFjMTkxY2RiOGQwYjAxOTIxODY5N2RjMzE5OWVkNGVhMGYyYzEwMzIzZDA3N2QzZDQwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjJiMzM3OWQwOGQ5NjZjOTUzZDEzNGVjMDc0YjE3ZTc0ZjdiOWMwZmMwOTA4OWVlMDUyMzMwNmFjY2JkNjM0NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_995d61e440cc424ea80b6dd9e54d32e6",
+      "statement": "papers/README.md's 'Lido' column defaults every entry to ☐ (not yet read by Rafael) and is only flipped to a dated ✅ checkmark once Rafael has actually read that source, kept in sync with the same field inside that paper's own note file.",
+      "evidence": [
+        {
+          "resource": "repo://papers/README.md#L5-L5",
+          "version": "repo-lines-v1:sha256:b45362a1eb0875c9831f4ebcb53edf32d02bb2c0c50738ddf924fe557bfbe55c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjQ1MzYyYTFlYjA4NzVjOTgzMWY0ZWJjYjUzZWRmMzJkMDJiYjJjMGM1MDczOGRkZjkyNGZlNTU3YmZiZTU1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjQ1MzYyYTFlYjA4NzVjOTgzMWY0ZWJjYjUzZWRmMzJkMDJiYjJjMGM1MDczOGRkZjkyNGZlNTU3YmZiZTU1YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTQ1NDI1MDcwYmFjN2Q2YTkwMDc3YWQ4MmQ1NjZhODE4MzQyMmQzMjAzMmQ5ZjFmMjExZjYyZWIxMmE3MGNiNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2M2OWI0YjQwMDY3MDY1ODk2YmQxZTRlNDE2ZGY5MjVlODczMDdhMmUyZGRiMmJmNDViNmU0OTVkNjExMGQ3NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b8ce3562fc9b4335b5131087a27dabd1",
+      "statement": "papers/reading-queue.md names sources cross-referenced from Zhang et al.'s full 27-model survey corpus that do not yet have a complete atomic note, and deliberately avoids fabricating bibliographic details for them until they are actually read and verified against a primary source.",
+      "evidence": [
+        {
+          "resource": "repo://papers/reading-queue.md#L3-L3",
+          "version": "repo-lines-v1:sha256:5bb6f4c7f8a2648500a84f2c299fae80614ddb2a628e86b5f358a2fc99d87739:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWJiNmY0YzdmOGEyNjQ4NTAwYTg0ZjJjMjk5ZmFlODA2MTRkZGIyYTYyOGU4NmI1ZjM1OGEyZmM5OWQ4NzczOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWJiNmY0YzdmOGEyNjQ4NTAwYTg0ZjJjMjk5ZmFlODA2MTRkZGIyYTYyOGU4NmI1ZjM1OGEyZmM5OWQ4NzczOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmE5MzhhNTcyNmYxM2Q4MmNiN2Y5ZThlNDQ3MWI0ZjAxMWM3ZDZiN2I5NjAwYzg0MDZhNTVlNTQ4MDU4NDExMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDQ5MGQ3MzAxNTFjYmI5NDE3ZWJkYzllN2JkYmUzNmFmOGY3OTllYWE3MWEzOGUyNjllMmQxZWJjMjc2ZDA5MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_07c39d89b7414073a242eaac52a12019",
+      "statement": "The project maintains a strict distinction between a paper having a verified note in papers/ (bibliographic facts checked against a primary source) and Rafael having actually read it — the former is real, useful verification work but not a substitute for the close reading needed to defend a design choice or claim to the tutor.",
+      "evidence": [
+        {
+          "resource": "repo://papers/reading-queue.md#L9-L11",
+          "version": "repo-lines-v1:sha256:941c55eac3e0117e37725aab12c5092562885e22a6423e613935f2bed4b220bf:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDI5ODdiYzc5ZDgzZWFhNWQ5NmIxMzQxOTA5OGEzMzI4NjNiYWM5NDM5MzE3M2E4MGI3NWE1MDVlZTQ5YzU1NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmJiOTQ4NWYxNmI2YzI0MTAzNmM2OWVhZmNlODBiNDc5YmFiYmE5NmQ4NWQ0OGRjMDIxMDI3Y2Q5OWU4MjQ1YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDdiMWM5YTliZGFmMzgxOTBjZGUxNmMwNDllMTc0MjM2M2QyNzZhNDc0MDhhODE5NDMyMGQ5ZGRkNjBjYmZmYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTZkOThkNWFkNmM0YTlkM2RjMTNiYmRhMDc1OTNlYTcwZDIzZTg0ZDMyZTJhMTllMTYzMWJkYzQ0MDc1NjM1ZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_436d25de948a4fd6b56698638b072eb0",
+      "statement": "A third verification tier, 🔎, added 24/08/2026, marks a paper whose full text was read by an AI agent (no defined provider) via a dispatched sub-agent, extracting specific mechanisms/formulas/answers — stronger than 📝 bibliographic-only verification but still never conflated with ✅ (Rafael read it).",
+      "evidence": [
+        {
+          "resource": "repo://papers/reading-queue.md#L15-L15",
+          "version": "repo-lines-v1:sha256:43b9b5140866bc9643f9619c9ce8adc2e2e45c75e4f78718edeed790bd121db5:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDNiOWI1MTQwODY2YmM5NjQzZjk2MTljOWNlOGFkYzJlMmU0NWM3NWU0Zjc4NzE4ZWRlZWQ3OTBiZDEyMWRiNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDNiOWI1MTQwODY2YmM5NjQzZjk2MTljOWNlOGFkYzJlMmU0NWM3NWU0Zjc4NzE4ZWRlZWQ3OTBiZDEyMWRiNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTZkOThkNWFkNmM0YTlkM2RjMTNiYmRhMDc1OTNlYTcwZDIzZTg0ZDMyZTJhMTllMTYzMWJkYzQ0MDc1NjM1ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTRmNmM5YjkxN2UyNjhiNGVhM2QzNDA3NGNjYjgwYWQ0ZjRjNmU5YjRmMDdmMzdlNjgxZWI4YjNjMjFkNGE5YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_596eb3654eba49b586bbef156f7d7b29",
+      "statement": "Citation verification in this project never fabricates an arXiv ID, author list, or date; because direct WebFetch access to arxiv.org is blocked by this environment's network egress, verification instead uses WebSearch to confirm title/authors/date/headline claims.",
+      "evidence": [
+        {
+          "resource": "repo://papers/reading-queue.md#L13-L13",
+          "version": "repo-lines-v1:sha256:8bd7cf8bdf7f44b8f1146d9f5816bae2796efe6aa641396877178235a102055b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJkN2NmOGJkZjdmNDRiOGYxMTQ2ZDlmNTgxNmJhZTI3OTZlZmU2YWE2NDEzOTY4NzcxNzgyMzVhMTAyMDU1YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJkN2NmOGJkZjdmNDRiOGYxMTQ2ZDlmNTgxNmJhZTI3OTZlZmU2YWE2NDEzOTY4NzcxNzgyMzVhMTAyMDU1YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2NlZGMxZjk2ODE5OWJiYjlkNWI2OWE2MTU1NmIwNzJiZDFmZjhkZjg4ODlmNzQxYzVmMmEyOWNhZmQzMTAzZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmE1YmIyMWNjYzEzOTJlYmE3ZjI1MDZhNGYzYWRmZTZmNDNhYzU4MTgwOGUxY2RkMGRiZjhmMGRjZDIyNzc1ZiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.1",
+    "at": "2026-09-18T11:27:06.172Z"
+  }
+}

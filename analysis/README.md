@@ -5,16 +5,33 @@ the "working memory" evidence base for the project's memory-layer hypothesis.
 
 Each analysis lives in its own dated folder (`YYYY-MM-slug/`) containing:
 
-- `pipeline/` — the executed Jupyter notebook (the reproducible pipeline, with outputs embedded)
-  and any companion scripts (e.g. `drill_down.py` for case-level triangulation);
+- `pipeline/` — the executed Jupyter notebook(s) (the reproducible pipeline, with outputs embedded), a shared
+  `base_pipeline.py` when the folder hosts more than one analysis (trace loading, step explosion, error
+  classification — every notebook builds on it instead of copying cells), and any companion scripts (e.g.
+  `drill_down.py` for case-level triangulation). **One notebook per analysis pass** — a pre-registered method
+  applied to a set of objects: the §11 schema-mining pass covers units nº2 and nº10 in a single notebook
+  because they share the method; units needing a different method wait for their own pass. Not one notebook
+  per object, not one giant notebook — the boundary is the method. Each notebook **owns a section-number
+  range** (the mining notebook owns §11.x, the next takes §12.x, and so on — a number is never reused);
 - `docs/` — the narrative documents: `01-racionais.md` (the plain-language logic), `02-relatorio-achados.md`
   (the findings report, Portuguese), `03-procedimento-validacao.md` (validation/audit procedure),
-  `04-roadmap.md` (what's left);
+  `04-roadmap.md` (what's left), `05-schema.md` (the raw-trace schema). Each analysis pass gets its own
+  numbered pair named after the pass — `06-racionais-mineracao-unidades-n2-n10.md` +
+  `07-relatorio-mineracao-unidades-n2-n10.md` for the nº2/nº10 mining pass, so the doc slug matches the
+  notebook slug (`mineracao_unidades_n2_n10.ipynb`) — keeping the original section numbering so existing
+  cross-references still resolve;
 - `literature/` — 🔎-level notes on the papers that ground the analysis (full text read by a
   sub-agent, bibliography verified against the PDF). See `papers/reading-queue.md` for what
   🔎 means and why it is not the same as "read";
 - `resultados/` — derived CSVs, **git-ignored**: they carry client names, case numbers and
-  document excerpts in the clear. Regenerate by running the notebook;
+  document excerpts in the clear. Regenerate by running the notebook. Case-level evidence lives in
+  `resultados/evidencia/<section>_<analysis>/` — one folder per analysis, prefixed by the section number of
+  the notebook that generated it (`11.4_conserto/` = §11.4 of the mining notebook). **Two-stage generation:**
+  the notebook writes the structural part (`casos.csv`, `leia-me.md`, `derivados/`); `drill_down.py evidencia
+  <folder>` writes `crus/` (the untouched raw-trace row — the source) and the per-case views, checking each
+  excerpt against the raw row as it writes. `resultados/unidades_memoria.json` is the **canonical registry**
+  of memory-unit records — not per-notebook: each pass reads it and rewrites it with its own records added or
+  updated;
 - `audit/` (optional) — independent audit reports and recomputation scripts.
 
 Raw trace files (`*.csv.xz` at repo root or elsewhere) must never be committed in the clear

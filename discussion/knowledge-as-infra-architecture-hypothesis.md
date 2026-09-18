@@ -195,13 +195,13 @@ Three inputs from the tutor (reflections [`checkpoint-2026-08-28-reflections.md#
 ### C. Update Engine (Cognition Layer) — the harness-adjustment layer, batched
 
 **First concrete empirical instance of the v2 harness-change signal, 17/09/2026.** The trace-law-flow analysis
-(`../analysis/2026-09-trace-law-flow/`) mined two candidate memory units end to end (`01-racionais.md` §9) and one
+(`../analysis/2026-09-trace-law-flow/`) mined two candidate memory units end to end (`06-racionais-mineracao-unidades-n2-n10.md` §9) and one
 of them — nº10, `validar_quebra_sigilo` — turned out to be **exactly** the "propose a harness change instead of a
 strategy unit" case this section only had as shape until now. What made it decidable, cheaply and deterministically
 (no LLM, no replay): the system prompt declares the **same field name** for the tool's return and for the final
 JSON's output field, the agent conflates the two, and the wrong value is measurable directly in the delivered
 payload — **9 of 21 delivered responses (43%, across 3 months) carry an invalid regulatory field, with zero
-exceptions raised anywhere in the log** (`02-relatorio-achados.md` §6.2). The pre-registered decision rule (≥1
+exceptions raised anywhere in the log** (`07-relatorio-mineracao-unidades-n2-n10.md` §6.2). The pre-registered decision rule (≥1
 confirmed case reaching the final payload → harness, not memory) is the first real instance of a **diagnostic
 front-end producing a harness-change signal**, in the AgentDebug Stage-1/2 sense already mapped below — except it
 didn't need Stage 3's sandbox re-run to decide: comparing the declared contract against the real schema and the

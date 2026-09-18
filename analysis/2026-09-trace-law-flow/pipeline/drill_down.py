@@ -34,11 +34,11 @@ Uso:
            do bloco `def ferramenta(...)` (assinatura, descrição, formato de retorno), com
            em quantos steps, execuções, meses e papéis ela aparece. Serve para conferir
            o que o prompt diz que a ferramenta devolve contra o que ela devolve de verdade
-           (notebook §11.3; 03-procedimento-validacao.md §1.8). O bloco é documentação da
+           (notebook mineracao_unidades_n2_n10.ipynb §11.3; 03-procedimento-validacao.md §1.8). O bloco é documentação da
            ferramenta, não dado de caso — mas conferir antes de colar em documento.
 
     python drill_down.py evidencia [<análise>]
-        -> completa as pastas resultados/evidencia/<análise>/ que a §11 do notebook grava
+        -> completa as pastas resultados/evidencia/<análise>/ que a §11 do notebook mineracao_unidades_n2_n10.ipynb grava
            (casos.csv, derivados/*.csv, leia-me.md): para cada caso de casos.csv, escreve
            crus/<exec_id>.json — a linha inteira do trace, sem alteração, só txt_etap_memo
            desserializado — e derivados/<exec>_<role>_idx<n>.json — a visão do caso para
@@ -76,36 +76,12 @@ números de processo em claro.
 import sys, os, json, re, random
 import pandas as pd
 
-TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
-                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
+from base_pipeline import TRACE, classify as _bp_classify
 
 def classify(m):
-    # Nomes sincronizados com classify() do notebook (§2) — renomeados 15/09/2026 (grupo 1:
-    # os 4 nomes antigos afirmavam uma causa só parcialmente verdadeira; ver 01-racionais.md §7).
-    if 'Could not index' in m: return 'Falha ao indexar o retorno (Could not index)'
-    if 'does not support multiple positional' in m: return 'Argumento posicional onde só cabe nomeado'
-    if 'unterminated' in m: return 'String não fechada (relatório longo em literal)'
-    if 'regex pattern' in m: return 'Resposta sem bloco de código [INATIVO desde dez/2025]'
-    if 'IndentationError' in m: return 'Indentação inválida'
-    if 'leading zeros' in m: return 'Data DD/MM interpolada como número'
-    if 'forgot a comma' in m or 'never closed' in m or 'invalid decimal' in m: return 'Texto do documento colado em literal'
-    if 'SyntaxError' in m: return 'Sintaxe inválida'
-    if 'is not defined' in m:
-        v = re.search(r'variable `(\w+)`', m)
-        if v and v.group(1) in {'json','pd','np','re','os','math','datetime'}: return 'Módulo usado sem import'
-        return 'Variável não definida'
-    if 'has no attribute' in m: return 'Objeto sem o atributo esperado'
-    if 'not allowed' in m or 'explicitly allowed' in m or 'is not permitted' in m: return 'Função ou import bloqueado pelo sandbox'
-    if 'ModuleNotFound' in m: return 'Módulo ausente no sandbox'
-    if 'Forbidden' in m: return 'Operação proibida'
-    if 'AgentGenerationError' in m or 'internally hosted' in m: return 'Falha do LLM interno'
-    if 'Error code: 422' in m or 'UnprocessableEntity' in m: return 'HTTP 422'
-    if 'JSONDecode' in m: return 'Retorno não era JSON'
-    if 'KeyError' in m: return 'Campo ausente no retorno'
-    if 'TypeError' in m: return 'Tipo diferente do esperado'
-    if 'ValueError' in m: return 'Formato/valor inválido'
-    if 'IndexError' in m: return 'Retorno vazio indexado'
-    return 'Erro não classificado'
+    # Assinatura do par (família, assinatura) que base_pipeline.classify retorna —
+    # mesma classificação dos notebooks, sem cópia local (antes sincronizada à mão).
+    return _bp_classify(m)[1]
 
 def tutorial():
     """Passo a passo guiado, pra quem tá usando o script pela 1ª vez sem saber
@@ -441,13 +417,13 @@ def visao_do_caso(analise, caso, cru):
     }, ok, len(trechos)
 
 def evidencia(analise=None):
-    """Completa as pastas de evidência a partir do casos.csv que o notebook gravou: crus/<exec_id>.json (a linha inteira
+    """Completa as pastas de evidência a partir do casos.csv que o notebook de mineração gravou: crus/<exec_id>.json (a linha inteira
     do trace) e derivados/<exec>_<role>_idx<n>.json (a visão de cada caso, conferida contra o cru). Sem argumento, todas
     as pastas que têm casos.csv."""
     pastas = sorted(d for d in os.listdir(PASTA_EVIDENCIA) if os.path.exists(os.path.join(PASTA_EVIDENCIA, d, "casos.csv"))) \
         if analise is None else [analise]
     if not pastas or not os.path.exists(os.path.join(PASTA_EVIDENCIA, pastas[0], "casos.csv")):
-        print(f"nenhum casos.csv em {PASTA_EVIDENCIA}/{analise or '*'} — rode a §11 do notebook antes."); return
+        print(f"nenhum casos.csv em {PASTA_EVIDENCIA}/{analise or '*'} — rode a §11 do notebook mineracao_unidades_n2_n10.ipynb antes."); return
     casos = {d: pd.read_csv(os.path.join(PASTA_EVIDENCIA, d, "casos.csv"), dtype={"exec_id": str, "role": str}) for d in pastas}
     ids = set().union(*(set(c["exec_id"]) for c in casos.values()))
     df = load()
@@ -470,7 +446,7 @@ def evidencia(analise=None):
         print(f"{d}: {len(casos[d])} casos · {len(crus)} crus ({tam / 1e6:.1f} MB) · trechos conferidos contra o cru: {ok_tot}/{n_tot}")
 
 def evidencia_avulsa(exec_id, role, idx, ferramenta):
-    """Um caso qualquer, fora das análises do notebook: grava em resultados/evidencia/avulso/."""
+    """Um caso qualquer, fora das análises do notebook de mineração: grava em resultados/evidencia/avulso/."""
     pasta = os.path.join(PASTA_EVIDENCIA, "avulso")
     df = load()
     sel = df[df["cod_idef_exeo"] == exec_id]

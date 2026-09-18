@@ -38,3 +38,11 @@ git merge-base --is-ancestor HEAD origin/main && echo "merged"
 ```
 
 If merged, don't force-push over it — `git stash push -u`, `git checkout -B <branch> origin/main`, `git stash pop`, then commit and push normally.
+
+<!-- OPENWIKI:START -->
+
+## OpenWiki
+
+See [AGENTS.md](AGENTS.md) for OpenWiki agent instructions.
+
+<!-- OPENWIKI:END -->

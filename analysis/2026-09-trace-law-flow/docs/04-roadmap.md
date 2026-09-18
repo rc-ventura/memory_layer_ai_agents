@@ -41,7 +41,7 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   "Second trace extraction". Produz a primeira unidade de memória `factual · ambiente` derivada e validada
   contra o dado (não hipótese à mão), no schema de `01-racionais.md` §8. **Feito (16–17/09): os 8 passos, com
   saídas salvas no notebook, dois registros `derived-and-checked` e uma pasta de evidência com trace cru por análise**
-  — método em `01-racionais.md` §9, resultados em `02-relatorio-achados.md` §6.1, validação em
+  — método em `06-racionais-mineracao-unidades-n2-n10.md` §9, resultados em `07-relatorio-mineracao-unidades-n2-n10.md` §6.1, validação em
   `03-procedimento-validacao.md` §1.7–1.9. O que falta para fechar, em ordem:
   1. [x] **Verificação humana do Passo 6** (17/09) — os 10 casos de `resultados/evidencia/11.7_amostra_passo6/`;
      confirma os achados nos 10/10, sem divergência (1 nota não generalizável sobre `draft_resposta`/assunto).
@@ -51,8 +51,8 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   2. [x] **Análise mais funda de `validar_quebra_sigilo`** (17/09) — 9/21 respostas entregues (43%) com o campo
      regulatório de quebra de sigilo inválido, sem nenhum erro registrado, medido no `action_output` (payload de
      verdade, não inferência de código). Inclui retratação registrada de um achado errado da primeira rodada.
-     Resultado em `02-relatorio-achados.md` §6.2, conferência e retratação em `03-procedimento-validacao.md` §1.10,
-     racional em `01-racionais.md` §9. **Formalizada como §11.9 do notebook** (17/09) — mesmos números reproduzidos
+     Resultado em `07-relatorio-mineracao-unidades-n2-n10.md` §6.2, conferência e retratação em `03-procedimento-validacao.md` §1.10,
+     racional em `06-racionais-mineracao-unidades-n2-n10.md` §9. **Formalizada como §11.9 do notebook** (17/09) — mesmos números reproduzidos
      dentro do pipeline oficial (a régua de leitura-em-cadeia achou de quebra um bug de escopo do detector de
      grafia: sem restringir a comparação à variável que de fato vem da ferramenta, 2 comparações de uma execução
      não relacionada — outro campo qualquer — entravam por engano; corrigido e reconferido). Evidência em
@@ -74,14 +74,14 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   **Resultado:** 9/21 respostas entregues (43%, 3 meses) com o campo regulatório de quebra de sigilo inválido, sem
   nenhum erro registrado — medido no `action_output` (payload entregue), não inferido do código. Decidiu a nº10
   como harness. Uma retratação no meio do processo (primeira rodada apontou caso errado, por não tratar `.get`
-  aninhado como cadeia) está registrada por escrito. Detalhe completo: `01-racionais.md` §9 ("Execução..."),
-  `02-relatorio-achados.md` §6.2, `03-procedimento-validacao.md` §1.10.
+  aninhado como cadeia) está registrada por escrito. Detalhe completo: `06-racionais-mineracao-unidades-n2-n10.md` §9 ("Execução..."),
+  `07-relatorio-mineracao-unidades-n2-n10.md` §6.2, `03-procedimento-validacao.md` §1.10.
   - **[x] Formalizada como §11.9 do notebook** (17/09) — funções em §11.0 (`classificar_campo_final`,
     `payload_entregue_qs`, `comparacoes_grafia_qs`), `registro_final` agora aceita um `desfecho` opcional e
     `unidades_memoria.json` sai regravado já com `destino`/`impact` corretos. Números reproduzidos: 9/21 (43%),
     3 meses.
   - **Extensão natural, depois:** o mesmo detector (comparar payload entregue × schema real) para toda ferramenta de
-    schema conhecido — "Monitoramento além do Passo 3" de `01-racionais.md` §9. Começou nesta sessão para
+    schema conhecido — "Monitoramento além do Passo 3" de `06-racionais-mineracao-unidades-n2-n10.md` §9. Começou nesta sessão para
     `get_available_documents` e `extrair_evidencias`, item abaixo.
 
 - [x] **Achado candidato em `get_available_documents`: mesma forma de leitura silenciosa — fechado como §11.10
@@ -91,8 +91,8 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   `DEGENERADO` (o detector já validado, não uma lista nova) na resposta **real** do `managerAgent`. Resultado: **4
   ocorrências silenciosas confirmadas** (exaustivo, não amostra), **0/4 batendo `DEGENERADO`** — o mecanismo é real,
   o "confirmado: chega a `final_answer` errado" da exploração anterior é **retirado**. `status`/`destino` da nº2 não
-  mudam; `impact` continua `null`. Detalhe em `01-racionais.md` §9 ("Análise funda da nº2"),
-  `02-relatorio-achados.md` §6.3, `03-procedimento-validacao.md` §1.11. Evidência reconciliada em
+  mudam; `impact` continua `null`. Detalhe em `06-racionais-mineracao-unidades-n2-n10.md` §9 ("Análise funda da nº2"),
+  `07-relatorio-mineracao-unidades-n2-n10.md` §6.3, `03-procedimento-validacao.md` §1.11. Evidência reconciliada em
   `resultados/evidencia/11.10_leituras_get_available_documents/`.
 
 - [x] **"Guarda sobre chave fantasma" descarta documentos por inteiro — quantificado (17/09).** Um dos 3 casos da
@@ -102,7 +102,7 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   AST dedicado, não deixado como menção solta): **1 ocorrência no trace inteiro** — o próprio `15f6ad52…`, nenhuma
   outra —, abaixo do piso de recorrência de qualquer candidata a memória (≥3 execuções e ≥2 meses, §7 Passo 5). As
   três checagens de dano (`DEGENERADO`, `None`/`null`, dict impresso — ver item abaixo) também não batem nela.
-  `status`/`destino`/`impact` da nº2 não mudam. `01-racionais.md` §9, `02-relatorio-achados.md` §6.3,
+  `status`/`destino`/`impact` da nº2 não mudam. `06-racionais-mineracao-unidades-n2-n10.md` §9, `07-relatorio-mineracao-unidades-n2-n10.md` §6.3,
   `03-procedimento-validacao.md` §1.11.
 
 - [x] **`DEGENERADO` sozinho não bastava como sinal de dano — ampliado para três checagens (17/09).** `DEGENERADO`
@@ -116,7 +116,7 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
 - [x] **`extrair_evidencias` — checada e descartada para este aprofundamento (17/09).** Só 8 execuções declaram a
   ferramenta, 1 erro conhecido; sem campo único mensurável no payload (o retorno se espalha em texto). Amostra
   pequena demais para qualquer contagem valer como achado. Registro de que foi investigada, não esquecida — em
-  `01-racionais.md` §9 e `03-procedimento-validacao.md` §1.10.
+  `06-racionais-mineracao-unidades-n2-n10.md` §9 e `03-procedimento-validacao.md` §1.10.
 
 - [ ] **Análise mais funda: de onde vem o conhecimento do schema da nº2 (`get_available_documents`), e o agente sabe
   ou erra ao aplicar.** Registrada em 17/09, motivada por um achado da verificação humana do Passo 6
@@ -127,11 +127,11 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   - **A pergunta.** No caso resíduo, o agente sabia que `result` existia (citou no `thought`) mas errou a profundidade
     (`docs['result'][0][0]` em vez de `[0]`), e mesmo depois de errar não sabia — teve que investigar com
     `print(type(...))` no step seguinte. Isso não é "não sabe nada" (o prompt não declara, 0/91, confirmado até fora
-    do bloco da ferramenta — `02-relatorio-achados.md` §6.1); é sobre reter/aplicar o que o próprio agente já
+    do bloco da ferramenta — `07-relatorio-mineracao-unidades-n2-n10.md` §6.1); é sobre reter/aplicar o que o próprio agente já
     observou dentro da execução (mesmo padrão dos logs 4–5 de `03` §1.8: "a estrutura estava na frente e errou mesmo
     assim").
   - **Por que não é escopo do que já foi feito.** Os Passos 1–8 respondem "qual é o schema certo" (degrau 2/3,
-    `01-racionais.md` §9 Passo 7). Isso pergunta "por que o agente erra ao aplicar um schema que ele mesmo já viu" —
+    `06-racionais-mineracao-unidades-n2-n10.md` §9 Passo 7). Isso pergunta "por que o agente erra ao aplicar um schema que ele mesmo já viu" —
     causa cognitiva, do tipo já registrado como fora de alcance sem LLM (mesma ressalva do Passo 7).
   - **Mesmo processo, se for feita.** Pré-registrar as classes de leitura (sabia e aplicou certo / sabia e errou a
     profundidade / nunca tinha visto) antes de rodar — mesmo motivo do revert de 16/09; determinístico (achar
@@ -149,7 +149,7 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
   ferramenta (Passo 4) vira linha de base: um retorno que contradiz a forma de uma ferramenta historicamente estável é
   sinal determinístico de mudança de API, não de comportamento do agente. Testar primeiro na segunda extração. Liga com o
   item "Should the deterministic anomaly filter…" de `../../../discussion/open-questions.md`.
-- [ ] **Replay contrafactual — o teste de suficiência da memória (`01-racionais.md` §9 Passo 7).** Os registros dizem
+- [ ] **Replay contrafactual — o teste de suficiência da memória (`06-racionais-mineracao-unidades-n2-n10.md` §9 Passo 7).** Os registros dizem
   o que fazer, não se basta dizer: injetar a `correction_guidance` (ou corrigir a documentação da ferramenta) e medir se
   o erro volta. Não dá para fazer só com o trace — depende de rodar a esteira. Combinar com o time junto com o item 4
   acima.
@@ -316,7 +316,7 @@ essas respostas recuperadas estão factualmente certas — essa é a pergunta de
   `unidade`, mesma `funcao_origem`) — só o Passo 2 não conseguia ler a mensagem (`Object X has no attribute get`,
   formato diferente de `Could not index`). Regra geral adicionada (checa a chave revelada contra o schema derivado de
   **outros** erros da mesma ferramenta — nunca circular). Cobertura por erro da nº2: 89/91 → 91/91; `status` não
-  mudou. Ver `01-racionais.md` §9 (emenda ao Passo 5), `02-relatorio-achados.md` §6.1, `03-procedimento-validacao.md`
+  mudou. Ver `06-racionais-mineracao-unidades-n2-n10.md` §9 (emenda ao Passo 5), `07-relatorio-mineracao-unidades-n2-n10.md` §6.1, `03-procedimento-validacao.md`
   §1.9.
 - [x] **`correction_guidance` da nº2/nº10 simplificada (17/09).** Tirado o contraste "não `r[0]`"/"não
   `r['quebra_sigilo']`" — motivado por outro achado do Passo 6 (o mesmo caso `3f44a68b…` mostrou o erro **oposto**,

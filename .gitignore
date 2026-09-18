@@ -8,3 +8,7 @@ Thumbs.db
 # de documentos jurídicos em claro. Nunca versionar sem anonimização.
 *.csv.xz
 *.csv
+
+# Python bytecode
+__pycache__/
+*.pyc
