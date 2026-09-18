@@ -861,6 +861,76 @@ que é achado à parte, não usado no cálculo do impact. `resultados/unidades_m
 pela própria célula (não editado à mão). Evidência: `resultados/evidencia/11.9_leituras_quebra_sigilo/` — 13 casos,
 122/122 trechos conferidos contra o cru (`drill_down.py evidencia 11.9_leituras_quebra_sigilo`).
 
+### 1.11 · Análise funda de `get_available_documents` (nº2) — de exploração avulsa a célula do notebook, com
+retratação (17/09/2026)
+
+Pré-registro e racional completos em [`01-racionais.md`](01-racionais.md), "Análise funda da nº2"; resultado em
+[`02-relatorio-achados.md`](02-relatorio-achados.md) §6.3; código no notebook, §11.10.
+
+**Ponto de partida — o que já existia e por que não bastava.** Uma sessão anterior no mesmo dia tinha gerado a
+pasta `resultados/evidencia/11.10_leituras_get_available_documents/` **fora do notebook, sem pré-registro**: 3
+casos escolhidos por inspeção, 2 chamados de "confirmado: chega a `final_answer` errado" usando uma lista de
+palavras inventada ("não encontr...", "ausente", "inacessível"...) aplicada à saída do `ConversationAgent`. Antes
+de aceitar isso como resultado, três problemas foram encontrados ao tentar reproduzir/formalizar:
+
+1. **A lista de marcadores era inventada**, não derivada do system prompt (diferente de `DEGENERADO`, que vem de
+   uma frase literal que o próprio prompt instrui usar). É exatamente a categoria de proxy que `01-racionais.md`
+   §2 já mostrou frágil (o "reasoning-action mismatch" foi retirado pelo mesmo motivo).
+2. **O nível errado do trace.** Os marcadores foram checados na saída **intermediária** do `ConversationAgent`,
+   não na resposta **real** que o `managerAgent` entrega — conferido diretamente: `DEGENERADO` (o detector já
+   validado) **não bate** na resposta real do `managerAgent` para nenhum dos 3 casos daquela pasta.
+3. **Os caminhos citados no `leia-me.md` daquela pasta não existiam** (`resultados/evidencia/get_available_documents_silent/traces/...`,
+   `manifest.csv`) — os arquivos reais estavam em outro lugar (`resultados/evidencia/avulso/`), sinal de que a
+   evidência não passou pelo padrão `registrar_evidencia`/`drill_down.py evidencia` do resto do pipeline.
+
+**O que foi refeito.** Uma célula nova (§11.10) generaliza o Passo 1 da mineração original (`acessos()`,
+`chamadas_de()`, o critério de reatribuição entre steps) para o **universo completo** de chamadas a
+`get_available_documents` — não só os 91 erros já conhecidos —, separando leituras guardadas (dead code quando a
+condição nunca é satisfeita pelo schema real) e protegidas por `try/except` das leituras sem proteção nenhuma, e
+cruzando estas últimas, quando o step não tem erro, com `DEGENERADO` na resposta real do `managerAgent`.
+
+**Teste de consistência (condição para confiar no resto).** As leituras erradas-e-desprotegidas com erro no step
+precisam reconciliar com os 91 já conhecidos da nº2 (`ATRIB`). Bateram: 93 de 597 leituras rastreadas, contra 91
+erros conhecidos — a diferença de 2 é mais de uma leitura por step em alguns dos erros já contados, não
+divergência. Sem esse teste passar, os números novos não seriam publicáveis.
+
+**Por que `DEGENERADO` sozinho não bastava (achado em sessão de revisão, 17/09).** `DEGENERADO` só pega **recusa
+explícita** — a frase que o system prompt manda usar quando não acha nada. Mas um `.get(chave_errada)` sem plano B
+devolve `None` **em silêncio**, e nada garante que isso vire uma recusa explícita: pode virar um `None`/`null`
+literal no texto final, ou o dict/objeto inteiro sendo repassado adiante e acabando impresso (o mesmo mecanismo já
+visto na nº10, classe "objeto inteiro repassado", §6.2) — nenhum dos dois soa como "não encontrado". Por isso a
+célula final roda **três checagens independentes** na resposta real do `managerAgent`, não uma: `DEGENERADO`,
+presença literal de `None`/`null`, e um regex frouxo para "parece um dict impresso". Conferido manualmente antes de
+formalizar (fora do notebook, lendo os 4 crus dos casos confirmados): nenhum dos três sinais aparece em nenhum dos
+4 — confirma que a checagem ampliada não muda o resultado desta rodada, só o torna mais defensável.
+
+**Resultado, e o que ele retrata.** 4 ocorrências do mecanismo ".get sem plano B" no universo completo (não
+amostra), 0/4 em qualquer das três checagens. **A frase "confirmado: chega a `final_answer` errado" da pasta
+exploratória é retirada** — o mecanismo (leitura silenciosa que descarta documentos reais) é real e agora contado
+de forma exaustiva; o dano à resposta entregue, como tinha sido afirmado, não se sustenta contra nenhum sinal já
+validado ou estrutural. Mesma disciplina de retratação do §2 de `01-racionais.md`: separar "corrigir" (o mecanismo
+continua verdadeiro, só a régua mudou) de "retirar" (a afirmação específica de dano não estava lá).
+
+**O segundo mecanismo — quantificado, não deixado como menção solta.** Um dos 3 casos originais (`15f6ad52…`) não
+é do tipo ".get sem plano B" — é uma guarda (`if 'documents' in retorno`) cuja condição a chave real (`result`)
+nunca satisfaz, então o ramo que usaria os documentos reais nunca roda e eles são descartados por inteiro. Uma
+primeira versão deste documento deixou isso como "lead, não quantificado" — o Rafael apontou que isso não deveria
+entrar no racional como se fosse parte da análise sem ter sido de fato rodado. Corrigido: um segundo detector de
+AST (`'chave' in retorno` com `chave` fora do schema real) rodado no mesmo universo de 635 papéis achou **1
+ocorrência no trace inteiro** — o próprio `15f6ad52…`, nenhuma outra — abaixo do piso de recorrência de qualquer
+candidata a memória (≥3 execuções e ≥2 meses, §7 Passo 5). Fecha como mecanismo confirmado e raro, não como lead
+pendente.
+
+**Evidência reconciliada.** A pasta `resultados/evidencia/11.10_leituras_get_available_documents/` foi **regravada
+pela própria célula** (`registrar_evidencia`) e por `drill_down.py evidencia 11.10_leituras_get_available_documents`
+— 9 casos, 8 crus (9,7 MB), 64/64 trechos conferidos contra o cru. O conteúdo da pasta exploratória anterior
+(incluindo o `leia-me.md` com os caminhos inconsistentes) foi substituído; os arquivos com o nome de padrão antigo
+(`<exec>_<role>.json`, sem prefixo de UUID completo) que não correspondiam a nenhum caso do `casos.csv` foram
+removidos.
+
+**PII.** Toda a análise usa estrutura (chave lida, forma da proteção, se bateu ou não um regex já validado) —
+nenhum texto de documento ou de resposta apareceu na tela desta sessão.
+
 ---
 
 ## Frente 2 — Verificar a literatura (aqui sim precisa da sua leitura)

@@ -1636,6 +1636,98 @@ alimenta um campo único e nomeado como `quebra_sigilo` — o conteúdo se espal
 mesma medida direta (comparar payload estruturado) não se aplica sem reintroduzir leitura de texto livre. Fica
 registrada como investigada, com o motivo de não ter avançado escrito — não como pendência esquecida.
 
+### Análise funda da nº2 — leituras silenciosas de `get_available_documents` (17/09/2026)
+
+**Por que esta análise, e por que não é cega como a da nº10.** A tabela de destino/impact (§8) só existe para a
+nº10; a nº2 continuava com `analise_funda: "pendente"` desde a padronização de schema desta sessão. Diferente da
+nº10, este pré-registro **não parte de zero**: uma sessão anterior, fora do notebook e sem pré-registro (pasta
+`resultados/evidencia/11.10_leituras_get_available_documents/`, gerada por um agente, não pelo pipeline), já tinha
+olhado 3 casos a dedo e relatado "2 confirmados" — leitura silenciosa (`.get("documents")`/`.get("summary")` sem
+plano B) que faz o `final_answer` afirmar ausência de documentos que existiam de verdade no retorno da ferramenta.
+Essa exploração motivou a pergunta, mas **contamina** a cegueira do pré-registro — por isso o que segue separa
+explicitamente o que já era conhecido (o mecanismo, a existência de pelo menos 1 caso) do que é genuinamente novo
+e cego (a contagem exaustiva no universo completo, e o cruzamento com um detector já validado, nenhum dos dois
+feito antes).
+
+**O que ficou fixado antes de rodar.**
+
+1. **Universo.** Toda `(exec_id, role)` cujo system prompt declara `get_available_documents`, e dentro dela toda
+   chamada `var = get_available_documents(...)` achada por AST (`chamadas_de`) — não só os steps que já erraram.
+2. **Rastreio entre steps.** A partir do step da chamada, percorrer os steps seguintes do mesmo papel aplicando
+   `acessos()` (já usada e validada no Passo 3 da mineração original) a cada um, até uma reatribuição de `var` que
+   não seja "chamar `get_available_documents` de novo" — mesmo critério de corte já usado dentro de um único step,
+   agora entre steps.
+3. **Classificação de cada leitura.** `real` se a chave é `result` (o único nível de topo que interessa aqui — as
+   chaves por documento, já derivadas no Passo 2, não entram nesta contagem, que é sobre o envelope); senão
+   `errada`. Dentro de `errada`: **guardada** (dentro de um ramo condicionado a checar a própria chave/tipo antes —
+   inclui os 17 casos já documentados de guarda de tipo, e é dead code sempre que a condição nunca é satisfeita
+   pelo schema real, como `'documents' in retorno`) e **protegida** (dentro de `try/except`) ficam de fora da
+   contagem de "silenciosa" — não é que rodaram sem consequência, é que a análise desta rodada não decide o que
+   acontece dentro delas (ver "o que fica de fora", abaixo). O que sobra, sem guarda e sem proteção, se divide em
+   **visível** (o step tem erro — deveria coincidir com os 91 já conhecidos, é o teste de consistência do método)
+   e **silenciosa** (o step não tem erro — o alvo desta análise).
+4. **O teste de consistência antes de contar qualquer coisa nova.** As leituras classificadas "visível" precisam
+   bater com o conjunto já conhecido dos 91 erros da nº2 (`ATRIB`, `unidade == "U_contrato_dict"`) — se não
+   baterem, o método tem um bug, não um achado. Só depois desse teste passar os números novos contam.
+5. **O sinal de dano, sem inventar lista de palavras.** Para cada leitura silenciosa, checar se a resposta **real**
+   entregue (a do `managerAgent`, não a saída intermediária do `ConversationAgent` que a pasta exploratória tinha
+   lido) bate o detector `DEGENERADO` (`n[ãa]o encontrad[oa] na base|informa[çc][ãa]o insuficiente`) — o único
+   detector de resposta ruim já validado no pipeline, porque vem do texto literal do próprio system prompt
+   (`01-racionais.md` §4 Passo 2), não de uma lista inventada. **Decisão fixada antes de rodar:** se `DEGENERADO`
+   não bater em nenhum caso, a análise não eleva `impact` nem muda `destino` — só registra `analise_funda`, porque
+   inventar uma lista de palavras nova sobre a saída do `ConversationAgent` (o que a pasta exploratória tinha
+   feito) repetiria o erro que derrubou o "reasoning-action mismatch" (§2).
+6. **O que fica de fora, declarado antes de rodar.** Leituras guardadas por uma condição que a chave real nunca
+   satisfaz (`'documents' in retorno`, sempre falso) não são "sem consequência" — ao contrário, o `if` nunca entra
+   e o ramo verdadeiro (que usaria os documentos reais) nunca roda, então os documentos são **descartados por
+   inteiro**, incondicionalmente, toda vez que esse padrão de código aparece. Isso é um mecanismo distinto do
+   ".get sem plano B" (aqui não sobra um valor errado, sobra ausência total) e pré-registrar uma régua para ele
+   exigiria antes decidir, caso a caso, se a condição de guarda é satisfazível pelo schema real — trabalho que
+   não estava pronto a tempo desta rodada. Fica registrado como achado à parte, não quantificado exaustivamente
+   (`04-roadmap.md`), não misturado ao número de "silenciosas" desta análise.
+
+**Execução e resultado — o mecanismo ".get sem plano B".** 635 papéis declaram `get_available_documents`; 597
+leituras rastreadas no universo completo. Teste de consistência: das leituras sem guarda/proteção com o step em
+erro, 93 batem com os 91 erros já conhecidos (a pequena folga vem de mais de uma leitura por erro em alguns steps
+— esperado, não é uma divergência). **4 ocorrências silenciosas confirmadas** (uma por execução: `175cd9f2…`,
+`26e300f1…`, `910fde1e…`, `a47d6e3b…`), em 3 meses (2025-11 ×2, 2026-05, 2026-06). Restou também, sem ser contada
+como silenciosa nem como achado (resíduo explicitado, não escondido, `04-roadmap.md`), **8 leituras** sem
+guarda/proteção, com erro no step, que não batem os 91 já conhecidos.
+
+**O sinal de dano, com três checagens independentes, não só `DEGENERADO`.** As 4 execuções chegam a um
+`final_answer` real do `managerAgent` (a execução não trava). Três checagens estruturais na resposta real, nenhuma
+lendo conteúdo de documento: (1) `DEGENERADO` (recusa explícita, do texto do próprio system prompt); (2) presença
+literal de `None`/`null` (o valor que um `.get` sem plano B devolve, se vazar pro texto); (3) um regex frouxo pra
+"parece um dict/objeto Python impresso" (o mesmo mecanismo que a nº10 achou na classe "objeto inteiro repassado",
+§6.2 — cobre o caso de vazar a estrutura toda, não só `None`). **Nenhuma das 4 bate nenhuma das três.**
+
+**Execução e resultado — o segundo mecanismo, "guarda sobre chave fantasma", quantificado (não deixado de fora).**
+O item 6 acima só registrava a *decisão* de não misturar este mecanismo ao número de "silenciosas"; ele foi, à
+parte, contado exaustivamente com a mesma disciplina: um detector de AST específico (`'chave' in retorno` cuja
+`chave` não existe no schema real) rodado no mesmo universo de 635 papéis. **Resultado: 1 ocorrência no trace
+inteiro** — exatamente o caso `15f6ad52…` que a pasta exploratória tinha chamado de "achado mais forte" — em 1
+execução, 1 mês, e as mesmas três checagens (`DEGENERADO`, `None`/`null`, dict impresso) não batem nela também.
+Abaixo do piso de recorrência que qualquer candidata a memória exige (≥3 execuções e ≥2 meses, §7 Passo 5): fica
+documentado como mecanismo confirmado e raro, não vira unidade própria.
+
+**A retratação, por escrito.** A pasta exploratória anterior chamava 2 dos 3 casos que olhou de "confirmado: chega
+a `final_answer` errado", e citava o caso do segundo mecanismo como o "achado mais forte" sem contar quantas vezes
+ele acontece. Com o universo completo e as três checagens (não uma lista de palavras nova sobre a saída
+intermediária do `ConversationAgent`, que era o método da pasta anterior), **nenhuma das 5 ocorrências reais
+(4 + 1) bate nenhum sinal de resposta ruim/corrompida que o pipeline já confia**. Segue a mesma regra do §2:
+**corrigir** quando o fenômeno é real e só a régua era fraca — aqui os dois mecanismos são reais, agora contados
+exaustivamente em vez de 3 casos a dedo —, mas o **dano à resposta entregue**, tal como a pasta anterior afirmou,
+não se sustenta e é retirado. Conferência completa em [`03-procedimento-validacao.md`](03-procedimento-validacao.md)
+§1.11; evidência reconciliada (mesma pasta, conteúdo substituído) em
+`resultados/evidencia/11.10_leituras_get_available_documents/`; código no notebook, §11.10.
+
+**O que isso muda para a nº2.** `status` continua `derived-and-checked` (não depende desta análise) e `destino`
+continua `memória` (o prompt segue incompleto, não contraditório — nada aqui muda essa leitura). O que muda é
+`validation.analise_funda`, que sai de `"pendente"` para o resultado acima — e a `description`/`correction_guidance`
+ganham um fato a mais, ainda não incorporado ao texto: existe, além dos 91 erros que quebram, um número pequeno mas
+real de leituras que não quebram e ainda assim perdem os documentos — argumento a favor de também levar o envelope
+`result` não documentado ao time da plataforma (mesma recomendação já feita para a nº10), não só escrever a memória.
+
 ---
 
 ## Onde ver os números e o código de cada teste

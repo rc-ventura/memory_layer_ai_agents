@@ -84,16 +84,34 @@ discussão de escopo (groundedness determinístico vs. juiz) registrada no níve
     schema conhecido — "Monitoramento além do Passo 3" de `01-racionais.md` §9. Começou nesta sessão para
     `get_available_documents` e `extrair_evidencias`, item abaixo.
 
-- [ ] **Achado candidato em `get_available_documents`: mesma forma de leitura silenciosa, travada no limite de
-  PII.** Encontrado em 17/09 ao estender o método acima: `.get('documents')`/`.get('summary')` sobre o retorno —
-  chaves que não existem no schema real (só `result` existe) — em **2 execuções**, sem plano B, sem erro. Diferente
-  da nº10, esta ferramenta alimenta **texto livre** de resposta, não um campo estruturado único; confirmar exigiria
-  ler o texto da resposta contra o conteúdo real dos documentos, o que a regra de PII em vigor não permite
-  (`03-procedimento-validacao.md` §1.9–1.10). **Não decide nada sozinho** — a nº2 já está `derived-and-checked` — mas
-  é sinal de que o mesmo padrão de bug pode existir na ferramenta mais usada do trace (730 chamadas). Caminho
-  possível, não iniciado: um canal de confirmação que não exija ler conteúdo — ex. comparar a **contagem** de
-  documentos que a resposta menciona com a contagem que `get_available_documents` de fato devolveu, sem tocar no
-  texto. Detalhe em `01-racionais.md` §9, `02-relatorio-achados.md` §6.2, `03-procedimento-validacao.md` §1.10.
+- [x] **Achado candidato em `get_available_documents`: mesma forma de leitura silenciosa — fechado como §11.10
+  (17/09).** Uma exploração inicial (fora do notebook, sem pré-registro) tinha achado 3 casos a dedo e chamado 2 de
+  "confirmado", usando uma lista de palavras inventada sobre a saída do `ConversationAgent`. Formalizado como célula
+  do notebook (§11.10): universo completo de chamadas (não 3 a dedo), leituras rastreadas entre steps, cruzadas com
+  `DEGENERADO` (o detector já validado, não uma lista nova) na resposta **real** do `managerAgent`. Resultado: **4
+  ocorrências silenciosas confirmadas** (exaustivo, não amostra), **0/4 batendo `DEGENERADO`** — o mecanismo é real,
+  o "confirmado: chega a `final_answer` errado" da exploração anterior é **retirado**. `status`/`destino` da nº2 não
+  mudam; `impact` continua `null`. Detalhe em `01-racionais.md` §9 ("Análise funda da nº2"),
+  `02-relatorio-achados.md` §6.3, `03-procedimento-validacao.md` §1.11. Evidência reconciliada em
+  `resultados/evidencia/11.10_leituras_get_available_documents/`.
+
+- [x] **"Guarda sobre chave fantasma" descarta documentos por inteiro — quantificado (17/09).** Um dos 3 casos da
+  exploração original (`15f6ad52…`) não é ".get sem plano B" — é um `if 'documents' in retorno` cuja condição a
+  chave real (`result`) nunca satisfaz, então o ramo que usaria os documentos reais nunca roda e eles somem por
+  inteiro (diferente de sobrar um valor errado). Rodado exaustivamente no mesmo universo de 635 papéis (detector de
+  AST dedicado, não deixado como menção solta): **1 ocorrência no trace inteiro** — o próprio `15f6ad52…`, nenhuma
+  outra —, abaixo do piso de recorrência de qualquer candidata a memória (≥3 execuções e ≥2 meses, §7 Passo 5). As
+  três checagens de dano (`DEGENERADO`, `None`/`null`, dict impresso — ver item abaixo) também não batem nela.
+  `status`/`destino`/`impact` da nº2 não mudam. `01-racionais.md` §9, `02-relatorio-achados.md` §6.3,
+  `03-procedimento-validacao.md` §1.11.
+
+- [x] **`DEGENERADO` sozinho não bastava como sinal de dano — ampliado para três checagens (17/09).** `DEGENERADO`
+  só pega recusa **explícita**; um `.get` sem plano B devolve `None` em silêncio, que pode vazar pro texto final
+  como `None`/`null` literal, ou como o dict/objeto inteiro repassado (mesmo mecanismo da nº10, classe "objeto
+  inteiro repassado", §6.2) — nenhum dos dois soa como recusa. Adicionadas duas checagens estruturais (presença de
+  `None`/`null`; regex frouxo para "parece dict impresso") às 5 ocorrências dos dois mecanismos acima. Nenhuma bate
+  nenhuma das três. Não prova que a resposta está correta/completa — isso é *groundedness* (item 1 abaixo),
+  continua fora de escopo do v1.
 
 - [x] **`extrair_evidencias` — checada e descartada para este aprofundamento (17/09).** Só 8 execuções declaram a
   ferramenta, 1 erro conhecido; sem campo único mensurável no payload (o retorno se espalha em texto). Amostra
@@ -343,3 +361,14 @@ essas respostas recuperadas estão factualmente certas — essa é a pergunta de
   **`correction_guidance`** (não temos — do AgentDebug Stage 2). **O candidato de memória de verdade é o
   `correction_guidance` validado, não a unidade em si** — a unidade (§7) é o agrupamento que torna a derivação
   tratável, não o conteúdo final.
+
+- [ ] **Separar um `memory_payload` do registro de auditoria dentro de `unidades_memoria.json` (17/09/2026,
+  aberto).** Hoje cada registro é só trilha de auditoria — proveniência do método (`validation.*`, `location`,
+  `evidence` com o rastro de cada passo), não algo pronto pra injetar no contexto do agente. Decisão desta sessão:
+  não vale criar um artefato/schema novo agora — o schema de produção da camada 2 (`S`, decay, embedding, ACL)
+  segue indefinido em todo o projeto (`../../../discussion/knowledge-as-infra-architecture-hypothesis.md`,
+  componente A, "Still open") — mas os **campos do futuro `memory_payload` já estão decididos**: `description`,
+  `correction_guidance` e `scope`, só nas unidades com `validation.destino` diferente de `harness`. Falta: gerar
+  esse sub-objeto dentro de `registro_final` (notebook, §11.0) a partir dos campos que já existem, sem duplicar
+  conteúdo à mão. Não é bloqueante com 2 registros só — roda quando a fase "Construir os candidatos de memória de
+  verdade" (acima) ou o Update Engine v1 precisarem consumir isto programaticamente.

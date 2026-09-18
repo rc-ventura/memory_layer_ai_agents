@@ -722,14 +722,66 @@ e por 9 casos, não 1. **`validation.destino` da nº10: harness.** `impact`: os 
 
 **Extensão a outras ferramentas com documentação divergente (mesma sessão).** `get_available_documents` (nº2,
 730 chamadas) tem a mesma forma de bug — `.get('documents')`/`.get('summary')`, chaves que não existem no schema real,
-sem plano B — em **2 execuções** achadas. Fica como **candidato**: essa ferramenta alimenta texto livre, não um
-campo estruturado único, então confirmar exigiria ler o conteúdo da resposta contra o conteúdo real dos documentos —
-fora do que a regra de PII desta análise permite. `extrair_evidencias` foi checada e descartada para este
-aprofundamento: só 8 execuções a declaram, 1 erro conhecido, amostra pequena demais e sem campo único mensurável.
-Detalhe em `01-racionais.md` §9.
+sem plano B. Uma exploração inicial, fora do notebook e sem pré-registro, achou 2 casos e não sabia como confirmar
+sem ler conteúdo de resposta. **Isso mudou — ver §6.3 abaixo, que substitui essa leitura preliminar.**
+`extrair_evidencias` foi checada e descartada para este aprofundamento: só 8 execuções a declaram, 1 erro
+conhecido, amostra pequena demais e sem campo único mensurável. Detalhe em `01-racionais.md` §9.
 
-**Ainda não feito:** replicar esta análise na segunda extração; investigar o caso candidato de `get_available_documents`
-por um canal que não exija ler texto de resposta (`04-roadmap.md`).
+**Ainda não feito:** replicar esta análise na segunda extração; quantificar exaustivamente o achado "guarda sobre
+chave fantasma" da §6.3 (`04-roadmap.md`).
+
+### 6.3 · Análise funda de `get_available_documents` — leituras silenciosas, universo completo (17/09/2026)
+
+Racional e pré-registro completos em [`01-racionais.md`](01-racionais.md), "Análise funda da nº2"; conferência e
+retratação em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.11; código no notebook, §11.10;
+evidência em `resultados/evidencia/11.10_leituras_get_available_documents/`.
+
+**A pergunta.** A nº2 já tem 91 erros que quebram (§6.1). Existe, ao lado deles, leitura da mesma chave errada que
+**não quebra** — e, se existe, ela chega a produzir uma resposta final errada (o mesmo tipo de achado que decidiu a
+nº10), ou só existe como mecanismo, sem dano medível?
+
+**O método, em uma frase.** Rastrear, por AST, toda chamada a `get_available_documents` no trace inteiro (não só os
+91 erros já conhecidos) e toda leitura subsequente da variável entre steps do mesmo papel, classificando cada uma
+por chave (real/errada) e por proteção (guardada por um `if`, protegida por `try/except`, ou nenhuma das duas). Dois
+mecanismos distintos, os dois quantificados de ponta a ponta, não só o primeiro:
+
+1. **".get sem plano B"** — leitura errada, sem proteção, sem exceção: o `.get` devolve `None` em silêncio.
+2. **"guarda sobre chave fantasma"** — um `if 'chave' in retorno` cuja `chave` nunca existe no schema real: o ramo
+   que usaria os documentos reais nunca roda, e eles somem por inteiro (não viram um valor errado).
+
+Para os dois, três checagens estruturais na resposta **real** entregue pelo `managerAgent` (nunca a saída
+intermediária do `ConversationAgent`, nem conteúdo de documento): `DEGENERADO` (recusa explícita, já validado, do
+texto do próprio system prompt — `01-racionais.md` §4); presença literal de `None`/`null` (o valor que o `.get`
+sem plano B devolve, se vazar pro texto); e um regex para "parece um dict/objeto Python impresso" (o mesmo
+mecanismo da classe "objeto inteiro repassado" da nº10, §6.2 — cobre vazar a estrutura toda, não só `None`).
+
+**O resultado.** 635 papéis declaram a ferramenta; 597 leituras rastreadas. O teste de consistência bateu (as
+leituras erradas-e-desprotegidas com erro no step reconciliam com os 91 já conhecidos). **4 ocorrências do
+mecanismo 1** — uma por execução (`175cd9f2…`, `26e300f1…`, `910fde1e…`, `a47d6e3b…`), 3 meses (2025-11 ×2,
+2026-05, 2026-06) — e **1 ocorrência do mecanismo 2**, no trace inteiro (`15f6ad52…`, 2026-05; abaixo do piso de
+recorrência de qualquer candidata a memória, ≥3 execuções e ≥2 meses, §7 Passo 5). Nas 5, o `managerAgent` chega a
+um `final_answer` real — a execução não trava — e **nenhuma bate nenhuma das três checagens**.
+
+| Fonte | Confirmado | Consequência medida (3 checagens na resposta real) |
+|---|---|---|
+| Mecanismo 1 (".get sem plano B") | **sim** — 4 ocorrências, universo exaustivo | 0/4 em qualquer checagem |
+| Mecanismo 2 ("guarda sobre chave fantasma") | **sim** — 1 ocorrência, universo exaustivo | 0/1 |
+| Dano à resposta entregue | — | não eleva `impact` nem muda `destino` |
+
+**Retratação.** Uma exploração anterior (fora do notebook, sem pré-registro) tinha chamado 2 de 3 casos olhados a
+dedo de "confirmado: chega a `final_answer` errado", e citado o caso do mecanismo 2 como "achado mais forte" sem
+contar quantas vezes ele acontece — usando uma lista de palavras inventada ("não encontr...", "ausente"...) sobre
+a saída **intermediária** do `ConversationAgent`, não a resposta real do `managerAgent`, nem um detector já
+testado. Com o universo completo e as três checagens, essa afirmação **não se sustenta** e é retirada — mesma
+disciplina do §2 de `01-racionais.md`: os dois mecanismos são reais e agora contados exaustivamente (5 ocorrências
+no total, não 2-3 a dedo); o dano à resposta, tal como afirmado antes, não é.
+
+**O que isso muda para a nº2.** `status` (`derived-and-checked`) e `destino` (`memória`) não mudam. `impact`
+continua `null` — a mesma razão de sempre: nenhuma proxy inventada substitui uma consequência medida, e aqui as
+três consequências medidas deram zero nas duas mecânicas. O que muda é `validation.analise_funda`, de `"pendente"`
+para este resultado. **O que isso não prova:** que a resposta entregue nesses 5 casos está factualmente completa
+ou correta — só que não há recusa explícita nem corrupção estrutural óbvia no texto. Essa é a pergunta de
+*groundedness*, ainda fora de escopo do v1 (`04-roadmap.md` item 1).
 
 ## 7 · O que a leitura dos papers refutou
 
