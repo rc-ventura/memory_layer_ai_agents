@@ -161,3 +161,17 @@ kept outside the agent.
 | Folder | What it analyzes |
 |---|---|
 | [`2026-09-trace-law-flow/`](2026-09-trace-law-flow/) | First raw trace (1,000 executions, Nov 2025 – Aug 2026): root-cause error taxonomy from step-level working memory, token/latency cost of failures, error propagation, cross-execution recurrence, silent-failure detectors, and the resulting memory-unit candidates. Grounded in four full-text-read taxonomy papers (`literature/`). Before presenting: `docs/03-procedimento-validacao.md` — pipeline audit, paper-reading order, and how to triangulate any number against a concrete raw-trace case (`pipeline/drill_down.py`); `docs/01-racionais.md` — the plain-language logic behind the analysis and what a robustness test is, for explaining rather than executing. |
+
+Standalone reference (PT, sits at `analysis/` root rather than inside a dated folder because it's written to
+be reusable groundwork for later analyses, not a one-pass deliverable):
+[`schema-e-taxonomia-de-erros.md`](schema-e-taxonomia-de-erros.md) — where the error lives in the raw trace
+(`ActionStep.error`), the N0→N4 symptom→mechanism→unit taxonomy cascade, and the guideline for the
+per-family study report. Its §7 named the genealogy Sankey before it existed; that figure now lives in
+`2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md` §1.1.
+
+**Portable-code watch.** `2026-09-trace-law-flow/pipeline/genealogia_sankey.py` renders that Sankey with a
+generic layout engine (barycenter column ordering + minimum node height for legibility — see its own
+docstring) that has no dependency on error taxonomy specifically; only the data-prep half of that file is
+analysis-specific. Not yet split into its own module — one caller isn't enough to validate the boundary — but
+if a future analysis needs a similarly legible many-node Sankey, that's the code to lift out, and `analysis/`
+(this level, not inside a dated folder) is the natural home for it.

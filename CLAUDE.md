@@ -13,6 +13,7 @@ This file is an index, not a rulebook — each doc below is the actual source of
 - **Open items across the project** → [`discussion/open-questions.md`](discussion/open-questions.md)
 - **The working memory-mechanism architecture ("knowledge as infra")** → [`discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md`](discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md) is the canonical single file (all inbound links point here); [`discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/`](discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/README.md) is a per-section **verbatim** split for reading — edit the canonical, not the fragments
 - **Raw-trace analyses (notebooks, findings reports, PII rules for derived data)** → [`analysis/README.md`](analysis/README.md)
+- **The error-genealogy methodology (family → signature → mechanism → unit → destination, all deterministic/rule-based — no LLM in the classification path)** → generic hypothesis (pre-article) in [`discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md`](discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md); schema + taxonomy groundwork in [`analysis/schema-e-taxonomia-de-erros.md`](analysis/schema-e-taxonomia-de-erros.md); the verified instantiation (numbers, functions, the genealogy Sankey) in [`analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md`](analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md)
 
 ## Session-specific operational notes
 

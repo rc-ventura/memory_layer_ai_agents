@@ -10,13 +10,13 @@ Cada item: o que fazer em uma frase + `→` onde está o contexto. Decisões de 
 
 - [ ] **Entregar ao tutor o doc de schema + taxonomia de erros** — pedido da reunião de 18/09: onde o erro
   mora no trace (`error` no `ActionStep`), a taxonomia do mais genérico ao mais específico, evidência no
-  cru. Serve de base para a query que extrai da base ~1M um dataset só de erros. → `08-schema-e-taxonomia-de-erros.md`
+  cru. Serve de base para a query que extrai da base ~1M um dataset só de erros. → [`../../schema-e-taxonomia-de-erros.md`](../../schema-e-taxonomia-de-erros.md)
 - [ ] **Relatório de estudo da taxonomia de erros** — logo depois da entrega ao tutor: cada família
   explicada + evidência no cru + `exec_id`s para `drill_down.py`, com o **gráfico-guia "genealogia"**
   (árvore `error` → família → assinatura → submecanismo → unidade de memória → decisão, contagem real por
   nó — **Sankey entregue 21/09 no `09-metodologia-erro-a-memoria.md` §1.1**, gerado por
   `pipeline/genealogia_sankey.py`; falta o aprofundamento família por família) e o teste de cobertura na
-  extração ~1M ("Não classificado" do `classify()` = candidato a erro novo). Guideline completo → `08-schema-e-taxonomia-de-erros.md` §7
+  extração ~1M ("Não classificado" do `classify()` = candidato a erro novo). Guideline completo → [`../../schema-e-taxonomia-de-erros.md`](../../schema-e-taxonomia-de-erros.md) §7
 - [ ] **Criar branch e commitar o trabalho** — convenção `YYYY-MM-DD-slug`; hoje há edições em `main` sem
   branch (docs 04/05/08, diário).
 
@@ -24,7 +24,7 @@ Cada item: o que fazer em uma frase + `→` onde está o contexto. Decisões de 
 
 | # | Item | Contexto |
 |---|---|---|
-| 1 | **Dataset de erros da base completa (~1M) via query** — montar a query com o tutor a partir do doc 08 (catch-all = `error` presente → `error.type` → `error.message`), replicar a §11 do notebook na base nova (teste de replicação das unidades nº2/nº10), confirmar semântica dos status 1/2/3/34 com a esteira | `08-*.md` · `open-questions.md` ("Second trace extraction") · `05-schema.md` §Aberto |
+| 1 | **Dataset de erros da base completa (~1M) via query** — montar a query com o tutor a partir do doc de schema (catch-all = `error` presente → `error.type` → `error.message`), replicar a §11 do notebook na base nova (teste de replicação das unidades nº2/nº10), confirmar semântica dos status 1/2/3/34 com a esteira | `../../schema-e-taxonomia-de-erros.md` · `open-questions.md` ("Second trace extraction") · `05-schema.md` §Aberto |
 | 2 | **Groundedness-como-presença (determinístico)** — tokens tipados (CNJ, CPF, data, valor) do `final_answer` checados contra observações anteriores; ordenar a fila pelo crosstab erro×resposta-entregue (310 execs); é o mesmo mecanismo do *Output-Fabrication* do item 13 | `01-racionais.md` §4 · `02-relatorio-achados.md` §3.1 |
 | 3 | **Detectores nos steps sem erro (91,4% nunca olhados)** — proxy determinístico primeiro: padrões de validação no `code_action` (`assert`, `if not`, `len(`, `try/except`) | `../literature/agentdebug-2509.25370.md` |
 | 4 | **Instruction Non-compliance** — erro nº1 do TRAIL (35,5%), nunca levanta exceção; detector por regra explícita do system prompt | `../literature/trail-2505.08638.md` §4 (#4) |

@@ -216,10 +216,16 @@ cada uma explicada e evidenciada no cru. Estrutura por família:
   fora), incluindo as famílias que **não** viram memória e por quê.
 
 **O gráfico-guia — a "genealogia".** O §3 mostra a cascata genérica N0→N4; o estudo a **ramifica por
-família**: `error` presente → `error.type` → família → assinatura → submecanismo → unidade → decisão, com
+família**: `error` presente → `error.type` → família → assinatura → submecanismo → unidade → destino, com
 a **contagem real em cada nó** (erros e execuções). É o mapa que responde de uma vez "de onde vem cada
-unidade de memória" e "que família ainda não tem roteamento" — hoje essa visão não existe em figura
-nenhuma (§8.1 mostra o Pareto de assinaturas, não a árvore).
+unidade de memória" e "que família ainda não tem roteamento" — **essa figura já existe**:
+[`pipeline/genealogia_sankey.py`](2026-09-trace-law-flow/pipeline/genealogia_sankey.py) gera o Sankey com
+contagem real por nó/aresta, embutido em
+[`2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md`](2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md)
+§1.1. Vai um passo além do que este parágrafo pedia: a última coluna não para em "decisão" (3 baldes) — nomeia
+o destino de cada unidade (`MEM <título>`/`HARNESS <título>`/`FORA <motivo>`), a mesma lição que já está em
+`UNI` (`base_pipeline.py`) e em `candidatos_memoria.csv`. §8.1 continua sendo o Pareto de assinaturas
+(1 nível); a genealogia é a árvore completa dos 5 níveis.
 
 **Cobertura / erro novo.** Na próxima extração (~1M records): todo erro cuja `error.message` cai no balde
 "Não classificado" do `classify()` é candidato a erro novo que a taxonomia ainda não viu — o relatório

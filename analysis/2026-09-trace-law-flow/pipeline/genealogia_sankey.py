@@ -26,6 +26,18 @@ continua somando 498 — a figura é uma decomposição de fluxo completa dos
 erros classificados. Uso:
 
     python3 genealogia_sankey.py
+
+Reaproveitamento por outra análise: `ordenar_colunas`, `calcular_ys`,
+`centralizar`, `dividir`, `ribbon_path` e o corpo de desenho de `render_png`
+não sabem o que é "família" nem "erro" — só consomem `(tot, arestas)`
+genéricos e desenham um Sankey de N colunas com o piso de altura mínima acima.
+É o motor reaproveitável se uma análise futura precisar da mesma figura
+legível. `preparar_dados`, `KEEP_SIG`/`KEEP_MEC`/`CURTO_MEM` e o resto do
+módulo são específicos desta classificação (`base_pipeline.py`) e não
+generalizam. Ainda não foi extraído para um módulo à parte por só ter um
+chamador até agora — quando aparecer o segundo, o candidato natural é
+`analysis/` (ao lado de `schema-e-taxonomia-de-erros.md`), que também não é
+amarrado a um trace específico.
 """
 
 import os
