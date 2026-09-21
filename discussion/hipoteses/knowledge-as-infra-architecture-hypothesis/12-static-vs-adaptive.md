@@ -2,7 +2,7 @@
 
 ## Static vs. adaptive memory — where each component could become adaptive, and where it shouldn't (added 27/08/2026)
 
-SSGM frames a distinction between **static memory systems** (Generative Agents, MemoryBank — content changes but operations are fixed rules) and **adaptive memory systems** (MemGPT, Memory-R1 — the operations themselves are learned policies). This architecture is **static by design** — all operations are fixed, auditable, deterministic rules. See the analysis in [`../papers/ssgm-2026.md`](../../papers/ssgm-2026.md) (the "Static vs. adaptive memory" section) for why static is the right choice for this domain (auditability, predictability, legal compliance). This section maps where each component *could* become adaptive in a v2, and where it explicitly should not.
+SSGM frames a distinction between **static memory systems** (Generative Agents, MemoryBank — content changes but operations are fixed rules) and **adaptive memory systems** (MemGPT, Memory-R1 — the operations themselves are learned policies). This architecture is **static by design** — all operations are fixed, auditable, deterministic rules. See the analysis in [`../papers/ssgm-2026.md`](../../../papers/ssgm-2026.md) (the "Static vs. adaptive memory" section) for why static is the right choice for this domain (auditability, predictability, legal compliance). This section maps where each component *could* become adaptive in a v2, and where it explicitly should not.
 
 **Governing principle: adaptive can calibrate parameters, never change rules.** Where the mechanism decides "how much" (thresholds, weights, decay rates), adaptive can learn. Where the mechanism decides "whether" (delete or not, validate or not, capture or not), it must remain fixed and governed.
 

@@ -234,7 +234,10 @@ def montar_unidades(E):
     EU["submecanismo"] = EU["err_msg"].apply(submecanismo)
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
+    sem_casa = set(EU["submecanismo"].unique()) - set(SUB2UNI)
+    assert not sem_casa, f"mecanismo sem casa em SUB2UNI: {sorted(sem_casa)}"
     EU["unidade"] = EU["submecanismo"].map(SUB2UNI)
+    assert EU["unidade"].notna().all(), "erro com unidade NaN após o map SUB2UNI"
     EU["ocorrencia"] = EU["cascata"].astype(str) + "|" + EU["unidade"]
     return EU
 

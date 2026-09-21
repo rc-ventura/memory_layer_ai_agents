@@ -14,7 +14,7 @@ Benchmarks three agent harnesses — OpenClaw, LangChain Deep Agents, and Hermes
 
 ## Relevance to the project
 
-The closest existing source to a three-way framework comparison — but it omits smolagents, which is why the project's [Hermes/smolagents/Deep-Agents comparison](../discussion/framework-comparison-hermes-smolagents-deepagents.md) is a defensible original contribution.
+The closest existing source to a three-way framework comparison — but it omits smolagents, which is why the project's [Hermes/smolagents/Deep-Agents comparison](../discussion/hipoteses/framework-comparison-hermes-smolagents-deepagents.md) is a defensible original contribution.
 
 ---
 Source review: [`deep-agents.md`](../literature-review/deep-agents.md)

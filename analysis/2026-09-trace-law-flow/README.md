@@ -23,6 +23,7 @@ unidade — virou conjunto proprio em 18/09/2026: docs 05–06 e o notebook `min
 | 5 | [`05-schema.md`](docs/05-schema.md) | O schema do trace cru: as 11 colunas, o campo de status, a estrutura de `txt_etap_memo`, o que ficou em aberto. | Quando precisar ler o trace na mao |
 | 6 | [`06-racionais-mineracao-unidades-n2-n10.md`](docs/06-racionais-mineracao-unidades-n2-n10.md) | A logica da segunda analise (mineracao nº2/nº10): os 8 passos pre-registrados, as analises fundas das duas unidades. Continua a numeracao do 01 (e a "§9 dos racionais"). | Depois do 01 — mesma funcao, outra analise |
 | 7 | [`07-relatorio-mineracao-unidades-n2-n10.md`](docs/07-relatorio-mineracao-unidades-n2-n10.md) | O relatorio da mineracao: o schema real derivado do trace (§6.1), as analises fundas de `validar_quebra_sigilo` (§6.2) e `get_available_documents` (§6.3). Continua a numeracao do 02. | Os numeros da segunda analise |
+| 8 | [`09-metodologia-erro-a-memoria.md`](docs/09-metodologia-erro-a-memoria.md) | O documento-metodo da cadeia de agregacao (erro, classify, submecanismo, SUB2UNI, unidade, triagem): os dois eixos paralelos, cardinalidades verificadas nos 498 erros, o exemplo trabalhado "Could not index" e o rastreio ponta a ponta com tres erros reais. E a instanciacao do metodo generico (pre-artigo) que vive em `discussion/hipoteses/trace-error-taxonomy-methodology/`. | Para ver a cadeia inteira num arquivo so — e o que cada grafico do notebook demonstra |
 
 ## Pipeline e ferramentas
 

@@ -116,7 +116,7 @@ Lendo §2.1 e §2.2:
 >
 > A ideia central: **o Memory Store não atua apagando — ele só decai.** Quem faz a gestão de deleção é outro componente (de repente o Update Engine). Porque aí teríamos um **gate**: por exemplo, "posso apagar isso?" (Update Engine) → ativa o gate de revisão humana.
 
-(Implicação: isso moveria o hard-delete de uma ação automática por threshold — como o componente E está esboçado hoje — para uma ação **gated e revisada**, dona de outro componente. Propagado em 27/08 pro doc de arquitetura, componentes [E](../discussion/knowledge-as-infra-architecture-hypothesis.md#e-forgetting--decay-plus-a-real-delete-step) e [G](../discussion/knowledge-as-infra-architecture-hypothesis.md#g-consolidation--an-open-gap-in-evolution-not-yet-a-designed-component-added-25082026), e pro [`open-questions.md`](../discussion/open-questions.md).)
+(Implicação: isso moveria o hard-delete de uma ação automática por threshold — como o componente E está esboçado hoje — para uma ação **gated e revisada**, dona de outro componente. Propagado em 27/08 pro doc de arquitetura, componentes [E](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#e-forgetting--decay-plus-a-real-delete-step) e [G](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#g-consolidation--an-open-gap-in-evolution-not-yet-a-designed-component-added-25082026), e pro [`open-questions.md`](../discussion/open-questions.md).)
 
 ---
 Source review: [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md)

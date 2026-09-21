@@ -23,13 +23,14 @@ query de origem — amostra, não população (`04-roadmap.md` item 3).
 | 3 | `cod_idef_cvsa_asnc` | id de conversa / fluxo assíncrono | nome **inferido** da abreviação |
 | 4 | `dat_hor_encm_exeo` | data/hora de encerramento — **só preenchida para status 3 e 34** | dado |
 | 5 | `txt_etap_memo` | JSON das etapas: `model_output` (thought), `code_action`, `observations`, `tool_calls`, `model_input_messages`, e a chamada `final_answer()` | dado |
-| 6 | `txt_vrvl_locl` | "variável local" — provável namespace Python persistido entre steps | nome **inferido** |
+| 6 | `txt_vrvl_locl` | namespace de variáveis locais do interpretador, por papel — **confirmado por inspeção do conteúdo (18/09)**, ver §`txt_vrvl_locl` abaixo | dado |
 | 7 | `txt_rspa_fina` | texto da resposta final (coluna dedicada) — **vazia para status 1** | dado |
 | 8 | `dat_hor_inio_exeo` | data/hora de início | dado |
 | 9 | `cod_vers_aget` | versão do agente | dado |
 | 10 | `anomesdia` | AAAAMMDD (int) | dado |
 
-⚠️ Nomes das colunas 3 e 6 são leitura da abreviação, não confirmados com a esteira.
+⚠️ Nome da coluna 3 é leitura da abreviação, não confirmado com a esteira. A coluna 6 foi confirmada por
+inspeção direta do conteúdo em 18/09/2026 (ver §`txt_vrvl_locl` abaixo).
 
 ## Estrutura de `txt_etap_memo` — os steps (medido em 16/09/2026, direto no trace)
 
@@ -40,6 +41,13 @@ em que aconteceram. Cada passo tem um discriminador `"__class__"`. **Nada aqui �
 conteúdo cru destes campos.
 
 **Censo (840 execuções com memória):** `TaskStep` **2.569** · `ActionStep` **5.781** · `PlanningStep` **46**.
+
+**Por que 840 e não 1.000** (medido 19/09, `json.loads` linha a linha): as 160 linhas restantes têm
+`txt_etap_memo` **vazio** — 159 são status 1, 1 é status 3. Não é JSON corrompido: **0 falhas de parse**
+entre as preenchidas. A execução existe na tabela mas o dump da working memory não veio — "com memória"
+no funil do §8.0 quer dizer *campo preenchido*, não "conseguimos ler". Por que o campo vem vazio é
+pergunta aberta para a esteira (relacionada a §Status: status 1 também não persiste encerramento nem
+resposta final — mas 713 execuções status 1 **têm** memória, então status não determina o vazio).
 
 ```json
 {
@@ -104,6 +112,24 @@ serialização de papel, ver `04-roadmap.md`). Campos (100% dos 46): `plan` (str
 **Não tem** `code_action`/`observations`/`error` — planeja, não executa. As versões antigas do pipeline o
 descartavam em silêncio; `drill_down.py caso` e o notebook já o incluem (`04-roadmap.md` item 10).
 
+## `txt_vrvl_locl` — o namespace de variáveis locais por papel (confirmado 18/09)
+
+Medido direto do CSV: presente em ~90% das execuções. JSON `{papel: {namespace}}` — o **estado final das
+variáveis Python** (`locals()` do executor smolagents) que o agente foi definindo nos `code_action` ao longo
+dos steps. Cada namespace mistura:
+
+- **internos do executor**: `__name__` (`"__main__"`), `_print_outputs` (buffer de print),
+  `_operations_count` (contador de operações);
+- **variáveis do agente**: tudo que foi atribuído step a step — ex. na execução `1be966e7` (`RespostaBacen`):
+  `id_reclamacao`, `evidencias`, `info_evidencias`, `reclamacao_texto`, `draft`, `resposta_org`, `quebra`,
+  `final_output`.
+
+Não contém steps nem erros — é o que **sobrou de estado** no fim da execução. Utilidade medida: guarda o
+**retorno real das ferramentas** como o agente o recebeu — na execução `1be966e7`, a variável `quebra`
+contém `{"vazamento_sigilo": "NAO", "justificativa": "..."}`, o campo real do contrato que o prompt induz a
+chamar de `quebra_sigilo` (evidência direta da unidade nº10, ver `06-racionais-mineracao-unidades-n2-n10.md`).
+Vale baixar junto no dataset de erros como contexto de estado.
+
 
 ## `cod_idef_stat_exeo_aget` (o campo "status")
 
@@ -145,8 +171,9 @@ coisas distintas.
 5. status 34 só desde abr/2026 — código novo? o que era antes?
 6. O status depende do *tipo* de agente (`cod_idef_aget` 1 e 2 são sempre status 1)?
 7. A extração de 1.000 linhas filtra por status?
-8. Confirmar os nomes das colunas 3 (`cod_idef_cvsa_asnc`) e 6 (`txt_vrvl_locl`).
+8. ~~Confirmar os nomes das colunas 3 e 6~~ — coluna 6 (`txt_vrvl_locl`) confirmada por inspeção do conteúdo
+   (18/09, ver §`txt_vrvl_locl`). Resta confirmar só a coluna 3 (`cod_idef_cvsa_asnc`).
 
 ---
-Extração e cross-tabs: `lzma.open` + `csv.reader`, 2026-09-10. A semântica dos códigos de status e os nomes
-das colunas 3/6 são **inferência** — confirmar com a esteira antes de citar como fato.
+Extração e cross-tabs: `lzma.open` + `csv.reader`, 2026-09-10. A semântica dos códigos de status e o nome
+da coluna 3 são **inferência** — confirmar com a esteira antes de citar como fato.

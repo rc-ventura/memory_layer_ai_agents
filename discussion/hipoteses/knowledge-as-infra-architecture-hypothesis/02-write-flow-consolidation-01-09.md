@@ -2,7 +2,7 @@
 
 ### Consolidação 01/09/2026 — três camadas operacionais, filtro determinístico unificado, gate nos dois caminhos
 
-Refina §A, §C e §D abaixo. Detalhe e trade-offs em [`promotion-policy-log-to-ltm.md`](../promotion-policy-log-to-ltm.md) (seção "Estratégias de promoção em consideração"). Continua hipótese — nada aqui é sign-off; veio de uma rodada longa de design em 01/09 (diário [01/09/2026](../../research-diary/Set/diario_campo_2026-08-31.md)), enquanto o SAGE ainda estava em leitura.
+Refina §A, §C e §D abaixo. Detalhe e trade-offs em [`promotion-policy-log-to-ltm.md`](../promotion-policy-log-to-ltm.md) (seção "Estratégias de promoção em consideração"). Continua hipótese — nada aqui é sign-off; veio de uma rodada longa de design em 01/09 (diário [01/09/2026](../../../research-diary/Set/diario_campo_2026-08-31.md)), enquanto o SAGE ainda estava em leitura.
 
 ```mermaid
 flowchart TB

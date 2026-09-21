@@ -1,8 +1,8 @@
-> **Sub-atividade:** 1.6 / 2.2 · **Type:** Nota de desenho — política ainda em aberto, não decidida · **Idioma:** português por decisão explícita (override por-arquivo, ver [`README.md`](README.md)) · **Logged:** 31/08/2026
+> **Sub-atividade:** 1.6 / 2.2 · **Type:** Nota de desenho — política ainda em aberto, não decidida · **Idioma:** português por decisão explícita (override por-arquivo, ver [`README.md`](../README.md)) · **Logged:** 31/08/2026
 
 # Política de promoção: log episódico → LTM recuperável
 
-Consolida o que hoje está fragmentado — os sub-bullets de 27/08 em [`open-questions.md`](open-questions.md), o item de 31/08 ("quem é dono do gate de admissão"), as notas de leitura do SAGE e do MemoryBank, e a seção "Static vs. adaptive" de [`../papers/ssgm-2026.md`](../papers/ssgm-2026.md). Surgiu de várias rodadas de conversa (28–31/08) em que ficou claro que a política de promoção nunca foi escrita como uma coisa só.
+Consolida o que hoje está fragmentado — os sub-bullets de 27/08 em [`open-questions.md`](../open-questions.md), o item de 31/08 ("quem é dono do gate de admissão"), as notas de leitura do SAGE e do MemoryBank, e a seção "Static vs. adaptive" de [`../papers/ssgm-2026.md`](../../papers/ssgm-2026.md). Surgiu de várias rodadas de conversa (28–31/08) em que ficou claro que a política de promoção nunca foi escrita como uma coisa só.
 
 ## O que "promoção" é — e o que não é
 
@@ -45,7 +45,7 @@ O "log episódico é *tudo*" da seção acima continua valendo: a camada 1 guard
 
 | Escrita | Gatilho | Quem dispara | Chamada de LLM? | Já é infra viva? |
 |---|---|---|---|---|
-| evento de pipeline → **trace no log (1)** | conclusão de stage publicada em tópico Kafka | sistema (não é tool do agente) | não | **sim** — cadastro já publica ao concluir ([checkpoint 21/08](../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md)); é o "banco de traces" que o tutor vai fornecer |
+| evento de pipeline → **trace no log (1)** | conclusão de stage publicada em tópico Kafka | sistema (não é tool do agente) | não | **sim** — cadastro já publica ao concluir ([checkpoint 21/08](../../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md)); é o "banco de traces" que o tutor vai fornecer |
 | log → **LTM recuperável (2)** | `R = e^(−τ/S) ≥ θ1`, avaliado numa cadência (sweep agendado + bump no recall) | **mecanismo determinístico separado** (lean — ver item 9) | **não** | não — é a política desta nota |
 | traces → **proposta de estratégia** | scan em lote agendado (default do tutor) · severidade cumulativa · gatilho humano — com **filtro heurístico determinístico como 1ª etapa** (tamanho do trace, nº de tool calls, distribuição de 👎, outlier vs. distribuição) | Update Engine (componente C) | sim — map-reduce de LLMs, **só nos sobreviventes do filtro** | não |
 | proposta → **commit na strategy layer (3)** | chamada `propose_memory_update` | Commit Gate (componente D) | sim (NLI `∆M ∧ M_core ⊨ ⊥`) | não |
@@ -85,7 +85,7 @@ São filtros com propósitos diferentes sobre o mesmo pool de traces — um deci
 
 ### O que o SSGM contribui aqui — e o que não
 
-O Princípio 1 do SSGM é **trigger-agnostic** por desenho: desacopla "o que dispara a escrita" de "como a escrita é validada", e entrega só o segundo (o Write Validation Gate). A lista de gatilhos que ele cita (decisão RL de ADD, hook de fim-de-subtarefa, timer de N turnos, detecção de erro, reflexão gerada) é catálogo de opções, não recomendação. A definição do nosso gatilho é decisão de projeto — o SSGM não a fornece, só confirma que ela é separada da validação. Ver [`../papers/ssgm-2026.md`](../papers/ssgm-2026.md) → "SSGM's design principles — P1".
+O Princípio 1 do SSGM é **trigger-agnostic** por desenho: desacopla "o que dispara a escrita" de "como a escrita é validada", e entrega só o segundo (o Write Validation Gate). A lista de gatilhos que ele cita (decisão RL de ADD, hook de fim-de-subtarefa, timer de N turnos, detecção de erro, reflexão gerada) é catálogo de opções, não recomendação. A definição do nosso gatilho é decisão de projeto — o SSGM não a fornece, só confirma que ela é separada da validação. Ver [`../papers/ssgm-2026.md`](../../papers/ssgm-2026.md) → "SSGM's design principles — P1".
 
 ## O esqueleto que está decidido
 
@@ -94,7 +94,7 @@ O Princípio 1 do SSGM é **trigger-agnostic** por desenho: desacopla "o que dis
 - **Reforço:** `S → S+1` a cada recall (spacing effect, MemoryBank).
 - **Regra de corte:** `R ≥ θ1` → promove.
 - **Volume alvo:** ~20–30% do log (estimativa, não medido).
-- **Natureza:** política **estática** por design — regra fixa, auditável, determinística; `θ1` é *calibrado* (Sub 1.6/1.7), não aprendido. Ver [`../papers/ssgm-2026.md`](../papers/ssgm-2026.md) (static vs. adaptive).
+- **Natureza:** política **estática** por design — regra fixa, auditável, determinística; `θ1` é *calibrado* (Sub 1.6/1.7), não aprendido. Ver [`../papers/ssgm-2026.md`](../../papers/ssgm-2026.md) (static vs. adaptive).
 - **`θ1` não é portável:** nem da escala de "poignancy" social do SAGE, nem do "150" do Generative Agents — calibração do zero.
 - **A nossa versão não tem o tier STM do SAGE.** No SAGE há três faixas (`R ≥ θ1` fica em STM / `θ2 ≤ R < θ1` promove pra LTM / `R < θ2` descarta). Aqui o log episódico é *tudo*, e a promoção é log→índice-LTM — por isso a regra de faixas do SAGE não mapeia direto e virou um limiar só. A banda exata é ponto em aberto (ver abaixo).
 
@@ -109,16 +109,16 @@ Esqueleto existe (a fórmula-sketch acima). Falta: (a) confirmar **que campos es
 Se um trace **não está indexado**, ele não é retornado pelo `recall_memory` — então como "ganha" o `+1`? Candidatos: (a) só conta recall de itens **já promovidos** — nesse caso o reforço **mantém** promovido, não promove de início; (b) as leituras do Update Engine sobre o log contam como "recall" — aí um trace muito lido pela reflexão poderia subir. Não decidido. Lean: (a) — o reforço é mecanismo de *permanência*, não de *entrada*.
 
 ### 3. Decay temporal — rebaixa ou descarta?
-`R` cai com `τ`. Um trace promovido, velho e não usado, cai abaixo de `θ1`. Ele então: (a) é **rebaixado** (sai do índice, volta a ser só log)? (b) é **descartado** (hard-delete)? Liga direto com o item aberto "hard-delete automático vs. gated" do componente E ([`open-questions.md`](open-questions.md)). Lean provável: rebaixamento é automático e barato (sai do índice); hard-delete do **log** é outra decisão, gated.
+`R` cai com `τ`. Um trace promovido, velho e não usado, cai abaixo de `θ1`. Ele então: (a) é **rebaixado** (sai do índice, volta a ser só log)? (b) é **descartado** (hard-delete)? Liga direto com o item aberto "hard-delete automático vs. gated" do componente E ([`open-questions.md`](../open-questions.md)). Lean provável: rebaixamento é automático e barato (sai do índice); hard-delete do **log** é outra decisão, gated.
 
 ### 4. Sinal de falha — vai pra LTM recuperável ou só pra reflexão? *(o mais importante)*
 Um trace com 👎 ou desfecho adverso (do Signal Ledger): (a) entra na LTM recuperável, pra o agente ver "teve um caso assim que deu errado" (exemplar cautelar); ou (b) **não** entra no espaço de retrieval — só alimenta a reflexão do Update Engine, que destila a lição pra strategy layer. Risco de (a): encher o espaço de retrieval de falhas pode enviesar o agente / degradar o sinal. Risco de (b): perde-se o exemplar concreto negativo, que às vezes ensina mais que a regra abstrata. **Não decidido — e é uma bifurcação real de desenho.** O worked example do doc de arquitetura sugere que o agente recebe "relevant past episodes" (poderia incluir cautelares), mas não crava.
 
 ### 5. Cap de capacidade
-O índice LTM tem orçamento finito. Quando cheio: evicta o de menor `R` (padrão **Priority Decay** / "forgetting-by-design" — achado da leitura do SSGM, [`../papers/ssgm-2026.md`](../papers/ssgm-2026.md), demonstrado no FiFA benchmark: política de esquecimento *bounded, budget-aware* reduz custo E preserva coerência/privacidade). Não desenhado. Precisa de: tamanho do orçamento, e se a eviction é por `R` puro ou ponderada (ex.: proteger grande causa). A eviction aqui é **remoção de verdade** do índice recuperável (não de-priorização de ranking) — mapeia na faixa `R < θ2 → descarta` do MemorySyntax do SAGE, e é segura *só* porque a camada 1 continua consultável (§"Escotilha de escape"). Essa faixa **não** se aplica à camada 1 (log que não apaga).
+O índice LTM tem orçamento finito. Quando cheio: evicta o de menor `R` (padrão **Priority Decay** / "forgetting-by-design" — achado da leitura do SSGM, [`../papers/ssgm-2026.md`](../../papers/ssgm-2026.md), demonstrado no FiFA benchmark: política de esquecimento *bounded, budget-aware* reduz custo E preserva coerência/privacidade). Não desenhado. Precisa de: tamanho do orçamento, e se a eviction é por `R` puro ou ponderada (ex.: proteger grande causa). A eviction aqui é **remoção de verdade** do índice recuperável (não de-priorização de ranking) — mapeia na faixa `R < θ2 → descarta` do MemorySyntax do SAGE, e é segura *só* porque a camada 1 continua consultável (§"Escotilha de escape"). Essa faixa **não** se aplica à camada 1 (log que não apaga).
 
 ### 6. Redundância / dedup na promoção
-50 traces "cadastro simples, sem erro" passam em `θ1` = index bloat sem ganho de sinal (degrada retrieval pro agente). Um check de quase-duplicados no momento da promoção limitaria quantos near-duplicates entram. É o gap de **Consolidation** (componente G, [`knowledge-as-infra-architecture-hypothesis.md`](knowledge-as-infra-architecture-hypothesis.md#g-consolidation--an-open-gap-in-evolution-not-yet-a-designed-component-added-25082026)) aplicado à entrada da LTM. DarwinMem ([`../papers/reading-queue.md`](../papers/reading-queue.md) #42) tem um padrão adjacente (poda por *survival value*). Não desenhado.
+50 traces "cadastro simples, sem erro" passam em `θ1` = index bloat sem ganho de sinal (degrada retrieval pro agente). Um check de quase-duplicados no momento da promoção limitaria quantos near-duplicates entram. É o gap de **Consolidation** (componente G, [`knowledge-as-infra-architecture-hypothesis.md`](knowledge-as-infra-architecture-hypothesis.md#g-consolidation--an-open-gap-in-evolution-not-yet-a-designed-component-added-25082026)) aplicado à entrada da LTM. DarwinMem ([`../papers/reading-queue.md`](../../papers/reading-queue.md) #42) tem um padrão adjacente (poda por *survival value*). Não desenhado.
 
 ### 7. Cadência de avaliação do gate
 O gate roda: (a) **agendado** (varre o log a cada X)? (b) **on-recall** (reavalia `R` quando o item é acessado)? (c) **os dois** (é o que o SAGE faz — decay contínuo + salto de `S` no recall que pode reempurrar `R` acima de `θ1`)? Não decidido.
@@ -127,11 +127,11 @@ O gate roda: (a) **agendado** (varre o log a cada X)? (b) **on-recall** (reavali
 O DMF-lite foi desenhado pra **importância no write** (quanto este caso importa *agora*), não pra **relevância de retrieval ao longo do tempo**. As duas metas podem divergir. Reusar o mesmo `S` é mais simples e coerente com o princípio de não duplicar sinais; um "promotion score" separado é mais fiel ao propósito. Não decidido.
 
 ### 9. Dono do gate — mecanismo separado ou o Update Engine?
-Item registrado em 31/08 no [`open-questions.md`](open-questions.md). Lean documentado: **mecanismo determinístico separado** (`R ≥ θ1`, sem LLM, no caminho quente/morno), distinto do Update Engine (LLM, lote, cold path). Colar (9) no Update Engine poria uma chamada de LLM no caminho de admissão — granularidade e custo errados. A linguagem "curador" da reunião de 28/08 borrou os dois; precisa de decisão explícita.
+Item registrado em 31/08 no [`open-questions.md`](../open-questions.md). Lean documentado: **mecanismo determinístico separado** (`R ≥ θ1`, sem LLM, no caminho quente/morno), distinto do Update Engine (LLM, lote, cold path). Colar (9) no Update Engine poria uma chamada de LLM no caminho de admissão — granularidade e custo errados. A linguagem "curador" da reunião de 28/08 borrou os dois; precisa de decisão explícita.
 
 ## Estratégias de promoção em consideração (added 01/09/2026)
 
-Rodada de conversa de 01/09 (diário [01/09/2026](../research-diary/Set/diario_campo_2026-08-31.md)). **Posição do Rafael (01/09): tem que haver um gate de promoção — "não podemos armazenar ruído" (requisito do tutor, 28/08).** Isso descarta a Estratégia 1 (promover sem filtro) como mecanismo primário do v1. O que fica em aberto não é *se* há gate, mas *qual o critério* dele.
+Rodada de conversa de 01/09 (diário [01/09/2026](../../research-diary/Set/diario_campo_2026-08-31.md)). **Posição do Rafael (01/09): tem que haver um gate de promoção — "não podemos armazenar ruído" (requisito do tutor, 28/08).** Isso descarta a Estratégia 1 (promover sem filtro) como mecanismo primário do v1. O que fica em aberto não é *se* há gate, mas *qual o critério* dele.
 
 O esqueleto acima assume um critério — `R ≥ θ1` com `S` DMF-lite. Ele depende de dois fatos ainda não verificados: (i) se os campos estruturados pro `S` existem no banco de traces / nos eventos Kafka — **a checar analisando o trace real** (item 1); (ii) `θ1` só calibra com traces anotados (Sub 1.6/1.7). Enquanto isso não fecha, um critério booleano mais simples (Estratégia 2) é o candidato do v1.
 
@@ -155,7 +155,7 @@ A camada 3 (strategy layer) continua sendo a destilação de **segunda ordem** �
 **Fundamento (papers do repo):**
 
 - **Generative Agents** (Park et al. 2023) — árvore de reflexão: observações → reflexões → reflexões de 2ª ordem, todas no mesmo *memory stream* recuperável. Precedente direto de "exemplar + reflexão num store só, tipados".
-- **SAGE** (arXiv:2409.00872) — promove os `r` (self-reflection results) pra LTM, não a trajetória crua. **MemorySyntax é otimização *linguística*** (curva de Ebbinghaus + reescrita da unidade para força maior, `S* > S`): a premissa "conceito claro e resumido retém e recupera melhor que log cru ou texto confuso" é o precedente de o tipo `reflexão` (baixa entropia, curado pelo Update Engine no cold path) ser pareado ao `exemplar` cru — e de nascer com `S` inicial **maior** (ver "Em aberto" abaixo). Ver [`../papers/sage-2026.md`](../papers/sage-2026.md) → seção de mecânica, "MemorySyntax como otimização linguística". **Leitura concluída do Rafael (02/09/2026):** os **Dual Triggers** do SAGE são um segundo ângulo do mesmo precedente — a `M_L` do SAGE já é implicitamente **tipada por caminho de escrita**: Time trigger (info decaída, `θ2 ≤ R < θ1`, sem lição) ≈ `exemplar`; Content trigger (`rₜ`, lição aprendida) ≈ `reflexão`. Ressalva: "episódico/semântico" é rótulo da nossa taxonomia (Hu/Liu), não do SAGE; e a metade "`exemplar` vindo do decaimento" é menos especificada no paper que o caminho do `rₜ`.
+- **SAGE** (arXiv:2409.00872) — promove os `r` (self-reflection results) pra LTM, não a trajetória crua. **MemorySyntax é otimização *linguística*** (curva de Ebbinghaus + reescrita da unidade para força maior, `S* > S`): a premissa "conceito claro e resumido retém e recupera melhor que log cru ou texto confuso" é o precedente de o tipo `reflexão` (baixa entropia, curado pelo Update Engine no cold path) ser pareado ao `exemplar` cru — e de nascer com `S` inicial **maior** (ver "Em aberto" abaixo). Ver [`../papers/sage-2026.md`](../../papers/sage-2026.md) → seção de mecânica, "MemorySyntax como otimização linguística". **Leitura concluída do Rafael (02/09/2026):** os **Dual Triggers** do SAGE são um segundo ângulo do mesmo precedente — a `M_L` do SAGE já é implicitamente **tipada por caminho de escrita**: Time trigger (info decaída, `θ2 ≤ R < θ1`, sem lição) ≈ `exemplar`; Content trigger (`rₜ`, lição aprendida) ≈ `reflexão`. Ressalva: "episódico/semântico" é rótulo da nossa taxonomia (Hu/Liu), não do SAGE; e a metade "`exemplar` vindo do decaimento" é menos especificada no paper que o caminho do `rₜ`.
 - **ExpeL** — extração de insights/regras cross-trajectory (a destilação de 2ª ordem → strategy).
 - **A-MEM** — notas semânticas que evoluem quando entra nota nova.
 - **Learning from Supervision with Semantic and Episodic Memory (2025)** — adaptação reflexiva com as duas memórias.
@@ -165,7 +165,7 @@ A camada 3 (strategy layer) continua sendo a destilação de **segunda ordem** �
 1. **Perde o raciocínio por precedente** — recuperar o caso concreto parecido e adaptar é como o jurídico raciocina; a reflexão abstrata não substitui o exemplar (ver item 4).
 2. **Põe o LLM no caminho de escrita de toda memória recuperável** — hoje a promoção de `exemplar` é determinística, zero LLM, auditável (diferencial vs. Mem0 + requisito de auditoria). Manter o tipo `exemplar` preserva esse caminho; o tipo `reflexão` aceita o LLM porque já é cold path (Update Engine).
 
-**Em aberto:** se o `recall_memory` mistura os dois tipos no mesmo ranking ou o agente pede um tipo ("caso parecido" vs. "lição"); e se o `S` inicial de uma `reflexão` (que nasce curada) deve ser maior que o de um `exemplar`. **Lean (02/09/2026): maior** — o `S* > S` do MemorySyntax do SAGE é o fundamento (uma representação curada, de baixa entropia, decai mais devagar por construção). Ver [`../papers/sage-2026.md`](../papers/sage-2026.md).
+**Em aberto:** se o `recall_memory` mistura os dois tipos no mesmo ranking ou o agente pede um tipo ("caso parecido" vs. "lição"); e se o `S` inicial de uma `reflexão` (que nasce curada) deve ser maior que o de um `exemplar`. **Lean (02/09/2026): maior** — o `S* > S` do MemorySyntax do SAGE é o fundamento (uma representação curada, de baixa entropia, decai mais devagar por construção). Ver [`../papers/sage-2026.md`](../../papers/sage-2026.md).
 
 ### Provenância entre camadas — precondição da reconciliação reversível (added 01/09/2026)
 
@@ -196,7 +196,7 @@ Ponto do Rafael (01/09): **os dois writes gerados pelo Update Engine** — a 1ª
 **Assimetria de gatilho 👍/👎:**
 
 - **Filtro determinístico → camada 2** (1ª etapa, antes do Update Engine): usa 👍 **e** 👎 — um 👍 marca um exemplar positivo que vale ser recuperável.
-- **Gatilho → camada 3** (passo da strategy): **ponderado pro negativo** — 👎, desfecho adverso, severidade cumulativa, ou **N casos similares acumulados** viram candidatos a regra. Destila-se regra corretiva de falha, não do que já deu certo. Bate com o registro de [31/08](../research-diary/Set/diario_campo_2026-08-31.md): trigger do Update Engine = feedback negativo, não o positivo.
+- **Gatilho → camada 3** (passo da strategy): **ponderado pro negativo** — 👎, desfecho adverso, severidade cumulativa, ou **N casos similares acumulados** viram candidatos a regra. Destila-se regra corretiva de falha, não do que já deu certo. Bate com o registro de [31/08](../../research-diary/Set/diario_campo_2026-08-31.md): trigger do Update Engine = feedback negativo, não o positivo.
 - **Nuance de 31/08 preservada:** o *gatilho* da camada 3 é negativo, mas o Update Engine, quando roda, **lê sucesso E falha** como contexto da reflexão (contraste ExpeL-style). Trigger ≠ input.
 
 ### Estratégia 1 — janela sem filtro ("promote-all + forget-by-disuse")
@@ -231,7 +231,7 @@ Falta travar: (i) quais desses sinais existem de fato no banco de traces (bloque
 
 ### Observabilidade (Datadog) como fonte do filtro de anomalia (added 02/09/2026)
 
-Ponto do Rafael (02/09): a plataforma **já tem uma camada de observabilidade usando Datadog** (afirmação do Rafael — confirmar contra o [checkpoint de infra de 21/08](../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md) / o tutor; "infra viva vs. proposta"). Ela pode disparar sinais de anomalia sobre **traces individuais ou grupos de traces** (spans, agregados por serviço/coorte) — mais uma fonte para o **filtro determinístico de anomalia** já definido acima, sem LLM e já instrumentada.
+Ponto do Rafael (02/09): a plataforma **já tem uma camada de observabilidade usando Datadog** (afirmação do Rafael — confirmar contra o [checkpoint de infra de 21/08](../../docs/checkpoints/checkpoint-2026-08-21-infra-arquitetura.md) / o tutor; "infra viva vs. proposta"). Ela pode disparar sinais de anomalia sobre **traces individuais ou grupos de traces** (spans, agregados por serviço/coorte) — mais uma fonte para o **filtro determinístico de anomalia** já definido acima, sem LLM e já instrumentada.
 
 - **Sinais candidatos:** outlier de latência, spike de taxa de erro, contagem de retry, taxa de falha de tool call, anomalia de span, desvio de throughput.
 - **Ressalva do Rafael:** vários desses são **difíceis de atribuir** — latência, por exemplo, não necessariamente melhora com uma memory layer efetiva (um trace lento pode ser infra instável ou latência do modelo, não sinal de aprendizado). Então anomalia de observabilidade é **sinal fraco/ambíguo**: diz "este trace/grupo foi anormal", não "este trace é instrutivo". Entra **ponderado/combinado** no filtro, nunca como gatilho único — mesma lógica de erro→recuperação ser sub-sinal e não o filtro inteiro.
@@ -251,7 +251,7 @@ A regra `R = e^(−τ/S) ≥ θ1` está fazendo dois trabalhos: decidir **entrad
 
 | Trabalho | O que faz na promoção | O que a gente pega / muda |
 |---|---|---|
-| **SAGE** (arXiv:2409.00872) 🔎 | Gate STM→LTM com **duas** faixas θ1>θ2, `S(Iₜ)=H(Iₜ)/f(t)` *entropy-weighted*, cap de capacidade. MemorySyntax é otimização *linguística* — reescreve a unidade para força maior (`S* > S`); texto limpo retém/recupera melhor que log cru. Leitura do Rafael (02/09/2026): **"Dual Triggers"** — *Time* (`R` cai na faixa `θ2 ≤ R < θ1` → transfere pra LTM; `R < θ2` → descarta) **e**, independente, *Content* (`rₜ` da resolução de erro com o Checker → `M_L ∪ {rₜ}` direto, sem limiar). Ver [`../papers/sage-2026.md`](../papers/sage-2026.md) | Do *Time trigger* pegamos a ideia do gate com threshold + cap; **mudamos** `S` (DMF-lite determinístico, não entropia — só a metade `f(t)` sobrevive, como `S→S+1` no recall) e o layering (sem tier STM próprio → 3 faixas viram 1 limiar). O *Content trigger* é precedente do sub-sinal **erro→recuperação** (Estratégia 2) e mapeia no caminho de **reflexão** (Update Engine → strategy / tipo `reflexão`), não no gate determinístico — e o SAGE escreve `rₜ` na LTM **sem** gate de governança, o gap que o Commit Gate (D) fecha. Da otimização linguística: o tipo `reflexão` é a nossa instância (destilação no cold path, não no gate); `S` inicial de `reflexão` > `exemplar` (fundamento `S* > S`); a faixa `R < θ2 → descarta` mapeia na eviction por cap da camada 2, **não** na camada 1 |
+| **SAGE** (arXiv:2409.00872) 🔎 | Gate STM→LTM com **duas** faixas θ1>θ2, `S(Iₜ)=H(Iₜ)/f(t)` *entropy-weighted*, cap de capacidade. MemorySyntax é otimização *linguística* — reescreve a unidade para força maior (`S* > S`); texto limpo retém/recupera melhor que log cru. Leitura do Rafael (02/09/2026): **"Dual Triggers"** — *Time* (`R` cai na faixa `θ2 ≤ R < θ1` → transfere pra LTM; `R < θ2` → descarta) **e**, independente, *Content* (`rₜ` da resolução de erro com o Checker → `M_L ∪ {rₜ}` direto, sem limiar). Ver [`../papers/sage-2026.md`](../../papers/sage-2026.md) | Do *Time trigger* pegamos a ideia do gate com threshold + cap; **mudamos** `S` (DMF-lite determinístico, não entropia — só a metade `f(t)` sobrevive, como `S→S+1` no recall) e o layering (sem tier STM próprio → 3 faixas viram 1 limiar). O *Content trigger* é precedente do sub-sinal **erro→recuperação** (Estratégia 2) e mapeia no caminho de **reflexão** (Update Engine → strategy / tipo `reflexão`), não no gate determinístico — e o SAGE escreve `rₜ` na LTM **sem** gate de governança, o gap que o Commit Gate (D) fecha. Da otimização linguística: o tipo `reflexão` é a nossa instância (destilação no cold path, não no gate); `S` inicial de `reflexão` > `exemplar` (fundamento `S* > S`); a faixa `R < θ2 → descarta` mapeia na eviction por cap da camada 2, **não** na camada 1 |
 | **MemoryBank** (arXiv:2305.10250) ✅ | `R = e^(−Δt/S)`, `S→S+1` no recall, **só de-prioritiza no ranking, nunca promove nem apaga** | Pegamos a fórmula e o reforço; **adicionamos** a promoção seletiva (que o MemoryBank não tem) e, no componente E, o hard-delete (que ele também não tem) |
 | **SSGM** (arXiv:2603.11768) 🔎 | "forgetting-by-design", budget-aware (FiFA / Priority Decay) | Sustenta o cap de capacidade (item 5) como decisão de projeto, não damage control |
 | **DarwinMem** (arXiv:2601.22528) 📝 | *Utility-driven Natural Selection* — poda unidades por *survival value* | Padrão adjacente pros itens 5–6 (poda/dedup por utilidade); domínio GUI, não jurídico — pegar o padrão, não a implementação |
@@ -259,7 +259,7 @@ A regra `R = e^(−τ/S) ≥ θ1` está fazendo dois trabalhos: decidir **entrad
 ## Perguntas objetivas (pro tutor / pra quando a base de traces chegar)
 
 1. Que **campos estruturados** o pipeline emite hoje que serviriam pro `S` DMF-lite? (item 1)
-2. A base de traces atual guarda **trajetória completa** ou só desfecho? (pré-condição do chunking, item que já está em [`open-questions.md`](open-questions.md))
+2. A base de traces atual guarda **trajetória completa** ou só desfecho? (pré-condição do chunking, item que já está em [`open-questions.md`](../open-questions.md))
 3. Um trace de **falha** deve ficar recuperável pelo agente, ou só alimentar a reflexão? (item 4 — decisão de produto tanto quanto técnica)
 4. Há um **orçamento** natural pro índice LTM (custo de vetor DB, latência alvo do Sub 3.6)? (item 5)
 5. O gate de promoção é peça separada do curador, ou o tutor espera que "o curador" faça tudo? (item 9)
@@ -269,12 +269,12 @@ A regra `R = e^(−τ/S) ≥ θ1` está fazendo dois trabalhos: decidir **entrad
 - Itens 1, 2, 5: destravam ao **inspecionar a base de traces real** (o tutor vai fornecer).
 - Itens 3, 4, 8, 9: decisão de desenho, a fechar **antes do Sub 2.2 travar**.
 - Itens 6, 7, e a calibração de `θ1`: **POC do Sub 1.6/1.7** — não dá pra calibrar `θ1` sem rodar contra traces reais anotados.
-- A política inteira é **estática** — todos os parâmetros externalizados como config, calibrados à mão no v1 (adaptive calibration é v2 direction, ver [`../papers/ssgm-2026.md`](../papers/ssgm-2026.md)).
+- A política inteira é **estática** — todos os parâmetros externalizados como config, calibrados à mão no v1 (adaptive calibration é v2 direction, ver [`../papers/ssgm-2026.md`](../../papers/ssgm-2026.md)).
 
 ## Links
 
-- Fragmentos que esta nota consolida: [`open-questions.md`](open-questions.md) (sub-bullets de 27/08 sobre o SAGE-style promotion gate + item de 31/08 sobre o dono do gate)
+- Fragmentos que esta nota consolida: [`open-questions.md`](../open-questions.md) (sub-bullets de 27/08 sobre o SAGE-style promotion gate + item de 31/08 sobre o dono do gate)
 - Arquitetura: [`knowledge-as-infra-architecture-hypothesis.md`](knowledge-as-infra-architecture-hypothesis.md) — componente A (Memory Store + write-path snapshot), E (Forgetting), G (Consolidation)
 - Sibling: [`component-a-tutor-meeting-prep.md`](component-a-tutor-meeting-prep.md) — briefing do componente A pro tutor
-- Leitura: [`../papers/ssgm-2026.md`](../papers/ssgm-2026.md), [`../papers/memorybank-2023.md`](../papers/memorybank-2023.md), [`../papers/reading-queue.md`](../papers/reading-queue.md) (SAGE #19, DarwinMem #42)
-- Diário: [31/08/2026](../research-diary/Set/diario_campo_2026-08-31.md)
+- Leitura: [`../papers/ssgm-2026.md`](../../papers/ssgm-2026.md), [`../papers/memorybank-2023.md`](../../papers/memorybank-2023.md), [`../papers/reading-queue.md`](../../papers/reading-queue.md) (SAGE #19, DarwinMem #42)
+- Diário: [31/08/2026](../../research-diary/Set/diario_campo_2026-08-31.md)

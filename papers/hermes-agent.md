@@ -14,7 +14,7 @@ A closed learning loop that (a) tracks multi-step tasks in an episodic layer (ev
 
 ## Relevance to the project
 
-A production embodiment of the project's thesis (session history → reusable rules/skills with a native learning loop); skill-file transparency and trust-tiering (builtin > official > community) are attractive for auditable legal use. One pole of the [three-way framework comparison](../discussion/framework-comparison-hermes-smolagents-deepagents.md).
+A production embodiment of the project's thesis (session history → reusable rules/skills with a native learning loop); skill-file transparency and trust-tiering (builtin > official > community) are attractive for auditable legal use. One pole of the [three-way framework comparison](../discussion/hipoteses/framework-comparison-hermes-smolagents-deepagents.md).
 
 **Note:** Claims come from vendor docs/blogs, not independent peer review. A fan site (hermes-agent.ai) is unaffiliated — cite the official repo/docs (hermes-agent.nousresearch.com).
 

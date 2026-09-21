@@ -14,7 +14,7 @@ A minimalist library ("the logic for agents fits in ~1,000 lines of code") whose
 
 ## Relevance to the project
 
-Transparent, inspectable short-term/working memory with full programmatic control, but no native long-term learning loop or automatic session→skill consolidation — the contrast that motivates the project. Recommended substrate for the controlled update mechanism (memory fully exposed) in the review's [Recommendations](../literature-review/memory-in-ai-agents.md#recommendations). Other pole of the [three-way framework comparison](../discussion/framework-comparison-hermes-smolagents-deepagents.md).
+Transparent, inspectable short-term/working memory with full programmatic control, but no native long-term learning loop or automatic session→skill consolidation — the contrast that motivates the project. Recommended substrate for the controlled update mechanism (memory fully exposed) in the review's [Recommendations](../literature-review/memory-in-ai-agents.md#recommendations). Other pole of the [three-way framework comparison](../discussion/hipoteses/framework-comparison-hermes-smolagents-deepagents.md).
 
 ---
 Source review: [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md)
