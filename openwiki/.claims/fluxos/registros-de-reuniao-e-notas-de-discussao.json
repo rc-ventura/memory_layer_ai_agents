@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:3f9e164f1cc9ee11e06bdece09ba48a116fe35bf8ab7c7f7583985ffa3685c0f",
+  "pageVersion": "sha256:60349d75128bf3061d5bea334172f2f53812d6cb58bcb202698903d8a7654a57",
   "claims": [
     {
       "id": "claim_3de9ef0f8f5b4135b5f156273d6f4681",
@@ -54,17 +54,27 @@
     },
     {
       "id": "claim_19098c4783bd44cfb452a0d53550c360",
-      "statement": "The discussion/checkpoint-2026-08-20-reflections.md note demonstrates the meeting-record pattern's analytical layer: it quotes the tutor's unprompted description of the memory mechanism ('corrija a memória... não retreinando') as the primary source for the project's harness-not-retraining scope decision, which previously lacked a citable primary source.",
+      "statement": "The discussion/reflexoes/checkpoint-2026-08-20-reflections.md note demonstrates the meeting-record pattern's analytical layer: it quotes the tutor's unprompted description of the memory mechanism ('corrija a memória... não retreinando') as the primary source for the project's harness-not-retraining scope decision, which previously lacked a citable primary source.",
       "evidence": [
         {
-          "resource": "repo://discussion/checkpoint-2026-08-20-reflections.md#L7-L11",
-          "version": "repo-lines-v1:sha256:46e5b7de5a37b06a23552bba93f8a9be7414929195c27f067e0e32ba292a695f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzc1NmZhN2JjMTdhOGMxOTllMTk5NDBhNjYyZjE0YzE5ZjYyODQ2ZjUxNmViYzAwZjkxZTU1ZTdlMjQ3NGMwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTFhYTgxOThlNjRmNzVkOTcwMjc1NzM1MTVkOWMwNmQzNjdmNmM4Y2JhMmRhZGYxMDgxZmJmZjk4NTVmNWUwNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI2MTM3NWNjZGVjNDFlZjAxYmZkNzNjZjUyZWRhYjcyMDllZmQ0NGNiZjFhNGQwMjM3Y2NlNDgwZTgzYmY0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGNkNTVjYzY3YzZkMjhlODY3NmU0MDI4YmVhNGM0YTY4NWRiMmY3OGM2NjU5NmExN2MyNmRkMTc2M2Y1YTVmNCJ9"
+          "resource": "repo://discussion/reflexoes/checkpoint-2026-08-20-reflections.md#L7-L11",
+          "version": "repo-lines-v1:sha256:d30d5c8b3b72bd6569311237d6c3fde789d409cd18c843368519f22241fb77dd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzc1NmZhN2JjMTdhOGMxOTllMTk5NDBhNjYyZjE0YzE5ZjYyODQ2ZjUxNmViYzAwZjkxZTU1ZTdlMjQ3NGMwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTMzN2ViYWM3OWU4YTg5NmNmMDdhYjgzODM1MzQzMGMyYjg1ZWQzNmZjNTE3NTcyYjA5NmU0MzZiNGNlOTA2MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDBjY2ZkMGUwZDNkNDA4NmIzYTgwMmVkNDc3NDI2MTAwZTc2MjU5MGUxZTY0N2ZjNTNiMjI1ZTJkNzE4MTdmNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGNkNTVjYzY3YzZkMjhlODY3NmU0MDI4YmVhNGM0YTY4NWRiMmY3OGM2NjU5NmExN2MyNmRkMTc2M2Y1YTVmNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ab187643ccba4a948645c7aa5f0ef10a",
+      "statement": "discussion/ is organized into topic subfolders — hipoteses/ for still-hypothetical architecture and design-policy notes, teoria/ for literature comparisons and reconciliations, and reflexoes/ for the meeting-record pattern's analytical-layer notes — which subfolder a new note belongs in is a subsequent editorial choice, distinct from the diary-vs-discussion/ admission criterion itself.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/README.md#L1-L21",
+          "version": "repo-lines-v1:sha256:1574a8fe01616d0e94ce218f336bf01932fc7da486979bbc57741f7f59b2cb43:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNzc4ZWM5Y2FiNWQ0YzBhZjFhOTAzN2U5MzJiMTc0ZDNiYWRjNWRhNTZlYTUwMmIwOGIzYjg1NzYzODU3ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0NTNmODgxNTRjOGY3NWViYThiN2ZmOWFiMDFhMzJiMmQ0YmMwYTg1MjYyMzY3NGI4MmVkYmQzOGY5NWU2YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMjlmYzUzNTc2MmY1YzRlZmQ4YTZkODdjOTY2ODk1MTdmNTM1ZTFiMjE4NTMzNmMyODE3YWEwN2VhZWUzY2QifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.1",
-    "at": "2026-09-18T11:27:06.172Z"
+    "at": "2026-09-21T19:21:20.640Z"
   }
 }

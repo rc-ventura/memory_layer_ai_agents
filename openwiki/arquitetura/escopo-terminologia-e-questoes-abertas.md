@@ -11,7 +11,7 @@ sources:
     resource: repo://discussion/open-questions.md
   - id: openwiki-source-1564f2f4d84d9043ebdb5351
     resource: repo://discussion/scope-and-terminology-decisions.md
-generated: { by: "claude-code", at: "2026-09-18T13:35:02.362Z" }
+generated: { by: "claude-code", at: "2026-09-21T19:21:20.640Z" }
 ---
 
 Este par de documentos — [`discussion/scope-and-terminology-decisions.md`](../../discussion/scope-and-terminology-decisions.md) e [`discussion/open-questions.md`](../../discussion/open-questions.md) — funciona como o registro de governança do projeto: um é o log de **decisões já tomadas** (append-only, atualizado no lugar quando uma decisão é revisitada), o outro é a **lista viva de itens ainda não resolvidos**. Quando uma questão aberta se resolve, a resolução migra para o log de decisões e o item é apagado da lista de abertas — as duas fontes nunca duplicam o mesmo fato por muito tempo.
@@ -55,6 +55,7 @@ Ver [`discussion/open-questions.md`](../../discussion/open-questions.md) (o item
 | Confiabilidade do sinal thumbs up/down | Tutor confirmou de forma independente uma assimetria (👍 quase sem sinal, 👎 forte) em 28/08; cruzamento com a literatura de RLHF ainda pendente. |
 | Granularidade do trigger de escrita episódica (componente A): por estágio de pipeline ou por caso inteiro? | Lean de trabalho: por estágio (26/08), ainda sem aval do tutor. |
 | Gaps do write path do componente A (schema, substrato físico, tipo de vector store, chunking, o que é um "episodic trace") | Parcialmente resolvido: trace = trajetória completa, não resumo de business-record (27/08). Os outros quatro seguem abertos. |
+<!-- openwiki: broken internal link [../../discussion/promotion-policy-log-to-ltm.md] file "../../discussion/promotion-policy-log-to-ltm.md" does not exist. Fix the href or restore the target, then delete this comment. -->
 | Política de promoção log episódico → LTM (gate estilo SAGE) | Lean forte de que o gate é estruturalmente necessário, não opcional; consolidada em nota própria ([`promotion-policy-log-to-ltm.md`](../../discussion/promotion-policy-log-to-ltm.md)) com nove componentes de política ainda abertos. |
 | Quem é dono do gate de admissão — mecanismo determinístico separado ou o próprio Update Engine ("curador")? | Lean atualizado em 01/09: filtro determinístico de anomalia, unificado, roda antes do Update Engine; predicado exato ainda não decidido. |
 | Hard-delete automático por threshold vs. gated/revisado por humano | Não decidido; alternativa gated dá um remit concreto ao componente G hipotético. |

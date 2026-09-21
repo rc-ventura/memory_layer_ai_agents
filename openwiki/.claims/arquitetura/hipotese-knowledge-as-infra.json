@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:868bebc6e11b5f9f3e38b32f67d635897b5360eb68f70ca74568a3f40f7a328d",
+  "pageVersion": "sha256:815cdeed34be9761bdd06af9ef5993af90cb921931af87852d9a84334c6d911f",
   "claims": [
     {
       "id": "claim_d7a352be9a5d484687582992badccd7d",
       "statement": "The knowledge-as-infra memory mechanism is explicitly a working hypothesis, not a locked architecture; it graduates to a formal Sub 2.2 decision only after the Sub 1.6 minimal-agent POCs and the Sub 1.7 implicit-vs-explicit comparison test it against real behavior.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L5-L7",
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L5-L7",
           "version": "repo-lines-v1:sha256:9d226ac043b9f992cdaafddb43cd720561a1b92201f1fdabdf0a426064f0ce2c:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDgzNWEwOGZkOTk4YmRkNzgyNTIyOGNjY2RjMjJkMDExYWUzMjVmY2FjNjE4NTZlMGY3OGU3NGMzOWE1MDNkNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjBlMTQ4N2QzNjA4NGJjMTZiMzI5OTRmYTM5ZGE4NTgyZTY5ZGE1YzI0ZmY0NDExMmVlNjEyOTZlNTM0MDVjOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmQ4YTViNjkzYWExOWFhN2Y5NmE4NWQ0NGZiMzVjZmM3YzFjYTFmY2ZiMjlmZTg0NTdjMzI1ODAzYzc5NWE0YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTZhMWU5Mjc5N2RjYjExNzVhMjQxNTY2NTQ4OWU3YjVkZDkwODFiMzJkZTJmYzA5MTE4ODYxZTJjM2RjMTVhNyJ9"
         }
       ]
@@ -17,7 +17,7 @@
       "statement": "The architecture resolves the 'pluggable/agnostic module vs. memory in the agent's loop' tension by exposing memory operations as explicit MCP tool calls the agent itself decides to invoke inside its own reasoning trace, making the design simultaneously framework-agnostic and loop-native.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L11-L11",
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L11-L11",
           "version": "repo-lines-v1:sha256:68cbdc7040a421942846856f34ffab5ac33185afe1d16045e168163c1615f026:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjhjYmRjNzA0MGE0MjE5NDI4NDY4NTZmMzRmZmFiNWFjMzMxODVhZmUxZDE2MDQ1ZTE2ODE2M2MxNjE1ZjAyNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjhjYmRjNzA0MGE0MjE5NDI4NDY4NTZmMzRmZmFiNWFjMzMxODVhZmUxZDE2MDQ1ZTE2ODE2M2MxNjE1ZjAyNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTZhMWU5Mjc5N2RjYjExNzVhMjQxNTY2NTQ4OWU3YjVkZDkwODFiMzJkZTJmYzA5MTE4ODYxZTJjM2RjMTVhNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2IyNTAzYWViYmQxY2Q5MjZiNGI1NmY5NzY5YjFlZWMwODIwODAxMDFjYjFhNTc1Y2QzZjcwYWE2ODZmMmQxMiJ9"
         }
       ]
@@ -27,7 +27,7 @@
       "statement": "The architecture separates memory capture/storage (Sub 3.1, continuous, per case, cheap and reversible) from controlled memory-content adjustment (Sub 3.2, batched and gated), matching the Plano de Trabalho's own split rather than collapsing every case into a candidate for changing agent behavior.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L13-L13",
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L13-L13",
           "version": "repo-lines-v1:sha256:5de571a7f760071e06f3d3d6d8a09971d8d099b4cc5151bfd7870dbd88e9119b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRlNTcxYTdmNzYwMDcxZTA2ZjNkM2Q2ZDhhMDk5NzFkOGQwOTliNGNjNTE1MWJmZDc4NzBkYmQ4OGU5MTE5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRlNTcxYTdmNzYwMDcxZTA2ZjNkM2Q2ZDhhMDk5NzFkOGQwOTliNGNjNTE1MWJmZDc4NzBkYmQ4OGU5MTE5YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDlhZDVlMjA0YmZlMzAwM2Q0MjllNDA3Y2Y0ODIzMDNkY2Y3YmIxNjBiOWUyMDdiNWNmYTUwMmFjODFkMzExZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjJhMWViMjAyMTU0ZTdkNGZmY2E5ZmQ4YzgzYTRiNWQ4ZjIwZjgxYzdmOGE3NDQ4MzFjMmY5ZGYxM2Q0ODcwMSJ9"
         }
       ]
@@ -37,8 +37,8 @@
       "statement": "The episodic log write (component A) is triggered automatically by a system-level event (pipeline-stage completion via Kafka), not by an agent-invoked tool call, so that a case the agent doesn't flag still leaves a record for legal auditability completeness.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L310-L312",
-          "version": "repo-lines-v1:sha256:241198f2d90f88daa8d32e9b912252b06345a0c32abc93b0ba39ac2b0b601726:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZjZWQ1Mzk1MTBmZDI3ZjkyN2VlMzk4ZDFjOTM1YzBhNmI2YWZjMDVmNTk3MzRlMmM4NTVkYzUzMTc3MWQyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTljZDZlZTA4YWMzZWRlYTIzZGI5YWU5ZGExZWIyNzgxY2Y1ODM0NmNmZDkwNjliYmQ3ODE2NjFjOTI3MTU5MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjZlODRmMzQ0ZmU4YWY5MWI2MGEyZWE0MzU0ZjY0NmVlYWZmYmUwNGU0NGYzYWIxZjRhMjAzZjc3MTE0MWYwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmM2Mjg1ZDY3NTZmYmFjMzA1Mjc4YzRkYzk5YzljMTNlN2Y0OGViYjNiNDdkMGVmNmE1YmJlMzRiZTZjYTYyYyJ9"
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L310-L312",
+          "version": "repo-lines-v1:sha256:241198f2d90f88daa8d32e9b912252b06345a0c32abc93b0ba39ac2b0b601726:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZjZWQ1Mzk1MTBmZDI3ZjkyN2VlMzk4ZDFjOTM1YzBhNmI2YWZjMDVmNTk3MzRlMmM4NTVkYzUzMTc3MWQyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTljZDZlZTA4YWMzZWRlYTIzZGI5YWU5ZGExZWIyNzgxY2Y1ODM0NmNmZDkwNjliYmQ3ODE2NjFjOTI3MTU5MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTA5OThiNWI0MjgyOWZjYjc3YzgyZDFiNTcxN2YxYjc4NzY1NzBjYTIxZGVhZmQyYTkzYmFlZGI4NTZkMDRjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmM2Mjg1ZDY3NTZmYmFjMzA1Mjc4YzRkYzk5YzljMTNlN2Y0OGViYjNiNDdkMGVmNmE1YmJlMzRiZTZjYTYyYyJ9"
         }
       ]
     },
@@ -47,8 +47,8 @@
       "statement": "Component A's write path has several settled decisions (unconditional ADD, a system-event trigger, flat-text non-graph storage, an immutable append-only log separate from the mutable strategy layer) but leaves the exact schema, physical substrate, vector-storage category, and chunking strategy unresolved.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L136-L150",
-          "version": "repo-lines-v1:sha256:64d008f4e09ff2682c7258ffe50a6ce42af6ebb9b0f5932827ca86768160c83e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxY2NkZTEwNTcxYjdjMmEyOWIwZDc5NThiYzBjZmQ5Y2E1YTdjMWExNWVjMmQxNjJmNDNmZTcxNmU1MTNmNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNGY2ZGJkOTk1N2Y5ZDA5NWUyZTE4ZjEzNzJmMTNkMDE0ZmRmNTk4MDA2MWQ4MzdkZDIxYTg5MWVkZWZlNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkODg5ZmYxMzhmOTQ5YTg4OTMwZWQyNmM5MDFhMTQ5ZjE4NzlhZjc0NmU5ZTk3ODQ5NGMxY2U1MmEzZTIwMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlYzE5MzY4ZmZiNTFhYzE5MzFkMjE4ZTg5NDk4ZDdiMTU5YTBkNWE3ODlkMTI0NDhmMTZjZDY5NTdkMzgwOWEifQ"
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L136-L150",
+          "version": "repo-lines-v1:sha256:50b47f650c498b5a9bf07b6966280963b4bb51881acf9584430dd388acf1f9dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxY2NkZTEwNTcxYjdjMmEyOWIwZDc5NThiYzBjZmQ5Y2E1YTdjMWExNWVjMmQxNjJmNDNmZTcxNmU1MTNmNjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNGY2ZGJkOTk1N2Y5ZDA5NWUyZTE4ZjEzNzJmMTNkMDE0ZmRmNTk4MDA2MWQ4MzdkZDIxYTg5MWVkZWZlNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkODg5ZmYxMzhmOTQ5YTg4OTMwZWQyNmM5MDFhMTQ5ZjE4NzlhZjc0NmU5ZTk3ODQ5NGMxY2U1MmEzZTIwMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlYzE5MzY4ZmZiNTFhYzE5MzFkMjE4ZTg5NDk4ZDdiMTU5YTBkNWE3ODlkMTI0NDhmMTZjZDY5NTdkMzgwOWEifQ"
         }
       ]
     },
@@ -57,8 +57,8 @@
       "statement": "The Commit Gate's contradiction check is formalized as SSGM's Write Validation Gate, a Truth Maintenance System that rejects a candidate memory update when it logically contradicts protected core facts (ΔM ∧ M_core ⊨ ⊥), a more rigorous version of Mem0's simpler contradiction-based deletion.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L262-L262",
-          "version": "repo-lines-v1:sha256:fbd73ee1ddfafc23e5244f9d8b252917088067e25902b9ec94b6dee70b4ca8bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJkNzNlZTFkZGZhZmMyM2U1MjQ0ZjlkOGIyNTI5MTcwODgwNjdlMjU5MDJiOWVjOTRiNmRlZTcwYjRjYThiYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJkNzNlZTFkZGZhZmMyM2U1MjQ0ZjlkOGIyNTI5MTcwODgwNjdlMjU5MDJiOWVjOTRiNmRlZTcwYjRjYThiYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmJkZGE1ZWY5Y2NhZTM4ZWFjNjRiMjg2MDA2OTViN2U2NWRlZWQ0Y2ZiZWYwNjc5OTJhOTJmYTQ5ZWQzMThhYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTViMjM5M2ZjYTFiMmI0YTVlYTA4MGNjMWRiNjBiMTdjYmZhZDE1NTAxYjIwNDg5NzJhOTBiZjczYWMzNDQ1MSJ9"
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L262-L262",
+          "version": "repo-lines-v1:sha256:64c8f2778590bae2f86c9017696d2ee7fe26204b7aed29f1912d545c0d50b0a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRjOGYyNzc4NTkwYmFlMmY4NmM5MDE3Njk2ZDJlZTdmZTI2MjA0YjdhZWQyOWYxOTEyZDU0NWMwZDUwYjBhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRjOGYyNzc4NTkwYmFlMmY4NmM5MDE3Njk2ZDJlZTdmZTI2MjA0YjdhZWQyOWYxOTEyZDU0NWMwZDUwYjBhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDViY2E5YzYzZDExZmIwZTdiZmMwNmM0MmRjMTM2ZTJkZDBmYmIwODNlNWRkYTRlNWIwMWI5MDYxZTliMDliNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTViMjM5M2ZjYTFiMmI0YTVlYTA4MGNjMWRiNjBiMTdjYmZhZDE1NTAxYjIwNDg5NzJhOTBiZjczYWMzNDQ1MSJ9"
         }
       ]
     },
@@ -67,8 +67,8 @@
       "statement": "This architecture implements SSGM's three-layer structure (Cognition Layer / Governance Layer / Memory Layer) mapped respectively onto its own Update Engine (C), Commit Gate (D), and Memory Store (A) components, but distributes governance to the write points that need it instead of centralizing it in one middleware.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L60-L68",
-          "version": "repo-lines-v1:sha256:995a48b461bca2dc2518c665b274eb93ab17ffcc2654b031ff995e5db89e8ebb:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODYyMzQ3MzVhZmFlNGFmYTA5YmI3NmIwOTQ3NjliYmFkNWQ1OWIzZDFjMDM5OTQzYjdiNTY4ZDY0ZDk4MmE3ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDE1NzlmMDBiNTI3ZDRjZTVhZDk2NTk1Y2FiODE2NWM1Njc0NTQxNGFmYzM5MzM2NzhiZWZkM2EzMGRhNzQ0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDA5NWUyNTJkMmNmNjFmN2Y3YjJhNTY4NzhhMjg3NjU3N2IyMDkwMjEzNDUxMWU0MjNjMmRiNjU2YmIwYjFkNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWEwYWViMmQyMmE5YTgxZjM5NWMyYThkODU4N2U3NjA4NzhiNmNlMDIxODZiZTBlNmZhNTQxY2FjZTJkNDEwZSJ9"
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L60-L68",
+          "version": "repo-lines-v1:sha256:216b62f343d4fce5dd68ef3aee9d8cf5e17a066f15e8110a38ad1de4f4d01a77:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODYyMzQ3MzVhZmFlNGFmYTA5YmI3NmIwOTQ3NjliYmFkNWQ1OWIzZDFjMDM5OTQzYjdiNTY4ZDY0ZDk4MmE3ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGVmYjRjY2Y3ZTI1ZGJiZDA1MGEyZTRjNjM4OGM1MjVkMjFmMjk4MzllNmYyNDMxYTlkNmNjYTNmZTU4YTRiYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDA5NWUyNTJkMmNmNjFmN2Y3YjJhNTY4NzhhMjg3NjU3N2IyMDkwMjEzNDUxMWU0MjNjMmRiNjU2YmIwYjFkNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDM2NDlmZTI2NzFhNzViN2MxZDNiZTc0NDMzMzk4ZDdmM2JiZGRjOGJhNmRmMTA1ZGVkZmNhNWVjODQwYTQyZCJ9"
         }
       ]
     },
@@ -77,8 +77,8 @@
       "statement": "The architecture has no dedicated Consolidation component (component G) as of this writing: nothing merges or deduplicates overlapping strategy-layer entries or near-duplicate episodic traces, so redundant content is only ever pruned by the Forgetting component's staleness logic.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L285-L287",
-          "version": "repo-lines-v1:sha256:59a05113c9d20cd9360e0b50d5da4335f58bee4fe0b572d188298a1b94326aa5:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQwYTkzNDBjNjAwMWE4MmNjNDQ2YjBmNmUxOTM4YzM4NmZkNzJjZmYxMjhlODExZDYyNTVjZTVhNDE3ZDQzNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2UwNjJkMGJjNmYwMWM2Mjk3YzEzZmNkY2MwYjljN2RkNDhkY2I1YTY4OGZkMzllYWUxMDI2ZGMzNWRiMzg4YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTVhZDUzYTU3MzA5YzUzN2U3N2UwNGJlMjZmM2Q3Njk1MTQ3Y2ZhZTY4YzdmMmY5ZTIwNDAxZTJmNTg0ZmQ2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWI4ZGY1MThiNWMzOWUyZmU2YWU0NDU0NTBiOWQ4ZjQ0YzBiYWM5YWMxYzI2ZWU0MzNlM2Q1NjNjZWU5MGE4MiJ9"
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L285-L287",
+          "version": "repo-lines-v1:sha256:037fcd889705ff4cf2e77f4690e3f354e2ed5ffd074cf10b8a4064a81b905ed2:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmQwYTkzNDBjNjAwMWE4MmNjNDQ2YjBmNmUxOTM4YzM4NmZkNzJjZmYxMjhlODExZDYyNTVjZTVhNDE3ZDQzNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWFiOTk1NGYzNGVhODkwMDEwYzk5NjU2MWY3MGJhYTVjNzgzMzdkZTkyMWIxYWI3MzUxM2E2ZjVmYWY5MjVkOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzExYWRjZDU0Yjk3MDQ0YjliZmMzZDNiOTIwNzYzNTU4MmY3OTg0Njc3NDVmYzEwZWU0MDhlODU5ODFmZWQ4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWI4ZGY1MThiNWMzOWUyZmU2YWU0NDU0NTBiOWQ4ZjQ0YzBiYWM5YWMxYzI2ZWU0MzNlM2Q1NjNjZWU5MGE4MiJ9"
         }
       ]
     },
@@ -87,8 +87,8 @@
       "statement": "The architecture is static by design for v1 (all operations are fixed, auditable, deterministic rules), governed by the principle that a v2 adaptive extension may calibrate parameters (thresholds, weights, decay rates) but must never change rules (whether to delete, validate, or capture).",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L344-L348",
-          "version": "repo-lines-v1:sha256:97571edce0248b203c3e183cb3e13a46a80cf32cd8a2f7f28f4c290eaf9e7b09:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU3YTMxOGI4Y2RiNzhmZGU2Y2FmOWZmNmEzOGYwMTE4MzVlY2NkNjUwZDc0YmMxYjE2ZWVjMjZmYmVlNWYzYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGNlNjVhOGY5NzViMGVhOTE3OTU4YzgwNjBiODdhZDVkNWU2YTMyM2Y4MzY5M2U2MmIzZjFiNDA1OTkwNTYxMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDg3YjZkZDY0MGU3ODQ3YTU1MmZiM2FlMzQ3NTc4OTY1NTk2OWJhMGM3MDFlOWU3YTE1ZWViNDAxZjAxNmYxOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQxODgwZTEzYmQ4YTc0OGZmNDhkMzliYzQ4MmYyOGIxMGY5Yzg0ZjQxMmNlZjQxYjRmMjI5ZmI5NjEzYWFiNiJ9"
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L344-L348",
+          "version": "repo-lines-v1:sha256:f08e1a2b2c394b727bb302b7c3106a5fcfcac55fe3c0d90ff725733953b2bd4e:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU3YTMxOGI4Y2RiNzhmZGU2Y2FmOWZmNmEzOGYwMTE4MzVlY2NkNjUwZDc0YmMxYjE2ZWVjMjZmYmVlNWYzYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGNlNjVhOGY5NzViMGVhOTE3OTU4YzgwNjBiODdhZDVkNWU2YTMyM2Y4MzY5M2U2MmIzZjFiNDA1OTkwNTYxMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWQ3ZmFjZTQ1OWY0N2MxNzk2MjlkZmUxMGM4MWFjMzFlMGQ4MmJjZDBlZGE1ZDc3MTkyZDI2MWNjMWE5ZDZiZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQxODgwZTEzYmQ4YTc0OGZmNDhkMzliYzQ4MmYyOGIxMGY5Yzg0ZjQxMmNlZjQxYjRmMjI5ZmI5NjEzYWFiNiJ9"
         }
       ]
     },
@@ -97,14 +97,14 @@
       "statement": "Mining the first raw trace (analysis/2026-09-trace-law-flow/) produced a concrete instance of a harness-change signal (memory unit candidate nº10, validar_quebra_sigilo): the system prompt reuses the same field name for a tool's return and for the final JSON output field, and 9 of 21 delivered responses (43% over 3 months) carried an invalid regulatory field with zero exceptions raised in the log.",
       "evidence": [
         {
-          "resource": "repo://discussion/knowledge-as-infra-architecture-hypothesis.md#L197-L214",
-          "version": "repo-lines-v1:sha256:b31e90b70a69be1c67c49fb050dca31ab2d20dc3d565085920a402dd93615d32:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZmM0ZDVjNmE2Yjg0YTQzNzEwYzg1MjJlOGJkMmVlNGFjZDMxNWY3M2RlMWVmZWFkOTc1NDA3MjBiNjY0ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNzJmNjRjZTlmZTI1Njg5NjExZjUxMDJkMDhmZDM3YmI5ZmY3MGFmNDM3ZDJiMGRjYzg3YTYyNGJiMDkyM2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NTcwNzFkZThkMWNlMDI5NDJlOTExMmMwMWM3YzNlYTZjMWNjNmI4ZGY1ZWY3Nzg1MTNiMzQ3MDFiZjNlODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyY2M5NGNkYTcwYTMxZTQ0MzYwNTBkZTcwNjc1ZjIwYmUzNzhlZmQ4ZDRjOWRjMzczNTc0NTAzMDQyYTMyM2QifQ"
+          "resource": "repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md#L197-L214",
+          "version": "repo-lines-v1:sha256:485a379c442ae24fbf0cc1509afb1bde7411e0c898e089216751c2255d3fd94c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZmM0ZDVjNmE2Yjg0YTQzNzEwYzg1MjJlOGJkMmVlNGFjZDMxNWY3M2RlMWVmZWFkOTc1NDA3MjBiNjY0ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNzJmNjRjZTlmZTI1Njg5NjExZjUxMDJkMDhmZDM3YmI5ZmY3MGFmNDM3ZDJiMGRjYzg3YTYyNGJiMDkyM2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NTcwNzFkZThkMWNlMDI5NDJlOTExMmMwMWM3YzNlYTZjMWNjNmI4ZGY1ZWY3Nzg1MTNiMzQ3MDFiZjNlODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyY2M5NGNkYTcwYTMxZTQ0MzYwNTBkZTcwNjc1ZjIwYmUzNzhlZmQ4ZDRjOWRjMzczNTc0NTAzMDQyYTMyM2QifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.1",
-    "at": "2026-09-18T11:27:06.172Z"
+    "at": "2026-09-21T19:21:20.640Z"
   }
 }

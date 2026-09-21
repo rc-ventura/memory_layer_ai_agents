@@ -5,16 +5,16 @@ description: A arquitetura de trabalho (ainda não travada) do mecanismo de atua
 tags: [architecture-hypothesis, memory-mechanism, commit-gate, update-engine, mcp-integration, forgetting, non-parametric-memory]
 verified:
   - by: openwiki/0.5.1
-    at: 2026-09-18T11:27:06.172Z
+    at: 2026-09-21T19:21:20.640Z
 sources:
-  - id: openwiki-source-89148645df3f0c0dfb8af600
-    resource: repo://discussion/knowledge-as-infra-architecture-hypothesis.md
-generated: { by: "claude-code", at: "2026-09-18T11:27:06.172Z" }
+  - id: openwiki-source-56ccdf861a6bbaf0f353ce7c
+    resource: repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md
+generated: { by: "claude-code", at: "2026-09-21T19:21:20.640Z" }
 ---
 
 ## Status — hipótese, não arquitetura travada
 
-O documento canônico ([`discussion/knowledge-as-infra-architecture-hypothesis.md`](../../discussion/knowledge-as-infra-architecture-hypothesis.md)) é explícito: isto é "a melhor suposição fundamentada dado o que já foi lido", não algo a defender como final para o tutor. Ele só vira decisão formal (Sub 2.2) depois que os POCs de agentes mínimos (Sub 1.6) e a comparação implícito-vs-explícito (Sub 1.7) testarem essas alegações contra comportamento real. Uma versão verbatim, dividida por seção, existe em [`knowledge-as-infra-architecture-hypothesis/`](../../discussion/knowledge-as-infra-architecture-hypothesis/README.md) apenas para leitura — o arquivo canônico, editável, é o `.md` na raiz de `discussion/`.
+O documento canônico ([`discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md`](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md)) é explícito: isto é "a melhor suposição fundamentada dado o que já foi lido", não algo a defender como final para o tutor. Ele só vira decisão formal (Sub 2.2) depois que os POCs de agentes mínimos (Sub 1.6) e a comparação implícito-vs-explícito (Sub 1.7) testarem essas alegações contra comportamento real. Uma versão verbatim, dividida por seção, existe em [`knowledge-as-infra-architecture-hypothesis/`](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/README.md) apenas para leitura — o arquivo canônico, editável, é o `.md` em `discussion/hipoteses/` (não os fragmentos da pasta de leitura).
 
 ## As duas perguntas de enquadramento que o desenho resolve
 
@@ -55,7 +55,7 @@ O Memory Store deixa de ser um "two-tier" simples (log cru + índice recuperáve
 | 2 | LTM recuperável (tipada) | `exemplar` (trace concreto) + `reflexão` (1ª reflexão do Update Engine), ambos com score `S` e decay `R = e^(−τ/S)` | Sim |
 | 3 | Strategy layer | heurística destilada (2ª reflexão / meta-reflexão do Update Engine) | Sim |
 
-Consequência prática: `R ≥ θ1` deixa de decidir *entrada* na camada 2 (que passa a depender do filtro determinístico de anomalia — tamanho do trace, nº de tool calls, distribuição de 👎, outlier) e vira só regra de *permanência/rebaixamento* dentro dela. O Update Engine passa a produzir **dois writes**: uma 1ª reflexão (camada 2, gate mais leve de grounding/dedup/ACL) e uma 2ª reflexão/meta-reflexão (camada 3, via o Commit Gate NLI completo). Detalhe e trade-offs em [`promotion-policy-log-to-ltm.md`](../../discussion/promotion-policy-log-to-ltm.md).
+Consequência prática: `R ≥ θ1` deixa de decidir *entrada* na camada 2 (que passa a depender do filtro determinístico de anomalia — tamanho do trace, nº de tool calls, distribuição de 👎, outlier) e vira só regra de *permanência/rebaixamento* dentro dela. O Update Engine passa a produzir **dois writes**: uma 1ª reflexão (camada 2, gate mais leve de grounding/dedup/ACL) e uma 2ª reflexão/meta-reflexão (camada 3, via o Commit Gate NLI completo). Detalhe e trade-offs em [`promotion-policy-log-to-ltm.md`](../../discussion/hipoteses/promotion-policy-log-to-ltm.md).
 
 ## Por que nenhum candidato da literatura bastava sozinho
 

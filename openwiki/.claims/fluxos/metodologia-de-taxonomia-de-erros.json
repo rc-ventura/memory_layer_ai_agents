@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:365a25de7f177ef308a91ecc7adfe64c28a2fd8d6c9c079de171aad91129aecf",
+  "claims": [
+    {
+      "id": "claim_19302d51362a45d98d6145a78488cf0a",
+      "statement": "The error-genealogy method routes every raw trace error through five deterministic, LLM-free links — E0 granularity (what counts as one error event), E1 symptom (family + signature, description/provenance only, does not decide), E2 mechanism (the agent's actual mistake, the diagnosis), E3 unit (mechanisms grouped by a shared preventing lesson), and E4/E5 triage (candidate / non-memory / out, a decision rather than a taxonomy level).",
+      "evidence": [
+        {
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L77-L85",
+          "version": "repo-lines-v1:sha256:cd209935d902e871e3d4d35cfb1af149962e7737b61d9720f80e9908cf0043a8:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGVjOTg2YjBkZWVmNWE0MTU4MWZiMjlhNDJiYTA4ZTA5NTYxYzA2NjBmMGIzNjc3NjZjZWIwOTlkMjljNmIwZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDdlOGE2Y2M5YWFkMDljMTY0OTIwZGI2YzU1OGRlOTNiYzYyYzVmMzlmNWU2ZTA3OGY4MzYyN2FmNTkxMTg3OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDc4MmJjN2ZmNzMxZWU5MWViMjhhMDU5ZGE1YjA2MGZiZjE1YzU4MWJlYTAyMzI4NzRjZDYxMGMzZmNjYzRkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDgyYThhMTIwODEwOWEwNGRmYzIxMGRkZGZjYmNkZGE2MDAyMmE1YWRkNDcyNTllYmYwNjM2MGQyOGY4NTI5YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c658c83407f24ffaab49a6f25e906825",
+      "statement": "Symptom (E1) and mechanism (E2) classification are two independent readings of the same error message with independent roles (describe vs. decide) rather than independently-coded pipelines; the mechanism axis adds exactly one local evidence signal the symptom axis never reads (e.g., the rejected code line), and the two axes relate many-to-many in both directions, so a tree cannot represent them — the symptom axis never feeds the triage decision.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L87-L108",
+          "version": "repo-lines-v1:sha256:52a2c64c466d452f487be9f0884040bd6249ac1a5c2c921f46717962e4424e8c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5M2Y5MjMyZTRjYWM0ZTk4ZGZmNmU3ODczYTU1MzdmY2MzMTg1OTYxZjUxNmRkYjA5YTBiNzBkMWQ4NmVjY2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1Y2NhZDRlOGE0OTgwYmRjN2U5NzBiYWI5ZTk0Y2E1NWJkMWRiMGE4MzQzMzZhOWUyNTc0OTk0YjM2MTU5MjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZGY0NDZmMjJkYTBkYWVkZjJkNjBkNGE4MjFlMjFjOWI4M2I4YTA1ZWM4OGQ4NWZlYTFhNjVlOWY5MDFkMzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxMjUzYjgxNTUzMmY0OWM2MTExNzUyMTlhZTM2ZjZhNmE4NGYyZTIyN2YxZTEyYWFjOWNlYjgzN2RjMTJkNGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e67914fda8644ffba83bc6649c89b4d1",
+      "statement": "The genealogy's edge cardinalities are symptom→mechanism = 1:N (the taxonomy divides: one surface complaint admits multiple causes), mechanism→unit = N:1 (the taxonomy fuses: different causes needing the same fix converge), and unit→decision = N:1 decided at the global unit level, not per (context × unit).",
+      "evidence": [
+        {
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L110-L138",
+          "version": "repo-lines-v1:sha256:6a4cfa55bc548a070ec6f65c89db5be9062672ba8a3e29e5c77b842f8357ea9a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5YWEzNWZhN2NkZjMyZTM2NzVkZmI5YWVkZjhjZDNhMmQ1MDJkMzg0ODY4ZGZjZmFkMjlhOGMyMmQwODdkZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5NWExYmI2Y2U5NzYxZDZkZGUwZjZiYzA5ODg4YjljM2RkYzE3OGU1ZWZiNTQ5MzYyZmM4NWE0NWMxMTZmM2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwZTY0YWUzNjdiODYyYjlhODgyOTM5NDRjZmRiMWIwODlhNjgyMDNmYzZkYzFhMWM0ZGFkZjFhNDJmMWRiZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5YTY4ZDQ3OWMzNDE0ZjgzNWQ1Y2RjMTgyNmM5NjIwZmNlYWJlOTRmMmQ3YmE4YzI0NWUwYjAyMjI3OTliMTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9a6cf9287ee440e49418ce7f75cb604d",
+      "statement": "In the trace-law-flow instantiation, the 136 errors sharing the symptom signature 'Could not index' split into three distinct mechanisms via submecanismo() reading the rejected code line — dict_indexado_por_posicao (89), tipo_real_do_retorno (37), and campo_inexistente_no_retorno (10) — and the first two (plus a third mechanism born of a different symptom) converge into the same memory unit (U_contrato_dict, 96 errors) because one lesson prevents both, while campo_inexistente_no_retorno remains a separate unit because no single sentence could cover both causes without becoming a disjunction.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md#L126-L140",
+          "version": "repo-lines-v1:sha256:42254a5e755487eb374e35a971d496f528c3736dad65d9b83fd5afeb754d2854:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZDVjMzE3N2NjNjdhMGExZDBkMzExZDY5Nzg3YzA2MmU5YzkxYzc1MDIxODUwYmZhODY0ZmRiM2NkM2EyNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExMDQ0MWU0NjQxOGRjODJhZWY3YTc5YTFjNWFkOTM1NDViZmU1OTU2YzliOWE1NDc5OWY4ZTc3NGUwOGMxZmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjMTAwZTczNWRkYzhlZGNlNDc3OGEwOWQwY2ExOGJjOTMxNjg0MjI2NzljMTc5ZDMyMDhkZWRkY2QxNTc4OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0ZmQzZTdiNGYwMTRhNTA5NDg2ZmJiYjYzNTI5OGY5MzRmNTE5YmY3MzQ3YTVjN2VhYjdlODRmNTcyYjg4ZDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_243c7f35b36b49d19ac18a74cb137894",
+      "statement": "Writing memory at the symptom level instead of the unit level fails in two opposite ways simultaneously: a symptom that splits into multiple mechanisms produces an ambiguous, diluted card (a checklist of possible causes with different fixes, and a non-injective routing key since re-running the mechanism classifier would still be required), while a symptom whose mechanism is shared with another symptom produces a duplicated card (the same lesson written twice, doubling maintenance cost and risking divergence).",
+      "evidence": [
+        {
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L253-L267",
+          "version": "repo-lines-v1:sha256:2b39eccb6fef03102110632f6da2519f6b7b62ea7d1578c2b129ce92a86a7193:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2YzgyMzBmMDA3NTY3ODc1NzAzZjRmZmJlOWQ2ODZhNTMzMDI0MjU5OWUxMzExNGNlMzZkNmNjMDE3OGFjMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiMTA2NmVmODFjMmE5MzQ0YzkzZDA5Y2E2MGUxM2Q4ODhhYjgxN2Q4MzAzM2NiYWRjZGRlZjNiYTI0OGE4NmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4aaebd4e8883409d9fcd1af40eaeb9c1",
+      "statement": "A memory unit is only triaged as a candidate after passing three ordered gating questions — (1) is this the agent's own memory to learn from, as opposed to a harness/upstream-LLM failure routed to operational policy instead; (2) does the unit have unique, single-sentence content rather than being a heterogeneous residual group; (3) does it recur across executions and over time — and the recurrence thresholds (execution count, time window) are calibrated per instantiation rather than being fixed constants of the method, requiring an explicit sensitivity test.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L218-L241",
+          "version": "repo-lines-v1:sha256:7730b560a6db082c1189404fca56f4ed9fc9c153c6ed4ff5d3321835b6f60624:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0OGFiODdiMWM4MzY5MDY5ODIzNjkwMjYwMjFjZDI2NTlkOWYzZWYzOWEzYTNiZjJjZGI2MjY3NTQ0NDE5NzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlYTg0ODg5YmE0OWRiODU5ZjVjZWI4MDY1YzE4Nzg1ZWJkZDNhZTZmZmM5YjJlZWU3ODgyMTlhOGNmZjAyNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZDM1YmRjMTY3NDJlM2YyNmQxNWU3ZjlkMmMxMDQ4YmQ2MGYzZGIyZTNjZThjNWM1MGM5YTM5MWRkNDEyZjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d5c17dbb03ba4e3d8decf8dcc1ddef71",
+      "statement": "The method's construction order deliberately starts from the raw trace and only afterward tests the resulting taxonomy against the literature, which is restricted to three roles — testing the mapping against external taxonomies, suggesting analyses not yet run, and lending vocabulary — and is never allowed to supply the taxonomy's categories directly, since that would make the result an import rather than a genealogy grounded in the trace.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L56-L71",
+          "version": "repo-lines-v1:sha256:0984baf731d071d27b641ced72c776da313f671ebce1290d574aab0a9a564575:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjNzY3MmI1MWIxYTFiYjgxMzJiOWYxNWFmNjk4MmZiYTk5NzI1OWE1ZDk3NmVlNDNlNjJhYTNlZWU0OWZhZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2YzM4MTNhZDFlMzUwMjk5ZTg4ZjUxMjk3MGMwNjEwMzEyODQ0OTRiNDRmNGY5NTI3MjIzYWI5MjQxOTc3YWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_91a63aaa38054d359eb27ac6487bd2d7",
+      "statement": "A prior version of the trace-law-flow memory-candidate table overclaimed that AgentDebug's finding was 'the module that produced the error routes the memory type'; checking the full 32-page PDF (arXiv:2509.25370) found zero occurrences of routing or memory-type language — the paper proposes a 5-module diagnostic taxonomy and an ablation showing root-cause-only correction beats fixing every surface mistake, but the routing claim was the project's own analogy, not a transferred finding, and was corrected in three files the same day.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/teoria/agentdebug-vs-trail-error-taxonomy.md#L7-L11",
+          "version": "repo-lines-v1:sha256:913974503cf09a22f72fc3235bb50a2e20ef96802c9eea762b7f93d4adca128f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDYzN2ZiNTIyZmJiMDRlNjdkMDBhMWI4MTBjMDlhY2U5ZTI3MzRlOWM5NTM1OWViZTBiZjRkYTRmMTgzYjdhNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg4ZjZkYjdlZWRiOTQ1YmQ5YTk3YjIyZmZjMjYwMDUzMWYzOGM0ZGZhOTRmMGJlMjYyMWQyZDk0ZGM2NDY3NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODUxZDc0ODc0OGIzMDQ3Zjc3NzJhNDcyYTRmN2FhZjg4MWU3NmI2NTM0ZGViNjhkZjZmN2ViMzcxOGVlOGE3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGNjYzIyNjE2YjAyM2I1MmYxOTk4OTU5OGIzNzZhYzMyNmZjNzUwNDYzMjVkZDk3NmIyY2JiM2NkOWI2MjYxMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ee4b18e432f145888f3656f40acc1e95",
+      "statement": "AgentDebug and TRAIL classify agent errors along genuinely different, complementary axes rather than being redundant or competing: AgentDebug classifies by which cognitive module produced the error and outputs prescriptive correction_guidance, while TRAIL classifies by phenomenon (20 leaf error types) with a per-error impact severity field and a diagnostic output — AgentDebug informs the shape of a memory unit, TRAIL informs coverage measurement and prioritization by cost.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/teoria/agentdebug-vs-trail-error-taxonomy.md#L17-L35",
+          "version": "repo-lines-v1:sha256:7594f228d5dcdc9162d725ce2def4e51c6cc7a4141ccca2f66d935503c077b7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJjZjRlNzZmYzAzNDllMTRjMTgzMjUwMmUwNWI0NzIzZjQzYmEwNzEyZjQ1NjFjMmZiYjllZTZkMDczMmI0ZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmMDJmYTJiMTQwNWRmYzEzMmU3YTFjOGI0Y2YwY2YzN2Y2YmRhNjEwMWY2MGRkNzRjNWVjZTgzNzYwNDNhODIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxNGI1ZThiZTQ4MDJmMGZlY2UzMWMyNmQ0ODVkMmVlYjFhZjI3N2E4ZTZhMjllYjVmYjEyZGQ3MjQ4MmZjNWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlMDU1NTI2NzY5NjNkNzkxMmRkMmQyYzViZDk3MmU2MGQ5MWM2YmQ3ZWMwZjA3Yjg0MWNiYWVkYzRlNzc5ZjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fecf5c7828974f4c95e2f46bd8a833c1",
+      "statement": "The method declares six explicit limits: only exceptions that raise are counted (silent failures need separate detectors); the symptom axis's family/signature names already carry causal interpretation rather than being neutral surface labels; the method reads what the trace shows, not agent intent; there is no severity-of-consequence axis alongside frequency and cost; cascade deduplication looks only at a short window of consecutive steps; and triage recurrence thresholds are calibrated choices requiring sensitivity testing, not fixed constants.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L297-L316",
+          "version": "repo-lines-v1:sha256:d7006ecdbbcde827a8670fa80f2c6482d34db00998c70c9eb16d3288d4de3d54:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhNjk1N2VmNzEyOTJlOTFhNjFkNDE1NzAzMjk0MDM1ZDRlOTBhYWVjNjk0YjhlYjhhZmZkMzkwMDc2ZmM1NDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiMDQyNGRkZTE5OWNkZTIyNTQwMzBjNjRlYmMyY2M5NTNkYmQwODg1MmRmN2U2ZmI1NTBiNzFlYTdkODYwNzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.1",
+    "at": "2026-09-21T19:21:20.640Z"
+  }
+}

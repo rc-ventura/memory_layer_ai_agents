@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:52b9d8416a4c969930c26e3f9b123cc279797fd7af3b68e2b43f44e8b370b228",
+  "pageVersion": "sha256:4717bd2c06e13e0c9b10487b54ea3f5401ce2497f8bbe9a6294903be26c444e3",
   "claims": [
     {
       "id": "claim_c06a136cc42543a4a0ae0d736af6d5ca",
@@ -14,7 +14,7 @@
     },
     {
       "id": "claim_eb86328dd4044bde808eac7a7912d50f",
-      "statement": "papers/ holds one short atomic note per source (39 indexed), mostly extracted from the two literature-review reports, with a few (ExpeL, SCM, Retroformer) added later directly from verified arXiv/proceedings pages; new notes follow papers/_TEMPLATE.md.",
+      "statement": "papers/README.md's opening line states '39 sources indexed below', mostly extracted from the two literature-review reports with a few (ExpeL, SCM, Retroformer, and others since) added later directly from verified arXiv/proceedings pages; the stated count trails the folder's actual file count, and new notes follow papers/_TEMPLATE.md.",
       "evidence": [
         {
           "resource": "repo://papers/README.md#L3-L3",
@@ -71,10 +71,24 @@
           "version": "repo-lines-v1:sha256:8bd7cf8bdf7f44b8f1146d9f5816bae2796efe6aa641396877178235a102055b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJkN2NmOGJkZjdmNDRiOGYxMTQ2ZDlmNTgxNmJhZTI3OTZlZmU2YWE2NDEzOTY4NzcxNzgyMzVhMTAyMDU1YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJkN2NmOGJkZjdmNDRiOGYxMTQ2ZDlmNTgxNmJhZTI3OTZlZmU2YWE2NDEzOTY4NzcxNzgyMzVhMTAyMDU1YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2NlZGMxZjk2ODE5OWJiYjlkNWI2OWE2MTU1NmIwNzJiZDFmZjhkZjg4ODlmNzQxYzVmMmEyOWNhZmQzMTAzZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmE1YmIyMWNjYzEzOTJlYmE3ZjI1MDZhNGYzYWRmZTZmNDNhYzU4MTgwOGUxY2RkMGRiZjhmMGRjZDIyNzc1ZiJ9"
         }
       ]
+    },
+    {
+      "id": "claim_fd6a4e12fb00427eb5e38560b37deb9f",
+      "statement": "As of 2026-09-21, papers/ contains 41 atomic note files (excluding README.md, _TEMPLATE.md, and reading-queue.md), while papers/README.md's own index tables have not been updated to match — ssgm-2026.md exists as a complete atomic note with a verified Core Contribution section but is not listed in any of papers/README.md's index tables.",
+      "evidence": [
+        {
+          "resource": "repo://papers/README.md#L3-L3",
+          "version": "repo-lines-v1:sha256:2d6a039ae39c44054fea35a510f0e403fc53a63cdcdba6ea422946d89d4029ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQ2YTAzOWFlMzljNDQwNTRmZWEzNWE1MTBmMGU0MDNmYzUzYTYzY2RjZGJhNmVhNDIyOTQ2ZDg5ZDQwMjllYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQ2YTAzOWFlMzljNDQwNTRmZWEzNWE1MTBmMGU0MDNmYzUzYTYzY2RjZGJhNmVhNDIyOTQ2ZDg5ZDQwMjllYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjM5NGNiY2NiNmU5ZjFjMTkxY2RiOGQwYjAxOTIxODY5N2RjMzE5OWVkNGVhMGYyYzEwMzIzZDA3N2QzZDQwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjJiMzM3OWQwOGQ5NjZjOTUzZDEzNGVjMDc0YjE3ZTc0ZjdiOWMwZmMwOTA4OWVlMDUyMzMwNmFjY2JkNjM0NSJ9"
+        },
+        {
+          "resource": "repo://papers/ssgm-2026.md#L1-L10",
+          "version": "repo-lines-v1:sha256:5107daedba588a53d85104625e090cfc325565cc01a4846d56c05a599a0f686f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhMTNiMmE2YjNhMjZkYmMwMjk4NGE0YTFkM2VkNmNkMTMzYTNiZjkzNGRhYTlhZDU1ZWMzM2FlNDNkYzdlZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ZGIzMzI0OTg0YjE4OTExMGUwY2Q4YzQyMTU0MDViYzZmNDQxOGNkZTMxZjdmNjAyZTlkODkyMzJhNjgxNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlZjE3MWY0M2ViMWI5NjBmYzk5OTg1M2JjYzA3NDQ4MGI4NTJjZTFkNzUwYjVjYzZmODExNzA2ZGQwYTNhNDUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.1",
-    "at": "2026-09-18T11:27:06.172Z"
+    "at": "2026-09-21T19:21:20.640Z"
   }
 }
