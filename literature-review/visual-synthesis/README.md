@@ -65,7 +65,7 @@ graph LR
 
 </details>
 
-**Reading note:** this maps directly onto the **Sources → Forms → Operations** structure used throughout [`../memory-in-ai-agents.md`](../memory-in-ai-agents.md) and the [sub-activity map](../../docs/sub-activity-map.md) — the "Implementation Strategies" branch above is the same taxonomy behind [the cross-trial × forgetting gap finding](../../discussion/cross-trial-vs-forgetting-gap.md).
+**Reading note:** this maps directly onto the **Sources → Forms → Operations** structure used throughout [`../memory-in-ai-agents.md`](../memory-in-ai-agents.md) and the [sub-activity map](../../docs/sub-activity-map.md) — the "Implementation Strategies" branch above is the same taxonomy behind [the cross-trial × forgetting gap finding](../../discussion/teoria/cross-trial-vs-forgetting-gap.md).
 
 ## 2. Memory in the Age of AI Agents
 
@@ -160,7 +160,7 @@ graph LR
 
 ## 3. Knowledge as Infra — Memory Layer Architecture (hypothesis)
 
-Visualizes the working architecture hypothesis for the memory-update mechanism — the six/seven-component stack (Memory Store, Signal Capture, Update Engine, Commit Gate, Forgetting, MCP Integration, plus the open Consolidation gap) laid out as a hot-path/cold-path diagram with the worked consignado example. Derived directly from [`../../discussion/knowledge-as-infra-architecture-hypothesis.md`](../../discussion/knowledge-as-infra-architecture-hypothesis.md). Sub-atividades 1.6 / 1.7 / 2.2. (Diary entry for 26/08/2026 not yet logged — see [`../../research-diary/`](../../research-diary/) for the current state.)
+Visualizes the working architecture hypothesis for the memory-update mechanism — the six/seven-component stack (Memory Store, Signal Capture, Update Engine, Commit Gate, Forgetting, MCP Integration, plus the open Consolidation gap) laid out as a hot-path/cold-path diagram with the worked consignado example. Derived directly from [`../../discussion/knowledge-as-infra-architecture-hypothesis.md`](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md). Sub-atividades 1.6 / 1.7 / 2.2. (Diary entry for 26/08/2026 not yet logged — see [`../../research-diary/`](../../research-diary/) for the current state.)
 
 ![Infographic: Knowledge as Infra — Memory Layer Architecture (hypothesis)](knowledge-as-infra-architecture.png)
 
@@ -232,7 +232,7 @@ Visual emphasis: Memory Store = largest node (centerpiece); Commit Gate = second
 
 </details>
 
-**Reading note:** this is the visual companion to [`../../discussion/knowledge-as-infra-architecture-hypothesis.md`](../../discussion/knowledge-as-infra-architecture-hypothesis.md) — every labeled component in the infographic corresponds 1:1 to a section of that note (A. Memory Store, B. Signal Capture, C. Update Engine, D. Commit Gate, E. Forgetting, F. MCP Integration, G. Consolidation open gap). The "← paper" tags preserve the note's central point: each component borrows from a specific reading-sprint finding, none of which alone had everything needed. **Status:** hypothesis, not a locked architecture — graduates to a decision only after the Sub 1.6 minimal-agent POCs and the Sub 1.7 implicit-vs-explicit comparison test it against real behavior (per the note's own "Status" header).
+**Reading note:** this is the visual companion to [`../../discussion/knowledge-as-infra-architecture-hypothesis.md`](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md) — every labeled component in the infographic corresponds 1:1 to a section of that note (A. Memory Store, B. Signal Capture, C. Update Engine, D. Commit Gate, E. Forgetting, F. MCP Integration, G. Consolidation open gap). The "← paper" tags preserve the note's central point: each component borrows from a specific reading-sprint finding, none of which alone had everything needed. **Status:** hypothesis, not a locked architecture — graduates to a decision only after the Sub 1.6 minimal-agent POCs and the Sub 1.7 implicit-vs-explicit comparison test it against real behavior (per the note's own "Status" header).
 
 ## 4. MemoryBank — Mind Map
 

@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.4 / 1.5 / 2.2 / 3.6 · **Type:** Architecture cross-reference (LangChain Eval Engineering Skill → knowledge-as-infra) · **Logged:** [10/09/2026](../research-diary/Set/diario_campo_2026-09-07.md)
+> **Sub-atividade:** 1.4 / 1.5 / 2.2 / 3.6 · **Type:** Architecture cross-reference (LangChain Eval Engineering Skill → knowledge-as-infra) · **Logged:** [10/09/2026](../../research-diary/Set/diario_campo_2026-09-07.md)
 
 # Eval Engineering Skill ↔ knowledge-as-infra: component-by-component connections
 
@@ -78,7 +78,7 @@ The skill's 8-category failure taxonomy gives the project a concrete framework f
 | **Leakage** — hidden truth or scoring logic was visible | The agent found the expected answer through a shortcut, not through correct reasoning |
 | **Infrastructure** — build, startup, timeout, credential, cleanup failed | Platform infra failure — not the agent's or the memory's fault |
 
-**What's new:** The project's open question about "does thumbs up/down transfer from Reflexion/Retroformer's assumptions" ([open-questions.md](open-questions.md)) gets a concrete complement: the problem isn't just whether the signal is reliable, it's also about **attributing** failures correctly after a memory update. The 8-category taxonomy gives a structured way to do that attribution — and "false rejection" and "false acceptance" are exactly the Commit Gate's failure modes. "Do not make a Task harder to hide a defect" is a principle the cold path should adopt: if the verifier or the Commit Gate has a gap, fix the gap, don't make the criteria stricter to compensate.
+**What's new:** The project's open question about "does thumbs up/down transfer from Reflexion/Retroformer's assumptions" ([open-questions.md](../open-questions.md)) gets a concrete complement: the problem isn't just whether the signal is reliable, it's also about **attributing** failures correctly after a memory update. The 8-category taxonomy gives a structured way to do that attribution — and "false rejection" and "false acceptance" are exactly the Commit Gate's failure modes. "Do not make a Task harder to hide a defect" is a principle the cold path should adopt: if the verifier or the Commit Gate has a gap, fix the gap, don't make the criteria stricter to compensate.
 
 ## 5. Discovery methodology ↔ Sub 1.4 (mapear fluxos jurídicos)
 

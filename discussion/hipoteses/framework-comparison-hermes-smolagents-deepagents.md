@@ -4,7 +4,7 @@
 
 ## Why this comparison exists
 
-Neither literature review alone produces this table — [`memory-in-ai-agents.md`](../literature-review/memory-in-ai-agents.md) compares Hermes Agent and smolagents; [`deep-agents.md`](../literature-review/deep-agents.md) adds LangChain Deep Agents as a third pole and checks the literature for an existing three-way comparison. **None exists.** The closest source, Workspace-Bench 1.0 ([`../papers/workspace-bench-2026.md`](../papers/workspace-bench-2026.md), arXiv:2605.03596), benchmarks Hermes + Deep Agents + OpenClaw but omits smolagents. That gap is why this project's comparative framing is a defensible original contribution to Sub-activity 1.1 — and directly informs the choice of substrate for the Sub 1.6 minimal agents (native closed loop vs. transparent programmatic memory).
+Neither literature review alone produces this table — [`memory-in-ai-agents.md`](../../literature-review/memory-in-ai-agents.md) compares Hermes Agent and smolagents; [`deep-agents.md`](../../literature-review/deep-agents.md) adds LangChain Deep Agents as a third pole and checks the literature for an existing three-way comparison. **None exists.** The closest source, Workspace-Bench 1.0 ([`../papers/workspace-bench-2026.md`](../../papers/workspace-bench-2026.md), arXiv:2605.03596), benchmarks Hermes + Deep Agents + OpenClaw but omits smolagents. That gap is why this project's comparative framing is a defensible original contribution to Sub-activity 1.1 — and directly informs the choice of substrate for the Sub 1.6 minimal agents (native closed loop vs. transparent programmatic memory).
 
 **Revise this novelty claim if** a survey or benchmark explicitly evaluating all three emerges — downgrade to "extends existing comparisons" rather than claiming originality.
 
@@ -19,7 +19,7 @@ Neither literature review alone produces this table — [`memory-in-ai-agents.md
 | Control surface | Curated/automatic | Fully explicit/white-box | Configurable middleware stack |
 | Planning | Skills-driven | Optional PlanningStep at intervals | `write_todos` no-op planning tool |
 
-Full source entries: [`hermes-agent.md`](../papers/hermes-agent.md) · [`smolagents.md`](../papers/smolagents.md) · [`langchain-deep-agents.md`](../papers/langchain-deep-agents.md).
+Full source entries: [`hermes-agent.md`](../../papers/hermes-agent.md) · [`smolagents.md`](../../papers/smolagents.md) · [`langchain-deep-agents.md`](../../papers/langchain-deep-agents.md).
 
 ## Reading the triangle
 

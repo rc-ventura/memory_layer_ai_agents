@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.5 / 2.2 / 3.6 · **Type:** Cross-reference analysis (industry skill → project architecture) · **Logged:** [10/09/2026](../research-diary/Set/diario_campo_2026-09-07.md)
+> **Sub-atividade:** 1.5 / 2.2 / 3.6 · **Type:** Cross-reference analysis (industry skill → project architecture) · **Logged:** [10/09/2026](../../research-diary/Set/diario_campo_2026-09-07.md)
 
 # LangChain Eval Engineering Skill — full analysis (blog post + actual SKILL.md source)
 
@@ -6,7 +6,7 @@
 
 | Date | Source | What was extracted |
 |---|---|---|
-| 24/08/2026 | Video presentation (pre-blog) | **Trigger ≠ conteúdo** — Kafka event = trigger; full agent trajectory = content of the episodic trace. Propagated to component A's write-path design ([diary](../research-diary/Ago/diario_campo_2026-08-24.md#insight--trigger-de-armazenamento-conteudo-do-trace-e-acesso-a-stm)). |
+| 24/08/2026 | Video presentation (pre-blog) | **Trigger ≠ conteúdo** — Kafka event = trigger; full agent trajectory = content of the episodic trace. Propagated to component A's write-path design ([diary](../../research-diary/Ago/diario_campo_2026-08-24.md#insight--trigger-de-armazenamento-conteudo-do-trace-e-acesso-a-stm)). |
 | 10/09/2026 | Blog post "Towards Automating Eval Engineering" (22/07/2026) | Mechanics, isomorphism to the cold path, Harbor in the v2 loop. First version of this note. |
 | 10/09/2026 (later) | **Actual SKILL.md + 12 reference files** (cloned from [github.com/langchain-ai/langchain-skills](https://github.com/langchain-ai/langchain-skills), `config/skills/eval-engineering/`) | Full structure, 7-step flow, World Knowledge Skill concept, Task.md control-plane spec, Verifier design principles, Calibration failure taxonomy, Discovery methodology. This update. |
 
@@ -198,7 +198,7 @@ Harbor is already referenced in the v2 harness-change loop ([`knowledge-as-infra
 
 ## "Harness engineering" = this project's RL
 
-The blog states: *"Teams can fit agent behavior to them through harness engineering such as changing prompts & tools or fine-tuning."* This is exactly the project's decision #2 ([`scope-and-terminology-decisions.md#2`](scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title)): the mechanism's RL is harness adjustment driven by explicit thumbs up/down, not SFT, not policy gradient. The skill's own terminology ("Harness" = "the complete agent Harbor runs, including prompts, model loop, tools, hooks, memory, sessions, and adapter") uses the same word the project adopted — independent corroboration from a source that predates the tutor's 20/08 confirmation.
+The blog states: *"Teams can fit agent behavior to them through harness engineering such as changing prompts & tools or fine-tuning."* This is exactly the project's decision #2 ([`scope-and-terminology-decisions.md#2`](../scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title)): the mechanism's RL is harness adjustment driven by explicit thumbs up/down, not SFT, not policy gradient. The skill's own terminology ("Harness" = "the complete agent Harbor runs, including prompts, model loop, tools, hooks, memory, sessions, and adapter") uses the same word the project adopted — independent corroboration from a source that predates the tutor's 20/08 confirmation.
 
 ## What does NOT map directly (trade-offs)
 
@@ -210,4 +210,4 @@ The blog states: *"Teams can fit agent behavior to them through harness engineer
 
 - [`eval-engineering-skill-architecture-connections.md`](eval-engineering-skill-architecture-connections.md) — detailed component-by-component mapping to the knowledge-as-infra architecture, and what the skill's concepts mean for specific sub-activities (1.4, 1.5, 3.6, and the v2 harness-change loop).
 - [`knowledge-as-infra-architecture-hypothesis.md`](knowledge-as-infra-architecture-hypothesis.md) — the canonical architecture doc, where Harbor appears in the v2 loop (lines 219–229).
-- [`scope-and-terminology-decisions.md#2`](scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title) — the harness-not-retraining decision the skill's own terminology independently corroborates.
+- [`scope-and-terminology-decisions.md#2`](../scope-and-terminology-decisions.md#2-what-reinforcement-learning-means-in-this-projects-title) — the harness-not-retraining decision the skill's own terminology independently corroborates.

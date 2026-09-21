@@ -14,7 +14,7 @@ An "agent harness" built on LangGraph, defined by four pillars: a detailed syste
 
 ## Relevance to the project
 
-Third pole of the [three-way framework comparison](../discussion/framework-comparison-hermes-smolagents-deepagents.md): planning/sub-agent/filesystem harness with opt-in cross-session persistence, contrasted with Hermes' closed learning loop and smolagents' transparent step-memory. The CompositeBackend routing model (explicit, file-based, auditable, no mandatory embeddings) is recommended as an architectural reference for legal-workflow memory design.
+Third pole of the [three-way framework comparison](../discussion/hipoteses/framework-comparison-hermes-smolagents-deepagents.md): planning/sub-agent/filesystem harness with opt-in cross-session persistence, contrasted with Hermes' closed learning loop and smolagents' transparent step-memory. The CompositeBackend routing model (explicit, file-based, auditable, no mandatory embeddings) is recommended as an architectural reference for legal-workflow memory design.
 
 **Note:** Do not confuse with RUC-NLPIR's unrelated "DeepAgent" paper (arXiv:2510.21618, WWW 2026) — see that entry's disambiguation note.
 

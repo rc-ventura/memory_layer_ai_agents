@@ -28,4 +28,4 @@ Fluxo de uma mensagem no chat: **frontend → API Gateway → proxy (Lambda)**, 
 
 ## Não investigado aqui
 
-Ver [`../../discussion/checkpoint-2026-08-21-infra-reflections.md`](../../discussion/checkpoint-2026-08-21-infra-reflections.md) para o que essa reunião confirma, corrige ou abre em relação ao que já estava registrado no repo.
+Ver [`../../discussion/checkpoint-2026-08-21-infra-reflections.md`](../../discussion/reflexoes/checkpoint-2026-08-21-infra-reflections.md) para o que essa reunião confirma, corrige ou abre em relação ao que já estava registrado no repo.

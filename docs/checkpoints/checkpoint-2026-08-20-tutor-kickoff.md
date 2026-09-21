@@ -57,4 +57,4 @@ O número de agentes está crescendo rápido — algo como 2 em produção até 
 
 ## Não resolvido nesta reunião
 
-Ver [`../../discussion/checkpoint-2026-08-20-reflections.md`](../../discussion/checkpoint-2026-08-20-reflections.md) para o que isso muda ou abre em relação ao plano de trabalho, e [`../../discussion/open-questions.md`](../../discussion/open-questions.md) para os itens que essa reunião adiciona.
+Ver [`../../discussion/checkpoint-2026-08-20-reflections.md`](../../discussion/reflexoes/checkpoint-2026-08-20-reflections.md) para o que isso muda ou abre em relação ao plano de trabalho, e [`../../discussion/open-questions.md`](../../discussion/open-questions.md) para os itens que essa reunião adiciona.

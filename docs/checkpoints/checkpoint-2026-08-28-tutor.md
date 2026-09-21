@@ -4,7 +4,7 @@
 
 ## Por que essa reunião importa
 
-Diferente das duas anteriores (o tutor explicando a esteira jurídica e a infra), aqui foi o **Rafael apresentando a hipótese de arquitetura inteira** — o "mega cérebro" / conhecimento como infraestrutura destilado em [`../../discussion/knowledge-as-infra-architecture-hypothesis.md`](../../discussion/knowledge-as-infra-architecture-hypothesis.md) — com o tutor reagindo a cada parte. O checklist objetivo de 8 perguntas de [`../../discussion/component-a-tutor-meeting-prep.md`](../../discussion/component-a-tutor-meeting-prep.md) **não foi percorrido**; a conversa ficou num nível mais alto, de validação de direção.
+Diferente das duas anteriores (o tutor explicando a esteira jurídica e a infra), aqui foi o **Rafael apresentando a hipótese de arquitetura inteira** — o "mega cérebro" / conhecimento como infraestrutura destilado em [`../../discussion/knowledge-as-infra-architecture-hypothesis.md`](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md) — com o tutor reagindo a cada parte. O checklist objetivo de 8 perguntas de [`../../discussion/component-a-tutor-meeting-prep.md`](../../discussion/component-a-tutor-meeting-prep.md) **não foi percorrido**; a conversa ficou num nível mais alto, de validação de direção.
 
 ## Os dois tipos de memória, na visão do tutor
 
@@ -104,6 +104,6 @@ O tutor é do [EMPRESA] (não do Instituto/ICT); o trabalho dele é inovador mas
 
 ## Não investigado aqui
 
-Ver [`../../discussion/checkpoint-2026-08-28-reflections.md`](../../discussion/checkpoint-2026-08-28-reflections.md) para o que esta reunião confirma, tensiona ou abre em relação à hipótese de arquitetura, a [`../../discussion/open-questions.md`](../../discussion/open-questions.md) e às decisões de escopo já registradas.
+Ver [`../../discussion/checkpoint-2026-08-28-reflections.md`](../../discussion/reflexoes/checkpoint-2026-08-28-reflections.md) para o que esta reunião confirma, tensiona ou abre em relação à hipótese de arquitetura, a [`../../discussion/open-questions.md`](../../discussion/open-questions.md) e às decisões de escopo já registradas.
 
 O fechamento de loop no [diário de campo](../../research-diary/) (passo 4 do padrão de meeting-record) fica pendente de pedido explícito do Rafael.

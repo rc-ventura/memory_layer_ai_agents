@@ -136,3 +136,13 @@ Documentos atualizados: racionais §3 (Passo 8) e §6; relatório TL;DR, §2.2 e
 **Decisão/próximo passo:** Uma vez fundamentada, essa metodologia (sintoma → mecanismo → unidade de memória, com mineração aprofundada caso a caso) passa a ser a base para as próximas análises do projeto.
 
 **Tags:** achado, mineracao-de-memoria, unidade-2, unidade-10, conversationagent, respostabacen, schema-de-retorno, contrato-de-ferramenta, campo-inexistente, prompt-induz-erro, sub-2.1, sub-2.2
+
+## 18/09/2026
+
+**Tipo:** reunião — **Sub-atividade:** 2.1 / 2.2 — **Canal:** formal-tutor
+
+**Registro objetivo:** Reunião com o tutor definiu o trabalho da semana. Ponto central: os resultados preliminares apresentados ainda não são representativos — a análise trabalha com ~1.000 records, enquanto o banco de traces tem ~1M. Decidido que é preciso rodar mais análises de classificação de erros usando a taxonomia já definida. Nova tarefa atribuída: entregar ao tutor a taxonomia de erros **em forma de query** — partir da label mais genérica que capture todos os erros numa única consulta e descer em profundidade nível a nível, seguindo o trace (como o erro é logado, quais campos o identificam), até a unidade mais específica do erro. Objetivo final: montar uma query na AWS e baixar um dataset só de erros, excluindo o que não é erro, para trabalhar apenas nessa base. Checagem feita nos relatórios antes de registrar: a label genérica existe e é nativa do smolagents — o campo `error` do `ActionStep` só está presente quando o step falhou, e `error.type` tem só dois valores: `AgentExecutionError` (465 na amostra, falha durante a execução do código) e `AgentParsingError` (33, falha antes de rodar, ex.: resposta sem bloco de código). Já está materializado como coluna `err_type` na tabela `steps` — consultável a custo zero (`05-schema.md`, `04-roadmap.md` item 10). O nível seguinte de profundidade é `error.message`, que alimenta a `classify()` → assinaturas → mecanismos → unidades de memória.
+
+**Decisão/próximo passo:** Tarefas da semana: (1) estruturar a taxonomia como query hierárquica — do catch-all (`error` presente) ao `error.type` ao `error.message`/assinatura — para extrair via AWS o dataset completo de erros da base de ~1M records; (2) manter em paralelo as análises da primeira rodada genérica (tokens gastos, métricas de monitoramento), que seguem válidas além dos erros em si.
+
+**Tags:** reuniao, tutor, taxonomia-de-erros, query-aws, agentexecutionerror, agentparsingerror, error-type, err-type, catch-all, dataset-de-erros, 1m-records, representatividade, amostra-1000, hierarquia-de-erro, drill-de-niveis, metricas-de-monitoramento, sub-2.1, sub-2.2
