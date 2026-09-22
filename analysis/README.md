@@ -8,7 +8,8 @@ Each analysis lives in its own dated folder (`YYYY-MM-slug/`) containing:
 - `pipeline/` — the executed Jupyter notebook(s) (the reproducible pipeline, with outputs embedded), a shared
   `base_pipeline.py` when the folder hosts more than one analysis (trace loading, step explosion, error
   classification — every notebook builds on it instead of copying cells), and any companion scripts (e.g.
-  `drill_down.py` for case-level triangulation). **One notebook per analysis pass** — a pre-registered method
+  `drill_down.py` for case-level triangulation, `checklist.py` for the intake checks on a new base —
+  see below). **One notebook per analysis pass** — a pre-registered method
   applied to a set of objects: the §11 schema-mining pass covers units nº2 and nº10 in a single notebook
   because they share the method; units needing a different method wait for their own pass. Not one notebook
   per object, not one giant notebook — the boundary is the method. Each notebook **owns a section-number
@@ -155,6 +156,34 @@ aggregate -> selected cases by explicit rule -> raw trace -> derived view -> ind
 That is the default methodological move in `analysis/`: not just "count errors", but move from observed
 trace behavior to a reusable, auditable explanation of what should be remembered, changed, monitored, or
 kept outside the agent.
+
+## Intake checklist — a new trace base
+
+When a new extraction lands, the folder setup is mechanical: dated `YYYY-MM-slug/` folder, copy
+`pipeline/base_pipeline.py` + `drill_down.py` + `checklist.py` + `.gitignore`, drop the dump in
+`data/`, point `TRACE` at the new file. Then run `python checklist.py` from `pipeline/` — it bundles
+the two non-mechanical checks below plus context (period, agent versions, roles in the JSON). What it
+verifies:
+
+1. **Column drift** — `base_pipeline.py` reads five columns by name: `txt_etap_memo`, `cod_idef_exeo`,
+   `cod_idef_aget`, `cod_idef_stat_exeo_aget`, and `anomesdia` (parsed as `%Y%m%d` → `mes`). A different
+   extraction can rename or drop them; `print(df.columns.tolist())` before anything else.
+   **Worth having even though nothing reads them yet:** `txt_vrvl_locl` (the interpreter's final
+   `locals()` per role — it stores the *real* tool returns, the strongest evidence for
+   return-contract claims), `txt_rspa_fina` (persisted final answer), `dat_hor_inio/encm_exeo`
+   (real start/end timestamps, better than `anomesdia` for timing), `cod_vers_aget` (agent version —
+   separates platform eras).
+2. **`error.type` census** — `classify()` was built on the two types seen in the first sample; a new
+   base can emit types the taxonomy never saw (the second extraction already added `AgentMaxStepsError`,
+   n=1). One `str.findall` + `value_counts` on `"error": {"type": ...}` tells you whether the taxonomy
+   covers the base *before* it silently bins unknown errors. The full vocabulary smolagents can emit is
+   documented in `schema-e-taxonomia-de-erros.md` §3.1.
+
+`classify()` / `submecanismo()` / `SUB2UNI` are hypotheses mined from the first base — copy them
+unchanged and read the **"Não classificado" bucket as the coverage signal**: where it grows, the rules
+don't reach. Same method + new base = copy the notebook and rerun (outputs recompute on their own; the
+markdown prose keeps the old base's numbers until rewritten — that rewrite is where the analysis
+actually happens). New method = new notebook with its own § range, per the convention above.
 
 ## Index
 

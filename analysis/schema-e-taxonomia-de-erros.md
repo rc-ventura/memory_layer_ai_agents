@@ -122,6 +122,28 @@ micro-organismo. Todos os níveis são **determinísticos** (regra fixa, sem LLM
 campo `error` (N0); `error.type` é o primeiro corte (N1); daí para baixo a especificação é a `error.message`
 contra as regras da taxonomia.
 
+### 3.1 O vocabulário de `error.type` — o que o smolagents pode emitir
+
+O campo `type` grava o nome da classe concreta da exceção (`self.__class__.__name__`). A hierarquia do
+smolagents (`src/smolagents/utils.py`) tem **6 subclasses de `AgentError`** — a amostra de 1.000 mostrou só
+2, e a segunda extração já trouxe uma terceira, o que confirma que o censo DISTINCT prévio é etapa
+obrigatória em toda base nova:
+
+| `error.type` | pai | quando é lançado | visto onde |
+|---|---|---|---|
+| `AgentExecutionError` | `AgentError` | falha genérica durante o step | base 1 (465) · base 2 (409) |
+| `AgentParsingError` | `AgentError` | output do LLM não parseou (sem bloco `<code>`, JSON malformado) | base 1 (33) · base 2 (69) |
+| `AgentToolCallError` | `AgentExecutionError` | argumentos errados/ausentes na chamada da ferramenta | ainda não visto |
+| `AgentToolExecutionError` | `AgentExecutionError` | o `forward()` da ferramenta levantou exceção | ainda não visto |
+| `AgentMaxStepsError` | `AgentError` | estourou `max_steps` sem `final_answer` | base 2 (1) — raro |
+| `AgentGenerationError` | `AgentError` | a chamada ao modelo falhou | provavelmente nunca: `agents.py` faz `raise` — derruba a execução em vez de gravar no step |
+
+Duas leituras práticas: `AgentToolCallError`/`AgentToolExecutionError` são **subclasses** de
+`AgentExecutionError` — se a versão da esteira os emite, o DISTINCT os separa do pai, e o ToolCall mapeia
+direto para mecanismos de contrato de chamada. E `AgentMaxStepsError` não é erro de código — é exaustão de
+iterações; o destino natural é "fora do escopo de memória", não uma unidade. Em n=1 ele cai no balde
+"Não classificado" do `classify()` — correto: a taxonomia admite o que não conhece em vez de forçar encaixe.
+
 ## 4. Todas as famílias — contagem real na amostra
 
 498 erros, 313 execuções (nov/2025–ago/2026). `classify()` → família + assinatura:
@@ -198,7 +220,10 @@ separa erro cosmético de erro que corrompe a resposta.
 ## 6. Ressalvas
 
 - **Amostra ≠ população**: tudo aqui é sobre 1.000 execuções (~1M na base). `error.type` pode ter outros
-  valores na base completa — a consulta de extração deve listar os `DISTINCT` antes de assumir o binário.
+  valores — já confirmado na prática: a segunda extração (outra amostra de 1.000) trouxe
+  `AgentMaxStepsError` (n=1), ausente da primeira. Toda base nova passa pelo censo DISTINCT antes do
+  pipeline — ver §3.1 para o vocabulário completo possível; operacionalizado em
+  `2026-09-trace-law-flow/pipeline/checklist.py` (§4 faz o censo duplo regex×parse).
 - **`cod_idef_stat_exeo_aget` não serve como rótulo de erro** (`05-schema.md` §Status).
 - **PII**: o dataset extraído contém dados de clientes — mesmas regras do trace original.
 
