@@ -1,5 +1,10 @@
 # Auditoria independente #2 — parecer sobre a cadeia de evidência
 
+> ⚠️ **Parcialmente desatualizado desde 23/09/2026.** Os números por mês desta auditoria usam o mês de
+> `anomesdia` (o lote de corte); hoje o pipeline e os `scripts/audit_recompute*.py` usam o mês de
+> `dat_hor_inio_exeo` (quando a execução rodou). Números que não dependem de mês continuam valendo.
+> → `docs/04-roadmap.md` (Agora) · `docs/03-procedimento-validacao.md` §1.12
+
 **Data:** 2026-09-16 · **Auditor:** agente de auditoria · **Objeto:** a cadeia completa
 `data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz` → `pipeline/analise_trace_esteira_juridica.ipynb`
 (estado pós-15/09/2026, com a triagem por mecanismo da §9) → `docs/01-racionais.md` →

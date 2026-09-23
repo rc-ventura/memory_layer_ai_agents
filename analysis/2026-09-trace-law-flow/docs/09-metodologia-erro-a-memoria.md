@@ -145,7 +145,7 @@ Três `ActionStep.error` de verdade, passando por cada função. Escolhidos para
 mostrar os dois fenômenos do muitos-para-muitos num exemplo só:
 
 ```
-ERRO A  exec 008d142f  ConversationAgent  2026-06
+ERRO A  exec 008d142f  ConversationAgent  2026-03
         "Could not index {'result': [[{'hashDocumento': '05683f34…'…"   ← indexou dict por posição
 ERRO B  exec 3f44a68b  ConversationAgent  2026-06
         "Object hashDocumento has no attribute get"                     ← iterou o dict, pegou chave-string
@@ -177,9 +177,9 @@ flowchart TD
     SIG1 --> FAM["família 'Contrato de retorno'"]
     SIG2 --> FAM
 
-    MEC1 --> U1["U_contrato_dict<br/>96 erros · 87 execs · 6 meses · 1 papel"]
+    MEC1 --> U1["U_contrato_dict<br/>96 erros · 87 execs · 8 meses · 1 papel"]
     MEC2 --> U1
-    MEC3 --> U2["U_campo_inexistente<br/>10 erros · 10 execs · 3 meses · 2 papéis"]
+    MEC3 --> U2["U_campo_inexistente<br/>10 erros · 10 execs · 6 meses · 2 papéis"]
     U1 --> DEC["triagem → candidato"]
     U2 --> DEC
 ```
@@ -190,7 +190,7 @@ Monitoramento acumulado (saída real da `triagem()`):
 |---|---:|---:|
 | erros | 96 | 10 |
 | execuções (dedup cascata) | 87 | 10 |
-| meses | 6 (dez/25 → ago/26) | 3 |
+| meses | 8 (dez/25 → jul/26) | 6 |
 | papéis | 1 — só ConversationAgent | 2 — RespostaBacen 8, ConversationAgent 2 |
 | tokens desperdiçados | 2,99M | 0,19M |
 | assinaturas de origem | "Could not index" + "Objeto sem atributo" | "Could not index" |

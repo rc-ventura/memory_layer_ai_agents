@@ -1,5 +1,10 @@
 # Relatório independente — 11.5_estabilidade
 
+> ⚠️ **Desatualizado desde 23/09/2026 — refazer.** Esta auditoria verificou a amostra de casos escolhida quando
+> o `mes` vinha de `anomesdia` (o lote de corte). Hoje o `mes` vem de `dat_hor_inio_exeo` (quando a execução
+> rodou) e as regras de escolha, que ordenam por mês, trocaram parte dos casos desta pasta. Não citar como
+> verificação da amostra atual. → `docs/04-roadmap.md` (Agora) · `docs/03-procedimento-validacao.md` §1.12
+
 Data: 2026-09-17
 
 ## Escopo

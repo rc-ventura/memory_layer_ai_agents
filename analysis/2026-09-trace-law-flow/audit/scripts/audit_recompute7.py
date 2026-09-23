@@ -25,6 +25,8 @@ so tipos, chaves, comprimentos e contagens.
 import csv, json, re, ast, os, sys, unicodedata
 from collections import defaultdict
 
+# mês da execução = dat_hor_inio_exeo (AAAAMM), não anomesdia — anomesdia é a data de corte do lote
+# (ver 03-procedimento-validacao.md, 'três relógios'; troca feita em 23/09/2026)
 csv.field_size_limit(sys.maxsize)
 
 REPO = os.path.dirname(os.path.abspath(__file__))
@@ -61,7 +63,7 @@ def load_steps():
                 memo = json.loads(memo_txt)
             except Exception:
                 continue
-            ex, mes = row["cod_idef_exeo"], row["anomesdia"][:6]
+            ex, mes = row["cod_idef_exeo"], row["dat_hor_inio_exeo"][:7].replace("-", "")
             memos[ex] = memo
             mes_de[ex] = mes
             for role, steps in memo.items():

@@ -4,6 +4,8 @@ import csv, json, lzma, re, sys, ast
 from collections import Counter, defaultdict
 from statistics import median
 
+# mês da execução = dat_hor_inio_exeo (AAAAMM), não anomesdia — anomesdia é a data de corte do lote
+# (ver 03-procedimento-validacao.md, 'três relógios'; troca feita em 23/09/2026)
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
 import os
 # Caminho canônico corrigido 16/09/2026 (auditoria M2): ../../data/ a partir deste script.
@@ -55,7 +57,7 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
         if not memo_raw: continue
         try: memo = json.loads(memo_raw)
         except Exception: continue
-        eid = r["cod_idef_exeo"]; mes = r["anomesdia"][:6]
+        eid = r["cod_idef_exeo"]; mes = r["dat_hor_inio_exeo"][:7].replace("-", "")
         for role, stps in memo.items():
             if not isinstance(stps, list): continue
             acts = [s for s in stps if isinstance(s, dict) and s.get("__class__") == "ActionStep"]

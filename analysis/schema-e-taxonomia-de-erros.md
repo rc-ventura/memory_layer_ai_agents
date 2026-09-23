@@ -146,7 +146,7 @@ iterações; o destino natural é "fora do escopo de memória", não uma unidade
 
 ## 4. Todas as famílias — contagem real na amostra
 
-498 erros, 313 execuções (nov/2025–ago/2026). `classify()` → família + assinatura:
+498 erros, 313 execuções (out/2025–ago/2026). `classify()` → família + assinatura:
 
 | Família | Erros | Assinaturas |
 |---|---:|---|

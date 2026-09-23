@@ -1,5 +1,10 @@
 # Relatório independente — 11.9 Leituras de quebra_sigilo
 
+> ⚠️ **Parcialmente desatualizado desde 23/09/2026.** Os casos desta pasta não mudaram, mas as contagens por
+> mês (ex.: "em 3 meses") usam o mês de `anomesdia` (o lote de corte); hoje o `mes` vem de `dat_hor_inio_exeo`
+> (quando a execução rodou) e essas contagens mudam. → `docs/04-roadmap.md` (Agora) ·
+> `docs/03-procedimento-validacao.md` §1.12
+
 Data: 2026-09-18
 
 ## Escopo

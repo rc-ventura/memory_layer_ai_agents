@@ -52,6 +52,13 @@ Uso:
         -> o mesmo para um caso qualquer, fora das análises: resultados/evidencia/avulso/.
            `idx` é a coluna `idx` do notebook (posição do ActionStep no papel, a partir de 0).
 
+    python drill_down.py relogios
+        -> resultados/evidencia/A3_relogios/: para cada execução, as três datas de fontes
+           independentes — `anomesdia`, `dat_hor_inio_exeo` e o `timing` dos steps (gravado
+           pelo runtime) — mais o cruzamento mês da partição × mês real e os crus de uma
+           regra de escolha escrita. Sustenta que `anomesdia` não é a data da execução.
+           Imprime só contagens. Leia o leia-me.md da pasta.
+
     python drill_down.py caso <exec_id> <role>
         -> imprime a trajetória inteira daquele papel naquela execução, na ordem
            em que aconteceu: PlanningStep (plano) quando existir, e pra cada
@@ -178,7 +185,7 @@ def amostra(n=10):
             if not isinstance(steps, list): continue
             n_action = sum(1 for s in steps if isinstance(s, dict) and s.get("__class__") == "ActionStep")
             if n_action > 0:
-                found.append((r["cod_idef_exeo"], role, r["anomesdia"], n_action))
+                found.append((r["cod_idef_exeo"], role, r["dat_hor_inio_exeo"][:10], n_action))
     random.shuffle(found)
     print(f"{len(found)} pares (exec_id, role) com ActionStep no trace inteiro. Amostra aleatória de {min(n,len(found))}:\n")
     for eid, role, dt, n_action in found[:n]:
@@ -199,7 +206,7 @@ def listar(assinatura, n=8):
                 e = st.get("error") or {}
                 if not e: continue
                 if classify(str(e.get("message", ""))) == assinatura:
-                    found.append((r["cod_idef_exeo"], role, r["anomesdia"], st.get("step_number")))
+                    found.append((r["cod_idef_exeo"], role, r["dat_hor_inio_exeo"][:10], st.get("step_number")))
     print(f"'{assinatura}': {len(found)} ocorrências. Amostra de {min(n,len(found))}:\n")
     for eid, role, dt, step in found[:n]:
         print(f"  exec_id={eid}  role={role}  data={dt}  step={step}")
@@ -219,7 +226,7 @@ def planos(n=20):
             if not isinstance(steps, list): continue
             n_plan = sum(1 for s in steps if isinstance(s, dict) and s.get("__class__") == "PlanningStep")
             if n_plan > 0:
-                found.append((r["cod_idef_exeo"], role, r["anomesdia"], n_plan))
+                found.append((r["cod_idef_exeo"], role, r["dat_hor_inio_exeo"][:10], n_plan))
     print(f"{len(found)} pares (exec_id, role) com PlanningStep. Amostra de {min(n,len(found))}:\n")
     for eid, role, dt, n_plan in found[:n]:
         print(f"  exec_id={eid}  role={role}  data={dt}  {n_plan} PlanningStep")
@@ -259,7 +266,7 @@ def ferramenta(nome):
                 b = bloco_da_ferramenta(system_prompt(st), nome)
                 if not b: continue
                 v = variantes.setdefault(b, {"steps": 0, "execs": set(), "meses": set(), "papeis": set()})
-                v["steps"] += 1; v["execs"].add(r["cod_idef_exeo"]); v["meses"].add(r["anomesdia"][:6]); v["papeis"].add(role)
+                v["steps"] += 1; v["execs"].add(r["cod_idef_exeo"]); v["meses"].add(r["dat_hor_inio_exeo"][:7]); v["papeis"].add(role)
     if not variantes:
         print(f"nenhum system prompt declara `def {nome}(...)`."); return
     todos = set().union(*(v["execs"] for v in variantes.values()))
@@ -420,8 +427,10 @@ def evidencia(analise=None):
     """Completa as pastas de evidência a partir do casos.csv que o notebook de mineração gravou: crus/<exec_id>.json (a linha inteira
     do trace) e derivados/<exec>_<role>_idx<n>.json (a visão de cada caso, conferida contra o cru). Sem argumento, todas
     as pastas que têm casos.csv."""
-    pastas = sorted(d for d in os.listdir(PASTA_EVIDENCIA) if os.path.exists(os.path.join(PASTA_EVIDENCIA, d, "casos.csv"))) \
-        if analise is None else [analise]
+    def por_step(d):  # pastas com casos por (exec, role, idx); A3_relogios é por execução e tem comando próprio
+        arq = os.path.join(PASTA_EVIDENCIA, d, "casos.csv")
+        return os.path.exists(arq) and {"role", "idx"} <= set(pd.read_csv(arq, nrows=0).columns)
+    pastas = sorted(d for d in os.listdir(PASTA_EVIDENCIA) if por_step(d)) if analise is None else [analise]
     if not pastas or not os.path.exists(os.path.join(PASTA_EVIDENCIA, pastas[0], "casos.csv")):
         print(f"nenhum casos.csv em {PASTA_EVIDENCIA}/{analise or '*'} — rode a §11 do notebook mineracao_unidades_n2_n10.ipynb antes."); return
     casos = {d: pd.read_csv(os.path.join(PASTA_EVIDENCIA, d, "casos.csv"), dtype={"exec_id": str, "role": str}) for d in pastas}
@@ -462,6 +471,155 @@ def evidencia_avulsa(exec_id, role, idx, ferramenta):
         json.dump(visao, f, ensure_ascii=False, indent=2)
     print(f"gravado: {os.path.relpath(arq)} e crus/{exec_id}.json · trechos conferidos contra o cru: {ok}/{n}")
 
+def _timing(memo_txt):
+    """Menor start_time e maior end_time (epoch, gravados pelo runtime do agente) entre todos os steps do JSON."""
+    if pd.isna(memo_txt):
+        return None, None
+    try:
+        memo = json.loads(memo_txt)
+    except Exception:
+        return None, None
+    ini, fim = [], []
+    for passos in memo.values():
+        if not isinstance(passos, list):
+            continue
+        for st in passos:
+            tm = (st.get("timing") or {}) if isinstance(st, dict) else {}
+            if isinstance(tm.get("start_time"), (int, float)): ini.append(tm["start_time"])
+            if isinstance(tm.get("end_time"), (int, float)): fim.append(tm["end_time"])
+    return (min(ini) if ini else None), (max(fim) if fim else None)
+
+def relogios():
+    """Evidência do Ajuste 3: três relógios por execução, de fontes independentes — `anomesdia` (coluna),
+    `dat_hor_inio_exeo` (coluna) e `timing` dos steps (gravado pelo runtime dentro de txt_etap_memo). Não usa o
+    código de classificação; só o `h_bloco_code.csv` lê resultados/erros_mecanismo.csv (rode o notebook antes).
+    Grava resultados/evidencia/A3_relogios/ e imprime só contagens."""
+    pasta = os.path.join(PASTA_EVIDENCIA, "A3_relogios")
+    os.makedirs(os.path.join(pasta, "derivados"), exist_ok=True)
+    df = load()
+    tm = df["txt_etap_memo"].map(_timing)
+    R = pd.DataFrame({
+        "exec_id": df["cod_idef_exeo"], "linha_de_dados": df.index,
+        "anomesdia": df["anomesdia"], "dat_hor_inio_exeo": df["dat_hor_inio_exeo"],
+        "timing_min": pd.to_datetime([t[0] for t in tm], unit="s"),
+        "timing_max": pd.to_datetime([t[1] for t in tm], unit="s"),
+    })
+    part = pd.to_datetime(R["anomesdia"], format="%Y%m%d")
+    ini = pd.to_datetime(R["dat_hor_inio_exeo"])
+    R["delta_dias"] = ((part - ini).dt.total_seconds() / 86400).round(2)          # partição − início
+    R["delta_coluna_timing_h"] = ((ini - R["timing_min"]).dt.total_seconds() / 3600).round(3)
+    R["mes_particao"] = part.dt.to_period("M").astype(str)
+    R["mes_exec"] = ini.dt.to_period("M").astype(str)
+    R["mes_timing"] = R["timing_min"].dt.to_period("M").astype(str).where(R["timing_min"].notna())
+    R.drop(columns="linha_de_dados").to_csv(os.path.join(pasta, "derivados", "relogios.csv"), index=False)
+    X = pd.crosstab(R["mes_particao"], R["mes_exec"])
+    X.to_csv(os.path.join(pasta, "derivados", "cruzamento.csv"))
+
+    H = None
+    arq_mec = os.path.join(os.path.dirname(PASTA_EVIDENCIA), "erros_mecanismo.csv")
+    if os.path.exists(arq_mec):
+        M = pd.read_csv(arq_mec, dtype={"exec_id": str})
+        H = (M[M["unidade"] == "H_bloco_code"][["exec_id", "role", "idx"]]
+             .merge(R[["exec_id", "anomesdia", "dat_hor_inio_exeo", "mes_particao", "mes_exec"]], on="exec_id", how="left")
+             .sort_values(["dat_hor_inio_exeo", "exec_id", "idx"]))
+        H.to_csv(os.path.join(pasta, "derivados", "h_bloco_code.csv"), index=False)
+
+    # regra de escolha dos crus (escrita antes de olhar os casos; empate → ordem de exec_id)
+    Ro = R.sort_values("exec_id")
+    casos = [(r, "maior defasagem partição − início (top 3)") for _, r in
+             R.sort_values(["delta_dias", "exec_id"], ascending=[False, True]).head(3).iterrows()]
+    for p, g in Ro.groupby("mes_particao"):
+        g = g[g["delta_dias"] > 30]
+        if len(g):
+            casos.append((g.iloc[0], f"partição {p}: 1ª execução (ordem exec_id) com defasagem > 30 dias"))
+    ctrl = Ro[Ro["delta_dias"] < 1]
+    if len(ctrl):
+        casos.append((ctrl.iloc[0], "controle: 1ª execução (ordem exec_id) com defasagem < 1 dia"))
+    if H is not None:
+        h10 = H[H["mes_exec"] == "2025-10"].sort_values("exec_id")
+        if len(h10):
+            casos.append((R[R["exec_id"] == h10.iloc[0]["exec_id"]].iloc[0],
+                          "H_bloco_code: 1ª execução (ordem exec_id) com início em out/2025"))
+    vistos, linhas_casos = set(), []
+    for r, motivo in casos:
+        linhas_casos.append({"exec_id": r["exec_id"], "motivo": motivo, "anomesdia": r["anomesdia"],
+                             "dat_hor_inio_exeo": r["dat_hor_inio_exeo"], "timing_min": r["timing_min"],
+                             "delta_dias": r["delta_dias"]})
+        if r["exec_id"] not in vistos:
+            vistos.add(r["exec_id"])
+            gravar_cru(pasta, df.loc[r["linha_de_dados"]], r["linha_de_dados"])
+    pd.DataFrame(linhas_casos).to_csv(os.path.join(pasta, "casos.csv"), index=False)
+
+    com_t = R["timing_min"].notna()
+    # dois recortes: as 1.000 linhas, e as execuções com memória (as que o pipeline analisa — steps, erros, triagem)
+    recortes = [("todas as linhas", R), ("com memória (base das análises)", R[com_t])]
+    fatos = [f"linhas: {len(R)} · com memória (timing nos steps): {int(com_t.sum())} · "
+             f"exec_id repetido: {int(R['exec_id'].duplicated().sum())}"]
+    for nome, s in recortes:
+        igual = s["mes_particao"].eq(s["mes_exec"])
+        fatos.append(f"{nome}: mês da partição = mês real em {int(igual.sum())}/{len(s)} ({igual.mean():.1%}) · "
+                     f"defasagem partição − início: mediana {s['delta_dias'].median():.1f} d, "
+                     f"p75 {s['delta_dias'].quantile(.75):.1f} d, máx {s['delta_dias'].max():.1f} d")
+    fatos += [
+        f"início DEPOIS da partição: {int((R['delta_dias'] < 0).sum())}",
+        f"dat_hor_inio_exeo × timing_min: mesmo mês {(R.loc[com_t, 'mes_exec'] == R.loc[com_t, 'mes_timing']).mean():.1%} · "
+        f"|diferença| máx {R.loc[com_t, 'delta_coluna_timing_h'].abs().max():.2f} h",
+        f"valores distintos de anomesdia: {R['anomesdia'].nunique()} ({', '.join(sorted(R['anomesdia'].unique()))})",
+        f"meses reais sem nenhuma partição do mesmo mês: {', '.join(sorted(set(R['mes_exec']) - set(R['mes_particao']))) or 'nenhum'}",
+    ]
+    if H is not None:
+        fatos.append(f"H_bloco_code: {len(H)} erros · por mês real: " + ", ".join(f"{k} {v}" for k, v in H["mes_exec"].value_counts().sort_index().items())
+                     + " · por partição: " + ", ".join(f"{k} {v}" for k, v in H["mes_particao"].value_counts().sort_index().items()))
+    with open(os.path.join(pasta, "leia-me.md"), "w", encoding="utf-8") as f:
+        f.write(LEIA_ME_RELOGIOS.format(n_casos=len(linhas_casos), n_crus=len(vistos),
+                                        fatos="\n".join(f"- {x}" for x in fatos)))
+    print("A3_relogios:"); print("\n".join("  " + x for x in fatos))
+    print(f"  casos: {len(linhas_casos)} · crus gravados: {len(vistos)}")
+
+LEIA_ME_RELOGIOS = """# A3_relogios — Ajuste 3 (mês de partição × mês real da execução)
+
+**O que esta pasta sustenta.** Que `anomesdia` (de onde o pipeline deriva `mes`) **não** é a data da execução, e que
+`dat_hor_inio_exeo` é. A prova compara três relógios de fontes independentes para cada execução:
+
+1. `anomesdia`: coluna da tabela (semântica não documentada; hipótese: data de corte da democratização da base);
+2. `dat_hor_inio_exeo`: coluna da tabela, "data/hora de início" (`05-schema.md`);
+3. `timing.start_time` / `end_time` de cada step: gravados **pelo runtime do agente** dentro de `txt_etap_memo`.
+
+Se (2) e (3) concordam e (1) diverge, então (1) não data a execução. Nenhum código de classificação do pipeline
+entra nisso, só leitura de colunas e de um campo do JSON. A única exceção é `h_bloco_code.csv`, que usa a
+atribuição de unidade exportada pelo notebook (`resultados/erros_mecanismo.csv`).
+
+**Números (recalculados a cada geração):**
+
+{fatos}
+
+**Regra de escolha dos {n_casos} casos ({n_crus} crus),** escrita antes de olhar os casos; empate → ordem de `exec_id`:
+- as 3 execuções de maior defasagem partição − início;
+- em cada partição, a 1ª execução com defasagem > 30 dias;
+- 1 controle: a 1ª execução com defasagem < 1 dia;
+- a 1ª execução `H_bloco_code` com início em out/2025.
+
+**Arquivos.**
+
+- `crus/<exec_id>.json`: **a fonte**, a linha inteira do trace sem alteração (`txt_etap_memo` só desserializado).
+- `casos.csv`: os casos escolhidos, com o motivo e as três datas.
+- `derivados/relogios.csv`: as 1.000 execuções, uma por linha: as três datas, `delta_dias` (partição − início),
+  `delta_coluna_timing_h`, `mes_particao`, `mes_exec`, `mes_timing`. Só ids e datas.
+- `derivados/cruzamento.csv`: execuções por mês da partição (linhas) × mês real (colunas).
+- `derivados/h_bloco_code.csv`: os erros `H_bloco_code` com as datas da execução.
+
+**Conferir sem confiar no pipeline:** abrir um `crus/<exec_id>.json`, ler `anomesdia` e `dat_hor_inio_exeo`, pegar
+o `timing.start_time` de qualquer step em `txt_etap_memo` e converter o epoch (`date -u -r <epoch>` no macOS). As
+duas últimas datas batem; a primeira vem semanas ou meses depois.
+
+**O que esta pasta NÃO prova:** o que `anomesdia` é exatamente. Isso só quem mantém a tabela confirma
+(pergunta aberta: `05-schema.md` §Aberto).
+
+**Gerar** (em `pipeline/`): `uv run python drill_down.py relogios`
+
+> Os crus têm nome de cliente, número de processo e texto de documento. Pasta git-ignored — não versionar.
+"""
+
 def caso(exec_id, role, as_json=False):
     df = load()
     row = df[df["cod_idef_exeo"] == exec_id]
@@ -488,7 +646,8 @@ def caso(exec_id, role, as_json=False):
             "exec_id": exec_id,
             "role": role,
             "status": r["cod_idef_stat_exeo_aget"],
-            "data": r["anomesdia"],
+            "data": r["dat_hor_inio_exeo"],
+            "lote_anomesdia": r["anomesdia"],
             "steps": steps,
         }
         print(json.dumps(out, indent=2, ensure_ascii=False, default=str))
@@ -497,7 +656,7 @@ def caso(exec_id, role, as_json=False):
     n_plan = sum(1 for s in steps if s.get("__class__") == "PlanningStep")
     n_action = len(steps) - n_plan
     print(f"{'='*100}\nexec_id={exec_id}  role={role}  status={r['cod_idef_stat_exeo_aget']}  "
-          f"data={r['anomesdia']}  {len(steps)} steps ({n_action} ActionStep + {n_plan} PlanningStep)\n{'='*100}\n")
+          f"data={r['dat_hor_inio_exeo'][:19]} (lote {r['anomesdia']})  {len(steps)} steps ({n_action} ActionStep + {n_plan} PlanningStep)\n{'='*100}\n")
     for st in steps:
         tu = st.get("token_usage") or {}
         if st.get("__class__") == "PlanningStep":
@@ -541,6 +700,8 @@ if __name__ == "__main__":
             evidencia_avulsa(sys.argv[2], sys.argv[3], int(sys.argv[4]), sys.argv[5])
         else:
             evidencia(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "relogios":
+        relogios()
     elif cmd == "caso":
         args = [a for a in sys.argv[2:] if a != "--json"]
         as_json = "--json" in sys.argv[2:]

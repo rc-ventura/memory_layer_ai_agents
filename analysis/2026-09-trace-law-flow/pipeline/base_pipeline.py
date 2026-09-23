@@ -29,7 +29,12 @@ TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
 
 def carregar_trace():
     df = pd.read_csv(TRACE, dtype=str)
-    df["mes"] = pd.to_datetime(df["anomesdia"], format="%Y%m%d").dt.to_period("M").astype(str)
+    # `mes` = mês em que a execução RODOU (dat_hor_inio_exeo). `anomesdia` não serve para isso: é a data de corte
+    # do lote (1 valor por mês, sempre posterior ao início — mediana 46 dias, até 230), e só bate com o mês real
+    # em 36% das execuções com memória. Evidência: `drill_down.py relogios`; método: 03-procedimento-validacao.md.
+    df["mes_exec"] = pd.to_datetime(df["dat_hor_inio_exeo"]).dt.to_period("M").astype(str)
+    df["mes_particao"] = pd.to_datetime(df["anomesdia"], format="%Y%m%d").dt.to_period("M").astype(str)
+    df["mes"] = df["mes_exec"]
     return df
 
 
@@ -45,7 +50,7 @@ def explodir_memoria(df):
                 tu, tm = st.get("token_usage") or {}, st.get("timing") or {}
                 err = st.get("error") or {}
                 rec = {"exec_id": r["cod_idef_exeo"], "agente": r["cod_idef_aget"], "mes": r["mes"],
-                       "status": r["cod_idef_stat_exeo_aget"], "role": role,
+                       "mes_particao": r["mes_particao"], "status": r["cod_idef_stat_exeo_aget"], "role": role,
                        "idx": i, "n_steps_role": len(acts), "step": st.get("step_number"),
                        "dur_s": tm.get("duration"), "tok_in": tu.get("input_tokens") or 0,
                        "tok_out": tu.get("output_tokens") or 0, "tok_tot": tu.get("total_tokens") or 0,
@@ -70,7 +75,7 @@ def explodir_memoria(df):
     steps = pd.DataFrame(rows)
     RAW = raw   # com code/thought/ctx — usado nos detectores silenciosos
 
-    execs = (steps.groupby("exec_id").agg(agente=("agente","first"), mes=("mes","first"),
+    execs = (steps.groupby("exec_id").agg(agente=("agente","first"), mes=("mes","first"), mes_particao=("mes_particao","first"),
              n_steps=("step","size"), n_err=("err_type", lambda s: s.notna().sum()),
              tok_tot=("tok_tot","sum"), dur_s=("dur_s","sum"), tem_final=("is_final","any")).reset_index())
     execs["com_erro"] = execs["n_err"] > 0
@@ -221,13 +226,13 @@ UNI = {
                       "Referenciar a variável que guardou o retorno em vez de colar o print truncado dentro do código."),
     "H_infra_llm": ("Falha do LLM upstream — política de retry", NAO,
                     "AgentGenerationError/422: retry com backoff e circuit breaker por subagente."),
-    # tipo=NAO reflete só a base 1 (o incidente de dez/2025 morre a partir de mai/2026 NESTA base).
+    # tipo=NAO reflete só a base 1 (o incidente de out/2025 morre a partir de mar/2026 NESTA base).
     # Gatilho de reabertura (≥2 casos/mês ou taxa > 1/1k steps) foi acionado na base 2 — ver diário
     # de campo 22/09/2026 e `04-roadmap.md` §Monitoramento. Reclassificar (tipo/decisão) quando a
     # base 2 for formalmente integrada ao pipeline; até então, tratar como candidato reaberto, não
     # como resolvido.
     "H_bloco_code": ("Protocolo do harness", NAO,
-                     "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente dez/2025). REABERTO em 22/09/2026 (base 2) — ver diário de campo."),
+                     "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente, a partir de mar/2026: ≤0,99/1k). REABERTO em 22/09/2026 (base 2) — ver diário de campo."),
     "X_pontual": ("Erros pontuais sem conteúdo único", SEM, "—"),
 }
 

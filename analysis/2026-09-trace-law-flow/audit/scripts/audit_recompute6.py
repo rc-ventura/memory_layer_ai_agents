@@ -24,6 +24,8 @@ Saída não commitável: pode conter PII (audit_out*.txt é git-ignored).
 import csv, json, lzma, re, sys, ast, builtins, os
 from collections import Counter, defaultdict
 
+# mês da execução = dat_hor_inio_exeo (AAAAMM), não anomesdia — anomesdia é a data de corte do lote
+# (ver 03-procedimento-validacao.md, 'três relógios'; troca feita em 23/09/2026)
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
 # Caminhos canônicos corrigidos 16/09/2026 (auditoria M2): relativos a este script, não a um
 # home de usuário fixo.
@@ -114,7 +116,7 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
         if not memo_raw: continue
         try: memo = json.loads(memo_raw)
         except Exception: continue
-        eid = r["cod_idef_exeo"]; mes = r["anomesdia"][:6]
+        eid = r["cod_idef_exeo"]; mes = r["dat_hor_inio_exeo"][:7].replace("-", "")
         exec_month[eid] = mes
         for role, stps in memo.items():
             if not isinstance(stps, list): continue

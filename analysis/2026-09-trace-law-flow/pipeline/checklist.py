@@ -10,7 +10,8 @@ Operacionaliza os itens não-mecânicos do "Intake checklist — a new trace bas
                    quebradas em silêncio);
   §4 error.type  — censo regex no cru (o que o DISTINCT no banco vê) × censo via parse (o que
                    o pipeline vê), com flag de divergência;
-  §5 contexto    — período (anomesdia), agentes/versões, papéis presentes no JSON.
+  §5 contexto    — período das execuções (dat_hor_inio_exeo) × lotes de corte (anomesdia), com o cruzamento;
+                   agentes/versões, papéis presentes no JSON.
 
 Uso (rodar de dentro de pipeline/):  python checklist.py [outra-base.csv]
 Lê sempre o TRACE de base_pipeline.py — nada hardcoded aqui.
@@ -22,9 +23,11 @@ from collections import Counter
 import pandas as pd
 from base_pipeline import TRACE
 
+# dat_hor_inio_exeo é requerida desde 23/09/2026: é dela que base_pipeline.py tira o `mes` (quando a execução
+# rodou). anomesdia continua requerida, mas só como proveniência (o lote de corte) — não data a execução.
 REQUERIDAS = ["txt_etap_memo", "cod_idef_exeo", "cod_idef_aget",
-              "cod_idef_stat_exeo_aget", "anomesdia"]
-VALIOSAS = ["txt_vrvl_locl", "txt_rspa_fina", "dat_hor_inio_exeo",
+              "cod_idef_stat_exeo_aget", "dat_hor_inio_exeo", "anomesdia"]
+VALIOSAS = ["txt_vrvl_locl", "txt_rspa_fina",
             "dat_hor_encm_exeo", "cod_vers_aget", "cod_idef_cvsa_asnc"]
 
 df = pd.read_csv(TRACE, dtype=str)
@@ -90,9 +93,19 @@ if novos:
 
 # -- §5 contexto ------------------------------------------------------------------
 print("\n§5 CONTEXTO\n")
+exec_m = part_m = None
+if "dat_hor_inio_exeo" in df.columns:
+    exec_m = pd.to_datetime(df["dat_hor_inio_exeo"], errors="coerce").dt.to_period("M")
+    print(f"  execuções (dat_hor_inio_exeo): {exec_m.min()} a {exec_m.max()}  ({exec_m.nunique()} meses reais)"
+          + (f"  !! {int(exec_m.isna().sum())} sem data" if exec_m.isna().any() else ""))
 if "anomesdia" in df.columns:
-    meses = pd.to_datetime(df["anomesdia"], format="%Y%m%d", errors="coerce").dt.to_period("M")
-    print(f"  período (anomesdia):      {meses.min()} a {meses.max()}  ({meses.nunique()} meses)")
+    part_m = pd.to_datetime(df["anomesdia"], format="%Y%m%d", errors="coerce").dt.to_period("M")
+    print(f"  lotes de corte (anomesdia):    {part_m.min()} a {part_m.max()}  ({part_m.nunique()} lotes)"
+          "  — proveniência, não data de execução")
+if exec_m is not None and part_m is not None:
+    igual = (exec_m == part_m).mean()
+    print(f"  lote = mês real em {igual:.0%} das linhas. Execuções por lote (linhas) × mês real (colunas):\n")
+    print("\n".join("    " + l for l in pd.crosstab(part_m, exec_m).to_string().splitlines()))
 if "cod_idef_aget" in df.columns:
     vc = df["cod_idef_aget"].value_counts()
     print(f"  agentes (cod_idef_aget):  {df['cod_idef_aget'].nunique()} — "

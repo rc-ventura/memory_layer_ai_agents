@@ -109,7 +109,7 @@ Dois quadros diferentes, com força diferente:
   "<saída da tool validar_quebra_sigilo>"`. Ela devolve `{vazamento_sigilo, justificativa}` nos 7 casos. O agente pediu
   exatamente a chave declarada em 7/7; `"justificativa"` só aparece no prompt como valor de exemplo. A declaração é a
   mesma no trace inteiro — 2 variantes do bloco, que só diferem na quebra de linha, em 135 steps de 26 execuções
-  (dez/2025 e mar–jun/2026) —, e o modelo do JSON final está em 135/135. **O valor também diverge:** o prompt declara
+  (dez/2025–jun/2026) —, e o modelo do JSON final está em 135/135. **O valor também diverge:** o prompt declara
   `"NÃO"`; os 7 objetos trazem `'NAO'` (6) ou `'SIM'` (1), e em 3 dos 7 o código que quebrou compara com o literal do
   prompt (`== "NÃO"`). Com a chave certa, essa comparação seria falsa sem exceção nenhuma — uma falha silenciosa
   possível, ainda não procurada. `extrair_evidencias` repete o padrão num caso só: declara `informacoes_evidencias`,
@@ -183,13 +183,16 @@ dentro dele —, cada forma comparada com a mais comum do nível. Só os meses c
 
 | Ferramenta | Nível (chaves de topo) | Erros | Meses com erro | Veredito | Leitura estrita |
 |---|---|---:|---|---|---|
-| `get_available_documents` | `{result}` — retorno inteiro | 86 | 6: dez/2025, abr–ago/2026 | **estável**; 1 com campos a mais em ago/2026 | difere em ago/2026 |
+| `get_available_documents` | `{result}` — retorno inteiro | 86 | 8: dez/2025–jul/2026 | **estável**; 1 com campos a mais em jul/2026 | difere em jul/2026 |
 | `get_available_documents` | `{hashDocumento, metadado, tipoExtracaoOcr}` — um documento | 3 | 1: jun/2026 | estável | estável |
-| `validar_quebra_sigilo` | `{justificativa, vazamento_sigilo}` | 7 | 3: abr–jun/2026 | **estável** | estável |
+| `validar_quebra_sigilo` | `{justificativa, vazamento_sigilo}` | 7 | 5: jan, fev, abr–jun/2026 | **estável** | estável |
 
-- **Nenhuma contradição.** Em 85 dos 86 retornos inteiros a forma é idêntica, nos 6 meses. O único diferente traz
-  dois campos a mais nos documentos, nulos (`iuDocsId`, `iuDocsTenantId`), com todo o resto igual — e em ago/2026, o
-  mesmo mês em que outros 3 erros têm a forma comum. É variação entre execuções, não mudança no tempo.
+- **Nenhuma contradição.** Em 85 dos 86 retornos inteiros a forma é idêntica, nos 8 meses. O único diferente traz
+  dois campos a mais nos documentos, nulos (`iuDocsId`, `iuDocsTenantId`), com todo o resto igual — em jul/2026, o
+  último mês com erro nesse nível e o único erro dele naquele mês. **Com um caso só, o dado não separa variação
+  entre execuções de mudança no tempo** (datado pelo lote, esse caso caía num mês com outros 3 erros de forma comum,
+  e a leitura era "variação entre execuções" — ela não se sustenta mais com a data real; `03-procedimento-validacao.md`
+  §1.12).
 - **"Campos a mais" não conta como contradição** porque a memória usa as chaves da forma comum, e elas estão lá. Essa
   definição foi escrita depois de o Passo 2 já ter mostrado o caso — por isso a leitura estrita vai ao lado.
 - Evidência: `11.5_estabilidade/` — o primeiro caso de cada mês em cada nível, mais o caso diferente (11 casos).
@@ -201,7 +204,7 @@ dentro dele —, cada forma comparada com a mais comum do nível. Só os meses c
 | `get_available_documents` (nº2) | 86/86 (100%) | 91/91 | 0 | 1 | **derived-and-checked** | parcial |
 | `validar_quebra_sigilo` (nº10) | 7/7 (100%) | 7/7 | 0 | 0 | **derived-and-checked** | derived-and-checked |
 
-**O resíduo fechou em 17/09.** Eram 2 erros da nº2 (jun e ago/2026), os dois `Object hashDocumento has no attribute
+**O resíduo fechou em 17/09.** Eram 2 erros da nº2 (jun e jul/2026), os dois `Object hashDocumento has no attribute
 get`: o agente percorre um documento como se fosse lista de documentos, recebe as chaves (`hashDocumento`…) e chama
 `.get` numa delas — a mensagem não imprime o objeto inteiro, só essa chave. É o mesmo mecanismo "desce um nível
 demais" dos outros 3 já lidos, e a chave revelada bate com o schema já derivado dos outros 89 (achado da verificação
@@ -241,7 +244,7 @@ derivaram; `description` e `correction_guidance` saem de um molde fixo. Registro
     *(17/09, achado da verificação humana do Passo 6 — `03-procedimento-validacao.md` §1.9 — motivou tirar o
     contraste "não `r[0]`": o erro dominante é de menos (`r[0]`, 88/91), mas o caso resíduo mostra o oposto —
     `r['result'][0][0]`, fundo demais. A frase diz só o caminho certo, cobrindo os dois sentidos.)*
-  - `location`: 91 erros; 10 casos alternando os 6 meses. `impact`: `null`.
+  - `location`: 91 erros; 10 casos alternando os 8 meses. `impact`: `null`.
 - **nº10 — `(RespostaBacen, validar_quebra_sigilo)` · status `derived-and-checked`**
   - `description`: "`validar_quebra_sigilo` devolve `{justificativa: str, vazamento_sigilo: str}`. O agente pediu a
     chave `'quebra_sigilo'`, que não existe no retorno, em 7/7 erros. É a chave que o bloco da ferramenta no system
@@ -291,7 +294,7 @@ guarda o resultado de fato, a medida direta substitui a inferência por código.
 | **string vazia** (`''`) | **1** | 1 |
 
 **9 de 21 respostas entregues (43%) trazem no campo regulatório de quebra de sigilo algo que não é `SIM` nem `NAO`**,
-em três meses (dez/2025, mai/2026, jun/2026) — sem nenhuma exceção registrada em nenhuma delas.
+em cinco meses (dez/2025, jan–mar/2026, jun/2026) — sem nenhuma exceção registrada em nenhuma delas.
 
 **Por que o objeto inteiro vaza (7 casos, o mecanismo dominante).** O prompt usa **o mesmo nome**, `quebra_sigilo`,
 para o campo da resposta final e para o campo do retorno da ferramenta que ele (erradamente) descreve. Diante do
@@ -353,7 +356,7 @@ mecanismo da classe "objeto inteiro repassado" da nº10, §6.2 — cobre vazar a
 **O resultado.** 635 papéis declaram a ferramenta; 597 leituras rastreadas. O teste de consistência bateu (as
 leituras erradas-e-desprotegidas com erro no step reconciliam com os 91 já conhecidos). **4 ocorrências do
 mecanismo 1** — uma por execução (`175cd9f2…`, `26e300f1…`, `910fde1e…`, `a47d6e3b…`), 3 meses (2025-11 ×2,
-2026-05, 2026-06) — e **1 ocorrência do mecanismo 2**, no trace inteiro (`15f6ad52…`, 2026-05; abaixo do piso de
+2026-03, 2026-06) — e **1 ocorrência do mecanismo 2**, no trace inteiro (`15f6ad52…`, 2026-03; abaixo do piso de
 recorrência de qualquer candidata a memória, ≥3 execuções e ≥2 meses, `01-racionais.md` §7 Passo 5). Nas 5, o `managerAgent` chega a
 um `final_answer` real — a execução não trava — e **nenhuma bate nenhuma das três checagens**.
 
