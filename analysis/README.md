@@ -190,6 +190,24 @@ don't reach. Same method + new base = copy the notebook and rerun (outputs recom
 markdown prose keeps the old base's numbers until rewritten — that rewrite is where the analysis
 actually happens). New method = new notebook with its own § range, per the convention above.
 
+**When a residual bucket grows on a new base.** Two buckets, two different jobs (rationale:
+`2026-09-trace-law-flow/docs/01-racionais.md` §7 Passo 2; cases: `03-procedimento-validacao.md` §1.13;
+`python drill_down.py residuo` lists them with the exception class and a masked message):
+
+- **Sintoma não reconhecido** (unit `X_sintoma_nao_reconhecido`) — the taxonomy understands *nothing* of the
+  error. Read its share of all errors as **coverage**: those results are incomplete by that proportion. Group the
+  cases by exception class and open a few with `drill_down.py caso`. For each group that repeats, write a
+  **symptom rule first** (`classify()`), then a **cause rule** (`submecanismo()`). If the group is not the agent's
+  fault (e.g. `AgentMaxStepsError`, an iteration limit, or infra) it goes to harness/non-memory, not memory.
+- **Causa não identificada** (unit `X_causa_nao_identificada`) — the symptom is known, the cause is not. Two
+  classes: *Erro conhecido, causa sem regra* is the bucket **closest to new memory** — group by signature, read the
+  cases, and where a pattern repeats write a cause rule (it becomes a unit and can pass triage); *Código Python mal
+  escrito* is noise while few and scattered — if many, split by kind (unclosed bracket, indentation, invalid
+  operator) and see whether one dominates.
+
+Today both buckets leave triage by type, before the recurrence test — a recurrent error there is not surfaced
+(`04-roadmap.md`, proposal "a revisar").
+
 ## Index
 
 | Folder | What it analyzes |

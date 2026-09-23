@@ -198,6 +198,23 @@ sua frequência ou custo (lacuna declarada em §7).
 | **Alternativa rejeitada** | Classificar pelo raciocínio do agente (módulo cognitivo de origem). Rejeitado por escopo — o raciocínio é escrito **antes** da ação acontecer, e a pergunta deste método é "que conteúdo evitaria o erro", não "em qual módulo ele nasceu". São lentes compatíveis, não rivais |
 | **Racional do nível** | Sem o mecanismo, o mesmo sintoma alimentaria lições contraditórias (§5); com ele, cada erro ganha um diagnóstico contável e falsificável |
 
+### E2b · O resíduo — o que nenhuma regra reconhece, em dois baldes
+
+Todo classificador por regras tem uma sobra. Aqui ela tem **dois baldes**, porque as duas leituras (E1 e E2) podem
+falhar de formas diferentes, e cada falha pede um trabalho diferente:
+
+| Balde | Quando | O que pede |
+|---|---|---|
+| **Sintoma não reconhecido** | nem E1 nem E2 reconhecem a mensagem | a taxonomia não cobre esse erro: alarme de **cobertura**. Escrever regra de sintoma primeiro, depois de causa |
+| **Causa não identificada** | E1 reconhece o sintoma, E2 não identifica a causa | metade do caminho feita: escrever só a regra de causa. Inclui o código malformado (sintaxe) — ruído até se provar recorrente |
+
+Cada erro cai em **no máximo um** balde. A combinação das duas leituras acontece num único ponto, o fechamento da
+unidade (E3), e **só para o resíduo** — é a única exceção à regra de que o sintoma não decide (§9). "Causa não
+identificada" descreve a **regra**, não o erro: não significa que ele aconteceu uma vez só. Ler o tamanho de cada
+balde é parte do relato de cobertura de uma instanciação; ambos nunca viram memória por construção, e por isso a
+**limitação a corrigir** é que hoje saem da triagem antes do teste de recorrência (E4b) — um erro desconhecido que
+se repete muito fica invisível como prioridade.
+
 ### E3 · Unidade — a lição como operador de fechamento
 
 | | |
@@ -347,12 +364,14 @@ flowchart TD
 
 | Termo | É | Não é |
 |---|---|---|
-| família / assinatura | saída do sintoma (E1) — descrição, proveniência, descoberta | não alimenta a decisão |
+| família / assinatura | saída do sintoma (E1) — descrição, proveniência, descoberta | não decide candidatas (só separa os dois baldes do resíduo, E2b) |
 | mecanismo | saída do diagnóstico (E2) — a causa, erro a erro | ainda não é a lição |
 | unidade | agrupamento de mecanismos por lição comum (E3) | não é automaticamente candidata |
 | ocorrência | unidade deduplicada dentro da cascata (E4a) | não é "um erro" |
 | candidata | unidade que passou a triagem (E5) | **decisão**, não nível da taxonomia |
 | não-memória | correção fora do agente (harness/infra/retry) | não é lição descartada — vive em política operacional |
+| sintoma não reconhecido | resíduo em que nem E1 nem E2 reconhecem o erro (E2b) | não é erro "pontual": mede cobertura |
+| causa não identificada | resíduo em que o sintoma é conhecido e a causa não (E2b) | não quer dizer "aconteceu uma vez" |
 
 Armadilha a evitar: o conjunto de unidades tipicamente inclui agrupamentos que
 por construção **nunca** viram memória (harness/infra, resíduo sem conteúdo

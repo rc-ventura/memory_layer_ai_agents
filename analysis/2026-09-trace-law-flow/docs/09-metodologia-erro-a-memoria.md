@@ -91,7 +91,7 @@ ou em `KEEP_SIG`/`KEEP_MEC`/`CURTO_MEM` no próprio script.)*
 ## 2. Dois eixos paralelos, não uma árvore
 
 `classify()` e `submecanismo()` são **duas leituras independentes da mesma
-mensagem** — um não chama o outro. A razão: a relação sintoma↔mecanismo é
+mensagem** — um não chama o outro (a única combinação está no fim desta seção). A razão: a relação sintoma↔mecanismo é
 muitos-para-muitos nos dois sentidos, o que uma árvore não representaria:
 
 - **Mesmo sintoma → mecanismos diferentes**: a assinatura `"Could not index"`
@@ -106,11 +106,27 @@ muitos-para-muitos nos dois sentidos, o que uma árvore não representaria:
 `classify()` **não decide candidatas**: a lista de candidatas seria idêntica sem
 ele. Seu papel é a camada de **descrição, proveniência e descoberta** — o censo dos
 sintomas (§8.1), a coluna "assinaturas de origem" da triagem, e a rede que flaga
-erro novo ("Sintoma não reconhecido") na extração maior. Desde 23/09/2026 ele
-também separa os dois baldes de resíduo: um erro cuja causa nenhuma regra
-reconhece vai para **Sintoma não reconhecido** se o `classify()` também não o
-reconhece, e para **Causa não identificada** se reconhece (os dois ficam fora da
-triagem; `01-racionais.md` §7 Passo 2).
+erro novo ("Sintoma não reconhecido") na extração maior.
+
+Na prática, as duas leituras se combinam **num só ponto** — `montar_unidades()` — e **só para o resíduo**:
+
+| O sintoma foi reconhecido? (`classify()`) | A causa foi identificada? (`submecanismo()`) | Vai para |
+|---|---|---|
+| sim | sim | uma unidade normal (ex.: `U_contrato_dict`) |
+| sim | não | **Causa não identificada** — classe *Código Python mal escrito* (erro de sintaxe) ou *Erro conhecido, causa sem regra* |
+| não | não | **Sintoma não reconhecido** — classe *Erro que a taxonomia não conhece* |
+| não | sim | uma unidade normal; só a coluna de família fica "Sintoma não reconhecido" (raro; 0 casos na base 1) |
+
+**Não há sobreposição:** cada erro vai para exatamente uma unidade; um erro nunca está nos dois baldes. "Sintoma
+não reconhecido" aparece em dois lugares — como **família** (coluna do `classify()`) e como **unidade** — e quase
+sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
+
+**Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
+`montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
+candidata depende disso — testado: as 10 candidatas da base 1 saem idênticas com ou sem a separação.
+
+O que cada balde pede quando cresce está em `analysis/README.md` (intake) e o racional em `01-racionais.md` §7
+Passo 2.
 
 ## 3. As relações de cardinalidade — verificadas no EU
 
@@ -249,7 +265,7 @@ Duas medidas convivem e não se confundem: **contagem de erros** (frequência �
 
 | termo | o que é | não é |
 |---|---|---|
-| família / assinatura | saída do `classify()` — o sintoma | não alimenta a decisão |
+| família / assinatura | saída do `classify()` — o sintoma | não decide candidatas (só separa os dois baldes de resíduo, §2) |
 | mecanismo | saída do `submecanismo()` — a causa | ainda não é a lição |
 | unidade | agrupamento de mecanismos por lição comum | **não é automaticamente candidata** |
 | candidata | unidade que passou no threshold da triagem | é uma **decisão**, não um nível da taxonomia |

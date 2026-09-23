@@ -744,6 +744,23 @@ a sua sobra, e cair em cada uma diz uma coisa diferente:
 | | **Erro conhecido, causa sem regra** (`causa_sem_regra`) | o `classify()` reconhece o sintoma, mas nenhuma regra de causa casa — inclusive "Could not index" fora dos três padrões | o sintoma tem nome, a causa não: **candidato a regra nova** se recorrer (ex.: argumento nomeado que não existe no `final_answer`) |
 | **Sintoma não reconhecido** (`X_sintoma_nao_reconhecido`) | **Erro que a taxonomia não conhece** (`sintoma_nao_reconhecido`) | nem o `classify()` nem o `submecanismo()` reconhecem a mensagem | **erro novo**: tipo que a taxonomia nunca viu, versão nova da esteira ou do smolagents, ou algo que não é erro de código (ex.: `AgentMaxStepsError`, exaustão de iterações). É o sinal de cobertura: onde ele cresce, as regras não alcançam |
 
+Na prática, as duas leituras se combinam **num só ponto** — `montar_unidades()` — e **só para o resíduo**:
+
+| O sintoma foi reconhecido? (`classify()`) | A causa foi identificada? (`submecanismo()`) | Vai para |
+|---|---|---|
+| sim | sim | uma unidade normal (ex.: `U_contrato_dict`) |
+| sim | não | **Causa não identificada** — classe *Código Python mal escrito* (erro de sintaxe) ou *Erro conhecido, causa sem regra* |
+| não | não | **Sintoma não reconhecido** — classe *Erro que a taxonomia não conhece* |
+| não | sim | uma unidade normal; só a coluna de família fica "Sintoma não reconhecido" (raro; 0 casos na base 1) |
+
+**Não há sobreposição:** cada erro vai para exatamente uma unidade; um erro nunca está nos dois baldes. "Sintoma
+não reconhecido" aparece em dois lugares — como **família** (coluna do `classify()`) e como **unidade** — e quase
+sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
+
+**Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
+`montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
+candidata depende disso — testado: as 10 candidatas da base 1 saem idênticas com ou sem a separação.
+
 O nome "causa não identificada" diz o que aconteceu com a regra, não com o erro: **não quer dizer que o erro
 aconteceu uma vez só** (até 23/09/2026 o balde chamava "erros pontuais", o que sugeria isso sem que a regra
 conferisse). Os casos da base 1 estão em `03-procedimento-validacao.md` §1.13.
