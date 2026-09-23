@@ -1019,10 +1019,20 @@ código rejeitada).
 **Conferir no cru.** `uv run python drill_down.py caso <exec_id> <role>`, ou em `A5_residuo/crus/<exec_id>.json`:
 `txt_etap_memo` → papel → o `idx`-ésimo `ActionStep` → `error.message`.
 
-**O que isso mostra.** Na base 1 o resíduo é pequeno (9 de 498 erros, 1,8%) e só 1 é erro desconhecido. Mas a
-"causa não identificada" soma 8 erros em 8 execuções e 6 meses: se a triagem testasse recorrência nesse balde, ela
-passaria. É o que a proposta de triagem "a revisar" trata. Na base 2 (25 erros de sintoma não reconhecido), a mesma
-tabela diz de cara quantos são erro desconhecido e quantos são causa sem regra.
+**Recorrência por padrão** (a regra da triagem para o resíduo, `01-racionais.md` §7 Passo 5; tabela no notebook
+9.2 e em `resultados/residuo_padroes.csv`). Os 9 erros formam **7 padrões**; um só se repete:
+
+| Padrão | Erros | Execuções | Meses | Passa (≥3 exec., ≥2 meses)? |
+|---|---:|---:|---:|---|
+| `SyntaxError: closing parenthesis <q> does not match opening parenthesis <q>` | 3 | 3 | 2 (out/2025, mar/2026) | **sim** |
+| os outros 6 padrões (um por linha da tabela acima) | 1 cada | 1 | 1 | não |
+
+**O que isso mostra.** Na base 1 o resíduo é pequeno (9 de 498 erros, 1,8%) e só 1 é erro desconhecido. Contado pela
+unidade, a "causa não identificada" pareceria recorrente (8 execuções, 6 meses), mas são 8 erros diferentes; contado
+por padrão, aparece **o único que volta de fato**: parênteses que fecham com um tipo diferente do que abriram, em 3
+execuções. Por isso a unidade sai **revisar — prioridade**, e o "sintoma não reconhecido" **revisar — baixa
+prioridade**. É candidato a regra de causa nova, não memória ainda. Na base 2 (25 erros de sintoma não reconhecido), a
+mesma tabela diz se são um erro novo que se repete ou vários soltos.
 
 ---
 

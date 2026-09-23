@@ -2,7 +2,8 @@
 
 O último estágio é o DESTINO nomeado — o artefato que nasce de cada unidade:
 `MEM <título>` para candidatas a memória, `HARNESS <título>` para correções de
-infra, `FORA <motivo>` para descartes (o prefixo carrega a decisão da triagem,
+infra, `REVISAR <título>` para o resíduo (falta regra de causa — trabalho de
+taxonomia), `FORA <motivo>` para descartes (o prefixo carrega a decisão da triagem,
 o título é a lição real de `UNI` em base_pipeline.py — a mesma que já
 alimenta `candidatos_memoria.csv`). É 1:1 com `unidade`: nenhuma fusão nova
 acontece aqui, só o rótulo humano da lição substitui o id técnico.
@@ -147,6 +148,8 @@ def preparar_dados():
             return f"MEM {nome}"
         if d == "não-memória":
             return f"HARNESS {nome}"
+        if d.startswith("revisar"):
+            return f"REVISAR {nome}"
         return f"FORA {d.split(': ', 1)[1]}"
 
     EU["destino"] = EU["unidade"].map(destino)

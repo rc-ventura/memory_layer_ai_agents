@@ -20,7 +20,8 @@ from types import SimpleNamespace
 
 __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
            "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
-           "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem",
+           "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
+           "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
@@ -234,10 +235,10 @@ UNI = {
     # como resolvido.
     "H_bloco_code": ("Protocolo do harness", NAO,
                      "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente, a partir de mar/2026: ≤0,99/1k). REABERTO em 22/09/2026 (base 2) — ver diário de campo."),
-    # os dois baldes de resíduo (01-racionais.md §7, "Os dois baldes de resíduo"): nenhum vira memória hoje, e a
-    # triagem os tira sem teste de recorrência — o que eles medem é onde as regras ainda não alcançam
-    "X_causa_nao_identificada": ("Causa não identificada", SEM, "—"),
-    "X_sintoma_nao_reconhecido": ("Sintoma não reconhecido", SEM, "—"),
+    # os dois baldes de resíduo (01-racionais.md §7, "Os dois baldes de resíduo"): nunca viram memória; a triagem os
+    # põe em "revisar", com prioridade se algum padrão de erro recorre — o que medem é onde as regras não alcançam
+    "X_causa_nao_identificada": ("Causa não identificada", SEM, "— (revisar: escrever regra de causa)"),
+    "X_sintoma_nao_reconhecido": ("Sintoma não reconhecido", SEM, "— (revisar: escrever regra de sintoma e de causa)"),
 }
 
 
@@ -256,13 +257,57 @@ def montar_unidades(E):
     EU["unidade"] = EU["submecanismo"].map(SUB2UNI)
     assert EU["unidade"].notna().all(), "erro com unidade NaN após o map SUB2UNI"
     EU["ocorrencia"] = EU["cascata"].astype(str) + "|" + EU["unidade"]
+    res = EU["unidade"].str.startswith("X_")
+    EU["padrao"] = None
+    EU.loc[res, "padrao"] = [padrao_residuo(m, sm) for m, sm in zip(EU.loc[res, "err_msg"], EU.loc[res, "submecanismo"])]
     return EU
 
 
+def mascarar(frase):
+    """Texto entre aspas → <q>, entre crases → <id>, números → <n>. Sobra só o texto padrão da exceção do Python."""
+    frase = re.sub(r"'[^']*'|\"[^\"]*\"", "<q>", frase)
+    frase = re.sub(r"`[^`]*`", "<id>", frase)
+    return re.sub(r"\d+", "<n>", frase).strip()
+
+
+def padrao_residuo(m, sub):
+    """A impressão digital de um erro do resíduo, para contar recorrência por erro e não pelo balde inteiro:
+    classe da exceção + frase mascarada. Na sintaxe, a frase é o motivo do parser (linha `Error:`), sem a posição —
+    só a classe juntaria códigos quebrados de jeitos diferentes. Aproximação declarada: pode juntar erros que diferem
+    só dentro das aspas, ou separar o mesmo erro se a frase fora das aspas variar (01-racionais.md §7 Passo 5)."""
+    if sub == "codigo_mal_escrito":
+        classe = (re.findall(r"due to: (\w+Error)", m) or re.findall(r"\b(\w+Error)\b", m) or ["?"])[-1]
+        linhas = [l.strip() for l in m.splitlines() if l.strip().startswith("Error:")]
+        motivo = mascarar(linhas[-1][len("Error:"):]) if linhas else ""
+        motivo = re.sub(r"\s*\(<unknown>, line <n>\)", "", motivo)
+        motivo = re.sub(r"\s+on line <n>", "", motivo)
+        return f"{classe}: {motivo}".rstrip(": ")
+    k = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]{0,90})", m)
+    if k:
+        return f"{k[-1][0]}: {mascarar(k[-1][1])}"
+    return (re.findall(r"\b\w+(?:Error|Exception)\b", m) or ["?"])[-1]
+
+
 MIN_EXECS, MIN_MESES = 3, 2
+REVISAR_PRIORIDADE, REVISAR_BAIXA = "revisar — prioridade", "revisar — baixa prioridade"
+
+
+def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+    """Uma linha por padrão de resíduo: erros, execuções e meses (sobre ocorrências, como a triagem) e se passa no
+    mesmo teste de recorrência das candidatas. É a lista de trabalho para escrever regra nova."""
+    R = EU[EU["unidade"].str.startswith("X_")]
+    o = R.drop_duplicates("ocorrencia")
+    chave = ["unidade", "submecanismo", "padrao"]
+    t = (o.groupby(chave).agg(ocorrências=("ocorrencia", "size"), execuções=("exec_id", "nunique"),
+                               meses=("mes", "nunique"), papéis=("role", "nunique"))
+         .join(R.groupby(chave).size().rename("erros")).reset_index())
+    t["passa na recorrência"] = (t["execuções"] >= min_execs) & (t["meses"] >= min_meses)
+    return t.sort_values(["passa na recorrência", "execuções", "erros"], ascending=False).reset_index(drop=True)
 
 
 def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+    # resíduo: recorrência contada por PADRÃO de erro, não pela unidade (que junta erros diferentes por construção)
+    passa = residuo_por_padrao(EU, min_execs, min_meses).groupby("unidade")["passa na recorrência"].any()
     tri = []
     for u, g in EU.groupby("unidade"):
         nome, tipo, conteudo = UNI[u]
@@ -270,8 +315,8 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         execs_u, meses_u = o["exec_id"].nunique(), o["mes"].nunique()
         if tipo == NAO:
             decisao = "não-memória"
-        elif tipo == SEM:
-            decisao = "fora: causa não identificada"
+        elif tipo == SEM:  # resíduo: nunca candidato (falta a regra de causa); a fila de trabalho da taxonomia
+            decisao = REVISAR_PRIORIDADE if passa.get(u, False) else REVISAR_BAIXA
         elif execs_u < min_execs or meses_u < min_meses:
             decisao = "fora: sem recorrência"
         else:
@@ -283,7 +328,7 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
                     "% ocorr. após outro erro": round(o["seguidor"].mean() * 100),
                     "assinaturas de origem": " + ".join(g["assinatura"].value_counts().index),
                     "conteúdo proposto": conteudo})
-    ordem = {"candidato": 0, "não-memória": 1, "fora: sem recorrência": 2, "fora: causa não identificada": 3}
+    ordem = {"candidato": 0, "não-memória": 1, REVISAR_PRIORIDADE: 2, REVISAR_BAIXA: 3, "fora: sem recorrência": 4}
     t = pd.DataFrame(tri)
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
 

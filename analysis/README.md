@@ -205,8 +205,11 @@ actually happens). New method = new notebook with its own § range, per the conv
   escrito* is noise while few and scattered — if many, split by kind (unclosed bracket, indentation, invalid
   operator) and see whether one dominates.
 
-Today both buckets leave triage by type, before the recurrence test — a recurrent error there is not surfaced
-(`04-roadmap.md`, proposal "a revisar").
+Start from the **per-pattern table** (notebook 9.2, `resultados/residuo_padroes.csv`): recurrence in the residual is
+counted per error pattern (exception class + masked message), not per bucket, with the same thresholds as candidates.
+A bucket with a recurring pattern is triaged **revisar — prioridade**; otherwise **revisar — baixa prioridade**. Neither
+is memory: the work is on the taxonomy (write the rule), and once the rule exists the error becomes a normal unit and
+goes through triage like any other.
 
 ## Index
 

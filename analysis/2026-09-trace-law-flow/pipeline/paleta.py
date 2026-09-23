@@ -13,12 +13,13 @@ herdar em silêncio a cor de alguém.
 """
 
 __all__ = ["SURFACE", "INK", "INK2", "MUTED", "GRID", "BASE", "BLUE", "BLUE_DK", "ORANGE",
-           "GREEN", "YELLOW", "PINK", "CINZA", "PALETTE", "CAT_U", "COR_UNIDADE", "COR_FAMILIA", "cor"]
+           "GREEN", "YELLOW", "PINK", "CINZA", "REVISAR", "PALETTE", "CAT_U", "COR_UNIDADE", "COR_FAMILIA", "cor"]
 
 SURFACE, INK, INK2, MUTED = "#fcfcfb", "#0b0b0b", "#52514e", "#898781"
 GRID, BASE, BLUE, BLUE_DK, ORANGE = "#e1e0d9", "#c3c2b7", "#2a78d6", "#1c5cab", "#eb6834"
 GREEN, YELLOW, PINK = "#1baf7a", "#eda100", "#e87ba4"
 CINZA = "#9a988f"
+REVISAR = "#4a3aa7"   # resíduo a revisar (fila da taxonomia) — distinto do cinza de "fora" e de "não vira memória"
 
 # paleta categórica, ordem fixa (validate_palette.js: PASS) — a ordem só importa para quem a
 # consulta por índice; as figuras abaixo consultam pelos dicionários de nome
@@ -35,6 +36,7 @@ COR_UNIDADE = {
     "U_arg_nomeado": YELLOW,
     "U_campo_inexistente": PINK,
     "Outras candidatas": BASE,     # cinza claro = candidata também, fora do destaque
+    "Resíduo — revisar": REVISAR,  # nenhuma regra reconheceu a causa: trabalho de taxonomia, não memória
     "Não vira memória": MUTED,     # cinza escuro = harness/infra/reprovada na triagem
 }
 

@@ -631,11 +631,7 @@ CLASSE_RESIDUO = {
     "sintoma_nao_reconhecido": "Erro que a taxonomia não conhece",
 }
 
-def mascarar(frase):
-    """Texto entre aspas → <q>, entre crases → <id>, números → <n>. Sobra só o texto padrão da exceção do Python."""
-    frase = re.sub(r"'[^']*'|\"[^\"]*\"", "<q>", frase)
-    frase = re.sub(r"`[^`]*`", "<id>", frase)
-    return re.sub(r"\d+", "<n>", frase)
+from base_pipeline import mascarar, padrao_residuo  # a mesma impressão digital que a triagem usa
 
 def residuo():
     """Evidência do resíduo da taxonomia: todos os erros das unidades X_ (causa não identificada / sintoma não
@@ -668,7 +664,8 @@ def residuo():
                        "unidade": c["unidade"], "submecanismo": c["submecanismo"],
                        "classe": CLASSE_RESIDUO.get(c["submecanismo"], c["submecanismo"]),
                        "assinatura": c["assinatura"], "error_type": tipo, "excecao": classe_exc,
-                       "frase_mascarada": mascarar(frase).strip()})
+                       "frase_mascarada": mascarar(frase),
+                       "padrao": padrao_residuo(m, c["submecanismo"])})
     casos = pd.DataFrame(linhas)
     casos.to_csv(os.path.join(pasta, "casos.csv"), index=False)
     casos.drop(columns=["frase_mascarada"]).to_csv(os.path.join(pasta, "derivados", "residuo.csv"), index=False)
@@ -704,8 +701,9 @@ mensagem de exceção diz.
 
 **Arquivos.**
 - `crus/<exec_id>.json`: **a fonte**, a linha inteira do trace sem alteração (`txt_etap_memo` só desserializado).
-- `casos.csv`: um erro por linha, com a classe, o `error.type`, a classe da exceção e a frase da exceção mascarada
-  (texto entre aspas → `<q>`, entre crases → `<id>`, números → `<n>`).
+- `casos.csv`: um erro por linha, com a classe, o `error.type`, a classe da exceção, a frase da exceção mascarada
+  (texto entre aspas → `<q>`, entre crases → `<id>`, números → `<n>`) e o **padrão** (`padrao_residuo()` do
+  `base_pipeline.py`) — a chave com que a triagem conta a recorrência do resíduo.
 - `derivados/residuo.csv`: o mesmo, sem a frase — com `exec_id`/`role`/`idx` para voltar ao cru.
 
 **Conferir no cru:** `txt_etap_memo` → papel → o `idx`-ésimo `ActionStep` da lista → `error.message`. Ou

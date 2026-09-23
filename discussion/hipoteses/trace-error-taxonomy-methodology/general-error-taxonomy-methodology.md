@@ -211,9 +211,12 @@ falhar de formas diferentes, e cada falha pede um trabalho diferente:
 Cada erro cai em **no máximo um** balde. A combinação das duas leituras acontece num único ponto, o fechamento da
 unidade (E3), e **só para o resíduo** — é a única exceção à regra de que o sintoma não decide (§9). "Causa não
 identificada" descreve a **regra**, não o erro: não significa que ele aconteceu uma vez só. Ler o tamanho de cada
-balde é parte do relato de cobertura de uma instanciação; ambos nunca viram memória por construção, e por isso a
-**limitação a corrigir** é que hoje saem da triagem antes do teste de recorrência (E4b) — um erro desconhecido que
-se repete muito fica invisível como prioridade.
+balde é parte do relato de cobertura de uma instanciação. Ambos nunca viram memória por construção — sem regra de
+causa não há lição —, mas **não saem da triagem**: vão para **revisar**, a fila de trabalho da taxonomia, e passam
+pelo mesmo teste de recorrência das candidatas (E4b), contado **por padrão de erro** (a mensagem com os dados do
+caso mascarados) e não pelo balde, que junta erros diferentes por construção. Um padrão recorrente põe o balde em
+**prioridade**; sem nenhum, **baixa prioridade**. A máscara é aproximação declarada e a tabela por padrão fica
+visível para conferência humana antes de escrever a regra.
 
 ### E3 · Unidade — a lição como operador de fechamento
 
@@ -239,7 +242,9 @@ flowchart TD
     U["unidade"] --> Q1{"1 · É memória<br/>do agente?"}
     Q1 -->|"não (falha de harness/LLM)"| NM["não-memória<br/>→ política operacional:<br/>retry, monitoramento"]
     Q1 -->|"sim"| Q2{"2 · Tem conteúdo único<br/>(uma frase que previne)?"}
-    Q2 -->|"não (resíduo heterogêneo)"| OUT1["fora:<br/>sem conteúdo"]
+    Q2 -->|"não (resíduo: nenhuma regra de causa)"| REV{"recorre, contado<br/>por padrão de erro?"}
+    REV -->|"sim"| R1["revisar — prioridade<br/>→ escrever regra de causa"]
+    REV -->|"não"| R2["revisar — baixa prioridade<br/>(sinal de cobertura)"]
     Q2 -->|"sim"| Q3{"3 · Recorre entre<br/>execuções e no tempo?"}
     Q3 -->|"não"| OUT2["fora:<br/>sem recorrência"]
     Q3 -->|"sim"| CAND["CANDIDATA<br/>→ roteia pelo tipo do conteúdo:<br/>factual · ambiente / experiencial · estratégia"]
@@ -248,7 +253,7 @@ flowchart TD
 | Pergunta | Racional do threshold | Custo de errar |
 |---|---|---|
 | É memória do agente? | Se quem falhou foi o harness/LLM upstream, o agente não tem o que aprender — escrever memória aqui seria ruído | falso positivo: lição irrelevante para o modelo |
-| Tem conteúdo único? | Memória é uma frase ensinável; heterogêneo residual não tem uma | memória ambígua, pior que nenhuma |
+| Tem conteúdo único? | Memória é uma frase ensinável; o resíduo (sem regra de causa) não tem uma — vai para "revisar", com a mesma régua de recorrência aplicada por padrão de erro | memória ambígua, pior que nenhuma; ou, se o resíduo fosse descartado, um erro novo recorrente invisível |
 | Recorre? | Memória **entre** execuções só se justifica se o problema atravessa execuções e tempo (senão é episódico, não estrutural) | escrever para exceções que não voltam |
 
 **Os limiares de recorrência (quantas execuções, quanto tempo) são escolhas

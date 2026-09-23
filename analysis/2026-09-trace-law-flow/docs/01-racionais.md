@@ -802,9 +802,17 @@ ablação); **a operacionalização por cascata é nossa**, não do paper.
 
 1. **É memória do agente?** Tipo `não-memória` → fica fora do agente (continua na tabela porque vira política
    operacional).
-2. **A causa foi identificada?** Os dois baldes de resíduo (Passo 2) não têm uma frase que evite os casos → fora.
-   **Limitação atual:** saem pelo tipo, **antes** do teste de recorrência do item 3 — mesmo que o erro se repita.
-   Na base 1, a causa não identificada tem 8 erros em 8 execuções e 6 meses: passaria no item 3.
+2. **A causa foi identificada?** Os dois baldes de resíduo (Passo 2) não têm uma frase que evite os casos: sem
+   regra de causa não há lição escrevível, então **nunca são candidatos**. Vão para **revisar** — a fila de trabalho
+   da taxonomia —, e passam pelo mesmo teste de recorrência do item 3, só que contado **por padrão de erro** e não
+   pela unidade: a unidade de resíduo junta erros diferentes por construção (é o que sobrou), e ela "recorrer" só
+   diria que existe resíduo em vários meses. O **padrão** (`padrao_residuo()`) é a classe da exceção mais a frase
+   mascarada (aspas → `<q>`, crases → `<id>`, números → `<n>`); na sintaxe, o motivo do parser sem a posição.
+   Algum padrão passa → **revisar — prioridade**; nenhum passa → **revisar — baixa prioridade** (continua na lista:
+   é sinal de cobertura). A máscara é aproximação declarada — pode juntar erros que diferem só dentro das aspas, ou
+   separar o mesmo erro se a frase fora das aspas variar; por isso a tabela por padrão fica visível (notebook 9.2,
+   `resultados/residuo_padroes.csv`) para conferência humana antes de escrever a regra. "Revisar" não é
+   não-memória: lá a causa é conhecida e a correção vive fora do agente; aqui a causa não é conhecida.
 3. **Volta em execuções diferentes?** Memória entre execuções só se justifica se o problema recorre: **≥3
    execuções e ≥2 meses** com ocorrência. Abaixo disso → fora.
 
@@ -828,7 +836,7 @@ critério "causa única, conteúdo numa frase" continua certo — o erro era apl
 erro.
 
 **Passo 7 — o resultado.** 15 unidades: **10 candidatas** (5 factual · ambiente, 5 experiencial · estratégia),
-2 não-memória e 3 fora. As candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
+2 não-memória, 2 a revisar (resíduo) e 1 fora. As candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
 O que mudou em relação à tabela anterior de 7 linhas:
 
 - **Três candidatas novas com peso real**: "Retorno pode chegar como string" (47 erros, 36 execuções, 9 meses,

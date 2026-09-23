@@ -125,6 +125,8 @@ sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
 `montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
 candidata depende disso — testado: as 10 candidatas da base 1 saem idênticas com ou sem a separação.
 
+Na triagem, os dois baldes vão para **revisar** (a fila de trabalho da taxonomia, não não-memória): com
+**prioridade** se algum padrão de erro recorre, contado por padrão e não pelo balde (`01-racionais.md` §7 Passo 5).
 O que cada balde pede quando cresce está em `analysis/README.md` (intake) e o racional em `01-racionais.md` §7
 Passo 2.
 

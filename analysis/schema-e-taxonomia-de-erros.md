@@ -178,8 +178,8 @@ E o nível mais específico — as **15 unidades de memória** (triagem: conteú
 | Protocolo do harness | 33 | 24 | 4 | não-memória (base 1) — reaberto na base 2, 22/09/2026 |
 | Falha do LLM upstream (retry) | 7 | 7 | 3 | não-memória |
 | Não colar retorno impresso no código | 2 | 2 | 1 | fora: sem recorrência |
-| Causa não identificada (nenhuma regra de causa reconheceu o erro) | 8 | 8 | 6 | fora: causa não identificada |
-| Sintoma não reconhecido (erro que a taxonomia não conhece) | 1 | 1 | 1 | fora: causa não identificada |
+| Causa não identificada (nenhuma regra de causa reconheceu o erro) | 8 | 8 | 6 | revisar — prioridade (1 padrão recorrente) |
+| Sintoma não reconhecido (erro que a taxonomia não conhece) | 1 | 1 | 1 | revisar — baixa prioridade |
 
 Detalhe completo: `06-racionais-mineracao-unidades-n2-n10.md` · `07-relatorio-mineracao-unidades-n2-n10.md`.
 Gráficos já produzidos (notebook §8): overview de granularidade (§8.0), Pareto de assinaturas (§8.1),
