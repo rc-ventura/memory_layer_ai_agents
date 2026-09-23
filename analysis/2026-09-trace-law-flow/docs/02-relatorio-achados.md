@@ -506,7 +506,7 @@ Três afirmações da v1 não sobreviveram:
 
 - **Amostra**: exatamente 1.000 linhas (provável `LIMIT`); proporções são estimativas. As maiores taxas de erro por mês
   são out/2025 (17,0%, 407 steps — o incidente do harness) e jul/2026 (17,0%, só 53 steps).
-- **Semântica dos status** (1/2/3/34) foi inferida por correlação, não confirmada com o time da esteira.
+- **Semântica dos status:** os nomes vêm da tabela de status (1 ativo, 2 pausado, 3 encerrado, 34 validado, 67 falha; `05-schema.md` §Status). O que cada um implica no fluxo (ex.: por que 87% ficam em "ativo") segue não confirmado com o time da esteira.
 - **Comparações com os datasets dos papers são indicativas, não métricas**: um *span* do TRAIL ≠ um `ActionStep`;
   e os traces do TRAIL têm erro **parcialmente induzido por desenho experimental**, então sua distribuição não é
   taxa-base natural.

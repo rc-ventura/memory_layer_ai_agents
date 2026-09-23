@@ -19,7 +19,7 @@ query de origem — amostra, não população (`04-roadmap.md` item 3).
 |---|---|---|---|
 | 0 | `cod_idef_aget` | id numérico do agente (tipo/papel) | dado |
 | 1 | `cod_idef_exeo` | id da execução | dado |
-| 2 | `cod_idef_stat_exeo_aget` | código de status da execução (ver §Status) | dado; semântica **inferida** |
+| 2 | `cod_idef_stat_exeo_aget` | código de status da execução (ver §Status) | dado; **nomes confirmados** pela tabela de status (23/09) — ver §Status |
 | 3 | `cod_idef_cvsa_asnc` | id de conversa / fluxo assíncrono | nome **inferido** da abreviação |
 | 4 | `dat_hor_encm_exeo` | data/hora de encerramento — **só preenchida para status 3 e 34** | dado |
 | 5 | `txt_etap_memo` | JSON das etapas: `model_output` (thought), `code_action`, `observations`, `tool_calls`, `model_input_messages`, e a chamada `final_answer()` | dado |
@@ -153,15 +153,32 @@ Vale baixar junto no dataset de erros como contexto de estado.
 
 ## `cod_idef_stat_exeo_aget` (o campo "status")
 
+**Dicionário (tabela `status_execucao_agente.csv`, recebida em 23/09/2026):**
+
+| código | nome | no dicionário desde |
+|---|---|---|
+| 1 | ativo | sempre |
+| 2 | pausado | sempre |
+| 3 | encerrado | sempre |
+| 34 | validado | fev/2026 |
+| 67 | falha | mar/2026 |
+
+A tabela só traduz código → nome; é um dicionário fotografado a cada corte (`anomesdia`, 18 cortes, de set/2025 a
+set/2026), não um log por execução. O "desde" é a primeira fotografia em que o código aparece, e não diz quando as
+execuções passaram a receber o status. **Correção:** a inferência anterior "34 = erro" estava errada — 34 é
+**validado**. O código 67 (**falha**) **não aparece na base 1** (0/1.000); existe no dicionário, e a base 2 pode tê-lo.
+O que a tabela **não** diz: por que status 1 (ativo) nunca traz encerramento (o nome sugere "ainda em curso", o que
+não explica execuções com `final_answer` no JSON), nem como as 1.000 linhas de cada extração foram escolhidas.
+
 Medido direto do CSV em 2026-09-10 (`lzma.open` + `csv.reader`, `field_size_limit` alto). **Nunca null** —
-sempre um de 4 valores.
+sempre um de 4 valores na base 1 (1, 2, 3, 34).
 
 | status | execuções | % | tem `dat_hor_encm_exeo`? | tem `txt_rspa_fina`? |
 |---|---:|---:|---|---|
-| **1** | 872 | 87,2% | não (0/872) | não (0/872) |
-| **3** | 68 | 6,8% | sim (68/68) | sim (63/68) |
-| **2** | 51 | 5,1% | não (0/51) | parcial (29/51) |
-| **34** | 9 | 0,9% | sim (9/9) | sim (9/9) |
+| **1** ativo | 872 | 87,2% | não (0/872) | não (0/872) |
+| **3** encerrado | 68 | 6,8% | sim (68/68) | sim (63/68) |
+| **2** pausado | 51 | 5,1% | não (0/51) | parcial (29/51) |
+| **34** validado | 9 | 0,9% | sim (9/9) | sim (9/9) |
 
 Cortes adicionais:
 
@@ -183,10 +200,11 @@ coisas distintas.
 
 ## Aberto — perguntas para o time da esteira (`04-roadmap.md` item 3)
 
-1. O que é cada código? status 1 = "em andamento" / "não rastreado até o fim" / "sucesso não persistido"?
+1. ~~O que é cada código?~~ — respondido pela tabela (23/09): 1 ativo, 2 pausado, 3 encerrado, 34 validado, 67 falha.
+   Resta: por que "ativo" (1) cobre 87% das execuções, muitas com `final_answer`?
 2. Por que status 1 nunca tem `dat_hor_encm_exeo` / `txt_rspa_fina` se houve `final_answer()`? Quem escreve
    essas colunas, e quando?
-3. 3 e 34 são os "encerrados" — 3 = sucesso, 34 = erro? Outra distinção?
+3. ~~3 e 34: sucesso × erro?~~ — não: 3 = encerrado, 34 = validado (etapa posterior, não erro). Validado por quem e como?
 4. status 2 (sem encerramento, resposta parcial) — o que é?
 5. status 34 só desde mar/2026 — código novo? o que era antes?
 6. O status depende do *tipo* de agente (`cod_idef_aget` 1 e 2 são sempre status 1)?

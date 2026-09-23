@@ -13,7 +13,7 @@ JSON de `txt_etap_memo`.
 |---|---|---|
 | `cod_idef_exeo` | id da execução | chave de tudo |
 | `cod_idef_aget` | id do tipo/papel do agente | análise por papel (168 = `RespostaBacen`…) |
-| `cod_idef_stat_exeo_aget` | status (1/2/3/34) | **não** é rótulo de erro — 87% ficam em status 1 sem resposta persistida mesmo com `final_answer()` no trace |
+| `cod_idef_stat_exeo_aget` | status (1 ativo · 2 pausado · 3 encerrado · 34 validado · 67 falha) | **não** é rótulo de erro — 87% ficam em status 1 sem resposta persistida mesmo com `final_answer()` no trace |
 | `cod_idef_cvsa_asnc` | id de conversa/fluxo | pouco usado (nome inferido) |
 | `dat_hor_inio_exeo` / `dat_hor_encm_exeo` | início / encerramento | duração |
 | `txt_etap_memo` | **JSON das etapas — onde moram os steps e os erros** | o coração da análise |
