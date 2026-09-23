@@ -110,11 +110,14 @@ sub-unidade `(unidade, função)`, nesta ordem:
    as duas recorrentes → duas candidatas).
 2. **Não passa, e cobre ≥10% das ocorrências da unidade → documentada e monitorada.** Não é descarte: ficar fora
    por falta de recorrência numa amostra de 1.000 linhas, com provável `LIMIT` (`04-roadmap.md` item 3), não prova
-   que o problema não recorre. Mesma lógica do protocolo do harness [INATIVO] (`02-relatorio-achados.md` §6):
+   que o problema não recorre. Mesma lógica do protocolo do harness (`02-relatorio-achados.md` §6):
    dormente, com gatilho de reabertura explícito — **na segunda extração, reaplicar a triagem a cada
    `(unidade, papel, função)`; se passar em ≥3 execuções e ≥2 meses, na base nova ou nas duas somadas depois do
    dedup por `cod_idef_exeo`, vira candidata.** É o caso frágil: a dominante vira memória, as funções de 1 caso
-   ficam monitoradas.
+   ficam monitoradas. **Confirmação empírica do próprio design (22/09/2026):** é exatamente o que aconteceu com
+   o protocolo do harness — dormente na base 1, gatilho disparado ao rodar a base 2 (diário de campo,
+   22/09/2026; `04-roadmap.md` §Monitoramento) — evidência de que a política "monitorada, não deletada" tem
+   trabalho real a fazer, não é só formalismo.
 3. **Não passa, e cobre menos de 10% → bucket de consulta.** Uma fatia pequena de uma unidade não justifica gatilho
    próprio, mas também não some: fica listada caso a caso, sem memória, para abrir com
    `drill_down.py caso <exec_id> <role>` — mesma ideia do balde "Não classificado" da `classify()`.

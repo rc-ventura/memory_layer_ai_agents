@@ -61,7 +61,7 @@ KEEP_SIG = {
     "Falha ao indexar o retorno (Could not index)",
     "Sintaxe inválida",
     "Argumento posicional onde só cabe nomeado",
-    "Resposta sem bloco de código [INATIVO desde dez/2025]",
+    "Resposta sem bloco de código (harness)",
     "Tipo diferente do esperado",
     "Função ou import bloqueado pelo sandbox",
     "Objeto sem o atributo esperado",
@@ -87,7 +87,7 @@ OUTROS_SIG, OUTROS_MEC = "outras assinaturas", "outros mecanismos"
 NOME_CURTO = {
     "Falha ao indexar o retorno (Could not index)": "Could not index",
     "String não fechada (relatório longo em literal)": "String não fechada",
-    "Resposta sem bloco de código [INATIVO desde dez/2025]": "Sem bloco de código (INATIVO)",
+    "Resposta sem bloco de código (harness)": "Sem bloco de código (harness)",
     "Função ou import bloqueado pelo sandbox": "Função bloqueada",
     "Argumento posicional onde só cabe nomeado": "Arg. posicional",
     "Tipo diferente do esperado": "Tipo diferente",

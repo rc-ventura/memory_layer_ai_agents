@@ -153,7 +153,7 @@ iterações; o destino natural é "fora do escopo de memória", não uma unidade
 | Geração de código | 225 | string não fechada em literal (159) · sintaxe inválida (39) · texto de documento colado em literal (20) · data DD/MM como número (5) · indentação (2) |
 | Contrato de retorno da ferramenta | 168 | falha ao indexar retorno — `Could not index` (136) · tipo diferente do esperado (22) · objeto sem atributo (8) · retorno não-JSON (2) · retorno vazio indexado — dentro de TypeError |
 | Convenção de chamada | 35 | argumento posicional onde só cabe nomeado |
-| Protocolo do harness | 33 | resposta sem bloco de código — `[INATIVO desde dez/2025]` |
+| Protocolo do harness | 33 | resposta sem bloco de código — não-memória na base 1, gatilho de reabertura acionado na base 2 (22/09/2026, ver diário) |
 | Ambiente & sandbox | 19 | função/import bloqueado (11) · módulo sem import (6) · módulo ausente (1) · operação proibida (1) |
 | Suposição sobre estado | 8 | variável não definida |
 | Infra / LLM upstream | 7 | falha do LLM interno (6) · HTTP 422 (1) |
@@ -175,7 +175,7 @@ E o nível mais específico — as **14 unidades de memória** (triagem: conteú
 | Campo inexistente no retorno estruturado | 10 | 10 | 3 | candidato → destino **harness** |
 | Nome usado sem ter sido definido | 5 | 5 | 3 | candidato |
 | Após step com erro, o que ele definiria não existe | 5 | 4 | 3 | candidato |
-| Protocolo do harness [INATIVO] | 33 | 24 | 3 | não-memória |
+| Protocolo do harness | 33 | 24 | 3 | não-memória (base 1) — reaberto na base 2, 22/09/2026 |
 | Falha do LLM upstream (retry) | 7 | 7 | 4 | não-memória |
 | Não colar retorno impresso no código | 2 | 2 | 1 | fora: sem recorrência |
 | Erros pontuais sem conteúdo único | 9 | 9 | 3 | fora: sem conteúdo |

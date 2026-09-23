@@ -81,7 +81,7 @@ def classify(m):
     if 'Could not index' in m:      return ('Contrato de retorno da ferramenta','Falha ao indexar o retorno (Could not index)')
     if 'does not support multiple positional' in m: return ('Convenção de chamada de ferramenta','Argumento posicional onde só cabe nomeado')
     if 'unterminated' in m:         return ('Geração de código','String não fechada (relatório longo em literal)')
-    if 'regex pattern' in m:        return ('Protocolo do harness','Resposta sem bloco de código [INATIVO desde dez/2025]')
+    if 'regex pattern' in m:        return ('Protocolo do harness','Resposta sem bloco de código (harness)')
     if 'IndentationError' in m:     return ('Geração de código','Indentação inválida')
     if 'leading zeros' in m:        return ('Geração de código','Data DD/MM interpolada como número')
     if 'forgot a comma' in m or 'never closed' in m or 'invalid decimal' in m:
@@ -221,8 +221,13 @@ UNI = {
                       "Referenciar a variável que guardou o retorno em vez de colar o print truncado dentro do código."),
     "H_infra_llm": ("Falha do LLM upstream — política de retry", NAO,
                     "AgentGenerationError/422: retry com backoff e circuit breaker por subagente."),
-    "H_bloco_code": ("Protocolo do harness [INATIVO]", NAO,
-                     "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente dez/2025)."),
+    # tipo=NAO reflete só a base 1 (o incidente de dez/2025 morre a partir de mai/2026 NESTA base).
+    # Gatilho de reabertura (≥2 casos/mês ou taxa > 1/1k steps) foi acionado na base 2 — ver diário
+    # de campo 22/09/2026 e `04-roadmap.md` §Monitoramento. Reclassificar (tipo/decisão) quando a
+    # base 2 for formalmente integrada ao pipeline; até então, tratar como candidato reaberto, não
+    # como resolvido.
+    "H_bloco_code": ("Protocolo do harness", NAO,
+                     "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente dez/2025). REABERTO em 22/09/2026 (base 2) — ver diário de campo."),
     "X_pontual": ("Erros pontuais sem conteúdo único", SEM, "—"),
 }
 

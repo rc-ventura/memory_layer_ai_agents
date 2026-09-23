@@ -162,8 +162,9 @@ kept outside the agent.
 When a new extraction lands, the folder setup is mechanical: dated `YYYY-MM-slug/` folder, copy
 `pipeline/base_pipeline.py` + `drill_down.py` + `checklist.py` + `.gitignore`, drop the dump in
 `data/`, point `TRACE` at the new file. Then run `python checklist.py` from `pipeline/` — it bundles
-the two non-mechanical checks below plus context (period, agent versions, roles in the JSON). What it
-verifies:
+the two non-mechanical checks below plus context (period, agent versions, roles in the JSON). Optional:
+`python checklist.py <outra-base.csv>` adds an execution-overlap check (`cod_idef_exeo`) against another
+extraction — mandatory before calling two bases independent replicas or pooling them. What it verifies:
 
 1. **Column drift** — `base_pipeline.py` reads five columns by name: `txt_etap_memo`, `cod_idef_exeo`,
    `cod_idef_aget`, `cod_idef_stat_exeo_aget`, and `anomesdia` (parsed as `%Y%m%d` → `mes`). A different
@@ -197,6 +198,19 @@ be reusable groundwork for later analyses, not a one-pass deliverable):
 (`ActionStep.error`), the N0→N4 symptom→mechanism→unit taxonomy cascade, and the guideline for the
 per-family study report. Its §7 named the genealogy Sankey before it existed; that figure now lives in
 `2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md` §1.1.
+
+**Shared code at this level — [`base_utils.py`](base_utils.py).** Generic primitives for any CodeAgent
+(smolagents-format) trace analysis, imported from `analysis/` root instead of copied into each dated folder:
+grouping steps into ordered `(exec_id, role)` sequences, the authoritative tool inventory (`def name(...)` in
+the system prompt), AST helpers over `code_action` (direct calls, names read, call assignments, normalized
+call signature), and typed-entity extraction + support check (the caller passes the domain regexes).
+Nothing in it knows the legal workflow or the error taxonomy. Created 22/09/2026 ahead of splitting the
+silent-failure detectors into their own notebook (`2026-09-trace-law-flow/docs/04-roadmap.md` item 26);
+verified to reproduce the §7 detector numbers exactly (inventory 90, Result-Ignore 103/3,053, RAC 125,
+Tool-Skip 10/840). The boundary: what is a **hypothesis about one base** (`classify()`, `submecanismo()`,
+`SUB2UNI`, `carregar_base()`) stays in that folder's `base_pipeline.py` and is copied per the intake
+checklist; what is **mechanics of the trace format** lives here. `drill_down.py` and `checklist.py` stay
+per-folder too — they read that folder's `TRACE` and write to its `resultados/`.
 
 **Portable-code watch.** `2026-09-trace-law-flow/pipeline/genealogia_sankey.py` renders that Sankey with a
 generic layout engine (barycenter column ordering + minimum node height for legibility — see its own

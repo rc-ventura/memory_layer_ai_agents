@@ -141,7 +141,7 @@ Só famílias com amostra confiável (n ≥ 20 — o que sobrevive ao teste):
 | Assinatura | Duração mediana | n |
 |---|---:|---:|
 | Texto do documento colado em literal | 15,6s | 20 |
-| Resposta sem bloco de código [INATIVO desde dez/2025] | 15,6s | 33 |
+| Resposta sem bloco de código (harness) — reaberto 22/09/2026, ver §6 | 15,6s | 33 |
 | String não fechada | 15,3s | 159 |
 | Retorno é dict | 7,7s | 136 |
 | Sintaxe inválida | 7,6s | 39 |
@@ -372,7 +372,7 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 3 | 2 | 0,29M |
 | 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
 | 10 | **Campo inexistente no retorno estruturado** — `quebra_sigilo` 7× | factual · ambiente | 10 | 10 | 10 | 3 | 2 | 0,19M |
-| — | **Protocolo do harness [INATIVO]** — gatilho de reabertura, não correção | não-memória | 33 | 33 | 24 | 3 | 4 | 0,81M |
+| — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)** | não-memória* | 33 | 33 | 24 | 3 | 4 | 0,81M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 4 | 2 | 0,12M |
 | — | Erros pontuais sem conteúdo único — fora | — | 9 | 9 | 9 | 3 | 2 | 0,14M |
 | — | Retorno impresso colado de volta no código — fora, sem recorrência | experiencial · estratégia | 2 | 2 | 2 | 1 | 1 | 0,05M |
@@ -414,11 +414,23 @@ código) é, em boa parte, a reação do agente a esse erro de protocolo — 7 d
 depois dele.
 
 Isso também não é "resolvido" — não sabemos a causa (o harness é infra de terceiro, fora do nosso controle) nem
-temos garantia de que não volta. É **inativo**, com gatilho de reabertura explícito como conteúdo da linha:
-**≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato** (limiar = teto do IC95% acima). Tratado como
-memória dormente, não deletada — teste de caso para a política de aposentar/reativar unidades de memória que o
-mecanismo do projeto precisa ter, não só criar. Passo a passo completo da construção desta tabela e do gráfico
-em [`01-racionais.md`](01-racionais.md) §7.
+temos garantia de que não volta. Por isso este achado sempre foi tratado como **monitorado**, não como
+descartado, com gatilho de reabertura explícito como conteúdo da linha: **≥2 casos num mês, ou taxa > 1/1k
+steps, reabre o candidato** (limiar = teto do IC95% acima). Tratado como memória dormente, não deletada —
+teste de caso para a política de aposentar/reativar unidades de memória que o mecanismo do projeto precisa
+ter, não só criar. Passo a passo completo da construção desta tabela e do gráfico em
+[`01-racionais.md`](01-racionais.md) §7.
+
+**Gatilho disparado (22/09/2026) — status atual: reaberto, não mais "inativo".** Esta análise cobre só a base
+1 (1.000 execuções, nov/2025–ago/2026), onde o incidente de fato morre a partir de mai/2026. Rodando o mesmo
+pipeline numa segunda base (ago/2026, 1.000 registros — diário de campo, entrada 22/09/2026), o erro
+"reapareceu com força", muito acima do limiar de reabertura definido acima. **A rotulagem anterior
+`[INATIVO desde dez/2025]`, presente no código (`base_pipeline.py`) e propagada por toda a análise (esta
+tabela, `04-roadmap.md`, `schema-e-taxonomia-de-erros.md`, a figura Sankey), foi removida em 22/09/2026 por
+estar desatualizada — ela lia como um fato permanente, não como o resultado, já então superado, de uma
+checagem de uma única base.** A decisão `não-memória` acima permanece a leitura correta *da base 1 isolada*;
+a reclassificação formal (tipo/decisão desta unidade) fica pendente da integração da base 2 ao pipeline —
+ver `04-roadmap.md` §Monitoramento.
 
 ### A continuação da §6: a mineração das unidades nº2 e nº10
 
@@ -459,8 +471,9 @@ Três afirmações da v1 não sobreviveram:
   → FM-1.3 (o modo mais frequente da taxonomia, 15,7%). Alerta metodológico do Apêndice J.1: *"Successful runs are
   not failure-free"* — modos de verificação aparecem em execuções bem-sucedidas, e minha análise inteira está
   condicionada em `err_type != null`.
-- **TRAIL** — arXiv:2505.08638 (Patronus AI). Fornece o tamanho medido do ponto cego (≥59%) e o schema de anotação
-  reusável. O 11% do abstract é *joint accuracy* (categoria + localização); decomposto, a localização chega a 0,82.
+- **TRAIL** — arXiv:2505.08638 (Patronus AI). Fornece a taxonomia e o dataset anotado que usamos para **estimar por
+  mapeamento nosso** o tamanho do ponto cego (≥59% — não é medida que o paper publica, ver §5) e o schema de
+  anotação reusável. O 11% do abstract é *joint accuracy* (categoria + localização); decomposto, a localização chega a 0,82.
   Como **já tenho a localização de graça**, o problema vira classificação — viável, desde que se mande **um step**
   por vez, não o trace inteiro (a performance é anticorrelacionada com o comprimento de entrada, r = −0,38).
 - **AgentDebug** — arXiv:2509.25370. Aporta o princípio de causa-raiz em vez de sintoma (ablação, p. 2 e p. 8 —

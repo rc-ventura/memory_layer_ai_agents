@@ -12,10 +12,12 @@ Operacionaliza os itens não-mecânicos do "Intake checklist — a new trace bas
                    o pipeline vê), com flag de divergência;
   §5 contexto    — período (anomesdia), agentes/versões, papéis presentes no JSON.
 
-Uso (rodar de dentro de pipeline/):  python checklist.py
+Uso (rodar de dentro de pipeline/):  python checklist.py [outra-base.csv]
 Lê sempre o TRACE de base_pipeline.py — nada hardcoded aqui.
+Com um argumento, adiciona §6: sobreposição de execuções (cod_idef_exeo) com a outra base —
+o outro arquivo pode ser um CSV completo ou uma lista de IDs em coluna única.
 """
-import json, re
+import json, re, sys
 from collections import Counter
 import pandas as pd
 from base_pipeline import TRACE
@@ -101,4 +103,21 @@ if "cod_vers_aget" in df.columns:
           + ", ".join(f"{k}({v})" for k, v in vc.head(6).items()))
 print(f"  papéis no JSON:           {len(papeis)} — "
       + ", ".join(f"{k}({v} execs)" for k, v in papeis.most_common(8)))
+
+# -- §6 sobreposição com outra base (opcional, via argumento) ---------------------
+if len(sys.argv) > 1 and "cod_idef_exeo" in df.columns:
+    outro_path = sys.argv[1]
+    outro = pd.read_csv(outro_path, dtype=str)
+    col = "cod_idef_exeo" if "cod_idef_exeo" in outro.columns else outro.columns[0]
+    atual, outros = set(df["cod_idef_exeo"].dropna()), set(outro[col].dropna())
+    inter = atual & outros
+    print("\n§6 SOBREPOSIÇÃO —", outro_path.split("/")[-1], "\n")
+    print(f"  exec_ids nesta base:   {len(atual)}")
+    print(f"  exec_ids na outra:     {len(outros)}")
+    print(f"  sobrepostos:           {len(inter)}   ({len(inter)/max(len(outros),1):.0%} da outra base)")
+    if inter:
+        print("  → mesmas execuções nas duas bases: dedup obrigatório numa análise conjunta;")
+        print("    como réplica, reportar a sobreposição no relatório.")
+    else:
+        print("  → extrações disjuntas: réplica independente.")
 print()

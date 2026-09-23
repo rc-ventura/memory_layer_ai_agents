@@ -856,10 +856,12 @@ distinção mais estrutural, de **método**, que a comparação de campos não m
   que audita exaustivamente, sem hierarquia entre os erros achados além da escala de impacto. Método: cataloga
   tudo que já aconteceu num trace já estruturado, não busca a causa de um fracasso.
 
-São lentes diferentes, e ambas fazem sentido pro projeto, sem que uma precise vencer a outra: o TRAIL responde
-**"quanto do que aconteceu no trace estamos vendo"** (cobertura, ponto cego — §4 do fichamento, os 59% de erros
-estruturalmente invisíveis à nossa `classify()`); o AgentDebug responde **"qual passo, corrigido, teria evitado
-a cascata"** (causa raiz, e daí a política de escrita "uma unidade de memória por cascata, na raiz" — §7 acima).
+São lentes diferentes, e ambas fazem sentido pro projeto, sem que uma precise vencer a outra: usamos o TRAIL para
+responder **"quanto do que aconteceu no trace estamos vendo"** (cobertura, ponto cego — §4 do fichamento; ≥59% dos
+tipos de erro do TRAIL, classificados por nós por visibilidade a exceção, caem fora do que a nossa `classify()`
+pegaria — **mapeamento nosso sobre o dataset deles, não uma medida que o paper publica**); o AgentDebug responde
+**"qual passo, corrigido, teria evitado a cascata"** (causa raiz, e daí a política de escrita "uma unidade de
+memória por cascata, na raiz" — §7 acima).
 A comparação campo a campo que segue é sobre o produto de cada método, não substitui esta distinção de método.
 
 **Onde TRAIL e AgentDebug entram — os dois cobrem o degrau 2, cada um com um campo a mais que o outro não tem:**
