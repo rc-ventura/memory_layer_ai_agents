@@ -107,7 +107,8 @@ NOME_CURTO = {
 # rótulo curto do destino final de cada unidade (o nome da memória/correção
 # que o erro deve produzir — não o id técnico da unidade). Unidades fora
 # deste dicionário caem no nome completo de UNI[u][0] (mais raras: só as
-# unidades "fora" — X_pontual, U_repr_colado — não têm entrada aqui).
+# unidades "fora" — X_causa_nao_identificada, X_sintoma_nao_reconhecido, U_repr_colado — não
+# têm entrada aqui).
 CURTO_MEM = {
     "U_contrato_dict": "retorno é dict",
     "U_campo_inexistente": "campo inexistente",
@@ -129,7 +130,7 @@ TITULOS = {"familia": "família", "sig_disp": "assinatura", "mec_disp": "mecanis
 PARES = list(zip(STAGES, STAGES[1:]))
 
 # cor da família = COR_FAMILIA[nome] (paleta.py), fixa por nome em qualquer base; cinza
-# para os agregados artificiais ("outras/outros"), para "Não classificado" e para família
+# para os agregados artificiais ("outras/outros"), para "Sintoma não reconhecido" e para família
 # sem cor fixa (esta última com aviso).
 
 

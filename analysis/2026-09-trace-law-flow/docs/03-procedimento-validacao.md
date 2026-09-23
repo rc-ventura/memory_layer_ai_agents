@@ -993,6 +993,37 @@ O que muda de conclusão, e não só de número:
 O teste sintético da §1.7 (unidades inventadas, "3 meses") e as datas que não vêm do trace (datas de auditoria,
 de trabalho, do diário) não mudam.
 
+### 1.13 · O resíduo da taxonomia na base 1 (23/09/2026)
+
+**A pergunta.** O que cai nos dois baldes de resíduo — os erros que nenhuma regra de causa reconheceu — e o que
+cada caso pode significar? O racional dos baldes e das classes está em `01-racionais.md` §7 Passo 2 ("Os dois
+baldes de resíduo").
+
+**O método.** Todos os erros das unidades `X_causa_nao_identificada` e `X_sintoma_nao_reconhecido`, sem amostra.
+Para cada um: a classe (o submecanismo), a assinatura do `classify()`, o `error.type`, a classe da exceção e a
+frase da exceção **mascarada** — texto entre aspas → `<q>`, entre crases → `<id>`, números → `<n>` —, porque os
+valores entre aspas podem ser dados do caso. Nos erros de sintaxe a frase não entra (a mensagem traz a linha de
+código rejeitada).
+
+**Evidência.** `uv run python drill_down.py residuo` (depois do notebook) → `resultados/evidencia/A5_residuo/`
+(git-ignored): `casos.csv`, `derivados/residuo.csv` e os 9 crus.
+
+**Resultado — 9 erros, 3 classes:**
+
+| Classe | n | Casos (exec · papel · mês) | Exceção e frase mascarada | Leitura |
+|---|---:|---|---|---|
+| **Código Python mal escrito** | 4 | `456d8bf5`, `a80a9074` (managerAgent, out/2025) · `a47d6e3b` (ConversationAgent, mar/2026) · `b8a32b7b` (ConversationAgent, fev/2026) | `SyntaxError` ×3, `IndentationError` ×1 | código mal formado; nada em comum entre os casos além da classe |
+| **Erro conhecido, causa sem regra** | 4 | `6dde0bab` (ConversationAgent, dez/2025) · `ab45d27a` (managerAgent, mar/2026) · `87e8f3f4` (managerAgent, nov/2025) · `f82e081a` (ConversationAgent, mai/2026) | `TypeError`: `<q> not supported between instances of <q> and <q>` · `TypeError`: `unsupported operand type(s) for \|: <q> and <q>` · `ValueError`: `dictionary update sequence element #<n> has length <n>; <n> is required` · `TypeError`: `FinalAnswerTool.forward() got an unexpected keyword argument <q>` | dois tipos: operação ou comparação entre tipos errados (vizinho de "retorno pode chegar como string"), e **argumento nomeado que não existe no `final_answer`** — um erro de contrato de chamada (o IAN do ToolScan), não um acaso |
+| **Erro que a taxonomia não conhece** | 1 | `c4611fe3` (ConversationAgent, dez/2025) | `InterpreterError`: `NoneType is not supported.` | limitação do interpretador do smolagents; nenhuma regra de sintoma nem de causa a conhece |
+
+**Conferir no cru.** `uv run python drill_down.py caso <exec_id> <role>`, ou em `A5_residuo/crus/<exec_id>.json`:
+`txt_etap_memo` → papel → o `idx`-ésimo `ActionStep` → `error.message`.
+
+**O que isso mostra.** Na base 1 o resíduo é pequeno (9 de 498 erros, 1,8%) e só 1 é erro desconhecido. Mas a
+"causa não identificada" soma 8 erros em 8 execuções e 6 meses: se a triagem testasse recorrência nesse balde, ela
+passaria. É o que a proposta de triagem "a revisar" trata. Na base 2 (25 erros de sintoma não reconhecido), a mesma
+tabela diz de cara quantos são erro desconhecido e quantos são causa sem regra.
+
 ---
 
 ## Frente 2 — Verificar a literatura (aqui sim precisa da sua leitura)

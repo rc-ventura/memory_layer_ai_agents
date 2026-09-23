@@ -107,7 +107,7 @@ flowchart TD
     N0 -- "{type, message} (8,6%)" --> N1["<b>N1 · error.type</b> — nativo do smolagents<br/>AgentExecutionError 465 · AgentParsingError 33<br/><i>falhou durante × antes de rodar</i>"]
     N1 --> N2["<b>N2 · assinatura = sintoma</b><br/>error.message → regras de substring (classify)<br/>9 famílias · 20 assinaturas<br/><i>o que o Python reclamou</i>"]
     N2 --> N3["<b>N3 · mecanismo</b><br/>message + linha de código rejeitada → submecanismo()<br/><i>o que o agente fez de errado</i>"]
-    N3 --> N4["<b>N4 · unidade de memória</b><br/>cascata (dedup de repetições) + triagem<br/>≥3 execuções · ≥2 meses<br/>14 unidades · 10 candidatas<br/><i>o conteúdo ensinável</i>"]
+    N3 --> N4["<b>N4 · unidade de memória</b><br/>cascata (dedup de repetições) + triagem<br/>≥3 execuções · ≥2 meses<br/>15 unidades · 10 candidatas<br/><i>o conteúdo ensinável</i>"]
     style N0 fill:#f2b824,stroke:#8a6d00,color:#000
     style N4 fill:#7cc47f,stroke:#1a6e1e,color:#000
 ```
@@ -142,7 +142,7 @@ Duas leituras práticas: `AgentToolCallError`/`AgentToolExecutionError` são **s
 `AgentExecutionError` — se a versão da esteira os emite, o DISTINCT os separa do pai, e o ToolCall mapeia
 direto para mecanismos de contrato de chamada. E `AgentMaxStepsError` não é erro de código — é exaustão de
 iterações; o destino natural é "fora do escopo de memória", não uma unidade. Em n=1 ele cai no balde
-"Não classificado" do `classify()` — correto: a taxonomia admite o que não conhece em vez de forçar encaixe.
+"Sintoma não reconhecido" do `classify()` — correto: a taxonomia admite o que não conhece em vez de forçar encaixe.
 
 ## 4. Todas as famílias — contagem real na amostra
 
@@ -158,27 +158,28 @@ iterações; o destino natural é "fora do escopo de memória", não uma unidade
 | Suposição sobre estado | 8 | variável não definida |
 | Infra / LLM upstream | 7 | falha do LLM interno (6) · HTTP 422 (1) |
 | Suposição sobre dados | 2 | formato/valor inválido |
-| Não classificado | 1 | — |
+| Sintoma não reconhecido | 1 | — |
 
-E o nível mais específico — as **14 unidades de memória** (triagem: conteúdo único + ≥3 execuções +
+E o nível mais específico — as **15 unidades de memória** (triagem: conteúdo único + ≥3 execuções +
 ≥2 meses; cobrem 90% dos erros e 92% dos tokens em steps com erro):
 
 | Unidade | Erros | Execs | Meses | Decisão |
 |---|---:|---:|---:|---|
-| Texto longo nunca dentro de literal de string | 186 | 149 | 9 | candidato |
-| Retorno das ferramentas de documento é dict | 96 | 87 | 6 | candidato |
-| Retorno pode chegar como string | 47 | 36 | 7 | candidato |
-| Ferramentas só aceitam argumento nomeado | 35 | 22 | 6 | candidato |
-| Explicação nunca solta no bloco de código | 33 | 12 | 4 | candidato |
-| Inventário do sandbox | 17 | 17 | 6 | candidato |
-| next() sobre gerador falha no sandbox | 13 | 11 | 5 | candidato |
-| Campo inexistente no retorno estruturado | 10 | 10 | 3 | candidato → destino **harness** |
-| Nome usado sem ter sido definido | 5 | 5 | 3 | candidato |
+| Texto longo nunca dentro de literal de string | 186 | 149 | 10 | candidato |
+| Retorno das ferramentas de documento é dict | 96 | 87 | 8 | candidato |
+| Retorno pode chegar como string | 47 | 36 | 9 | candidato |
+| Ferramentas só aceitam argumento nomeado | 35 | 22 | 10 | candidato |
+| Explicação nunca solta no bloco de código | 33 | 12 | 5 | candidato |
+| Inventário do sandbox | 17 | 17 | 8 | candidato |
+| next() sobre gerador falha no sandbox | 13 | 11 | 8 | candidato |
+| Campo inexistente no retorno estruturado | 10 | 10 | 6 | candidato → destino **harness** |
+| Nome usado sem ter sido definido | 5 | 5 | 4 | candidato |
 | Após step com erro, o que ele definiria não existe | 5 | 4 | 3 | candidato |
-| Protocolo do harness | 33 | 24 | 3 | não-memória (base 1) — reaberto na base 2, 22/09/2026 |
-| Falha do LLM upstream (retry) | 7 | 7 | 4 | não-memória |
+| Protocolo do harness | 33 | 24 | 4 | não-memória (base 1) — reaberto na base 2, 22/09/2026 |
+| Falha do LLM upstream (retry) | 7 | 7 | 3 | não-memória |
 | Não colar retorno impresso no código | 2 | 2 | 1 | fora: sem recorrência |
-| Erros pontuais sem conteúdo único | 9 | 9 | 3 | fora: sem conteúdo |
+| Causa não identificada (nenhuma regra de causa reconheceu o erro) | 8 | 8 | 6 | fora: causa não identificada |
+| Sintoma não reconhecido (erro que a taxonomia não conhece) | 1 | 1 | 1 | fora: causa não identificada |
 
 Detalhe completo: `06-racionais-mineracao-unidades-n2-n10.md` · `07-relatorio-mineracao-unidades-n2-n10.md`.
 Gráficos já produzidos (notebook §8): overview de granularidade (§8.0), Pareto de assinaturas (§8.1),
@@ -253,5 +254,5 @@ o destino de cada unidade (`MEM <título>`/`HARNESS <título>`/`FORA <motivo>`),
 (1 nível); a genealogia é a árvore completa dos 5 níveis.
 
 **Cobertura / erro novo.** Na próxima extração (~1M records): todo erro cuja `error.message` cai no balde
-"Não classificado" do `classify()` é candidato a erro novo que a taxonomia ainda não viu — o relatório
+"Sintoma não reconhecido" do `classify()` (unidade `X_sintoma_nao_reconhecido`) é candidato a erro novo que a taxonomia ainda não viu — o relatório
 ganha uma seção "fora da taxonomia" listando essas mensagens para decidir se viram família nova.

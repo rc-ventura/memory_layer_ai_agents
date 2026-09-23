@@ -67,7 +67,7 @@ Números gerais: 840 execuções com memória preservada · 5.781 ActionSteps ·
 | **Suposição sobre estado** | 8 | 1,6% | Variável de step que falhou |
 | **Infra / LLM upstream** | 7 | 1,4% | `AgentGenerationError` (6) |
 | **Suposição sobre dados** | 2 | 0,4% | Formato/valor inválido |
-| *(não classificado)* | 1 | 0,2% | — |
+| *(sintoma não reconhecido)* | 1 | 0,2% | — |
 
 497 dos 498 erros classificados. Os dois casos concretos que dominam:
 
@@ -379,7 +379,8 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 10 | **Campo inexistente no retorno estruturado** — `quebra_sigilo` 7× | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
 | — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)** | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |
-| — | Erros pontuais sem conteúdo único — fora | — | 9 | 9 | 9 | 6 | 2 | 0,14M |
+| — | **Causa não identificada** (nenhuma regra de causa reconheceu o erro) — fora | — | 8 | 8 | 8 | 6 | 2 | 0,13M |
+| — | **Sintoma não reconhecido** (erro que a taxonomia não conhece) — fora | — | 1 | 1 | 1 | 1 | 1 | 0,01M |
 | — | Retorno impresso colado de volta no código — fora, sem recorrência | experiencial · estratégia | 2 | 2 | 2 | 1 | 1 | 0,05M |
 
 As 10 candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens em steps com erro. Sensibilidade: com ≥5

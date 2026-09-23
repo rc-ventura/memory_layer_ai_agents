@@ -109,7 +109,7 @@ def classify(m):
     if 'TypeError' in m:            return ('Contrato de retorno da ferramenta','Tipo diferente do esperado')
     if 'ValueError' in m:           return ('Suposição sobre dados','Formato/valor inválido')
     if 'IndexError' in m:           return ('Contrato de retorno da ferramenta','Retorno vazio indexado')
-    return ('Não classificado', 'Erro não classificado')
+    return ('Sintoma não reconhecido', 'Sintoma não reconhecido')  # nenhuma regra de sintoma casou: erro novo para a taxonomia
 
 
 def classificar_erros(steps):
@@ -153,7 +153,7 @@ def submecanismo(m):
             return "texto_em_literal"
         if e_texto(l):
             return "texto_solto_no_codigo"
-        return "pontual"
+        return "codigo_mal_escrito"   # sintaxe/indentação em código de verdade, não texto colado
     if "does not support multiple positional" in m:
         return "argumento_posicional"
     if "Could not index" in m:
@@ -163,7 +163,7 @@ def submecanismo(m):
             return "dict_indexado_por_posicao"
         if "KeyError: '" in m or "are in the [columns]" in m:
             return "campo_inexistente_no_retorno"
-        return "pontual"
+        return "causa_sem_regra"
     if "Object hashDocumento has no attribute" in m:
         return "dict_iterado_como_lista"
     if ("JSON object must be str" in m or "JSONDecode" in m or "multiply sequence by non-int" in m
@@ -181,7 +181,7 @@ def submecanismo(m):
         return "inventario_sandbox"
     if v:
         return "nome_nao_definido"
-    return "pontual"
+    return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
 
 
 SUB2UNI = {
@@ -198,7 +198,8 @@ SUB2UNI = {
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm",
     "harness_bloco_code": "H_bloco_code",
-    "pontual": "X_pontual",
+    "codigo_mal_escrito": "X_causa_nao_identificada", "causa_sem_regra": "X_causa_nao_identificada",
+    "sintoma_nao_reconhecido": "X_sintoma_nao_reconhecido",
 }
 FACT, ESTR, NAO, SEM = "factual · ambiente", "experiencial · estratégia", "não-memória · harness/infra", "—"
 UNI = {
@@ -233,7 +234,10 @@ UNI = {
     # como resolvido.
     "H_bloco_code": ("Protocolo do harness", NAO,
                      "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente, a partir de mar/2026: ≤0,99/1k). REABERTO em 22/09/2026 (base 2) — ver diário de campo."),
-    "X_pontual": ("Erros pontuais sem conteúdo único", SEM, "—"),
+    # os dois baldes de resíduo (01-racionais.md §7, "Os dois baldes de resíduo"): nenhum vira memória hoje, e a
+    # triagem os tira sem teste de recorrência — o que eles medem é onde as regras ainda não alcançam
+    "X_causa_nao_identificada": ("Causa não identificada", SEM, "—"),
+    "X_sintoma_nao_reconhecido": ("Sintoma não reconhecido", SEM, "—"),
 }
 
 
@@ -244,6 +248,9 @@ def montar_unidades(E):
     EU["submecanismo"] = EU["err_msg"].apply(submecanismo)
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
+    # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece
+    sel = EU["submecanismo"].eq("causa_sem_regra") & EU["familia"].eq("Sintoma não reconhecido")
+    EU.loc[sel, "submecanismo"] = "sintoma_nao_reconhecido"
     sem_casa = set(EU["submecanismo"].unique()) - set(SUB2UNI)
     assert not sem_casa, f"mecanismo sem casa em SUB2UNI: {sorted(sem_casa)}"
     EU["unidade"] = EU["submecanismo"].map(SUB2UNI)
@@ -264,7 +271,7 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         if tipo == NAO:
             decisao = "não-memória"
         elif tipo == SEM:
-            decisao = "fora: sem conteúdo único"
+            decisao = "fora: causa não identificada"
         elif execs_u < min_execs or meses_u < min_meses:
             decisao = "fora: sem recorrência"
         else:
@@ -276,7 +283,7 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
                     "% ocorr. após outro erro": round(o["seguidor"].mean() * 100),
                     "assinaturas de origem": " + ".join(g["assinatura"].value_counts().index),
                     "conteúdo proposto": conteudo})
-    ordem = {"candidato": 0, "não-memória": 1, "fora: sem recorrência": 2, "fora: sem conteúdo único": 3}
+    ordem = {"candidato": 0, "não-memória": 1, "fora: sem recorrência": 2, "fora: causa não identificada": 3}
     t = pd.DataFrame(tri)
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
 

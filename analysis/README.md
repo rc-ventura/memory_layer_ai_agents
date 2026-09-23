@@ -185,7 +185,7 @@ extraction — mandatory before calling two bases independent replicas or poolin
    documented in `schema-e-taxonomia-de-erros.md` §3.1.
 
 `classify()` / `submecanismo()` / `SUB2UNI` are hypotheses mined from the first base — copy them
-unchanged and read the **"Não classificado" bucket as the coverage signal**: where it grows, the rules
+unchanged and read the **"Sintoma não reconhecido" bucket (unit `X_sintoma_nao_reconhecido`; called "Não classificado" until 2026-09-23) as the coverage signal**: where it grows, the rules
 don't reach. Same method + new base = copy the notebook and rerun (outputs recompute on their own; the
 markdown prose keeps the old base's numbers until rewritten — that rewrite is where the analysis
 actually happens). New method = new notebook with its own § range, per the convention above.

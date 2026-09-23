@@ -4,6 +4,9 @@
 > `anomesdia` (o lote de corte); hoje o pipeline e os `scripts/audit_recompute*.py` usam o mês de
 > `dat_hor_inio_exeo` (quando a execução rodou). Números que não dependem de mês continuam valendo.
 > → `docs/04-roadmap.md` (Agora) · `docs/03-procedimento-validacao.md` §1.12
+> Também desde 23/09: o balde "Erros pontuais sem conteúdo único" (`X_pontual`) virou dois — **Causa não
+> identificada** e **Sintoma não reconhecido** — e "Não classificado" passou a "Sintoma não reconhecido"; por isso
+> as "14 unidades" auditadas aqui são 15 hoje (as 10 candidatas não mudaram). → `docs/01-racionais.md` §7 Passo 2
 
 **Data:** 2026-09-16 · **Auditor:** agente de auditoria · **Objeto:** a cadeia completa
 `data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz` → `pipeline/analise_trace_esteira_juridica.ipynb`

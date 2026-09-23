@@ -103,11 +103,14 @@ muitos-para-muitos nos dois sentidos, o que uma árvore não representaria:
   distintos na superfície, mesma lacuna: o agente não conhece o inventário do
   sandbox — um único card de memória previne os dois.
 
-`classify()` **não alimenta a decisão**: hoje o resultado (unidades, triagem,
-candidatas) seria idêntico sem ele. Seu papel é a camada de **descrição,
-proveniência e descoberta** — o censo dos sintomas (§8.1), a coluna
-"assinaturas de origem" da triagem, e a rede que flaga erro novo
-("Não classificado") na extração maior.
+`classify()` **não decide candidatas**: a lista de candidatas seria idêntica sem
+ele. Seu papel é a camada de **descrição, proveniência e descoberta** — o censo dos
+sintomas (§8.1), a coluna "assinaturas de origem" da triagem, e a rede que flaga
+erro novo ("Sintoma não reconhecido") na extração maior. Desde 23/09/2026 ele
+também separa os dois baldes de resíduo: um erro cuja causa nenhuma regra
+reconhece vai para **Sintoma não reconhecido** se o `classify()` também não o
+reconhece, e para **Causa não identificada** se reconhece (os dois ficam fora da
+triagem; `01-racionais.md` §7 Passo 2).
 
 ## 3. As relações de cardinalidade — verificadas no EU
 
@@ -252,5 +255,6 @@ Duas medidas convivem e não se confundem: **contagem de erros** (frequência �
 | candidata | unidade que passou no threshold da triagem | é uma **decisão**, não um nível da taxonomia |
 
 Armadilha a evitar: "unidade de memória" no pipeline inclui `H_*`
-(harness/infra) e `X_pontual` — agrupamentos que por construção nunca viram
+(harness/infra) e os dois baldes de resíduo, `X_causa_nao_identificada` e
+`X_sintoma_nao_reconhecido` — agrupamentos que por construção nunca viram
 memória. Em contexto descritivo, ler "unidade" como "tipo de erro agrupado".

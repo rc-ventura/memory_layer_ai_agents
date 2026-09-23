@@ -726,12 +726,27 @@ rejeitou**. Sem LLM, regras em ordem:
   entre aspas) ou o erro é `unterminated` / `never closed` / `forgot a comma` → *texto dentro de literal*. A linha
   é texto em português ou markdown (começa com `|`, `#`, `**`, `- `, `1)`; tem crase; ou ≥15% das palavras são
   stopwords do português) → *texto solto no código*. Contém "truncado" → *retorno impresso colado de volta*.
-  Nenhuma das anteriores → *erro de sintaxe Python pontual*.
+  Nenhuma das anteriores → *código Python mal escrito* (`codigo_mal_escrito`).
 - **Erros de execução.** `KeyError: 0` num dict → *dict indexado por posição*; `string indices must be integers`
   → *string tratada como dict*; `KeyError: 'campo'` → *campo inexistente*; `'list' object is not an iterator` →
   *`next()` sobre gerador*; `variable X is not defined` → *módulo sem import* (se X é `json`, `datetime`...) ou
   *nome não definido*; builtin proibido ou `Import of` → *inventário do sandbox*; `AgentGenerationError`/422 →
   *infra*.
+
+**Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** Duas funções leem a mesma
+mensagem de erro, com papéis diferentes. O `classify()` dá o **sintoma** (família e assinatura, §2 do relatório) e
+não decide nada: descreve. O `submecanismo()` dá a **causa**, e é ela que leva o erro a uma unidade. Cada uma tem
+a sua sobra, e cair em cada uma diz uma coisa diferente:
+
+| Balde | Classe (submecanismo) | Quando cai | O que pode significar |
+|---|---|---|---|
+| **Causa não identificada** (`X_causa_nao_identificada`) | **Código Python mal escrito** (`codigo_mal_escrito`) | erro de sintaxe ou indentação em que a linha rejeitada não é texto colado, literal de texto nem retorno colado | código mal formado de verdade (parêntese, indentação, operador): ruído, até se provar que se repete |
+| | **Erro conhecido, causa sem regra** (`causa_sem_regra`) | o `classify()` reconhece o sintoma, mas nenhuma regra de causa casa — inclusive "Could not index" fora dos três padrões | o sintoma tem nome, a causa não: **candidato a regra nova** se recorrer (ex.: argumento nomeado que não existe no `final_answer`) |
+| **Sintoma não reconhecido** (`X_sintoma_nao_reconhecido`) | **Erro que a taxonomia não conhece** (`sintoma_nao_reconhecido`) | nem o `classify()` nem o `submecanismo()` reconhecem a mensagem | **erro novo**: tipo que a taxonomia nunca viu, versão nova da esteira ou do smolagents, ou algo que não é erro de código (ex.: `AgentMaxStepsError`, exaustão de iterações). É o sinal de cobertura: onde ele cresce, as regras não alcançam |
+
+O nome "causa não identificada" diz o que aconteceu com a regra, não com o erro: **não quer dizer que o erro
+aconteceu uma vez só** (até 23/09/2026 o balde chamava "erros pontuais", o que sugeria isso sem que a regra
+conferisse). Os casos da base 1 estão em `03-procedimento-validacao.md` §1.13.
 
 Cada submecanismo aponta para uma **unidade** (um conteúdo). O CSV `triagem_assinaturas.csv` mostra, para cada
 assinatura da §2, em quantas unidades ela se divide e quanto cai na dominante.
@@ -770,8 +785,9 @@ ablação); **a operacionalização por cascata é nossa**, não do paper.
 
 1. **É memória do agente?** Tipo `não-memória` → fica fora do agente (continua na tabela porque vira política
    operacional).
-2. **Tem conteúdo único?** O resíduo de erros pontuais (parêntese trocado, comparação com `None`, argumento errado
-   em `final_answer`) não tem uma frase que evite os 9 casos → fora.
+2. **A causa foi identificada?** Os dois baldes de resíduo (Passo 2) não têm uma frase que evite os casos → fora.
+   **Limitação atual:** saem pelo tipo, **antes** do teste de recorrência do item 3 — mesmo que o erro se repita.
+   Na base 1, a causa não identificada tem 8 erros em 8 execuções e 6 meses: passaria no item 3.
 3. **Volta em execuções diferentes?** Memória entre execuções só se justifica se o problema recorre: **≥3
    execuções e ≥2 meses** com ocorrência. Abaixo disso → fora.
 
@@ -784,8 +800,8 @@ documentado. Medido erro por erro, **nenhuma das cinco era multi-causa**:
 
 | Assinatura excluída antes | Erros | Para onde foram os erros | Leitura |
 |---|---:|---|---|
-| Sintaxe inválida (prosa vazando no código) | 39 | 28 explicação solta · 7 texto em literal · 3 pontuais · 1 retorno colado | 72% numa unidade; parecia heterogênea porque 67% dos erros vêm logo depois de outro erro do mesmo papel — quase sempre repetição do mesmo |
-| Tipo diferente do esperado | 22 | 13 `next()` sobre gerador · 6 retorno como string · 3 pontuais | 59% numa causa única que ainda não tinha nome |
+| Sintaxe inválida (prosa vazando no código) | 39 | 28 explicação solta · 7 texto em literal · 3 causa não identificada · 1 retorno colado | 72% numa unidade; parecia heterogênea porque 67% dos erros vêm logo depois de outro erro do mesmo papel — quase sempre repetição do mesmo |
+| Tipo diferente do esperado | 22 | 13 `next()` sobre gerador · 6 retorno como string · 3 causa não identificada | 59% numa causa única que ainda não tinha nome |
 | Texto do documento colado em literal | 20 | 19 texto em literal · 1 retorno colado | mesma causa do candidato "relatório em literal", com outra mensagem de exceção |
 | Objeto sem o atributo esperado | 8 | 7 dict iterado como lista · 1 retorno como string | mesma causa do contrato de retorno das ferramentas de documento |
 | Módulo usado sem import | 6 | 6 inventário do sandbox | já estava no *conteúdo* do candidato "Inventário do sandbox", só não era contada |
@@ -794,8 +810,8 @@ Três eram a mesma causa de um candidato existente, escrita com outra exceção;
 critério "causa única, conteúdo numa frase" continua certo — o erro era aplicá-lo à assinatura em vez de a cada
 erro.
 
-**Passo 7 — o resultado.** 14 unidades: **10 candidatas** (5 factual · ambiente, 5 experiencial · estratégia),
-2 não-memória e 2 fora. As candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
+**Passo 7 — o resultado.** 15 unidades: **10 candidatas** (5 factual · ambiente, 5 experiencial · estratégia),
+2 não-memória e 3 fora. As candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
 O que mudou em relação à tabela anterior de 7 linhas:
 
 - **Três candidatas novas com peso real**: "Retorno pode chegar como string" (47 erros, 36 execuções, 9 meses,

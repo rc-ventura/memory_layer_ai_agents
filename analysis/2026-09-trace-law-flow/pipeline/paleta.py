@@ -49,7 +49,7 @@ COR_FAMILIA = {
     "Suposição sobre estado": PALETTE[5],
     "Infra / LLM upstream": PALETTE[6],
     "Suposição sobre dados": PALETTE[7],
-    "Não classificado": CINZA,
+    "Sintoma não reconhecido": CINZA,
 }
 
 _avisados = set()
