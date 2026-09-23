@@ -102,7 +102,7 @@ seção 5 do notebook. Deu **58 (13,5%)**. As duas réguas concordam em 65 das 7
 foram abertas com `drill_down.py caso`: 9 são mensagens diferentes para a mesma confusão (ex.: `docs[0][0]` e
 depois iterar um documento como lista, execução `cd794f02…`), 2 são a mesma mensagem para lições diferentes
 (campo inexistente e depois texto de erro indexado, execução `95344639…`). Não é a divergência de 3× do
-prefixo × sufixo — as réguas convergem. A manchete continua 11,9%; ressalva: 20 dos 58 vêm do laço de dez/2025.
+prefixo × sufixo — as réguas convergem. A manchete continua 11,9%; ressalva: 20 dos 58 vêm do laço de out/2025.
 
 **A lição pra qualquer novo número que você for defender:** teste sempre com pelo menos duas heurísticas de
 correspondência diferentes antes de reportar como firme. Se divergirem muito, investigue exemplos concretos
@@ -463,15 +463,15 @@ caso), contra o retorno real do Passo 2:
 
 | Ferramenta | O prompt diz que devolve | Devolve de verdade | Declaração no trace (`drill_down.py ferramenta`) |
 |---|---|---|---|
-| `validar_quebra_sigilo` | `json com a validação de quebra de sigilo no formato: {"quebra_sigilo": "SIM" ou "NÃO", "motivo": "justificativa"}` | `{vazamento_sigilo: str, justificativa: str}` | 2 variantes, que só diferem na quebra de linha — 135 steps, 26 execuções, dez/2025 e mar–jun/2026 |
+| `validar_quebra_sigilo` | `json com a validação de quebra de sigilo no formato: {"quebra_sigilo": "SIM" ou "NÃO", "motivo": "justificativa"}` | `{vazamento_sigilo: str, justificativa: str}` | 2 variantes, que só diferem na quebra de linha — 135 steps, 26 execuções, dez/2025–jun/2026 |
 | `extrair_evidencias` | `json com as informações extraídas das evidências, no seguinte formato: {"informacoes_evidencias": [<lista de informações extraídas de cada evidência>]}` | `{dados_evidencias: [{4 campos}]}` | 1 variante — 38 steps, 8 execuções, mar–jun/2026 |
-| `get_available_documents` | `-> object`; *"This is a tool that returns a list of documents and a summary of the kinds of documents from a list of dominios […]"* — nenhuma chave | `{result: [[{documento}], {<campo>: {<valor>: int}}]}` | 5 variantes — 2.478 steps, 635 execuções, nov/2025–ago/2026; nenhuma cita `result` (as de nov–dez/2025 dizem só *"returns documents"*) |
+| `get_available_documents` | `-> object`; *"This is a tool that returns a list of documents and a summary of the kinds of documents from a list of dominios […]"* — nenhuma chave | `{result: [[{documento}], {<campo>: {<valor>: int}}]}` | 5 variantes — 2.478 steps, 635 execuções, out/2025–ago/2026; nenhuma cita `result` (as de out–nov/2025 dizem só *"returns documents"*) |
 
 Fora do bloco, o prompt do `RespostaBacen` repete a chave no **modelo do JSON final** que o agente deve entregar —
 `"quebra_sigilo": "<saída da tool validar_quebra_sigilo>"` — e, no prompt do log 3, a ferramenta seguinte é declarada
 como `def draft_resposta(reclamacao: string, assunto: string, informacoes_evidencias: array)`.
 
-#### Log 1 — `validar_quebra_sigilo`, troca de chave · `d3d64194…` · `RespostaBacen` · abr/2026 · idx 1 → 2
+#### Log 1 — `validar_quebra_sigilo`, troca de chave · `d3d64194…` · `RespostaBacen` · jan/2026 · idx 1 → 2
 
 - **O erro (idx 1).** O agente encadeia as ferramentas na ordem que o prompt manda, imprime o retorno
   (`print(quebra)`) e monta o JSON final lendo a chave declarada: `"quebra_sigilo": quebra["quebra_sigilo"]`.
@@ -483,7 +483,7 @@ como `def draft_resposta(reclamacao: string, assunto: string, informacoes_eviden
   Código: `"quebra_sigilo": quebra["vazamento_sigilo"]` — mantém o nome de campo que o modelo do JSON final pede e lê a
   chave real. Sem erro; `final_answer`.
 
-#### Log 2 — `validar_quebra_sigilo`, conserto que aceita os dois contratos · `21a4fa6c…` · `RespostaBacen` · jun/2026 · idx 2 → 3
+#### Log 2 — `validar_quebra_sigilo`, conserto que aceita os dois contratos · `21a4fa6c…` · `RespostaBacen` · fev/2026 · idx 2 → 3
 
 - **O erro (idx 2).** O agente copia do prompt a chave **e** o valor: `if validacao_sigilo["quebra_sigilo"] == "NÃO":`.
   Mensagem: `Could not index {'vazamento_sigilo': 'NAO', 'justificativa': <str>} with 'quebra_sigilo': KeyError: 'quebra_sigilo'`.
@@ -497,7 +497,7 @@ como `def draft_resposta(reclamacao: string, assunto: string, informacoes_eviden
 - **O que o log mostra além da chave.** O prompt declara `"NÃO"`; a ferramenta devolveu `'NAO'`. Com a chave certa e o
   valor do prompt, `== "NÃO"` seria falso sem exceção nenhuma.
 
-#### Log 3 — `extrair_evidencias`, troca de chave · `95344639…` · `RespostaBacen` · jun/2026 · idx 0 → 1
+#### Log 3 — `extrair_evidencias`, troca de chave · `95344639…` · `RespostaBacen` · mar/2026 · idx 0 → 1
 
 - **O erro (idx 0).** `draft_resposta(..., informacoes_evidencias=info_evidencias["informacoes_evidencias"])` — o
   nome do argumento e a chave são os dois que o prompt declara. Mensagem: `Could not index {'dados_evidencias': [{…}]}
@@ -595,7 +595,7 @@ notebook — com o mesmo resultado nas 8 pastas.
 7. **Passo 8 — `location` e `evidence`.** `location` alterna os meses (até 10); `evidence` são os 3 primeiros, de 3
    meses diferentes.
 
-**Conferência do Passo 4.** A variante com campos a mais foi lida no cru (`11.5_estabilidade/crus/`, ago/2026), com
+**Conferência do Passo 4.** A variante com campos a mais foi lida no cru (`11.5_estabilidade/crus/`, jul/2026), com
 `ast.literal_eval` sobre a mensagem de erro e só contagens na tela: `result` tem 2 posições (lista e dict); os 18
 documentos de `result[0]` têm as 3 chaves da forma comum, os 18 têm `iuDocsId` e `iuDocsTenantId`, nulos em todos, e
 nenhum tem outra chave; os `metadado` de todos têm `nomeMetadado`/`valorMetadado`. Os 3 objetos de nível de documento são os mesmos 3 já cruzados na §1.7
@@ -857,7 +857,7 @@ se a variável comparada vinha de fato do retorno da ferramenta. **Corrigido:** 
 que o lado comparado se resolva (`base_deriva_de`, um nível de indireção) até uma variável que recebeu a chamada de
 `validar_quebra_sigilo` naquele papel — mesma disciplina de proveniência usada em `classificar_campo_final`.
 Reconferido: os 5 casos de grafia voltam a bater com o já publicado (2 execuções, `06-racionais-mineracao-unidades-n2-n10.md` §9). Números
-decisivos — **9/21 (43%), 3 meses, `destino: harness`** — não mudaram: o bug estava isolado no detector de grafia,
+decisivos — **9/21 (43%), 5 meses, `destino: harness`** — não mudaram: o bug estava isolado no detector de grafia,
 que é achado à parte, não usado no cálculo do impact. `resultados/unidades_memoria.json` regravado automaticamente
 pela própria célula (não editado à mão). Evidência: `resultados/evidencia/11.9_leituras_quebra_sigilo/` — 13 casos,
 122/122 trechos conferidos contra o cru (`drill_down.py evidencia 11.9_leituras_quebra_sigilo`).
@@ -931,6 +931,67 @@ removidos.
 
 **PII.** Toda a análise usa estrutura (chave lida, forma da proteção, se bateu ou não um regex já validado) —
 nenhum texto de documento ou de resposta apareceu na tela desta sessão.
+
+### 1.12 · Três relógios — que data o `mes` do pipeline carrega (23/09/2026)
+
+**A pergunta.** Toda análise por mês (triagem "≥2 meses", séries mensais, datação de incidentes) depende de a
+data de cada execução estar certa. Até 23/09 ela vinha de `anomesdia`. Esse campo é a data da execução?
+
+**O método: três relógios de fontes independentes, por execução.**
+
+1. `anomesdia`: coluna da tabela (quem grava não está documentado);
+2. `dat_hor_inio_exeo`: coluna da tabela, "data/hora de início";
+3. `timing.start_time` de cada step: gravado **pelo runtime do agente**, durante a execução, dentro de
+   `txt_etap_memo`.
+
+Se (2) e (3) concordam e (1) diverge, (1) não é a data da execução. O teste não passa por nenhum código de
+classificação: só lê duas colunas e um campo do JSON.
+
+**Evidência.** `uv run python drill_down.py relogios` → `resultados/evidencia/A3_relogios/` (git-ignored):
+`derivados/relogios.csv` (as 1.000 execuções com as três datas), `derivados/cruzamento.csv` (lote × mês real),
+`derivados/h_bloco_code.csv` e `crus/` para uma regra de escolha escrita antes de olhar os casos: as 3 de maior
+defasagem, a 1ª com defasagem > 30 dias em cada lote, 1 controle com defasagem < 1 dia, e a 1ª execução
+`H_bloco_code` de out/2025 (empate → ordem de `exec_id`).
+
+**Resultado.** (2) = (3) em 840/840 (mesmo mês e mesma semana; diferença máx. 0,26 h). (1) só bate com o mês
+real em 35,8% das 840 execuções com memória (41,4% nas 1.000 linhas: as 160 sem memória são quase todas
+recentes); defasagem mediana de 46 dias, máx. 230; **0** execuções começam depois de (1). Semântica e decisão:
+`05-schema.md` §Datas; `01-racionais.md` §1.
+
+**Conferir sem confiar no pipeline.** Abrir um `crus/<exec_id>.json`, ler `anomesdia` e `dat_hor_inio_exeo`,
+pegar qualquer `timing.start_time` de um step e converter (`date -u -r <epoch>`). As duas últimas batem; a
+primeira vem semanas ou meses depois. No controle, as três batem.
+
+**O que não prova.** O que `anomesdia` é exatamente — só quem mantém a tabela confirma (`05-schema.md` §Aberto 9).
+
+**Consequência para as pastas de evidência da §11.** As regras de escolha de casos ordenam por (mês, exec_id,
+idx). Com o `mes` real, os casos escolhidos mudaram em 8 das 10 pastas `11.x` (a 11.9 manteve os casos, mas suas contagens por mês mudam; a 11.6 não tem casos); as pastas foram regeneradas
+(`casos.csv` pelo notebook, `crus/` e visões por `drill_down.py evidencia`) e conferem contra o cru, mas **os
+`relatorio_independente.md` e os `relatorio_meta_*.md` auditaram a amostra antiga** — estão desatualizados até
+serem refeitos (`04-roadmap.md`).
+
+**Errata aplicada nos docs (23/09/2026).** 69 trechos em `01`, `02`, `03`, `05`, `06`, `07`, `09`,
+`schema-e-taxonomia-de-erros.md` e nos comentários de `base_pipeline.py`, todos recalculados com o `mes` real.
+O que muda de conclusão, e não só de número:
+
+- **Incidente do harness:** foi em **out/2025** (24 dos 33 casos, 59,0/1k steps), não em dez/2025. Some a partir
+  de **mar/2026**, não de mai/2026. O limiar de reabertura quase não muda (teto do IC95% ≤ 0,99/1k com 0 casos
+  em 3.037 steps; antes ≤ 0,87/1k em 3.461). O laço de 10 erros do `managerAgent` (`2a407143…`) e a concentração
+  de "Explicação solta" (25/33 erros, 90% dos tokens) também são de out/2025.
+- **Custo mensal:** a série ganha out/2025 e fev/2026. A conclusão "sem tendência de queda" **se mantém**: base
+  nov/2025–jan/2026 em 39–50 mil, 2026 acima dela. out/2025 (88 mil) é o mês do incidente e fica fora da base.
+- **Estabilidade do schema de `get_available_documents` (07 §11.5):** o único retorno com campos a mais é de
+  jul/2026, o último mês com erro nesse nível e sozinho nele. A leitura anterior ("variação entre execuções, não
+  mudança no tempo") dependia de o caso cair num mês com outros 3, o que só acontecia na datação por lote. **Não se
+  sustenta mais**, e o 07 agora diz que o dado não separa as duas hipóteses.
+- **Colunas `meses`** (triagem, sub-unidades, assinaturas) sobem, porque um lote juntava vários meses. As decisões da
+  triagem, inclusive a sensibilidade ≥5/≥3, são idênticas.
+- **Datas de casos citados** (logs 1–3 da §1.8, exemplos do 09, entregas não conformes da 11.9): passam ao mês
+  real; as não conformes da 11.9 ficam em 5 meses, não 3.
+- **Cobertura:** out/2025–ago/2026 (11 meses), não nov/2025–ago/2026.
+
+O teste sintético da §1.7 (unidades inventadas, "3 meses") e as datas que não vêm do trace (datas de auditoria,
+de trabalho, do diário) não mudam.
 
 ---
 
@@ -1102,7 +1163,7 @@ agente sabe o que errou), é a ausência de um mecanismo que traduza esse diagn�
 diferente — o argumento direto para memória procedural.
 
 Por mecanismo ([`01-racionais.md`](01-racionais.md) §7), esses 10 erros seguidos são a maior cascata da unidade
-"Explicação nunca solta no bloco de código": começa logo depois do erro de protocolo do harness de dez/2025.
+"Explicação nunca solta no bloco de código": começa logo depois do erro de protocolo do harness de out/2025.
 
 ### Exemplos já testados (15/09/2026) — quando a mensagem engana e o mecanismo acerta
 

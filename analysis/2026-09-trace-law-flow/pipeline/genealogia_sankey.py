@@ -48,6 +48,7 @@ import matplotlib.patches as mpatches
 from matplotlib.path import Path
 
 from base_pipeline import carregar_base, triagem, UNI
+from paleta import COR_FAMILIA, CINZA, cor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RESULTADOS = os.path.join(HERE, "resultados")
@@ -127,11 +128,9 @@ TITULOS = {"familia": "família", "sig_disp": "assinatura", "mec_disp": "mecanis
            "unidade": "unidade", "destino": "destino"}
 PARES = list(zip(STAGES, STAGES[1:]))
 
-# paleta categórica fixa (dataviz skill: ordem fixa, nunca ciclada) + cinza
-# para nós que são agregados artificiais ("outras/outros") ou que misturam
-# família (a família "Não classificado" tem só 1 erro e cai no cinza também).
-PALETTE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"]
-CINZA = "#9a988f"
+# cor da família = COR_FAMILIA[nome] (paleta.py), fixa por nome em qualquer base; cinza
+# para os agregados artificiais ("outras/outros"), para "Não classificado" e para família
+# sem cor fixa (esta última com aviso).
 
 
 def preparar_dados():
@@ -234,15 +233,16 @@ def ribbon_path(x0, y0a, y0b, x1, y1a, y1b):
 
 
 def cores_por_coluna(tot, arestas, ordem):
-    """Cor por nó: a 1ª coluna recebe a paleta categórica fixa; cada coluna
+    """Cor por nó: a 1ª coluna recebe a cor fixa da família pelo NOME
+    (COR_FAMILIA — não pelo ranking de volume, que muda de base para base
+    e trocaria todas as cores da figura); cada coluna
     seguinte herda a cor da sua origem MAJORITÁRIA — exceto os agregados
     artificiais ("outras/outros"), que são sempre cinza porque fundem
     múltiplas famílias por construção (colorir pela maior fatia esconderia
     que boa parte do bloco vem de outras origens). `destino` NÃO entra nessa
     exceção: é 1:1 com `unidade` (cada lição vira exatamente um nó nomeado),
     então herdar a cor da única origem é exato, não uma maquiagem."""
-    fams = tot["familia"].sort_values(ascending=False).index.tolist()
-    cores = {"familia": {f: (PALETTE[i] if i < len(PALETTE) else CINZA) for i, f in enumerate(fams)}}
+    cores = {"familia": {f: cor(COR_FAMILIA, f) for f in tot["familia"].index}}
     for a, b in PARES:
         g = arestas[(a, b)]
         cores_b = {}

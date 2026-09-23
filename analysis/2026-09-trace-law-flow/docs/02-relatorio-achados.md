@@ -1,6 +1,6 @@
 # Relatório de achados — trace cru da esteira de agentes jurídicos
 
-**Data:** 2026-09-08 · **Fonte:** `85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz` (1.000 execuções, nov/2025–ago/2026)
+**Data:** 2026-09-08 · **Fonte:** `85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz` (1.000 execuções, out/2025–ago/2026)
 **Pipeline reproduzível:** [`analise_trace_esteira_juridica.ipynb`](../pipeline/analise_trace_esteira_juridica.ipynb)
 **Fichamentos (texto completo lido):** [`literature/`](../literature/)
 **Antes de apresentar isto:** siga [`03-procedimento-validacao.md`](03-procedimento-validacao.md) — auditoria do
@@ -29,8 +29,8 @@ memória somam 57% dos erros.
 O resultado decisivo para a tese: **86,3% das mensagens de erro entram comprovadamente no contexto do step
 seguinte — e, dessas, 11,9% caem de novo na mesma categoria de erro** (13,5% comparando pelo mecanismo). O agente
 relê a falha e reincide. Somado a isso, o mecanismo mais frequente (texto longo dentro de literal) reaparece em
-**todos os 9 meses** com dado da amostra, em execuções distintas. O sistema
-não acumula nada entre execuções: repete o mesmo erro há dez meses. É o argumento empírico direto para uma
+**10 dos 11 meses** com dado da amostra, em execuções distintas. O sistema
+não acumula nada entre execuções: repete o mesmo erro há onze meses. É o argumento empírico direto para uma
 camada de memória persistente — e ele não existia na v1.
 
 ---
@@ -71,7 +71,7 @@ Números gerais: 840 execuções com memória preservada · 5.781 ActionSteps ·
 
 497 dos 498 erros classificados. Os dois casos concretos que dominam:
 
-- **`{'result': [[...]]}` indexado como lista** (136 erros, 119 execuções, 7 meses, 4 papéis). O agente escreve
+- **`{'result': [[...]]}` indexado como lista** (136 erros, 119 execuções, 10 meses, 4 papéis). O agente escreve
   `docs[0][0]` ou `[d['hashDocumento'] for d in docs[0]]` sobre um dicionário. *Corrigido em 15/09 (§6):* só 89
   desses 136 são esse mecanismo; somados a 7 "objeto sem atributo", a unidade do contrato de retorno cobre **96
   erros (19%)**, todos no `ConversationAgent`. Dos outros, 37 são uma string indexada por chave e 10 um campo
@@ -273,26 +273,31 @@ projeto ser "corrigir o comportamento mais quebrado" ou "maximizar economia abso
 
 ### 3.6 · Evolução mensal — o sistema não melhora sozinho
 
-Mediana de tokens por execução, mês a mês (jan e mar/2026 têm `n` pequeno demais — 7 e 9 — pra confiar):
+Mediana de tokens por execução, mês a mês, pelo mês em que a execução rodou (jul e ago/2026 têm `n` pequeno
+demais — 14 e 5 — pra confiar):
 
 | Mês | n | Mediana tokens/execução |
 |---|---:|---:|
-| nov/2025 | 33 | 56.725 |
-| dez/2025 | 208 | 54.086 |
-| abr/2026 | 65 | 94.585 |
-| mai/2026 | 183 | 81.927 |
-| jun/2026 | 268 | 75.430 |
-| jul/2026 | 44 | 91.623 |
-| ago/2026 | 23 | 61.524 |
+| out/2025 | 51 | 87.689 |
+| nov/2025 | 75 | 38.913 |
+| dez/2025 | 152 | 49.448 |
+| jan/2026 | 34 | 49.832 |
+| fev/2026 | 83 | 90.482 |
+| mar/2026 | 138 | 84.984 |
+| abr/2026 | 118 | 109.114 |
+| mai/2026 | 84 | 80.384 |
+| jun/2026 | 86 | 59.660 |
 
-Não há tendência de queda: a linha de base de nov–dez/2025 fica em 54–57 mil, e todos os meses de 2026 com
-amostra confiável ficam acima disso — abril chega a quase o dobro. Sem melhora orgânica ao longo de 9 meses, o argumento "com o tempo o problema se resolve
+Não há tendência de queda: a linha de base de nov/2025–jan/2026 fica em 39–50 mil, e todos os meses de 2026
+com amostra confiável ficam acima dela — fev–mai entre 80 e 109 mil (abril, mais que o dobro), junho em 60 mil.
+out/2025 (88 mil) é o mês do incidente do harness (§6) e fica fora da linha de base. Sem melhora orgânica ao
+longo de 11 meses, o argumento "com o tempo o problema se resolve
 sozinho" não se sustenta — reforça que só um mecanismo ativo de memória endereçaria a recorrência já
 documentada em §4.
 
 **Ressalva:** "não há queda" é o que este corte sustenta. A *subida* em 2026 não é, sozinha, prova de
 regressão de eficiência — mediana mais alta pode ser mudança de carga (mais casos pesados, rota/agente novo:
-status 34 só a partir de abr/2026), não o mesmo trabalho ficando mais caro. Separar as duas coisas é o item 9
+status 34 só a partir de mar/2026), não o mesmo trabalho ficando mais caro. Separar as duas coisas é o item 9
 de [`04-roadmap.md`](04-roadmap.md): decompor cada mês em erro × baseline limpo × trajetória.
 
 ## 4 · O resultado central: o agente lê o erro e reincide
@@ -315,13 +320,13 @@ de [`04-roadmap.md`](04-roadmap.md): decompor cada mês em erro × baseline limp
 >
 > **Quarta régua (15/09/2026):** comparando pelo **mecanismo** (§6), são 58 (13,5%). As duas réguas concordam em
 > 65 das 76 repetições; as 11 divergências foram conferidas caso a caso com `drill_down.py`
-> ([`01-racionais.md`](01-racionais.md) §3 Passo 8). Ressalva: 20 dos 58 vêm do laço de dez/2025 ("explicação
+> ([`01-racionais.md`](01-racionais.md) §3 Passo 8). Ressalva: 20 dos 58 vêm do laço de out/2025 ("explicação
 > solta no bloco de código"). A manchete continua 11,9%; por mecanismo o achado fica um pouco mais forte.
 
-E entre execuções, por mecanismo: **"texto longo dentro de literal" aparece em 149 execuções, nos 9 meses com
-dado; "retorno das ferramentas de documento é dict", em 87 execuções ao longo de 6 meses; "retorno pode chegar
-como string", em 36 execuções ao longo de 7 meses.** Recorde: 10 erros seguidos no mesmo mecanismo num
-`managerAgent` (dez/2025).
+E entre execuções, por mecanismo: **"texto longo dentro de literal" aparece em 149 execuções, em 10 dos 11 meses
+com dado; "retorno das ferramentas de documento é dict", em 87 execuções ao longo de 8 meses; "retorno pode chegar
+como string", em 36 execuções ao longo de 9 meses.** Recorde: 10 erros seguidos no mesmo mecanismo num
+`managerAgent` (out/2025).
 
 O feedback intra-trajetória existe, é lido, e demonstravelmente não corrige — nem dentro da execução, nem entre
 execuções. Este é o caso empírico para memória externa persistente, e é mensurável como métrica de RL
@@ -362,19 +367,19 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 
 | # | Unidade | Tipo | Ocorr. | Erros | Execuções | Meses | Papéis | Tokens |
 |---|---|---|---:|---:|---:|---:|---:|---:|
-| 1 | **Texto longo nunca dentro de literal de string** — montar em variáveis, depois `final_answer` | experiencial · estratégia | 173 | 186 | 149 | 9 | 6 | 4,04M |
-| 2 | **Retorno das ferramentas de documento é dict** — `r['result'][0]`, nunca `r[0]` | factual · ambiente | 87 | 96 | 87 | 6 | 1 | 2,99M |
-| 3 | **Retorno pode chegar como string** — checar `str` antes de indexar ou `json.loads` | experiencial · estratégia | 42 | 47 | 36 | 7 | 7 | 2,11M |
-| 4 | **Explicação nunca solta no bloco de código** — ⚠️ 92% dos tokens em dez/2025 | experiencial · estratégia | 12 | 33 | 12 | 4 | 3 | 1,39M |
-| 5 | **Inventário do sandbox** — builtins e imports proibidos; `json`/`datetime` explícitos; sem `openpyxl` | factual · ambiente | 17 | 17 | 17 | 6 | 6 | 0,89M |
-| 6 | **Ferramentas só aceitam argumento nomeado** — `f(arg=v)`, nunca posicional | factual · ambiente | 24 | 35 | 22 | 6 | 7 | 0,36M |
-| 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 5 | 2 | 0,34M |
-| 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 3 | 2 | 0,29M |
+| 1 | **Texto longo nunca dentro de literal de string** — montar em variáveis, depois `final_answer` | experiencial · estratégia | 173 | 186 | 149 | 10 | 6 | 4,04M |
+| 2 | **Retorno das ferramentas de documento é dict** — `r['result'][0]`, nunca `r[0]` | factual · ambiente | 87 | 96 | 87 | 8 | 1 | 2,99M |
+| 3 | **Retorno pode chegar como string** — checar `str` antes de indexar ou `json.loads` | experiencial · estratégia | 42 | 47 | 36 | 9 | 7 | 2,11M |
+| 4 | **Explicação nunca solta no bloco de código** — ⚠️ 90% dos tokens em out/2025 | experiencial · estratégia | 12 | 33 | 12 | 5 | 3 | 1,39M |
+| 5 | **Inventário do sandbox** — builtins e imports proibidos; `json`/`datetime` explícitos; sem `openpyxl` | factual · ambiente | 17 | 17 | 17 | 8 | 6 | 0,89M |
+| 6 | **Ferramentas só aceitam argumento nomeado** — `f(arg=v)`, nunca posicional | factual · ambiente | 24 | 35 | 22 | 10 | 7 | 0,36M |
+| 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 8 | 2 | 0,34M |
+| 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 4 | 2 | 0,29M |
 | 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
-| 10 | **Campo inexistente no retorno estruturado** — `quebra_sigilo` 7× | factual · ambiente | 10 | 10 | 10 | 3 | 2 | 0,19M |
-| — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)** | não-memória* | 33 | 33 | 24 | 3 | 4 | 0,81M |
-| — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 4 | 2 | 0,12M |
-| — | Erros pontuais sem conteúdo único — fora | — | 9 | 9 | 9 | 3 | 2 | 0,14M |
+| 10 | **Campo inexistente no retorno estruturado** — `quebra_sigilo` 7× | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
+| — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)** | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
+| — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |
+| — | Erros pontuais sem conteúdo único — fora | — | 9 | 9 | 9 | 6 | 2 | 0,14M |
 | — | Retorno impresso colado de volta no código — fora, sem recorrência | experiencial · estratégia | 2 | 2 | 2 | 1 | 1 | 0,05M |
 
 As 10 candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens em steps com erro. Sensibilidade: com ≥5
@@ -403,9 +408,9 @@ real observado, junto com a nº 10 (as chaves que de fato existem). Isso é, lit
 atualização de memória alimentado por sinal de erro que o projeto propõe.
 
 **Rebaixado da v1, reintegrado como linha de não-memória (09/09):** "sempre emitir bloco de código" era
-candidato de conteúdo #3 na v1. Os 33 casos estão concentrados em dez/2025 (31 deles, 21,0 erros/1k steps) e
-**desaparecem a partir de mai/2026** (0 em 3.461 steps; IC95% para zero eventos ≤ 0,87/1k, 24× abaixo do pico
-do incidente) — não é candidato de conteúdo, o agente não tem nada pra aprender aqui. Mas a v1→v2 tinha
+candidato de conteúdo #3 na v1. Os 33 casos estão concentrados em out/2025 (24 deles, 59,0 erros/1k steps), com cauda
+em nov–dez/2025 (8) e 1 caso em fev/2026, e **desaparecem a partir de mar/2026** (0 em 3.037 steps; IC95% para
+zero eventos ≤ 0,99/1k, 60× abaixo do pico do incidente) — não é candidato de conteúdo, o agente não tem nada pra aprender aqui. Mas a v1→v2 tinha
 descartado o achado por completo, sem registro estruturado, enquanto o outro achado de harness da mesma
 triagem (a linha de retry, `AgentGenerationError`) virou linha formal na tabela mesmo sem ser memória de
 conteúdo. Regra aplicada de forma inconsistente entre os dois — corrigido aplicando a mesma régua aos dois:
@@ -422,8 +427,8 @@ ter, não só criar. Passo a passo completo da construção desta tabela e do gr
 [`01-racionais.md`](01-racionais.md) §7.
 
 **Gatilho disparado (22/09/2026) — status atual: reaberto, não mais "inativo".** Esta análise cobre só a base
-1 (1.000 execuções, nov/2025–ago/2026), onde o incidente de fato morre a partir de mai/2026. Rodando o mesmo
-pipeline numa segunda base (ago/2026, 1.000 registros — diário de campo, entrada 22/09/2026), o erro
+1 (1.000 execuções, out/2025–ago/2026), onde o incidente de fato morre a partir de mar/2026. Rodando o mesmo
+pipeline numa segunda base (lote de corte de ago/2026, 1.000 registros — diário de campo, entrada 22/09/2026), o erro
 "reapareceu com força", muito acima do limiar de reabertura definido acima. **A rotulagem anterior
 `[INATIVO desde dez/2025]`, presente no código (`base_pipeline.py`) e propagada por toda a análise (esta
 tabela, `04-roadmap.md`, `schema-e-taxonomia-de-erros.md`, a figura Sankey), foi removida em 22/09/2026 por
@@ -499,8 +504,8 @@ Três afirmações da v1 não sobreviveram:
 
 ## 9 · Limitações
 
-- **Amostra**: exatamente 1.000 linhas (provável `LIMIT`); proporções são estimativas. O pico de taxa de erro em
-  mar/2026 (16%) assenta sobre 43 steps.
+- **Amostra**: exatamente 1.000 linhas (provável `LIMIT`); proporções são estimativas. As maiores taxas de erro por mês
+  são out/2025 (17,0%, 407 steps — o incidente do harness) e jul/2026 (17,0%, só 53 steps).
 - **Semântica dos status** (1/2/3/34) foi inferida por correlação, não confirmada com o time da esteira.
 - **Comparações com os datasets dos papers são indicativas, não métricas**: um *span* do TRAIL ≠ um `ActionStep`;
   e os traces do TRAIL têm erro **parcialmente induzido por desenho experimental**, então sua distribuição não é

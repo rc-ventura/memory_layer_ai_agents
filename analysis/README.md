@@ -166,13 +166,17 @@ the two non-mechanical checks below plus context (period, agent versions, roles 
 `python checklist.py <outra-base.csv>` adds an execution-overlap check (`cod_idef_exeo`) against another
 extraction — mandatory before calling two bases independent replicas or pooling them. What it verifies:
 
-1. **Column drift** — `base_pipeline.py` reads five columns by name: `txt_etap_memo`, `cod_idef_exeo`,
-   `cod_idef_aget`, `cod_idef_stat_exeo_aget`, and `anomesdia` (parsed as `%Y%m%d` → `mes`). A different
-   extraction can rename or drop them; `print(df.columns.tolist())` before anything else.
+1. **Column drift** — `base_pipeline.py` reads six columns by name: `txt_etap_memo`, `cod_idef_exeo`,
+   `cod_idef_aget`, `cod_idef_stat_exeo_aget`, `dat_hor_inio_exeo` (→ `mes`, the month the execution
+   ran) and `anomesdia` (→ `mes_particao`, the month of the extraction batch — provenance only, **not** the
+   execution date: a batch accumulates several months of executions, see
+   `2026-09-trace-law-flow/docs/05-schema.md` §Datas). A different extraction can rename or drop them;
+   `print(df.columns.tolist())` before anything else. `checklist.py` §5 prints the batch × real-month
+   cross-tab — read it before calling a base "one month".
    **Worth having even though nothing reads them yet:** `txt_vrvl_locl` (the interpreter's final
    `locals()` per role — it stores the *real* tool returns, the strongest evidence for
-   return-contract claims), `txt_rspa_fina` (persisted final answer), `dat_hor_inio/encm_exeo`
-   (real start/end timestamps, better than `anomesdia` for timing), `cod_vers_aget` (agent version —
+   return-contract claims), `txt_rspa_fina` (persisted final answer), `dat_hor_encm_exeo`
+   (real end timestamp), `cod_vers_aget` (agent version —
    separates platform eras).
 2. **`error.type` census** — `classify()` was built on the two types seen in the first sample; a new
    base can emit types the taxonomy never saw (the second extraction already added `AgentMaxStepsError`,

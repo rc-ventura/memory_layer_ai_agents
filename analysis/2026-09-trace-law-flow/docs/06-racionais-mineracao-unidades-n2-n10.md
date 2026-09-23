@@ -606,8 +606,8 @@ Das 26 execuções que declaram a ferramenta, **21 chegaram a entregar** um payl
 | um **texto de 203 caracteres** (não é `SIM`/`NAO`) | **1** | 1 |
 | **string vazia** (`''`) | **1** | 1 |
 
-**9 das 21 entregas — 43% — puseram no campo de sigilo algo que não é `SIM` nem `NAO`.** Em três meses diferentes
-(dez/2025, mai/2026, jun/2026). Nenhuma delas levantou exceção; nenhuma aparece em qualquer contagem de erro do
+**9 das 21 entregas — 43% — puseram no campo de sigilo algo que não é `SIM` nem `NAO`.** Em cinco meses diferentes
+(dez/2025, jan–mar/2026, jun/2026). Nenhuma delas levantou exceção; nenhuma aparece em qualquer contagem de erro do
 pipeline, porque não há erro nenhum a contar.
 
 #### Os três jeitos de errar o mesmo campo
@@ -786,7 +786,7 @@ feito antes).
 leituras rastreadas no universo completo. Teste de consistência: das leituras sem guarda/proteção com o step em
 erro, 93 batem com os 91 erros já conhecidos (a pequena folga vem de mais de uma leitura por erro em alguns steps
 — esperado, não é uma divergência). **4 ocorrências silenciosas confirmadas** (uma por execução: `175cd9f2…`,
-`26e300f1…`, `910fde1e…`, `a47d6e3b…`), em 3 meses (2025-11 ×2, 2026-05, 2026-06). Restou também, sem ser contada
+`26e300f1…`, `910fde1e…`, `a47d6e3b…`), em 3 meses (2025-11 ×2, 2026-03, 2026-06). Restou também, sem ser contada
 como silenciosa nem como achado (resíduo explicitado, não escondido, `04-roadmap.md`), **8 leituras** sem
 guarda/proteção, com erro no step, que não batem os 91 já conhecidos.
 

@@ -8,6 +8,8 @@ Não commitar a saída: pode conter PII do payload.
 import csv, json, lzma, re, statistics, sys
 from collections import Counter, defaultdict
 
+# mês da execução = dat_hor_inio_exeo (AAAAMM), não anomesdia — anomesdia é a data de corte do lote
+# (ver 03-procedimento-validacao.md, 'três relógios'; troca feita em 23/09/2026)
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
 
 import os
@@ -71,7 +73,7 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
             continue
         n_memo += 1
         eid = r["cod_idef_exeo"]
-        mes = r["anomesdia"][:6]
+        mes = r["dat_hor_inio_exeo"][:7].replace("-", "")
         for role, stps in memo.items():
             if not isinstance(stps, list): continue
             acts = [s for s in stps if isinstance(s, dict) and s.get("__class__") == "ActionStep"]

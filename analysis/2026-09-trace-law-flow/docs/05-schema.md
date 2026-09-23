@@ -4,7 +4,7 @@
 de clientes, nºs de processo, trechos de documentos em claro); ver `.gitignore` da raiz (`*.csv.xz`, `*.csv`) e
 o desta pasta. Nunca versionar sem anonimização.
 
-**Cobertura:** 1.000 execuções, nov/2025–ago/2026 · 5.781 `ActionStep` (+ 2.569 `TaskStep` e 46 `PlanningStep`,
+**Cobertura:** 1.000 execuções, out/2025–ago/2026 (lotes de corte nov/2025–ago/2026) · 5.781 `ActionStep` (+ 2.569 `TaskStep` e 46 `PlanningStep`,
 ver §Estrutura de `txt_etap_memo` abaixo) · 142,6M tokens. **Provável `LIMIT 1000`** na
 query de origem — amostra, não população (`04-roadmap.md` item 3).
 
@@ -25,12 +25,32 @@ query de origem — amostra, não população (`04-roadmap.md` item 3).
 | 5 | `txt_etap_memo` | JSON das etapas: `model_output` (thought), `code_action`, `observations`, `tool_calls`, `model_input_messages`, e a chamada `final_answer()` | dado |
 | 6 | `txt_vrvl_locl` | namespace de variáveis locais do interpretador, por papel — **confirmado por inspeção do conteúdo (18/09)**, ver §`txt_vrvl_locl` abaixo | dado |
 | 7 | `txt_rspa_fina` | texto da resposta final (coluna dedicada) — **vazia para status 1** | dado |
-| 8 | `dat_hor_inio_exeo` | data/hora de início | dado |
+| 8 | `dat_hor_inio_exeo` | data/hora de início — **é o relógio da análise**: `mes` = mês desta coluna (ver §Datas) | dado |
 | 9 | `cod_vers_aget` | versão do agente | dado |
-| 10 | `anomesdia` | AAAAMMDD (int) | dado |
+| 10 | `anomesdia` | AAAAMMDD (int) — **data de corte do lote, não da execução** (ver §Datas); vira `mes_particao` | dado; semântica **inferida** |
 
 ⚠️ Nome da coluna 3 é leitura da abreviação, não confirmado com a esteira. A coluna 6 foi confirmada por
 inspeção direta do conteúdo em 18/09/2026 (ver §`txt_vrvl_locl` abaixo).
+
+## Datas — `dat_hor_inio_exeo` data a execução; `anomesdia` data o lote (medido em 23/09/2026)
+
+Até 23/09/2026 o pipeline tirava o `mes` de `anomesdia`. Não serve: `anomesdia` tem só **9 valores** nas 1.000
+linhas, um por mês e sempre perto do fim dele (`20251130`, `20251231`, …, `20260629`, `20260830`), e o início
+da execução é **sempre anterior** a ele — em nenhuma linha a execução começa depois. Nas 840 execuções com
+memória, o mês de `anomesdia` só bate com o mês real em **35,8%**; a defasagem mediana é de **46 dias** (máx.
+230). É a assinatura de um **corte periódico que acumula tudo o que rodou até ali** — hipótese de trabalho: a
+data de corte da democratização da base, feita no fim de cada mês. `dat_hor_inio_exeo` bate com o
+`timing.start_time` que o runtime do agente grava em cada step (mesmo mês e mesma semana em 840/840, diferença
+máx. 0,26 h) — é a data da execução.
+
+| Coluna derivada (`base_pipeline.carregar_trace`) | Vem de | Uso |
+|---|---|---|
+| `mes` = `mes_exec` | `dat_hor_inio_exeo` | **toda** análise temporal (triagem, séries por mês) |
+| `mes_particao` | `anomesdia` | só proveniência: de qual lote a linha veio (sobreposição entre bases, como uma base foi recortada) |
+
+Consequência para qualquer base nova: um recorte "de um mês" feito por `anomesdia` cobre vários meses de
+execução (na base 1, o lote de ago/2026 tem 48 execuções, 5 delas de agosto). `checklist.py` §5 imprime o
+cruzamento lote × mês real. Método e evidência: `03-procedimento-validacao.md` §1.12.
 
 ## Estrutura de `txt_etap_memo` — os steps (medido em 16/09/2026, direto no trace)
 
@@ -147,7 +167,7 @@ Cortes adicionais:
 
 - **status 1 = default dos agentes de maior volume.** `cod_idef_aget` 1 (714 exec) e 2 (100 exec) são 100%
   status 1. Os agentes de domínio (ids 67, 133, 168, 496…) concentram 2/3/34.
-- **status 34 só aparece a partir de abr/2026** (0 em nov–dez/2025) — possivelmente código adicionado depois.
+- **status 34 só aparece a partir de mar/2026** (0 em out/2025–fev/2026) — possivelmente código adicionado depois.
 - status 1 domina todos os meses.
 
 ### Por que o status não serve como rótulo de sucesso/fracasso
@@ -168,11 +188,13 @@ coisas distintas.
    essas colunas, e quando?
 3. 3 e 34 são os "encerrados" — 3 = sucesso, 34 = erro? Outra distinção?
 4. status 2 (sem encerramento, resposta parcial) — o que é?
-5. status 34 só desde abr/2026 — código novo? o que era antes?
+5. status 34 só desde mar/2026 — código novo? o que era antes?
 6. O status depende do *tipo* de agente (`cod_idef_aget` 1 e 2 são sempre status 1)?
 7. A extração de 1.000 linhas filtra por status?
 8. ~~Confirmar os nomes das colunas 3 e 6~~ — coluna 6 (`txt_vrvl_locl`) confirmada por inspeção do conteúdo
    (18/09, ver §`txt_vrvl_locl`). Resta confirmar só a coluna 3 (`cod_idef_cvsa_asnc`).
+9. O que é `anomesdia`? A hipótese é a data de corte da democratização da base (§Datas). Como a query de
+   extração filtra por ele — um recorte "de agosto" pega o lote de agosto ou as execuções de agosto?
 
 ---
 Extração e cross-tabs: `lzma.open` + `csv.reader`, 2026-09-10. A semântica dos códigos de status e o nome

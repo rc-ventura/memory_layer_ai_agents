@@ -75,6 +75,15 @@ trace cru → taxonomia própria (inspeção direta do dado, por causa-raiz)
 A taxonomia é evidência do trace; a literatura é o que permite dizer onde essa taxonomia se encaixa, onde ela
 expõe algo que a literatura não previu, e o que ainda falta olhar.
 
+### Como cada execução é datada (decisão de 23/09/2026)
+
+O `mes` de cada execução vem de `dat_hor_inio_exeo`, **não** de `anomesdia`. O critério "≥2 meses" da triagem
+quer saber se o erro voltou a acontecer em momentos diferentes. Isso é sobre **quando a execução rodou**, e
+`anomesdia` data o **lote de corte**: um lote acumula execuções de vários meses, e dois erros do mesmo mês
+podiam cair em "meses" diferentes só por terem saído em lotes diferentes. O lote continua disponível como
+`mes_particao`, só para proveniência. Por que `anomesdia` não serve e como isso foi verificado:
+`05-schema.md` §Datas e `03-procedimento-validacao.md` §1.12.
+
 ---
 
 ## 2 · O que é um teste de robustez
@@ -254,7 +263,7 @@ agente errou de novo, as duas réguas concordam em 65 e discordam em 11 — conf
   como dict. As duas quebras aparecem como "Could not index", mas são lições diferentes.
 
 **Ressalva que vai junto:** 20 dos 58 vêm de "Explicação nunca solta no bloco de código", quase todos do
-incidente de dez/2025 — é o laço da execução `2a407143…` (10 erros seguidos, descrito em
+incidente de out/2025 — é o laço da execução `2a407143…` (10 erros seguidos, descrito em
 `03-procedimento-validacao.md`). O mesmo laço também pesa na régua por mensagem.
 
 **Decisão:** o número-manchete continua 11,9% (a régua já testada, usada no relatório); 13,5% entra como quarta
@@ -265,7 +274,7 @@ mecanismo deixa o achado um pouco mais forte, não mais fraco.
 
 **Prova:** o feedback dentro da trajetória existe, é lido, e não basta. Em 11,9% dos casos onde o agente
 comprovadamente leu o erro, ele caiu na mesma categoria de novo (13,5% comparando pelo mecanismo, Passo 8). Junto
-com a reincidência entre execuções (o mecanismo "texto longo dentro de literal" aparece nos 9 meses com dado da
+com a reincidência entre execuções (o mecanismo "texto longo dentro de literal" aparece em 10 dos 11 meses com dado da
 amostra), é o caso empírico direto para memória externa persistente.
 
 **Não prova:** que o agente é incapaz de aprender. O que está medido é a insuficiência do mecanismo de feedback
@@ -513,7 +522,7 @@ escolha embutida, e foi testada (ver abaixo).
 
 **O que conta como "uma execução", e por que o corte é 50.000.** Uma execução = uma linha do CSV = um
 atendimento completo da esteira a **um** pedido do usuário, da pergunta que entra até o `final_answer` que sai
-— dura minutos. Os 9 meses (nov/2025–ago/2026) são só a janela em que as 1.000 execuções foram coletadas, não
+— dura minutos. Os 11 meses (out/2025–ago/2026) são só a janela em que as 1.000 execuções foram coletadas, não
 a duração de uma. Dentro de **uma** execução atuam vários papéis: o `managerAgent` orquestra, delega ao
 `ConversationAgent`, que aciona agentes de domínio (`CalculoCivel`, `CadastroTrabalhista`…). O "custo de uma
 execução" é a soma dos tokens (entrada + saída, todos os steps) de **todos esses papéis juntos, dentro daquela
@@ -525,10 +534,10 @@ Esse é um recorte **diferente** do `tok_total` do filtro — e confundir os doi
 | Soma | Junta o quê | Ordem de grandeza |
 |---|---|---|
 | **custo de uma execução** | todos os papéis, **dentro de 1 execução** (1 pedido) | ~dezenas de milhares (~50 mil) |
-| **`tok_total` de um papel** (o do filtro) | um só papel, **somando as 1.000 execuções / 9 meses** | `ConversationAgent` 76,8M · `CalculoCivel` 7,9M · papel raro < 10 mil |
+| **`tok_total` de um papel** (o do filtro) | um só papel, **somando as 1.000 execuções / 11 meses** | `ConversationAgent` 76,8M · `CalculoCivel` 7,9M · papel raro < 10 mil |
 
 O corte de 50.000 toma emprestado o número "uma execução típica" (~50 mil) e o usa como **piso** sobre o
-`tok_total` do papel: se um papel, somando os 9 meses inteiros, gastou menos do que uma única execução típica
+`tok_total` do papel: se um papel, somando os 11 meses inteiros, gastou menos do que uma única execução típica
 custa, ele é marginal demais pra entrar num ranking de desperdício — o "% desperdiçado" dele sairia de uma
 base minúscula (tirar percentual de 2 jogadas de moeda). É um piso de relevância, redondo e aproximado de
 propósito; o que o sustenta não é o valor exato, e sim o teste do Passo 4 (10k / 50k / 100k não mexem nos
@@ -553,24 +562,26 @@ o máximo em termos absolutos (`ConversationAgent`).
 por ajuste orgânico da equipe — sem nenhum mecanismo de memória — isso enfraqueceria a tese: bastaria esperar
 o sistema melhorar sozinho.
 
-**Passo 2 — a operação.** Agrupar as 840 execuções por `mes` (campo já derivado de `anomesdia` desde a seção
-1), tirar mediana de `tok_tot` por mês. Sem corte, sem classificação — é agrupamento e mediana direto.
+**Passo 2 — a operação.** Agrupar as 840 execuções por `mes` (mês em que a execução rodou, de `dat_hor_inio_exeo` —
+§1, "Como cada execução é datada"), tirar mediana de `tok_tot` por mês. Sem corte, sem classificação — é agrupamento e mediana direto.
 
-**Passo 3 — o resultado.** dez/2025 (n=208): mediana 54.086. Os meses seguintes não caem — abr/2026 (n=65)
-chega a 94.585, quase o dobro. jun/2026 (n=268, a maior amostra do dataset): 75.430, ainda acima de dezembro.
+**Passo 3 — o resultado.** A linha de base nov/2025–jan/2026 (n=75, 152, 34) fica em 38.913–49.832. Os meses
+seguintes não caem — fev–mai/2026 ficam entre 80.384 e 109.114 (abr/2026, n=118, mais que o dobro da base);
+jun/2026 (n=86): 59.660, ainda acima dela. out/2025 (n=51, 87.689) é o mês do incidente do harness (§7) e fica
+fora da linha de base.
 
-**Passo 4 — a ressalva de amostra, não de escolha.** jan/2026 (n=7) e mar/2026 (n=9) foram excluídos da
+**Passo 4 — a ressalva de amostra, não de escolha.** jul/2026 (n=14) e ago/2026 (n=5) foram excluídos da
 leitura por amostra pequena demais — isso não é um corte que precise de teste de robustez (não é uma escolha
-que poderia mudar a conclusão se variada), é simplesmente reconhecer que 7 pontos não sustentam uma mediana
+que poderia mudar a conclusão se variada), é simplesmente reconhecer que 5 ou 14 pontos não sustentam uma mediana
 confiável, o mesmo princípio do corte de amostra usado em §2.3 e §6 abaixo.
 
 **Passo 5 — a leitura.** Não há tendência de queda nos meses com amostra confiável. Ausência de melhora
-orgânica ao longo de 9 meses é o que sustenta a necessidade de um mecanismo ativo — se bastasse esperar, o
+orgânica ao longo de 11 meses é o que sustenta a necessidade de um mecanismo ativo — se bastasse esperar, o
 padrão apareceria aqui, e não aparece.
 
 **Ressalva — o que "a mediana subiu" não diz sozinho.** Mediana mais alta em 2026 não distingue "o mesmo
 trabalho ficou mais caro" de "a carga mudou" (mais casos pesados, agente/rota nova — o status 34 só aparece a
-partir de abr/2026). A conclusão que se sustenta aqui é a **ausência de queda**; atribuir a subida a regressão
+partir de mar/2026). A conclusão que se sustenta aqui é a **ausência de queda**; atribuir a subida a regressão
 de eficiência exige decompor cada mês em erro × baseline limpo × comprimento de trajetória —
 [`04-roadmap.md`](04-roadmap.md) item 9.
 
@@ -736,7 +747,7 @@ executável (uma função ou API nova), o que muda o harness — direção v2; *
 episódio, e as unidades aqui são entre execuções por construção.
 
 **Passo 4 — ocorrência, não erro: a cascata.** Contar erros infla as unidades que o agente repete em sequência:
-numa execução de dez/2025 o `managerAgent` errou 10 steps seguidos escrevendo explicação em prosa no lugar do
+numa execução de out/2025 o `managerAgent` errou 10 steps seguidos escrevendo explicação em prosa no lugar do
 código. A regra: erros em steps **consecutivos** do mesmo papel na mesma execução formam uma **cascata**; dentro
 dela, a mesma unidade repetida conta **uma ocorrência**. Resultado: 498 erros → 437 ocorrências. O princípio de
 focar a causa-raiz e não o sintoma de superfície é do AgentDebug (arXiv 2509.25370, p. 2 e p. 8, confirmado por
@@ -774,7 +785,7 @@ erro.
 2 não-memória e 2 fora. As candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
 O que mudou em relação à tabela anterior de 7 linhas:
 
-- **Três candidatas novas com peso real**: "Retorno pode chegar como string" (47 erros, 36 execuções, 7 meses,
+- **Três candidatas novas com peso real**: "Retorno pode chegar como string" (47 erros, 36 execuções, 9 meses,
   7 papéis — a 3ª maior em tokens, 2,11M), "`next()` sobre expressão geradora falha no sandbox" (13 erros) e
   "Campo inexistente no retorno estruturado" (10 erros, `quebra_sigilo` 7×, 8 deles no `RespostaBacen`). Mais
   duas menores: "Explicação nunca solta no bloco de código" e "Nome usado sem ter sido definido".
@@ -786,9 +797,9 @@ O que mudou em relação à tabela anterior de 7 linhas:
   422, mas o HTTP 422 não entrava).
 - **"Variável não existe após erro" se dividiu**: 5 casos em que o step anterior falhou (a unidade limítrofe) e
   5 nomes nunca definidos (`Observation`, `result`, funções auxiliares).
-- **Ressalva sobre "Explicação nunca solta no bloco de código"**: 26 dos seus 33 erros (92% dos tokens) são de
-  dez/2025, e 7 das 12 ocorrências vêm logo depois do erro de protocolo do harness daquele incidente — é, em boa
-  parte, a reação do agente ao incidente. Ela passa na triagem pelas 4 ocorrências próprias de abr–jun/2026, mas
+- **Ressalva sobre "Explicação nunca solta no bloco de código"**: 25 dos seus 33 erros (90% dos tokens) são de
+  out/2025, e 7 das 12 ocorrências vêm logo depois do erro de protocolo do harness daquele incidente — é, em boa
+  parte, a reação do agente ao incidente. Ela passa na triagem pelas 4 ocorrências próprias de mar–jun/2026, mas
   o volume grande é resíduo.
 
 **Passo 8 — o gráfico.** Uma barra por unidade, agrupadas pela decisão (candidatas / não-memória / fora) e
