@@ -75,6 +75,19 @@ trace cru → taxonomia própria (inspeção direta do dado, por causa-raiz)
 A taxonomia é evidência do trace; a literatura é o que permite dizer onde essa taxonomia se encaixa, onde ela
 expõe algo que a literatura não previu, e o que ainda falta olhar.
 
+### O que a reclassificação por causa-raiz mudou (base 1)
+
+Registro movido do cabeçalho do notebook genérico em 23/09/2026 (o notebook passou a não carregar números de
+uma base específica):
+
+| Correção | v1 (sintoma) | v2 (causa-raiz) |
+|---|---|---|
+| "ValueError ao manipular resultado" (37) | tratado como erro de dados | **35 eram erro de convenção de chamada de ferramenta** (posicional × nomeado), em 12 ferramentas |
+| "KeyError campo ausente" (98) | genérico | **136 erros têm uma causa única**: o retorno da ferramenta é `dict`, o agente indexa como lista |
+| "SyntaxError" (223) | um balde | **159 são string não fechada** (relatório jurídico longo dentro de literal) |
+| "Protocolo do harness" (33) | candidato a memória | **incidente de out/2025; não-memória na base 1 — gatilho de reabertura acionado na base 2 (22/09/2026, ver diário)** |
+| — | não analisado | posição na trajetória, propagação, reincidência entre execuções, falhas silenciosas |
+
 ### Como cada execução é datada (decisão de 23/09/2026)
 
 O `mes` de cada execução vem de `dat_hor_inio_exeo`, **não** de `anomesdia`. O critério "≥2 meses" da triagem

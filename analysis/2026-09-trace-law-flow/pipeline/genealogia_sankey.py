@@ -22,8 +22,8 @@ aceita configurar altura por nó nem espaçamento entre rótulos — com ~50 nó
 altura mínima por nó (piso de legibilidade, não proporcional ao valor para
 os nós minúsculos) e ordena cada coluna por baricentro das arestas de entrada
 (o mesmo princípio do d3-sankey) para reduzir cruzamento visual. Cada estágio
-continua somando 498 — a figura é uma decomposição de fluxo completa dos
-erros classificados. Uso:
+soma o total de erros classificados — a figura é uma decomposição de fluxo
+completa. Uso:
 
     python3 genealogia_sankey.py
 
@@ -306,7 +306,7 @@ def render_png(EU, out_path):
     ax.set_ylim(-0.7, altura_dados + 0.3)
     ax.invert_yaxis()
     ax.axis("off")
-    ax.set_title("Genealogia dos 498 erros: família → assinatura → mecanismo → unidade → destino (memória/harness/descarte)",
+    ax.set_title(f"Genealogia dos {len(EU)} erros: família → assinatura → mecanismo → unidade → destino (memória/harness/descarte)",
                  fontsize=13, fontweight="bold", pad=14, loc="left")
     fig.tight_layout()
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
