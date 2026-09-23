@@ -21,7 +21,7 @@ from types import SimpleNamespace
 __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
            "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
-           "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA",
+           "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
@@ -290,6 +290,9 @@ def padrao_residuo(m, sub):
 
 MIN_EXECS, MIN_MESES = 3, 2
 REVISAR_PRIORIDADE, REVISAR_BAIXA = "revisar — prioridade", "revisar — baixa prioridade"
+# alarme de cobertura: se o "Sintoma não reconhecido" passar desta fração de TODOS os erros da base, a taxonomia não
+# cobre a base e o balde sobe para prioridade mesmo sem padrão recorrente (03-procedimento-validacao.md, Frente 3)
+ALARME_COBERTURA = 0.05
 
 
 def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
@@ -308,6 +311,7 @@ def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
 def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     # resíduo: recorrência contada por PADRÃO de erro, não pela unidade (que junta erros diferentes por construção)
     passa = residuo_por_padrao(EU, min_execs, min_meses).groupby("unidade")["passa na recorrência"].any()
+    fracao_desconhecida = (EU["unidade"] == "X_sintoma_nao_reconhecido").mean()
     tri = []
     for u, g in EU.groupby("unidade"):
         nome, tipo, conteudo = UNI[u]
@@ -316,12 +320,18 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         if tipo == NAO:
             decisao = "não-memória"
         elif tipo == SEM:  # resíduo: nunca candidato (falta a regra de causa); a fila de trabalho da taxonomia
-            decisao = REVISAR_PRIORIDADE if passa.get(u, False) else REVISAR_BAIXA
+            alarme = u == "X_sintoma_nao_reconhecido" and fracao_desconhecida > ALARME_COBERTURA
+            decisao = REVISAR_PRIORIDADE if (passa.get(u, False) or alarme) else REVISAR_BAIXA
+            motivo = ("padrão recorrente" if passa.get(u, False) else "") + \
+                     (" + " if passa.get(u, False) and alarme else "") + \
+                     (f"alarme de cobertura ({fracao_desconhecida:.1%} dos erros)" if alarme else "") or \
+                     "nenhum padrão recorrente"
         elif execs_u < min_execs or meses_u < min_meses:
             decisao = "fora: sem recorrência"
         else:
             decisao = "candidato"
         tri.append({"unidade": u, "nome": nome, "tipo": tipo, "decisão": decisao,
+                    "motivo (resíduo)": motivo if tipo == SEM else "",
                     "ocorrências": len(o), "erros": len(g), "reincidências na cascata": len(g) - len(o),
                     "execuções": execs_u, "meses": meses_u, "papéis": o["role"].nunique(),
                     "tokens": int(g["tok_tot"].sum()),

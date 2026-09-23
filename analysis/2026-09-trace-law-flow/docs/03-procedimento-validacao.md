@@ -8,8 +8,8 @@ revisado; é o caminho mais curto pra revisar direito. Este documento é o "como
 "por quê" em linguagem acessível (o que é um teste de robustez, por que algo é corrigido vs. retirado), ver
 [`01-racionais.md`](01-racionais.md).
 
-O procedimento tem duas frentes independentes — uma mecânica, outra de leitura — e um eixo que atravessa as
-duas: **nunca apresentar um número agregado sem saber apontar o caso concreto no trace cru que o sustenta.**
+O procedimento tem duas frentes independentes — uma mecânica, outra de leitura —, uma terceira que diz o que fazer
+com cada decisão da triagem (Frente 3), e um eixo que atravessa todas: **nunca apresentar um número agregado sem saber apontar o caso concreto no trace cru que o sustenta.**
 
 ---
 
@@ -1077,6 +1077,56 @@ Não commitar os PDFs no repo — manter como cópia de leitura local, fora do g
 Marque o progresso de leitura na `reading-queue.md` com a mesma régua que o projeto já usa: 📝 (verificado
 bibliograficamente) < 🔎 (texto completo lido por agente — nível atual dos quatro fichamentos) < ✅ (lido por
 você). Promova pra ✅ conforme for lendo de fato.
+
+---
+
+## Frente 3 — Depois da triagem: o que fazer com cada decisão (23/09/2026)
+
+A triagem (`01-racionais.md` §7 Passo 5) dá a cada unidade uma de cinco decisões. Esta frente diz, para cada uma, o
+que fazer, quando o trabalho termina e onde registrar. Vale para qualquer base: os números de uma base vão no doc
+daquela base, não aqui.
+
+| Decisão | O que fazer | Termina quando | Onde registrar |
+|---|---|---|---|
+| **candidato** | Rodar a **mineração** da unidade (`06-racionais-mineracao-unidades-n2-n10.md` §9, Passos 1–8; notebook `mineracao_unidades_n2_n10.ipynb`): de qual ferramenta vem cada erro, schema real do retorno, o que o prompt declara × o que a ferramenta devolve, estabilidade no tempo, amostra conferida no cru, registro final | registro final com `status` — `derived-and-checked`, ou `parcial` com a cobertura explícita | notebook de mineração · pastas `resultados/evidencia/11.*` · `07-relatorio-mineracao` |
+| **não-memória** | Nomear quem corrige **fora do agente** (harness, infra, LLM) e escrever o **gatilho de reabertura**: quantos casos por mês ou que taxa por 1.000 steps reabrem a unidade (ex. do `H_bloco_code`: ≥2 casos/mês ou > 1/1k steps) | gatilho escrito e com dono | `04-roadmap.md` §Monitoramento |
+| **revisar — prioridade** | O **procedimento do resíduo** (abaixo), para cada padrão que passa na recorrência — e para todos os padrões, se o motivo for o alarme de cobertura | o padrão virou regra (saiu do resíduo) **ou** foi descartado com motivo escrito | `01` §7 Passo 2 (a regra) · Frente 1 deste doc (os casos) · roadmap |
+| **revisar — baixa prioridade** | Nada agora. Registrar o tamanho do balde como **cobertura**. Sobe para prioridade se: (a) o mesmo padrão aparecer em outra base; ou (b) o "Sintoma não reconhecido" passar de **5% de todos os erros** da base — o **alarme de cobertura**, que a `triagem()` aplica sozinha (`ALARME_COBERTURA`; a coluna "motivo (resíduo)" diz por que subiu) | próxima base | a tabela por padrão da base (notebook 9.2) |
+| **fora: sem recorrência** | Nada agora. Reavaliar quando houver mais dados: somando bases, se passar no teste, volta à triagem como qualquer outra | próxima base | nenhum — a tabela da triagem já mostra |
+
+### O procedimento do resíduo, passo a passo
+
+1. **Listar os casos do padrão:** `uv run python drill_down.py padrao "<trecho do padrão>"` (sem argumento, lista
+   todos os padrões com erros, execuções e meses).
+2. **Ler no cru:** todos os casos, se forem até 10; senão, o 1º de cada mês (ordem `exec_id`, `idx`) — a mesma regra
+   das pastas de evidência. `uv run python drill_down.py caso <exec_id> <role>`.
+3. **Conferir o agrupamento:** os casos são mesmo o mesmo erro? A máscara pode juntar erros diferentes (que só
+   diferem dentro das aspas). Se não forem, anotar o motivo, dividir o padrão, e cada parte volta ao passo 1.
+4. **De quem é a falha?**
+   - do **agente** (o código que ele escreveu, o jeito que chamou a ferramenta) → segue para o passo 5;
+   - do **harness, da infra ou de um limite do LLM** (ex.: `AgentMaxStepsError`, o interpretador que não suporta
+     algo) → unidade nova `H_*`, tipo não-memória, e vai para o procedimento de não-memória.
+5. **Já existe uma unidade para essa lição?** Se sim (a regra só não reconhecia esta mensagem) → **estender a regra**
+   da unidade existente. Se não → **unidade nova**: nome, tipo (factual · ambiente ou experiencial · estratégia) e o
+   conteúdo em uma frase.
+6. **Escrever a regra** — determinística, sem LLM — no `submecanismo()` do `base_pipeline.py` (e também no
+   `classify()`, se o balde era "Sintoma não reconhecido": primeiro a regra de sintoma, depois a de causa), em
+   `SUB2UNI` e `UNI`, e a mesma regra no `audit/scripts/audit_recompute6.py`.
+7. **Rodar do zero e conferir:** os erros do padrão saíram do resíduo; nenhum outro erro mudou de unidade sem
+   explicação; as candidatas que já existiam não mudaram; a auditoria nº 6 continua com 0 divergências.
+8. **Registrar:** a regra e o porquê no `01` §7 Passo 2; os casos e a conferência na Frente 1 deste doc; a pasta de
+   evidência com os crus; o item fechado no roadmap. A unidade nova passa pela triagem como qualquer outra — se
+   sair candidata, entra no procedimento de candidata.
+
+**Dois casos particulares:**
+- **Código Python mal escrito em volume:** o padrão já separa pelo motivo do parser (parêntese, indentação,
+  operador); comece pelo motivo mais frequente.
+- **Sintoma não reconhecido:** o passo 6 começa pelo `classify()` (família e assinatura novas) e só depois o
+  `submecanismo()`.
+
+**Primeiro caso na base 1:** o padrão `SyntaxError: closing parenthesis <q> does not match opening parenthesis <q>`
+(3 execuções, 2 meses) está em "revisar — prioridade". Aplicar este procedimento a ele é o próximo passo da
+taxonomia, depois de rodar a base 2 (para ver se ele também se repete lá) — `04-roadmap.md`.
 
 ---
 

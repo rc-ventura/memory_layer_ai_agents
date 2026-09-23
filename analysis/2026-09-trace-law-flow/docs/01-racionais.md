@@ -809,7 +809,9 @@ ablação); **a operacionalização por cascata é nossa**, não do paper.
    diria que existe resíduo em vários meses. O **padrão** (`padrao_residuo()`) é a classe da exceção mais a frase
    mascarada (aspas → `<q>`, crases → `<id>`, números → `<n>`); na sintaxe, o motivo do parser sem a posição.
    Algum padrão passa → **revisar — prioridade**; nenhum passa → **revisar — baixa prioridade** (continua na lista:
-   é sinal de cobertura). A máscara é aproximação declarada — pode juntar erros que diferem só dentro das aspas, ou
+   é sinal de cobertura). **Alarme de cobertura:** se o "Sintoma não reconhecido" passar de 5% de todos os erros da
+   base (`ALARME_COBERTURA`), ele sobe para prioridade mesmo sem padrão recorrente — a taxonomia não cobre aquela
+   base. O que fazer com cada decisão: `03-procedimento-validacao.md` Frente 3. A máscara é aproximação declarada — pode juntar erros que diferem só dentro das aspas, ou
    separar o mesmo erro se a frase fora das aspas variar; por isso a tabela por padrão fica visível (notebook 9.2,
    `resultados/residuo_padroes.csv`) para conferência humana antes de escrever a regra. "Revisar" não é
    não-memória: lá a causa é conhecida e a correção vive fora do agente; aqui a causa não é conhecida.

@@ -268,7 +268,24 @@ e refazer a conta) é parte obrigatória da triagem, não um passo opcional.
 | candidata · factual · ambiente | card de fato do ambiente, **checável contra o sistema** (schema de retorno, assinatura de ferramenta) |
 | candidata · experiencial · estratégia | card de regra de ação, validável só observando se o erro para de voltar |
 | não-memória | política operacional no harness/infra (retry, circuit breaker, gatilho de monitoramento) |
+| revisar (resíduo) | trabalho na **taxonomia**: escrever a regra que reconheça o erro; depois ele passa pela triagem como qualquer outro |
 | fora | nada escrito; registrado só como estatística |
+
+### E6 · Depois da triagem — o que fazer com cada decisão
+
+Toda saída da triagem precisa de um próximo passo e de um critério de "terminou"; senão cada instanciação é lida
+de um jeito, e a fila do resíduo não tem como ser atacada.
+
+| Decisão | Próximo passo | Termina quando |
+|---|---|---|
+| candidata | investigação dirigida da unidade: de onde vem cada erro, o contrato real do que falhou, estabilidade no tempo, amostra conferida no cru; então o registro final da memória | registro com status de confiança e cobertura explícita |
+| não-memória | nomear o dono da correção fora do agente e escrever o gatilho de reabertura (casos por período, taxa por passos) | gatilho escrito e com dono |
+| revisar — prioridade | procedimento do resíduo: listar os casos do padrão → ler no cru → conferir que são o mesmo erro → decidir de quem é a falha (agente × plataforma) → estender uma unidade existente ou criar uma nova → escrever a regra determinística → rodar do zero e conferir que só aquele padrão mudou → registrar | o padrão virou regra, ou foi descartado com motivo |
+| revisar — baixa prioridade | nada agora; o tamanho do balde entra no relato de cobertura. Sobe para prioridade se o padrão reaparecer em outra instanciação, ou se o balde "sintoma não reconhecido" passar de uma fração declarada dos erros (**alarme de cobertura**) | próxima instanciação |
+| fora | nada agora; reavaliar com mais dados | próxima instanciação |
+
+O limiar do alarme de cobertura é escolha da instanciação, como os limiares de recorrência — e, como eles,
+declarado e testável.
 
 ---
 

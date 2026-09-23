@@ -64,6 +64,11 @@ Uso:
            (unidades X_), com a classe de cada um e a frase da exceção mascarada, mais os crus.
            Lê resultados/erros_mecanismo.csv — rode o notebook antes. Imprime só contagens.
 
+    python drill_down.py padrao ["<trecho do padrão>"]
+        -> os casos de um padrão de erro do resíduo (exec_id/role/idx/mês), para o passo 1 do
+           procedimento de revisão (03-procedimento-validacao.md, Frente 3). Sem argumento, lista
+           os padrões com erros, execuções e meses. Lê resultados/erros_mecanismo.csv.
+
     python drill_down.py caso <exec_id> <role>
         -> imprime a trajetória inteira daquele papel naquela execução, na ordem
            em que aconteceu: PlanningStep (plano) quando existir, e pra cada
@@ -714,6 +719,35 @@ mensagem de exceção diz.
 > Os crus têm nome de cliente, número de processo e texto de documento. Pasta git-ignored — não versionar.
 """
 
+def padrao(trecho=None):
+    """Os casos de um padrão de erro do resíduo (passo 1 do procedimento de revisão, 03-procedimento-validacao.md,
+    Frente 3). Sem argumento: lista os padrões com contagem. Com argumento: o padrão que contém o trecho (sem
+    diferença de maiúsculas); se mais de um contém, lista os candidatos para escolher. Lê
+    resultados/erros_mecanismo.csv — rode o notebook antes. Só ids e datas: o padrão já vem mascarado."""
+    M = pd.read_csv(os.path.join(os.path.dirname(PASTA_EVIDENCIA), "erros_mecanismo.csv"), dtype={"exec_id": str})
+    if "padrao" not in M.columns:
+        print("erros_mecanismo.csv sem a coluna `padrao` — rode o notebook de novo (versão de 23/09/2026 em diante)."); return
+    R = M[M["padrao"].notna()]
+    cont = R.groupby(["unidade", "padrao"]).agg(erros=("exec_id", "size"), execucoes=("exec_id", "nunique"),
+                                                meses=("mes", "nunique")).sort_values(["execucoes", "erros"], ascending=False)
+    if not trecho:
+        print(f"{len(cont)} padrões de resíduo (unidade · erros · execuções · meses):\n")
+        for (u, pd_), c in cont.iterrows():
+            print(f"  {u:27s} {c['erros']:3d} err · {c['execucoes']:3d} exec · {c['meses']:2d} meses · {pd_}")
+        print('\nUm padrão:  python drill_down.py padrao "<trecho do padrão>"'); return
+    hits = sorted({p_ for p_ in R["padrao"] if trecho.lower() in p_.lower()})
+    if not hits:
+        print(f"nenhum padrão contém '{trecho}'. Sem argumento, a lista completa."); return
+    if len(hits) > 1:
+        print(f"{len(hits)} padrões contêm '{trecho}' — use um trecho mais específico:")
+        for h in hits: print("  " + h)
+        return
+    C = R[R["padrao"] == hits[0]].sort_values(["mes", "exec_id", "idx"])
+    print(f"padrão: {hits[0]}\n{len(C)} erros · {C['exec_id'].nunique()} execuções · {C['mes'].nunique()} meses\n")
+    for _, c in C.iterrows():
+        print(f"  exec_id={c['exec_id']}  role={c['role']}  idx={c['idx']}  mes={c['mes']}  unidade={c['unidade']}")
+    print("\nLer um caso no cru:  python drill_down.py caso <exec_id> <role>")
+
 def caso(exec_id, role, as_json=False):
     df = load()
     row = df[df["cod_idef_exeo"] == exec_id]
@@ -798,6 +832,8 @@ if __name__ == "__main__":
         relogios()
     elif cmd == "residuo":
         residuo()
+    elif cmd == "padrao":
+        padrao(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "caso":
         args = [a for a in sys.argv[2:] if a != "--json"]
         as_json = "--json" in sys.argv[2:]

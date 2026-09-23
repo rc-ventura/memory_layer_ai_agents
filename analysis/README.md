@@ -190,6 +190,10 @@ don't reach. Same method + new base = copy the notebook and rerun (outputs recom
 markdown prose keeps the old base's numbers until rewritten — that rewrite is where the analysis
 actually happens). New method = new notebook with its own § range, per the convention above.
 
+**After triage — what to do with each decision** (candidate, non-memory, revisar — prioridade, revisar — baixa
+prioridade, out): the step-by-step procedure, with exit criteria and where to record, is
+`2026-09-trace-law-flow/docs/03-procedimento-validacao.md` **Frente 3**. The short version for the residual:
+
 **When a residual bucket grows on a new base.** Two buckets, two different jobs (rationale:
 `2026-09-trace-law-flow/docs/01-racionais.md` §7 Passo 2; cases: `03-procedimento-validacao.md` §1.13;
 `python drill_down.py residuo` lists them with the exception class and a masked message):
