@@ -704,7 +704,8 @@ de tamanho de amostra por família — os três testados, dois confirmados robus
 
 Números completos em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6. Código no notebook: a célula "Do
 sintoma ao mecanismo" (logo após `classify()`, na §2 — submecanismo, cascata, ocorrência; usada também em §2.2,
-§3, §5, §6, §8.4, §8.5 e §8.8), e na §9 as células 9.2 (triagem, tabelas, CSV) e 9.3 (gráfico). **Refeito do zero em
+§3, §5, §6, §8.4, §8.5 e §8.8), e na §9 as células 9.2 (triagem, tabelas, CSV), 9.3 (gráfico global) e 9.4–9.5
+(a triagem no recorte por papel — Passo 10). **Refeito do zero em
 15/09/2026**, reexecutando o notebook inteiro duas vezes: as saídas da §9 saíram idênticas nas duas execuções e
 os outros quatro CSVs (`erros_classificados`, `execucoes`, `payoff_assinaturas`, `reincidencia`) saíram
 byte-idênticos à versão anterior — só a tabela de candidatos mudou. A versão anterior (7 candidatos, tipos por
@@ -858,12 +859,14 @@ O que mudou em relação à tabela anterior de 7 linhas:
   parte, a reação do agente ao incidente. Ela passa na triagem pelas 4 ocorrências próprias de mar–jun/2026, mas
   o volume grande é resíduo.
 
-**Passo 8 — o gráfico.** Uma barra por unidade, agrupadas pela decisão (candidatas / não-memória / fora) e
-ordenadas por tokens dentro de cada grupo. Cor pelo tipo — factual = azul, estratégia = laranja, não-memória =
-verde — e cinza neutro para "fora", que não é série. As três cores são os slots 1–3 da paleta categórica em
-ordem fixa, validados com `validate_palette.js` (skill dataviz): passa em tudo; o aviso de contraste do verde é
-coberto pelo rótulo direto em cada barra. O rótulo mostra tokens e **ocorrências**, não erros, porque ocorrência
-é a evidência que a triagem usa.
+**Passo 8 — o gráfico (9.3).** Uma barra por unidade, agrupadas pela decisão (candidatas / não-memória / revisar
+/ fora da triagem) e ordenadas por tokens dentro de cada grupo. **Desde 24/09/2026 a cor é a família dominante
+dos erros da unidade** — a língua comum `COR_ERRO`, a mesma do 8.8 e da genealogia (`03-procedimento-validacao.md`
+§1.14) — e o **tipo da memória vai escrito no rótulo**, junto com a marca "limítrofe" quando é o caso (até
+então a cor era o tipo: factual = azul, estratégia = laranja, não-memória = verde; histórico do git). O rótulo
+mostra tokens e **ocorrências**, não erros, porque ocorrência é a evidência que a triagem usa. O 8.8, que até
+24/09 importava esta decisão em cores ("candidata / não vira memória"), virou descrição pura — Pareto de erros
+por papel — e não fala mais de memória; a decisão vive toda aqui na §9.
 
 **Passo 9 — a leitura.** As duas maiores unidades — "Texto longo nunca dentro de literal de string" e "Retorno das
 ferramentas de documento é dict" — somam 57% dos erros e 50% dos tokens. Continuam sendo a aposta mais forte, com
@@ -881,6 +884,41 @@ nasceu"**. Duas consequências: (a) só entram erros que levantaram exceção �
 entrega errado) ficam de fora por construção (ver §5 do relatório); (b) a regra de cascata olha só o step
 imediatamente anterior, então uma variável definida num step que falhou dois steps antes aparece como "nome
 nunca definido", não como "estado perdido após erro".
+
+**Passo 10 — a candidatura por papel (9.4 e 9.5), 24/09/2026.**
+
+**A pergunta.** A memória do projeto vai ser **escopada por papel** — recuperada pela chave (papel, unidade), não
+pela unidade global. Mas a triagem acima decide pela unidade **na base inteira**: conta as execuções e os meses da
+unidade somando todos os papéis. Isso esconde o caso em que a unidade é recorrente no conjunto porque é recorrente
+num papel, mas aparece uma vez só nos outros — a candidatura global seria "emprestada" a papéis onde a memória
+não se justificaria sozinha.
+
+**A operação.** `triagem_por_papel(EU)` em `base_pipeline.py`: as mesmas três perguntas do Passo 5, rodadas
+**dentro de cada papel** — na prática só resta o teste de recorrência (tipo e regra de causa são da unidade, não
+do papel): ≥3 execuções e ≥2 meses com ocorrência, contados com a mesma deduplicação de cascata. **Os limiares
+são os mesmos da global, sem recalibração** — régua diferente destruiria a comparabilidade com o 9.3 e com o
+teste de sensibilidade já validado. Plataforma (não-memória) e resíduo (`X_`) ficam **fora por desenho**: a
+pergunta do gráfico é "o que pode virar memória neste papel", e esses dois blocos nunca podem. Papéis com menos
+de 5 erros ficam fora da figura (o mesmo corte do 8.8), mas continuam na tabela.
+
+**A figura (9.4)** é uma matriz papel × unidade — os dois números cabem numa célula: **cor cheia** = candidata
+naquele papel (cor = família do erro, a língua comum); **cinza** = a unidade ocorre no papel mas não se repete o
+suficiente **nele**; **vazio** = não ocorre. O número na célula são os erros da unidade naquele papel.
+
+**O comparativo (9.5)** cruza o veredito global (9.3) com o scoped (9.4) por (papel × unidade): **firme**
+(candidata nos dois), **herdada** (candidata global sem recorrência no papel), **revelada** (candidata no papel
+sem passar na global) e **fora**. **Fato estrutural: "revelada" é impossível com a mesma régua** — se a unidade
+junta ≥3 execuções e ≥2 meses dentro de um papel, essas mesmas execuções já passam a régua na base inteira
+(o papel está contido na base). A escolha informada é no sentido contrário: as **herdadas** mostram onde a
+triagem global empresta candidatura a um papel no qual a memória não se sustentaria sozinha.
+
+**O resultado** (base 1): 18 células (papel × unidade) candidatas de 33 com erro; 14 herdadas — quase metade das
+células onde uma candidata global aparece num papel não se sustenta nele. A candidatura scoped concentra-se no
+`ConversationAgent` (8 unidades), com 3 no `managerAgent`, 2 no `RespostaBacen`, 2 no `RoteadorCivel` e 1 em
+cada um de `CadastroCivel`, `CadastroTrabalhista` e `CalculoCivel`. Sensibilidade com a régua estrita (≥5
+execuções, ≥3 meses): **8 das 18** células candidatas caem — a régua scoped é bem mais sensível que a global
+(1 das 10 unidades), porque os volumes por papel são menores por construção; a lista de limítrofes está em
+`03-procedimento-validacao.md` §1.15.
 
 ---
 

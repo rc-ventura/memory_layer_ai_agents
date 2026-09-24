@@ -1071,6 +1071,42 @@ nó agregado na genealogia; no 8.8 cada painel soma 100% do papel; a cor de um e
 
 **Numa base nova.** Família nova sem cor → cinza e aviso (`paleta.cor`), até ganhar uma cor na `paleta.py`.
 
+### 1.15 · Candidatura por papel — a triagem scoped, 9.4/9.5 (24/09/2026)
+
+**O que é.** A mesma triagem da §7 dos racionais rodada **dentro de cada papel** (`triagem_por_papel()` em
+`base_pipeline.py`), para a memória escopada por (papel, unidade). Classificação intacta — a função só
+reagrupa `EU`; a auditoria nº 6 e os CSVs existentes não são afetados.
+
+**Conferências automáticas (passam).**
+
+1. **Fechamento com o EU**: erros e ocorrências de cada unidade elegível, somados sobre os papéis, são idênticos
+   aos da triagem global (execuções/meses não fecham por construção — uma execução pode abrigar dois papéis).
+2. **Sanidade da figura**: assert no notebook — a matriz do 9.4 soma exatamente os erros elegíveis dos papéis
+   exibidos (≥5 erros, o corte do 8.8).
+3. **Fato estrutural conferido por exaustão**: zero células "reveladas" (candidata no papel sem passar na
+   global) — impossível com a mesma régua: execuções/meses de um papel estão contidos nos da base.
+
+**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 18** células candidatas mudam de lado — a
+"limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 10 unidades): os volumes por
+papel são menores por construção. As 8:
+
+| Papel | Unidade |
+|---|---|
+| CadastroCivel | Texto longo nunca dentro de literal de string |
+| CalculoCivel | Retorno pode chegar como string |
+| ConversationAgent | Nome usado sem ter sido definido |
+| ConversationAgent | Após step com erro, o que ele definiria não existe |
+| ConversationAgent | Ferramentas só aceitam argumento nomeado |
+| RoteadorCivel | Ferramentas só aceitam argumento nomeado |
+| RoteadorCivel | Texto longo nunca dentro de literal de string |
+| managerAgent | Explicação nunca solta no bloco de código |
+
+**Leitura honesta.** O veredito scoped por célula é frágil nos papéis pequenos — as células com 3–4 execuções
+vivem no limiar. O achado que não depende da régua é a **direção** do cruzamento: 14 das 32 células em que uma
+candidata global aparece num papel são **herdadas** (não se sustentam nele), e nenhuma "revelada" é sequer
+possível. A decisão de escrever memória por papel deve olhar a tabela do 9.4 junto com o volume, não a cor da
+célula isolada.
+
 ---
 
 ## Frente 2 — Verificar a literatura (aqui sim precisa da sua leitura)

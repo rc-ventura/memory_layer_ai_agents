@@ -22,7 +22,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
-           "categoria_do_erro",
+           "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
@@ -342,6 +342,27 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     ordem = {"candidato": 0, "não-memória": 1, REVISAR_PRIORIDADE: 2, REVISAR_BAIXA: 3, "fora: sem recorrência": 4}
     t = pd.DataFrame(tri)
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
+
+
+def triagem_por_papel(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+    """A mesma régua do triagem(), aplicada dentro de cada papel — a candidatura scoped da §9.4. Só unidades
+    elegíveis a memória (tipo factual/estratégia): plataforma (não-memória) e resíduo (X_) ficam fora por
+    decisão de desenho. Uma linha por (role, unidade) com erros no papel; a decisão é "candidato" quando a
+    unidade se repete naquele papel (>= min_execs execuções e >= min_meses meses, sobre ocorrências
+    deduplicadas da cascata, como a global). Unidade ausente no papel simplesmente não gera linha."""
+    tri = []
+    for (role, u), g in EU.groupby(["role", "unidade"]):
+        nome, tipo, _ = UNI[u]
+        if tipo not in (FACT, ESTR):
+            continue
+        o = g.drop_duplicates("ocorrencia")
+        execs, meses = o["exec_id"].nunique(), o["mes"].nunique()
+        tri.append({"role": role, "unidade": u, "nome": nome, "tipo": tipo,
+                    "decisão": "candidato" if (execs >= min_execs and meses >= min_meses) else "fora no papel",
+                    "ocorrências": len(o), "erros": len(g), "execuções": execs, "meses": meses,
+                    "tokens": int(g["tok_tot"].sum())})
+    t = pd.DataFrame(tri)
+    return t.sort_values(["role", "decisão", "tokens"], ascending=[True, True, False]).reset_index(drop=True)
 
 
 def categoria_do_erro(familia, unidade):

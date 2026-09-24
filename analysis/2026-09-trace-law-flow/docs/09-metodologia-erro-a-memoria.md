@@ -27,7 +27,7 @@ execução (papel) → ActionStep com error
           "uma memória só previne todos os mecanismos do grupo?"
                        │
                  triagem(unidade)    → decisão                a PRIORIZAÇÃO
-          ≥3 execuções, ≥2 meses, não-harness → candidata / não-memória / fora
+          ≥3 execuções, ≥2 meses, não-harness → candidata / não-memória / revisar / fora
 ```
 
 Cada elo é uma função determinística em `pipeline/base_pipeline.py`. Nenhum passo
@@ -40,12 +40,13 @@ flowchart TD
     E --> S["submecanismo(msg)<br/>lê mensagem + linha rejeitada"]
     C --> F["família — 9 baldes"]
     C --> A["assinatura — 20 sintomas"]
-    S --> M["mecanismo — 16 causas"]
-    M -->|"SUB2UNI · N:1"| U["unidade — 14 lições"]
+    S --> M["mecanismo — 18 causas"]
+    M -->|"SUB2UNI · N:1"| U["unidade — 15 lições"]
     U --> T["triagem()<br/>≥3 execs · ≥2 meses · não-harness"]
     T --> D1["candidato — 10 unidades"]
     T --> D2["não-memória — 2"]
-    T --> D3["fora — 2"]
+    T --> D4["revisar — 2 (resíduo: falta regra)"]
+    T --> D3["fora — 1"]
     A -.->|"proveniência (não decide)"| T
 ```
 
@@ -79,11 +80,13 @@ de relance, da esquerda para a direita:
 3. **decide** — a última coluna nomeia o destino de cada unidade (1:1, sem
    nova fusão): `MEM <título>` para as 10 unidades que viram candidata a
    memória (447 erros, 90%), `HARNESS <título>` para as 2 que apontam
-   correção de harness/infra (40 erros), `FORA <motivo>` para as 2
-   descartadas por falta de recorrência ou de conteúdo único (11 erros). O
-   título de cada `MEM`/`HARNESS` é a mesma lição de `UNI` em
-   `base_pipeline.py` que preenche `candidatos_memoria.csv` — a figura não
-   inventa texto novo, só nomeia o que a triagem já decide.
+   correção de harness/infra (40 erros), `REVISAR <título>` para os 2 baldes
+   de resíduo (9 erros — a fila de trabalho da taxonomia: falta escrever a
+   regra de causa/sintoma) e `FORA <motivo>` para a 1 unidade descartada por
+   falta de recorrência (2 erros). O título de cada `MEM`/`HARNESS` é a
+   mesma lição de `UNI` em `base_pipeline.py` que preenche
+   `candidatos_memoria.csv` — a figura não inventa texto novo, só nomeia o
+   que a triagem já decide.
 
 Ressalva: a figura conta **erros**; a `triagem()` decide sobre **ocorrências**
 (437, dedup de cascata) — os thresholds são aplicados lá, não aqui.
