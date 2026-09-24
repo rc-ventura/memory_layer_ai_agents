@@ -24,14 +24,25 @@ altura mínima por nó (piso de legibilidade, não proporcional ao valor para
 os nós minúsculos) e ordena cada coluna por baricentro das arestas de entrada
 (o mesmo princípio do d3-sankey) para reduzir cruzamento visual. Cada estágio
 soma o total de erros classificados — a figura é uma decomposição de fluxo
-completa. Uso:
+completa.
+
+**Cor = onde o erro termina** (a decisão da triagem, `COR_DECISAO` em paleta.py —
+a mesma linguagem do gráfico 9.3): memória factual, memória de estratégia,
+não-memória, revisar, fora. Cada fita e cada fatia de nó leva a cor da decisão
+dos erros que passam por ela; um nó que reúne erros de destinos diferentes é
+desenhado em fatias, uma por decisão, e as fitas saem da fatia da sua decisão.
+Família, assinatura e mecanismo são identificados pelo nome escrito, não pela
+cor. Até 24/09/2026 a cor era a da família de origem, herdada para a direita;
+um agregado cinza ("outros mecanismos") passava o cinza a tudo que saía dele,
+inclusive a uma memória candidata. Uso:
 
     python3 genealogia_sankey.py
 
 Reaproveitamento por outra análise: `ordenar_colunas`, `calcular_ys`,
 `centralizar`, `dividir`, `ribbon_path` e o corpo de desenho de `render_png`
-não sabem o que é "família" nem "erro" — só consomem `(tot, arestas)`
-genéricos e desenham um Sankey de N colunas com o piso de altura mínima acima.
+não sabem o que é "família" nem "erro" — só consomem `(tot, arestas, comp)`
+genéricos (arestas com uma coluna de categoria de cor) e desenham um Sankey de N
+colunas com o piso de altura mínima acima.
 É o motor reaproveitável se uma análise futura precisar da mesma figura
 legível. `preparar_dados`, `KEEP_SIG`/`KEEP_MEC`/`CURTO_MEM` e o resto do
 módulo são específicos desta classificação (`base_pipeline.py`) e não
@@ -48,8 +59,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.path import Path
 
-from base_pipeline import carregar_base, triagem, UNI
-from paleta import COR_FAMILIA, CINZA, cor
+from base_pipeline import carregar_base, triagem, UNI, CATEGORIAS_DECISAO, categoria_decisao
+from paleta import COR_DECISAO
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RESULTADOS = os.path.join(HERE, "resultados")
@@ -130,9 +141,8 @@ TITULOS = {"familia": "família", "sig_disp": "assinatura", "mec_disp": "mecanis
            "unidade": "unidade", "destino": "destino"}
 PARES = list(zip(STAGES, STAGES[1:]))
 
-# cor da família = COR_FAMILIA[nome] (paleta.py), fixa por nome em qualquer base; cinza
-# para os agregados artificiais ("outras/outros"), para "Sintoma não reconhecido" e para família
-# sem cor fixa (esta última com aviso).
+# ordem das fatias dentro de cada nó (de cima para baixo) = ordem das categorias de decisão
+ORDEM_CAT = CATEGORIAS_DECISAO
 
 
 def preparar_dados():
@@ -153,6 +163,7 @@ def preparar_dados():
         return f"FORA {d.split(': ', 1)[1]}"
 
     EU["destino"] = EU["unidade"].map(destino)
+    EU["cat"] = [categoria_decisao(tri_idx.loc[u, "decisão"], UNI[u][1]) for u in EU["unidade"]]
     EU["sig_disp"] = EU["assinatura"].map(lambda s: s if s in KEEP_SIG else OUTROS_SIG)
     EU["mec_disp"] = EU["submecanismo"].map(lambda s: s if s in KEEP_MEC else OUTROS_MEC)
     return EU, tri
@@ -162,10 +173,11 @@ def montar_grafo(EU):
     tot = {c: EU[c].value_counts() for c in STAGES}
 
     def fluxo(a, b):
-        return EU.groupby([a, b], sort=False).size().reset_index(name="n")
+        return EU.groupby([a, b, "cat"], sort=False).size().reset_index(name="n")
 
     arestas = {par: fluxo(*par) for par in PARES}
-    return tot, arestas
+    comp = {c: EU.groupby([c, "cat"]).size() for c in STAGES}   # quantos erros de cada decisão em cada nó
+    return tot, arestas, comp
 
 
 def ordenar_colunas(tot, arestas):
@@ -205,26 +217,36 @@ def centralizar(ys):
     return ys, maior
 
 
-def dividir(col_ref, col_outro, arestas_df, ys, ordem):
-    """Sub-segmentos de cada nó de col_ref, particionando sua altura
-    proporcionalmente ao n de cada aresta, na ordem de ordem[col_outro]
-    (isso é o que faz as fitas não se cruzarem à toa)."""
-    pos_outro = {n: i for i, n in enumerate(ordem[col_outro])}
+def fatias(col, comp, ys, ordem):
+    """(y0, y1) de cada categoria dentro de cada nó da coluna, na ordem ORDEM_CAT, proporcional à contagem."""
     saida = {}
-    for nome in ordem[col_ref]:
-        sub = arestas_df[arestas_df[col_ref] == nome].copy()
-        sub["_ord"] = sub[col_outro].map(pos_outro)
-        sub = sub.sort_values("_ord")
-        total_n = sub["n"].sum()
-        y0, _, h = ys[col_ref][nome]
-        cur = y0
-        segs = []
-        for _, r in sub.iterrows():
-            seg_h = (r["n"] / total_n) * h
-            segs.append((r[col_outro], cur, cur + seg_h))
-            cur += seg_h
-        saida[nome] = segs
+    for nome in ordem[col]:
+        y0, _, h = ys[col][nome]
+        cont = comp[col].loc[nome]
+        total, cur, d = cont.sum(), y0, {}
+        for c in ORDEM_CAT:
+            n = int(cont.get(c, 0))
+            if n:
+                d[c] = (cur, cur + n / total * h)
+                cur += n / total * h
+        saida[nome] = d
     return saida
+
+
+def dividir(col_ref, col_outro, arestas_df, fat, ordem):
+    """Onde cada fita encosta no nó de col_ref: dentro da fatia da sua categoria e, dentro dela, na ordem dos nós
+    de col_outro (é o que evita cruzamento à toa). Chave: (nó de col_ref, nó de col_outro, categoria)."""
+    pos_outro = {n: i for i, n in enumerate(ordem[col_outro])}
+    segs = {}
+    for (nome, c), sub in arestas_df.groupby([col_ref, "cat"], sort=False):
+        a0, a1 = fat[nome][c]
+        sub = sub.assign(_ord=sub[col_outro].map(pos_outro)).sort_values("_ord")
+        total_n, cur = sub["n"].sum(), a0
+        for _, r in sub.iterrows():
+            seg_h = r["n"] / total_n * (a1 - a0)
+            segs[(nome, r[col_outro], c)] = (cur, cur + seg_h)
+            cur += seg_h
+    return segs
 
 
 def ribbon_path(x0, y0a, y0b, x1, y1a, y1b):
@@ -236,38 +258,13 @@ def ribbon_path(x0, y0a, y0b, x1, y1a, y1b):
     return Path(verts, codes)
 
 
-def cores_por_coluna(tot, arestas, ordem):
-    """Cor por nó: a 1ª coluna recebe a cor fixa da família pelo NOME
-    (COR_FAMILIA — não pelo ranking de volume, que muda de base para base
-    e trocaria todas as cores da figura); cada coluna
-    seguinte herda a cor da sua origem MAJORITÁRIA — exceto os agregados
-    artificiais ("outras/outros"), que são sempre cinza porque fundem
-    múltiplas famílias por construção (colorir pela maior fatia esconderia
-    que boa parte do bloco vem de outras origens). `destino` NÃO entra nessa
-    exceção: é 1:1 com `unidade` (cada lição vira exatamente um nó nomeado),
-    então herdar a cor da única origem é exato, não uma maquiagem."""
-    cores = {"familia": {f: cor(COR_FAMILIA, f) for f in tot["familia"].index}}
-    for a, b in PARES:
-        g = arestas[(a, b)]
-        cores_b = {}
-        for nome_b in ordem[b]:
-            if nome_b in (OUTROS_SIG, OUTROS_MEC):
-                cores_b[nome_b] = CINZA
-                continue
-            sub = g[g[b] == nome_b]
-            origem_dominante = sub.loc[sub["n"].idxmax(), a]
-            cores_b[nome_b] = cores[a][origem_dominante]
-        cores[b] = cores_b
-    return cores
-
-
 def rotulo(col, nome, tot):
     base = NOME_CURTO.get(nome, nome)
     return f"{base} · {int(tot[col][nome])}"
 
 
 def render_png(EU, out_path):
-    tot, arestas = montar_grafo(EU)
+    tot, arestas, comp = montar_grafo(EU)
     ordem = ordenar_colunas(tot, arestas)
 
     maior_valor = max(int(v) for col in STAGES for v in tot[col].values)
@@ -276,7 +273,7 @@ def render_png(EU, out_path):
     ys = calcular_ys(tot, ordem, MIN_H, PAD, scale)
     ys, altura_dados = centralizar(ys)
 
-    cores = cores_por_coluna(tot, arestas, ordem)
+    fat = {col: fatias(col, comp, ys, ordem) for col in STAGES}
 
     X_STEP, NODE_W = 3.6, 0.22
     X = {col: i * X_STEP for i, col in enumerate(STAGES)}
@@ -286,19 +283,19 @@ def render_png(EU, out_path):
 
     for a, b in PARES:
         g = arestas[(a, b)]
-        saida = dividir(a, b, g, ys, ordem)
-        entrada = dividir(b, a, g, ys, ordem)
-        for nome_a, segs in saida.items():
-            for nome_b, y0s, y1s in segs:
-                y0t, y1t = next((y0, y1) for nb, y0, y1 in entrada[nome_b] if nb == nome_a)
-                path = ribbon_path(X[a] + NODE_W, y0s, y1s, X[b], y0t, y1t)
-                ax.add_patch(mpatches.PathPatch(path, facecolor=cores[a][nome_a],
-                                                 edgecolor="none", alpha=0.42, zorder=1))
+        saida = dividir(a, b, g, fat[a], ordem)
+        entrada = dividir(b, a, g, fat[b], ordem)
+        for (nome_a, nome_b, c), (y0s, y1s) in saida.items():
+            y0t, y1t = entrada[(nome_b, nome_a, c)]
+            path = ribbon_path(X[a] + NODE_W, y0s, y1s, X[b], y0t, y1t)
+            ax.add_patch(mpatches.PathPatch(path, facecolor=COR_DECISAO[c],
+                                             edgecolor="none", alpha=0.42, zorder=1))
 
     for col in STAGES:
         for nome, (y0, y1, h) in ys[col].items():
-            ax.add_patch(mpatches.Rectangle((X[col], y0), NODE_W, h, facecolor=cores[col][nome],
-                                             edgecolor="white", linewidth=0.7, zorder=2))
+            for c, (c0, c1) in fat[col][nome].items():   # o nó em fatias, uma por decisão
+                ax.add_patch(mpatches.Rectangle((X[col], c0), NODE_W, c1 - c0, facecolor=COR_DECISAO[c],
+                                                 edgecolor="white", linewidth=0.7, zorder=2))
             texto = rotulo(col, nome, tot)
             ax.text(X[col] + NODE_W + 0.08, (y0 + y1) / 2, texto, va="center", ha="left",
                     fontsize=8.3, zorder=3,
@@ -310,8 +307,11 @@ def render_png(EU, out_path):
     ax.set_ylim(-0.7, altura_dados + 0.3)
     ax.invert_yaxis()
     ax.axis("off")
-    ax.set_title(f"Genealogia dos {len(EU)} erros: família → assinatura → mecanismo → unidade → destino (memória/harness/descarte)",
-                 fontsize=13, fontweight="bold", pad=14, loc="left")
+    ax.set_title(f"Genealogia dos {len(EU)} erros: família → assinatura → mecanismo → unidade → destino  ·  "
+                 "cor = onde o erro termina", fontsize=13, fontweight="bold", pad=14, loc="left")
+    presentes = [c for c in ORDEM_CAT if (EU["cat"] == c).any()]
+    ax.legend(handles=[mpatches.Patch(color=COR_DECISAO[c], label=c) for c in presentes],
+              loc="upper right", bbox_to_anchor=(1.0, 1.02), ncol=len(presentes), fontsize=9.5, frameon=False)
     fig.tight_layout()
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     fig.savefig(out_path, dpi=170)

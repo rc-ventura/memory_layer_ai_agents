@@ -1034,6 +1034,42 @@ execuções. Por isso a unidade sai **revisar — prioridade**, e o "sintoma nã
 prioridade**. É candidato a regra de causa nova, não memória ainda. Na base 2 (25 erros de sintoma não reconhecido), a
 mesma tabela diz se são um erro novo que se repete ou vários soltos.
 
+### 1.14 · Cores das figuras — como foram escolhidas e conferidas (24/09/2026)
+
+**A regra.** Duas linguagens de cor, fixas por nome em `pipeline/paleta.py`, iguais em qualquer base:
+
+- **decisão da triagem** (`COR_DECISAO`), no 9.3 e na genealogia: azul = memória factual, laranja = memória de
+  estratégia, cinza escuro = não-memória, roxo = revisar, cinza claro = fora. Na genealogia, cada fita e cada fatia de
+  nó leva a cor de onde o erro termina;
+- **unidade de erro** (`COR_UNIDADE`), no 8.8, que só descreve: tons frios = unidades factuais, quentes = unidades de
+  estratégia, cinzas = plataforma (harness/infra), roxos = resíduo. São 11 tons de lição, acima dos 8 que a skill de
+  visualização de dados recomenda — decisão do projeto: toda unidade com cor própria, sem balde "outras".
+
+**O problema que motivou.** A mesma cor significava três coisas: a unidade no 8.8, o tipo no 9.3 e a família na
+genealogia (ex.: amarelo era uma memória no 8.8 e o protocolo do harness, uma não-memória, na genealogia). No 8.8, o
+cinza "Outras candidatas" escondia 5 memórias (73 dos 498 erros; 17% no `managerAgent` e no `ConversationAgent`). Na
+genealogia, o agregado cinza "outros mecanismos" (23 erros, 4 destinos) passava o cinza a tudo que saía dele,
+inclusive à memória "redefinir após erro".
+
+**Como os tons das unidades foram escolhidos.** Com o validador da skill (`validate_palette.js`: faixa de
+luminosidade, saturação mínima, separação para daltonismo protan/deutan e para visão normal), procurando a
+atribuição de tons às unidades — frios para as factuais, quentes para as de estratégia — que maximiza a separação dos
+**pares de fatias que de fato se encostam** nas barras do 8.8 da base 1: é o par vizinho que o leitor precisa
+distinguir. Restrição: a maior unidade ("Texto longo dentro de literal") no mesmo laranja do 9.3.
+
+**Resultado (base 1).** 21 pares encostados; pior par para daltonismo ΔE 8,5 (meta ≥ 8), pior para visão normal
+ΔE 17,2 (piso 15); os 11 tons dentro da faixa de luminosidade e acima da saturação mínima. Aviso de contraste
+(< 3:1 com o fundo) em 4 tons claros — coberto pela legenda, pelos números nas fatias largas e pela tabela da §2.2
+do notebook (a paleta de 8 de antes tinha o mesmo aviso). Limite: procurar uma cor na legenda (qualquer par, não só
+vizinhos) é mais difícil para daltônicos em alguns pares; por isso a legenda segue a ordem da pilha.
+
+**Conferências automáticas.** Nenhuma memória candidata em cinza em nenhuma figura; a cor da decisão de cada unidade
+é a mesma no 9.3 e na genealogia; `resultados/genealogia_arestas.csv` idêntico ao de antes (só a pintura mudou).
+
+**Numa base nova.** Outra ordem de tamanho muda quais fatias se encostam no 8.8. Refazer é rodar o validador sobre os
+pares encostados daquela base; se algum cair abaixo do piso, trocar os tons entre unidades do mesmo grupo (frio ou
+quente) em `paleta.py`. Unidade nova sem cor fixa → cinza e aviso, até ganhar um tom.
+
 ---
 
 ## Frente 2 — Verificar a literatura (aqui sim precisa da sua leitura)

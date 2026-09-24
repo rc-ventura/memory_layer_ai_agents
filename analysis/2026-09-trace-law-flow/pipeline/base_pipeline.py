@@ -22,6 +22,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
+           "CATEGORIAS_DECISAO", "categoria_decisao",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
@@ -341,6 +342,21 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     ordem = {"candidato": 0, "não-memória": 1, REVISAR_PRIORIDADE: 2, REVISAR_BAIXA: 3, "fora: sem recorrência": 4}
     t = pd.DataFrame(tri)
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
+
+
+# a decisão da triagem na forma que as figuras pintam (9.3 e genealogia): a mesma categoria tem a mesma cor nas duas
+CATEGORIAS_DECISAO = ["memória · factual", "memória · estratégia", "não-memória", "revisar", "fora"]
+
+
+def categoria_decisao(decisao, tipo):
+    """candidato se divide pelo tipo do conteúdo (Hu et al. 2025); as demais decisões valem como estão."""
+    if decisao == "candidato":
+        return "memória · factual" if tipo == FACT else "memória · estratégia"
+    if decisao == "não-memória":
+        return "não-memória"
+    if decisao.startswith("revisar"):
+        return "revisar"
+    return "fora"
 
 
 DEGENERADO = re.compile(r"n[ãa]o encontrad[oa] na base|informa[çc][ãa]o insuficiente", re.I)

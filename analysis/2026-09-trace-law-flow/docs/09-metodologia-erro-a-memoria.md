@@ -57,10 +57,17 @@ crus em `pipeline/resultados/genealogia_arestas.csv` — granularidade total,
 sem agregação). Cada estágio soma os **498 erros** — é uma decomposição de
 fluxo completa, não amostra. Para legibilidade a figura mantém explícitas só
 as assinaturas e mecanismos maiores/protagonistas e agrega o resto em "outras
-assinaturas"/"outros mecanismos" (cinza — cor reservada para nós que misturam
-família, nunca reaproveitada de uma família real). As fitas herdam a cor da
-família de origem; cada coluna é ordenada por baricentro das arestas de
-entrada, para que o mesmo fluxo não zigue-zague sem necessidade. Três leituras
+assinaturas"/"outros mecanismos". **A cor é onde o erro termina** — a decisão da
+triagem, na mesma linguagem do gráfico 9.3: azul = memória factual, laranja =
+memória de estratégia, cinza escuro = não-memória, roxo = revisar, cinza claro =
+fora. Cada fita leva a cor da decisão dos erros que passam por ela, e um nó que
+reúne destinos diferentes aparece em fatias, uma por decisão: cada família mostra
+de relance quanto dela vira memória. Família, assinatura e mecanismo são
+identificados pelo nome, não pela cor (até 24/09/2026 a cor era a da família,
+herdada para a direita, e o agregado cinza passava o cinza a uma memória
+candidata; `03-procedimento-validacao.md` §1.14). Cada coluna é ordenada por
+baricentro das arestas de entrada, para que o mesmo fluxo não zigue-zague sem
+necessidade. Três leituras
 de relance, da esquerda para a direita:
 
 1. **divide** — o sintoma abre: "Could not index · 136" parte em
