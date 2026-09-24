@@ -2,74 +2,74 @@
   "schemaVersion": 1,
   "pages": {
     "/openwiki/arquitetura/escopo-terminologia-e-questoes-abertas.md": {
-      "pageVersion": "sha256:acf1baaf4eae391e11b1cef42e01dd1faf052b27f514c8b74eb38d59e97c8efb",
+      "pageVersion": "sha256:93445fc5009dbab238fcee91087485407accb611f51709a9fc5656e70a22b503",
       "completedBy": "claude-code",
-      "completedRunId": "2aa6978e-e94f-4a6f-9a23-e65a2ac698a3",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "8a6a12f7-aca1-46dd-910a-a374881572c7",
+      "gitHead": "39ca7b1e78f10a5d36440f16550af0b267a234ef",
+      "sourceFingerprint": "sha256:b9134592558583fc1e4dc2418b4afb4fa83a826a2179d235a89408454835207b"
     },
     "/openwiki/arquitetura/hipotese-knowledge-as-infra.md": {
+      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
+      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df",
       "pageVersion": "sha256:815cdeed34be9761bdd06af9ef5993af90cb921931af87852d9a84334c6d911f",
       "completedBy": "claude-code",
-      "completedRunId": "6e8968b8-da6c-4802-b95f-61cc72521967",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "6e8968b8-da6c-4802-b95f-61cc72521967"
     },
     "/openwiki/fluxos/diario-de-campo.md": {
+      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
+      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df",
       "pageVersion": "sha256:5876c25f63eb3753ebad7ca0a1d223f6bfcea88cd20ab4de03f5ac22b9df4378",
       "completedBy": "claude-code",
-      "completedRunId": "ae616853-4b9a-4e5f-93c9-176598f01bb8",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "ae616853-4b9a-4e5f-93c9-176598f01bb8"
     },
     "/openwiki/fluxos/metodologia-de-analise-de-traces.md": {
-      "pageVersion": "sha256:f9e952b90b1bdd518be2c932b1a86960ef03808570149a707356dc87b20c2f95",
+      "pageVersion": "sha256:79884143c27e31dd1c5be146569fa84e5f0a46620aedafcf02ff885699033ce7",
       "completedBy": "claude-code",
-      "completedRunId": "2aa6978e-e94f-4a6f-9a23-e65a2ac698a3",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "8a6a12f7-aca1-46dd-910a-a374881572c7",
+      "gitHead": "39ca7b1e78f10a5d36440f16550af0b267a234ef",
+      "sourceFingerprint": "sha256:b9134592558583fc1e4dc2418b4afb4fa83a826a2179d235a89408454835207b"
     },
     "/openwiki/fluxos/metodologia-de-taxonomia-de-erros.md": {
-      "pageVersion": "sha256:ccbcd0294234cb5853030e0c1e94bebb11525e15a1dc16b35a027943489e9bfc",
+      "pageVersion": "sha256:d600fba885f90cbfe47930d523208378f9f09ab7f396f143abefe87ce80d6fe9",
       "completedBy": "claude-code",
-      "completedRunId": "2aa6978e-e94f-4a6f-9a23-e65a2ac698a3",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "8a6a12f7-aca1-46dd-910a-a374881572c7",
+      "gitHead": "39ca7b1e78f10a5d36440f16550af0b267a234ef",
+      "sourceFingerprint": "sha256:b9134592558583fc1e4dc2418b4afb4fa83a826a2179d235a89408454835207b"
     },
     "/openwiki/fluxos/registros-de-reuniao-e-notas-de-discussao.md": {
+      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
+      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df",
       "pageVersion": "sha256:60349d75128bf3061d5bea334172f2f53812d6cb58bcb202698903d8a7654a57",
       "completedBy": "claude-code",
-      "completedRunId": "6e8968b8-da6c-4802-b95f-61cc72521967",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "6e8968b8-da6c-4802-b95f-61cc72521967"
     },
     "/openwiki/fluxos/revisao-de-literatura-e-disciplina-de-citacao.md": {
+      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
+      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df",
       "pageVersion": "sha256:269011ddafdaa66a54e75c96ac4619aa75910241e49051775c1f5090f96c7ab2",
       "completedBy": "claude-code",
-      "completedRunId": "2aa6978e-e94f-4a6f-9a23-e65a2ac698a3",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "2aa6978e-e94f-4a6f-9a23-e65a2ac698a3"
     },
     "/openwiki/overview.md": {
+      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
+      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df",
       "pageVersion": "sha256:b244c0faff1f8ee4aab1421bc9d68f89c056e617d839e0476729e3c3635d7a0a",
       "completedBy": "claude-code",
-      "completedRunId": "ae616853-4b9a-4e5f-93c9-176598f01bb8",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "ae616853-4b9a-4e5f-93c9-176598f01bb8"
     },
     "/openwiki/quickstart.md": {
+      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
+      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df",
       "pageVersion": "sha256:350b0c0f5a7b8ac585180aec6f3801e268f66c140d83e0fb6431128012aded88",
       "completedBy": "claude-code",
-      "completedRunId": "6e8968b8-da6c-4802-b95f-61cc72521967",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "6e8968b8-da6c-4802-b95f-61cc72521967"
     },
     "/openwiki/referencia/plano-de-trabalho.md": {
+      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
+      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df",
       "pageVersion": "sha256:4389f9cbf9d2add4ce2ad7b4dfb276418a81eacc3157bea262ab14c231c9810f",
       "completedBy": "claude-code",
-      "completedRunId": "ae616853-4b9a-4e5f-93c9-176598f01bb8",
-      "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
-      "sourceFingerprint": "sha256:b878ee8b75e2690778d0cec4dcc2ab51e9ac7222717570bfeba840b3363460df"
+      "completedRunId": "ae616853-4b9a-4e5f-93c9-176598f01bb8"
     }
   }
 }

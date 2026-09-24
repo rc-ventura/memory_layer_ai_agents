@@ -4,8 +4,8 @@ title: Escopo, Terminologia e Questões Abertas
 description: Log de decisões de escopo/terminologia do mecanismo de memória (forma não-paramétrica, o sentido de "RL" no título do projeto, cross-trial vs. cross-agent) e o catálogo vivo de questões ainda não resolvidas sobre a arquitetura hipotética.
 tags: [scope-decisions, terminology, open-questions, architecture-hypothesis, reinforcement-learning, non-parametric-memory]
 verified:
-  - by: openwiki/0.5.1
-    at: 2026-09-23T23:38:13.077Z
+  - by: openwiki/0.6.0
+    at: 2026-09-24T16:54:16.453Z
 sources:
   - id: openwiki-source-569719c5da69b38f321cdb6a
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py

@@ -10,6 +10,8 @@ sources:
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py
   - id: openwiki-source-0db414e3ad59b3a4b0ec3ea1
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/drill_down.py
+  - id: openwiki-source-af7756299b766cf9f705cec7
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/genealogia_sankey.py
   - id: openwiki-source-bf7dacbe9994bcd338b3c0c5
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/resultados/evidencia/relatorio_meta_11.1-11.10.md
   - id: openwiki-source-4e5bd038f77a72e191e7c372
@@ -18,10 +20,10 @@ sources:
     resource: repo://analysis/base_utils.py
   - id: openwiki-source-968204141b3124543370ca68
     resource: repo://analysis/README.md
-generated: { by: "claude-code", at: "2026-09-23T23:38:13.077Z" }
+generated: { by: "claude-code", at: "2026-09-24T16:54:16.453Z" }
 verified:
-  - by: openwiki/0.5.1
-    at: 2026-09-23T23:38:13.077Z
+  - by: openwiki/0.6.0
+    at: 2026-09-24T16:54:16.453Z
 ---
 
 `analysis/` guarda as análises empíricas de traces brutos de agentes reais da esteira jurídica — a base de evidência de "memória de trabalho" para a hipótese de memória do projeto. Não é só um lugar para contar erros ou juntar gráficos: o objetivo recorrente é construir uma ponte empírica entre o **trace bruto** de um sistema de agentes real, os **mecanismos reais de falha** visíveis nesse trace, e a menor **lição/memória/correção operacional** reutilizável que poderia evitar a mesma falha de novo. A classificação de erro em si (sintoma → mecanismo → unidade → destino) tem sua própria metodologia dedicada — ver [Metodologia de Taxonomia de Erros (Genealogia)](metodologia-de-taxonomia-de-erros.md); esta página cobre o que envolve essa classificação: layout de pasta, disciplina de PII e a escada de validação.
@@ -82,7 +84,7 @@ Cada análise vive na sua própria pasta `analysis/AAAA-MM-slug/` (nova pasta po
 
 | Subpasta | Conteúdo |
 |---|---|
-| `pipeline/` | Os notebooks Jupyter executados (pipeline reprodutível, com outputs embutidos), um `base_pipeline.py` compartilhado quando a pasta hospeda mais de uma análise (carga do trace, explosão em steps, classificação de erro — cada notebook constrói sobre ele em vez de copiar células), e scripts companheiros: `drill_down.py` (triangula qualquer número agregado contra um caso concreto no trace bruto — comandos `caso`, `listar`, `mecanismo`, `ferramenta`, `evidencia`, `relogios`, `residuo`) e `checklist.py` (as verificações de intake de uma base nova — ver abaixo) |
+| `pipeline/` | Os notebooks Jupyter executados (pipeline reprodutível, com outputs embutidos), um `base_pipeline.py` compartilhado quando a pasta hospeda mais de uma análise (carga do trace, explosão em steps, classificação de erro — cada notebook constrói sobre ele em vez de copiar células), e scripts companheiros: `drill_down.py` (triangula qualquer número agregado contra um caso concreto no trace bruto — comandos `caso`, `listar`, `mecanismo`, `ferramenta`, `evidencia`, `relogios`, `residuo`, `padrao`), `checklist.py` (as verificações de intake de uma base nova — ver abaixo), `genealogia_sankey.py` (gera o Sankey da genealogia dos erros — família → assinatura → mecanismo → unidade → destino — e grava as arestas cruas em `resultados/genealogia_arestas.csv`) e `paleta.py` (a língua de cor única das figuras: `COR_ERRO` prende a cor ao **nome** da família do erro — resíduo roxo, plataforma cinzas; nome sem cor fixa cai em cinza com aviso, em vez de herdar a cor de outro) |
 | `docs/` | Os documentos narrativos, numerados por par racional/relatório: `01-racionais.md` + `02-relatorio-achados.md` para a primeira análise, `03-procedimento-validacao.md` (validação/auditoria) e `04-roadmap.md` (o que falta) completam o primeiro conjunto, `05-schema.md` documenta o schema do trace bruto. Uma segunda análise metodologicamente distinta na mesma pasta datada ganha seu próprio par numerado (`06-racionais-mineracao-unidades-n2-n10.md` + `07-relatorio-mineracao-unidades-n2-n10.md`, para o passe de mineração das unidades nº2/nº10), com o slug do doc casando com o slug do notebook (`mineracao_unidades_n2_n10.ipynb`) e preservando a numeração de seção original para que as referências cruzadas continuem resolvendo. `09-metodologia-erro-a-memoria.md` é a instanciação verificada (funções, números, o Sankey de genealogia) da metodologia geral de taxonomia de erros |
 | `resultados/` | CSVs derivados, **git-ignored** — carregam nomes de clientes, números de processo e trechos de documento em claro. Regenerados rodando o notebook, nunca commitados |
 | `audit/` (opcional) | Relatórios de auditoria independentes datados (`2026-09-08-…`, `2026-09-16-…`) e `scripts/audit_recompute*.py`, os scripts de recomputação independente do universo inteiro no CSV bruto |
@@ -101,6 +103,8 @@ A segunda extração (**base 2**, outra amostra independente de 1.000 execuçõe
 3. **Censo de `error.type`** — regex no cru × parse pelo pipeline, com flag de divergência: diz se a taxonomia cobre a base *antes* de ela jogar erros desconhecidos no resíduo;
 4. **Contexto** — período real das execuções × lotes de corte, versões de agente, papéis no JSON;
 5. **Sobreposição (opcional)** — `python checklist.py <outra-base.csv>` cruza `cod_idef_exeo` entre duas extrações — obrigatório antes de chamar duas bases de réplicas independentes ou de somá-las.
+
+Depois do intake vem a pergunta seguinte: **o que fazer com cada decisão da triagem** — candidata, não-memória, `revisar — prioridade`, `revisar — baixa prioridade`, fora. O procedimento passo a passo, com critério de saída e onde registrar, vive na **Frente 3** de `docs/03-procedimento-validacao.md` da pasta datada; `analysis/README.md` carrega o resumo operacional, incluindo o procedimento para quando um **balde de resíduo cresce numa base nova** (`X_sintoma_nao_reconhecido` pede regra de sintoma e depois de causa; `X_causa_nao_identificada` pede só a regra de causa — e o sub-bucket "código Python mal escrito" é ruído até se provar recorrente). A recorrência no resíduo é contada **por padrão de erro** (classe da exceção + mensagem mascarada — `resultados/residuo_padroes.csv`, `drill_down.py padrao`), não pelo balde inteiro.
 
 ### Os três relógios — `anomesdia` não é a data da execução
 

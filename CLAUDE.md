@@ -44,6 +44,6 @@ If merged, don't force-push over it — `git stash push -u`, `git checkout -B <b
 
 ## OpenWiki
 
-See [AGENTS.md](AGENTS.md) for OpenWiki agent instructions.
+@AGENTS.md
 
 <!-- OPENWIKI:END -->
