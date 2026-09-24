@@ -5,13 +5,25 @@ description: Log de decisões de escopo/terminologia do mecanismo de memória (f
 tags: [scope-decisions, terminology, open-questions, architecture-hypothesis, reinforcement-learning, non-parametric-memory]
 verified:
   - by: openwiki/0.5.1
-    at: 2026-09-18T13:35:02.362Z
+    at: 2026-09-23T23:38:13.077Z
 sources:
+  - id: openwiki-source-569719c5da69b38f321cdb6a
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py
+  - id: openwiki-source-631277a618f3e5073c6d0450
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py
+  - id: openwiki-source-968204141b3124543370ca68
+    resource: repo://analysis/README.md
+  - id: openwiki-source-7f7d00c2d53f56cf831f9d45
+    resource: repo://analysis/schema-e-taxonomia-de-erros.md
+  - id: openwiki-source-fb0fb67897cb389c902db805
+    resource: repo://analysis/status_execucao_agente.csv
   - id: openwiki-source-23df8725c93a4ea44539b97e
     resource: repo://discussion/open-questions.md
   - id: openwiki-source-1564f2f4d84d9043ebdb5351
     resource: repo://discussion/scope-and-terminology-decisions.md
-generated: { by: "claude-code", at: "2026-09-21T19:21:20.640Z" }
+  - id: openwiki-source-d841fc5e9e282ddb91a8cfaf
+    resource: repo://research-diary/Set/diario_campo_2026-09-21.md
+generated: { by: "claude-code", at: "2026-09-23T23:38:13.077Z" }
 ---
 
 Este par de documentos — [`discussion/scope-and-terminology-decisions.md`](../../discussion/scope-and-terminology-decisions.md) e [`discussion/open-questions.md`](../../discussion/open-questions.md) — funciona como o registro de governança do projeto: um é o log de **decisões já tomadas** (append-only, atualizado no lugar quando uma decisão é revisitada), o outro é a **lista viva de itens ainda não resolvidos**. Quando uma questão aberta se resolve, a resolução migra para o log de decisões e o item é apagado da lista de abertas — as duas fontes nunca duplicam o mesmo fato por muito tempo.
@@ -60,7 +72,7 @@ Ver [`discussion/open-questions.md`](../../discussion/open-questions.md) (o item
 | Quem é dono do gate de admissão — mecanismo determinístico separado ou o próprio Update Engine ("curador")? | Lean atualizado em 01/09: filtro determinístico de anomalia, unificado, roda antes do Update Engine; predicado exato ainda não decidido. |
 | Hard-delete automático por threshold vs. gated/revisado por humano | Não decidido; alternativa gated dá um remit concreto ao componente G hipotético. |
 | Quais parâmetros do v1 (estático) viram adaptativos no v2, mantendo as regras fixas | Mapa por componente registrado (27/08) — princípio: "adaptativo calibra parâmetro, nunca muda regra". Não é requisito do v1, mas os parâmetros devem ser externalizados como config. |
-| Segunda extração de trace: isolar em pasta nova ou mesclar com a primeira? | Decidido nesta sessão (16/09): isolar primeiro, com o núcleo analítico copiado byte-idêntico entre as pastas para permitir comparação. Atualização de 18/09: esse núcleo agora vive em `pipeline/base_pipeline.py`, o que torna a exigência de identidade byte-a-byte trivialmente verificável (a pasta nova copia o arquivo, não células de notebook). |
+| Segunda extração de trace: isolar em pasta nova ou mesclar com a primeira? | Decidido (16/09): isolar primeiro, com o núcleo analítico copiado byte-idêntico entre as pastas — desde 18/09 esse núcleo vive em `pipeline/base_pipeline.py`, o que torna a exigência trivialmente verificável. **A segunda extração já aconteceu**: uma base independente de 1.000 execuções ("base 2"), que trouxe um `error.type` novo (`AgentMaxStepsError`, n=1), reabriu o bucket de protocolo do harness (22/09) e expôs que `anomesdia` data o lote de extração, não a execução — a data real passou a vir de `dat_hor_inio_exeo`. A tabela de status também chegou (`analysis/status_execucao_agente.csv`; o dicionário 1/2/3/34/67 está em `schema-e-taxonomia-de-erros.md`). O intake de uma base nova agora é operacionalizado por `pipeline/checklist.py` (censo de `error.type`, drift de colunas, checagem de sobreposição de `cod_idef_exeo` entre bases). |
 | Dataset gold-standard anotado por especialistas para calibrar um LLM-as-judge | Proposto em 15/09; gated na leitura própria do Rafael de Casper et al. (ainda 🔎, não lida) antes de fechar o protocolo de anotação. |
 | Filtro de anomalia deveria distinguir causa comportamental (do agente) de causa ambiental/infra antes de rotear ao Update Engine? | Levantado em 10/09 a partir da Eval Engineering Skill da LangChain; não decidido. |
 

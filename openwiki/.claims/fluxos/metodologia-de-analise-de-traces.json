@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:26956675c6eabc1119d67eac0adaf1aea843a639a9feb4f91d954de7fc2db52d",
+  "pageVersion": "sha256:f9e952b90b1bdd518be2c932b1a86960ef03808570149a707356dc87b20c2f95",
   "claims": [
     {
       "id": "claim_9b4219f67448476ebdc33ce5d7ec6283",
@@ -91,8 +91,8 @@
       "statement": "A dated analysis folder that hosts more than one methodologically distinct analysis organizes each as a 'passe' (pass): a pre-registered method applied to a set of units, sharing one notebook per pass regardless of how many units share that method, built on a shared base_pipeline.py rather than duplicating notebook cells.",
       "evidence": [
         {
-          "resource": "repo://analysis/README.md#L8-L15",
-          "version": "repo-lines-v1:sha256:9ed97c54ba65e8431bc3a8fd158f65afbd5f01814cfceb104b9a78cd9221e23d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzViZGUxYTE1ZWY1MDc4ZTIxNThhYzhjZGVjYzNjYjEzNmRkODc2ZTU1NzEwMDExYTE3ODBkNGIyM2QwMDM2NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzlmNWMwODQwYzc0ZTk5YjI5YWQyMzEzZjBkNzEzMDhkYTY1Mzg3MDI4NWRiODBiMGFiMjRkMmVhOWRmZGVhMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2I1NGJiOTNkMDQ2OTY5ZmJiNTVlYmNkMjJiMTMyYTJlZGUxMDNkMTI2MzZmZTVhMDEwNTRiYjI0NDg4OTgzZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTk2YTIwNDM4MzE5Y2JmNmYzYjIyZjBmNTQ3ZmIyYTk3MDkxYjEwMWJhYzkyZWMxNTJiMWJiODAyYzYzYThhNiJ9"
+          "resource": "repo://analysis/README.md#L6-L16",
+          "version": "repo-lines-v1:sha256:d25fd9d71de8420e7fd3ef97e67143b01e7cf35616af413463a8dcb088fdc5c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwNGM3ZjJlNzhhM2QyNDA1OTIzYjNlOTRkMmJjMzIzMWE1NmMxMTU3MjVkNTdkNDkzYzZiNzM3NDQzZGEwYjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5ZjVjMDg0MGM3NGU5OWIyOWFkMjMxM2YwZDcxMzA4ZGE2NTM4NzAyODVkYjgwYjBhYjI0ZDJlYTlkZmRlYTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3NjFiYmMwNDIyZGQzZTM5MjFiYzZmZDViNmM2MmNlMWFiYmM2ZWYwM2YxY2Y2ZjZiYzZiMzY3NjJjZDczMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhNWE2YTBkMmU3ZmRmZmNmMTYxZDFhMjc4OTJiMWM1YjBiMTJiMTc0MjNiYzFiOTIzNWZlN2VlNTk0ZThmMjEifQ"
         }
       ]
     },
@@ -101,8 +101,8 @@
       "statement": "Each analysis-pass notebook owns a dedicated, never-reused range of section numbers (e.g. the first pass owns §1–§10, a mining pass owns §11.x, the next pass takes §12.x), and a second methodologically distinct pass in the same dated folder gets its own numbered docs/ pair (e.g. 06-racionais-*.md + 07-relatorio-*.md) while preserving the original section numbering so existing cross-references keep resolving.",
       "evidence": [
         {
-          "resource": "repo://analysis/README.md#L11-L22",
-          "version": "repo-lines-v1:sha256:9d9745c4e8eb264e82bc96b75c8b1cbec315608a590d68940957871b455aa5a5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1YjRiNzVlYWJmNzgwMmI3ZGMyMjE1ZDFjZjQ3ZTNjNjA2YWU3MTlmNTA1OGU4NDFiNjY1OTc0YTA2ODU2NzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyMDY0ZTQyMGZmODU5MDNlMDA5YTViMTM0YzdiNGYwZDJiZGQ2OGUwY2JiNDk5YWI0NjhhZmU2ZTAyODM5ZTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5MmU0NDA5MGFhYmQ3YTc0ZWI5M2IxMWNlZmNjOTViOTUyZDlmNGQwNjNjMzQ1NDhkNDJkYTZhYzBmZDdlMTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0MGI5MTA2MzUzYjJkYjY4ODQzMDMxYjk0ZmZlMmU1ODU4NWY0MDliZDEwYTRiMWVjOTQ2NmIwMDJkOGUwYzYifQ"
+          "resource": "repo://analysis/README.md#L15-L23",
+          "version": "repo-lines-v1:sha256:4ea9023527e7790eadcc838027f2518c4a5aa8335129ca8a2a7e3f2b2eaf7207:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjBmNzViMWY1NjE4MDljNDQyYmE3NjY1ZjI2ZWE2MmZkMTE4MTAyNjJiY2M2ZWQ0YWY3YTAyMzZjMmU5MGUzMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjIwNjRlNDIwZmY4NTkwM2UwMDlhNWIxMzRjN2I0ZjBkMmJkZDY4ZTBjYmI0OTlhYjQ2OGFmZTZlMDI4MzllNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGI0ZTU5MDcwNTFlODFhNzdiNmY4NTkzMTdhZWJiYzMyYTMwNWU3NmJiYjY1MTA5YWYxYWFlMjQzZjRiN2NjMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQwYjkxMDYzNTNiMmRiNjg4NDMwMzFiOTRmZmUyZTU4NTg1ZjQwOWJkMTBhNGIxZWM5NDY2YjAwMmQ4ZTBjNiJ9"
         }
       ]
     },
@@ -118,11 +118,15 @@
     },
     {
       "id": "claim_2b7e7d24a8814fadaa8869fa0b6f113d",
-      "statement": "The §11 mining pass established a per-evidence-folder independent audit pattern: each of its ten evidence folders (11.1_origem_do_erro/ through 11.10_leituras_get_available_documents/) got its own relatorio_independente.md written from that folder's raw excerpts, and a relatorio_meta_11.1-11.10.md consolidates all ten into a single sustained/caveated/retracted verdict per step; the strongest two audits (11.9, 11.10) went further and independently recomputed the entire universe from the raw CSV with a separate code path (csv.DictReader, no pandas, no notebook functions reused).",
+      "statement": "The §11 mining pass established a per-evidence-folder independent audit pattern: each of its ten evidence folders (11.1 through 11.10) got its own relatorio_independente.md written from that folder's raw excerpts, and a relatorio_meta_11.1-11.10.md consolidates all ten into a single sustained/caveated/retracted verdict per step; the strongest audits recomputed the entire universe from the raw CSV with an independent code path (csv.DictReader, no pandas). Caveat added 23/09/2026: those audits verified the sample selected under the old anomesdia dating, so the meta-report now carries a 'Desatualizado — refazer' banner and must not be cited as verification of the current sample until redone.",
       "evidence": [
         {
-          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/resultados/evidencia/relatorio_meta_11.1-11.10.md#L1-L17",
-          "version": "repo-lines-v1:sha256:7f159c6724b2ded45b04154bf8ddb5fa233b99a4aa76b6af71222a62c5f67caf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4NDc0ODVhM2M5ODcyMDBjZTIxMDVmYzgyYWJmZDczZjYxYWQwNmYyOTE4ZDk4YmNlZjAzYTkxZjZiZjNlMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyNmY0NGFkYzQwMzIyZDMzZmE2ZGRmNmZmMjA2YjU5NThkZTUwMDkzOWJhYjNiZDYxYTQyNGMzMDZlMzBhZGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkMWQ5NzcwNDZhYjMwYmQ3OTU5NmMwNDVkNmI3ZWU0MDEzOTE5ZjhkNTNjN2EzMzE2ZDk1NjIyOWM5NGU3MjAifQ"
+          "resource": "repo://analysis/2026-09-trace-law-flow/docs/03-procedimento-validacao.md",
+          "version": "repo-file-v1:sha256:5f9841ff6f6cbd6c84d779edd705c10db4460f9c373f116c97663a5a82c878c4"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/resultados/evidencia/relatorio_meta_11.1-11.10.md#L1-L22",
+          "version": "repo-lines-v1:sha256:dd75e4c131ca2a94b380ac3c6d1c58bcc703d7b3436b1913a2660b172af7ffaa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4NDc0ODVhM2M5ODcyMDBjZTIxMDVmYzgyYWJmZDczZjYxYWQwNmYyOTE4ZDk4YmNlZjAzYTkxZjZiZjNlMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyNmY0NGFkYzQwMzIyZDMzZmE2ZGRmNmZmMjA2YjU5NThkZTUwMDkzOWJhYjNiZDYxYTQyNGMzMDZlMzBhZGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkMWQ5NzcwNDZhYjMwYmQ3OTU5NmMwNDVkNmI3ZWU0MDEzOTE5ZjhkNTNjN2EzMzE2ZDk1NjIyOWM5NGU3MjAifQ"
         }
       ]
     },
@@ -135,10 +139,60 @@
           "version": "repo-lines-v1:sha256:19636ac6b7d496b7f141cbb6c2ff2b02ca915c01e33282ec3fa0c7f16ededf41:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmE4ZTQ3YjIyNzUxZjFjYTQ3NzY2ZDEzYWNjMWVjYzY5NzQwMWQxMmU0ZmJiYTA3NDkwZGZmNWM1MDkyZjI0OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGUwOWFjN2U0MTNhZWE0Njg5Nzk0M2RmMjVlZjMwMjQxMTQ2MDFjZGFjMzM4NzEyYjJmNDAxMjhlNzUyNDU4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjQyMDI2MmRmNWVhNjI3MTIzMWJjODU1YTI0Zjk5MzU0YTI3ZDQxNTFiM2IwMGEwMDUxZTk2MzA3Y2U4Yjk3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_b10cac8072e34e488862b10777a7131c",
+      "statement": "New-base intake is operationalized by pipeline/checklist.py, run before any notebook: it checks column drift against the six columns base_pipeline.py reads by name, JSON parse health, a dual error.type census (raw regex × pipeline parse, flagging divergence), execution-period vs extraction-batch context, and — given a second CSV argument — cod_idef_exeo overlap between bases, which is mandatory before calling two extractions independent replicas or pooling them.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py#L1-L31",
+          "version": "repo-lines-v1:sha256:5a0b2f7cce2a1c4d080c64db6c1d59bdc41d2458dd3a49110ec585aa00a2847b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMDg0YTlmMzc4MTI0YjJiMWE1MTU2M2JmM2MyMjQ0NGViN2ZmMzM2OTIwMTdkYTI4YjIxMzZhZTU2OTg3ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzMDFlNDM2NWYxZTI4YThlMDQzMTM2ODI3YTgzYzA0MWJlZWE2OWExNjZhOTc2MzhlOTBkZWY4NDJmNWM1NzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0NzMyNjAyZjI5MWZiMDE1MGRlN2RhZWQ0NjdmY2ZiZWVhZGM3ZGEyOWZlNTY2YmQxNDA4Y2U4YjAyOTBmZjUifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py#L84-L135",
+          "version": "repo-lines-v1:sha256:08b08f65f4b71e7b5fbd2dfc6e48fc8e269a8d08450ee4af0ff552a2d28fa77f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzM2EwYjI3OWZjZjQ4YTBhYjEwMjAxOGY4NzRjM2ZlZjA5MTc0MTBmMWVhZTNlNjI0NTUwYTdmMzJmMzE3YWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0N2E0NTUwNmQ4ZTRiZTkwOGFmYjQ3NTJlODljZDYwNmYwN2JjNTRlMzc4NWNlN2JlNWUwMDEyZDc1NTFjMWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2YmY5YTZkM2E2MThjNDE5MmJiMGJhMTRkOGExMWNmOTI4ZTA3ZDYwMWU4Njg4YTRhZmEwYjgxMTFiZjU1YzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4NTk0ZmExMjY4ZWNhYmM2MmFmN2M5ZTI0NDliOGM0NmRiMGY0MjZjZDlhYWQzODRjNjdlZmU1OWU1ODJiM2UifQ"
+        },
+        {
+          "resource": "repo://analysis/README.md#L160-L195",
+          "version": "repo-lines-v1:sha256:64ab89f31bca89260be553e9e47ad73666757889485faa8f654828c3f6edb2e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzRjYzlkZGIyYzEyNjIyNDY1YTEwMDUxODE4MjkxOGE1ZTRmMTQ5OGU4NjgzODUwNTA5MTUyOTQ0NjY2ZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwNjY2OTY4Yzc5YjliMWEwMDk2OTEzZjZiMWY0OTZiNmQ4YTNhMjJiMDcwNzYzY2ZiZDg5YmNiN2JiNjBhODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjNWM1MjczMTk0MWUxYzA0YmEzYzk5MDJlNDQ2NWU5MWMxY2JjOTNhNjVjMjFkYjE5MzkxZGYzMzUyZWU2NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFiOTUxY2E3YzkzNTBlN2JlZDRhMTA3NmIyYTc2NjBiMzE4NDhlMzU1NmRjODVhMWYyYjcxNWJkNmEyYjYyZDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_593f6d1a8da84b9c981ecfd9c27edd32",
+      "statement": "Executions are dated by dat_hor_inio_exeo, not anomesdia: a three-clock test (anomesdia × dat_hor_inio_exeo × the runtime-recorded timing.start_time inside each step's JSON) showed the latter two agree in 840/840 executions while anomesdia — the extraction-batch partition — lags by a median of 46 days with zero executions starting after it. Base 1 coverage is therefore out/2025–ago/2026 (11 months); the harness incident was in out/2025; and the §11 evidence folders were regenerated under the real month while their independent audit reports await redo.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/docs/03-procedimento-validacao.md",
+          "version": "repo-file-v1:sha256:5f9841ff6f6cbd6c84d779edd705c10db4460f9c373f116c97663a5a82c878c4"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py#L26-L29",
+          "version": "repo-lines-v1:sha256:5d3cf9227ca5f3910fb73a6afb09302900874734c0293c1cd1e36fbf05b01762:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGE4YmQ2NTRhYTk3ZWFmY2I2OGMyODU3OTdiMDE5MWE4NWU4MTIyYzI5ZDYxMzBlYjIzZWYyOTlmZTE0MjRkOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRhMWQ0NjRjY2NjZDQzOGM3ZmI1YzE5ZmYwNjI5OTcyZDkyNzgxNTc5YTYwYWRiYTFkZWNhOTYwZjFmNjFiYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmMyOTgwMDQ2MDg5OTQ2NTVmNmJiYzkyY2E1MTljMzQ1OGE1YTM2OWMyNjRmYjE1MTk3Y2ZjN2IwYTZhOWYyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmExMmZiNTRkMDk0NmQ4YWZhMzRlZWM5ZjBlOWFiM2ZhZTk1YWNkYWVkYTE4OTFlNWJkZDQ2MzgyYTdiZjNjMCJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/drill_down.py#L57-L62",
+          "version": "repo-lines-v1:sha256:bc64cbc6ed5e74d5db1ce0a73f7ded6942582e29c1b9ad5aa71237909ae896d2:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzZjYjhiZjU4MjZhMjc5ZGI4YzBmNmRkZjVkY2YxMTQzOGY5ZjM2ZmJhZDg4MGNkNDE2MDM5Y2E2ZmZjMWFhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VhZjcwZDZkOTk0YmZmZTE3Y2MwMGIwMjc4ZWJhOTNmY2YwYTc2NjA5ODY0YTRiYmNjODM0MTFhODM3YmFiNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzc0N2QwOTYwYjI1ZGU1N2E5M2M4YjNiMGVmNzg4YWEyZGY2M2Q3Y2JmNzRiN2Q4MTFmZTU4OTA2YmZiYTQxYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjc1ZjgyMDRlNTkzNzBmZWNmNGJiOTEzOGMyNmY2OGUwNmYxY2JmZWQwZTM5ZDZhNWMwOTc0MTI0ZTZhYjM1OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_adb4281fafdf46f19f986bf8704de063",
+      "statement": "analysis/base_utils.py holds generic CodeAgent (smolagents-format) trace mechanics shared across dated folders — (exec_id, role) step sequencing, the authoritative tool inventory from system-prompt 'def name(...)' declarations, AST helpers over code_action, and typed-entity support checks — while per-base hypotheses (classify(), submecanismo(), SUB2UNI) stay in each folder's base_pipeline.py and are copied, not imported, when a new base arrives.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/README.md#L230-L245",
+          "version": "repo-lines-v1:sha256:a03bc3507e1a7d71565dc9ebb5b246d36084b82b86a73b373af37f80a7368d4c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5MDY5OTZkODNlZGM4Zjc5NTc5NWZjM2NjMzlmY2M3ZmRhMTA3ODFhOThlYjg1NDM3NWQ1ZDkwZTRiNjc3MWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlMDlhYzdlNDEzYWVhNDY4OTc5NDNkZjI1ZWYzMDI0MTE0NjAxY2RhYzMzODcxMmIyZjQwMTI4ZTc1MjQ1ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmZWY3NDEwZTA3NGE5NWMyOGRlNDVhYTJjNjQxMmNkYjFkMDhlYjU3YjFkYTk0MGE0MWE4MThiODljMjQzNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://analysis/base_utils.py#L1-L45",
+          "version": "repo-lines-v1:sha256:8176f5c93754b2f3ff3a50448f6942b5582bd21b8ea2fb494eca4e7158a4f0ea:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkN2EyZWE1NGRiYTRiZTUyYTEwMzA5Zjg3OWRkZDhlZjc2YzFiYjNhNzk4MDY3YjZhMjYxZDlkOTQ0NWZkMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkYTVjNjZlMTdiMTQ1Mzk3ODM0YjhjODU0ZGM0MTkzZTIxMjUxODBhODk5NmExNGMzMTg4MzMyNmIyZWZiY2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3OTVjMWQ2ODdjZDI3Mjg2MjM4ODk3YWZiYTRmMWVkNTg1OTViNDBlOWQ2OTY0Njg3ODJhMzg4ZWM1NTUyYTYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.1",
-    "at": "2026-09-21T19:21:20.640Z"
+    "at": "2026-09-23T23:38:13.077Z"
   }
 }

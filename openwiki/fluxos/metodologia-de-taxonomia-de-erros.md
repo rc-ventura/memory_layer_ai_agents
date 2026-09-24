@@ -3,17 +3,19 @@ type: methodology
 title: Metodologia de Taxonomia de Erros (Genealogia)
 description: O método determinístico, sem LLM, que roteia cada erro bruto de trace até a menor lição de memória que o evitaria — cinco elos (granularidade, sintoma, mecanismo, unidade, triagem), dois eixos paralelos que dividem e depois fundem, e por que a memória vive no nível da unidade, não do sintoma.
 tags: [error-taxonomy, genealogy, memory-candidates, trace-analysis, deterministic-classification, triage]
-verified:
-  - by: openwiki/0.5.1
-    at: 2026-09-21T19:21:20.640Z
 sources:
   - id: openwiki-source-61e9034accfd6552e38f7eff
     resource: repo://analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md
+  - id: openwiki-source-569719c5da69b38f321cdb6a
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py
   - id: openwiki-source-2d51aa76f8fc441a01852754
     resource: repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md
   - id: openwiki-source-e2588285d2ac910e627dab99
     resource: repo://discussion/teoria/agentdebug-vs-trail-error-taxonomy.md
-generated: { by: "claude-code", at: "2026-09-21T19:21:20.640Z" }
+generated: { by: "claude-code", at: "2026-09-23T23:38:13.077Z" }
+verified:
+  - by: openwiki/0.5.1
+    at: 2026-09-23T23:38:13.077Z
 ---
 
 Sistemas de agentes sem memória persistente redescobrem as mesmas falhas em cada execução. Transformar erros registrados em memória útil exige uma taxonomia — mas taxonomia boa não é rótulo bonito, é **roteamento**: cada erro bruto precisa chegar, por regras determinísticas e reabíveis no dado cru, até a menor lição reutilível que o evitaria (ou até fora da memória). A contribuição central é a **genealogia de erros** — dois eixos paralelos de classificação (o que o sistema reclamou × o que o agente fez de errado) que se **dividem** (um sintoma pode ter várias causas) e se **fundem** (causas diferentes podem pedir a mesma cura) até convergir numa decisão de escrita.
@@ -28,7 +30,7 @@ Dois documentos, dois papéis que não se confundem: a hipótese de método **ge
 | **E1 · Sintoma** | O que o sistema reclamou? | família + assinatura | chave de proveniência/busca — **não decide** |
 | **E2 · Mecanismo** | O que o agente fez de errado? | causa, erro a erro | diagnóstico — desambigua o sintoma |
 | **E3 · Unidade** | Uma lição só previne todos os erros do grupo? | agrupamento de mecanismos | conteúdo — o card em si, um fato/regra por unidade |
-| **E4/E5 · Triagem** | Merece persistir? Onde a correção vive? | candidata / não-memória / fora | decisão — não é um nível da taxonomia |
+| **E4/E5 · Triagem** | Merece persistir? Onde a correção vive? | candidata / não-memória / fora / revisar | decisão — não é um nível da taxonomia |
 
 Cada elo é uma regra determinística sobre texto (mensagem de erro + o sinal local mais informativo que o trace já registre, como a linha de código rejeitada) — nunca um classificador neural ou LLM-as-judge. A razão não é custo: é que uma regra determinística é **reabível** — qualquer rótulo se triangula de volta ao caso cru — enquanto um classificador neural seria mais uma afirmação a validar, não uma base para validar as outras.
 
@@ -42,7 +44,18 @@ Sintoma (E1) e mecanismo (E2) são duas leituras independentes da mesma mensagem
 | mecanismo → unidade | **N:1** | causas diferentes com a mesma cura convergem — é onde a taxonomia se **fecha** |
 | unidade → decisão | **N:1** | a triagem decide pela unidade **global**, não por (contexto × unidade) |
 
-Consequência arquitetural: o eixo sintoma **não alimenta a decisão** — é a camada de descrição, proveniência e descoberta (o censo dos sintomas, a trilha de auditoria, o catch-all que sinaliza erro novo numa extração maior). Quem decide é sempre o eixo mecanismo.
+Consequência arquitetural: o eixo sintoma **não alimenta a decisão** — é a camada de descrição, proveniência e descoberta (o censo dos sintomas, a trilha de auditoria, o catch-all que sinaliza erro novo numa extração maior). Quem decide é sempre o eixo mecanismo — **com uma única exceção, declarada**: no fechamento da unidade (`montar_unidades()` na instanciação), a família do sintoma é consultada só para separar os dois baldes de resíduo entre si (ver abaixo), que nunca viram memória. Nenhuma candidata depende disso — na base 1 as 10 candidatas saem idênticas com ou sem a separação.
+
+### O resíduo — dois baldes, não um catch-all
+
+Todo classificador por regras tem uma sobra, e aqui ela é dividida em dois baldes porque as duas leituras podem falhar de formas diferentes — e cada falha pede um trabalho diferente:
+
+|| Balde | Quando | O que pede |
+|---|---|---|---|
+|| **Sintoma não reconhecido** (`X_sintoma_nao_reconhecido`) | nem E1 nem E2 reconhecem a mensagem | alarme de **cobertura**: a taxonomia não cobre esse erro — escrever regra de sintoma primeiro, depois de causa |
+|| **Causa não identificada** (`X_causa_nao_identificada`) | E1 reconhece o sintoma, E2 não identifica a causa | metade do caminho feita — escrever só a regra de causa. Inclui o código malformado (sintaxe), ruído até se provar recorrente |
+
+Cada erro cai em **no máximo um** balde — não há sobreposição — e "causa não identificada" descreve a **regra**, não o erro (não significa que aconteceu uma vez). O tamanho de cada balde é parte do relato de cobertura de qualquer instanciação: onde o resíduo cresce, as regras não alcançam.
 
 ### Exemplo real — a assinatura "Could not index" se divide, dois mecanismos se fundem
 
@@ -65,8 +78,10 @@ O equilíbrio que o método persegue: granular o suficiente para ser ensinável,
 Uma unidade só vira candidata a memória depois de passar, em ordem, por três perguntas de gate:
 
 1. **É memória do agente?** Se quem falhou foi o harness ou o LLM upstream, o agente não tem o que aprender — a correção vai para política operacional (retry, monitoramento), não para memória.
-2. **Tem conteúdo único — uma frase que previne?** Se o agrupamento é heterogêneo demais para uma frase só, fica fora por falta de conteúdo.
+2. **Tem conteúdo único — uma frase que previne?** Se o agrupamento é heterogêneo demais para uma frase só — o caso dos dois baldes de resíduo — ele **não é descartado nem vira não-memória**: vai para **revisar**, a fila de trabalho da taxonomia.
 3. **Recorre entre execuções e no tempo?** Memória entre execuções só se justifica se o problema atravessa execuções e tempo — senão é episódico, não estrutural.
+
+Os desfechos possíveis da triagem são, portanto, quatro: **candidata**, **não-memória**, **fora** (sem recorrência) e **revisar**. Os baldes de resíduo passam pelo mesmo teste de recorrência das candidatas, mas contado **por padrão de erro** (classe da exceção + mensagem com os dados do caso mascarados), não pelo balde — que junta erros diferentes por construção. Um padrão recorrente põe o balde em **revisar — prioridade**; sem nenhum, **revisar — baixa prioridade**. Nenhum dos dois é memória: o trabalho é na taxonomia (escrever a regra que falta), e uma vez escrita o erro vira unidade normal e refaz a triagem como qualquer outra.
 
 Os limiares de recorrência (quantas execuções, quanto tempo) são **escolhas calibradas por instanciação, não constantes do método** — na instanciação da esteira jurídica, o corte adotado foi ≥3 execuções e ≥2 meses. Testar a sensibilidade do limiar (mover a régua e refazer a conta) é parte obrigatória da triagem, não um passo opcional.
 

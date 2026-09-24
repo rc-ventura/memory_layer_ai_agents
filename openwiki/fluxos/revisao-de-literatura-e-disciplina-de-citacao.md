@@ -5,8 +5,10 @@ description: Como literature-review/, papers/ e papers/reading-queue.md se relac
 tags: [literature-review, citation-discipline, reading-queue, bibliographic-verification, arxiv]
 verified:
   - by: openwiki/0.5.1
-    at: 2026-09-21T19:21:20.640Z
+    at: 2026-09-23T23:38:13.077Z
 sources:
+  - id: openwiki-source-1b2eaaad43bd36f8c539994c
+    resource: repo://analysis/literature/README.md
   - id: openwiki-source-5809f342a2c80efa4a9f4820
     resource: repo://literature-review/README.md
   - id: openwiki-source-674dfb0e25b8acca2dea113b
@@ -15,7 +17,7 @@ sources:
     resource: repo://papers/README.md
   - id: openwiki-source-84c8ba53358ba5f16899f53e
     resource: repo://papers/ssgm-2026.md
-generated: { by: "claude-code", at: "2026-09-21T19:21:20.640Z" }
+generated: { by: "claude-code", at: "2026-09-23T23:38:13.077Z" }
 ---
 
 Três pastas guardam a mesma base bibliográfica em três formas diferentes, cada uma otimizada para um uso:
@@ -54,8 +56,14 @@ Nenhum item da fila de leitura é marcado como lido (☐, nenhuma caixa ainda ma
 
 Nunca se fabrica um ID de arXiv, lista de autores ou data. `arxiv.org` via fetch direto (`WebFetch`) é bloqueado pelo egress de rede deste ambiente — a verificação usa `WebSearch` para confirmar título/autores/data/alegações principais, prática que tem se mostrado confiável para esse fim.
 
+## Os fichamentos da análise de trace — `analysis/literature/`
+
+Os quatro papers de taxonomia de erro de agentes lidos em texto completo por subagentes (08/09/2026) para fundamentar a análise do trace da esteira jurídica vivem em [`analysis/literature/`](../../analysis/literature/README.md) — **na raiz de `analysis/`, compartilhados entre análises**, não dentro da pasta datada (foram promovidos para lá quando a segunda base chegou). Todos 🔎 na escala acima, com bibliografia conferida contra o próprio PDF (`curl` + `pdftotext`, porque `WebFetch` em arxiv.org é bloqueado neste ambiente): MAST, TRAIL, AgentDebug e ToolScan/SpecTool + ToolFailBench. A reading-queue registra esses quatro como uma categoria à parte (fora dos tiers 1–3) só para rastreabilidade. Dois deles já foram promovidos a ✅ por leitura do próprio Rafael (TRAIL em 15/09, AgentDebug em 09/09).
+
+Duas lições disciplinares que esses fichamentos já produziram: (1) a taxonomia do ToolScan citada na v1 do relatório **havia sido inventada por um sumarizador de busca** — nenhum dos sete nomes existe no paper; (2) a cifra "≥59% dos erros de agente não levantam exceção" é **estimativa por mapeamento próprio** sobre as categorias do dataset do TRAIL — não um número que o paper publica —, distinção que precisa acompanhar a cifra sempre que ela for citada.
+
 ## Como se conecta ao resto do projeto
 
-- A disciplina 📝/🔎/✅ também se aplica às notas de literatura dentro de cada pasta de análise de trace — ver [Metodologia de Análise de Traces](metodologia-de-analise-de-traces.md).
+- A disciplina 📝/🔎/✅ também se aplica às notas de literatura de cada análise de trace — hoje reunidas em `analysis/literature/` — ver [Metodologia de Análise de Traces](metodologia-de-analise-de-traces.md).
 - Muitos dos componentes da [Hipótese de Arquitetura "Knowledge as Infra"](../arquitetura/hipotese-knowledge-as-infra.md) citam papers específicos desta fila como fundamento — o guia de leitura por componente, dentro de `reading-queue.md`, é um corte diferente do mesmo corpus organizado por qual paper explica qual componente da arquitetura.
 - Os papers de taxonomia de erro (MAST, TRAIL, AgentDebug, ToolScan/SpecTool/ToolFailBench, Hu/Liu) que fundamentam a classificação de erros seguem a mesma disciplina de verificação e alimentam a [Metodologia de Taxonomia de Erros (Genealogia)](metodologia-de-taxonomia-de-erros.md).
