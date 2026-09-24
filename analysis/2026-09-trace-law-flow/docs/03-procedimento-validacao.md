@@ -8,8 +8,8 @@ revisado; é o caminho mais curto pra revisar direito. Este documento é o "como
 "por quê" em linguagem acessível (o que é um teste de robustez, por que algo é corrigido vs. retirado), ver
 [`01-racionais.md`](01-racionais.md).
 
-O procedimento tem duas frentes independentes — uma mecânica, outra de leitura — e um eixo que atravessa as
-duas: **nunca apresentar um número agregado sem saber apontar o caso concreto no trace cru que o sustenta.**
+O procedimento tem duas frentes independentes — uma mecânica, outra de leitura —, uma terceira que diz o que fazer
+com cada decisão da triagem (Frente 3), e um eixo que atravessa todas: **nunca apresentar um número agregado sem saber apontar o caso concreto no trace cru que o sustenta.**
 
 ---
 
@@ -993,6 +993,120 @@ O que muda de conclusão, e não só de número:
 O teste sintético da §1.7 (unidades inventadas, "3 meses") e as datas que não vêm do trace (datas de auditoria,
 de trabalho, do diário) não mudam.
 
+### 1.13 · O resíduo da taxonomia na base 1 (23/09/2026)
+
+**A pergunta.** O que cai nos dois baldes de resíduo — os erros que nenhuma regra de causa reconheceu — e o que
+cada caso pode significar? O racional dos baldes e das classes está em `01-racionais.md` §7 Passo 2 ("Os dois
+baldes de resíduo").
+
+**O método.** Todos os erros das unidades `X_causa_nao_identificada` e `X_sintoma_nao_reconhecido`, sem amostra.
+Para cada um: a classe (o submecanismo), a assinatura do `classify()`, o `error.type`, a classe da exceção e a
+frase da exceção **mascarada** — texto entre aspas → `<q>`, entre crases → `<id>`, números → `<n>` —, porque os
+valores entre aspas podem ser dados do caso. Nos erros de sintaxe a frase não entra (a mensagem traz a linha de
+código rejeitada).
+
+**Evidência.** `uv run python drill_down.py residuo` (depois do notebook) → `resultados/evidencia/A5_residuo/`
+(git-ignored): `casos.csv`, `derivados/residuo.csv` e os 9 crus.
+
+**Resultado — 9 erros, 3 classes:**
+
+| Classe | n | Casos (exec · papel · mês) | Exceção e frase mascarada | Leitura |
+|---|---:|---|---|---|
+| **Código Python mal escrito** | 4 | `456d8bf5`, `a80a9074` (managerAgent, out/2025) · `a47d6e3b` (ConversationAgent, mar/2026) · `b8a32b7b` (ConversationAgent, fev/2026) | `SyntaxError` ×3, `IndentationError` ×1 | código mal formado; nada em comum entre os casos além da classe |
+| **Erro conhecido, causa sem regra** | 4 | `6dde0bab` (ConversationAgent, dez/2025) · `ab45d27a` (managerAgent, mar/2026) · `87e8f3f4` (managerAgent, nov/2025) · `f82e081a` (ConversationAgent, mai/2026) | `TypeError`: `<q> not supported between instances of <q> and <q>` · `TypeError`: `unsupported operand type(s) for \|: <q> and <q>` · `ValueError`: `dictionary update sequence element #<n> has length <n>; <n> is required` · `TypeError`: `FinalAnswerTool.forward() got an unexpected keyword argument <q>` | dois tipos: operação ou comparação entre tipos errados (vizinho de "retorno pode chegar como string"), e **argumento nomeado que não existe no `final_answer`** — um erro de contrato de chamada (o IAN do ToolScan), não um acaso |
+| **Erro que a taxonomia não conhece** | 1 | `c4611fe3` (ConversationAgent, dez/2025) | `InterpreterError`: `NoneType is not supported.` | limitação do interpretador do smolagents; nenhuma regra de sintoma nem de causa a conhece |
+
+**Conferir no cru.** `uv run python drill_down.py caso <exec_id> <role>`, ou em `A5_residuo/crus/<exec_id>.json`:
+`txt_etap_memo` → papel → o `idx`-ésimo `ActionStep` → `error.message`.
+
+**Recorrência por padrão** (a regra da triagem para o resíduo, `01-racionais.md` §7 Passo 5; tabela no notebook
+9.2 e em `resultados/residuo_padroes.csv`). Os 9 erros formam **7 padrões**; um só se repete:
+
+| Padrão | Erros | Execuções | Meses | Passa (≥3 exec., ≥2 meses)? |
+|---|---:|---:|---:|---|
+| `SyntaxError: closing parenthesis <q> does not match opening parenthesis <q>` | 3 | 3 | 2 (out/2025, mar/2026) | **sim** |
+| os outros 6 padrões (um por linha da tabela acima) | 1 cada | 1 | 1 | não |
+
+**O que isso mostra.** Na base 1 o resíduo é pequeno (9 de 498 erros, 1,8%) e só 1 é erro desconhecido. Contado pela
+unidade, a "causa não identificada" pareceria recorrente (8 execuções, 6 meses), mas são 8 erros diferentes; contado
+por padrão, aparece **o único que volta de fato**: parênteses que fecham com um tipo diferente do que abriram, em 3
+execuções. Por isso a unidade sai **revisar — prioridade**, e o "sintoma não reconhecido" **revisar — baixa
+prioridade**. É candidato a regra de causa nova, não memória ainda. Na base 2 (25 erros de sintoma não reconhecido), a
+mesma tabela diz se são um erro novo que se repete ou vários soltos.
+
+### 1.14 · Cores das figuras — uma língua de cor para os erros (24/09/2026)
+
+**A regra.** Toda figura que pinta erros usa a mesma língua, fixa por nome em `pipeline/paleta.py` (`COR_ERRO`,
+aplicada por `base_pipeline.categoria_do_erro`): a cor é a **família** do erro (6 famílias do agente, 6 cores);
+**roxo = resíduo** (nenhuma regra reconheceu a causa — unidades `X_`); **cinzas = plataforma** (Protocolo do harness,
+Infra/LLM: não é erro do agente, não vira memória); **cinza-claro = "outros"** agrupados. O mesmo erro tem a mesma
+cor no 8.8, no 9.3 e na genealogia, em qualquer base; cada figura diz no título o que a cor mostra.
+
+| Figura | O que mostra | Como usa a cor |
+|---|---|---|
+| **8.8** | Pareto por papel: os 3 erros (submecanismos) mais frequentes do agente + plataforma + resíduo + outros | cada barra na cor do seu erro, com o nome escrito |
+| **9.3** | as unidades após a triagem, em seções por decisão | cada barra na cor da família dominante dos seus erros; o tipo da memória (factual/estratégia) vai no rótulo |
+| **genealogia** | árvore família → assinatura → mecanismo → lição → destino, sem agregados | cada fita leva a cor da família dos seus erros, de ponta a ponta; nós mistos em fatias |
+
+**Por que família, e não uma cor por submecanismo ou por unidade.** São 18 submecanismos e 15 unidades — cores demais
+para ler (foi a queixa ao 8.8 com 15 cores). Com 6 cores de família + 2 reservadas, toda barra e todo nó levam o nome
+escrito ao lado, e a cor diz de que família o erro vem.
+
+**Histórico das tentativas (24/09).** (1) O 8.8 destacava 5 unidades fixas e juntava o resto num cinza "Outras
+candidatas" que escondia 5 memórias (73 dos 498 erros), e a mesma cor significava coisas diferentes em cada figura
+(amarelo = uma memória no 8.8 e o protocolo do harness na genealogia). (2) Uma cor por unidade (15) e a genealogia
+pintada pela decisão (5 cores) resolveram o significado, mas o 8.8 ficou difícil de ler e a genealogia perdeu a
+família — o que ela existe para mostrar. (3) A regra atual.
+
+**Conferência com o validador da skill de visualização de dados** (`validate_palette.js`), nas 7 cores saturadas na
+ordem da legenda: faixa de luminosidade e saturação mínima passam; **vizinhos** — visão normal ΔE ≥ 27,6 (piso 15),
+daltonismo ΔE 6,1 (faixa 6–8, legal com rótulo junto: todo nó e toda barra têm nome); **qualquer par** — dois pares
+ficam abaixo do piso: laranja × verde para daltônicos (3,2) e vermelho × laranja para visão normal (7,1). É o limite
+conhecido de qualquer paleta de mais de 3 cores (a paleta padrão da skill tem os mesmos pares); os pares envolvem
+famílias pequenas (Suposição sobre estado, 8 erros; Suposição sobre dados, 2) e a leitura nunca depende só da cor.
+Aviso de contraste (< 3:1 com o fundo) no verde-água e no rosa, coberto pelos rótulos.
+
+**Conferências automáticas.** `resultados/genealogia_arestas.csv` idêntico ao de antes (só a pintura mudou); nenhum
+nó agregado na genealogia; no 8.8 cada painel soma 100% do papel; a cor de um erro vem sempre de `COR_ERRO`.
+
+**Numa base nova.** Família nova sem cor → cinza e aviso (`paleta.cor`), até ganhar uma cor na `paleta.py`.
+
+### 1.15 · Candidatura por papel — a triagem scoped, 9.4/9.5 (24/09/2026)
+
+**O que é.** A mesma triagem da §7 dos racionais rodada **dentro de cada papel** (`triagem_por_papel()` em
+`base_pipeline.py`), para a memória escopada por (papel, unidade). Classificação intacta — a função só
+reagrupa `EU`; a auditoria nº 6 e os CSVs existentes não são afetados.
+
+**Conferências automáticas (passam).**
+
+1. **Fechamento com o EU**: erros e ocorrências de cada unidade elegível, somados sobre os papéis, são idênticos
+   aos da triagem global (execuções/meses não fecham por construção — uma execução pode abrigar dois papéis).
+2. **Sanidade da figura**: assert no notebook — a matriz do 9.4 soma exatamente os erros elegíveis dos papéis
+   exibidos (≥5 erros, o corte do 8.8).
+3. **Fato estrutural conferido por exaustão**: zero células "reveladas" (candidata no papel sem passar na
+   global) — impossível com a mesma régua: execuções/meses de um papel estão contidos nos da base.
+
+**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 18** células candidatas mudam de lado — a
+"limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 10 unidades): os volumes por
+papel são menores por construção. As 8:
+
+| Papel | Unidade |
+|---|---|
+| CadastroCivel | Texto longo nunca dentro de literal de string |
+| CalculoCivel | Retorno pode chegar como string |
+| ConversationAgent | Nome usado sem ter sido definido |
+| ConversationAgent | Após step com erro, o que ele definiria não existe |
+| ConversationAgent | Ferramentas só aceitam argumento nomeado |
+| RoteadorCivel | Ferramentas só aceitam argumento nomeado |
+| RoteadorCivel | Texto longo nunca dentro de literal de string |
+| managerAgent | Explicação nunca solta no bloco de código |
+
+**Leitura honesta.** O veredito scoped por célula é frágil nos papéis pequenos — as células com 3–4 execuções
+vivem no limiar. O achado que não depende da régua é a **direção** do cruzamento: 14 das 32 células em que uma
+candidata global aparece num papel são **herdadas** (não se sustentam nele), e nenhuma "revelada" é sequer
+possível. A decisão de escrever memória por papel deve olhar a tabela do 9.4 junto com o volume, não a cor da
+célula isolada.
+
 ---
 
 ## Frente 2 — Verificar a literatura (aqui sim precisa da sua leitura)
@@ -1036,6 +1150,56 @@ Não commitar os PDFs no repo — manter como cópia de leitura local, fora do g
 Marque o progresso de leitura na `reading-queue.md` com a mesma régua que o projeto já usa: 📝 (verificado
 bibliograficamente) < 🔎 (texto completo lido por agente — nível atual dos quatro fichamentos) < ✅ (lido por
 você). Promova pra ✅ conforme for lendo de fato.
+
+---
+
+## Frente 3 — Depois da triagem: o que fazer com cada decisão (23/09/2026)
+
+A triagem (`01-racionais.md` §7 Passo 5) dá a cada unidade uma de cinco decisões. Esta frente diz, para cada uma, o
+que fazer, quando o trabalho termina e onde registrar. Vale para qualquer base: os números de uma base vão no doc
+daquela base, não aqui.
+
+| Decisão | O que fazer | Termina quando | Onde registrar |
+|---|---|---|---|
+| **candidato** | Rodar a **mineração** da unidade (`06-racionais-mineracao-unidades-n2-n10.md` §9, Passos 1–8; notebook `mineracao_unidades_n2_n10.ipynb`): de qual ferramenta vem cada erro, schema real do retorno, o que o prompt declara × o que a ferramenta devolve, estabilidade no tempo, amostra conferida no cru, registro final | registro final com `status` — `derived-and-checked`, ou `parcial` com a cobertura explícita | notebook de mineração · pastas `resultados/evidencia/11.*` · `07-relatorio-mineracao` |
+| **não-memória** | Nomear quem corrige **fora do agente** (harness, infra, LLM) e escrever o **gatilho de reabertura**: quantos casos por mês ou que taxa por 1.000 steps reabrem a unidade (ex. do `H_bloco_code`: ≥2 casos/mês ou > 1/1k steps) | gatilho escrito e com dono | `04-roadmap.md` §Monitoramento |
+| **revisar — prioridade** | O **procedimento do resíduo** (abaixo), para cada padrão que passa na recorrência — e para todos os padrões, se o motivo for o alarme de cobertura | o padrão virou regra (saiu do resíduo) **ou** foi descartado com motivo escrito | `01` §7 Passo 2 (a regra) · Frente 1 deste doc (os casos) · roadmap |
+| **revisar — baixa prioridade** | Nada agora. Registrar o tamanho do balde como **cobertura**. Sobe para prioridade se: (a) o mesmo padrão aparecer em outra base; ou (b) o "Sintoma não reconhecido" passar de **5% de todos os erros** da base — o **alarme de cobertura**, que a `triagem()` aplica sozinha (`ALARME_COBERTURA`; a coluna "motivo (resíduo)" diz por que subiu) | próxima base | a tabela por padrão da base (notebook 9.2) |
+| **fora: sem recorrência** | Nada agora. Reavaliar quando houver mais dados: somando bases, se passar no teste, volta à triagem como qualquer outra | próxima base | nenhum — a tabela da triagem já mostra |
+
+### O procedimento do resíduo, passo a passo
+
+1. **Listar os casos do padrão:** `uv run python drill_down.py padrao "<trecho do padrão>"` (sem argumento, lista
+   todos os padrões com erros, execuções e meses).
+2. **Ler no cru:** todos os casos, se forem até 10; senão, o 1º de cada mês (ordem `exec_id`, `idx`) — a mesma regra
+   das pastas de evidência. `uv run python drill_down.py caso <exec_id> <role>`.
+3. **Conferir o agrupamento:** os casos são mesmo o mesmo erro? A máscara pode juntar erros diferentes (que só
+   diferem dentro das aspas). Se não forem, anotar o motivo, dividir o padrão, e cada parte volta ao passo 1.
+4. **De quem é a falha?**
+   - do **agente** (o código que ele escreveu, o jeito que chamou a ferramenta) → segue para o passo 5;
+   - do **harness, da infra ou de um limite do LLM** (ex.: `AgentMaxStepsError`, o interpretador que não suporta
+     algo) → unidade nova `H_*`, tipo não-memória, e vai para o procedimento de não-memória.
+5. **Já existe uma unidade para essa lição?** Se sim (a regra só não reconhecia esta mensagem) → **estender a regra**
+   da unidade existente. Se não → **unidade nova**: nome, tipo (factual · ambiente ou experiencial · estratégia) e o
+   conteúdo em uma frase.
+6. **Escrever a regra** — determinística, sem LLM — no `submecanismo()` do `base_pipeline.py` (e também no
+   `classify()`, se o balde era "Sintoma não reconhecido": primeiro a regra de sintoma, depois a de causa), em
+   `SUB2UNI` e `UNI`, e a mesma regra no `audit/scripts/audit_recompute6.py`.
+7. **Rodar do zero e conferir:** os erros do padrão saíram do resíduo; nenhum outro erro mudou de unidade sem
+   explicação; as candidatas que já existiam não mudaram; a auditoria nº 6 continua com 0 divergências.
+8. **Registrar:** a regra e o porquê no `01` §7 Passo 2; os casos e a conferência na Frente 1 deste doc; a pasta de
+   evidência com os crus; o item fechado no roadmap. A unidade nova passa pela triagem como qualquer outra — se
+   sair candidata, entra no procedimento de candidata.
+
+**Dois casos particulares:**
+- **Código Python mal escrito em volume:** o padrão já separa pelo motivo do parser (parêntese, indentação,
+  operador); comece pelo motivo mais frequente.
+- **Sintoma não reconhecido:** o passo 6 começa pelo `classify()` (família e assinatura novas) e só depois o
+  `submecanismo()`.
+
+**Primeiro caso na base 1:** o padrão `SyntaxError: closing parenthesis <q> does not match opening parenthesis <q>`
+(3 execuções, 2 meses) está em "revisar — prioridade". Aplicar este procedimento a ele é o próximo passo da
+taxonomia, depois de rodar a base 2 (para ver se ele também se repete lá) — `04-roadmap.md`.
 
 ---
 

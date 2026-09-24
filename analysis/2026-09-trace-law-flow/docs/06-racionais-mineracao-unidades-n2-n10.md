@@ -120,7 +120,7 @@ sub-unidade `(unidade, função)`, nesta ordem:
    trabalho real a fazer, não é só formalismo.
 3. **Não passa, e cobre menos de 10% → bucket de consulta.** Uma fatia pequena de uma unidade não justifica gatilho
    próprio, mas também não some: fica listada caso a caso, sem memória, para abrir com
-   `drill_down.py caso <exec_id> <role>` — mesma ideia do balde "Não classificado" da `classify()`.
+   `drill_down.py caso <exec_id> <role>` — mesma ideia do balde "Sintoma não reconhecido" da `classify()`.
 
 A fatia é medida em **ocorrências**, o mesmo nível que a triagem conta. Casos **não resolvidos** (sem função
 atribuída) não entram nessa escada — não há função para triar: ficam documentados, com a atribuição a refazer.

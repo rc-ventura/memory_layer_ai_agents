@@ -3,19 +3,27 @@ type: methodology
 title: Metodologia de Análise de Traces
 description: A metodologia empírica de analysis/ — a escada de trace bruto a unidade de memória candidata, o layout de pastas por análise datada, a regra de que a profundidade de validação deve casar com a força da alegação, e a disciplina de dados derivados/PII.
 tags: [trace-analysis, empirical-methodology, validation, pii-discipline, memory-candidates, robustness-testing]
-verified:
-  - by: openwiki/0.5.1
-    at: 2026-09-21T19:21:20.640Z
 sources:
   - id: openwiki-source-747c216822a5f3a85d9b49e1
     resource: repo://analysis/2026-09-trace-law-flow/docs/03-procedimento-validacao.md
+  - id: openwiki-source-631277a618f3e5073c6d0450
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py
+  - id: openwiki-source-0db414e3ad59b3a4b0ec3ea1
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/drill_down.py
+  - id: openwiki-source-af7756299b766cf9f705cec7
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/genealogia_sankey.py
   - id: openwiki-source-bf7dacbe9994bcd338b3c0c5
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/resultados/evidencia/relatorio_meta_11.1-11.10.md
   - id: openwiki-source-4e5bd038f77a72e191e7c372
     resource: repo://analysis/2026-09-trace-law-flow/README.md
+  - id: openwiki-source-1748b7ddacfe941301be6af0
+    resource: repo://analysis/base_utils.py
   - id: openwiki-source-968204141b3124543370ca68
     resource: repo://analysis/README.md
-generated: { by: "claude-code", at: "2026-09-21T19:21:20.640Z" }
+generated: { by: "claude-code", at: "2026-09-24T16:54:16.453Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-09-24T16:54:16.453Z
 ---
 
 `analysis/` guarda as análises empíricas de traces brutos de agentes reais da esteira jurídica — a base de evidência de "memória de trabalho" para a hipótese de memória do projeto. Não é só um lugar para contar erros ou juntar gráficos: o objetivo recorrente é construir uma ponte empírica entre o **trace bruto** de um sistema de agentes real, os **mecanismos reais de falha** visíveis nesse trace, e a menor **lição/memória/correção operacional** reutilizável que poderia evitar a mesma falha de novo. A classificação de erro em si (sintoma → mecanismo → unidade → destino) tem sua própria metodologia dedicada — ver [Metodologia de Taxonomia de Erros (Genealogia)](metodologia-de-taxonomia-de-erros.md); esta página cobre o que envolve essa classificação: layout de pasta, disciplina de PII e a escada de validação.
@@ -76,11 +84,31 @@ Cada análise vive na sua própria pasta `analysis/AAAA-MM-slug/` (nova pasta po
 
 | Subpasta | Conteúdo |
 |---|---|
-| `pipeline/` | Os notebooks Jupyter executados (pipeline reprodutível, com outputs embutidos), um `base_pipeline.py` compartilhado quando a pasta hospeda mais de uma análise (carga do trace, explosão em steps, classificação de erro — cada notebook constrói sobre ele em vez de copiar células), e scripts companheiros (ex.: `drill_down.py`, que triangula qualquer número agregado contra um caso concreto no trace bruto) |
+| `pipeline/` | Os notebooks Jupyter executados (pipeline reprodutível, com outputs embutidos), um `base_pipeline.py` compartilhado quando a pasta hospeda mais de uma análise (carga do trace, explosão em steps, classificação de erro — cada notebook constrói sobre ele em vez de copiar células), e scripts companheiros: `drill_down.py` (triangula qualquer número agregado contra um caso concreto no trace bruto — comandos `caso`, `listar`, `mecanismo`, `ferramenta`, `evidencia`, `relogios`, `residuo`, `padrao`), `checklist.py` (as verificações de intake de uma base nova — ver abaixo), `genealogia_sankey.py` (gera o Sankey da genealogia dos erros — família → assinatura → mecanismo → unidade → destino — e grava as arestas cruas em `resultados/genealogia_arestas.csv`) e `paleta.py` (a língua de cor única das figuras: `COR_ERRO` prende a cor ao **nome** da família do erro — resíduo roxo, plataforma cinzas; nome sem cor fixa cai em cinza com aviso, em vez de herdar a cor de outro) |
 | `docs/` | Os documentos narrativos, numerados por par racional/relatório: `01-racionais.md` + `02-relatorio-achados.md` para a primeira análise, `03-procedimento-validacao.md` (validação/auditoria) e `04-roadmap.md` (o que falta) completam o primeiro conjunto, `05-schema.md` documenta o schema do trace bruto. Uma segunda análise metodologicamente distinta na mesma pasta datada ganha seu próprio par numerado (`06-racionais-mineracao-unidades-n2-n10.md` + `07-relatorio-mineracao-unidades-n2-n10.md`, para o passe de mineração das unidades nº2/nº10), com o slug do doc casando com o slug do notebook (`mineracao_unidades_n2_n10.ipynb`) e preservando a numeração de seção original para que as referências cruzadas continuem resolvendo. `09-metodologia-erro-a-memoria.md` é a instanciação verificada (funções, números, o Sankey de genealogia) da metodologia geral de taxonomia de erros |
-| `literature/` | Notas nível 🔎 (texto completo lido por um agente, verificado contra o PDF, mas não lido pelo Rafael) sobre os papers que fundamentam a análise — ver [Revisão de Literatura e Disciplina de Citação](revisao-de-literatura-e-disciplina-de-citacao.md) para o que 🔎 significa |
 | `resultados/` | CSVs derivados, **git-ignored** — carregam nomes de clientes, números de processo e trechos de documento em claro. Regenerados rodando o notebook, nunca commitados |
-| `audit/` (opcional) | Relatórios de auditoria independentes e scripts de recomputação |
+| `audit/` (opcional) | Relatórios de auditoria independentes datados (`2026-09-08-…`, `2026-09-16-…`) e `scripts/audit_recompute*.py`, os scripts de recomputação independente do universo inteiro no CSV bruto |
+
+Duas coisas mudaram de lugar e vivem na raiz de `analysis/`, não dentro da pasta datada:
+
+- **`literature/`** — as notas 🔎 dos papers de taxonomia de erro (texto completo lido por um agente, verificado contra o PDF, mas não lido pelo Rafael) foram promovidas a `analysis/literature/`, compartilhadas entre análises em vez de pertencer a uma pasta só — ver [Revisão de Literatura e Disciplina de Citação](revisao-de-literatura-e-disciplina-de-citacao.md) para o que 🔎 significa.
+- **`base_utils.py`** — primitivas genéricas de análise de trace de CodeAgent (formato smolagents): agrupar steps em sequências ordenadas `(exec_id, role)`, o inventário autoritativo de ferramentas (`def name(...)` no system prompt), helpers de AST sobre `code_action` e extração de entidades tipadas + checagem de suporte. Nada nele conhece a esteira jurídica nem a taxonomia de erros — a fronteira declarada é: **hipótese sobre uma base** (`classify()`, `submecanismo()`, `SUB2UNI`, `carregar_base()`) fica no `base_pipeline.py` da pasta datada e é **copiado** para a pasta nova; **mecânica do formato do trace** mora em `base_utils.py` e é importada. Criado em 22/09/2026 e verificado reproduzindo exatamente os números dos detectores de falha silenciosa da §7.
+
+## Uma segunda base existe — e o intake dela virou checklist
+
+A segunda extração (**base 2**, outra amostra independente de 1.000 execuções) já rodou o mesmo pipeline — e provou na prática por que intake precisa de procedimento: trouxe um `error.type` que a taxonomia nunca tinha visto (`AgentMaxStepsError`, n=1) e um erro que parecia extinto reapareceu com força, reabrindo a triagem do bucket "Protocolo do harness" (22/09/2026). O setup mecânico de uma base nova (pasta datada, cópia de `base_pipeline.py` + `drill_down.py` + `checklist.py` + `.gitignore`, dump em `data/`, apontar `TRACE`) está descrito no `analysis/README.md`; o que não é mecânico virou `pipeline/checklist.py`, que roda antes de qualquer notebook:
+
+1. **Drift de colunas** — `base_pipeline.py` lê seis colunas por nome; uma extração diferente pode renomear ou derrubar alguma;
+2. **Saúde do JSON** — quantas memórias parseiam vs. quebram em silêncio no `except` da explosão;
+3. **Censo de `error.type`** — regex no cru × parse pelo pipeline, com flag de divergência: diz se a taxonomia cobre a base *antes* de ela jogar erros desconhecidos no resíduo;
+4. **Contexto** — período real das execuções × lotes de corte, versões de agente, papéis no JSON;
+5. **Sobreposição (opcional)** — `python checklist.py <outra-base.csv>` cruza `cod_idef_exeo` entre duas extrações — obrigatório antes de chamar duas bases de réplicas independentes ou de somá-las.
+
+Depois do intake vem a pergunta seguinte: **o que fazer com cada decisão da triagem** — candidata, não-memória, `revisar — prioridade`, `revisar — baixa prioridade`, fora. O procedimento passo a passo, com critério de saída e onde registrar, vive na **Frente 3** de `docs/03-procedimento-validacao.md` da pasta datada; `analysis/README.md` carrega o resumo operacional, incluindo o procedimento para quando um **balde de resíduo cresce numa base nova** (`X_sintoma_nao_reconhecido` pede regra de sintoma e depois de causa; `X_causa_nao_identificada` pede só a regra de causa — e o sub-bucket "código Python mal escrito" é ruído até se provar recorrente). A recorrência no resíduo é contada **por padrão de erro** (classe da exceção + mensagem mascarada — `resultados/residuo_padroes.csv`, `drill_down.py padrao`), não pelo balde inteiro.
+
+### Os três relógios — `anomesdia` não é a data da execução
+
+A errata metodológica mais importante do ciclo: até 23/09/2026 o `mes` do pipeline vinha de `anomesdia`, que é a data do **lote de extração** (partição), não da execução — um lote acumula vários meses de execuções. Um teste de três relógios independentes por execução (`anomesdia` × `dat_hor_inio_exeo` × `timing.start_time` gravado pelo runtime dentro do JSON) mostrou que os dois últimos concordam em 840/840 e o primeiro diverge com mediana de 46 dias de defasagem — e **zero** execuções começam depois dele. Consequências: execuções passaram a ser datadas por `dat_hor_inio_exeo`; a cobertura da base 1 é **out/2025–ago/2026** (11 meses), não nov/2025–ago/2026; o incidente do harness foi em out/2025 (não dez/2025); e todas as colunas "meses" da triagem foram recalculadas — as decisões de triagem em si não mudaram. O comando `drill_down.py relogios` reproduz a evidência (`resultados/evidencia/A3_relogios/`). **Efeito colateral:** as auditorias independentes das pastas `11.x` verificaram a amostra escolhida sob a datação antiga — `relatorio_meta_11.1-11.10.md` e os `relatorio_independente.md` carregam um banner "Desatualizado desde 23/09/2026 — refazer" e não devem ser citados como verificação da amostra atual até serem refeitos.
 
 ## A metodologia de "passe" — como uma pasta de análise cresce
 
@@ -94,7 +122,7 @@ Dentro de `resultados/`, cada passe produz pastas de evidência em `resultados/e
 
 ## Auditoria independente por pasta de evidência, mais um meta-relatório consolidado
 
-O passe de mineração §11 (unidades nº2/nº10) estabeleceu o padrão concreto de auditoria: cada uma das dez pastas de evidência que ele produziu (`11.1_origem_do_erro/` a `11.10_leituras_get_available_documents/`) ganhou seu próprio `relatorio_independente.md` — uma segunda leitura, feita a partir dos `crus/` de cada pasta (não do notebook ou do código que os gerou), que confere se a alegação daquele passo específico se sustenta. Para os passos mais fortes (existência de um campo, contagem de entregas fora do padrão esperado), a auditoria foi além da releitura dos crus salvos e recomputou o universo inteiro a partir do CSV bruto com um caminho de código independente (`csv.DictReader` puro, sem reusar `pandas` nem as funções do notebook) — o mesmo princípio de "recomputar por fora" já em uso na análise original, agora aplicado passo a passo. Um `relatorio_meta_11.1-11.10.md` consolida essas dez auditorias num veredito único por passo (sustentado / sustentado com ressalva / retratado), para que a pergunta "essa cadeia de validação se sustenta reaberta do zero?" tenha uma resposta central em vez de dez respostas espalhadas.
+O passe de mineração §11 (unidades nº2/nº10) estabeleceu o padrão concreto de auditoria: cada uma das dez pastas de evidência que ele produziu (`11.1_origem_do_erro/` a `11.10_leituras_get_available_documents/`) ganhou seu próprio `relatorio_independente.md` — uma segunda leitura, feita a partir dos `crus/` de cada pasta (não do notebook ou do código que os gerou), que confere se a alegação daquele passo específico se sustenta. Para os passos mais fortes (existência de um campo, contagem de entregas fora do padrão esperado), a auditoria foi além da releitura dos crus salvos e recomputou o universo inteiro a partir do CSV bruto com um caminho de código independente (`csv.DictReader` puro, sem reusar `pandas` nem as funções do notebook) — o mesmo princípio de "recomputar por fora" já em uso na análise original, agora aplicado passo a passo e preservado em `audit/scripts/audit_recompute*.py`. Um `relatorio_meta_11.1-11.10.md` consolida essas dez auditorias num veredito único por passo (sustentado / sustentado com ressalva / retratado), para que a pergunta "essa cadeia de validação se sustenta reaberta do zero?" tenha uma resposta central em vez de dez respostas espalhadas. **Ressalva temporal:** essa rodada de auditorias verificou a amostra escolhida sob a datação antiga (`anomesdia`); depois da errata dos três relógios as pastas `11.x` foram regeneradas com a data real e os relatórios aguardam refação — estão marcados como desatualizados no próprio meta-relatório.
 
 ## Disciplina de dados derivados e PII
 
@@ -110,7 +138,7 @@ Da análise de referência (`2026-09-trace-law-flow/`), três práticas concreta
 
 ## Quando código nascido de uma análise vira código portátil
 
-`2026-09-trace-law-flow/pipeline/genealogia_sankey.py` renderiza a genealogia de erros como um diagrama Sankey com um motor de layout genérico (ordenação de colunas por baricentro + altura mínima de nó para legibilidade) que não depende de nada específico de taxonomia de erro — só a metade de preparação de dados do arquivo é específica da análise. Ainda não foi extraído para seu próprio módulo (um único chamador não basta para validar a fronteira certa), mas o precedente já está registrado: se uma análise futura precisar de um Sankey igualmente legível com muitos nós, esse é o código a reaproveitar, e `analysis/` (este nível, não dentro de uma pasta datada) é o lugar natural para esse tipo de código portátil — o mesmo raciocínio já aplicado a `schema-e-taxonomia-de-erros.md`, um documento de referência reutilizável que também vive na raiz de `analysis/`, fora de qualquer pasta datada, por não ser um artefato de um único passe.
+O precedente já se realizou uma vez: [`analysis/base_utils.py`](../../analysis/base_utils.py) é o módulo portátil que vive na raiz de `analysis/` com a mecânica genérica do formato de trace CodeAgent — criado quando uma segunda base chegou e a fronteira "hipótese por base × mecânica do formato" precisou virar código. O próximo candidato registrado é `2026-09-trace-law-flow/pipeline/genealogia_sankey.py`, que renderiza a genealogia de erros como um diagrama Sankey com um motor de layout genérico (ordenação de colunas por baricentro + altura mínima de nó para legibilidade) que não depende de nada específico de taxonomia de erro — só a metade de preparação de dados do arquivo é específica da análise. Ainda não foi extraído para seu próprio módulo (um único chamador não basta para validar a fronteira certa): se uma análise futura precisar de um Sankey igualmente legível com muitos nós, esse é o código a reaproveitar, e `analysis/` (este nível, não dentro de uma pasta datada) é o lugar natural para esse tipo de código portátil — o mesmo raciocínio já aplicado a `schema-e-taxonomia-de-erros.md`, um documento de referência reutilizável que também vive na raiz de `analysis/`, fora de qualquer pasta datada, por não ser um artefato de um único passe.
 
 ## Como se conecta ao resto do projeto
 

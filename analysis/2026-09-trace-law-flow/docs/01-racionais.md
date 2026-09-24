@@ -75,6 +75,19 @@ trace cru → taxonomia própria (inspeção direta do dado, por causa-raiz)
 A taxonomia é evidência do trace; a literatura é o que permite dizer onde essa taxonomia se encaixa, onde ela
 expõe algo que a literatura não previu, e o que ainda falta olhar.
 
+### O que a reclassificação por causa-raiz mudou (base 1)
+
+Registro movido do cabeçalho do notebook genérico em 23/09/2026 (o notebook passou a não carregar números de
+uma base específica):
+
+| Correção | v1 (sintoma) | v2 (causa-raiz) |
+|---|---|---|
+| "ValueError ao manipular resultado" (37) | tratado como erro de dados | **35 eram erro de convenção de chamada de ferramenta** (posicional × nomeado), em 12 ferramentas |
+| "KeyError campo ausente" (98) | genérico | **136 erros têm uma causa única**: o retorno da ferramenta é `dict`, o agente indexa como lista |
+| "SyntaxError" (223) | um balde | **159 são string não fechada** (relatório jurídico longo dentro de literal) |
+| "Protocolo do harness" (33) | candidato a memória | **incidente de out/2025; não-memória na base 1 — gatilho de reabertura acionado na base 2 (22/09/2026, ver diário)** |
+| — | não analisado | posição na trajetória, propagação, reincidência entre execuções, falhas silenciosas |
+
 ### Como cada execução é datada (decisão de 23/09/2026)
 
 O `mes` de cada execução vem de `dat_hor_inio_exeo`, **não** de `anomesdia`. O critério "≥2 meses" da triagem
@@ -691,7 +704,8 @@ de tamanho de amostra por família — os três testados, dois confirmados robus
 
 Números completos em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6. Código no notebook: a célula "Do
 sintoma ao mecanismo" (logo após `classify()`, na §2 — submecanismo, cascata, ocorrência; usada também em §2.2,
-§3, §5, §6, §8.4, §8.5 e §8.8), e na §9 as células 9.2 (triagem, tabelas, CSV) e 9.3 (gráfico). **Refeito do zero em
+§3, §5, §6, §8.4, §8.5 e §8.8), e na §9 as células 9.2 (triagem, tabelas, CSV), 9.3 (gráfico global) e 9.4–9.5
+(a triagem no recorte por papel — Passo 10). **Refeito do zero em
 15/09/2026**, reexecutando o notebook inteiro duas vezes: as saídas da §9 saíram idênticas nas duas execuções e
 os outros quatro CSVs (`erros_classificados`, `execucoes`, `payoff_assinaturas`, `reincidencia`) saíram
 byte-idênticos à versão anterior — só a tabela de candidatos mudou. A versão anterior (7 candidatos, tipos por
@@ -713,12 +727,44 @@ rejeitou**. Sem LLM, regras em ordem:
   entre aspas) ou o erro é `unterminated` / `never closed` / `forgot a comma` → *texto dentro de literal*. A linha
   é texto em português ou markdown (começa com `|`, `#`, `**`, `- `, `1)`; tem crase; ou ≥15% das palavras são
   stopwords do português) → *texto solto no código*. Contém "truncado" → *retorno impresso colado de volta*.
-  Nenhuma das anteriores → *erro de sintaxe Python pontual*.
+  Nenhuma das anteriores → *código Python mal escrito* (`codigo_mal_escrito`).
 - **Erros de execução.** `KeyError: 0` num dict → *dict indexado por posição*; `string indices must be integers`
   → *string tratada como dict*; `KeyError: 'campo'` → *campo inexistente*; `'list' object is not an iterator` →
   *`next()` sobre gerador*; `variable X is not defined` → *módulo sem import* (se X é `json`, `datetime`...) ou
   *nome não definido*; builtin proibido ou `Import of` → *inventário do sandbox*; `AgentGenerationError`/422 →
   *infra*.
+
+**Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** Duas funções leem a mesma
+mensagem de erro, com papéis diferentes. O `classify()` dá o **sintoma** (família e assinatura, §2 do relatório) e
+não decide nada: descreve. O `submecanismo()` dá a **causa**, e é ela que leva o erro a uma unidade. Cada uma tem
+a sua sobra, e cair em cada uma diz uma coisa diferente:
+
+| Balde | Classe (submecanismo) | Quando cai | O que pode significar |
+|---|---|---|---|
+| **Causa não identificada** (`X_causa_nao_identificada`) | **Código Python mal escrito** (`codigo_mal_escrito`) | erro de sintaxe ou indentação em que a linha rejeitada não é texto colado, literal de texto nem retorno colado | código mal formado de verdade (parêntese, indentação, operador): ruído, até se provar que se repete |
+| | **Erro conhecido, causa sem regra** (`causa_sem_regra`) | o `classify()` reconhece o sintoma, mas nenhuma regra de causa casa — inclusive "Could not index" fora dos três padrões | o sintoma tem nome, a causa não: **candidato a regra nova** se recorrer (ex.: argumento nomeado que não existe no `final_answer`) |
+| **Sintoma não reconhecido** (`X_sintoma_nao_reconhecido`) | **Erro que a taxonomia não conhece** (`sintoma_nao_reconhecido`) | nem o `classify()` nem o `submecanismo()` reconhecem a mensagem | **erro novo**: tipo que a taxonomia nunca viu, versão nova da esteira ou do smolagents, ou algo que não é erro de código (ex.: `AgentMaxStepsError`, exaustão de iterações). É o sinal de cobertura: onde ele cresce, as regras não alcançam |
+
+Na prática, as duas leituras se combinam **num só ponto** — `montar_unidades()` — e **só para o resíduo**:
+
+| O sintoma foi reconhecido? (`classify()`) | A causa foi identificada? (`submecanismo()`) | Vai para |
+|---|---|---|
+| sim | sim | uma unidade normal (ex.: `U_contrato_dict`) |
+| sim | não | **Causa não identificada** — classe *Código Python mal escrito* (erro de sintaxe) ou *Erro conhecido, causa sem regra* |
+| não | não | **Sintoma não reconhecido** — classe *Erro que a taxonomia não conhece* |
+| não | sim | uma unidade normal; só a coluna de família fica "Sintoma não reconhecido" (raro; 0 casos na base 1) |
+
+**Não há sobreposição:** cada erro vai para exatamente uma unidade; um erro nunca está nos dois baldes. "Sintoma
+não reconhecido" aparece em dois lugares — como **família** (coluna do `classify()`) e como **unidade** — e quase
+sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
+
+**Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
+`montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
+candidata depende disso — testado: as 10 candidatas da base 1 saem idênticas com ou sem a separação.
+
+O nome "causa não identificada" diz o que aconteceu com a regra, não com o erro: **não quer dizer que o erro
+aconteceu uma vez só** (até 23/09/2026 o balde chamava "erros pontuais", o que sugeria isso sem que a regra
+conferisse). Os casos da base 1 estão em `03-procedimento-validacao.md` §1.13.
 
 Cada submecanismo aponta para uma **unidade** (um conteúdo). O CSV `triagem_assinaturas.csv` mostra, para cada
 assinatura da §2, em quantas unidades ela se divide e quanto cai na dominante.
@@ -757,8 +803,19 @@ ablação); **a operacionalização por cascata é nossa**, não do paper.
 
 1. **É memória do agente?** Tipo `não-memória` → fica fora do agente (continua na tabela porque vira política
    operacional).
-2. **Tem conteúdo único?** O resíduo de erros pontuais (parêntese trocado, comparação com `None`, argumento errado
-   em `final_answer`) não tem uma frase que evite os 9 casos → fora.
+2. **A causa foi identificada?** Os dois baldes de resíduo (Passo 2) não têm uma frase que evite os casos: sem
+   regra de causa não há lição escrevível, então **nunca são candidatos**. Vão para **revisar** — a fila de trabalho
+   da taxonomia —, e passam pelo mesmo teste de recorrência do item 3, só que contado **por padrão de erro** e não
+   pela unidade: a unidade de resíduo junta erros diferentes por construção (é o que sobrou), e ela "recorrer" só
+   diria que existe resíduo em vários meses. O **padrão** (`padrao_residuo()`) é a classe da exceção mais a frase
+   mascarada (aspas → `<q>`, crases → `<id>`, números → `<n>`); na sintaxe, o motivo do parser sem a posição.
+   Algum padrão passa → **revisar — prioridade**; nenhum passa → **revisar — baixa prioridade** (continua na lista:
+   é sinal de cobertura). **Alarme de cobertura:** se o "Sintoma não reconhecido" passar de 5% de todos os erros da
+   base (`ALARME_COBERTURA`), ele sobe para prioridade mesmo sem padrão recorrente — a taxonomia não cobre aquela
+   base. O que fazer com cada decisão: `03-procedimento-validacao.md` Frente 3. A máscara é aproximação declarada — pode juntar erros que diferem só dentro das aspas, ou
+   separar o mesmo erro se a frase fora das aspas variar; por isso a tabela por padrão fica visível (notebook 9.2,
+   `resultados/residuo_padroes.csv`) para conferência humana antes de escrever a regra. "Revisar" não é
+   não-memória: lá a causa é conhecida e a correção vive fora do agente; aqui a causa não é conhecida.
 3. **Volta em execuções diferentes?** Memória entre execuções só se justifica se o problema recorre: **≥3
    execuções e ≥2 meses** com ocorrência. Abaixo disso → fora.
 
@@ -771,8 +828,8 @@ documentado. Medido erro por erro, **nenhuma das cinco era multi-causa**:
 
 | Assinatura excluída antes | Erros | Para onde foram os erros | Leitura |
 |---|---:|---|---|
-| Sintaxe inválida (prosa vazando no código) | 39 | 28 explicação solta · 7 texto em literal · 3 pontuais · 1 retorno colado | 72% numa unidade; parecia heterogênea porque 67% dos erros vêm logo depois de outro erro do mesmo papel — quase sempre repetição do mesmo |
-| Tipo diferente do esperado | 22 | 13 `next()` sobre gerador · 6 retorno como string · 3 pontuais | 59% numa causa única que ainda não tinha nome |
+| Sintaxe inválida (prosa vazando no código) | 39 | 28 explicação solta · 7 texto em literal · 3 causa não identificada · 1 retorno colado | 72% numa unidade; parecia heterogênea porque 67% dos erros vêm logo depois de outro erro do mesmo papel — quase sempre repetição do mesmo |
+| Tipo diferente do esperado | 22 | 13 `next()` sobre gerador · 6 retorno como string · 3 causa não identificada | 59% numa causa única que ainda não tinha nome |
 | Texto do documento colado em literal | 20 | 19 texto em literal · 1 retorno colado | mesma causa do candidato "relatório em literal", com outra mensagem de exceção |
 | Objeto sem o atributo esperado | 8 | 7 dict iterado como lista · 1 retorno como string | mesma causa do contrato de retorno das ferramentas de documento |
 | Módulo usado sem import | 6 | 6 inventário do sandbox | já estava no *conteúdo* do candidato "Inventário do sandbox", só não era contada |
@@ -781,8 +838,8 @@ Três eram a mesma causa de um candidato existente, escrita com outra exceção;
 critério "causa única, conteúdo numa frase" continua certo — o erro era aplicá-lo à assinatura em vez de a cada
 erro.
 
-**Passo 7 — o resultado.** 14 unidades: **10 candidatas** (5 factual · ambiente, 5 experiencial · estratégia),
-2 não-memória e 2 fora. As candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
+**Passo 7 — o resultado.** 15 unidades: **10 candidatas** (5 factual · ambiente, 5 experiencial · estratégia),
+2 não-memória, 2 a revisar (resíduo) e 1 fora. As candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
 O que mudou em relação à tabela anterior de 7 linhas:
 
 - **Três candidatas novas com peso real**: "Retorno pode chegar como string" (47 erros, 36 execuções, 9 meses,
@@ -802,12 +859,14 @@ O que mudou em relação à tabela anterior de 7 linhas:
   parte, a reação do agente ao incidente. Ela passa na triagem pelas 4 ocorrências próprias de mar–jun/2026, mas
   o volume grande é resíduo.
 
-**Passo 8 — o gráfico.** Uma barra por unidade, agrupadas pela decisão (candidatas / não-memória / fora) e
-ordenadas por tokens dentro de cada grupo. Cor pelo tipo — factual = azul, estratégia = laranja, não-memória =
-verde — e cinza neutro para "fora", que não é série. As três cores são os slots 1–3 da paleta categórica em
-ordem fixa, validados com `validate_palette.js` (skill dataviz): passa em tudo; o aviso de contraste do verde é
-coberto pelo rótulo direto em cada barra. O rótulo mostra tokens e **ocorrências**, não erros, porque ocorrência
-é a evidência que a triagem usa.
+**Passo 8 — o gráfico (9.3).** Uma barra por unidade, agrupadas pela decisão (candidatas / não-memória / revisar
+/ fora da triagem) e ordenadas por tokens dentro de cada grupo. **Desde 24/09/2026 a cor é a família dominante
+dos erros da unidade** — a língua comum `COR_ERRO`, a mesma do 8.8 e da genealogia (`03-procedimento-validacao.md`
+§1.14) — e o **tipo da memória vai escrito no rótulo**, junto com a marca "limítrofe" quando é o caso (até
+então a cor era o tipo: factual = azul, estratégia = laranja, não-memória = verde; histórico do git). O rótulo
+mostra tokens e **ocorrências**, não erros, porque ocorrência é a evidência que a triagem usa. O 8.8, que até
+24/09 importava esta decisão em cores ("candidata / não vira memória"), virou descrição pura — Pareto de erros
+por papel — e não fala mais de memória; a decisão vive toda aqui na §9.
 
 **Passo 9 — a leitura.** As duas maiores unidades — "Texto longo nunca dentro de literal de string" e "Retorno das
 ferramentas de documento é dict" — somam 57% dos erros e 50% dos tokens. Continuam sendo a aposta mais forte, com
@@ -825,6 +884,41 @@ nasceu"**. Duas consequências: (a) só entram erros que levantaram exceção �
 entrega errado) ficam de fora por construção (ver §5 do relatório); (b) a regra de cascata olha só o step
 imediatamente anterior, então uma variável definida num step que falhou dois steps antes aparece como "nome
 nunca definido", não como "estado perdido após erro".
+
+**Passo 10 — a candidatura por papel (9.4 e 9.5), 24/09/2026.**
+
+**A pergunta.** A memória do projeto vai ser **escopada por papel** — recuperada pela chave (papel, unidade), não
+pela unidade global. Mas a triagem acima decide pela unidade **na base inteira**: conta as execuções e os meses da
+unidade somando todos os papéis. Isso esconde o caso em que a unidade é recorrente no conjunto porque é recorrente
+num papel, mas aparece uma vez só nos outros — a candidatura global seria "emprestada" a papéis onde a memória
+não se justificaria sozinha.
+
+**A operação.** `triagem_por_papel(EU)` em `base_pipeline.py`: as mesmas três perguntas do Passo 5, rodadas
+**dentro de cada papel** — na prática só resta o teste de recorrência (tipo e regra de causa são da unidade, não
+do papel): ≥3 execuções e ≥2 meses com ocorrência, contados com a mesma deduplicação de cascata. **Os limiares
+são os mesmos da global, sem recalibração** — régua diferente destruiria a comparabilidade com o 9.3 e com o
+teste de sensibilidade já validado. Plataforma (não-memória) e resíduo (`X_`) ficam **fora por desenho**: a
+pergunta do gráfico é "o que pode virar memória neste papel", e esses dois blocos nunca podem. Papéis com menos
+de 5 erros ficam fora da figura (o mesmo corte do 8.8), mas continuam na tabela.
+
+**A figura (9.4)** é uma matriz papel × unidade — os dois números cabem numa célula: **cor cheia** = candidata
+naquele papel (cor = família do erro, a língua comum); **cinza** = a unidade ocorre no papel mas não se repete o
+suficiente **nele**; **vazio** = não ocorre. O número na célula são os erros da unidade naquele papel.
+
+**O comparativo (9.5)** cruza o veredito global (9.3) com o scoped (9.4) por (papel × unidade): **firme**
+(candidata nos dois), **herdada** (candidata global sem recorrência no papel), **revelada** (candidata no papel
+sem passar na global) e **fora**. **Fato estrutural: "revelada" é impossível com a mesma régua** — se a unidade
+junta ≥3 execuções e ≥2 meses dentro de um papel, essas mesmas execuções já passam a régua na base inteira
+(o papel está contido na base). A escolha informada é no sentido contrário: as **herdadas** mostram onde a
+triagem global empresta candidatura a um papel no qual a memória não se sustentaria sozinha.
+
+**O resultado** (base 1): 18 células (papel × unidade) candidatas de 33 com erro; 14 herdadas — quase metade das
+células onde uma candidata global aparece num papel não se sustenta nele. A candidatura scoped concentra-se no
+`ConversationAgent` (8 unidades), com 3 no `managerAgent`, 2 no `RespostaBacen`, 2 no `RoteadorCivel` e 1 em
+cada um de `CadastroCivel`, `CadastroTrabalhista` e `CalculoCivel`. Sensibilidade com a régua estrita (≥5
+execuções, ≥3 meses): **8 das 18** células candidatas caem — a régua scoped é bem mais sensível que a global
+(1 das 10 unidades), porque os volumes por papel são menores por construção; a lista de limítrofes está em
+`03-procedimento-validacao.md` §1.15.
 
 ---
 

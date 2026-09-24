@@ -3,17 +3,25 @@ type: methodology
 title: Metodologia de Taxonomia de Erros (Genealogia)
 description: O método determinístico, sem LLM, que roteia cada erro bruto de trace até a menor lição de memória que o evitaria — cinco elos (granularidade, sintoma, mecanismo, unidade, triagem), dois eixos paralelos que dividem e depois fundem, e por que a memória vive no nível da unidade, não do sintoma.
 tags: [error-taxonomy, genealogy, memory-candidates, trace-analysis, deterministic-classification, triage]
-verified:
-  - by: openwiki/0.5.1
-    at: 2026-09-21T19:21:20.640Z
 sources:
+  - id: openwiki-source-747c216822a5f3a85d9b49e1
+    resource: repo://analysis/2026-09-trace-law-flow/docs/03-procedimento-validacao.md
   - id: openwiki-source-61e9034accfd6552e38f7eff
     resource: repo://analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md
+  - id: openwiki-source-569719c5da69b38f321cdb6a
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py
+  - id: openwiki-source-af7756299b766cf9f705cec7
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/genealogia_sankey.py
+  - id: openwiki-source-b5d2e6c4b6578b784bc74767
+    resource: repo://analysis/2026-09-trace-law-flow/pipeline/paleta.py
   - id: openwiki-source-2d51aa76f8fc441a01852754
     resource: repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md
   - id: openwiki-source-e2588285d2ac910e627dab99
     resource: repo://discussion/teoria/agentdebug-vs-trail-error-taxonomy.md
-generated: { by: "claude-code", at: "2026-09-21T19:21:20.640Z" }
+generated: { by: "claude-code", at: "2026-09-24T16:54:16.453Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-09-24T16:54:16.453Z
 ---
 
 Sistemas de agentes sem memória persistente redescobrem as mesmas falhas em cada execução. Transformar erros registrados em memória útil exige uma taxonomia — mas taxonomia boa não é rótulo bonito, é **roteamento**: cada erro bruto precisa chegar, por regras determinísticas e reabíveis no dado cru, até a menor lição reutilível que o evitaria (ou até fora da memória). A contribuição central é a **genealogia de erros** — dois eixos paralelos de classificação (o que o sistema reclamou × o que o agente fez de errado) que se **dividem** (um sintoma pode ter várias causas) e se **fundem** (causas diferentes podem pedir a mesma cura) até convergir numa decisão de escrita.
@@ -28,7 +36,7 @@ Dois documentos, dois papéis que não se confundem: a hipótese de método **ge
 | **E1 · Sintoma** | O que o sistema reclamou? | família + assinatura | chave de proveniência/busca — **não decide** |
 | **E2 · Mecanismo** | O que o agente fez de errado? | causa, erro a erro | diagnóstico — desambigua o sintoma |
 | **E3 · Unidade** | Uma lição só previne todos os erros do grupo? | agrupamento de mecanismos | conteúdo — o card em si, um fato/regra por unidade |
-| **E4/E5 · Triagem** | Merece persistir? Onde a correção vive? | candidata / não-memória / fora | decisão — não é um nível da taxonomia |
+| **E4/E5 · Triagem** | Merece persistir? Onde a correção vive? | candidata / não-memória / fora / revisar | decisão — não é um nível da taxonomia |
 
 Cada elo é uma regra determinística sobre texto (mensagem de erro + o sinal local mais informativo que o trace já registre, como a linha de código rejeitada) — nunca um classificador neural ou LLM-as-judge. A razão não é custo: é que uma regra determinística é **reabível** — qualquer rótulo se triangula de volta ao caso cru — enquanto um classificador neural seria mais uma afirmação a validar, não uma base para validar as outras.
 
@@ -42,7 +50,18 @@ Sintoma (E1) e mecanismo (E2) são duas leituras independentes da mesma mensagem
 | mecanismo → unidade | **N:1** | causas diferentes com a mesma cura convergem — é onde a taxonomia se **fecha** |
 | unidade → decisão | **N:1** | a triagem decide pela unidade **global**, não por (contexto × unidade) |
 
-Consequência arquitetural: o eixo sintoma **não alimenta a decisão** — é a camada de descrição, proveniência e descoberta (o censo dos sintomas, a trilha de auditoria, o catch-all que sinaliza erro novo numa extração maior). Quem decide é sempre o eixo mecanismo.
+Consequência arquitetural: o eixo sintoma **não alimenta a decisão** — é a camada de descrição, proveniência e descoberta (o censo dos sintomas, a trilha de auditoria, o catch-all que sinaliza erro novo numa extração maior). Quem decide é sempre o eixo mecanismo — **com uma única exceção, declarada**: no fechamento da unidade (`montar_unidades()` na instanciação), a família do sintoma é consultada só para separar os dois baldes de resíduo entre si (ver abaixo), que nunca viram memória. Nenhuma candidata depende disso — na base 1 as 10 candidatas saem idênticas com ou sem a separação.
+
+### O resíduo — dois baldes, não um catch-all
+
+Todo classificador por regras tem uma sobra, e aqui ela é dividida em dois baldes porque as duas leituras podem falhar de formas diferentes — e cada falha pede um trabalho diferente:
+
+|| Balde | Quando | O que pede |
+|---|---|---|---|
+|| **Sintoma não reconhecido** (`X_sintoma_nao_reconhecido`) | nem E1 nem E2 reconhecem a mensagem | alarme de **cobertura**: a taxonomia não cobre esse erro — escrever regra de sintoma primeiro, depois de causa |
+|| **Causa não identificada** (`X_causa_nao_identificada`) | E1 reconhece o sintoma, E2 não identifica a causa | metade do caminho feita — escrever só a regra de causa. Inclui o código malformado (sintaxe), ruído até se provar recorrente |
+
+Cada erro cai em **no máximo um** balde — não há sobreposição — e "causa não identificada" descreve a **regra**, não o erro (não significa que aconteceu uma vez). O tamanho de cada balde é parte do relato de cobertura de qualquer instanciação: onde o resíduo cresce, as regras não alcançam.
 
 ### Exemplo real — a assinatura "Could not index" se divide, dois mecanismos se fundem
 
@@ -65,10 +84,24 @@ O equilíbrio que o método persegue: granular o suficiente para ser ensinável,
 Uma unidade só vira candidata a memória depois de passar, em ordem, por três perguntas de gate:
 
 1. **É memória do agente?** Se quem falhou foi o harness ou o LLM upstream, o agente não tem o que aprender — a correção vai para política operacional (retry, monitoramento), não para memória.
-2. **Tem conteúdo único — uma frase que previne?** Se o agrupamento é heterogêneo demais para uma frase só, fica fora por falta de conteúdo.
+2. **Tem conteúdo único — uma frase que previne?** Se o agrupamento é heterogêneo demais para uma frase só — o caso dos dois baldes de resíduo — ele **não é descartado nem vira não-memória**: vai para **revisar**, a fila de trabalho da taxonomia.
 3. **Recorre entre execuções e no tempo?** Memória entre execuções só se justifica se o problema atravessa execuções e tempo — senão é episódico, não estrutural.
 
+Os desfechos possíveis da triagem são, portanto, quatro: **candidata**, **não-memória**, **fora** (sem recorrência) e **revisar**. Os baldes de resíduo passam pelo mesmo teste de recorrência das candidatas, mas contado **por padrão de erro** (classe da exceção + mensagem com os dados do caso mascarados), não pelo balde — que junta erros diferentes por construção. Um padrão recorrente põe o balde em **revisar — prioridade**; sem nenhum, **revisar — baixa prioridade**. Nenhum dos dois é memória: o trabalho é na taxonomia (escrever a regra que falta), e uma vez escrita o erro vira unidade normal e refaz a triagem como qualquer outra.
+
+Por cima do teste por padrão existe um **alarme de cobertura**: se o balde "Sintoma não reconhecido" passar de uma fração de todos os erros da base (5% na instanciação, `ALARME_COBERTURA`), ele sobe para **revisar — prioridade** mesmo sem padrão recorrente — a leitura passa a ser "a taxonomia não cobre a base", não "um erro solto".
+
 Os limiares de recorrência (quantas execuções, quanto tempo) são **escolhas calibradas por instanciação, não constantes do método** — na instanciação da esteira jurídica, o corte adotado foi ≥3 execuções e ≥2 meses. Testar a sensibilidade do limiar (mover a régua e refazer a conta) é parte obrigatória da triagem, não um passo opcional.
+
+### Triagem escopada por papel — análise à parte, não troca da decisão global
+
+A candidatura continua sendo decidida pela unidade **global**. Mas quando a memória vai ser recuperada pela chave (papel, unidade), a mesma régua roda **dentro de cada papel** (`triagem_por_papel()` na instanciação — §9.4/§9.5) — o mesmo corte, **sem recalibração**, porque régua diferente destruiria a comparabilidade com a global. O cruzamento dos dois vereditos dá quatro estados por célula (papel × unidade): **firme** (candidata nos dois), **herdada** (candidata global que não se repete naquele papel — a triagem global a empresta), **revelada** (candidata no papel sem passar na global — **impossível por construção** com a mesma régua: as execuções e meses do papel estão contidos nos da base) e **fora**. Na base 1: 18 de 33 células candidatas, 14 herdadas, zero reveladas; 8 das 18 caem na régua estrita (≥5 execuções, ≥3 meses) — o veredito scoped é frágil nos papéis pequenos e se lê junto com o volume, nunca pela célula isolada.
+
+## A figura-canônica — a genealogia como árvore de roteamento
+
+A cadeia inteira cabe numa figura só (o Sankey da instanciação, gerado por `pipeline/genealogia_sankey.py`): cinco colunas — família → assinatura → mecanismo → unidade → destino — com **contagem real por nó e por aresta** (a soma se conserva em todos os estágios; as arestas cruas ficam em `resultados/genealogia_arestas.csv`). Todas as assinaturas e mecanismos aparecem pelo nome — é uma árvore de roteamento auditável, não um agregado. A última coluna nomeia o destino 1:1 com a unidade: `MEM`/`HARNESS`/`REVISAR`/`FORA` + o título real da lição.
+
+Todas as figuras que pintam erros dividem **uma língua de cor única** (`pipeline/paleta.py`, `COR_ERRO`, aplicada por `categoria_do_erro`): a cor é a **família** do erro (dominante, quando um nó mistura famílias); **roxo = resíduo**, **cinzas = plataforma**, cinza-claro = "outros". Um nome sem cor fixa cai em cinza **com aviso impresso** — família nova aparece como pendência, não herda a cor de outra em silêncio. O mesmo erro tem a mesma cor em qualquer figura e qualquer base.
 
 ## Validação — a mesma escada, aplicada à classificação
 

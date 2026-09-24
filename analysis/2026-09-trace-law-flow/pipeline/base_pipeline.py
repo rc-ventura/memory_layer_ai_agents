@@ -20,7 +20,9 @@ from types import SimpleNamespace
 
 __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
            "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
-           "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem",
+           "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
+           "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
+           "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
@@ -109,7 +111,7 @@ def classify(m):
     if 'TypeError' in m:            return ('Contrato de retorno da ferramenta','Tipo diferente do esperado')
     if 'ValueError' in m:           return ('Suposição sobre dados','Formato/valor inválido')
     if 'IndexError' in m:           return ('Contrato de retorno da ferramenta','Retorno vazio indexado')
-    return ('Não classificado', 'Erro não classificado')
+    return ('Sintoma não reconhecido', 'Sintoma não reconhecido')  # nenhuma regra de sintoma casou: erro novo para a taxonomia
 
 
 def classificar_erros(steps):
@@ -153,7 +155,7 @@ def submecanismo(m):
             return "texto_em_literal"
         if e_texto(l):
             return "texto_solto_no_codigo"
-        return "pontual"
+        return "codigo_mal_escrito"   # sintaxe/indentação em código de verdade, não texto colado
     if "does not support multiple positional" in m:
         return "argumento_posicional"
     if "Could not index" in m:
@@ -163,7 +165,7 @@ def submecanismo(m):
             return "dict_indexado_por_posicao"
         if "KeyError: '" in m or "are in the [columns]" in m:
             return "campo_inexistente_no_retorno"
-        return "pontual"
+        return "causa_sem_regra"
     if "Object hashDocumento has no attribute" in m:
         return "dict_iterado_como_lista"
     if ("JSON object must be str" in m or "JSONDecode" in m or "multiply sequence by non-int" in m
@@ -181,7 +183,7 @@ def submecanismo(m):
         return "inventario_sandbox"
     if v:
         return "nome_nao_definido"
-    return "pontual"
+    return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
 
 
 SUB2UNI = {
@@ -198,7 +200,8 @@ SUB2UNI = {
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm",
     "harness_bloco_code": "H_bloco_code",
-    "pontual": "X_pontual",
+    "codigo_mal_escrito": "X_causa_nao_identificada", "causa_sem_regra": "X_causa_nao_identificada",
+    "sintoma_nao_reconhecido": "X_sintoma_nao_reconhecido",
 }
 FACT, ESTR, NAO, SEM = "factual · ambiente", "experiencial · estratégia", "não-memória · harness/infra", "—"
 UNI = {
@@ -233,7 +236,10 @@ UNI = {
     # como resolvido.
     "H_bloco_code": ("Protocolo do harness", NAO,
                      "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente, a partir de mar/2026: ≤0,99/1k). REABERTO em 22/09/2026 (base 2) — ver diário de campo."),
-    "X_pontual": ("Erros pontuais sem conteúdo único", SEM, "—"),
+    # os dois baldes de resíduo (01-racionais.md §7, "Os dois baldes de resíduo"): nunca viram memória; a triagem os
+    # põe em "revisar", com prioridade se algum padrão de erro recorre — o que medem é onde as regras não alcançam
+    "X_causa_nao_identificada": ("Causa não identificada", SEM, "— (revisar: escrever regra de causa)"),
+    "X_sintoma_nao_reconhecido": ("Sintoma não reconhecido", SEM, "— (revisar: escrever regra de sintoma e de causa)"),
 }
 
 
@@ -244,18 +250,69 @@ def montar_unidades(E):
     EU["submecanismo"] = EU["err_msg"].apply(submecanismo)
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
+    # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece
+    sel = EU["submecanismo"].eq("causa_sem_regra") & EU["familia"].eq("Sintoma não reconhecido")
+    EU.loc[sel, "submecanismo"] = "sintoma_nao_reconhecido"
     sem_casa = set(EU["submecanismo"].unique()) - set(SUB2UNI)
     assert not sem_casa, f"mecanismo sem casa em SUB2UNI: {sorted(sem_casa)}"
     EU["unidade"] = EU["submecanismo"].map(SUB2UNI)
     assert EU["unidade"].notna().all(), "erro com unidade NaN após o map SUB2UNI"
     EU["ocorrencia"] = EU["cascata"].astype(str) + "|" + EU["unidade"]
+    res = EU["unidade"].str.startswith("X_")
+    EU["padrao"] = None
+    EU.loc[res, "padrao"] = [padrao_residuo(m, sm) for m, sm in zip(EU.loc[res, "err_msg"], EU.loc[res, "submecanismo"])]
     return EU
 
 
+def mascarar(frase):
+    """Texto entre aspas → <q>, entre crases → <id>, números → <n>. Sobra só o texto padrão da exceção do Python."""
+    frase = re.sub(r"'[^']*'|\"[^\"]*\"", "<q>", frase)
+    frase = re.sub(r"`[^`]*`", "<id>", frase)
+    return re.sub(r"\d+", "<n>", frase).strip()
+
+
+def padrao_residuo(m, sub):
+    """A impressão digital de um erro do resíduo, para contar recorrência por erro e não pelo balde inteiro:
+    classe da exceção + frase mascarada. Na sintaxe, a frase é o motivo do parser (linha `Error:`), sem a posição —
+    só a classe juntaria códigos quebrados de jeitos diferentes. Aproximação declarada: pode juntar erros que diferem
+    só dentro das aspas, ou separar o mesmo erro se a frase fora das aspas variar (01-racionais.md §7 Passo 5)."""
+    if sub == "codigo_mal_escrito":
+        classe = (re.findall(r"due to: (\w+Error)", m) or re.findall(r"\b(\w+Error)\b", m) or ["?"])[-1]
+        linhas = [l.strip() for l in m.splitlines() if l.strip().startswith("Error:")]
+        motivo = mascarar(linhas[-1][len("Error:"):]) if linhas else ""
+        motivo = re.sub(r"\s*\(<unknown>, line <n>\)", "", motivo)
+        motivo = re.sub(r"\s+on line <n>", "", motivo)
+        return f"{classe}: {motivo}".rstrip(": ")
+    k = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]{0,90})", m)
+    if k:
+        return f"{k[-1][0]}: {mascarar(k[-1][1])}"
+    return (re.findall(r"\b\w+(?:Error|Exception)\b", m) or ["?"])[-1]
+
+
 MIN_EXECS, MIN_MESES = 3, 2
+REVISAR_PRIORIDADE, REVISAR_BAIXA = "revisar — prioridade", "revisar — baixa prioridade"
+# alarme de cobertura: se o "Sintoma não reconhecido" passar desta fração de TODOS os erros da base, a taxonomia não
+# cobre a base e o balde sobe para prioridade mesmo sem padrão recorrente (03-procedimento-validacao.md, Frente 3)
+ALARME_COBERTURA = 0.05
+
+
+def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+    """Uma linha por padrão de resíduo: erros, execuções e meses (sobre ocorrências, como a triagem) e se passa no
+    mesmo teste de recorrência das candidatas. É a lista de trabalho para escrever regra nova."""
+    R = EU[EU["unidade"].str.startswith("X_")]
+    o = R.drop_duplicates("ocorrencia")
+    chave = ["unidade", "submecanismo", "padrao"]
+    t = (o.groupby(chave).agg(ocorrências=("ocorrencia", "size"), execuções=("exec_id", "nunique"),
+                               meses=("mes", "nunique"), papéis=("role", "nunique"))
+         .join(R.groupby(chave).size().rename("erros")).reset_index())
+    t["passa na recorrência"] = (t["execuções"] >= min_execs) & (t["meses"] >= min_meses)
+    return t.sort_values(["passa na recorrência", "execuções", "erros"], ascending=False).reset_index(drop=True)
 
 
 def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+    # resíduo: recorrência contada por PADRÃO de erro, não pela unidade (que junta erros diferentes por construção)
+    passa = residuo_por_padrao(EU, min_execs, min_meses).groupby("unidade")["passa na recorrência"].any()
+    fracao_desconhecida = (EU["unidade"] == "X_sintoma_nao_reconhecido").mean()
     tri = []
     for u, g in EU.groupby("unidade"):
         nome, tipo, conteudo = UNI[u]
@@ -263,22 +320,56 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         execs_u, meses_u = o["exec_id"].nunique(), o["mes"].nunique()
         if tipo == NAO:
             decisao = "não-memória"
-        elif tipo == SEM:
-            decisao = "fora: sem conteúdo único"
+        elif tipo == SEM:  # resíduo: nunca candidato (falta a regra de causa); a fila de trabalho da taxonomia
+            alarme = u == "X_sintoma_nao_reconhecido" and fracao_desconhecida > ALARME_COBERTURA
+            decisao = REVISAR_PRIORIDADE if (passa.get(u, False) or alarme) else REVISAR_BAIXA
+            motivo = ("padrão recorrente" if passa.get(u, False) else "") + \
+                     (" + " if passa.get(u, False) and alarme else "") + \
+                     (f"alarme de cobertura ({fracao_desconhecida:.1%} dos erros)" if alarme else "") or \
+                     "nenhum padrão recorrente"
         elif execs_u < min_execs or meses_u < min_meses:
             decisao = "fora: sem recorrência"
         else:
             decisao = "candidato"
         tri.append({"unidade": u, "nome": nome, "tipo": tipo, "decisão": decisao,
+                    "motivo (resíduo)": motivo if tipo == SEM else "",
                     "ocorrências": len(o), "erros": len(g), "reincidências na cascata": len(g) - len(o),
                     "execuções": execs_u, "meses": meses_u, "papéis": o["role"].nunique(),
                     "tokens": int(g["tok_tot"].sum()),
                     "% ocorr. após outro erro": round(o["seguidor"].mean() * 100),
                     "assinaturas de origem": " + ".join(g["assinatura"].value_counts().index),
                     "conteúdo proposto": conteudo})
-    ordem = {"candidato": 0, "não-memória": 1, "fora: sem recorrência": 2, "fora: sem conteúdo único": 3}
+    ordem = {"candidato": 0, "não-memória": 1, REVISAR_PRIORIDADE: 2, REVISAR_BAIXA: 3, "fora: sem recorrência": 4}
     t = pd.DataFrame(tri)
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
+
+
+def triagem_por_papel(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+    """A mesma régua do triagem(), aplicada dentro de cada papel — a candidatura scoped da §9.4. Só unidades
+    elegíveis a memória (tipo factual/estratégia): plataforma (não-memória) e resíduo (X_) ficam fora por
+    decisão de desenho. Uma linha por (role, unidade) com erros no papel; a decisão é "candidato" quando a
+    unidade se repete naquele papel (>= min_execs execuções e >= min_meses meses, sobre ocorrências
+    deduplicadas da cascata, como a global). Unidade ausente no papel simplesmente não gera linha."""
+    tri = []
+    for (role, u), g in EU.groupby(["role", "unidade"]):
+        nome, tipo, _ = UNI[u]
+        if tipo not in (FACT, ESTR):
+            continue
+        o = g.drop_duplicates("ocorrencia")
+        execs, meses = o["exec_id"].nunique(), o["mes"].nunique()
+        tri.append({"role": role, "unidade": u, "nome": nome, "tipo": tipo,
+                    "decisão": "candidato" if (execs >= min_execs and meses >= min_meses) else "fora no papel",
+                    "ocorrências": len(o), "erros": len(g), "execuções": execs, "meses": meses,
+                    "tokens": int(g["tok_tot"].sum())})
+    t = pd.DataFrame(tri)
+    return t.sort_values(["role", "decisão", "tokens"], ascending=[True, True, False]).reset_index(drop=True)
+
+
+def categoria_do_erro(familia, unidade):
+    """A categoria de cor de um erro — a mesma em todas as figuras (paleta.COR_ERRO): "Resíduo" quando nenhuma regra
+    de causa o reconheceu (unidades X_); senão a família do erro. As famílias de plataforma (harness/infra) ficam com
+    o nome da família e ganham cinzas na paleta."""
+    return "Resíduo" if unidade.startswith("X_") else familia
 
 
 DEGENERADO = re.compile(r"n[ãa]o encontrad[oa] na base|informa[çc][ãa]o insuficiente", re.I)

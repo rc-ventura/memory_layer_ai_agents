@@ -198,6 +198,26 @@ sua frequência ou custo (lacuna declarada em §7).
 | **Alternativa rejeitada** | Classificar pelo raciocínio do agente (módulo cognitivo de origem). Rejeitado por escopo — o raciocínio é escrito **antes** da ação acontecer, e a pergunta deste método é "que conteúdo evitaria o erro", não "em qual módulo ele nasceu". São lentes compatíveis, não rivais |
 | **Racional do nível** | Sem o mecanismo, o mesmo sintoma alimentaria lições contraditórias (§5); com ele, cada erro ganha um diagnóstico contável e falsificável |
 
+### E2b · O resíduo — o que nenhuma regra reconhece, em dois baldes
+
+Todo classificador por regras tem uma sobra. Aqui ela tem **dois baldes**, porque as duas leituras (E1 e E2) podem
+falhar de formas diferentes, e cada falha pede um trabalho diferente:
+
+| Balde | Quando | O que pede |
+|---|---|---|
+| **Sintoma não reconhecido** | nem E1 nem E2 reconhecem a mensagem | a taxonomia não cobre esse erro: alarme de **cobertura**. Escrever regra de sintoma primeiro, depois de causa |
+| **Causa não identificada** | E1 reconhece o sintoma, E2 não identifica a causa | metade do caminho feita: escrever só a regra de causa. Inclui o código malformado (sintaxe) — ruído até se provar recorrente |
+
+Cada erro cai em **no máximo um** balde. A combinação das duas leituras acontece num único ponto, o fechamento da
+unidade (E3), e **só para o resíduo** — é a única exceção à regra de que o sintoma não decide (§9). "Causa não
+identificada" descreve a **regra**, não o erro: não significa que ele aconteceu uma vez só. Ler o tamanho de cada
+balde é parte do relato de cobertura de uma instanciação. Ambos nunca viram memória por construção — sem regra de
+causa não há lição —, mas **não saem da triagem**: vão para **revisar**, a fila de trabalho da taxonomia, e passam
+pelo mesmo teste de recorrência das candidatas (E4b), contado **por padrão de erro** (a mensagem com os dados do
+caso mascarados) e não pelo balde, que junta erros diferentes por construção. Um padrão recorrente põe o balde em
+**prioridade**; sem nenhum, **baixa prioridade**. A máscara é aproximação declarada e a tabela por padrão fica
+visível para conferência humana antes de escrever a regra.
+
 ### E3 · Unidade — a lição como operador de fechamento
 
 | | |
@@ -222,7 +242,9 @@ flowchart TD
     U["unidade"] --> Q1{"1 · É memória<br/>do agente?"}
     Q1 -->|"não (falha de harness/LLM)"| NM["não-memória<br/>→ política operacional:<br/>retry, monitoramento"]
     Q1 -->|"sim"| Q2{"2 · Tem conteúdo único<br/>(uma frase que previne)?"}
-    Q2 -->|"não (resíduo heterogêneo)"| OUT1["fora:<br/>sem conteúdo"]
+    Q2 -->|"não (resíduo: nenhuma regra de causa)"| REV{"recorre, contado<br/>por padrão de erro?"}
+    REV -->|"sim"| R1["revisar — prioridade<br/>→ escrever regra de causa"]
+    REV -->|"não"| R2["revisar — baixa prioridade<br/>(sinal de cobertura)"]
     Q2 -->|"sim"| Q3{"3 · Recorre entre<br/>execuções e no tempo?"}
     Q3 -->|"não"| OUT2["fora:<br/>sem recorrência"]
     Q3 -->|"sim"| CAND["CANDIDATA<br/>→ roteia pelo tipo do conteúdo:<br/>factual · ambiente / experiencial · estratégia"]
@@ -231,7 +253,7 @@ flowchart TD
 | Pergunta | Racional do threshold | Custo de errar |
 |---|---|---|
 | É memória do agente? | Se quem falhou foi o harness/LLM upstream, o agente não tem o que aprender — escrever memória aqui seria ruído | falso positivo: lição irrelevante para o modelo |
-| Tem conteúdo único? | Memória é uma frase ensinável; heterogêneo residual não tem uma | memória ambígua, pior que nenhuma |
+| Tem conteúdo único? | Memória é uma frase ensinável; o resíduo (sem regra de causa) não tem uma — vai para "revisar", com a mesma régua de recorrência aplicada por padrão de erro | memória ambígua, pior que nenhuma; ou, se o resíduo fosse descartado, um erro novo recorrente invisível |
 | Recorre? | Memória **entre** execuções só se justifica se o problema atravessa execuções e tempo (senão é episódico, não estrutural) | escrever para exceções que não voltam |
 
 **Os limiares de recorrência (quantas execuções, quanto tempo) são escolhas
@@ -246,7 +268,24 @@ e refazer a conta) é parte obrigatória da triagem, não um passo opcional.
 | candidata · factual · ambiente | card de fato do ambiente, **checável contra o sistema** (schema de retorno, assinatura de ferramenta) |
 | candidata · experiencial · estratégia | card de regra de ação, validável só observando se o erro para de voltar |
 | não-memória | política operacional no harness/infra (retry, circuit breaker, gatilho de monitoramento) |
+| revisar (resíduo) | trabalho na **taxonomia**: escrever a regra que reconheça o erro; depois ele passa pela triagem como qualquer outro |
 | fora | nada escrito; registrado só como estatística |
+
+### E6 · Depois da triagem — o que fazer com cada decisão
+
+Toda saída da triagem precisa de um próximo passo e de um critério de "terminou"; senão cada instanciação é lida
+de um jeito, e a fila do resíduo não tem como ser atacada.
+
+| Decisão | Próximo passo | Termina quando |
+|---|---|---|
+| candidata | investigação dirigida da unidade: de onde vem cada erro, o contrato real do que falhou, estabilidade no tempo, amostra conferida no cru; então o registro final da memória | registro com status de confiança e cobertura explícita |
+| não-memória | nomear o dono da correção fora do agente e escrever o gatilho de reabertura (casos por período, taxa por passos) | gatilho escrito e com dono |
+| revisar — prioridade | procedimento do resíduo: listar os casos do padrão → ler no cru → conferir que são o mesmo erro → decidir de quem é a falha (agente × plataforma) → estender uma unidade existente ou criar uma nova → escrever a regra determinística → rodar do zero e conferir que só aquele padrão mudou → registrar | o padrão virou regra, ou foi descartado com motivo |
+| revisar — baixa prioridade | nada agora; o tamanho do balde entra no relato de cobertura. Sobe para prioridade se o padrão reaparecer em outra instanciação, ou se o balde "sintoma não reconhecido" passar de uma fração declarada dos erros (**alarme de cobertura**) | próxima instanciação |
+| fora | nada agora; reavaliar com mais dados | próxima instanciação |
+
+O limiar do alarme de cobertura é escolha da instanciação, como os limiares de recorrência — e, como eles,
+declarado e testável.
 
 ---
 
@@ -347,12 +386,14 @@ flowchart TD
 
 | Termo | É | Não é |
 |---|---|---|
-| família / assinatura | saída do sintoma (E1) — descrição, proveniência, descoberta | não alimenta a decisão |
+| família / assinatura | saída do sintoma (E1) — descrição, proveniência, descoberta | não decide candidatas (só separa os dois baldes do resíduo, E2b) |
 | mecanismo | saída do diagnóstico (E2) — a causa, erro a erro | ainda não é a lição |
 | unidade | agrupamento de mecanismos por lição comum (E3) | não é automaticamente candidata |
 | ocorrência | unidade deduplicada dentro da cascata (E4a) | não é "um erro" |
 | candidata | unidade que passou a triagem (E5) | **decisão**, não nível da taxonomia |
 | não-memória | correção fora do agente (harness/infra/retry) | não é lição descartada — vive em política operacional |
+| sintoma não reconhecido | resíduo em que nem E1 nem E2 reconhecem o erro (E2b) | não é erro "pontual": mede cobertura |
+| causa não identificada | resíduo em que o sintoma é conhecido e a causa não (E2b) | não quer dizer "aconteceu uma vez" |
 
 Armadilha a evitar: o conjunto de unidades tipicamente inclui agrupamentos que
 por construção **nunca** viram memória (harness/infra, resíduo sem conteúdo

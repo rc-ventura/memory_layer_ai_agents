@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:167a7564b1ac7573ef2152f416e2ac8d5bab72d6ce3fbc0d3f810a0fb7858214",
+  "pageVersion": "sha256:93445fc5009dbab238fcee91087485407accb611f51709a9fc5656e70a22b503",
   "claims": [
     {
       "id": "claim_d78b4f78b7cc4e67bafff8c5f0ea932e",
@@ -74,17 +74,43 @@
     },
     {
       "id": "claim_32260b764f424aeaa962b6889f19bb12",
-      "statement": "As of 18/09/2026, the analytical core shared between the trace-law-flow analysis folders now lives in pipeline/base_pipeline.py, making the byte-identical requirement between the original and a new isolated analysis folder trivially checkable (the new folder copies that one file instead of duplicating notebook cells).",
+      "statement": "As of 18/09/2026, the analytical core shared between trace-analysis folders lives in pipeline/base_pipeline.py (classify(), submecanismo(), SUB2UNI, triage), making the byte-identical requirement between the original and a new isolated analysis folder trivially checkable — the new folder copies that one file instead of duplicating notebook cells, as the intake checklist in analysis/README.md prescribes.",
       "evidence": [
         {
-          "resource": "repo://discussion/open-questions.md#L128-L128",
-          "version": "repo-lines-v1:sha256:3644ce282904a7586192bea8c6ef8499b00a29a2240be4b239b46733d09a24e0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzY0NGNlMjgyOTA0YTc1ODYxOTJiZWE4YzZlZjg0OTliMDBhMjlhMjI0MGJlNGIyMzliNDY3MzNkMDlhMjRlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzY0NGNlMjgyOTA0YTc1ODYxOTJiZWE4YzZlZjg0OTliMDBhMjlhMjI0MGJlNGIyMzliNDY3MzNkMDlhMjRlMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzU0NDdiNGM2NzZhZTVlYzViMzQzNjBlZTMwNTc5YTc4MzY1NzYxOTMwZDFiMDk0NWM4MDFiYjk1ODQ4MDQ1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzdlNjg5ZmVkOTJiZDYxMTYyNDgyNTNhYTRiYWUwM2UzNGRhNGFhMjRiOGYxNDQwOGU1NjI1MTE4ZTQ2MWY2OCJ9"
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L21-L30",
+          "version": "repo-lines-v1:sha256:0df367ed9df35f2609d210335416cce30f9938d67446657870c97d1f2769e9fb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzOTkzYTc1NTQxM2U4N2M0NWRkZTgzZWUyZTMwMjA1ZWQ1NjU0MmNiZDM3ZThkYzQxMjkyOTdhYzk5OWIzMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkNDVhMzIzYjYyN2Y5NWQxNzQ4YWEzMGNkMmM1MjE1YmI1MGM3MjgzZDNlYjU3OTQyM2I5Mzk5NDg3NDJlYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5NjUwNjA5NDc2OWIzYmU0ZDNmNTM3YmE2NzE5ZmQyYjU1NDMzMWJmYjJiMGUxNDlhNzA5ZjQzZTk4ZjBiNDMifQ"
+        },
+        {
+          "resource": "repo://analysis/README.md#L160-L190",
+          "version": "repo-lines-v1:sha256:854d0569774d2cac71ef549debe4ebd9f43b28c1f48b33baeabd88e5127be791:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzRjYzlkZGIyYzEyNjIyNDY1YTEwMDUxODE4MjkxOGE1ZTRmMTQ5OGU4NjgzODUwNTA5MTUyOTQ0NjY2ZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3M2NjYTE0MDgwYzZlMmZiYzMwNGE1NGUxOWZiYjE5YWJhNWI3ZmE1NGEzZDFkMmNjMjc4ZTI3Y2ZiMTJjYjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjNWM1MjczMTk0MWUxYzA0YmEzYzk5MDJlNDQ2NWU5MWMxY2JjOTNhNjVjMjFkYjE5MzkxZGYzMzUyZWU2NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyYTEzZWEzNjExYjBjZDUxYWFiMmRlZmYxNGQzMzA3MTBiNzM0Y2M4YzBlNWIzY2QyN2Q2YmQ5NDk0ODllYWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce57b05b50184b218dd02e7a606a8092",
+      "statement": "The second trace extraction has already happened: 'base 2' is an independent 1,000-execution sample that surfaced a new error.type unseen in base 1 (AgentMaxStepsError, n=1), reopened the harness-protocol bucket on 22/09/2026, and exposed that anomesdia dates the extraction batch, not the execution (real dates come from dat_hor_inio_exeo). The status lookup table also arrived (analysis/status_execucao_agente.csv; the 1/2/3/34/67 dictionary is in schema-e-taxonomia-de-erros.md), and new-base intake is operationalized by pipeline/checklist.py (column drift, error.type census, cross-base cod_idef_exeo overlap).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py#L1-L31",
+          "version": "repo-lines-v1:sha256:5a0b2f7cce2a1c4d080c64db6c1d59bdc41d2458dd3a49110ec585aa00a2847b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMDg0YTlmMzc4MTI0YjJiMWE1MTU2M2JmM2MyMjQ0NGViN2ZmMzM2OTIwMTdkYTI4YjIxMzZhZTU2OTg3ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzMDFlNDM2NWYxZTI4YThlMDQzMTM2ODI3YTgzYzA0MWJlZWE2OWExNjZhOTc2MzhlOTBkZWY4NDJmNWM1NzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0NzMyNjAyZjI5MWZiMDE1MGRlN2RhZWQ0NjdmY2ZiZWVhZGM3ZGEyOWZlNTY2YmQxNDA4Y2U4YjAyOTBmZjUifQ"
+        },
+        {
+          "resource": "repo://analysis/schema-e-taxonomia-de-erros.md#L125-L141",
+          "version": "repo-lines-v1:sha256:5085c60b6bc6969e8842deb72429eb401746e4592003a2957a6e796e1e03fd31:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NzlkYjY5YmUzODJiNjZmM2JkY2FkOWE4ZTFlMjc4NDQxZWQ4Nzk3YjBkZGI1OWJjZTRiMDJmODI1MTJlNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1MjU5Y2U2ODUyN2U3ZjkxMmNjYWZmNTA5NWE0ZWMzNzQwYzliYTU4YTk0NjBjNDJhZmI0ZjYzNTlhMDY1Y2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1YmQ3Mzg5ODFlMDUyNTQzYjUxMjdjZDhlYmYxMTI3NDYzZTYwNDk4ZmZmMWNiYzdlOWQ5YmYzM2IzODhlOWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwMTlmZGNjYmEwZWMxNWNmY2FiMzE4ZjkxMTE3ODZjMWQ4MTk0ZWUxYmRmNjJiYjgwY2Q5MTFlMDI2NmNkMjgifQ"
+        },
+        {
+          "resource": "repo://analysis/status_execucao_agente.csv",
+          "version": "repo-file-v1:sha256:c0866aa5db5c6fd0f850b63f863e8e302d0b72997be0a617e19165e5809bb3cd"
+        },
+        {
+          "resource": "repo://research-diary/Set/diario_campo_2026-09-21.md#L27-L43",
+          "version": "repo-lines-v1:sha256:a1bb21eed8891ab5604b98b98e097db8da44d8c088b1668aa3423940f1412f4d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyYWI3MzBhZGNmNDJiZGM0OTI2YzM2ZDFiODljOTlmNmM5NzIwM2Y4YmVlMjgxNzMwYzcwYWRiMmY0M2IxNzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYjE3YTFhZDFiM2U1NDFiYjA0ZmM5MTdlNTU1ZjY1NjljMDQ0ZWU4Y2FhMjM0ZTNlY2QyMmNlMDhkNWIxMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhYmY1NDQwYWRhOWJhNzk5ZGIxN2NiZWViNDU2OGVhNGQ5OWY5ODI1ZDU1YjAwMWQ2Nzk5MzYzZjVjYWIyNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlODk1YTJlY2Q2YzU5ZGNhZjliNzBkMzNhNGVhMzlmY2M5MzBlNzEwYTI0MmFhNDQwYThmZGQ5ZmFmMjJiYmQifQ"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.1",
-    "at": "2026-09-18T13:35:02.362Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-24T16:54:16.453Z"
   }
 }

@@ -59,6 +59,16 @@ Uso:
            regra de escolha escrita. Sustenta que `anomesdia` não é a data da execução.
            Imprime só contagens. Leia o leia-me.md da pasta.
 
+    python drill_down.py residuo
+        -> resultados/evidencia/A5_residuo/: todos os erros que nenhuma regra de causa reconheceu
+           (unidades X_), com a classe de cada um e a frase da exceção mascarada, mais os crus.
+           Lê resultados/erros_mecanismo.csv — rode o notebook antes. Imprime só contagens.
+
+    python drill_down.py padrao ["<trecho do padrão>"]
+        -> os casos de um padrão de erro do resíduo (exec_id/role/idx/mês), para o passo 1 do
+           procedimento de revisão (03-procedimento-validacao.md, Frente 3). Sem argumento, lista
+           os padrões com erros, execuções e meses. Lê resultados/erros_mecanismo.csv.
+
     python drill_down.py caso <exec_id> <role>
         -> imprime a trajetória inteira daquele papel naquela execução, na ordem
            em que aconteceu: PlanningStep (plano) quando existir, e pra cada
@@ -427,9 +437,9 @@ def evidencia(analise=None):
     """Completa as pastas de evidência a partir do casos.csv que o notebook de mineração gravou: crus/<exec_id>.json (a linha inteira
     do trace) e derivados/<exec>_<role>_idx<n>.json (a visão de cada caso, conferida contra o cru). Sem argumento, todas
     as pastas que têm casos.csv."""
-    def por_step(d):  # pastas com casos por (exec, role, idx); A3_relogios é por execução e tem comando próprio
+    def por_step(d):  # só as pastas da §11 da mineração; A3_relogios e A5_residuo têm comando próprio
         arq = os.path.join(PASTA_EVIDENCIA, d, "casos.csv")
-        return os.path.exists(arq) and {"role", "idx"} <= set(pd.read_csv(arq, nrows=0).columns)
+        return d.startswith("11.") and os.path.exists(arq) and {"role", "idx"} <= set(pd.read_csv(arq, nrows=0).columns)
     pastas = sorted(d for d in os.listdir(PASTA_EVIDENCIA) if por_step(d)) if analise is None else [analise]
     if not pastas or not os.path.exists(os.path.join(PASTA_EVIDENCIA, pastas[0], "casos.csv")):
         print(f"nenhum casos.csv em {PASTA_EVIDENCIA}/{analise or '*'} — rode a §11 do notebook mineracao_unidades_n2_n10.ipynb antes."); return
@@ -620,6 +630,124 @@ duas últimas datas batem; a primeira vem semanas ou meses depois.
 > Os crus têm nome de cliente, número de processo e texto de documento. Pasta git-ignored — não versionar.
 """
 
+CLASSE_RESIDUO = {
+    "codigo_mal_escrito": "Código Python mal escrito",
+    "causa_sem_regra": "Erro conhecido, causa sem regra",
+    "sintoma_nao_reconhecido": "Erro que a taxonomia não conhece",
+}
+
+from base_pipeline import mascarar, padrao_residuo  # a mesma impressão digital que a triagem usa
+
+def residuo():
+    """Evidência do resíduo da taxonomia: todos os erros das unidades X_ (causa não identificada / sintoma não
+    reconhecido), com a classe de cada um e a frase da exceção mascarada. Lê resultados/erros_mecanismo.csv (rode o
+    notebook antes). Grava resultados/evidencia/A5_residuo/ e imprime só contagens."""
+    pasta = os.path.join(PASTA_EVIDENCIA, "A5_residuo")
+    os.makedirs(os.path.join(pasta, "derivados"), exist_ok=True)
+    M = pd.read_csv(os.path.join(os.path.dirname(PASTA_EVIDENCIA), "erros_mecanismo.csv"), dtype={"exec_id": str})
+    X = M[M["unidade"].str.startswith("X_")].copy()
+    df = load()
+    linha = {r["cod_idef_exeo"]: (i, r) for i, r in df[df["cod_idef_exeo"].isin(set(X["exec_id"]))].iterrows()}
+    msgs = {}
+    for eid, (i, r) in linha.items():
+        memo = json.loads(r["txt_etap_memo"])
+        for role, passos in memo.items():
+            if not isinstance(passos, list): continue
+            acts = [st for st in passos if isinstance(st, dict) and st.get("__class__") == "ActionStep"]
+            for k, st in enumerate(acts):
+                e = st.get("error") or {}
+                if e: msgs[(eid, role, k)] = (e.get("type"), str(e.get("message") or ""))
+    linhas = []
+    for _, c in X.sort_values(["submecanismo", "exec_id", "idx"]).iterrows():
+        tipo, m = msgs.get((c["exec_id"], c["role"], int(c["idx"])), (None, ""))
+        exc = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]{0,90})", m)
+        if exc and c["submecanismo"] != "codigo_mal_escrito":
+            classe_exc, frase = exc[-1]
+        else:  # erro de parsing: só a classe, sem frase (a mensagem traz o código rejeitado)
+            classe_exc, frase = (re.findall(r"\b\w+(?:Error|Exception)\b", m) or ["?"])[-1], ""
+        linhas.append({"exec_id": c["exec_id"], "role": c["role"], "idx": int(c["idx"]), "mes": c["mes"],
+                       "unidade": c["unidade"], "submecanismo": c["submecanismo"],
+                       "classe": CLASSE_RESIDUO.get(c["submecanismo"], c["submecanismo"]),
+                       "assinatura": c["assinatura"], "error_type": tipo, "excecao": classe_exc,
+                       "frase_mascarada": mascarar(frase),
+                       "padrao": padrao_residuo(m, c["submecanismo"])})
+    casos = pd.DataFrame(linhas)
+    casos.to_csv(os.path.join(pasta, "casos.csv"), index=False)
+    casos.drop(columns=["frase_mascarada"]).to_csv(os.path.join(pasta, "derivados", "residuo.csv"), index=False)
+    for eid in casos["exec_id"].unique():
+        i, r = linha[eid]
+        gravar_cru(pasta, r, i)
+    cont = casos.groupby(["unidade", "classe"]).size()
+    with open(os.path.join(pasta, "leia-me.md"), "w", encoding="utf-8") as f:
+        f.write(LEIA_ME_RESIDUO.format(n=len(casos), n_crus=casos["exec_id"].nunique(),
+                                       contagem="\n".join(f"- {u} · {c}: {n}" for (u, c), n in cont.items())))
+    print(f"A5_residuo: {len(casos)} erros · {casos['exec_id'].nunique()} crus")
+    for (u, c), n in cont.items(): print(f"  {u} · {c}: {n}")
+
+LEIA_ME_RESIDUO = """# A5_residuo — o resíduo da taxonomia
+
+**O que esta pasta sustenta.** A leitura dos erros que nenhuma regra de causa reconheceu (`01-racionais.md` §7, "Os
+dois baldes de resíduo"; casos em `03-procedimento-validacao.md` §1.13): de qual classe é cada um e o que a
+mensagem de exceção diz.
+
+**Regra de escolha dos {n} casos ({n_crus} crus):** todos os erros das unidades `X_causa_nao_identificada` e
+`X_sintoma_nao_reconhecido` — sem amostra.
+
+**Contagem:**
+
+{contagem}
+
+**As classes:**
+- **Código Python mal escrito** (`codigo_mal_escrito`): erro de sintaxe ou indentação em código de verdade, não
+  texto colado no código.
+- **Erro conhecido, causa sem regra** (`causa_sem_regra`): o sintoma tem nome no `classify()`, mas nenhuma regra do
+  `submecanismo()` diz o que o agente fez de errado.
+- **Erro que a taxonomia não conhece** (`sintoma_nao_reconhecido`): nem o sintoma nem a causa são reconhecidos.
+
+**Arquivos.**
+- `crus/<exec_id>.json`: **a fonte**, a linha inteira do trace sem alteração (`txt_etap_memo` só desserializado).
+- `casos.csv`: um erro por linha, com a classe, o `error.type`, a classe da exceção, a frase da exceção mascarada
+  (texto entre aspas → `<q>`, entre crases → `<id>`, números → `<n>`) e o **padrão** (`padrao_residuo()` do
+  `base_pipeline.py`) — a chave com que a triagem conta a recorrência do resíduo.
+- `derivados/residuo.csv`: o mesmo, sem a frase — com `exec_id`/`role`/`idx` para voltar ao cru.
+
+**Conferir no cru:** `txt_etap_memo` → papel → o `idx`-ésimo `ActionStep` da lista → `error.message`. Ou
+`uv run python drill_down.py caso <exec_id> <role>`.
+
+**Gerar** (em `pipeline/`, depois do notebook): `uv run python drill_down.py residuo`
+
+> Os crus têm nome de cliente, número de processo e texto de documento. Pasta git-ignored — não versionar.
+"""
+
+def padrao(trecho=None):
+    """Os casos de um padrão de erro do resíduo (passo 1 do procedimento de revisão, 03-procedimento-validacao.md,
+    Frente 3). Sem argumento: lista os padrões com contagem. Com argumento: o padrão que contém o trecho (sem
+    diferença de maiúsculas); se mais de um contém, lista os candidatos para escolher. Lê
+    resultados/erros_mecanismo.csv — rode o notebook antes. Só ids e datas: o padrão já vem mascarado."""
+    M = pd.read_csv(os.path.join(os.path.dirname(PASTA_EVIDENCIA), "erros_mecanismo.csv"), dtype={"exec_id": str})
+    if "padrao" not in M.columns:
+        print("erros_mecanismo.csv sem a coluna `padrao` — rode o notebook de novo (versão de 23/09/2026 em diante)."); return
+    R = M[M["padrao"].notna()]
+    cont = R.groupby(["unidade", "padrao"]).agg(erros=("exec_id", "size"), execucoes=("exec_id", "nunique"),
+                                                meses=("mes", "nunique")).sort_values(["execucoes", "erros"], ascending=False)
+    if not trecho:
+        print(f"{len(cont)} padrões de resíduo (unidade · erros · execuções · meses):\n")
+        for (u, pd_), c in cont.iterrows():
+            print(f"  {u:27s} {c['erros']:3d} err · {c['execucoes']:3d} exec · {c['meses']:2d} meses · {pd_}")
+        print('\nUm padrão:  python drill_down.py padrao "<trecho do padrão>"'); return
+    hits = sorted({p_ for p_ in R["padrao"] if trecho.lower() in p_.lower()})
+    if not hits:
+        print(f"nenhum padrão contém '{trecho}'. Sem argumento, a lista completa."); return
+    if len(hits) > 1:
+        print(f"{len(hits)} padrões contêm '{trecho}' — use um trecho mais específico:")
+        for h in hits: print("  " + h)
+        return
+    C = R[R["padrao"] == hits[0]].sort_values(["mes", "exec_id", "idx"])
+    print(f"padrão: {hits[0]}\n{len(C)} erros · {C['exec_id'].nunique()} execuções · {C['mes'].nunique()} meses\n")
+    for _, c in C.iterrows():
+        print(f"  exec_id={c['exec_id']}  role={c['role']}  idx={c['idx']}  mes={c['mes']}  unidade={c['unidade']}")
+    print("\nLer um caso no cru:  python drill_down.py caso <exec_id> <role>")
+
 def caso(exec_id, role, as_json=False):
     df = load()
     row = df[df["cod_idef_exeo"] == exec_id]
@@ -702,6 +830,10 @@ if __name__ == "__main__":
             evidencia(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "relogios":
         relogios()
+    elif cmd == "residuo":
+        residuo()
+    elif cmd == "padrao":
+        padrao(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "caso":
         args = [a for a in sys.argv[2:] if a != "--json"]
         as_json = "--json" in sys.argv[2:]

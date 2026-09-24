@@ -68,13 +68,13 @@ def submecanismo_spec(m):
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or abre_string(l):
             return "texto_em_literal"
         if e_texto_pt(l): return "texto_solto_no_codigo"
-        return "pontual"
+        return "codigo_mal_escrito"
     if "does not support multiple positional" in m: return "argumento_posicional"
     if "Could not index" in m:
         if "string indices must be integers" in m: return "tipo_real_do_retorno"
         if re.search(r"KeyError: \d+\s*$", m) or "unhashable type: 'slice'" in m: return "dict_indexado_por_posicao"
         if "KeyError: '" in m or "are in the [columns]" in m: return "campo_inexistente_no_retorno"
-        return "pontual"
+        return "causa_sem_regra"
     if "Object hashDocumento has no attribute" in m: return "dict_iterado_como_lista"
     if ("JSON object must be str" in m or "JSONDecode" in m or "multiply sequence by non-int" in m
             or "could not convert string to float" in m or "has no attribute" in m):
@@ -86,7 +86,7 @@ def submecanismo_spec(m):
     if f and not hasattr(builtins, f.group(1)): return "nome_nao_definido"
     if f or "Import of" in m or "ModuleNotFound" in m or "Forbidden" in m: return "inventario_sandbox"
     if v: return "nome_nao_definido"
-    return "pontual"
+    return "causa_sem_regra"
 
 SUB2UNI = {
     "dict_indexado_por_posicao":"U_contrato_dict", "dict_iterado_como_lista":"U_contrato_dict",
@@ -95,7 +95,9 @@ SUB2UNI = {
     "argumento_posicional":"U_arg_nomeado", "inventario_sandbox":"U_sandbox", "modulo_sem_import":"U_sandbox",
     "next_sobre_gerador":"U_next_gerador", "nome_de_step_que_falhou":"U_estado_perdido",
     "nome_nunca_definido":"U_nome_inventado", "repr_colado":"U_repr_colado",
-    "infra_llm":"H_infra_llm", "harness_bloco_code":"H_bloco_code", "pontual":"X_pontual",
+    "infra_llm":"H_infra_llm", "harness_bloco_code":"H_bloco_code",
+    "codigo_mal_escrito":"X_causa_nao_identificada", "causa_sem_regra":"X_causa_nao_identificada",
+    "sintoma_nao_reconhecido":"X_sintoma_nao_reconhecido",
 }
 UNI_NOME = dict()
 for row in csv.DictReader(open(EM_CSV, encoding="utf-8")):
@@ -142,6 +144,32 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
 
 # --------------------------------------------- comparação erro-a-erro com o CSV
 csv_rows = list(csv.DictReader(open(EM_CSV, encoding="utf-8")))
+def classify_sig_local(m):
+    if 'Could not index' in m: return 'ret_dict'
+    if 'does not support multiple positional' in m: return 'arg_pos'
+    if 'unterminated' in m: return 'unterm'
+    if 'regex pattern' in m: return 'sem_bloco'
+    if 'IndentationError' in m: return 'indent'
+    if 'leading zeros' in m: return 'data'
+    if 'forgot a comma' in m or 'never closed' in m or 'invalid decimal' in m: return 'colado'
+    if 'SyntaxError' in m: return 'sintaxe'
+    if 'is not defined' in m:
+        v = re.search(r'variable `(\w+)`', m)
+        if v and v.group(1) in MODS: return 'sem_import'
+        return 'var_nao_def'
+    if 'has no attribute' in m: return 'sem_atributo'
+    if 'not allowed' in m or 'explicitly allowed' in m or 'is not permitted' in m: return 'bloqueado'
+    if 'ModuleNotFound' in m: return 'mod_ausente'
+    if 'Forbidden' in m: return 'proibido'
+    if 'AgentGenerationError' in m or 'internally hosted' in m: return 'falha_llm'
+    if 'Error code: 422' in m or 'UnprocessableEntity' in m: return 'http422'
+    if 'JSONDecode' in m: return 'nao_json'
+    if 'KeyError' in m: return 'campo_ausente'
+    if 'TypeError' in m: return 'tipo'
+    if 'ValueError' in m: return 'valor'
+    if 'IndexError' in m: return 'ret_vazio'
+    return 'NC'
+
 csv_map = {(r["exec_id"], r["role"], int(r["idx"])): r for r in csv_rows}
 mine_map = {}
 diffs = []
@@ -155,6 +183,9 @@ for e in errors:
             sub = "nome_de_step_que_falhou"
         else:
             sub = "nome_nunca_definido"
+    # causa sem regra + sintoma que a classificação local também não reconhece = erro desconhecido (01 §7)
+    if sub == "causa_sem_regra" and classify_sig_local(e["em"]) == "NC":
+        sub = "sintoma_nao_reconhecido"
     uni = SUB2UNI[sub]
     mine_map[(e["eid"], e["role"], e["idx"])] = (sub, uni)
     cr = csv_map.get((e["eid"], e["role"], e["idx"]))
@@ -294,31 +325,6 @@ print(f"   ferramentas declaradas (união): {len(INV)} (esp. 90)")
 # (eid, role, idx, err, em, uni, ctx_next).
 checked=reached=repeated=same_mec_r=0
 same_sig_r=0
-def classify_sig_local(m):
-    if 'Could not index' in m: return 'ret_dict'
-    if 'does not support multiple positional' in m: return 'arg_pos'
-    if 'unterminated' in m: return 'unterm'
-    if 'regex pattern' in m: return 'sem_bloco'
-    if 'IndentationError' in m: return 'indent'
-    if 'leading zeros' in m: return 'data'
-    if 'forgot a comma' in m or 'never closed' in m or 'invalid decimal' in m: return 'colado'
-    if 'SyntaxError' in m: return 'sintaxe'
-    if 'is not defined' in m:
-        v = re.search(r'variable `(\w+)`', m)
-        if v and v.group(1) in MODS: return 'sem_import'
-        return 'var_nao_def'
-    if 'has no attribute' in m: return 'sem_atributo'
-    if 'not allowed' in m or 'explicitly allowed' in m or 'is not permitted' in m: return 'bloqueado'
-    if 'ModuleNotFound' in m: return 'mod_ausente'
-    if 'Forbidden' in m: return 'proibido'
-    if 'AgentGenerationError' in m or 'internally hosted' in m: return 'falha_llm'
-    if 'Error code: 422' in m or 'UnprocessableEntity' in m: return 'http422'
-    if 'JSONDecode' in m: return 'nao_json'
-    if 'KeyError' in m: return 'campo_ausente'
-    if 'TypeError' in m: return 'tipo'
-    if 'ValueError' in m: return 'valor'
-    if 'IndexError' in m: return 'ret_vazio'
-    return 'NC'
 traj2 = defaultdict(list)
 with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
     rdr = csv.DictReader(f)

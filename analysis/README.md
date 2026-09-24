@@ -185,10 +185,35 @@ extraction — mandatory before calling two bases independent replicas or poolin
    documented in `schema-e-taxonomia-de-erros.md` §3.1.
 
 `classify()` / `submecanismo()` / `SUB2UNI` are hypotheses mined from the first base — copy them
-unchanged and read the **"Não classificado" bucket as the coverage signal**: where it grows, the rules
+unchanged and read the **"Sintoma não reconhecido" bucket (unit `X_sintoma_nao_reconhecido`; called "Não classificado" until 2026-09-23) as the coverage signal**: where it grows, the rules
 don't reach. Same method + new base = copy the notebook and rerun (outputs recompute on their own; the
 markdown prose keeps the old base's numbers until rewritten — that rewrite is where the analysis
 actually happens). New method = new notebook with its own § range, per the convention above.
+
+**After triage — what to do with each decision** (candidate, non-memory, revisar — prioridade, revisar — baixa
+prioridade, out): the step-by-step procedure, with exit criteria and where to record, is
+`2026-09-trace-law-flow/docs/03-procedimento-validacao.md` **Frente 3**. The short version for the residual:
+
+**When a residual bucket grows on a new base.** Two buckets, two different jobs (rationale:
+`2026-09-trace-law-flow/docs/01-racionais.md` §7 Passo 2; cases: `03-procedimento-validacao.md` §1.13;
+`python drill_down.py residuo` lists them with the exception class and a masked message):
+
+- **Sintoma não reconhecido** (unit `X_sintoma_nao_reconhecido`) — the taxonomy understands *nothing* of the
+  error. Read its share of all errors as **coverage**: those results are incomplete by that proportion. Group the
+  cases by exception class and open a few with `drill_down.py caso`. For each group that repeats, write a
+  **symptom rule first** (`classify()`), then a **cause rule** (`submecanismo()`). If the group is not the agent's
+  fault (e.g. `AgentMaxStepsError`, an iteration limit, or infra) it goes to harness/non-memory, not memory.
+- **Causa não identificada** (unit `X_causa_nao_identificada`) — the symptom is known, the cause is not. Two
+  classes: *Erro conhecido, causa sem regra* is the bucket **closest to new memory** — group by signature, read the
+  cases, and where a pattern repeats write a cause rule (it becomes a unit and can pass triage); *Código Python mal
+  escrito* is noise while few and scattered — if many, split by kind (unclosed bracket, indentation, invalid
+  operator) and see whether one dominates.
+
+Start from the **per-pattern table** (notebook 9.2, `resultados/residuo_padroes.csv`): recurrence in the residual is
+counted per error pattern (exception class + masked message), not per bucket, with the same thresholds as candidates.
+A bucket with a recurring pattern is triaged **revisar — prioridade**; otherwise **revisar — baixa prioridade**. Neither
+is memory: the work is on the taxonomy (write the rule), and once the rule exists the error becomes a normal unit and
+goes through triage like any other.
 
 ## Index
 
@@ -217,8 +242,10 @@ checklist; what is **mechanics of the trace format** lives here. `drill_down.py`
 per-folder too — they read that folder's `TRACE` and write to its `resultados/`.
 
 **Portable-code watch.** `2026-09-trace-law-flow/pipeline/genealogia_sankey.py` renders that Sankey with a
-generic layout engine (barycenter column ordering + minimum node height for legibility — see its own
-docstring) that has no dependency on error taxonomy specifically; only the data-prep half of that file is
+generic layout engine (barycenter column ordering + minimum node height for legibility; ribbons and node
+slices colored by a category column — here, the error's family, carried end to end, with the residual in violet and
+the platform in grays — see its own docstring)
+that has no dependency on error taxonomy specifically; only the data-prep half of that file is
 analysis-specific. Not yet split into its own module — one caller isn't enough to validate the boundary — but
 if a future analysis needs a similarly legible many-node Sankey, that's the code to lift out, and `analysis/`
 (this level, not inside a dated folder) is the natural home for it.

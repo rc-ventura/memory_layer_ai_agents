@@ -67,7 +67,7 @@ Números gerais: 840 execuções com memória preservada · 5.781 ActionSteps ·
 | **Suposição sobre estado** | 8 | 1,6% | Variável de step que falhou |
 | **Infra / LLM upstream** | 7 | 1,4% | `AgentGenerationError` (6) |
 | **Suposição sobre dados** | 2 | 0,4% | Formato/valor inválido |
-| *(não classificado)* | 1 | 0,2% | — |
+| *(sintoma não reconhecido)* | 1 | 0,2% | — |
 
 497 dos 498 erros classificados. Os dois casos concretos que dominam:
 
@@ -379,7 +379,8 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 10 | **Campo inexistente no retorno estruturado** — `quebra_sigilo` 7× | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
 | — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)** | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |
-| — | Erros pontuais sem conteúdo único — fora | — | 9 | 9 | 9 | 6 | 2 | 0,14M |
+| — | **Causa não identificada** (nenhuma regra de causa reconheceu o erro) — revisar, prioridade | — | 8 | 8 | 8 | 6 | 2 | 0,13M |
+| — | **Sintoma não reconhecido** (erro que a taxonomia não conhece) — revisar, baixa prioridade | — | 1 | 1 | 1 | 1 | 1 | 0,01M |
 | — | Retorno impresso colado de volta no código — fora, sem recorrência | experiencial · estratégia | 2 | 2 | 2 | 1 | 1 | 0,05M |
 
 As 10 candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens em steps com erro. Sensibilidade: com ≥5
@@ -401,6 +402,18 @@ papel sustentam isso com mais força do que a versão anterior: a nº 6 (argumen
 `CadastroTrabalhista`**; a nº 3 (retorno como string) é **13 dos 17 do `CalculoCivel`**; no `RespostaBacen`, a
 nº 10 (`quebra_sigilo`) e a nº 3 somam 16 dos 24; e a nº 2 só existe no `ConversationAgent`. Uma unidade escopada
 ao papel resolveria quase tudo o que aquele papel erra, mesmo sendo pequena no agregado.
+
+**Medido (24/09/2026) — a triagem no recorte por papel (notebook 9.4/9.5).** Rodando a mesma régua (≥3 execuções
+e ≥2 meses, mesma deduplicação de cascata) **dentro de cada papel**: 18 células (papel × unidade) são candidatas,
+de 33 com erro — `ConversationAgent` 8 unidades, `managerAgent` 3, `RespostaBacen` 2, `RoteadorCivel` 2,
+`CadastroCivel`/`CadastroTrabalhista`/`CalculoCivel` 1 cada. O cruzamento com a triagem global dá a medida do
+escopo: das 32 células em que uma candidata global aparece num papel, **14 são herdadas** — a unidade se repete na
+base, mas não naquele papel, e uma memória escrita para ele não se sustentaria pela régua. Nenhuma célula
+"revelada" (candidata no papel sem passar na global) é sequer possível com a mesma régua: o papel está contido
+na base. Sensibilidade com a régua estrita (≥5 execuções, ≥3 meses): **8 das 18** células caem — o veredito por
+papel é frágil nos papéis pequenos e deve ser lido junto com o volume, não pela célula isolada (lista das
+limítrofes em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.15; racional em
+[`01-racionais.md`](01-racionais.md) §7 Passo 10).
 
 As nºs 1 e 2 somam **57% dos erros e 50% dos tokens**. A nº 2 continua a mais promissora como **memória factual
 viva**: é minerável dos próprios traces, sem LLM — agregar os erros de contrato de retorno e consolidar o schema
@@ -506,7 +519,7 @@ Três afirmações da v1 não sobreviveram:
 
 - **Amostra**: exatamente 1.000 linhas (provável `LIMIT`); proporções são estimativas. As maiores taxas de erro por mês
   são out/2025 (17,0%, 407 steps — o incidente do harness) e jul/2026 (17,0%, só 53 steps).
-- **Semântica dos status** (1/2/3/34) foi inferida por correlação, não confirmada com o time da esteira.
+- **Semântica dos status:** os nomes vêm da tabela de status (1 ativo, 2 pausado, 3 encerrado, 34 validado, 67 falha; `05-schema.md` §Status). O que cada um implica no fluxo (ex.: por que 87% ficam em "ativo") segue não confirmado com o time da esteira.
 - **Comparações com os datasets dos papers são indicativas, não métricas**: um *span* do TRAIL ≠ um `ActionStep`;
   e os traces do TRAIL têm erro **parcialmente induzido por desenho experimental**, então sua distribuição não é
   taxa-base natural.

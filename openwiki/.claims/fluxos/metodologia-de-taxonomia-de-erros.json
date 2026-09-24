@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:365a25de7f177ef308a91ecc7adfe64c28a2fd8d6c9c079de171aad91129aecf",
+  "pageVersion": "sha256:d600fba885f90cbfe47930d523208378f9f09ab7f396f143abefe87ce80d6fe9",
   "claims": [
     {
       "id": "claim_19302d51362a45d98d6145a78488cf0a",
@@ -54,11 +54,11 @@
     },
     {
       "id": "claim_4aaebd4e8883409d9fcd1af40eaeb9c1",
-      "statement": "A memory unit is only triaged as a candidate after passing three ordered gating questions — (1) is this the agent's own memory to learn from, as opposed to a harness/upstream-LLM failure routed to operational policy instead; (2) does the unit have unique, single-sentence content rather than being a heterogeneous residual group; (3) does it recur across executions and over time — and the recurrence thresholds (execution count, time window) are calibrated per instantiation rather than being fixed constants of the method, requiring an explicit sensitivity test.",
+      "statement": "A memory unit is only triaged as a candidate after passing three ordered gating questions — (1) is this the agent's own memory to learn from, as opposed to a harness/upstream-LLM failure routed to operational policy instead; (2) does the unit have unique, single-sentence content — residual buckets that fail this go to 'revisar', the taxonomy work-queue, rather than being discarded; (3) does it recur across executions and over time — and the recurrence thresholds (execution count, time window) are calibrated per instantiation rather than being fixed constants of the method, requiring an explicit sensitivity test.",
       "evidence": [
         {
-          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L218-L241",
-          "version": "repo-lines-v1:sha256:7730b560a6db082c1189404fca56f4ed9fc9c153c6ed4ff5d3321835b6f60624:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0OGFiODdiMWM4MzY5MDY5ODIzNjkwMjYwMjFjZDI2NTlkOWYzZWYzOWEzYTNiZjJjZGI2MjY3NTQ0NDE5NzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlYTg0ODg5YmE0OWRiODU5ZjVjZWI4MDY1YzE4Nzg1ZWJkZDNhZTZmZmM5YjJlZWU3ODgyMTlhOGNmZjAyNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmZDM1YmRjMTY3NDJlM2YyNmQxNWU3ZjlkMmMxMDQ4YmQ2MGYzZGIyZTNjZThjNWM1MGM5YTM5MWRkNDEyZjcifQ"
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L238-L262",
+          "version": "repo-lines-v1:sha256:10f53b579692309c6b0057b0f5832dda0821252eadaeb00849140c123ce84e7f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0OGFiODdiMWM4MzY5MDY5ODIzNjkwMjYwMjFjZDI2NTlkOWYzZWYzOWEzYTNiZjJjZGI2MjY3NTQ0NDE5NzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1YmU4NWRkZDViNzEwMWUxZTk4NTk2MWI3ZTBiNDM2ZjY5ZjdmNGIwMzU3OGRmMmZhM2QxYTdhNDNjYjZjODUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlYTg0ODg5YmE0OWRiODU5ZjVjZWI4MDY1YzE4Nzg1ZWJkZDNhZTZmZmM5YjJlZWU3ODgyMTlhOGNmZjAyNDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmM2UxZjBlOTYzZjQ2YjdkZGNlMDM2MzMyOTVhYzhhOGJmNmJkYjQwNWY4ZjEwNzQ1YWYzMTIwNTNjNDMxZTAifQ"
         }
       ]
     },
@@ -101,10 +101,94 @@
           "version": "repo-lines-v1:sha256:d7006ecdbbcde827a8670fa80f2c6482d34db00998c70c9eb16d3288d4de3d54:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhNjk1N2VmNzEyOTJlOTFhNjFkNDE1NzAzMjk0MDM1ZDRlOTBhYWVjNjk0YjhlYjhhZmZkMzkwMDc2ZmM1NDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiMDQyNGRkZTE5OWNkZTIyNTQwMzBjNjRlYmMyY2M5NTNkYmQwODg1MmRmN2U2ZmI1NTBiNzFlYTdkODYwNzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_8c2e981e1f2c41bdb2dae8f75e76ee20",
+      "statement": "The classifier's residual is split into two non-overlapping buckets — 'Sintoma não reconhecido' (neither E1 nor E2 recognizes the message: a coverage alarm that asks for a symptom rule first) and 'Causa não identificada' (symptom known, cause unknown: asks only for a cause rule, and includes malformed-code noise until proven recurrent). Each error lands in at most one bucket, bucket size is part of an instantiation's coverage report, and both buckets pass the same recurrence test as candidates but counted per masked error pattern — a recurring pattern yields 'revisar — prioridade', otherwise 'revisar — baixa prioridade'.",
+      "evidence": [
+        {
+          "resource": "repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md#L201-L219",
+          "version": "repo-lines-v1:sha256:87048d3791718caafc0b0162b8a8ab4a17fd4c617db8f5377b226fbfbe8b6387:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxZmMwOTc0YjMxZTc0YjE2YTJjYWMyODJjMTBkZTQ2Y2NhOTIwMWFjZTk3MjBlZmMwNWE0ZTM3MjQxYzNmNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwNGY0NjdjMTdiMzBlMjY0NTM3MjMxNjFiODQwMWI2YmIwOGNlMzg1NDRjNTA5YzVkMGMxODRlNWJiMDg4NTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5MWJhY2M4Zjk4OThhYjI2NDE0NjkzOTcyYzY4YTA2NWFlOTM4YTEzNjAwMmIxOGMzNjg2ZjdkNmYzMWFjZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlMDAxNmY5MTczMjczZTgzZjA3NzIxZDM0YWI3NDQxNzE4MGM1OGM2ZmNmZGZiMjQ3NWUwZjVmMDU0YTllYzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9ab0b6e3159245048b946919f1baa161",
+      "statement": "The single declared exception to 'the symptom axis never feeds the decision': montar_unidades() consults the classify() family only to separate the two residual buckets (causa_sem_regra + 'Sintoma não reconhecido' family → sintoma_nao_reconhecido) — buckets that never become memory; all 10 base-1 candidates are identical with or without that separation.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md#L91-L135",
+          "version": "repo-lines-v1:sha256:664e6266f99e60291d03266c415a6534df94aeeaff597db0f0d66b5df0af1e6b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2NjRjMDM3MmJmMDFkNWI3OGIzYWYyNTk5Zjk0NTM2NzI1MmZkNzNmM2U1YjhkNWE2NGU0OTNlMzkzOWFiMGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljYzYyODdkZjc5ZGI2ZTU5MGI0ZmZmYzNjNzc4YTc0NmZjYjVkYzdlMDA0NjEyNWE2ODEwNzdlNDEzZThhZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5MmE4NDRiY2RiZGEzNjRkMGYxMjRkMmI1ODY3NTJlODA3YWE2ZDVkZTNiYmJmNDlmZjA2NDRiYzQyNGU2OTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzOTdhZmI1NmVkMzRkODU2ZjYwNjA5YTIzNzhlYWQzMGJhODQ3ZTczM2QwMGU1YTFiZGQ4YjNkNTIxZWE5OTkifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L245-L255",
+          "version": "repo-lines-v1:sha256:db43a7a82ab41d264aec416cc868a7f914f38642e14c20de43e327656ff6567a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwMDQyODBlNDBhNzNkMDJmYTlkZmE0NzMwZWFlNGU4MjYwOWUwNzFhNWNkMTA3NWFmNWU3OGI3MzYzY2U5ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhNDZkMmZlMDgwYjhhNzYwM2IwZDU5YmNhN2M0OGQ5OTFkNzFlMDYyNGE3MGRhZjg0OGI5ZDBiODIyNmZlNWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5ZjkzMDgzYzE5NzEyMWI5ODI3MDBiYThhZmFiZDE3MjJjZjFkM2U3NDA0NTA5ZTgwZWZhMjcyNDdmNjJmMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiZTFmNjIyOGVmMDljMjViMzg0ZDQwNTYwNjM4Y2I0YWMyZDE0OGJhYzgxMTQ1Zjg4YTA3Y2EwOGRmMjdlYWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b9b9101a12e64cb8851d87e4dc67b3e7",
+      "statement": "On top of the per-pattern recurrence test there is a coverage alarm (ALARME_COBERTURA = 0.05): if the X_sintoma_nao_reconhecido bucket exceeds 5% of all errors in a base, it is promoted to 'revisar — prioridade' even without a recurring pattern — the signal that the taxonomy does not cover the base, not just a stray error.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L292-L296",
+          "version": "repo-lines-v1:sha256:fa1bb8ad611a107f4bcd4f9931d3d946962b183252d0ad8729a64d27ee018ae3:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQyMjNlMGVlZWZiNGE3YjFiOTIzNzk1ZTEzNzZkNGYyMGY1YjU3NWRlYzgzMjZjMjY1YTdlZDg0N2VjNzhkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWEwZGYzNjUzNDk2OTg4MmQwNTJkOTJjMGQxODBiMjM3YjQyNDU3ZjdhZjA1MDFjNWFlMGRhNTU5ZmE2MGY4MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTk3MTU2OTBjZDk1ZGQ2YmEwZDMxN2JmZjRmNDQ4MzVlYmVkZTk5OTVhN2VlODVjMDc5ZjM1NjEzNjBkMmMyMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjkxMTMxNjdiMmM5YWVkYjE3OWRiMzgwMWRmZjcwOTAwZWUyZmNlMGEzYTM2MGI0MGQ2NDI1NjdjMzI4NWM4YSJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L321-L329",
+          "version": "repo-lines-v1:sha256:73aa1770340d38e6efc7bd1fc8c416f91538fa27664bae5d11a0f63e0d9b2c3c:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDQ2YjFjMmJmMjcwYjY5ZDNiZmQzMzVkYzgzYWJhZjlhODUxZjNlMDhhZmU4NGJkZTE1MGJjZTZhMDY4ZmYzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGQxYWI1Y2YxYWM1ZWE4NDViNzY4MTVjYmM2YjliMDllMTdjMDgzNTVkMjQ0NzAzNDQ2YjRlMTY4NzhlY2IzMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI1ZTlmMDc5OWFlMjk2YzA3YzZhNjhiOGMxYTQ1ZmRjMmMwMDA3ZTFkZDIzZDNjOWNmOGM5MGRiYmI1NGMwMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2MzOTYxMWM0NDYzMTI3NGZlM2NlYzg5MmUzODJiNDY1MDBhYzE3OGYwMjhmYjJlOWQ0ZjM5OGZiODQ1NWM0NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_522813ffd21949cca971701f12965565",
+      "statement": "triagem_por_papel() runs the same triage rule (>=3 executions, >=2 months, deduplicated cascade occurrences) inside each agent role for memory-scoped candidacy — only factual/experiential units are eligible; platform and residual are excluded by design. Global vs per-role verdicts yield four states per (role, unit) cell: firme, herdada, revelada, fora; 'revelada' is impossible by construction under the same rule (a role's executions/months are subsets of the base's). On base 1: 18 of 33 cells candidate, 14 herdada, 0 revelada, 8 of 18 flip under the stricter >=5/>=3 rule.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/docs/03-procedimento-validacao.md#L1074-L1109",
+          "version": "repo-lines-v1:sha256:c5d92b5dc9e61d152f7260da5cc1e5050aea39249df230a694c383bfdf29322c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NWZmNzM4MWI2MWFmYTFlMzg5ZTE3YzZjNTg2YWFmMzNlNzA2OWY5M2QwNjAxNzlkNjI3ZGVlMmM5MDUyMzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmMGJmZGJlYTJjY2QwNGY0OWFjZDliOWIwMDBkNWYwMDFkNzg0MTRiOTQ0MjA5YzgyNzg5ODM3NTg5MzdiNGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjMzdlMDdkOTM0OGJiZWE2M2IzZGIzMmE3ZmExYzEwNzMyZGZjMTk3NDY5OTNkNmNhYzk1MWNjMDUwZjg0ODkifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L347-L365",
+          "version": "repo-lines-v1:sha256:64015d2d41834879f982650fe4bb71eb9a98fc4b8a2b437eab025a395cff4088:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZDBmZWEwNDU0NjBkMmYzMTFjZTgxNzRjZDA3YWQ3ODE4MTgwZDAzOWZjZjYyZDUzZjhjYjVhZWNhZGMwMzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3MTljNWJiZWVlZjdjOTcxNjNmZTU5NjYzNWE0ZGNkMDVlNDAxZDAyZDZiZTlkYjY4ZDliYjQ2ZGE1OTdjZGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhZDIxNDBjZGYwMDFjYTIwNDY4NzExMTBlMmEwY2Q0NDAxYWJmNWE0NmViYmIwOGUyYjNjMWM3ZGNmNGJkNTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3YWM1YWIzZTJhNmNmNjEyMWM2OTNlZTZiMzg0YmM5MTMzZWQ3Nzk2NzJiZTA4ZWEwZmU5YTNkYjk4YjUzMjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_221a4e6aedaa497897f8559139c3620b",
+      "statement": "All figures that paint errors share one color language fixed by name in pipeline/paleta.py (COR_ERRO, applied via base_pipeline.categoria_do_erro): color = the error's family (dominant when a node mixes families), violet = residual (X_ units), grays = platform (harness/infra), light gray = grouped 'others'. A name without a fixed color falls back to gray with a printed warning, so a new family surfaces as a pending task instead of silently inheriting a color.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L368-L372",
+          "version": "repo-lines-v1:sha256:1af82d407e7759610b2f3ba7b831d91c6537d3acdb1be7256e2a1a9939d1ebee:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGM4OGNjZjZjOGVmOWI0YTMyZjUzYjgwNWVlY2Q4Y2UzN2I4YWU2Y2Y4ZjJiZDcyZDE4MWE3MzFjNWU0YWNhYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmRhNGYxNzI3MGQ2ODI5Y2VkNTMzMWFlY2YwOWQ2MzRiZjA1ZDMyYThlNzhiNTM0OGM4NWU1YTY2YWQ4YjBmMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmY0MDBjNjllYjNiYmZkNzI5Nzc5NTRhN2IyNTVlMzllNTI1ZjgyOWU0ODdjNmVhYzYxOTFlOWNlODlkMDY0ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzU3ZmFhOGJiYTI4ZmIxNGU3NzFiOGFiYjcxMDJkMjhiNTRkYTJkYjRjOGM3ZTc4MzU0ODk4MmJjMTI5N2YxOSJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/paleta.py#L1-L38",
+          "version": "repo-lines-v1:sha256:8ec2f1bf078cb6303f51e96bb36070ffd0e8c896d70b0c0396c0405726e1fdc0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0ZjJkM2MyNTQ2MGMzZTI3NTgzNDYzN2I0ZmIwMTI1YTQ0YzhmNjRlMGQzNTE0YjQyNWViYTA2ODE1ZDljMDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0ZTdmMWIxZjIxYzQ4NTE4OWE1MDc1YzQ3NmM4YjJiMTdhYTU1M2EzNzk5M2QxOTMwODMzYWUxZmI1NDc5YWYifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/paleta.py#L62-L72",
+          "version": "repo-lines-v1:sha256:80769b83a3899e3a7a558af02a5245be781800ef4f84259bbfa085130b96a92e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiYWQ5NmIwYzMwZDRlZWI3NjRmOGQxYzlmYWJiZjhkM2RmMjM5MTdkZmYzMzhhMWQ0Mjk5MjFjODMwOWRlMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjMDU1ZWIyYTZhYmY3MTlhOGQ0NTE5YjhiYzg2M2ZiY2RlNzg5YzBiNzFmNTZhYmUwMWE5NWZmNmM1YWYzNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxMWY4YTA1NDJjMmEwZDY1Njc2OWExNmQ3MTg1YzZjNmU0NmQ4NDI2MDlhMGU2OTZiYTIzMTVjYTZlNmRmMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_07c73a23c9bb4f3daf6b3f0131b2ed72",
+      "statement": "pipeline/genealogia_sankey.py renders the whole error chain as a five-column routing-tree Sankey (familia -> assinatura -> mecanismo -> unidade -> destino) with real per-node and per-edge error counts conserved across stages, all signatures and mechanisms named without aggregates, and destinations labeled MEM/HARNESS/REVISAR/FORA + the actual lesson title 1:1 with each unit; it also writes the unaggregated edges to resultados/genealogia_arestas.csv.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/genealogia_sankey.py#L1-L40",
+          "version": "repo-lines-v1:sha256:4b8996e0fff3c30fd214530317c6632bdfdc08c0aca86bd81294a777a66e79f9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlMTkwMTQ1ZTAxZDU3MTU2NTAxMjBjNDJlNzFkMDU5NmM3MGE2MGFkNmEwOWIxY2MyNjc0NjYwYjJlZjIwMDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzMjY4ZTU5NzcyN2NhOTU5ZWEwZTViNjk2MDUzNTIxZGJmMzg4NDAyYTM1YTY2YWNkZmUzNzdjNjMyZjc0MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhMjgzNTNiOGY5ODg5NDJjODNiYjE2NzRmMTQzZTBkYTI4OGNhNzE4NTIwZTg0NTI4ODdjMmQ4OWMxZThkYjAifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/genealogia_sankey.py#L290-L310",
+          "version": "repo-lines-v1:sha256:839809a9dc5398f4120d54daa754162eb674dbd3135304eab2545935370d1fec:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyZTMxMjU3ZGMwYWUxZDU5MzAzN2MyODBjOWFkNTA4MTliOGE2YzhjZjcyOGJlMDcxNmQwMGEzZWVjYzA0YmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxZjVkMDE2NjI4NmIxNzI1YTViZWU1NWJhNjI4YWM1OTJjYmMwODlkYmE4NmI4YmZmZWZkNGQ5MTI2MDBkM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzMmU2OTIyNTE4NDY1ZGVlOTg3MGU3NjAxNjU0YWVkZWI4OThiODQ5ZmJmNmMzZjA0OGM4YzE5MmY3M2JmMGUifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.1",
-    "at": "2026-09-21T19:21:20.640Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-24T16:54:16.453Z"
   }
 }
