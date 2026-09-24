@@ -1034,41 +1034,42 @@ execuções. Por isso a unidade sai **revisar — prioridade**, e o "sintoma nã
 prioridade**. É candidato a regra de causa nova, não memória ainda. Na base 2 (25 erros de sintoma não reconhecido), a
 mesma tabela diz se são um erro novo que se repete ou vários soltos.
 
-### 1.14 · Cores das figuras — como foram escolhidas e conferidas (24/09/2026)
+### 1.14 · Cores das figuras — uma língua de cor para os erros (24/09/2026)
 
-**A regra.** Duas linguagens de cor, fixas por nome em `pipeline/paleta.py`, iguais em qualquer base:
+**A regra.** Toda figura que pinta erros usa a mesma língua, fixa por nome em `pipeline/paleta.py` (`COR_ERRO`,
+aplicada por `base_pipeline.categoria_do_erro`): a cor é a **família** do erro (6 famílias do agente, 6 cores);
+**roxo = resíduo** (nenhuma regra reconheceu a causa — unidades `X_`); **cinzas = plataforma** (Protocolo do harness,
+Infra/LLM: não é erro do agente, não vira memória); **cinza-claro = "outros"** agrupados. O mesmo erro tem a mesma
+cor no 8.8, no 9.3 e na genealogia, em qualquer base; cada figura diz no título o que a cor mostra.
 
-- **decisão da triagem** (`COR_DECISAO`), no 9.3 e na genealogia: azul = memória factual, laranja = memória de
-  estratégia, cinza escuro = não-memória, roxo = revisar, cinza claro = fora. Na genealogia, cada fita e cada fatia de
-  nó leva a cor de onde o erro termina;
-- **unidade de erro** (`COR_UNIDADE`), no 8.8, que só descreve: tons frios = unidades factuais, quentes = unidades de
-  estratégia, cinzas = plataforma (harness/infra), roxos = resíduo. São 11 tons de lição, acima dos 8 que a skill de
-  visualização de dados recomenda — decisão do projeto: toda unidade com cor própria, sem balde "outras".
+| Figura | O que mostra | Como usa a cor |
+|---|---|---|
+| **8.8** | Pareto por papel: os 3 erros (submecanismos) mais frequentes do agente + plataforma + resíduo + outros | cada barra na cor do seu erro, com o nome escrito |
+| **9.3** | as unidades após a triagem, em seções por decisão | cada barra na cor da família dominante dos seus erros; o tipo da memória (factual/estratégia) vai no rótulo |
+| **genealogia** | árvore família → assinatura → mecanismo → lição → destino, sem agregados | cada fita leva a cor da família dos seus erros, de ponta a ponta; nós mistos em fatias |
 
-**O problema que motivou.** A mesma cor significava três coisas: a unidade no 8.8, o tipo no 9.3 e a família na
-genealogia (ex.: amarelo era uma memória no 8.8 e o protocolo do harness, uma não-memória, na genealogia). No 8.8, o
-cinza "Outras candidatas" escondia 5 memórias (73 dos 498 erros; 17% no `managerAgent` e no `ConversationAgent`). Na
-genealogia, o agregado cinza "outros mecanismos" (23 erros, 4 destinos) passava o cinza a tudo que saía dele,
-inclusive à memória "redefinir após erro".
+**Por que família, e não uma cor por submecanismo ou por unidade.** São 18 submecanismos e 15 unidades — cores demais
+para ler (foi a queixa ao 8.8 com 15 cores). Com 6 cores de família + 2 reservadas, toda barra e todo nó levam o nome
+escrito ao lado, e a cor diz de que família o erro vem.
 
-**Como os tons das unidades foram escolhidos.** Com o validador da skill (`validate_palette.js`: faixa de
-luminosidade, saturação mínima, separação para daltonismo protan/deutan e para visão normal), procurando a
-atribuição de tons às unidades — frios para as factuais, quentes para as de estratégia — que maximiza a separação dos
-**pares de fatias que de fato se encostam** nas barras do 8.8 da base 1: é o par vizinho que o leitor precisa
-distinguir. Restrição: a maior unidade ("Texto longo dentro de literal") no mesmo laranja do 9.3.
+**Histórico das tentativas (24/09).** (1) O 8.8 destacava 5 unidades fixas e juntava o resto num cinza "Outras
+candidatas" que escondia 5 memórias (73 dos 498 erros), e a mesma cor significava coisas diferentes em cada figura
+(amarelo = uma memória no 8.8 e o protocolo do harness na genealogia). (2) Uma cor por unidade (15) e a genealogia
+pintada pela decisão (5 cores) resolveram o significado, mas o 8.8 ficou difícil de ler e a genealogia perdeu a
+família — o que ela existe para mostrar. (3) A regra atual.
 
-**Resultado (base 1).** 21 pares encostados; pior par para daltonismo ΔE 8,5 (meta ≥ 8), pior para visão normal
-ΔE 17,2 (piso 15); os 11 tons dentro da faixa de luminosidade e acima da saturação mínima. Aviso de contraste
-(< 3:1 com o fundo) em 4 tons claros — coberto pela legenda, pelos números nas fatias largas e pela tabela da §2.2
-do notebook (a paleta de 8 de antes tinha o mesmo aviso). Limite: procurar uma cor na legenda (qualquer par, não só
-vizinhos) é mais difícil para daltônicos em alguns pares; por isso a legenda segue a ordem da pilha.
+**Conferência com o validador da skill de visualização de dados** (`validate_palette.js`), nas 7 cores saturadas na
+ordem da legenda: faixa de luminosidade e saturação mínima passam; **vizinhos** — visão normal ΔE ≥ 27,6 (piso 15),
+daltonismo ΔE 6,1 (faixa 6–8, legal com rótulo junto: todo nó e toda barra têm nome); **qualquer par** — dois pares
+ficam abaixo do piso: laranja × verde para daltônicos (3,2) e vermelho × laranja para visão normal (7,1). É o limite
+conhecido de qualquer paleta de mais de 3 cores (a paleta padrão da skill tem os mesmos pares); os pares envolvem
+famílias pequenas (Suposição sobre estado, 8 erros; Suposição sobre dados, 2) e a leitura nunca depende só da cor.
+Aviso de contraste (< 3:1 com o fundo) no verde-água e no rosa, coberto pelos rótulos.
 
-**Conferências automáticas.** Nenhuma memória candidata em cinza em nenhuma figura; a cor da decisão de cada unidade
-é a mesma no 9.3 e na genealogia; `resultados/genealogia_arestas.csv` idêntico ao de antes (só a pintura mudou).
+**Conferências automáticas.** `resultados/genealogia_arestas.csv` idêntico ao de antes (só a pintura mudou); nenhum
+nó agregado na genealogia; no 8.8 cada painel soma 100% do papel; a cor de um erro vem sempre de `COR_ERRO`.
 
-**Numa base nova.** Outra ordem de tamanho muda quais fatias se encostam no 8.8. Refazer é rodar o validador sobre os
-pares encostados daquela base; se algum cair abaixo do piso, trocar os tons entre unidades do mesmo grupo (frio ou
-quente) em `paleta.py`. Unidade nova sem cor fixa → cinza e aviso, até ganhar um tom.
+**Numa base nova.** Família nova sem cor → cinza e aviso (`paleta.cor`), até ganhar uma cor na `paleta.py`.
 
 ---
 

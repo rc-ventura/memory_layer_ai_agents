@@ -26,15 +26,16 @@ os nós minúsculos) e ordena cada coluna por baricentro das arestas de entrada
 soma o total de erros classificados — a figura é uma decomposição de fluxo
 completa.
 
-**Cor = onde o erro termina** (a decisão da triagem, `COR_DECISAO` em paleta.py —
-a mesma linguagem do gráfico 9.3): memória factual, memória de estratégia,
-não-memória, revisar, fora. Cada fita e cada fatia de nó leva a cor da decisão
-dos erros que passam por ela; um nó que reúne erros de destinos diferentes é
-desenhado em fatias, uma por decisão, e as fitas saem da fatia da sua decisão.
-Família, assinatura e mecanismo são identificados pelo nome escrito, não pela
-cor. Até 24/09/2026 a cor era a da família de origem, herdada para a direita;
-um agregado cinza ("outros mecanismos") passava o cinza a tudo que saía dele,
-inclusive a uma memória candidata. Uso:
+**Árvore de roteamento, sem agregados:** todas as assinaturas e todos os
+mecanismos aparecem com o nome, para seguir cada bucket de erro até o mecanismo,
+a lição e o destino. **Cor = a família do erro, carregada de ponta a ponta** (a
+língua de cor comum das figuras, `COR_ERRO` em paleta.py via
+`base_pipeline.categoria_do_erro`): cada fita leva a cor da família dos erros
+que passam por ela; roxo = resíduo (nenhuma regra reconheceu a causa); cinzas =
+plataforma (harness/infra). Um nó que reúne categorias diferentes é desenhado em
+fatias, e as fitas saem da fatia da sua categoria. Até 24/09/2026 a cor era
+herdada do nó anterior e um agregado cinza ("outros mecanismos") passava o cinza
+a tudo que saía dele, inclusive a uma memória candidata. Uso:
 
     python3 genealogia_sankey.py
 
@@ -44,7 +45,7 @@ não sabem o que é "família" nem "erro" — só consomem `(tot, arestas, comp)
 genéricos (arestas com uma coluna de categoria de cor) e desenham um Sankey de N
 colunas com o piso de altura mínima acima.
 É o motor reaproveitável se uma análise futura precisar da mesma figura
-legível. `preparar_dados`, `KEEP_SIG`/`KEEP_MEC`/`CURTO_MEM` e o resto do
+legível. `preparar_dados`, `NOME_CURTO`/`CURTO_MEM` e o resto do
 módulo são específicos desta classificação (`base_pipeline.py`) e não
 generalizam. Ainda não foi extraído para um módulo à parte por só ter um
 chamador até agora — quando aparecer o segundo, o candidato natural é
@@ -59,43 +60,12 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.path import Path
 
-from base_pipeline import carregar_base, triagem, UNI, CATEGORIAS_DECISAO, categoria_decisao
-from paleta import COR_DECISAO
+from base_pipeline import carregar_base, triagem, UNI, categoria_do_erro
+from paleta import COR_ERRO, cor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RESULTADOS = os.path.join(HERE, "resultados")
 ASSETS = os.path.join(HERE, "..", "assets")
-
-# nós mantidos explícitos na figura: os maiores + os protagonistas da
-# narrativa (divide "Could not index"; funde dict_iterado/modulo_sem_import;
-# aresta cruzada nome_nunca_definido). O resto vira "outras/outros".
-KEEP_SIG = {
-    "String não fechada (relatório longo em literal)",
-    "Falha ao indexar o retorno (Could not index)",
-    "Sintaxe inválida",
-    "Argumento posicional onde só cabe nomeado",
-    "Resposta sem bloco de código (harness)",
-    "Tipo diferente do esperado",
-    "Função ou import bloqueado pelo sandbox",
-    "Objeto sem o atributo esperado",
-    "Variável não definida",
-    "Módulo usado sem import",
-}
-KEEP_MEC = {
-    "texto_em_literal",
-    "dict_indexado_por_posicao",
-    "tipo_real_do_retorno",
-    "argumento_posicional",
-    "harness_bloco_code",
-    "texto_solto_no_codigo",
-    "next_sobre_gerador",
-    "inventario_sandbox",
-    "campo_inexistente_no_retorno",
-    "dict_iterado_como_lista",
-    "modulo_sem_import",
-    "nome_nunca_definido",
-}
-OUTROS_SIG, OUTROS_MEC = "outras assinaturas", "outros mecanismos"
 
 NOME_CURTO = {
     "Falha ao indexar o retorno (Could not index)": "Could not index",
@@ -136,13 +106,13 @@ CURTO_MEM = {
     "H_bloco_code": "gatilho bloco de código",
 }
 
-STAGES = ["familia", "sig_disp", "mec_disp", "unidade", "destino"]
-TITULOS = {"familia": "família", "sig_disp": "assinatura", "mec_disp": "mecanismo",
+STAGES = ["familia", "assinatura", "submecanismo", "unidade", "destino"]
+TITULOS = {"familia": "família", "assinatura": "assinatura", "submecanismo": "mecanismo",
            "unidade": "unidade", "destino": "destino"}
 PARES = list(zip(STAGES, STAGES[1:]))
 
 # ordem das fatias dentro de cada nó (de cima para baixo) = ordem das categorias de decisão
-ORDEM_CAT = CATEGORIAS_DECISAO
+ORDEM_CAT = list(COR_ERRO)   # famílias do agente, plataforma, resíduo — a ordem da paleta
 
 
 def preparar_dados():
@@ -163,9 +133,7 @@ def preparar_dados():
         return f"FORA {d.split(': ', 1)[1]}"
 
     EU["destino"] = EU["unidade"].map(destino)
-    EU["cat"] = [categoria_decisao(tri_idx.loc[u, "decisão"], UNI[u][1]) for u in EU["unidade"]]
-    EU["sig_disp"] = EU["assinatura"].map(lambda s: s if s in KEEP_SIG else OUTROS_SIG)
-    EU["mec_disp"] = EU["submecanismo"].map(lambda s: s if s in KEEP_MEC else OUTROS_MEC)
+    EU["cat"] = [categoria_do_erro(f, u) for f, u in zip(EU["familia"], EU["unidade"])]
     return EU, tri
 
 
@@ -224,7 +192,7 @@ def fatias(col, comp, ys, ordem):
         y0, _, h = ys[col][nome]
         cont = comp[col].loc[nome]
         total, cur, d = cont.sum(), y0, {}
-        for c in ORDEM_CAT:
+        for c in ORDEM_CAT + [k for k in cont.index if k not in ORDEM_CAT]:
             n = int(cont.get(c, 0))
             if n:
                 d[c] = (cur, cur + n / total * h)
@@ -288,13 +256,13 @@ def render_png(EU, out_path):
         for (nome_a, nome_b, c), (y0s, y1s) in saida.items():
             y0t, y1t = entrada[(nome_b, nome_a, c)]
             path = ribbon_path(X[a] + NODE_W, y0s, y1s, X[b], y0t, y1t)
-            ax.add_patch(mpatches.PathPatch(path, facecolor=COR_DECISAO[c],
+            ax.add_patch(mpatches.PathPatch(path, facecolor=cor(COR_ERRO, c),
                                              edgecolor="none", alpha=0.42, zorder=1))
 
     for col in STAGES:
         for nome, (y0, y1, h) in ys[col].items():
-            for c, (c0, c1) in fat[col][nome].items():   # o nó em fatias, uma por decisão
-                ax.add_patch(mpatches.Rectangle((X[col], c0), NODE_W, c1 - c0, facecolor=COR_DECISAO[c],
+            for c, (c0, c1) in fat[col][nome].items():   # o nó em fatias, uma por categoria de erro
+                ax.add_patch(mpatches.Rectangle((X[col], c0), NODE_W, c1 - c0, facecolor=cor(COR_ERRO, c),
                                                  edgecolor="white", linewidth=0.7, zorder=2))
             texto = rotulo(col, nome, tot)
             ax.text(X[col] + NODE_W + 0.08, (y0 + y1) / 2, texto, va="center", ha="left",
@@ -308,10 +276,11 @@ def render_png(EU, out_path):
     ax.invert_yaxis()
     ax.axis("off")
     ax.set_title(f"Genealogia dos {len(EU)} erros: família → assinatura → mecanismo → unidade → destino  ·  "
-                 "cor = onde o erro termina", fontsize=13, fontweight="bold", pad=14, loc="left")
+                 "cor = família do erro (roxo = resíduo, cinza = plataforma)", fontsize=13, fontweight="bold",
+                 pad=14, loc="left")
     presentes = [c for c in ORDEM_CAT if (EU["cat"] == c).any()]
-    ax.legend(handles=[mpatches.Patch(color=COR_DECISAO[c], label=c) for c in presentes],
-              loc="upper right", bbox_to_anchor=(1.0, 1.02), ncol=len(presentes), fontsize=9.5, frameon=False)
+    ax.legend(handles=[mpatches.Patch(color=cor(COR_ERRO, c), label=NOME_CURTO.get(c, c)) for c in presentes],
+              loc="upper center", bbox_to_anchor=(0.5, 0.0), ncol=len(presentes), fontsize=9.5, frameon=False)
     fig.tight_layout()
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     fig.savefig(out_path, dpi=170)

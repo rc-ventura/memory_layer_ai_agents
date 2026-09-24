@@ -55,19 +55,18 @@ Contagem **real por nó e por aresta** (gerada por
 [`pipeline/genealogia_sankey.py`](../pipeline/genealogia_sankey.py); arestas
 crus em `pipeline/resultados/genealogia_arestas.csv` — granularidade total,
 sem agregação). Cada estágio soma os **498 erros** — é uma decomposição de
-fluxo completa, não amostra. Para legibilidade a figura mantém explícitas só
-as assinaturas e mecanismos maiores/protagonistas e agrega o resto em "outras
-assinaturas"/"outros mecanismos". **A cor é onde o erro termina** — a decisão da
-triagem, na mesma linguagem do gráfico 9.3: azul = memória factual, laranja =
-memória de estratégia, cinza escuro = não-memória, roxo = revisar, cinza claro =
-fora. Cada fita leva a cor da decisão dos erros que passam por ela, e um nó que
-reúne destinos diferentes aparece em fatias, uma por decisão: cada família mostra
-de relance quanto dela vira memória. Família, assinatura e mecanismo são
-identificados pelo nome, não pela cor (até 24/09/2026 a cor era a da família,
-herdada para a direita, e o agregado cinza passava o cinza a uma memória
-candidata; `03-procedimento-validacao.md` §1.14). Cada coluna é ordenada por
-baricentro das arestas de entrada, para que o mesmo fluxo não zigue-zague sem
-necessidade. Três leituras
+fluxo completa, não amostra. É uma **árvore de roteamento**: todas as
+assinaturas (o bucket, a mensagem) e todos os mecanismos aparecem com o nome,
+sem agregado, para seguir cada bucket até o mecanismo, a lição e o destino.
+**A cor é a família do erro, carregada de ponta a ponta** — a língua de cor
+comum das figuras (`paleta.COR_ERRO`, a mesma do 8.8 e do 9.3): cada fita leva a
+cor da família dos erros que passam por ela; **roxo = resíduo** (nenhuma regra
+reconheceu a causa), **cinzas = plataforma** (harness/infra, não é erro do
+agente). Um nó que reúne categorias diferentes aparece em fatias. (Até 24/09/2026
+a cor era herdada do nó anterior e um agregado cinza, "outros mecanismos",
+passava o cinza a tudo que saía dele, inclusive a uma memória candidata;
+`03-procedimento-validacao.md` §1.14.) Cada coluna é ordenada por baricentro
+das arestas de entrada, para que o mesmo fluxo não zigue-zague sem necessidade. Três leituras
 de relance, da esquerda para a direita:
 
 1. **divide** — o sintoma abre: "Could not index · 136" parte em
@@ -93,7 +92,7 @@ Ressalva: a figura conta **erros**; a `triagem()` decide sobre **ocorrências**
 
 *(figura gerada por `pipeline/genealogia_sankey.py` — regenerar após qualquer
 mudança em `base_pipeline.py` que altere `classify`/`submecanismo`/`SUB2UNI`/`UNI`,
-ou em `KEEP_SIG`/`KEEP_MEC`/`CURTO_MEM` no próprio script.)*
+em `CURTO_MEM`/`NOME_CURTO` no próprio script, ou nas cores de `paleta.py`.)*
 
 ## 2. Dois eixos paralelos, não uma árvore
 

@@ -243,7 +243,8 @@ per-folder too — they read that folder's `TRACE` and write to its `resultados/
 
 **Portable-code watch.** `2026-09-trace-law-flow/pipeline/genealogia_sankey.py` renders that Sankey with a
 generic layout engine (barycenter column ordering + minimum node height for legibility; ribbons and node
-slices colored by a category column — here, the triage decision each error ends in — see its own docstring)
+slices colored by a category column — here, the error's family, carried end to end, with the residual in violet and
+the platform in grays — see its own docstring)
 that has no dependency on error taxonomy specifically; only the data-prep half of that file is
 analysis-specific. Not yet split into its own module — one caller isn't enough to validate the boundary — but
 if a future analysis needs a similarly legible many-node Sankey, that's the code to lift out, and `analysis/`

@@ -22,7 +22,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
-           "CATEGORIAS_DECISAO", "categoria_decisao",
+           "categoria_do_erro",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
@@ -344,19 +344,11 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
 
 
-# a decisão da triagem na forma que as figuras pintam (9.3 e genealogia): a mesma categoria tem a mesma cor nas duas
-CATEGORIAS_DECISAO = ["memória · factual", "memória · estratégia", "não-memória", "revisar", "fora"]
-
-
-def categoria_decisao(decisao, tipo):
-    """candidato se divide pelo tipo do conteúdo (Hu et al. 2025); as demais decisões valem como estão."""
-    if decisao == "candidato":
-        return "memória · factual" if tipo == FACT else "memória · estratégia"
-    if decisao == "não-memória":
-        return "não-memória"
-    if decisao.startswith("revisar"):
-        return "revisar"
-    return "fora"
+def categoria_do_erro(familia, unidade):
+    """A categoria de cor de um erro — a mesma em todas as figuras (paleta.COR_ERRO): "Resíduo" quando nenhuma regra
+    de causa o reconheceu (unidades X_); senão a família do erro. As famílias de plataforma (harness/infra) ficam com
+    o nome da família e ganham cinzas na paleta."""
+    return "Resíduo" if unidade.startswith("X_") else familia
 
 
 DEGENERADO = re.compile(r"n[ãa]o encontrad[oa] na base|informa[çc][ãa]o insuficiente", re.I)
