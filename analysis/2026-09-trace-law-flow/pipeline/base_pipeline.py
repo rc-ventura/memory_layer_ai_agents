@@ -19,7 +19,7 @@ from collections import Counter, defaultdict
 from types import SimpleNamespace
 
 __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
-           "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
+           "linha_do_codigo", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "categoria_do_erro", "triagem_por_papel",
@@ -57,6 +57,8 @@ def explodir_memoria(df):
                        "dur_s": tm.get("duration"), "tok_in": tu.get("input_tokens") or 0,
                        "tok_out": tu.get("output_tokens") or 0, "tok_tot": tu.get("total_tokens") or 0,
                        "err_type": err.get("type"), "err_msg": str(err.get("message") or ""),
+                       "linha_codigo_erro": linha_do_codigo(str(err.get("message") or ""), st.get("code_action"))
+                                            if err else "",
                        "is_final": bool(st.get("is_final_answer"))}
                 rows.append(rec)
                 mim = st.get("model_input_messages")
@@ -130,9 +132,25 @@ LITERAL_INICIO = re.compile(r"^(final_answer\s*\(|\w+\s*\+?=\s*\(?\s*[frbuFRBU]*
 MODULOS = {"json", "pd", "np", "re", "os", "math", "datetime"}
 
 
-def linha_rejeitada(m):
+def linha_do_codigo(m, code):
+    """A linha N do code_action, quando a mensagem de parsing é do formato novo (`... on line N due to: SyntaxError:
+    <motivo>`, numa linha só e sem o código — RoteadorCivel desde jun/2026, nas duas bases). No formato antigo a
+    mensagem já traz a linha e isto devolve "". Conferido na base 1: nos 222 erros do formato antigo, a linha N do
+    code_action é a linha que a mensagem traz em 221 (a exceção é uma f-string de várias linhas, em que o parser
+    aponta o início e N o fim)."""
+    n = re.search(r"on line (\d+) due to: \w+", m)
+    if not n or not code or re.search(r"due to: \w+\s*\n(.*?)\n\s*Error:", m, re.S):
+        return ""
+    linhas = str(code).splitlines()
+    k = int(n.group(1)) - 1
+    return linhas[k].strip() if 0 <= k < len(linhas) else ""
+
+
+def linha_rejeitada(m, linha_codigo=""):
+    """A linha de código que o parser rejeitou: a que a mensagem traz (formato antigo) ou, no formato novo, a linha N
+    do code_action (`linha_do_codigo`, coluna `linha_codigo_erro`)."""
     mm = re.search(r"due to: \w+\s*\n(.*?)\n\s*Error:", m, re.S)
-    return re.sub(r"\s*\^\s*$", "", mm.group(1).split("\n")[0]).strip() if mm else ""
+    return re.sub(r"\s*\^\s*$", "", mm.group(1).split("\n")[0]).strip() if mm else (linha_codigo or "")
 
 
 def e_texto(s):
@@ -142,13 +160,13 @@ def e_texto(s):
     return len(toks) >= 3 and sum(t in PT_STOP for t in toks) / len(toks) >= 0.15
 
 
-def submecanismo(m):
+def submecanismo(m, linha_codigo=""):
     if "regex pattern" in m:
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
         return "infra_llm"
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
-        l = linha_rejeitada(m)
+        l = linha_rejeitada(m, linha_codigo)
         if re.search(r"truncad", l, re.I):
             return "repr_colado"
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or LITERAL_INICIO.match(l):
@@ -247,7 +265,8 @@ def montar_unidades(E):
     EU = E.copy().sort_values(["exec_id", "role", "idx"])
     EU["seguidor"] = EU.groupby(["exec_id", "role"])["idx"].shift().eq(EU["idx"] - 1)
     EU["cascata"] = (~EU["seguidor"]).cumsum()
-    EU["submecanismo"] = EU["err_msg"].apply(submecanismo)
+    lc = EU["linha_codigo_erro"] if "linha_codigo_erro" in EU else pd.Series("", index=EU.index)
+    EU["submecanismo"] = [submecanismo(m, l) for m, l in zip(EU["err_msg"], lc.fillna(""))]
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
     # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece
@@ -279,7 +298,8 @@ def padrao_residuo(m, sub):
     if sub == "codigo_mal_escrito":
         classe = (re.findall(r"due to: (\w+Error)", m) or re.findall(r"\b(\w+Error)\b", m) or ["?"])[-1]
         linhas = [l.strip() for l in m.splitlines() if l.strip().startswith("Error:")]
-        motivo = mascarar(linhas[-1][len("Error:"):]) if linhas else ""
+        inline = re.search(r"due to: \w+Error: ([^\n]*)", m)  # formato novo: o motivo vem na linha do `due to:`
+        motivo = mascarar(linhas[-1][len("Error:"):]) if linhas else (mascarar(inline.group(1)) if inline else "")
         motivo = re.sub(r"\s*\(<unknown>, line <n>\)", "", motivo)
         motivo = re.sub(r"\s+on line <n>", "", motivo)
         return f"{classe}: {motivo}".rstrip(": ")

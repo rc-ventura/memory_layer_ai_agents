@@ -42,9 +42,14 @@ PT_STOP = {"de","da","do","das","dos","a","o","as","os","e","é","que","para","c
            "somente","nenhum","nenhuma"}
 MODS = {"json","pd","np","re","os","math","datetime"}
 
-def linha_rejeitada(m):
+def linha_rejeitada(m, code=""):
     mm = re.search(r"due to: \w+\s*\n(.*?)\n\s*Error:", m, re.S)
-    return re.sub(r"\s*\^\s*$", "", mm.group(1).split("\n")[0]).strip() if mm else ""
+    if mm:
+        return re.sub(r"\s*\^\s*$", "", mm.group(1).split("\n")[0]).strip()
+    # formato novo ("... on line N due to: SyntaxError: <motivo>", sem o código): a linha N do code_action
+    n = re.search(r"on line (\d+) due to: \w+", m)
+    linhas = (code or "").splitlines()
+    return linhas[int(n.group(1)) - 1].strip() if n and 0 < int(n.group(1)) <= len(linhas) else ""
 
 def abre_string(l):
     # "abre uma string": final_answer("..., x = """..., chave de dict entre aspas, task=...
@@ -57,13 +62,13 @@ def e_texto_pt(s):
     toks = re.findall(r"[A-Za-zÀ-ÿ]+", s.lower())
     return len(toks) >= 3 and sum(t in PT_STOP for t in toks)/len(toks) >= 0.15
 
-def submecanismo_spec(m):
+def submecanismo_spec(m, code=""):
     # Escrito a partir do §7 Passo 2 dos racionais (prosa), mesma ordem descrita lá.
     if "regex pattern" in m: return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
         return "infra_llm"
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
-        l = linha_rejeitada(m)
+        l = linha_rejeitada(m, code)
         if re.search(r"truncad", l, re.I): return "repr_colado"
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or abre_string(l):
             return "texto_em_literal"
@@ -140,7 +145,8 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
                                              mes=mes, tok=tt, code=code, sysp=sysp))
                 e = st.get("error")
                 if e:
-                    errors.append(dict(eid=eid, role=role, idx=i, em=str(e.get("message") or ""), mes=mes, tok=tt))
+                    errors.append(dict(eid=eid, role=role, idx=i, em=str(e.get("message") or ""), mes=mes, tok=tt,
+                                       code=code))
 
 # --------------------------------------------- comparação erro-a-erro com o CSV
 csv_rows = list(csv.DictReader(open(EM_CSV, encoding="utf-8")))
@@ -174,7 +180,7 @@ csv_map = {(r["exec_id"], r["role"], int(r["idx"])): r for r in csv_rows}
 mine_map = {}
 diffs = []
 for e in errors:
-    sub = submecanismo_spec(e["em"])
+    sub = submecanismo_spec(e["em"], e["code"])
     # split nome_nao_definido por seguidor (precisa do step anterior — do traj)
     if sub == "nome_nao_definido":
         seq = traj[(e["eid"], e["role"])]
