@@ -228,6 +228,12 @@ be reusable groundwork for later analyses, not a one-pass deliverable):
 per-family study report. Its §7 named the genealogy Sankey before it existed; that figure now lives in
 `2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md` §1.1.
 
+**Cross-base ledger — [`pipeline-entre-bases.md`](pipeline-entre-bases.md)** (PT). Where `2026-09-trace-law-flow/`
+is the foundational analysis, this records how the method changes when a later base (the second run, on the compliance
+machine) stresses it: per adjustment — trigger, evidence, change, verification, effect on each base, what to replicate
+on the other machine — plus the plan for the next ones. The per-base docs keep the method and the numbers; this one
+keeps the *why it changed*.
+
 **Shared code at this level — [`base_utils.py`](base_utils.py).** Generic primitives for any CodeAgent
 (smolagents-format) trace analysis, imported from `analysis/` root instead of copied into each dated folder:
 grouping steps into ordered `(exec_id, role)` sequences, the authoritative tool inventory (`def name(...)` in

@@ -1,0 +1,47 @@
+# Síntese Mensal do Diário — Setembro de 2026
+
+Projeto: Mecanismo de atualização de memória para agentes de IA generativa aplicado a fluxos jurídicos ([PROGRAMA-FOMENTO], Nº [ANONIMIZADO])
+
+*Leitura rápida do mês, semana a semana. Até 4 registros — a reflexão de cada semana, tirada dos arquivos episódicos em `../../Set/diario_campo_*.md` e apenas organizada aqui. Regenerável. Não duplica o log episódico nem substitui o export `.docx` do coordenador.*
+
+- **Última regeneração:** 25/09/2026
+
+---
+
+### Semana 1 · 31/08–04/09/2026 · 6 registros
+
+A semana abriu com o registro do checkpoint de 28/08 com o tutor: o gate seletivo STM→LTM ganhou respaldo independente dele ("a maioria dos traces pode não ser nada") — e o cruzamento com a documentação mostrou que ele já estava resolvido no `open-questions.md` desde 27/08 como split de duas camadas (log episódico com ADD incondicional, LTM só pelo gate `R ≥ θ1`). As leituras próprias seguiram a ordem planejada: SSGM fechado e avaliado como referência forte, e o SAGE finalizado com o achado dos dois gatilhos independentes (Time trigger = regra de faixa `θ1/θ2`; Content trigger = self-reflection `rₜ` escrita direto na LTM). Em cima disso, a arquitetura de 3 camadas foi consolidada (log cru → camada 2 tipada `exemplar`+`reflexão` → strategy layer/meta-reflexão com referência cruzada à camada 1 para reconsolidação), e os Dual Triggers do SAGE mapearam quase 1:1 na camada 2 tipada — Time → gate determinístico / `exemplar`, Content → caminho de reflexão / `reflexão`.
+
+**Decidido:** gate STM→LTM é necessário, não opcional (mas depende de calibrar θ1/θ2 no Sub 1.6/1.7); o log cru **não** é a STM do agente (a `M_S` do SAGE descarta, o nosso log nunca apaga — requisito de auditoria); os Dual Triggers do SAGE mapeiam para gate determinístico e caminho de reflexão respectivamente, e as duas classes de unidade da LTM do SAGE inferem a tipagem `exemplar`/`reflexão` já proposta.
+
+**Em aberto:** quem é dono do gate de admissão da LTM — mecanismo determinístico separado ou o Update Engine/curador (inclui: o `S` do gate é o do DMF-lite ou um promotion score à parte? avalia em schedule, no recall, ou ambos?); se o v1 tem um filtro determinístico antes do Update Engine ou se a reflexão dele é o único filtro de ruído; "janela" precisa virar "stage/caso", não "N turnos"; bifurcação trace cru vs. derivado sumarizado na promoção; inspecionar o banco de traces real que o tutor prometeu (define se os campos do score DMF-lite existem); leituras seguintes: DMF (#11) e DarwinMem (#42).
+
+---
+
+### Semana 2 · 07–11/09/2026 · 5 registros
+
+Semana de dois eixos: fechar a leitura própria do cluster de taxonomia de erro e apresentar os resultados ao tutor. AgentDebug lido e promovido para ✅ — o que transfere é a classificação por step e o mapeamento *módulo do erro-raiz → tipo de unidade de memória*; o insight "propagação leva o trace à falha" não transfere (na esteira, cascata é cara mas recuperada: 99,3% entregam conteúdo). O Stage 3 (re-rollout) foi desmontado: acontece inteiramente em simulador, o que definiu o formato do loop v2 do Update Engine — LLM só propõe a mudança de harness, a verificação é uma suíte de regressão determinística em sandbox/replay harness, e o Commit Gate fica entre "passou" e "aplicado". Na reunião de 10/09 o tutor recebeu bem as análises (insights que a própria esteira não produzia) e se comprometeu a expandir a base de traces e investigar o campo `status`. Achado lateral relevante: a skill open source "Eval Engineering" da LangChain mapeia quase 1:1 na arquitetura do projeto (World Knowledge Skill ↔ strategy layer; Verifier ↔ Commit Gate; calibration taxonomy ↔ atribuição de causa no cold path).
+
+**Decidido:** política de escrita "uma unidade por cascata, na raiz"; o v2 roda em simulador/sandbox, nunca em produção — o único artefato que sai é o aprendizado já validado; a LLM no v2 entra só em "propor" (não faz commit nos ~130 repos); Caminho A (memória) e Caminho B (harness) são camadas complementares do mesmo loop, não concorrentes.
+
+**Em aberto:** MAST e ToolScan completam o cluster de 4 papers; o replay harness com ferramentas mockadas é pré-requisito do v2 (sem ele o v1 fica só com "escreve memória → observa reincidência"); o campo `status` (números referenciando tabelas?) fica para quando a base expandida chegar; a open question nova — o filtro determinístico deve distinguir anomalia do agente de anomalia de ambiente/infra antes de rotear para o Update Engine; estudar a skill LangChain com calma, testar na Sub 1.6.
+
+---
+
+### Semana 3 · 14–18/09/2026 · 9 registros
+
+A semana mais densa do mês foi de correção de excessos e consolidação de método. Dois overclaims foram detectados e corrigidos no próprio trabalho: o AgentDebug não propõe tipos de memória nem "roteamento" (os 4 `tipo` da tabela de candidatos são analogia própria do projeto), e os 11 detectores determinísticos são derivação nossa sobre a taxonomia do TRAIL, não entrega do paper — o TRAIL foi promovido a ✅ na sequência. A triagem de candidatos a memória foi refeita por **mecanismo** (régua Hu et al. 2025): 498 erros → 437 ocorrências → 14 unidades, 10 candidatas cobrindo 90% dos erros e 92% dos tokens; a reexecução independente reproduziu tudo byte-a-byte. A decisão "sintoma → mecanismo → motivo" passou por três rodadas de correção até a forma final: TRAIL e AgentDebug ficam no mesmo degrau (diagnóstico), diferem em lente — módulo cognitivo/caça à raiz única vs. sistema/exaustão por span — e em campo extra (`impact` × `correction_guidance`). O mecanismo foi aplicado às análises de repetição (reincidência 13,5% por mecanismo vs. 11,9% por mensagem) e as duas primeiras unidades de memória foram mineradas no cru: a nº2 (contrato dict — faltava indexar por `result`) e a nº10 (campo inexistente — o próprio prompt induz o nome errado). Na reunião de 18/09, o tutor marcou que ~1.000 records não são representativos frente a ~1M no banco — tarefa atribuída: expressar a taxonomia como **query hierárquica** (catch-all `error` → `error.type` → `error.message`) para baixar da AWS um dataset só de erros.
+
+**Decidido:** a distinção sintoma (inventário/custo) → mecanismo (repetição/lição) → motivo (onde consertar/escrever memória) organiza a classificação; a metodologia sintoma → mecanismo → unidade de memória, fundamentada, passa a ser a base das próximas análises; AgentDebug e TRAIL são complementares, não redundantes (causa-raiz × cobertura — 59% dos tipos do TRAIL são estruturalmente invisíveis à classificação por exceção usada hoje); tarefa da semana seguinte definida com o tutor: taxonomia como query + dataset só de erros do banco de ~1M.
+
+**Em aberto:** grupo 1 de renomeações na `classify()` (etiquetas com causa falsa para parte do conteúdo); divergência `ConversationAgent`/`managerAgent` na §3.3 do relatório vs. notebook; memórias na forma de regras gerais têm valor como granularidade *adicional* (não substituição); os 11 detectores derivados do TRAIL, dos quais só 2–3 estão no roadmap; a taxonomia-query e o dataset de erros da base grande ainda a executar; a regra de ≥2 meses/≥3 execuções e a assinatura limítrofe ficaram pendentes de variação das regras do submecanismo.
+
+---
+
+### Semana 4 · 21–25/09/2026 · 5 registros
+
+A semana abriu finalizando o relatório para o tutor (taxonomia + schema dos records, caminho para a query de extração de erros) e, a partir de 22/09, virou inteiramente para a **base 2** — outro recorte de 1.000 registros. Primeiro achado: a taxa de erro sobe para ~37% (vs. ~32% na base 1) e o custo dos steps com erro fica ~4x (vs. ~3x). Segundo, e mais estrutural: `anomesdia` é data de partição da extração, não de execução — num teste em três vias (por agente, sem provider definido), o `start_time` do JSON bate com `dat_hor_inio_exeo`, e a base 2 na verdade cobre ~9 meses, não um; todas as análises foram refeitas com o relógio correto. O diagnóstico do resíduo da base 2 (25 erros sem sintoma reconhecido + ~19 sem mecanismo) rendeu ajustes executados na taxonomia — a questão aberta sendo: erro novo da base, regex que falhou, ou taxonomia que precisa de revisão? E apareceu o primeiro **erro invisível** concreto: plano de 17 passos, timeout na ferramenta da etapa 15, constraint do system prompt impedindo reexecução, `final_answer` entregue sem a etapa — com o agente consciente da omissão no `thought`.
+
+**Decidido:** `dat_hor_inio_exeo` é o campo de tempo correto (corrigir schema e refazer análises nas duas bases); checklist de intake para toda base nova (colunas × schema; pré-rodagem de erros/famílias smolagents; dedup contra bases anteriores); a regra canônica de ≥2 meses segue, mas precisa de reanálise para recortes curtos; candidatos escopados por papel/agente continuam mesmo sob limitação temporal; docs serão fatiados com índice (estão grandes demais).
+
+**Em aberto:** investigação caso a caso das anomalias da base 2 — para cada padrão, decidir entre estender regra, criar regra ou cobertura documentada, e portar à base 1 só o que for generalização; o bucket "pontual"/resíduo como fila de trabalho ainda não esgotado (itens 29–34 do roadmap); o timeout de ferramenta emergente na base 2 (visível na ferramenta, invisível no resultado — reforça o item 26, falhas silenciosas); auditorias §11 marcadas como desatualizadas após o fix de datas; arrasta das semanas anteriores: MAST/ToolScan, campo `status`, replay harness do v2, dataset de erros do banco de ~1M.

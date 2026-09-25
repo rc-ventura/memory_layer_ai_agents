@@ -43,3 +43,27 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 **Decisão/próximo passo:** Refazer as análises nas duas bases usando `dat_hor_inio_exeo` como campo de tempo (corrigir o campo no doc de schema). Ajustar a lógica do notebook da esteira para auditar os dois buckets — "não classificado" por sintoma × "pontual" por submecanismo — e investigar os 25 casos da base 2.
 
 **Tags:** anomesdia, dat-hor-inio-exeo, start-time, campo-de-tempo, recorte-de-extracao, base-2, schema, erros-nao-classificados, bucket-pontual, auditoria-classificacao, classify-submecanismo, sub-2.5, sub-2.2
+
+## 24/09/2026
+
+**Tipo:** implementação — **Sub-atividade:** 2.2 — **Canal:** pessoal
+
+**Registro objetivo:** Executou ajustes na segunda base de traces a partir do diagnóstico dos dois baldes de resíduo da taxonomia: 25 erros sem sintoma reconhecido pelo `classify()` (`X_sintoma_nao_reconhecido`) e cerca de 19 erros com sintoma identificado mas sem mecanismo mapeado (`X_causa_nao_identificada`, sem submecanismo). Passou o dia analisando esse diagnóstico caso a caso para responder a duas perguntas: o que mudou de fato na segunda base (erros/padrões novos) e o que exige ajuste na própria metodologia de classificação (regras novas ou estendidas para rotular esses erros).
+
+**Reflexão:** Os dois baldes de resíduo cumpriram o papel previsto de fila de trabalho — em vez de rotular errado, a taxonomia sinalizou exatamente onde falta regra. A pergunta metodológica que o dia abriu é a distinção entre "a base nova trouxe erro novo" (cobertura: estender `classify()`/`submecanismo()`) e "a taxonomia precisa de novo eixo" (rever o desenho do roteamento) — e isso se decide no dado cru, padrão a padrão, não na contagem agregada do balde.
+
+**Decisão/próximo passo:** Transformar a análise dos dois baldes em decisões concretas de regra: para cada padrão recorrente do resíduo da base 2, decidir entre estender uma regra existente, criar regra nova ou manter como cobertura documentada — e portar de volta para a base 1 o que for generalização da metodologia, não peculiaridade da base 2.
+
+**Tags:** base-2, residuo, erros-nao-classificados, sintoma-nao-reconhecido, causa-nao-identificado, classify, submecanismo, taxonomia, cobertura-da-taxonomia, ajuste-de-regras, pipeline-entre-bases, sub-2.2
+
+## 25/09/2026
+
+**Tipo:** achado — **Sub-atividade:** 2.2 — **Canal:** pessoal
+
+**Registro objetivo:** Continuou o refinamento da análise comparando a base 2 com a base 1. Descobriu que alguns erros antes identificados deixaram de ser reconhecidos na base 2, aparentemente por mudança na versão do agente — e o trabalho atual é investigar essas anomalias não classificadas a fundo para responder: são erros novos que pedem classificação nova, ou erros já conhecidos que o regex não capturou, ou ainda sinal de que a taxonomia precisa rediscutir submecanismos/causa-raiz? Está documentando todo esse processo. No meio do dia encontrou um **erro invisível** (sem exceção): o agente planejou 17 passos, mas no passo 15 a ferramenta de consulta deu timeout — um problema que está aparecendo bastante na base 2 — e uma restrição do system prompt impedia reexecutar a mesma ferramenta; o agente então entregou o `final_answer` pulando a etapa 15, e menciona explicitamente essa omissão no `thought`, ou seja, está consciente do que fez.
+
+**Reflexão:** O caso do passo 15 é exatamente a classe de falha que a taxonomia por exceção não enxerga: o plano perde uma etapa obrigatória silenciosamente e o `final_answer` se apresenta como completo — só o `thought` denuncia. Reforça a decisão já tomada de separar as falhas silenciosas num notebook próprio com detectores determinísticos dedicados (roadmap, item 26). O timeout de ferramenta, além de erro visível recorrente, está gerando também esse modo de falha composto — visível na ferramenta, invisível no resultado.
+
+**Decisão/próximo passo:** Seguir a investigação caso a caso das anomalias não classificadas da base 2. Além disso, fatiar melhor a documentação — os docs estão ficando grandes demais; a ideia é criar um índice e dividir em vários `.md`.
+
+**Tags:** base-2, taxonomia, erros-nao-classificados, versao-do-agente, regex, comparacao-entre-bases, erro-invisivel, falha-silenciosa, timeout-de-ferramenta, final-answer, thought, plano-pulado, constraint-system-prompt, item-26, fatiamento-de-docs, indice-de-docs, sub-2.2

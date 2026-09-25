@@ -723,16 +723,27 @@ errada para 47 desses 136 erros.
 coisas que estão no próprio trace: o texto da exceção e, nos erros de parsing, **a linha de código que o parser
 rejeitou**. Sem LLM, regras em ordem:
 
-- **Erros de parsing.** A linha rejeitada abre uma string (`final_answer("...`, `x = """...`, chave de dict
-  entre aspas) ou o erro é `unterminated` / `never closed` / `forgot a comma` → *texto dentro de literal*. A linha
-  é texto em português ou markdown (começa com `|`, `#`, `**`, `- `, `1)`; tem crase; ou ≥15% das palavras são
-  stopwords do português) → *texto solto no código*. Contém "truncado" → *retorno impresso colado de volta*.
-  Nenhuma das anteriores → *código Python mal escrito* (`codigo_mal_escrito`).
+- **Erros de parsing**, na ordem em que o código testa. (1) A linha rejeitada contém "truncado" → *retorno
+  impresso colado de volta*. (2) A linha tem ≥2 pares `"chave": "texto"`, ≥2 dessas chaves já apareceram impressas
+  como chave numa observação anterior do mesmo papel e a instrução não é um `final_answer(` → o mesmo *retorno
+  colado*, agora inteiro (sem "truncado"): o dado vira **entrada** de outro código em vez de usar a variável que o
+  guardava; dentro do `final_answer` o texto é o relatório, e cai em *texto dentro de literal*. (3) A linha
+  rejeitada abre uma string (`final_answer("...`, `x = """...`, chave de dict entre aspas) ou o erro é
+  `unterminated` / `never closed` / `forgot a comma` → *texto dentro de literal*. (4) A linha é texto em português
+  ou markdown (começa com `|`, `#`, `**`, `- `, `1)`; tem crase; ou ≥15% das palavras são stopwords do português)
+  → *texto solto no código*. (5) Nenhuma das anteriores → *código Python mal escrito* (`codigo_mal_escrito`).
+  A regra (2) vem antes das palavras-chave da mensagem, que a escondiam (Ajuste 2.2, 25/09/2026). Quando a
+  mensagem vem no **formato novo** (`... on line N due to: SyntaxError: <motivo>`, numa linha e sem o código —
+  `RoteadorCivel` desde jun/2026), a linha rejeitada é a linha N do `code_action` (Ajuste 2.1). Os dois ajustes
+  estão em [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).
 - **Erros de execução.** `KeyError: 0` num dict → *dict indexado por posição*; `string indices must be integers`
   → *string tratada como dict*; `KeyError: 'campo'` → *campo inexistente*; `'list' object is not an iterator` →
   *`next()` sobre gerador*; `variable X is not defined` → *módulo sem import* (se X é `json`, `datetime`...) ou
-  *nome não definido*; builtin proibido ou `Import of` → *inventário do sandbox*; `AgentGenerationError`/422 →
-  *infra*.
+  *nome não definido*; builtin proibido ou `Import of`/`Import from` → *inventário do sandbox*; ferramenta chamada
+  com um nome de argumento que a assinatura não tem (`.forward() got an unexpected keyword argument`, ex.:
+  `final_answer(..., docs=...)`) → *argumento inexistente*, na mesma unidade do argumento posicional — a lição é a
+  mesma, usar a assinatura declarada; `AgentGenerationError`/422 → *infra*. (`Import from` e o argumento
+  inexistente entraram em 25/09/2026, Ajuste 3 de [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).)
 
 **Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** Duas funções leem a mesma
 mensagem de erro, com papéis diferentes. O `classify()` dá o **sintoma** (família e assinatura, §2 do relatório) e
@@ -742,7 +753,7 @@ a sua sobra, e cair em cada uma diz uma coisa diferente:
 | Balde | Classe (submecanismo) | Quando cai | O que pode significar |
 |---|---|---|---|
 | **Causa não identificada** (`X_causa_nao_identificada`) | **Código Python mal escrito** (`codigo_mal_escrito`) | erro de sintaxe ou indentação em que a linha rejeitada não é texto colado, literal de texto nem retorno colado | código mal formado de verdade (parêntese, indentação, operador): ruído, até se provar que se repete |
-| | **Erro conhecido, causa sem regra** (`causa_sem_regra`) | o `classify()` reconhece o sintoma, mas nenhuma regra de causa casa — inclusive "Could not index" fora dos três padrões | o sintoma tem nome, a causa não: **candidato a regra nova** se recorrer (ex.: argumento nomeado que não existe no `final_answer`) |
+| | **Erro conhecido, causa sem regra** (`causa_sem_regra`) | o `classify()` reconhece o sintoma, mas nenhuma regra de causa casa — inclusive "Could not index" fora dos três padrões | o sintoma tem nome, a causa não: **candidato a regra nova** se recorrer (ex.: o argumento nomeado que não existe no `final_answer` — virou regra em 25/09/2026, ao reaparecer na base 2) |
 | **Sintoma não reconhecido** (`X_sintoma_nao_reconhecido`) | **Erro que a taxonomia não conhece** (`sintoma_nao_reconhecido`) | nem o `classify()` nem o `submecanismo()` reconhecem a mensagem | **erro novo**: tipo que a taxonomia nunca viu, versão nova da esteira ou do smolagents, ou algo que não é erro de código (ex.: `AgentMaxStepsError`, exaustão de iterações). É o sinal de cobertura: onde ele cresce, as regras não alcançam |
 
 Na prática, as duas leituras se combinam **num só ponto** — `montar_unidades()` — e **só para o resíduo**:
@@ -760,7 +771,7 @@ sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
 
 **Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
 `montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
-candidata depende disso — testado: as 10 candidatas da base 1 saem idênticas com ou sem a separação.
+candidata depende disso — testado: as 11 candidatas da base 1 saem idênticas com ou sem a separação.
 
 O nome "causa não identificada" diz o que aconteceu com a regra, não com o erro: **não quer dizer que o erro
 aconteceu uma vez só** (até 23/09/2026 o balde chamava "erros pontuais", o que sugeria isso sem que a regra
@@ -838,8 +849,11 @@ Três eram a mesma causa de um candidato existente, escrita com outra exceção;
 critério "causa única, conteúdo numa frase" continua certo — o erro era aplicá-lo à assinatura em vez de a cada
 erro.
 
-**Passo 7 — o resultado.** 15 unidades: **10 candidatas** (5 factual · ambiente, 5 experiencial · estratégia),
-2 não-memória, 2 a revisar (resíduo) e 1 fora. As candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
+**Passo 7 — o resultado.** 15 unidades: **11 candidatas** (5 factual · ambiente, 6 experiencial · estratégia),
+2 não-memória e 2 a revisar (resíduo). As candidatas cobrem 450 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
+(Até 25/09/2026 eram 10 candidatas, 447 erros e 1 unidade "fora": "Não colar retorno impresso" tinha 2 erros; o
+Ajuste 2.2 passou a reconhecer o retorno colado inteiro, ela foi a 6 erros em 4 meses e virou candidata — e a
+maior, "Texto longo nunca dentro de literal", perdeu 4 erros, de 186 para 182.)
 O que mudou em relação à tabela anterior de 7 linhas:
 
 - **Três candidatas novas com peso real**: "Retorno pode chegar como string" (47 erros, 36 execuções, 9 meses,
@@ -869,7 +883,7 @@ mostra tokens e **ocorrências**, não erros, porque ocorrência é a evidência
 por papel — e não fala mais de memória; a decisão vive toda aqui na §9.
 
 **Passo 9 — a leitura.** As duas maiores unidades — "Texto longo nunca dentro de literal de string" e "Retorno das
-ferramentas de documento é dict" — somam 57% dos erros e 50% dos tokens. Continuam sendo a aposta mais forte, com
+ferramentas de documento é dict" — somam 56% dos erros e 50% dos tokens. Continuam sendo a aposta mais forte, com
 números menores que os 59%/59% da tabela anterior. O tipo não é cosmético: uma unidade *factual · ambiente* pode
 ser minerada do próprio trace e checada contra o sistema (o schema real sai dos erros); uma unidade *experiencial
 · estratégia* precisa ser escrita como regra e só se valida vendo se o erro para de voltar. As duas linhas de
@@ -912,13 +926,14 @@ junta ≥3 execuções e ≥2 meses dentro de um papel, essas mesmas execuções
 (o papel está contido na base). A escolha informada é no sentido contrário: as **herdadas** mostram onde a
 triagem global empresta candidatura a um papel no qual a memória não se sustentaria sozinha.
 
-**O resultado** (base 1): 18 células (papel × unidade) candidatas de 33 com erro; 14 herdadas — quase metade das
+**O resultado** (base 1): 19 células (papel × unidade) candidatas de 33 com erro; 14 herdadas — quase metade das
 células onde uma candidata global aparece num papel não se sustenta nele. A candidatura scoped concentra-se no
-`ConversationAgent` (8 unidades), com 3 no `managerAgent`, 2 no `RespostaBacen`, 2 no `RoteadorCivel` e 1 em
+`ConversationAgent` (9 unidades), com 3 no `managerAgent`, 2 no `RespostaBacen`, 2 no `RoteadorCivel` e 1 em
 cada um de `CadastroCivel`, `CadastroTrabalhista` e `CalculoCivel`. Sensibilidade com a régua estrita (≥5
-execuções, ≥3 meses): **8 das 18** células candidatas caem — a régua scoped é bem mais sensível que a global
-(1 das 10 unidades), porque os volumes por papel são menores por construção; a lista de limítrofes está em
-`03-procedimento-validacao.md` §1.15.
+execuções, ≥3 meses): **8 das 19** células candidatas caem — a régua scoped é bem mais sensível que a global
+(1 das 11 unidades), porque os volumes por papel são menores por construção; a lista de limítrofes está em
+`03-procedimento-validacao.md` §1.15. (Números de 25/09/2026, depois dos Ajustes 2.2 e 3; antes eram 18 células, 8
+das 18 e 1 das 10.)
 
 ---
 

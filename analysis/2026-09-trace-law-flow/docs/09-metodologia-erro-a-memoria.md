@@ -43,10 +43,10 @@ flowchart TD
     S --> M["mecanismo — 18 causas"]
     M -->|"SUB2UNI · N:1"| U["unidade — 15 lições"]
     U --> T["triagem()<br/>≥3 execs · ≥2 meses · não-harness"]
-    T --> D1["candidato — 10 unidades"]
+    T --> D1["candidato — 11 unidades"]
     T --> D2["não-memória — 2"]
     T --> D4["revisar — 2 (resíduo: falta regra)"]
-    T --> D3["fora — 1"]
+    T --> D3["fora — 0"]
     A -.->|"proveniência (não decide)"| T
 ```
 
@@ -78,12 +78,15 @@ de relance, da esquerda para a direita:
    `U_contrato_dict · 96`; `inventario_sandbox` 11 + `modulo_sem_import` 6
    fecham `U_sandbox · 17`;
 3. **decide** — a última coluna nomeia o destino de cada unidade (1:1, sem
-   nova fusão): `MEM <título>` para as 10 unidades que viram candidata a
-   memória (447 erros, 90%), `HARNESS <título>` para as 2 que apontam
-   correção de harness/infra (40 erros), `REVISAR <título>` para os 2 baldes
-   de resíduo (9 erros — a fila de trabalho da taxonomia: falta escrever a
-   regra de causa/sintoma) e `FORA <motivo>` para a 1 unidade descartada por
-   falta de recorrência (2 erros). O título de cada `MEM`/`HARNESS` é a
+   nova fusão): `MEM <título>` para as 11 unidades que viram candidata a
+   memória (450 erros, 90%), `HARNESS <título>` para as 2 que apontam
+   correção de harness/infra (40 erros) e `REVISAR <título>` para os 2 baldes
+   de resíduo (8 erros — a fila de trabalho da taxonomia: falta escrever a
+   regra de causa/sintoma). `FORA <motivo>` nomearia uma unidade descartada por
+   falta de recorrência; a base 1 não tem nenhuma desde 25/09/2026 (a que
+   havia, "Não colar retorno impresso", 2 erros, virou candidata com 6 quando a
+   regra passou a reconhecer o retorno colado inteiro — `pipeline-entre-bases.md`,
+   Ajuste 2.2). O título de cada `MEM`/`HARNESS` é a
    mesma lição de `UNI` em `base_pipeline.py` que preenche
    `candidatos_memoria.csv` — a figura não inventa texto novo, só nomeia o
    que a triagem já decide.
@@ -132,7 +135,7 @@ sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
 
 **Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
 `montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
-candidata depende disso — testado: as 10 candidatas da base 1 saem idênticas com ou sem a separação.
+candidata depende disso — testado: as 11 candidatas da base 1 saem idênticas com ou sem a separação.
 
 Na triagem, os dois baldes vão para **revisar** (a fila de trabalho da taxonomia, não não-memória): com
 **prioridade** se algum padrão de erro recorre, contado por padrão e não pelo balde (`01-racionais.md` §7 Passo 5).

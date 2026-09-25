@@ -24,7 +24,7 @@ Duas assinaturas de erro somam **59% de tudo**: o agente monta relatórios jurí
 string Python (159 erros) e trata como lista o dicionário que as ferramentas de documento retornam (136 erros).
 Olhando o mecanismo de cada erro (§6, refeito em 15/09), a segunda assinatura se divide — 96 são de fato o
 dicionário indexado como lista, 37 são uma *string* tratada como dicionário — e as duas maiores unidades de
-memória somam 57% dos erros.
+memória somam 56% dos erros.
 
 O resultado decisivo para a tese: **86,3% das mensagens de erro entram comprovadamente no contexto do step
 seguinte — e, dessas, 11,9% caem de novo na mesma categoria de erro** (13,5% comparando pelo mecanismo). O agente
@@ -323,7 +323,7 @@ de [`04-roadmap.md`](04-roadmap.md): decompor cada mês em erro × baseline limp
 > ([`01-racionais.md`](01-racionais.md) §3 Passo 8). Ressalva: 20 dos 58 vêm do laço de out/2025 ("explicação
 > solta no bloco de código"). A manchete continua 11,9%; por mecanismo o achado fica um pouco mais forte.
 
-E entre execuções, por mecanismo: **"texto longo dentro de literal" aparece em 149 execuções, em 10 dos 11 meses
+E entre execuções, por mecanismo: **"texto longo dentro de literal" aparece em 145 execuções, em 10 dos 11 meses
 com dado; "retorno das ferramentas de documento é dict", em 87 execuções ao longo de 8 meses; "retorno pode chegar
 como string", em 36 execuções ao longo de 9 meses.** Recorde: 10 erros seguidos no mesmo mecanismo num
 `managerAgent` (out/2025).
@@ -367,24 +367,28 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 
 | # | Unidade | Tipo | Ocorr. | Erros | Execuções | Meses | Papéis | Tokens |
 |---|---|---|---:|---:|---:|---:|---:|---:|
-| 1 | **Texto longo nunca dentro de literal de string** — montar em variáveis, depois `final_answer` | experiencial · estratégia | 173 | 186 | 149 | 10 | 6 | 4,04M |
+| 1 | **Texto longo nunca dentro de literal de string** — montar em variáveis, depois `final_answer` | experiencial · estratégia | 169 | 182 | 145 | 10 | 5 | 4,00M |
 | 2 | **Retorno das ferramentas de documento é dict** — `r['result'][0]`, nunca `r[0]` | factual · ambiente | 87 | 96 | 87 | 8 | 1 | 2,99M |
 | 3 | **Retorno pode chegar como string** — checar `str` antes de indexar ou `json.loads` | experiencial · estratégia | 42 | 47 | 36 | 9 | 7 | 2,11M |
 | 4 | **Explicação nunca solta no bloco de código** — ⚠️ 90% dos tokens em out/2025 | experiencial · estratégia | 12 | 33 | 12 | 5 | 3 | 1,39M |
 | 5 | **Inventário do sandbox** — builtins e imports proibidos; `json`/`datetime` explícitos; sem `openpyxl` | factual · ambiente | 17 | 17 | 17 | 8 | 6 | 0,89M |
-| 6 | **Ferramentas só aceitam argumento nomeado** — `f(arg=v)`, nunca posicional | factual · ambiente | 24 | 35 | 22 | 10 | 7 | 0,36M |
+| 6 | **Ferramentas só aceitam argumento nomeado** — `f(arg=v)`, nunca posicional, e só os nomes da assinatura | factual · ambiente | 25 | 36 | 23 | 11 | 7 | 0,39M |
 | 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 8 | 2 | 0,34M |
 | 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 4 | 2 | 0,29M |
 | 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
 | 10 | **Campo inexistente no retorno estruturado** — `quebra_sigilo` 7× | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
+| 11 | **Não colar retorno impresso de volta no código** — referenciar a variável que guardou o retorno (truncado ou inteiro); candidata desde 25/09/2026 | experiencial · estratégia | 6 | 6 | 6 | 4 | 2 | 0,09M |
 | — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)** | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |
-| — | **Causa não identificada** (nenhuma regra de causa reconheceu o erro) — revisar, prioridade | — | 8 | 8 | 8 | 6 | 2 | 0,13M |
+| — | **Causa não identificada** (nenhuma regra de causa reconheceu o erro) — revisar, prioridade | — | 7 | 7 | 7 | 5 | 2 | 0,10M |
 | — | **Sintoma não reconhecido** (erro que a taxonomia não conhece) — revisar, baixa prioridade | — | 1 | 1 | 1 | 1 | 1 | 0,01M |
-| — | Retorno impresso colado de volta no código — fora, sem recorrência | experiencial · estratégia | 2 | 2 | 2 | 1 | 1 | 0,05M |
 
-As 10 candidatas cobrem 447 dos 498 erros (90%) e 92% dos tokens em steps com erro. Sensibilidade: com ≥5
-execuções e ≥3 meses, só a nº 9 deixa de passar.
+As 11 candidatas cobrem 450 dos 498 erros (90%) e 92% dos tokens em steps com erro. Sensibilidade: com ≥5
+execuções e ≥3 meses, só a nº 9 deixa de passar. *(Até 25/09/2026 eram 10 candidatas e 447 erros: a nº 11 estava
+"fora, sem recorrência", com 2 erros em 1 mês, porque a regra só reconhecia o retorno colado quando o print vinha
+truncado; reconhecendo o inteiro — Ajuste 2.2, [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md) — 4 erros
+saíram da nº 1, de 186 para 182, e a nº 11 passou a 6 erros em 4 meses. No Ajuste 3, o erro do `final_answer`
+com argumento inexistente saiu do resíduo para a nº 6: 35 → 36 erros, 449 → 450 cobertos.)*
 
 **O que a triagem mudou** (detalhe em [`01-racionais.md`](01-racionais.md) §7 Passos 6–7):
 
@@ -403,19 +407,20 @@ papel sustentam isso com mais força do que a versão anterior: a nº 6 (argumen
 nº 10 (`quebra_sigilo`) e a nº 3 somam 16 dos 24; e a nº 2 só existe no `ConversationAgent`. Uma unidade escopada
 ao papel resolveria quase tudo o que aquele papel erra, mesmo sendo pequena no agregado.
 
-**Medido (24/09/2026) — a triagem no recorte por papel (notebook 9.4/9.5).** Rodando a mesma régua (≥3 execuções
-e ≥2 meses, mesma deduplicação de cascata) **dentro de cada papel**: 18 células (papel × unidade) são candidatas,
-de 33 com erro — `ConversationAgent` 8 unidades, `managerAgent` 3, `RespostaBacen` 2, `RoteadorCivel` 2,
+**Medido (24/09/2026, refeito em 25/09 com a nº 11) — a triagem no recorte por papel (notebook 9.4/9.5).** Rodando
+a mesma régua (≥3 execuções e ≥2 meses, mesma deduplicação de cascata) **dentro de cada papel**: 19 células
+(papel × unidade) são candidatas,
+de 33 com erro — `ConversationAgent` 9 unidades, `managerAgent` 3, `RespostaBacen` 2, `RoteadorCivel` 2,
 `CadastroCivel`/`CadastroTrabalhista`/`CalculoCivel` 1 cada. O cruzamento com a triagem global dá a medida do
-escopo: das 32 células em que uma candidata global aparece num papel, **14 são herdadas** — a unidade se repete na
+escopo: das 33 células em que uma candidata global aparece num papel, **14 são herdadas** — a unidade se repete na
 base, mas não naquele papel, e uma memória escrita para ele não se sustentaria pela régua. Nenhuma célula
 "revelada" (candidata no papel sem passar na global) é sequer possível com a mesma régua: o papel está contido
-na base. Sensibilidade com a régua estrita (≥5 execuções, ≥3 meses): **8 das 18** células caem — o veredito por
+na base. Sensibilidade com a régua estrita (≥5 execuções, ≥3 meses): **8 das 19** células caem — o veredito por
 papel é frágil nos papéis pequenos e deve ser lido junto com o volume, não pela célula isolada (lista das
 limítrofes em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.15; racional em
 [`01-racionais.md`](01-racionais.md) §7 Passo 10).
 
-As nºs 1 e 2 somam **57% dos erros e 50% dos tokens**. A nº 2 continua a mais promissora como **memória factual
+As nºs 1 e 2 somam **56% dos erros e 50% dos tokens**. A nº 2 continua a mais promissora como **memória factual
 viva**: é minerável dos próprios traces, sem LLM — agregar os erros de contrato de retorno e consolidar o schema
 real observado, junto com a nº 10 (as chaves que de fato existem). Isso é, literalmente, o mecanismo de
 atualização de memória alimentado por sinal de erro que o projeto propõe.

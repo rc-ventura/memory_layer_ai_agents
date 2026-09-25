@@ -6,7 +6,7 @@
 > → `docs/04-roadmap.md` (Agora) · `docs/03-procedimento-validacao.md` §1.12
 > Também desde 23/09: o balde "Erros pontuais sem conteúdo único" (`X_pontual`) virou dois — **Causa não
 > identificada** e **Sintoma não reconhecido** — e "Não classificado" passou a "Sintoma não reconhecido"; por isso
-> as "14 unidades" auditadas aqui são 15 hoje (as 10 candidatas não mudaram). → `docs/01-racionais.md` §7 Passo 2
+> as "14 unidades" auditadas aqui são 15 hoje (as 10 candidatas não mudaram — **até 25/09/2026**: o Ajuste 2.2 fez de "Não colar retorno impresso" a 11ª candidata e moveu 4 erros de 186 para 182 em "Texto longo…"; a cobertura é 449/498 — 450 depois do Ajuste 3, que passou o `final_answer` com argumento inexistente para "argumento nomeado" —, e o `audit_recompute6.py` foi atualizado e dá 0 divergências; `analysis/pipeline-entre-bases.md`). → `docs/01-racionais.md` §7 Passo 2
 
 **Data:** 2026-09-16 · **Auditor:** agente de auditoria · **Objeto:** a cadeia completa
 `data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz` → `pipeline/analise_trace_esteira_juridica.ipynb`

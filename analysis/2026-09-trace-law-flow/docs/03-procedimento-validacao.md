@@ -132,7 +132,7 @@ contagens de steps/execuções/tokens. Nenhum embute uma decisão de "o que cont
 | §2.3 duração "Falha do LLM interno" — 115s | corte de amostra mínima por família | `n >= 3, 10, 20, 50` | ❌ **NÃO robusto — retirado como número, virou hipótese** (só 6 pontos, variância de 3 ordens de magnitude) |
 | §3.5 desperdício % por papel | corte `tok_total >= 50.000` | cortes de 10k, 50k, 100k | ✅ **robusto** — ranking idêntico |
 | §3.3 tokens por chamada, por papel | o que fazer com o step cujo código **não parseia** (sem árvore, sem como contar chamadas) | as duas contagens defensáveis: descartar o step inteiro × somar os tokens dele com `n_calls = 0` | ⚠️ **escolha fixada em 15/09** — contar os tokens. Inclusiva: 27.988 / 18.775 / agregada 22.280; exclusiva: 27.062 / 17.592 / 21.420. ✅ **robusto no que a seção conclui**: ranking, os múltiplos 11,6× e 4,2×, a mediana (12.192) e o destaque laranja do 8.9 são idênticos nas duas. Racional em [`01-racionais.md`](01-racionais.md) §3.3, Ressalva 2 |
-| §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 10 candidatas muda de lado (marcada limítrofe) |
+| §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 11 candidatas muda de lado (marcada limítrofe) |
 | `submecanismo()` — base das análises por mecanismo | ordem das regras e o limiar de 15% de stopwords | 6 casos abertos com `drill_down.py` (15/09) | ⚠️ **conferido por amostra, não testado por variação** — os 6 casos batem; variar as regras ainda não foi feito |
 | §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 1 — de qual ferramenta vem cada erro (nº2: 94,8%; nº10: 70%) | a regra de rastreio da variável (AST; comando → step → steps anteriores) | conferência manual de todos os casos fora da dominante + amostra de 4 da dominante (16/09) | ⚠️ **conferido por amostra, não testado por variação** — as atribuições conferem; 5 (nº2) e 1 (nº10) ficam não resolvidos; o veredito da nº2 resiste ao pior caso (ver §1.7) |
 | §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 2 — schema lido da mensagem | o método de leitura do objeto impresso | `ast.literal_eval` × regex tolerante | ✅ **robusto** — 89/89 e 7/7 concordam (ver §1.7); a descrição da forma foi **corrigida** (listas mistas) |
@@ -1032,7 +1032,9 @@ unidade, a "causa não identificada" pareceria recorrente (8 execuções, 6 mese
 por padrão, aparece **o único que volta de fato**: parênteses que fecham com um tipo diferente do que abriram, em 3
 execuções. Por isso a unidade sai **revisar — prioridade**, e o "sintoma não reconhecido" **revisar — baixa
 prioridade**. É candidato a regra de causa nova, não memória ainda. Na base 2 (25 erros de sintoma não reconhecido), a
-mesma tabela diz se são um erro novo que se repete ou vários soltos.
+mesma tabela diz se são um erro novo que se repete ou vários soltos. *(Desde 25/09/2026 — §1.16, Ajuste 3 — o
+argumento inexistente no `final_answer` tem regra, porque reapareceu na base 2: o resíduo da base 1 são 8 erros em 6
+padrões, e a causa não identificada tem 7.)*
 
 ### 1.14 · Cores das figuras — uma língua de cor para os erros (24/09/2026)
 
@@ -1086,9 +1088,12 @@ reagrupa `EU`; a auditoria nº 6 e os CSVs existentes não são afetados.
 3. **Fato estrutural conferido por exaustão**: zero células "reveladas" (candidata no papel sem passar na
    global) — impossível com a mesma régua: execuções/meses de um papel estão contidos nos da base.
 
-**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 18** células candidatas mudam de lado — a
-"limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 10 unidades): os volumes por
-papel são menores por construção. As 8:
+**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 19** células candidatas mudam de lado — a
+"limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 11 unidades): os volumes por
+papel são menores por construção. As 8 *(refeito em 25/09/2026 depois dos Ajustes 2.2 e 3, §1.16; antes eram 8 das
+18 — "RoteadorCivel · Texto longo…" saiu porque os 3 erros dele foram para "Não colar retorno impresso", as duas
+células dessa unidade entraram, e "ConversationAgent · argumento nomeado" deixou de ser limítrofe ao ganhar o erro do
+`final_answer`, 4 → 5 execuções)*:
 
 | Papel | Unidade |
 |---|---|
@@ -1096,16 +1101,80 @@ papel são menores por construção. As 8:
 | CalculoCivel | Retorno pode chegar como string |
 | ConversationAgent | Nome usado sem ter sido definido |
 | ConversationAgent | Após step com erro, o que ele definiria não existe |
-| ConversationAgent | Ferramentas só aceitam argumento nomeado |
+| ConversationAgent | Não colar retorno impresso de volta no código |
 | RoteadorCivel | Ferramentas só aceitam argumento nomeado |
-| RoteadorCivel | Texto longo nunca dentro de literal de string |
+| RoteadorCivel | Não colar retorno impresso de volta no código |
 | managerAgent | Explicação nunca solta no bloco de código |
 
 **Leitura honesta.** O veredito scoped por célula é frágil nos papéis pequenos — as células com 3–4 execuções
-vivem no limiar. O achado que não depende da régua é a **direção** do cruzamento: 14 das 32 células em que uma
+vivem no limiar. O achado que não depende da régua é a **direção** do cruzamento: 14 das 33 células em que uma
 candidata global aparece num papel são **herdadas** (não se sustentam nele), e nenhuma "revelada" é sequer
 possível. A decisão de escrever memória por papel deve olhar a tabela do 9.4 junto com o volume, não a cor da
 célula isolada.
+
+### 1.16 · O resíduo da base 2 — dois ajustes de leitura (25/09/2026)
+
+**A pergunta.** A base 2 (ago/2026, na máquina de compliance) disparou o alarme de cobertura — sintoma não
+reconhecido em 25 erros, 5,2% dos ~479 — e trouxe 2 padrões "recorrentes" no resíduo. O que eles são de fato? O
+racional dos baldes está em `01-racionais.md` §7 Passo 2; o registro dos ajustes, em
+[`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).
+
+**O método.** O procedimento do resíduo (Frente 3, passos 1–3), com o cru lido **na máquina da base 2** — de lá só
+saem contagens, nomes de classe, categorias e verdadeiro/falso. Ferramentas: `drill_down.py residuo` (colunas
+`tem_due_to`, `tem_linha_error`, `linha_rejeitada_ok` e o bloco "estrutura por padrão"), `padrao "<nome exato>"` e
+`caso`.
+
+**Resultado — os 44 erros do resíduo da base 2 (25 sintoma + 19 causa):**
+
+| Padrão | Erros | O que é | Destino |
+|---|---:|---|---|
+| `SyntaxError` sem motivo (o "recorrente" da causa) | 7 | formato novo da mensagem de parsing (`due_to=1 error=0 rejeitada=0`); todos `RoteadorCivel`, `idx=1`, jun–ago/2026; o agente cola o retorno impresso de uma ferramenta dentro da chamada a outra (3 traces lidos) | Ajustes 2.1 e 2.2 → `repr_colado` |
+| `?` (o "recorrente" do sintoma) | 7 | chave de fallback: 6 `AgentExecutionError` sem `due to` (5 execuções, 3 meses, 3 papéis) + 1 `AgentMaxStepsError` — não é um padrão | pendente |
+| `TimeoutError: Tool <q> excedeu o timeout de <n>s` | 16 | 15 execuções, **1 mês, 1 papel**; a mensagem é em português — wrapper de ferramenta da esteira, não do smolagents; o agente segue com o fallback do prompt | plataforma (`H_*`), pendente |
+| `Import from <módulo> is not allowed` | 4 | o `classify()` reconhece; a regra do `inventario_sandbox` só casa `"Import of"`; a máscara os parte em 4 padrões | Ajuste 3 → `inventario_sandbox` |
+| `FinalAnswerTool…forward() got an unexpected keyword` | 1 | o mesmo caso da base 1 (argumento `docs`) com outro nome de classe | Ajuste 3 → `argumento_inexistente`, na unidade do argumento nomeado |
+| 9 casos de uma ocorrência | 9 | cobertura (os 7 que ficam na causa não identificada e os 2 de sintoma) | baixa prioridade, nada agora |
+
+**Conferido na base 1** (todas as unidades e a triagem de antes reproduzidas sem mudança, salvo o previsto):
+
+1. **A fonte do Ajuste 2.1.** Nos 222 erros de parsing do formato antigo, a linha N do `code_action` é a linha que a
+   mensagem traz em 221 (a exceção é uma f-string de várias linhas: o parser aponta o início e N é o fim). Os 3 do
+   formato novo são todos `RoteadorCivel`, jun–jul/2026. O 2.1 sozinho não muda nenhum erro da base 1.
+2. **O Ajuste 2.2.** Evidência `resultados/evidencia/A6_repr_colado/` (9 erros com ≥2 pares `"chave": "texto"` na
+   linha rejeitada; git-ignored). A primeira versão da regra (estrutura + origem nas observações) movia 6; **2 eram
+   falsos positivos**, revistos no cru: o `managerAgent` de fev/2026 (tabela markdown vinda do subagente, colada
+   dentro do relatório de `final_answer`) e o `ConversationAgent` de mar/2026 (o dict do próprio `final_answer`,
+   fechado com `)` sem `}`). Os dois são relatório dentro de `final_answer` — `texto_em_literal` — e a regra passou
+   a excluir o `final_answer`. Ficaram **4** erros: os 3 do `RoteadorCivel` (`busca_obf(textos_decisoes=…)`) e o
+   `raw_result = [[{…` do `ConversationAgent` (mai/2026). Só a estrutura pegaria um dict de relatório escrito pelo
+   agente; só a origem pegaria 70 erros de texto de documento copiado, outro mecanismo.
+3. **Números novos (Ajuste 2.2).** 10 → **11 candidatas**; "Não colar retorno impresso" de 2 para 6 erros (6 execuções, 4 meses,
+   2 papéis; passa também na régua estrita) e "Texto longo nunca dentro de literal" de 186 para 182 erros;
+   cobertura 447 → 449 erros (90%), tokens 92%; scoped 18 → 19 células (§1.15). Refeitos: CSVs, notebook e Sankey.
+4. **Auditoria nº 6** (`audit_recompute6.py`, a regra reescrita à parte como `retorno_colado()`): 0 divergências
+   nos 498 erros; 437 ocorrências; as 15 unidades conferidas; mecanismo 58 (13,5%).
+
+**Ajuste 3 (Etapa 3 do plano).** `Import from` passa a casar a regra do sandbox, como `Import of`; e
+`.forward() got an unexpected keyword argument` vira o mecanismo `argumento_inexistente`, na unidade "Ferramentas só
+aceitam argumento nomeado" (decisão do Rafael: uma lição só — usar a assinatura declarada — cobre a chamada posicional
+e o nome errado). O `classify()` não muda. Base 1: muda **1 erro** (o `final_answer` com `docs`, `ConversationAgent`,
+mai/2026): argumento nomeado 35 → 36 erros, 22 → 23 execuções, 10 → 11 meses; causa não identificada 8 → 7;
+cobertura 449 → 450; as 11 candidatas não mudam; scoped: 8 das 19 células caem na régua estrita (§1.15). Auditoria nº 6:
+0 divergências. Nenhum `Import from` na base 1.
+
+**Na base 2:** com o 2.1 os 7 `SyntaxError` foram a `texto_solto` — unidade errada, porque o resumo colado tem
+palavras em português — e com o 2.2 a `repr_colado` (1 em jun, 4 em jul, 2 em ago); a causa não identificada caiu de
+19 para 12 erros.
+
+**A mesma chave, mecanismos diferentes.** O padrão priorizado da base 1 (`SyntaxError: closing parenthesis <q> does
+not match opening parenthesis <q>`, 3 execuções, 2 meses) é o motivo que a base 2 também traz nos 7 erros do
+`RoteadorCivel`. Mas no cru da base 1 são **2 erros de digitação reais** (`doc['x'}`, um `{` sem fechar) e **1 texto
+longo dentro de uma chamada** — nenhum é retorno colado. A máscara junta as chaves; o mecanismo é outro. Por isso a
+regra "o mesmo padrão em outra base sobe de prioridade" (Frente 3) deve conferir o **mecanismo**, não só a chave.
+
+**Pendente** (roadmap 30, 31, 33, 34): o Timeout, o `?`, a comparação entre bases e a robustez do padrão e do
+alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
+fase desde a troca do relógio de 23/09 — usa o mês do lote (`202512`), não o da execução; não afeta as demais.
 
 ---
 

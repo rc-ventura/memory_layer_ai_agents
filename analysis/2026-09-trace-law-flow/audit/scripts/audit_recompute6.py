@@ -90,6 +90,8 @@ def submecanismo_spec(m, code="", obs_ant=""):
         if e_texto_pt(l): return "texto_solto_no_codigo"
         return "codigo_mal_escrito"
     if "does not support multiple positional" in m: return "argumento_posicional"
+    # argumento com nome que a ferramenta não declara (ex.: final_answer(..., docs=...)): mesma lição da posicional
+    if "got an unexpected keyword argument" in m and ".forward()" in m: return "argumento_inexistente"
     if "Could not index" in m:
         if "string indices must be integers" in m: return "tipo_real_do_retorno"
         if re.search(r"KeyError: \d+\s*$", m) or "unhashable type: 'slice'" in m: return "dict_indexado_por_posicao"
@@ -104,7 +106,7 @@ def submecanismo_spec(m, code="", obs_ant=""):
     if v and v.group(1) in MODS: return "modulo_sem_import"
     f = re.search(r"Forbidden function evaluation: '(\w+)'", m)
     if f and not hasattr(builtins, f.group(1)): return "nome_nao_definido"
-    if f or "Import of" in m or "ModuleNotFound" in m or "Forbidden" in m: return "inventario_sandbox"
+    if f or re.search(r"Import (of|from) ", m) or "ModuleNotFound" in m or "Forbidden" in m: return "inventario_sandbox"
     if v: return "nome_nao_definido"
     return "causa_sem_regra"
 
@@ -112,7 +114,7 @@ SUB2UNI = {
     "dict_indexado_por_posicao":"U_contrato_dict", "dict_iterado_como_lista":"U_contrato_dict",
     "campo_inexistente_no_retorno":"U_campo_inexistente", "tipo_real_do_retorno":"U_tipo_retorno",
     "texto_em_literal":"U_texto_literal", "texto_solto_no_codigo":"U_texto_solto",
-    "argumento_posicional":"U_arg_nomeado", "inventario_sandbox":"U_sandbox", "modulo_sem_import":"U_sandbox",
+    "argumento_posicional":"U_arg_nomeado", "argumento_inexistente":"U_arg_nomeado", "inventario_sandbox":"U_sandbox", "modulo_sem_import":"U_sandbox",
     "next_sobre_gerador":"U_next_gerador", "nome_de_step_que_falhou":"U_estado_perdido",
     "nome_nunca_definido":"U_nome_inventado", "repr_colado":"U_repr_colado",
     "infra_llm":"H_infra_llm", "harness_bloco_code":"H_bloco_code",
