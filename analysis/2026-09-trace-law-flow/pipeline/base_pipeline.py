@@ -211,6 +211,10 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         return "codigo_mal_escrito"   # sintaxe/indentação em código de verdade, não texto colado
     if "does not support multiple positional" in m:
         return "argumento_posicional"
+    # nome de argumento que a assinatura da ferramenta não tem (ex.: final_answer(..., docs=...)) — a mesma lição
+    # da chamada posicional: usar a assinatura declarada (pipeline-entre-bases.md, Ajuste 3)
+    if re.search(r"\.forward\(\) got an unexpected keyword argument", m):
+        return "argumento_inexistente"
     if "Could not index" in m:
         if "string indices must be integers" in m:
             return "tipo_real_do_retorno"
@@ -232,7 +236,7 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
     f = re.search(r"Forbidden function evaluation: '(\w+)'", m)
     if f and not hasattr(builtins, f.group(1)):
         return "nome_nao_definido"
-    if f or "Import of" in m or "ModuleNotFound" in m or "Forbidden" in m:
+    if f or "Import of" in m or "Import from" in m or "ModuleNotFound" in m or "Forbidden" in m:
         return "inventario_sandbox"
     if v:
         return "nome_nao_definido"
@@ -245,7 +249,7 @@ SUB2UNI = {
     "tipo_real_do_retorno": "U_tipo_retorno",
     "texto_em_literal": "U_texto_literal",
     "texto_solto_no_codigo": "U_texto_solto",
-    "argumento_posicional": "U_arg_nomeado",
+    "argumento_posicional": "U_arg_nomeado", "argumento_inexistente": "U_arg_nomeado",
     "inventario_sandbox": "U_sandbox", "modulo_sem_import": "U_sandbox",
     "next_sobre_gerador": "U_next_gerador",
     "nome_de_step_que_falhou": "U_estado_perdido",
@@ -269,7 +273,8 @@ UNI = {
     "U_texto_solto": ("Explicação nunca solta no bloco de código", ESTR,
                       "O bloco de código contém só Python; justificativa e texto ao usuário vão no pensamento ou dentro de final_answer(...)."),
     "U_arg_nomeado": ("Ferramentas só aceitam argumento nomeado", FACT,
-                      "Chamar sempre f(arg=valor); nenhuma das ferramentas observadas aceita posicional."),
+                      "Chamar as ferramentas com argumentos nomeados e só com os nomes da assinatura declarada: "
+                      "f(arg=valor); nenhuma aceita posicional, e o final_answer só recebe a resposta."),
     "U_sandbox": ("Inventário do sandbox", FACT,
                   "repr/eval/globals/dir e imports fora da lista (ex.: ast) são proibidos; json/datetime exigem import explícito; openpyxl ausente — usar envia_excel_para_usuario."),
     "U_next_gerador": ("next() sobre expressão geradora falha no sandbox", FACT,
