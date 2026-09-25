@@ -31,6 +31,8 @@ COR_ERRO = {
     # plataforma — não é erro do agente, não vira memória
     "Protocolo do harness": INK2,                      # cinza-escuro
     "Infra / LLM upstream": MUTED,                     # cinza-médio
+    "Infra / ferramenta": MUTED,                       # o mesmo cinza-médio: as duas "Infra" são externas ao harness;
+                                                     # o nome na barra as separa (nenhuma cor nova, nenhuma mudada)
     # reservadas
     "Resíduo": RESIDUO,
     "Sintoma não reconhecido": RESIDUO,                # família de quem nem o sintoma é reconhecido: é resíduo
@@ -54,6 +56,8 @@ NOME_ERRO = {
     "repr_colado": "Retorno impresso colado no código",
     "harness_bloco_code": "Resposta sem bloco de código",
     "infra_llm": "Falha do LLM upstream",
+    "timeout_ferramenta": "Ferramenta excedeu o timeout",
+    "argumento_inexistente": "Argumento com nome inexistente",
     "codigo_mal_escrito": "Código Python mal escrito",
     "causa_sem_regra": "Erro conhecido, causa sem regra",
     "sintoma_nao_reconhecido": "Sintoma não reconhecido",

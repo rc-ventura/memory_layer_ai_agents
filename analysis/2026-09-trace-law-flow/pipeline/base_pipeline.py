@@ -88,6 +88,8 @@ def explodir_memoria(df):
 
 
 def classify(m):
+    # limite de tempo do wrapper de ferramentas da esteira (mensagem em português): falha da plataforma, não do agente
+    if 'excedeu o timeout' in m or 'TimeoutError' in m: return ('Infra / ferramenta','Ferramenta excedeu o timeout')
     if 'Could not index' in m:      return ('Contrato de retorno da ferramenta','Falha ao indexar o retorno (Could not index)')
     if 'does not support multiple positional' in m: return ('Convenção de chamada de ferramenta','Argumento posicional onde só cabe nomeado')
     if 'unterminated' in m:         return ('Geração de código','String não fechada (relatório longo em literal)')
@@ -195,6 +197,8 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
         return "infra_llm"
+    if "excedeu o timeout" in m or "TimeoutError" in m:
+        return "timeout_ferramenta"   # pipeline-entre-bases.md, Ajuste 4
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
         l = linha_rejeitada(m, linha_codigo)
         if re.search(r"truncad", l, re.I):
@@ -255,7 +259,7 @@ SUB2UNI = {
     "nome_de_step_que_falhou": "U_estado_perdido",
     "nome_nunca_definido": "U_nome_inventado",
     "repr_colado": "U_repr_colado",
-    "infra_llm": "H_infra_llm",
+    "infra_llm": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
     "harness_bloco_code": "H_bloco_code",
     "codigo_mal_escrito": "X_causa_nao_identificada", "causa_sem_regra": "X_causa_nao_identificada",
     "sintoma_nao_reconhecido": "X_sintoma_nao_reconhecido",
@@ -293,6 +297,10 @@ UNI = {
     # de campo 22/09/2026 e `04-roadmap.md` §Monitoramento. Reclassificar (tipo/decisão) quando a
     # base 2 for formalmente integrada ao pipeline; até então, tratar como candidato reaberto, não
     # como resolvido.
+    "H_timeout_ferramenta": ("Ferramenta excedeu o timeout — correção na plataforma", NAO,
+                             "Limite de tempo do wrapper de ferramentas da esteira (600 s / 1800 s por ferramenta): revisar o "
+                             "limite das ferramentas longas ou torná-las assíncronas; o agente já segue o fallback do prompt. "
+                             "Gatilho: >= 2 casos num mês ou > 1/1k steps — acionado na base 2 (ago/2026)."),
     "H_bloco_code": ("Protocolo do harness", NAO,
                      "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente, a partir de mar/2026: ≤0,99/1k). REABERTO em 22/09/2026 (base 2) — ver diário de campo."),
     # os dois baldes de resíduo (01-racionais.md §7, "Os dois baldes de resíduo"): nunca viram memória; a triagem os

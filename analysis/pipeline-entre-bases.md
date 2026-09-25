@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 · **Estado:** ajustes 1, 2.1, 2.2 e 3 fechados e conferidos nas duas bases; próxima etapa: 4, o Timeout (§5).
+**Data:** 2026-09-25 · **Estado:** ajustes 1 a 3 fechados e conferidos nas duas bases; ajuste 4 (Timeout) feito neste repo, falta conferir na base 2; depois, a Etapa 5 (§5).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -58,6 +58,7 @@ reescritas.
 | 2.1 | 25/09 | mensagem de parsing em formato novo (sem o código) | `linha_do_codigo()`; `padrao_residuo()` lê o motivo na linha do `due to:` | idêntica | causa não identificada 19 → 12; os 7 `SyntaxError` saem do resíduo | `20d7c93` |
 | 2.2 | 25/09 | os 7 caiam na unidade errada (`texto_solto`) | `sinais_de_parsing()`, regra do retorno colado inteiro | 4 erros mudam; **10 → 11 candidatas** | os 7 → `repr_colado` | `2943c1b` |
 | 3 | 25/09 | `Import from` (4) e `final_answer` com argumento inexistente (1) no resíduo da base 2; o segundo também na base 1 | `Import from` na regra do sandbox; mecanismo `argumento_inexistente` → unidade do argumento nomeado | 1 erro muda; 11 candidatas; 450 cobertos | causa não identificada 12 → 7; resíduo com 8 padrões | branch `2026-09-25-residuo-base2` |
+| 4 | 25/09 | 16 erros de Timeout no sintoma não reconhecido; alarme disparado (5,2%) | sintoma e causa novos: família `Infra / ferramenta` → `H_timeout_ferramenta` (não-memória) | nenhum CSV muda | esperado: sintoma não reconhecido 25 → 9, alarme desliga | branch `2026-09-25-residuo-base2` |
 
 ### Ajuste 1 — evidência estrutural do resíduo
 
@@ -205,6 +206,60 @@ as mesmas duas regras, escritas à parte.
 `argumento_inexistente` logo depois da do `argumento_posicional`, a entrada no `SUB2UNI` e o texto de `U_arg_nomeado`;
 rodar o notebook inteiro e o `genealogia_sankey.py`.
 
+### Ajuste 4 — o Timeout de ferramenta
+
+**Gatilho.** O maior padrão do resíduo da base 2 — 16 dos 25 erros do sintoma não reconhecido, o que sozinho faz o
+alarme de cobertura disparar. O `classify()` não conhecia a mensagem.
+
+**Evidência** (base 2, só contagens, com o comando da Etapa 4):
+
+| O quê | Resultado | Leitura |
+|---|---|---|
+| Erros / execuções | 16 / 15 | — |
+| Papel | só `ContestacaoCivel` | um fluxo |
+| Ferramentas | `ingestao_peticao_inicial` 9, `laudo_contestacao` 4, `auditoria_final_contestacao` 1, `interpretar_provas_contestacao` 1, `buscar_hibrida` 1 | 5 ferramentas: é o limite de tempo do fluxo, não o defeito de uma |
+| Limite | 600 s em 12, 1800 s em 4 | configurado por ferramenta |
+| Dias | 10/08 (6), 11/08 (6), 18/08 (1), 20/08 (2), 25/08 (1) | pico de dois dias (incidente) e uma cauda |
+| Status da execução | 3 em 7, 2 em 9, nunca 67 (falha) | o status não registra o timeout |
+| Terminou com `final_answer` | 16 de 16 | o agente segue o fallback do prompt ("regra de execução única") |
+
+A mensagem é em português — é o wrapper de ferramentas da esteira, não o smolagents. O código do agente estava certo
+(no caso lido: `laudo_str = laudo_contestacao(dados)`).
+
+**Decisões (Rafael).**
+
+- **Família nova, `Infra / ferramenta`.** As três famílias de plataforma dizem de onde vem a falha: o **protocolo do
+  harness** (o harness não consegue ler a resposta do LLM, sem bloco de código), a **infra do LLM** (o provedor não
+  responde ou recusa — `AgentGenerationError`, HTTP 422) e a **infra de ferramenta** (a ferramenta passa do limite de
+  tempo). Isso basta para separar os donos; não se criou um eixo de "alavanca".
+- **Cor: o mesmo cinza-médio da `Infra / LLM upstream`.** A regra da paleta (`03` §1.14) é que a cor é fixa por família
+  e uma família nova só **acrescenta** — mudar a cor de uma família existente quebraria as figuras e as bases. Um terceiro
+  cinza ficaria indistinguível; o cinza-médio é "infra externa ao harness", e o nome escrito em cada barra separa as duas.
+
+**Mudança.** `base_pipeline.py`: regra no `classify()` (testada primeiro), `timeout_ferramenta` no `submecanismo()` (logo
+depois do `infra_llm`), `SUB2UNI`, `UNI["H_timeout_ferramenta"]` (não-memória). `paleta.py`: a cor e o nome legível (e
+o nome de `argumento_inexistente`, que faltava desde o Ajuste 3). `genealogia_sankey.py`: rótulos curtos.
+`audit_recompute6.py`: a regra escrita à parte. Gatilho no `04-roadmap.md` § Monitoramento.
+
+**Como o erro percorre a cadeia** (igual a qualquer outro — o `submecanismo()` roteia; a família só dá a cor):
+
+```
+mensagem ──classify()──► família "Infra / ferramenta", assinatura "Ferramenta excedeu o timeout"
+         └─submecanismo()─► timeout_ferramenta ──SUB2UNI──► H_timeout_ferramenta (tipo não-memória) ──triagem()──► não-memória
+```
+
+A triagem manda o tipo não-memória direto para "não-memória", sem o teste de recorrência — por isso "1 mês" não é
+problema. Nos gráficos ele conta como erro (Pareto, custo, genealogia) e, no 9.3, é uma barra própria na seção
+não-memória; nunca entra na cobertura das candidatas.
+
+**Efeito na base 1.** Nenhum: não há Timeout; todos os CSVs de `resultados/` saem idênticos; auditoria com 0 divergências.
+
+**Esperado na base 2.** Resíduo de 8 para 7 padrões; sintoma não reconhecido de 25 para 9 (1,9%) → **o alarme desliga**;
+`H_timeout_ferramenta` aparece como não-memória com 16 erros; o sintoma não reconhecido continua "revisar — prioridade"
+só por causa do `?` (Etapa 5).
+
+**Replicar na máquina 2:** `base_pipeline.py` (4 trechos), `paleta.py` (2), `genealogia_sankey.py` (2).
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e
@@ -234,7 +289,7 @@ reconhecido** (Timeout e `?`), e só então o alarme, que depende dos dois.
 | Etapa | Balde | Assunto | Depende de você | Mexe em número da base 1? |
 |---|---|---|---|---|
 | 3 | causa não identificada | `Import from` (4), `final_answer` com argumento inexistente (1); 7 de uma ocorrência ficam | nada | 1 erro — **feito** (Ajuste 3, §3) |
-| 4 | sintoma não reconhecido | Timeout de ferramenta → unidade de plataforma | 4 respostas do cru | não (0 ocorrências na base 1) |
+| 4 | sintoma não reconhecido | Timeout de ferramenta → unidade de plataforma | — | não — **feito** (Ajuste 4, §3); falta conferir na base 2 |
 | 5 | sintoma não reconhecido | a chave `?` e a chave sem impressão digital | 1 categoria por caso, 6 casos | não deve (verificar) |
 | 6 | — | o alarme de cobertura | decisões abaixo | não |
 | 7 | — | comparar bases; achados laterais; auditoria E | rodar na máquina 2 | não |
@@ -243,38 +298,10 @@ reconhecido** (Timeout e `?`), e só então o alarme, que depende dos dois.
 
 Feita em 25/09/2026 — é o **Ajuste 3** da §3. Conferida na base 2: 8 padrões no resíduo, causa não identificada 12 → 7.
 
-### Etapa 4 — o Timeout de ferramenta
+### Etapa 4 — o Timeout de ferramenta ✅
 
-**Contexto.** Base 2: 16 erros, 15 execuções, 1 mês, 1 papel; caem em `X_sintoma_nao_reconhecido` porque `classify()`
-(`base_pipeline.py`) não tem regra para `Timeout`. No primeiro caso lido (`ContestacaoCivel`): o código do agente está
-certo (`laudo_str = laudo_contestacao(dados)`); quem falhou foi a ferramenta. A mensagem é **em português** — o
-smolagents emite mensagens em inglês, então o wrapper que lança isso é da esteira (a confirmar). O pensamento do
-agente cita a "regra de execução única" do prompt e o fallback permitido: **o prompt já tem a política para esse
-caso e o agente a seguiu**, terminando **sem a etapa do laudo**. A literatura já lida classifica assim: AgentDebug
-(`llm_limit` — "timeouts, token limits"; `literature/agentdebug-2509.25370.md:375`: "system → não é memória do agente,
-é ticket de infra") e TRAIL (*System Execution Errors › Timeout Issues*, `trail-2505.08638.md:50`). A triagem já trata
-`H_*` assim: `tipo == NAO` vai direto a "não-memória", sem passar pela recorrência.
-
-**Solução.** Pela Frente 3 (passo 6: sintoma primeiro, causa depois), (1) `classify()`: sintoma novo "Ferramenta
-excedeu o timeout"; (2) `submecanismo()`: `timeout_ferramenta` → `SUB2UNI` → `H_timeout_ferramenta`, tipo
-não-memória, com o conteúdo "ajustar o timeout ou tornar a ferramenta assíncrona"; (3) o **gatilho de reabertura**
-com dono, no `04-roadmap.md` § Monitoramento (o modelo é o do `H_bloco_code`); (4) `genealogia_sankey.py`
-(`NOME_CURTO`/`CURTO_MEM`) e o `audit_recompute6.py`.
-
-**Por que esta.** Não é memória: o agente já sabe o que fazer, então nada há para lhe ensinar. Não é extensão de
-`H_infra_llm`: o dono do conserto é outro (quem mantém a ferramenta, não o LLM). E tira o Timeout do resíduo por uma
-**regra**, sem tocar no limiar — o alarme desliga por uma razão certa (25 → 9 erros, 1,9%).
-
-**Decisão sua.** A família do sintoma: reutilizar `Infra / LLM upstream` ou criar **`Infra / ferramenta`**
-(recomendo esta: mantém cada família ligada a um dono; custa uma entrada em `paleta.COR_ERRO`, e sem ela a cor cai no
-cinza com aviso).
-
-**O que falta de você** (só categorias e números): (a) os outros casos do Timeout são iguais — mesma ferramenta, mesmo
-papel, mesmo fallback? (b) em quantos dias distintos caem os 16 (incidente ou estrutural)? (c) o timeout em segundos;
-(d) como a execução termina — status e se a resposta final cita ou omite o laudo (sim/não).
-
-**Aceitação.** Base 1 sem mudança (0 ocorrências de Timeout — verificado em `erros_classificados.csv`); auditoria com 0
-divergências; base 2: os 16 erros saem do resíduo, o sintoma não reconhecido cai a 9, e a triagem mostra `H_timeout_ferramenta`.
+Feita neste repo em 25/09/2026 — é o **Ajuste 4** da §3. Falta conferir na base 2: o sintoma não reconhecido deve
+cair de 25 para 9 e o alarme desligar.
 
 ### Etapa 5 — a chave `?` e a chave sem impressão digital
 

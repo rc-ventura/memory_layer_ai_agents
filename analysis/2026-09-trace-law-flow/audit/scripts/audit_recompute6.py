@@ -81,6 +81,8 @@ def submecanismo_spec(m, code="", obs_ant=""):
     if "regex pattern" in m: return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
         return "infra_llm"
+    # limite de tempo do wrapper de ferramentas (mensagem em português): plataforma
+    if "excedeu o timeout" in m or "TimeoutError" in m: return "timeout_ferramenta"
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
         l = linha_rejeitada(m, code)
         if re.search(r"truncad", l, re.I): return "repr_colado"
@@ -117,7 +119,7 @@ SUB2UNI = {
     "argumento_posicional":"U_arg_nomeado", "argumento_inexistente":"U_arg_nomeado", "inventario_sandbox":"U_sandbox", "modulo_sem_import":"U_sandbox",
     "next_sobre_gerador":"U_next_gerador", "nome_de_step_que_falhou":"U_estado_perdido",
     "nome_nunca_definido":"U_nome_inventado", "repr_colado":"U_repr_colado",
-    "infra_llm":"H_infra_llm", "harness_bloco_code":"H_bloco_code",
+    "infra_llm":"H_infra_llm", "timeout_ferramenta":"H_timeout_ferramenta", "harness_bloco_code":"H_bloco_code",
     "codigo_mal_escrito":"X_causa_nao_identificada", "causa_sem_regra":"X_causa_nao_identificada",
     "sintoma_nao_reconhecido":"X_sintoma_nao_reconhecido",
 }
@@ -170,6 +172,7 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
 # --------------------------------------------- comparação erro-a-erro com o CSV
 csv_rows = list(csv.DictReader(open(EM_CSV, encoding="utf-8")))
 def classify_sig_local(m):
+    if 'excedeu o timeout' in m or 'TimeoutError' in m: return 'timeout'
     if 'Could not index' in m: return 'ret_dict'
     if 'does not support multiple positional' in m: return 'arg_pos'
     if 'unterminated' in m: return 'unterm'
