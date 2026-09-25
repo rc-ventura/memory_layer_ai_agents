@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 · **Estado:** ajustes 1, 2.1, 2.2 e 3 fechados neste repo (o 3 falta replicar na base 2); próxima etapa: 4, o Timeout (§5).
+**Data:** 2026-09-25 · **Estado:** ajustes 1, 2.1, 2.2 e 3 fechados e conferidos nas duas bases; próxima etapa: 4, o Timeout (§5).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -57,7 +57,7 @@ reescritas.
 | 1 | 25/09 | dois padrões "recorrentes" no resíduo (`SyntaxError`, `?`) sem prova de que eram padrões | `drill_down.py`: 3 colunas de estrutura da mensagem, bloco de contagens, `padrao` com nome exato | idêntica | mostrou que as duas chaves eram de fallback | `20d7c93` |
 | 2.1 | 25/09 | mensagem de parsing em formato novo (sem o código) | `linha_do_codigo()`; `padrao_residuo()` lê o motivo na linha do `due to:` | idêntica | causa não identificada 19 → 12; os 7 `SyntaxError` saem do resíduo | `20d7c93` |
 | 2.2 | 25/09 | os 7 caiam na unidade errada (`texto_solto`) | `sinais_de_parsing()`, regra do retorno colado inteiro | 4 erros mudam; **10 → 11 candidatas** | os 7 → `repr_colado` | `2943c1b` |
-| 3 | 25/09 | `Import from` (4) e `final_answer` com argumento inexistente (1) no resíduo da base 2; o segundo também na base 1 | `Import from` na regra do sandbox; mecanismo `argumento_inexistente` → unidade do argumento nomeado | 1 erro muda; 11 candidatas; 450 cobertos | esperado: causa não identificada 12 → 7 | sem commit |
+| 3 | 25/09 | `Import from` (4) e `final_answer` com argumento inexistente (1) no resíduo da base 2; o segundo também na base 1 | `Import from` na regra do sandbox; mecanismo `argumento_inexistente` → unidade do argumento nomeado | 1 erro muda; 11 candidatas; 450 cobertos | causa não identificada 12 → 7; resíduo com 8 padrões | branch `2026-09-25-residuo-base2` |
 
 ### Ajuste 1 — evidência estrutural do resíduo
 
@@ -197,7 +197,9 @@ as mesmas duas regras, escritas à parte.
 | `Import from` | — | 0 ocorrências na base 1: nada muda |
 | Auditoria nº 6 | 0 divergências | **0 divergências** |
 
-**Esperado na base 2:** a causa não identificada cai de **12 para 7**; "Inventário do sandbox" +4; "argumento nomeado" +1.
+**Na base 2 (conferido):** o resíduo ficou com **8 padrões** — Timeout, `?`, `invalid syntax`, `invalid character`,
+`IndexError`, `Could not index` com lista, `APIConnectionError`, `UnicodeDecodeError`; os 4 `Import from` e o
+`FinalAnswer` saíram, e a causa não identificada caiu de 12 para 7.
 
 **Replicar na máquina 2** (`base_pipeline.py`): o ramo do sandbox em `submecanismo()` (`"Import from"`), a regra
 `argumento_inexistente` logo depois da do `argumento_posicional`, a entrada no `SUB2UNI` e o texto de `U_arg_nomeado`;
@@ -239,8 +241,7 @@ reconhecido** (Timeout e `?`), e só então o alarme, que depende dos dois.
 
 ### Etapa 3 — a causa não identificada da base 2 ✅
 
-Feita em 25/09/2026 — é o **Ajuste 3** da §3. Falta replicar na base 2 e conferir: a causa não identificada deve
-cair de 12 para 7.
+Feita em 25/09/2026 — é o **Ajuste 3** da §3. Conferida na base 2: 8 padrões no resíduo, causa não identificada 12 → 7.
 
 ### Etapa 4 — o Timeout de ferramenta
 
@@ -340,7 +341,7 @@ são afetadas.
 |---|---|---|
 | Erros | 498 (313 execuções) | ~479 (soma da tabela de assinaturas) |
 | Unidades | 15: **11 candidatas** (450 erros, 90%), 2 não-memória (40), 2 revisar (8) | não vista depois do 2.2 |
-| Resíduo | 8 erros (1,6%): 7 causa + 1 sintoma; 1 padrão recorrente (parênteses) | 37 erros: 25 sintoma + 12 causa; 13 padrões, 1 passa (`?`) — esperado depois do Ajuste 3: 32 (25 + 7) |
+| Resíduo | 8 erros (1,6%): 7 causa + 1 sintoma; 1 padrão recorrente (parênteses) | 32 erros: 25 sintoma + 7 causa; 8 padrões, 1 passa (`?`) |
 | Alarme de cobertura | não dispara (1 erro, 0,2%) | **dispara**: 25 erros, 5,2% (sem o Timeout, 1,9%) |
 | `U_repr_colado` | candidata (6 erros, 4 meses) | 7 erros no `RoteadorCivel` (jun 1, jul 4, ago 2) |
 
