@@ -19,7 +19,7 @@ from collections import Counter, defaultdict
 from types import SimpleNamespace
 
 __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
-           "linha_do_codigo", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
+           "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "categoria_do_erro", "triagem_por_papel",
@@ -48,6 +48,7 @@ def explodir_memoria(df):
         for role, steps in memo.items():
             if not isinstance(steps, list): continue
             acts = [s for s in steps if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
+            obs_ant = ""   # observações dos steps anteriores deste papel — só para sinais_de_parsing(), não sai daqui
             for i, st in enumerate(acts):
                 tu, tm = st.get("token_usage") or {}, st.get("timing") or {}
                 err = st.get("error") or {}
@@ -57,10 +58,10 @@ def explodir_memoria(df):
                        "dur_s": tm.get("duration"), "tok_in": tu.get("input_tokens") or 0,
                        "tok_out": tu.get("output_tokens") or 0, "tok_tot": tu.get("total_tokens") or 0,
                        "err_type": err.get("type"), "err_msg": str(err.get("message") or ""),
-                       "linha_codigo_erro": linha_do_codigo(str(err.get("message") or ""), st.get("code_action"))
-                                            if err else "",
+                       **sinais_de_parsing(str(err.get("message") or ""), st.get("code_action"), obs_ant),
                        "is_final": bool(st.get("is_final_answer"))}
                 rows.append(rec)
+                obs_ant += str(st.get("observations") or "")
                 mim = st.get("model_input_messages")
                 # system prompt = PRIMEIRA mensagem apenas. É onde as ferramentas são declaradas.
                 # Ler o contexto inteiro contaminaria com as funções que o próprio agente define
@@ -146,6 +147,35 @@ def linha_do_codigo(m, code):
     return linhas[k].strip() if 0 <= k < len(linhas) else ""
 
 
+# par "chave": "texto" — valor é texto fixo, não expressão: o formato de um retorno de ferramenta impresso
+PAR_CHAVE_TEXTO = re.compile(r"[\"']([^\"'\n]{1,60})[\"']\s*:\s*[\"']")
+
+
+def sinais_de_parsing(m, code, obs_ant):
+    """Os sinais que o submecanismo() precisa num erro de parsing e que a mensagem sozinha não dá — só números e a
+    linha, nunca o texto das observações:
+    - `linha_codigo_erro`: a linha rejeitada no formato novo (`linha_do_codigo`);
+    - `chaves_vistas_antes`: quantas chaves distintas dos pares "chave": "texto" da linha rejeitada já apareceram
+      impressas como chave ('chave':) numa observação anterior do mesmo papel — o retorno colado vem de lá;
+    - `em_final_answer`: a instrução que contém a linha rejeitada começa com final_answer( — ali o texto é o
+      relatório final (texto_em_literal), não um retorno colado como entrada de código."""
+    vazio = {"linha_codigo_erro": "", "chaves_vistas_antes": 0, "em_final_answer": False}
+    if not ("Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m):
+        return vazio
+    lc = linha_do_codigo(m, code)
+    chaves = set(PAR_CHAVE_TEXTO.findall(linha_rejeitada(m, lc)))
+    vistas = sum(bool(re.search(r"[\"']" + re.escape(ch) + r"[\"']\s*:", obs_ant)) for ch in chaves)
+    em_fa = False
+    n = re.search(r"on line (\d+)", m)
+    linhas = str(code or "").splitlines()
+    if n and 0 < int(n.group(1)) <= len(linhas):
+        j = int(n.group(1)) - 1   # sobe até o início da instrução: linha de continuação, vazia ou que abre com aspas/fecha
+        while j > 0 and (linhas[j][:1] in (" ", "\t") or not linhas[j].strip() or linhas[j][:1] in "'\")]}"):
+            j -= 1
+        em_fa = linhas[j].lstrip().startswith("final_answer(")
+    return {"linha_codigo_erro": lc, "chaves_vistas_antes": vistas, "em_final_answer": em_fa}
+
+
 def linha_rejeitada(m, linha_codigo=""):
     """A linha de código que o parser rejeitou: a que a mensagem traz (formato antigo) ou, no formato novo, a linha N
     do code_action (`linha_do_codigo`, coluna `linha_codigo_erro`)."""
@@ -160,7 +190,7 @@ def e_texto(s):
     return len(toks) >= 3 and sum(t in PT_STOP for t in toks) / len(toks) >= 0.15
 
 
-def submecanismo(m, linha_codigo=""):
+def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False):
     if "regex pattern" in m:
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
@@ -168,6 +198,11 @@ def submecanismo(m, linha_codigo=""):
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
         l = linha_rejeitada(m, linha_codigo)
         if re.search(r"truncad", l, re.I):
+            return "repr_colado"
+        # retorno impresso colado inteiro (sem "truncado"): >= 2 pares "chave": "texto", >= 2 dessas chaves já
+        # impressas numa observação anterior, fora do final_answer. Antes das palavras-chave da mensagem, que o
+        # mandavam para texto_em_literal (base 1) ou texto_solto (base 2) — evidência A6_repr_colado
+        if (len(set(PAR_CHAVE_TEXTO.findall(l))) >= 2 and chaves_vistas_antes >= 2 and not em_final_answer):
             return "repr_colado"
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or LITERAL_INICIO.match(l):
             return "texto_em_literal"
@@ -244,7 +279,8 @@ UNI = {
     "U_nome_inventado": ("Nome usado sem ter sido definido", ESTR,
                          "Usar só variáveis e funções definidas no próprio código; 'Observation' é rótulo do harness, não variável."),
     "U_repr_colado": ("Não colar retorno impresso de volta no código", ESTR,
-                      "Referenciar a variável que guardou o retorno em vez de colar o print truncado dentro do código."),
+                      "Referenciar a variável que guardou o retorno em vez de colar o print dele (truncado ou inteiro) "
+                      "dentro do código."),
     "H_infra_llm": ("Falha do LLM upstream — política de retry", NAO,
                     "AgentGenerationError/422: retry com backoff e circuit breaker por subagente."),
     # tipo=NAO reflete só a base 1 (o incidente de out/2025 morre a partir de mar/2026 NESTA base).
@@ -265,8 +301,10 @@ def montar_unidades(E):
     EU = E.copy().sort_values(["exec_id", "role", "idx"])
     EU["seguidor"] = EU.groupby(["exec_id", "role"])["idx"].shift().eq(EU["idx"] - 1)
     EU["cascata"] = (~EU["seguidor"]).cumsum()
-    lc = EU["linha_codigo_erro"] if "linha_codigo_erro" in EU else pd.Series("", index=EU.index)
-    EU["submecanismo"] = [submecanismo(m, l) for m, l in zip(EU["err_msg"], lc.fillna(""))]
+    col = lambda c, v: EU[c] if c in EU else pd.Series(v, index=EU.index)
+    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa)) for m, l, k, fa in
+                          zip(EU["err_msg"], col("linha_codigo_erro", "").fillna(""),
+                              col("chaves_vistas_antes", 0).fillna(0), col("em_final_answer", False).fillna(False))]
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
     # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece

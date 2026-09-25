@@ -62,7 +62,21 @@ def e_texto_pt(s):
     toks = re.findall(r"[A-Za-zÀ-ÿ]+", s.lower())
     return len(toks) >= 3 and sum(t in PT_STOP for t in toks)/len(toks) >= 0.15
 
-def submecanismo_spec(m, code=""):
+def retorno_colado(l, m, code, obs_ant):
+    # retorno de ferramenta impresso e colado inteiro: a linha tem >= 2 chaves distintas com valor texto
+    # ("chave": "..."), >= 2 delas já apareceram como chave impressa numa observação anterior do papel, e a
+    # instrução onde a linha está não é um final_answer( (lá é relatório em literal)
+    chaves = {a for a in re.findall(r"[\"']([^\"'\n]{1,60})[\"']\s*:\s*[\"']", l)}
+    if len(chaves) < 2: return False
+    if sum(1 for a in chaves if re.search("[\"']" + re.escape(a) + "[\"']\\s*:", obs_ant)) < 2: return False
+    n = re.search(r"on line (\d+)", m); linhas = (code or "").splitlines()
+    if n and 0 < int(n.group(1)) <= len(linhas):
+        j = int(n.group(1)) - 1
+        while j > 0 and (not linhas[j].strip() or linhas[j][0] in " \t'\")]}"): j -= 1
+        if linhas[j].lstrip().startswith("final_answer("): return False
+    return True
+
+def submecanismo_spec(m, code="", obs_ant=""):
     # Escrito a partir do §7 Passo 2 dos racionais (prosa), mesma ordem descrita lá.
     if "regex pattern" in m: return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
@@ -70,6 +84,7 @@ def submecanismo_spec(m, code=""):
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
         l = linha_rejeitada(m, code)
         if re.search(r"truncad", l, re.I): return "repr_colado"
+        if retorno_colado(l, m, code, obs_ant): return "repr_colado"
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or abre_string(l):
             return "texto_em_literal"
         if e_texto_pt(l): return "texto_solto_no_codigo"
@@ -128,6 +143,7 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
         for role, stps in memo.items():
             if not isinstance(stps, list): continue
             acts = [s for s in stps if isinstance(s, dict) and s.get("__class__")=="ActionStep"]
+            obs_ant = ""
             for i, st in enumerate(acts):
                 tu = st.get("token_usage") or {}
                 tt = tu.get("total_tokens") or 0
@@ -146,7 +162,8 @@ with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
                 e = st.get("error")
                 if e:
                     errors.append(dict(eid=eid, role=role, idx=i, em=str(e.get("message") or ""), mes=mes, tok=tt,
-                                       code=code))
+                                       code=code, obs_ant=obs_ant))
+                obs_ant += str(st.get("observations") or "")
 
 # --------------------------------------------- comparação erro-a-erro com o CSV
 csv_rows = list(csv.DictReader(open(EM_CSV, encoding="utf-8")))
@@ -180,7 +197,7 @@ csv_map = {(r["exec_id"], r["role"], int(r["idx"])): r for r in csv_rows}
 mine_map = {}
 diffs = []
 for e in errors:
-    sub = submecanismo_spec(e["em"], e["code"])
+    sub = submecanismo_spec(e["em"], e["code"], e["obs_ant"])
     # split nome_nao_definido por seguidor (precisa do step anterior — do traj)
     if sub == "nome_nao_definido":
         seq = traj[(e["eid"], e["role"])]
