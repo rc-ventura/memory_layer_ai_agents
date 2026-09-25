@@ -636,7 +636,7 @@ CLASSE_RESIDUO = {
     "sintoma_nao_reconhecido": "Erro que a taxonomia não conhece",
 }
 
-from base_pipeline import mascarar, padrao_residuo  # a mesma impressão digital que a triagem usa
+from base_pipeline import mascarar, padrao_residuo, linha_rejeitada  # a mesma impressão digital que a triagem usa
 
 def residuo():
     """Evidência do resíduo da taxonomia: todos os erros das unidades X_ (causa não identificada / sintoma não
@@ -670,7 +670,11 @@ def residuo():
                        "classe": CLASSE_RESIDUO.get(c["submecanismo"], c["submecanismo"]),
                        "assinatura": c["assinatura"], "error_type": tipo, "excecao": classe_exc,
                        "frase_mascarada": mascarar(frase),
-                       "padrao": padrao_residuo(m, c["submecanismo"])})
+                       "padrao": padrao_residuo(m, c["submecanismo"]),
+                       # estrutura da mensagem, só verdadeiro/falso: o formato que linha_rejeitada() espera existe?
+                       "tem_due_to": bool(re.search(r"due to: \w+", m)),
+                       "tem_linha_error": any(l.strip().startswith("Error:") for l in m.splitlines()),
+                       "linha_rejeitada_ok": linha_rejeitada(m) != ""})
     casos = pd.DataFrame(linhas)
     casos.to_csv(os.path.join(pasta, "casos.csv"), index=False)
     casos.drop(columns=["frase_mascarada"]).to_csv(os.path.join(pasta, "derivados", "residuo.csv"), index=False)
@@ -683,6 +687,18 @@ def residuo():
                                        contagem="\n".join(f"- {u} · {c}: {n}" for (u, c), n in cont.items())))
     print(f"A5_residuo: {len(casos)} erros · {casos['exec_id'].nunique()} crus")
     for (u, c), n in cont.items(): print(f"  {u} · {c}: {n}")
+    # contagens por padrão × error.type × estrutura da mensagem — só nomes de classe e verdadeiro/falso, sem texto de
+    # caso: o bloco que pode sair da máquina para a conferência do resíduo (plano do resíduo da base 2, Etapa 1)
+    est = (casos.groupby(["unidade", "padrao", "error_type", "tem_due_to", "tem_linha_error", "linha_rejeitada_ok"],
+                         dropna=False)
+           .agg(erros=("exec_id", "size"), execucoes=("exec_id", "nunique"), meses=("mes", "nunique"),
+                papeis=("role", "nunique"))
+           .reset_index().sort_values(["unidade", "erros"], ascending=[True, False]))
+    print("\nestrutura por padrão (due_to · linha Error: · linha rejeitada extraída):")
+    for _, r in est.iterrows():
+        print(f"  {r['unidade']:26s} {r['erros']:3d} err · {r['execucoes']:3d} exec · {r['meses']:2d} m · "
+              f"{r['papeis']:2d} pap · type={r['error_type']} · due_to={r['tem_due_to']:d} "
+              f"error={r['tem_linha_error']:d} rejeitada={r['linha_rejeitada_ok']:d} · {str(r['padrao'])[:70]}")
 
 LEIA_ME_RESIDUO = """# A5_residuo — o resíduo da taxonomia
 
@@ -708,7 +724,11 @@ mensagem de exceção diz.
 - `crus/<exec_id>.json`: **a fonte**, a linha inteira do trace sem alteração (`txt_etap_memo` só desserializado).
 - `casos.csv`: um erro por linha, com a classe, o `error.type`, a classe da exceção, a frase da exceção mascarada
   (texto entre aspas → `<q>`, entre crases → `<id>`, números → `<n>`) e o **padrão** (`padrao_residuo()` do
-  `base_pipeline.py`) — a chave com que a triagem conta a recorrência do resíduo.
+  `base_pipeline.py`) — a chave com que a triagem conta a recorrência do resíduo. Três colunas verdadeiro/falso dizem
+  se a mensagem tem o formato que `linha_rejeitada()` espera: `tem_due_to` (trecho `due to: <Classe>`),
+  `tem_linha_error` (uma linha começando com `Error:`) e `linha_rejeitada_ok` (a linha de código rejeitada foi
+  extraída). Sintaxe com `linha_rejeitada_ok` falso cai em "Código Python mal escrito" por falta de formato, não por
+  diagnóstico.
 - `derivados/residuo.csv`: o mesmo, sem a frase — com `exec_id`/`role`/`idx` para voltar ao cru.
 
 **Conferir no cru:** `txt_etap_memo` → papel → o `idx`-ésimo `ActionStep` da lista → `error.message`. Ou
@@ -736,6 +756,8 @@ def padrao(trecho=None):
             print(f"  {u:27s} {c['erros']:3d} err · {c['execucoes']:3d} exec · {c['meses']:2d} meses · {pd_}")
         print('\nUm padrão:  python drill_down.py padrao "<trecho do padrão>"'); return
     hits = sorted({p_ for p_ in R["padrao"] if trecho.lower() in p_.lower()})
+    if trecho in hits:  # o padrão exato (ex.: "SyntaxError", "?") vale mesmo que outros padrões o contenham
+        hits = [trecho]
     if not hits:
         print(f"nenhum padrão contém '{trecho}'. Sem argumento, a lista completa."); return
     if len(hits) > 1:
