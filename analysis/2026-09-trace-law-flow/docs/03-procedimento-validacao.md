@@ -1071,7 +1071,9 @@ Aviso de contraste (< 3:1 com o fundo) no verde-água e no rosa, coberto pelos r
 **Conferências automáticas.** `resultados/genealogia_arestas.csv` idêntico ao de antes (só a pintura mudou); nenhum
 nó agregado na genealogia; no 8.8 cada painel soma 100% do papel; a cor de um erro vem sempre de `COR_ERRO`.
 
-**Numa base nova.** Família nova sem cor → cinza e aviso (`paleta.cor`), até ganhar uma cor na `paleta.py`.
+**Numa base nova.** Família nova sem cor → cinza e aviso (`paleta.cor`), até ganhar uma cor na `paleta.py`. Só se
+acrescenta: nenhuma cor existente muda. Primeiro caso (25/09/2026, base 2): `Infra / ferramenta` recebeu o mesmo
+cinza-médio da `Infra / LLM upstream` — as duas são infraestrutura externa ao harness, e o nome escrito separa as barras.
 
 ### 1.15 · Candidatura por papel — a triagem scoped, 9.4/9.5 (24/09/2026)
 
@@ -1130,7 +1132,7 @@ saem contagens, nomes de classe, categorias e verdadeiro/falso. Ferramentas: `dr
 |---|---:|---|---|
 | `SyntaxError` sem motivo (o "recorrente" da causa) | 7 | formato novo da mensagem de parsing (`due_to=1 error=0 rejeitada=0`); todos `RoteadorCivel`, `idx=1`, jun–ago/2026; o agente cola o retorno impresso de uma ferramenta dentro da chamada a outra (3 traces lidos) | Ajustes 2.1 e 2.2 → `repr_colado` |
 | `?` (o "recorrente" do sintoma) | 7 | chave de fallback: 6 `AgentExecutionError` sem `due to` (5 execuções, 3 meses, 3 papéis) + 1 `AgentMaxStepsError` — não é um padrão | pendente |
-| `TimeoutError: Tool <q> excedeu o timeout de <n>s` | 16 | 15 execuções, **1 mês, 1 papel**; a mensagem é em português — wrapper de ferramenta da esteira, não do smolagents; o agente segue com o fallback do prompt | plataforma (`H_*`), pendente |
+| `TimeoutError: Tool <q> excedeu o timeout de <n>s` | 16 | 15 execuções, **1 mês, 1 papel**; a mensagem é em português — wrapper de ferramenta da esteira, não do smolagents; o agente segue com o fallback do prompt | Ajuste 4 → `H_timeout_ferramenta` (não-memória) |
 | `Import from <módulo> is not allowed` | 4 | o `classify()` reconhece; a regra do `inventario_sandbox` só casa `"Import of"`; a máscara os parte em 4 padrões | Ajuste 3 → `inventario_sandbox` |
 | `FinalAnswerTool…forward() got an unexpected keyword` | 1 | o mesmo caso da base 1 (argumento `docs`) com outro nome de classe | Ajuste 3 → `argumento_inexistente`, na unidade do argumento nomeado |
 | 9 casos de uma ocorrência | 9 | cobertura (os 7 que ficam na causa não identificada e os 2 de sintoma) | baixa prioridade, nada agora |
@@ -1172,8 +1174,17 @@ not match opening parenthesis <q>`, 3 execuções, 2 meses) é o motivo que a ba
 longo dentro de uma chamada** — nenhum é retorno colado. A máscara junta as chaves; o mecanismo é outro. Por isso a
 regra "o mesmo padrão em outra base sobe de prioridade" (Frente 3) deve conferir o **mecanismo**, não só a chave.
 
-**Pendente** (roadmap 30, 31, 33, 34): o Timeout, o `?`, a comparação entre bases e a robustez do padrão e do
-alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
+**Ajuste 4 (Etapa 4 do plano) — o Timeout.** Evidência da base 2 (só contagens): 16 erros, 15 execuções, só
+`ContestacaoCivel`, **5 ferramentas** (`ingestao_peticao_inicial` 9, `laudo_contestacao` 4, `auditoria_final_contestacao`,
+`interpretar_provas_contestacao` e `buscar_hibrida` 1 cada), limite de 600 s em 12 e 1800 s em 4, 5 dias (10 e 11/08 com
+6 cada; 18, 20 e 25/08 com 4), status 2 ou 3 (nunca 67, falha) e **16 de 16 terminando com `final_answer`**. É o limite
+de tempo do fluxo, não defeito de uma ferramenta, e o agente cumpre o fallback do prompt: falha da plataforma (Frente 3,
+passo 4). Regra: `classify()` → família nova `Infra / ferramenta`, assinatura "Ferramenta excedeu o timeout";
+`submecanismo()` → `timeout_ferramenta` → `H_timeout_ferramenta`, não-memória. A família reusa o cinza-médio da
+`Infra / LLM upstream` (§1.14: família nova só acrescenta; nenhuma cor muda). Base 1: nenhum CSV muda (não tem
+Timeout); auditoria nº 6 com 0 divergências. O gatilho de reabertura está no `04-roadmap.md` § Monitoramento.
+
+**Pendente** (roadmap 30, 33, 34): o `?`, a comparação entre bases e a robustez do padrão e do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
 fase desde a troca do relógio de 23/09 — usa o mês do lote (`202512`), não o da execução; não afeta as demais.
 
 ---

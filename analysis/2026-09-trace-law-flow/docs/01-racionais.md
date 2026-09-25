@@ -742,8 +742,10 @@ rejeitou**. Sem LLM, regras em ordem:
   *nome não definido*; builtin proibido ou `Import of`/`Import from` → *inventário do sandbox*; ferramenta chamada
   com um nome de argumento que a assinatura não tem (`.forward() got an unexpected keyword argument`, ex.:
   `final_answer(..., docs=...)`) → *argumento inexistente*, na mesma unidade do argumento posicional — a lição é a
-  mesma, usar a assinatura declarada; `AgentGenerationError`/422 → *infra*. (`Import from` e o argumento
-  inexistente entraram em 25/09/2026, Ajuste 3 de [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).)
+  mesma, usar a assinatura declarada; `AgentGenerationError`/422 → *infra do LLM*; `TimeoutError` / "excedeu o
+  timeout" → *timeout de ferramenta* — o limite de tempo do wrapper de ferramentas da esteira (família própria,
+  `Infra / ferramenta`, e unidade de plataforma, não-memória). (`Import from` e o argumento inexistente entraram em
+  25/09/2026, Ajuste 3; o timeout, no Ajuste 4 — [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).)
 
 **Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** Duas funções leem a mesma
 mensagem de erro, com papéis diferentes. O `classify()` dá o **sintoma** (família e assinatura, §2 do relatório) e

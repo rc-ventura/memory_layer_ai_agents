@@ -81,6 +81,8 @@ NOME_CURTO = {
     "Convenção de chamada de ferramenta": "Convenção de chamada",
     "Ambiente & sandbox": "Ambiente & sandbox",
     "Infra / LLM upstream": "Infra / LLM upstream",
+    "Infra / ferramenta": "Infra / ferramenta",
+    "Ferramenta excedeu o timeout": "Timeout de ferramenta",
     "Protocolo do harness": "Protocolo do harness",
     "Suposição sobre estado": "Suposição sobre estado",
     "Suposição sobre dados": "Suposição sobre dados",
@@ -103,6 +105,7 @@ CURTO_MEM = {
     "U_estado_perdido": "redefinir após erro",
     "U_nome_inventado": "não inventar nomes",
     "H_infra_llm": "retry/backoff LLM",
+    "H_timeout_ferramenta": "timeout de ferramenta",
     "H_bloco_code": "gatilho bloco de código",
 }
 
