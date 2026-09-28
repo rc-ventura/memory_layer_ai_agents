@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 (atualizado 28/09) · **Estado:** ajustes 1 a 3 conferidos nas duas bases; 4 (Timeout) e 5 (sinal de harness) feitos neste repo, falta conferir na base 2; depois, a Etapa 5 do plano (§5).
+**Data:** 2026-09-25 (atualizado 28/09) · **Estado:** ajustes 1 a 5 conferidos nas duas bases; ajuste 6 (composição) feito neste repo, falta rodar na base 2; depois, a Etapa 5 do plano (§5).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -60,6 +60,7 @@ reescritas.
 | 3 | 25/09 | `Import from` (4) e `final_answer` com argumento inexistente (1) no resíduo da base 2; o segundo também na base 1 | `Import from` na regra do sandbox; mecanismo `argumento_inexistente` → unidade do argumento nomeado | 1 erro muda; 11 candidatas; 450 cobertos | causa não identificada 12 → 7; resíduo com 8 padrões | branch `2026-09-25-residuo-base2` |
 | 4 | 25/09 | 16 erros de Timeout no sintoma não reconhecido; alarme disparado (5,2%) | sintoma e causa novos: família `Infra / ferramenta` → `H_timeout_ferramenta` (não-memória) | nenhum CSV muda | esperado: sintoma não reconhecido 25 → 9, alarme desliga | branch `2026-09-25-residuo-base2` |
 | 5 | 28/09 | a nº10 aparecia como memória nas figuras, mas a mineração decidiu `harness` | `DESTINO_MINERACAO` + decisão "sinal de harness" na triagem | 1 decisão muda; **11 → 10 candidatas**, 440 cobertos | a nº10, se passar na triagem, também vira sinal | branch `2026-09-25-residuo-base2` |
+| 6 | 28/09 | a nº10 da base 2 herdou "harness" só pelo nome; "Nome usado sem ter sido definido" foi de 5 para ~117 erros | a composição de cada unidade comparada com a base em que foi validada → "revisar composição" | nada muda (espelha a si mesma) | a conferir | branch `2026-09-28-mineracao-base2` |
 
 ### Ajuste 1 — evidência estrutural do resíduo
 
@@ -297,6 +298,60 @@ nº 6: 0 divergências; cobertura e unidade sinalizada conferidas.
 
 **Replicar na máquina 2:** `base_pipeline.py` (a tabela, a `triagem()`, a ordem, a `triagem_por_papel()`, o `__all__`),
 `genealogia_sankey.py` (import e destino) e as 3 células do notebook (9.2, 9.3, 9.4).
+
+### Ajuste 6 — o que foi validado numa base tem de se espelhar na seguinte ("revisar composição")
+
+**Gatilho.** Duas perguntas do Rafael sobre a base 2: a nº10 (38 ocorrências) virou "sinal de harness" por herdar a
+decisão da base 1 **pelo nome da unidade**; e "Nome usado sem ter sido definido" passou de 5 erros (base 1) para cerca
+de 117. Nos dois casos, a regra reconhece **a mensagem**, e nada garante que a **causa** seja a mesma.
+
+**O problema de método.** As regras falham de dois jeitos numa base nova. Se não reconhecem a mensagem, o erro cai no
+resíduo e o alarme de cobertura avisa. Se reconhecem a mensagem mas a causa é outra, o erro entra numa unidade **em
+silêncio** — e a decisão da mineração vai junto. Faltava o alarme desse segundo tipo.
+
+**A solução.** A composição de cada unidade — papel, assinatura, submecanismo e, no campo inexistente, a chave pedida,
+com a taxa por 1.000 steps — é gravada na base em que ela foi validada (`pipeline/referencia/composicao_base1.csv`,
+versionada: só nomes e contagens) e comparada em cada base nova (`comparar_composicao()`):
+
+| Veredito | Quando |
+|---|---|
+| não verificável | menos de 10 erros na base nova (pouco em jogo; segue como está) |
+| **revisar composição** | referência com menos de 10 erros e 10 ou mais na base nova (o validado não sustenta o que chegou) |
+| **revisar composição** | menos de 50% dos erros em papéis, assinaturas ou submecanismos conhecidos, ou taxa ×4 |
+| **revisar composição** | o destino da mineração não se confirma: menos de 50% dos erros são o caso minerado |
+| espelha | nenhuma das anteriores |
+
+`DESTINO_MINERACAO` passou a guardar o caso: nº10 → `harness` só para `RespostaBacen · quebra_sigilo` (na base 1, 7 de
+10 erros); nº2 → `memória` para `ConversationAgent` (96 de 96).
+
+**Calibração dentro da base 1** — referência nos meses antigos, teste nos recentes; o mesmo sistema, então o que for
+sinalizado ali por outro motivo seria alarme falso:
+
+| Corte | Revisar composição | Motivo |
+|---|---|---|
+| ref < jan/2026 × teste ≥ jan/2026 | "Campo inexistente", "Retorno é dict", "Inventário do sandbox" | referência pequena: 0, 8 e 6 erros contra 10, 88 e 11 |
+| ref < mar/2026 × teste ≥ mar/2026 | "Inventário do sandbox" | referência pequena: 7 contra 10 |
+| unidades verificáveis, nos dois cortes | nenhuma | cobertura mínima 85–100%; taxa até ×3,0 (daí o limite ×4) |
+
+Só o que tinha referência pequena demais foi sinalizado — que é o caso em que a revisão tem de acontecer. Um desenho
+anterior (sem o piso de 10 erros, com nomes de variável e taxa ×3) sinalizava 5 de 10 unidades no mesmo teste.
+
+**Mudança.** `base_pipeline.py`: `chave_pedida`, `composicao`, `gravar_referencia_composicao` (só na base de
+referência), `carregar_referencia_composicao`, `fracao_caso_minerado`, `comparar_composicao`, os limites declarados; a
+`triagem(EU, n_steps=…, referencia=…)` manda para **revisar composição** a unidade que passaria e não espelha (colunas
+`composição` e `motivo (composição)`); `triagem_por_papel(…, elegiveis=…)`. Notebook: §9.2 imprime a tabela de
+composição e grava `resultados/composicao.csv`; §9.3 ganha a seção; §9.4/9.5 usam só candidatas e fora.
+`genealogia_sankey.py`: `REVISAR-COMPOSIÇÃO <nome>`. Auditoria: confere que, na base de referência, nada cai em revisar
+composição. `.gitignore`: exceção só para o arquivo da referência (não tem texto de caso).
+
+**Efeito na base 1.** Nenhum: comparada consigo mesma, todas espelham (ou não são verificáveis: as de 5 e 6 erros);
+decisões idênticas; auditoria nº 6 com 0 divergências.
+
+**Esperado na base 2.** "Nome usado sem ter sido definido" em revisar composição (referência de 5 erros); a nº10, se o
+caso `RespostaBacen · quebra_sigilo` não for a maioria. O que cair lá é o item 38 do roadmap.
+
+**Replicar na máquina 2:** copiar `base_pipeline.py` (restaurar o `TRACE`), `genealogia_sankey.py`, o notebook e a pasta
+**`referencia/`** inteira. Nunca gerar a referência na base 2.
 
 ## 4. O que os ajustes ensinam sobre o método
 

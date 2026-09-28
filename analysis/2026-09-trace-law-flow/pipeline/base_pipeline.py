@@ -22,7 +22,10 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
-           "DESTINO_MINERACAO", "SINAL_HARNESS",
+           "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "MIN_CASO_MINERADO",
+           "REVISAR_COMPOSICAO", "MIN_ERROS_COMPOSICAO", "MIN_COBERTURA_COMPOSICAO", "MAX_TAXA_COMPOSICAO",
+           "REFERENCIA_COMPOSICAO", "chave_pedida", "composicao", "gravar_referencia_composicao",
+           "carregar_referencia_composicao", "fracao_caso_minerado", "comparar_composicao",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -371,9 +374,113 @@ ALARME_COBERTURA = 0.05
 # `validation.destino` de cada unidade minerada. Unidade fora daqui = destino em aberto (ainda não minerada).
 # "harness" = erro do agente cujo conserto certo é no ambiente (contrato do prompt, validação no harness) — a saída
 # "sinal de harness" do mecanismo, distinta da não-memória operacional (onde a plataforma falhou).
-# Fonte: 07-relatorio-mineracao-unidades-n2-n10.md §6.1–6.2; pipeline-entre-bases.md, Ajuste 5.
-DESTINO_MINERACAO = {"U_contrato_dict": "memória", "U_campo_inexistente": "harness"}
+# Fonte: 07-relatorio-mineracao-unidades-n2-n10.md §6.1–6.2; pipeline-entre-bases.md, Ajustes 5 e 6.
+# O destino vale para o CASO minerado, não para o nome da unidade: numa base, a decisão só se aplica se pelo menos
+# MIN_CASO_MINERADO dos erros da unidade são desse caso (papel e, quando houver, a chave pedida); senão, a unidade vai
+# para "revisar composição" (a decisão não se confirma). Base 1: nº10 7/10 (70%) é RespostaBacen · quebra_sigilo.
+DESTINO_MINERACAO = {
+    "U_contrato_dict": {"destino": "memória", "caso": {"papel": "ConversationAgent"}},
+    "U_campo_inexistente": {"destino": "harness", "caso": {"papel": "RespostaBacen", "chave": "quebra_sigilo"}},
+}
+MIN_CASO_MINERADO = 0.5
 SINAL_HARNESS = "sinal de harness"
+
+
+def destino_mineracao(u):
+    """O destino decidido pela mineração para a unidade (memória / harness), ou "em aberto"."""
+    return DESTINO_MINERACAO.get(u, {}).get("destino", "em aberto")
+
+
+# ---- composição (Ajuste 6): o que foi validado numa base tem de se espelhar na seguinte; se não se espelha, a unidade
+# cai em "revisar composição". Falha que a regra não vê: ela reconhece a MENSAGEM, e uma base nova pode trazer a mesma
+# mensagem com outra causa. Regra declarada e calibrada dentro da base 1 (meses antigos × recentes — sem alarme falso
+# nas unidades verificáveis): pipeline-entre-bases.md, Ajuste 6.
+REVISAR_COMPOSICAO = "revisar composição"
+MIN_ERROS_COMPOSICAO = 10        # abaixo disto a composição não se sustenta (na base nova: não verificável;
+                                 # na referência com a base nova acima: referência pequena → revisar)
+MIN_COBERTURA_COMPOSICAO = 0.5   # fração dos erros da base nova em papéis/assinaturas/submecanismos que a referência conhece
+MAX_TAXA_COMPOSICAO = 4.0        # crescimento máximo da taxa por 1.000 steps
+REFERENCIA_COMPOSICAO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "referencia", "composicao_base1.csv")
+DIM_COMPOSICAO = {"papel": "role", "assinatura": "assinatura", "submecanismo": "submecanismo"}
+
+
+def chave_pedida(m):
+    """A chave que o agente pediu num campo inexistente — nome de schema, não dado de caso."""
+    k = re.search(r"KeyError: '([^']+)'", m)
+    return k.group(1) if k else ("colunas de DataFrame" if "are in the [columns]" in m else None)
+
+
+def composicao(EU, n_steps):
+    """De que é feita cada unidade: uma linha por (unidade, dimensão, categoria, erros) — papel, assinatura,
+    submecanismo e, no campo inexistente, a chave pedida — mais erros e steps totais (dimensão "_total")."""
+    linhas = []
+    for u, g in EU.groupby("unidade"):
+        linhas += [{"unidade": u, "dimensao": "_total", "categoria": "erros", "erros": len(g)},
+                   {"unidade": u, "dimensao": "_total", "categoria": "steps", "erros": int(n_steps)}]
+        for dim, col in DIM_COMPOSICAO.items():
+            linhas += [{"unidade": u, "dimensao": dim, "categoria": c, "erros": int(n)}
+                       for c, n in g[col].value_counts().items()]
+        ch = g.loc[g["submecanismo"] == "campo_inexistente_no_retorno", "err_msg"].map(chave_pedida).dropna()
+        linhas += [{"unidade": u, "dimensao": "chave", "categoria": c, "erros": int(n)}
+                   for c, n in ch.value_counts().items()]
+    return pd.DataFrame(linhas)
+
+
+def gravar_referencia_composicao(EU, n_steps, caminho=REFERENCIA_COMPOSICAO):
+    """Grava a referência — só na base em que as unidades foram validadas (base 1), nunca numa base nova:
+    uv run python -c "from base_pipeline import *; B = carregar_base(); gravar_referencia_composicao(B.EU, len(B.steps))" """
+    os.makedirs(os.path.dirname(caminho), exist_ok=True)
+    composicao(EU, n_steps).to_csv(caminho, index=False)
+
+
+def carregar_referencia_composicao(caminho=REFERENCIA_COMPOSICAO):
+    return pd.read_csv(caminho) if os.path.exists(caminho) else None
+
+
+def fracao_caso_minerado(u, g):
+    """Fração dos erros da unidade que são o caso em que a mineração decidiu o destino (papel e chave)."""
+    caso = DESTINO_MINERACAO.get(u, {}).get("caso")
+    if not caso or len(g) == 0:
+        return None
+    ok = g["role"] == caso["papel"]
+    if "chave" in caso:
+        ok &= g["err_msg"].map(chave_pedida) == caso["chave"]
+    return float(ok.mean())
+
+
+def comparar_composicao(EU, n_steps, ref):
+    """Uma linha por unidade de memória (factual/estratégia): a composição nesta base contra a referência e o
+    veredito — "espelha", "não verificável" (menos de MIN_ERROS_COMPOSICAO erros aqui) ou "revisar composição"."""
+    linhas = []
+    for u, g in EU.groupby("unidade"):
+        if UNI[u][1] not in (FACT, ESTR):
+            continue
+        r = ref[ref["unidade"] == u] if ref is not None else pd.DataFrame(columns=["dimensao", "categoria", "erros"])
+        tot = r[r["dimensao"] == "_total"].set_index("categoria")["erros"]
+        n_ref, steps_ref = int(tot.get("erros", 0)), int(tot.get("steps", 0))
+        taxa = (len(g) / n_steps) / (n_ref / steps_ref) if n_ref and steps_ref else None
+        cob = {dim: float(g[col].isin(set(r.loc[r["dimensao"] == dim, "categoria"])).mean())
+               for dim, col in DIM_COMPOSICAO.items()}
+        motivos = []
+        if len(g) < MIN_ERROS_COMPOSICAO:
+            veredito = "não verificável"
+        elif n_ref < MIN_ERROS_COMPOSICAO:
+            veredito, motivos = REVISAR_COMPOSICAO, [f"referência pequena ({n_ref} erros na referência, {len(g)} aqui)"]
+        else:
+            motivos = [f"{dim}: {c:.0%} conhecidos" for dim, c in cob.items() if c < MIN_COBERTURA_COMPOSICAO]
+            if taxa is not None and taxa > MAX_TAXA_COMPOSICAO:
+                motivos.append(f"taxa ×{taxa:.1f}")
+            veredito = REVISAR_COMPOSICAO if motivos else "espelha"
+        caso = fracao_caso_minerado(u, g)
+        if caso is not None and caso < MIN_CASO_MINERADO:
+            veredito = REVISAR_COMPOSICAO
+            motivos.append(f"destino da mineração não confirmado (caso minerado em {caso:.0%})")
+        linhas.append({"unidade": u, "nome": UNI[u][0], "erros": len(g), "erros na referência": n_ref,
+                       "taxa × referência": round(taxa, 1) if taxa is not None else None,
+                       **{f"{dim} conhecido": round(c, 2) for dim, c in cob.items()},
+                       "caso minerado": round(caso, 2) if caso is not None else None,
+                       "veredito": veredito, "motivo": "; ".join(motivos)})
+    return pd.DataFrame(linhas)
 
 
 def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
@@ -389,8 +496,12 @@ def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     return t.sort_values(["passa na recorrência", "execuções", "erros"], ascending=False).reset_index(drop=True)
 
 
-def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES, n_steps=None, referencia=None):
+    """As três perguntas por unidade; com `n_steps` e `referencia` (carregar_referencia_composicao()), também a
+    composição: a unidade que passaria e não espelha a referência vai para "revisar composição" (Ajuste 6)."""
     # resíduo: recorrência contada por PADRÃO de erro, não pela unidade (que junta erros diferentes por construção)
+    comp = (comparar_composicao(EU, n_steps, referencia).set_index("unidade")
+            if n_steps is not None and referencia is not None else None)
     passa = residuo_por_padrao(EU, min_execs, min_meses).groupby("unidade")["passa na recorrência"].any()
     fracao_desconhecida = (EU["unidade"] == "X_sintoma_nao_reconhecido").mean()
     tri = []
@@ -410,10 +521,15 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         elif execs_u < min_execs or meses_u < min_meses:
             decisao = "fora: sem recorrência"
         else:
-            # passou nas três perguntas; se a mineração já decidiu que o conserto é no ambiente, é sinal de harness
-            decisao = SINAL_HARNESS if DESTINO_MINERACAO.get(u) == "harness" else "candidato"
+            # passou nas três perguntas; se a mineração já decidiu que o conserto é no ambiente, é sinal de harness —
+            # desde que a unidade espelhe a referência e o caso minerado se confirme (senão, revisar composição)
+            decisao = SINAL_HARNESS if destino_mineracao(u) == "harness" else "candidato"
+            if comp is not None and u in comp.index and comp.loc[u, "veredito"] == REVISAR_COMPOSICAO:
+                decisao = REVISAR_COMPOSICAO
         tri.append({"unidade": u, "nome": nome, "tipo": tipo, "decisão": decisao,
-                    "destino (mineração)": DESTINO_MINERACAO.get(u, "em aberto") if tipo in (FACT, ESTR) else "",
+                    "destino (mineração)": destino_mineracao(u) if tipo in (FACT, ESTR) else "",
+                    "composição": comp.loc[u, "veredito"] if comp is not None and u in comp.index else "",
+                    "motivo (composição)": comp.loc[u, "motivo"] if comp is not None and u in comp.index else "",
                     "motivo (resíduo)": motivo if tipo == SEM else "",
                     "ocorrências": len(o), "erros": len(g), "reincidências na cascata": len(g) - len(o),
                     "execuções": execs_u, "meses": meses_u, "papéis": o["role"].nunique(),
@@ -421,23 +537,24 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
                     "% ocorr. após outro erro": round(o["seguidor"].mean() * 100),
                     "assinaturas de origem": " + ".join(g["assinatura"].value_counts().index),
                     "conteúdo proposto": conteudo})
-    ordem = {"candidato": 0, SINAL_HARNESS: 1, "não-memória": 2, REVISAR_PRIORIDADE: 3, REVISAR_BAIXA: 4,
-             "fora: sem recorrência": 5}
+    ordem = {"candidato": 0, SINAL_HARNESS: 1, REVISAR_COMPOSICAO: 2, "não-memória": 3, REVISAR_PRIORIDADE: 4,
+             REVISAR_BAIXA: 5, "fora: sem recorrência": 6}
     t = pd.DataFrame(tri)
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
 
 
-def triagem_por_papel(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+def triagem_por_papel(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES, elegiveis=None):
     """A mesma régua do triagem(), aplicada dentro de cada papel — a candidatura scoped da §9.4. Só unidades
     elegíveis a memória (tipo factual/estratégia): plataforma (não-memória) e resíduo (X_) ficam fora por
     decisão de desenho. Uma linha por (role, unidade) com erros no papel; a decisão é "candidato" quando a
     unidade se repete naquele papel (>= min_execs execuções e >= min_meses meses, sobre ocorrências
-    deduplicadas da cascata, como a global). Unidade ausente no papel simplesmente não gera linha. Unidade cujo
-    destino da mineração é harness também fica fora: o conserto é no ambiente, não há memória por papel a escrever."""
+    deduplicadas da cascata, como a global). Unidade ausente no papel simplesmente não gera linha. `elegiveis`: as
+    unidades cuja decisão global é candidato ou fora (o notebook passa a partir da triagem) — sinal de harness e
+    revisar composição ficam fora do recorte; sem `elegiveis`, só o sinal de harness é tirado."""
     tri = []
     for (role, u), g in EU.groupby(["role", "unidade"]):
         nome, tipo, _ = UNI[u]
-        if tipo not in (FACT, ESTR) or DESTINO_MINERACAO.get(u) == "harness":
+        if tipo not in (FACT, ESTR) or (u not in elegiveis if elegiveis is not None else destino_mineracao(u) == "harness"):
             continue
         o = g.drop_duplicates("ocorrencia")
         execs, meses = o["exec_id"].nunique(), o["mes"].nunique()

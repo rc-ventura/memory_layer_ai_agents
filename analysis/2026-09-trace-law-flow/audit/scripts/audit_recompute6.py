@@ -272,6 +272,9 @@ DESTINO_SPEC = {"U_contrato_dict": "memória", "U_campo_inexistente": "harness"}
 sinal_csv = sorted(u for u, c in cand_csv.items() if c.get("decisão") == "sinal de harness")
 sinal_esp = sorted(u for u, d in DESTINO_SPEC.items() if d == "harness")
 print(f"   sinal de harness no CSV: {sinal_csv} · esperado {sinal_esp} · {'OK' if sinal_csv == sinal_esp else '<< DIVERGE'}")
+# composição (Ajuste 6): a base 1 é a referência, então comparada consigo mesma nenhuma unidade pode cair em revisão
+rev_comp = sorted(u for u, c in cand_csv.items() if c.get("decisão") == "revisar composição")
+print(f"   revisar composição no CSV (base de referência): {rev_comp} · esperado [] · {'OK' if not rev_comp else '<< DIVERGE'}")
 
 # ------------------------------------------------------ tabela papel × mecanismo
 print("D. papel × unidade (% dos erros DO papel, papéis com ≥5 erros):")

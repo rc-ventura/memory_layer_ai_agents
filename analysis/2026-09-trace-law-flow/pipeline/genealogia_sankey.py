@@ -2,7 +2,8 @@
 
 O último estágio é o DESTINO nomeado — o artefato que nasce de cada unidade:
 `MEM <título>` para candidatas a memória, `SINAL-HARNESS <título>` para o erro do
-agente cujo conserto a mineração pôs no ambiente, `HARNESS <título>` para correções de
+agente cujo conserto a mineração pôs no ambiente, `REVISAR-COMPOSIÇÃO <título>` para a
+unidade que não espelha a base em que foi validada, `HARNESS <título>` para correções de
 infra, `REVISAR <título>` para o resíduo (falta regra de causa — trabalho de
 taxonomia), `FORA <motivo>` para descartes (o prefixo carrega a decisão da triagem,
 o título é a lição real de `UNI` em base_pipeline.py — a mesma que já
@@ -61,7 +62,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.path import Path
 
-from base_pipeline import carregar_base, triagem, UNI, categoria_do_erro, SINAL_HARNESS
+from base_pipeline import (carregar_base, triagem, UNI, categoria_do_erro, SINAL_HARNESS, REVISAR_COMPOSICAO,
+                           carregar_referencia_composicao)
 from paleta import COR_ERRO, cor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -122,7 +124,7 @@ ORDEM_CAT = list(COR_ERRO)   # famílias do agente, plataforma, resíduo — a o
 def preparar_dados():
     B = carregar_base()
     EU = B.EU.copy()
-    tri = triagem(EU)
+    tri = triagem(EU, n_steps=len(B.steps), referencia=carregar_referencia_composicao())
     tri_idx = tri.set_index("unidade")
 
     def destino(u):
@@ -132,6 +134,8 @@ def preparar_dados():
             return f"MEM {nome}"
         if d == SINAL_HARNESS:   # erro do agente; a mineração decidiu que o conserto é no ambiente (Ajuste 5)
             return f"SINAL-HARNESS {nome}"
+        if d == REVISAR_COMPOSICAO:   # não espelha a base em que foi validada (Ajuste 6)
+            return f"REVISAR-COMPOSIÇÃO {nome}"
         if d == "não-memória":
             return f"HARNESS {nome}"
         if d.startswith("revisar"):

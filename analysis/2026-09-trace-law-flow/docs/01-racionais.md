@@ -838,7 +838,12 @@ no harness), e memória sozinha não protegeria a resposta. Essa unidade sai de 
 harness** — a terceira saída do mecanismo, distinta da não-memória operacional (onde a plataforma falhou e o agente
 fez certo). A decisão vem de `DESTINO_MINERACAO` (`base_pipeline.py`), não da régua; a triagem automática não muda.
 Hoje só a nº10 ("Campo inexistente no retorno estruturado") tem esse destino (`07` §6.1; Ajuste 5 de
-[`pipeline-entre-bases.md`](../../pipeline-entre-bases.md)). Sensibilidade: com ≥5 execuções e ≥3 meses, só uma unidade muda de lado
+[`pipeline-entre-bases.md`](../../pipeline-entre-bases.md)) — e ele vale só para o **caso** minerado (`RespostaBacen ·
+quebra_sigilo`, ≥50% dos erros da unidade). **Numa base nova, a composição:** a regra de causa lê a mensagem, e uma
+base nova pode trazer a mesma mensagem com outra causa. Por isso cada unidade que passaria é comparada com a base
+em que foi validada (`referencia/composicao_base1.csv`: papéis, assinaturas, submecanismos, chaves); se tem 10 erros
+ou mais e não espelha a referência (referência com menos de 10, menos de 50% de categorias conhecidas, taxa ×4, ou o
+caso minerado sem se confirmar), vai para **revisar composição** — `03` Frente 3; Ajuste 6. Sensibilidade: com ≥5 execuções e ≥3 meses, só uma unidade muda de lado
 ("Após step com erro, o que ele definiria não existe") — marcada **limítrofe** na tabela e no gráfico.
 
 **Passo 6 — o antigo Passo 4, respondido com número.** A versão anterior dizia que cinco assinaturas ficaram de
