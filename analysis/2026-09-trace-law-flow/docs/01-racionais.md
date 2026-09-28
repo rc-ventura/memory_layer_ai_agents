@@ -838,7 +838,9 @@ no harness), e memória sozinha não protegeria a resposta. Essa unidade sai de 
 harness** — a terceira saída do mecanismo, distinta da não-memória operacional (onde a plataforma falhou e o agente
 fez certo). A decisão vem de `DESTINO_MINERACAO` (`base_pipeline.py`), não da régua; a triagem automática não muda.
 Hoje só a nº10 ("Campo inexistente no retorno estruturado") tem esse destino (`07` §6.1; Ajuste 5 de
-[`pipeline-entre-bases.md`](../../pipeline-entre-bases.md)). Sensibilidade: com ≥5 execuções e ≥3 meses, só uma unidade muda de lado
+[`pipeline-entre-bases.md`](../../pipeline-entre-bases.md)), e **só na base 1**: as bases são independentes, e a decisão
+da mineração vale na base em que foi tomada (`BASE_ID`; Ajuste 7) — numa base nova a unidade volta a candidata até ser
+minerada lá. Sensibilidade: com ≥5 execuções e ≥3 meses, só uma unidade muda de lado
 ("Após step com erro, o que ele definiria não existe") — marcada **limítrofe** na tabela e no gráfico.
 
 **Passo 6 — o antigo Passo 4, respondido com número.** A versão anterior dizia que cinco assinaturas ficaram de

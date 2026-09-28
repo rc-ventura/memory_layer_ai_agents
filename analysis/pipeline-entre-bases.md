@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 (atualizado 28/09) · **Estado:** ajustes 1 a 3 conferidos nas duas bases; 4 (Timeout) e 5 (sinal de harness) feitos neste repo, falta conferir na base 2; depois, a Etapa 5 do plano (§5).
+**Data:** 2026-09-25 (atualizado 28/09) · **Estado:** ajustes 1 a 5 conferidos nas duas bases; 6 revertido; 7 (destino da mineração por base) feito neste repo; próxima etapa: 5, a chave `?` (§5).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -60,6 +60,8 @@ reescritas.
 | 3 | 25/09 | `Import from` (4) e `final_answer` com argumento inexistente (1) no resíduo da base 2; o segundo também na base 1 | `Import from` na regra do sandbox; mecanismo `argumento_inexistente` → unidade do argumento nomeado | 1 erro muda; 11 candidatas; 450 cobertos | causa não identificada 12 → 7; resíduo com 8 padrões | branch `2026-09-25-residuo-base2` |
 | 4 | 25/09 | 16 erros de Timeout no sintoma não reconhecido; alarme disparado (5,2%) | sintoma e causa novos: família `Infra / ferramenta` → `H_timeout_ferramenta` (não-memória) | nenhum CSV muda | esperado: sintoma não reconhecido 25 → 9, alarme desliga | branch `2026-09-25-residuo-base2` |
 | 5 | 28/09 | a nº10 aparecia como memória nas figuras, mas a mineração decidiu `harness` | `DESTINO_MINERACAO` + decisão "sinal de harness" na triagem | 1 decisão muda; **11 → 10 candidatas**, 440 cobertos | a nº10, se passar na triagem, também vira sinal | branch `2026-09-25-residuo-base2` |
+| 6 | 28/09 | a nº10 herdou "harness" na base 2; "Nome usado sem ter sido definido" foi de 5 para ~117 erros | comparar a composição de cada unidade com a base de referência | **revertido** (overengineering para a fase atual — ver Ajuste 7) | — | `c39fdb2`, revertido em `d2f2ec8` |
+| 7 | 28/09 | a decisão da mineração vazava entre bases | `DESTINO_MINERACAO` guarda a base; `BASE_ID` ao lado do `TRACE` | nada muda | a nº10 volta a candidata (destino em aberto) | branch `2026-09-28-mineracao-base2` |
 
 ### Ajuste 1 — evidência estrutural do resíduo
 
@@ -297,6 +299,37 @@ nº 6: 0 divergências; cobertura e unidade sinalizada conferidas.
 
 **Replicar na máquina 2:** `base_pipeline.py` (a tabela, a `triagem()`, a ordem, a `triagem_por_papel()`, o `__all__`),
 `genealogia_sankey.py` (import e destino) e as 3 células do notebook (9.2, 9.3, 9.4).
+
+### Ajuste 6 (revertido) e Ajuste 7 — as bases são independentes; a decisão da mineração vale só onde foi tomada
+
+**O que o Ajuste 6 fazia.** Comparava a composição de cada unidade (papel, assinatura, submecanismo, chave pedida, taxa
+por 1.000 steps) com a da base em que ela foi validada, e mandava para "revisar composição" a que não espelhasse. A
+motivação era real: a regra de causa lê a mensagem, e uma base nova pode trazer a mesma mensagem com outra causa (a nº10
+da base 2 herdou "harness" pelo nome; "Nome usado sem ter sido definido" foi de 5 para ~117 erros).
+
+**Por que foi revertido (decisão do Rafael, 28/09).** Pelo protocolo (`03` Frente 3), **toda candidata passa pela
+mineração** antes de virar memória, e a mineração começa agregando os erros da unidade por papel, identificador e mês —
+é ali que um problema de composição aparece. As bases são **independentes**: cada uma é triada e minerada por conta
+própria; "a candidata aparece em outra base?" é uma comparação **posterior**, entre resultados já minerados (Etapa 7).
+Um alarme de composição dentro da triagem anteciparia o que a mineração faz de qualquer jeito, ao custo de regras,
+limites, arquivo de referência e — com a base 3 — uma referência acumulada. É **overengineering para a fase atual**.
+
+**Quando faria sentido.** Quando a análise virar **operação contínua** (a extração de ~1M; o Update Engine em lote por
+período): aí não dá para minerar cada candidata a cada lote, e um monitor que só aponta anomalias economiza verificação
+humana. A calibração feita fica registrada para essa hora: dentro da base 1 (meses antigos × recentes), com piso de 10
+erros, 50% de categorias conhecidas e taxa ×4, só as unidades com referência pequena foram sinalizadas; sem o piso e com
+nomes de variável, 5 de 10 unidades eram sinalizadas (alarme falso demais). O raciocínio e o desenho estão no commit
+`c39fdb2`; o roadmap guarda o item.
+
+**O que ficou (Ajuste 7).** O único problema concreto: **a decisão da mineração vazava entre bases**. Agora
+`DESTINO_MINERACAO` guarda a base em que a decisão foi tomada (`base1` para a nº2 e a nº10), e `base_pipeline.py` tem um
+**`BASE_ID`** logo abaixo do `TRACE` — as duas linhas que se ajustam ao copiar o pipeline para uma base nova
+(`"base2"` na `-second`, `"base3"` na `-third`). `destino_mineracao(u)` só devolve o destino se a base bater; senão, "em
+aberto". Base 1: tudo idêntico ao Ajuste 5 (a nº10 segue sinal de harness); com `BASE_ID = "base2"`, a nº2 e a nº10
+voltam a candidatas, com destino em aberto, até serem mineradas lá.
+
+**Replicar na máquina 2:** `base_pipeline.py` (restaurar o `TRACE` e ajustar o `BASE_ID`), o notebook e o
+`genealogia_sankey.py`; nada da pasta `referencia/`.
 
 ## 4. O que os ajustes ensinam sobre o método
 

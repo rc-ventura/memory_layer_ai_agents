@@ -22,12 +22,15 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
-           "DESTINO_MINERACAO", "SINAL_HARNESS",
+           "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
+# qual base é esta: "base1" aqui, "base2" na pasta -second, "base3" na -third. Junto com o TRACE, é o que se ajusta ao
+# copiar o pipeline para uma base nova — a decisão da mineração (DESTINO_MINERACAO) só vale na base em que foi tomada.
+BASE_ID = "base1"
 
 
 def carregar_trace():
@@ -372,8 +375,20 @@ ALARME_COBERTURA = 0.05
 # "harness" = erro do agente cujo conserto certo é no ambiente (contrato do prompt, validação no harness) — a saída
 # "sinal de harness" do mecanismo, distinta da não-memória operacional (onde a plataforma falhou).
 # Fonte: 07-relatorio-mineracao-unidades-n2-n10.md §6.1–6.2; pipeline-entre-bases.md, Ajuste 5.
-DESTINO_MINERACAO = {"U_contrato_dict": "memória", "U_campo_inexistente": "harness"}
+# As bases são independentes: cada uma é triada e minerada por conta própria, e a decisão só vale na base em que a
+# mineração foi feita (a nº10 da base 2 não herda o "harness" da base 1 — pipeline-entre-bases.md, Ajuste 7).
+DESTINO_MINERACAO = {
+    "U_contrato_dict": {"destino": "memória", "base": "base1"},
+    "U_campo_inexistente": {"destino": "harness", "base": "base1"},
+}
 SINAL_HARNESS = "sinal de harness"
+
+
+def destino_mineracao(u, base_id=None):
+    """O destino que a mineração decidiu para a unidade NESTA base (memória / harness), ou "em aberto" se ela não foi
+    minerada aqui."""
+    d = DESTINO_MINERACAO.get(u)
+    return d["destino"] if d and d["base"] == (base_id or BASE_ID) else "em aberto"
 
 
 def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
@@ -411,9 +426,9 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
             decisao = "fora: sem recorrência"
         else:
             # passou nas três perguntas; se a mineração já decidiu que o conserto é no ambiente, é sinal de harness
-            decisao = SINAL_HARNESS if DESTINO_MINERACAO.get(u) == "harness" else "candidato"
+            decisao = SINAL_HARNESS if destino_mineracao(u) == "harness" else "candidato"
         tri.append({"unidade": u, "nome": nome, "tipo": tipo, "decisão": decisao,
-                    "destino (mineração)": DESTINO_MINERACAO.get(u, "em aberto") if tipo in (FACT, ESTR) else "",
+                    "destino (mineração)": destino_mineracao(u) if tipo in (FACT, ESTR) else "",
                     "motivo (resíduo)": motivo if tipo == SEM else "",
                     "ocorrências": len(o), "erros": len(g), "reincidências na cascata": len(g) - len(o),
                     "execuções": execs_u, "meses": meses_u, "papéis": o["role"].nunique(),
@@ -437,7 +452,7 @@ def triagem_por_papel(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     tri = []
     for (role, u), g in EU.groupby(["role", "unidade"]):
         nome, tipo, _ = UNI[u]
-        if tipo not in (FACT, ESTR) or DESTINO_MINERACAO.get(u) == "harness":
+        if tipo not in (FACT, ESTR) or destino_mineracao(u) == "harness":
             continue
         o = g.drop_duplicates("ocorrencia")
         execs, meses = o["exec_id"].nunique(), o["mes"].nunique()
