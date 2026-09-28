@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 (atualizado 28/09) · **Estado:** ajustes 1 a 5 conferidos nas duas bases; 6 revertido; 7 (destino da mineração por base) feito neste repo; próxima etapa: 5, a chave `?` (§5).
+**Data:** 2026-09-25 (atualizado 28/09) · **Estado:** ajustes 1 a 5 conferidos nas duas bases; 6 revertido; 7 e 8 feitos neste repo, falta conferir na base 2; depois, a Etapa 6 do plano (§5).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -62,6 +62,7 @@ reescritas.
 | 5 | 28/09 | a nº10 aparecia como memória nas figuras, mas a mineração decidiu `harness` | `DESTINO_MINERACAO` + decisão "sinal de harness" na triagem | 1 decisão muda; **11 → 10 candidatas**, 440 cobertos | a nº10, se passar na triagem, também vira sinal | branch `2026-09-25-residuo-base2` |
 | 6 | 28/09 | a nº10 herdou "harness" na base 2; "Nome usado sem ter sido definido" foi de 5 para ~117 erros | comparar a composição de cada unidade com a base de referência | **revertido** (overengineering para a fase atual — ver Ajuste 7) | — | `c39fdb2`, revertido em `d2f2ec8` |
 | 7 | 28/09 | a decisão da mineração vazava entre bases | `DESTINO_MINERACAO` guarda a base; `BASE_ID` ao lado do `TRACE` | nada muda | a nº10 volta a candidata (destino em aberto) | branch `2026-09-28-mineracao-base2` |
+| 8 | 28/09 | o `?` da base 2 juntava 7 erros de três tipos e "passava" na recorrência | tempo do interpretador (plataforma × código lento), limite de passos como erro crítico, chave sem nome de exceção fora da recorrência | nada muda (só colunas novas) | esperado: o `?` some; sintoma não reconhecido 9 → 2 | branch `2026-09-28-mineracao-base2` |
 
 ### Ajuste 1 — evidência estrutural do resíduo
 
@@ -330,6 +331,47 @@ voltam a candidatas, com destino em aberto, até serem mineradas lá.
 
 **Replicar na máquina 2:** `base_pipeline.py` (restaurar o `TRACE` e ajustar o `BASE_ID`), o notebook e o
 `genealogia_sankey.py`; nada da pasta `referencia/`.
+
+### Ajuste 8 — desmontar o `?`: tempo do interpretador, código lento e o erro crítico
+
+**Problema.** O `?` é a chave que sobra quando a mensagem não tem palavra de exceção. Na base 2 ele juntou 7 erros de três
+tipos e "passava" na recorrência sem ser um padrão. Lidos no cru pelo Rafael:
+
+| Erros | Mensagem | O que o código do step fazia | De quem é |
+|---:|---|---|---|
+| 3 | `Code execution exceeded the maximum execution time of 30 seconds` | chamava ferramentas (OBFCivel: `extract_obf_requests`; `get_docs_from_filters`…; RespostaOficios: `estrutura_subsidios`, `gera_transcricao_imagens`) | **plataforma**: o sandbox corta o bloco em 30 s e a ferramenta leva mais (as ferramentas longas têm 600/1800 s no wrapper — limites desencontrados) |
+| 3 | a mesma | AgenteProcuracoes: só `final_answer`, 13 e 41 linhas, concatenando resultados de busca enormes ("estou concatenando blocos muito grandes, o que estoura o tempo") | **agente**: código lento |
+| 1 | `Reached max steps.` (`AgentMaxStepsError`) | CalculoCivel, step 48: nenhum código; 48 steps de erros em cascata | **desfecho**: o agente não se recuperou |
+
+**Solução.**
+
+1. **Tempo do interpretador** — sintoma "Bloco de código excedeu o tempo do interpretador" (família Ambiente & sandbox: o
+   limite é do sandbox). A causa se separa pelo código do step: chama ferramenta declarada no system prompt (fora
+   `final_answer`) → `timeout_interpretador` → `H_timeout_ferramenta` (a lição passa a citar os dois limites); não chama →
+   `codigo_lento` → **`U_codigo_lento`** (estratégia: "não manipular textos enormes no bloco"). O sinal
+   `chama_ferramenta` é calculado em `explodir_memoria` só nesses erros.
+2. **Limite de passos — erro crítico** (decisão do Rafael). Não é lição nem tarefa de plataforma: é consequência. Com 100
+   casos, "100 execuções morreram" não diria o que prevenir. Classe à parte, **`C_limite_passos`**, tipo "erro crítico ·
+   não se recuperou", decisão **"investigar — crítico"** sem limite mínimo: todo caso vai para investigação (humana ou
+   com LLM; a classificação continua determinística). `caminho_dos_criticos()` grava `resultados/criticos.csv` — por
+   execução morta, as unidades dos erros anteriores do papel e a primeira delas, o ponto de partida para achar o **passo
+   crítico** (AgentDebug). Na triagem, cada unidade ganha **"execuções mortas com esta unidade no caminho"**: o peso de
+   gravidade que a contagem de erros não dá. Acumulado, é sinal de qualidade do harness (roadmap 39).
+3. **Chave sem nome de exceção** — `padrao_residuo(m, sub, err_type)` devolve `sem nome de exceção: <tipo>` em vez de
+   `?`, e `residuo_por_padrao()` marca essas chaves (coluna `chave`) como fora da recorrência.
+
+**Ainda por medir:** o número da lição do `U_codigo_lento` ("textos de ~N caracteres") — tamanhos das observações e das
+variáveis nos 6 casos de tempo, na máquina 2.
+
+**Efeito na base 1.** Nenhum desses erros existe lá: `erros_mecanismo.csv` e a triagem idênticos; entram só as colunas
+novas (`chama_ferramenta`, `chave`, "execuções mortas…", todas zeradas/"identificada"); auditoria nº 6 com 0 divergências.
+
+**Esperado na base 2.** O `?` some. Sintoma não reconhecido de 9 para **2** (`APIConnectionError`, `UnicodeDecodeError`)
+→ "revisar — baixa prioridade". `H_timeout_ferramenta` +3; `U_codigo_lento` com 3 erros em 2 execuções e 1 mês → "fora:
+sem recorrência"; 1 erro crítico (CalculoCivel) em "investigar — crítico", com o caminho em `criticos.csv`.
+
+**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`, `paleta.py`,
+`genealogia_sankey.py` e o notebook.
 
 ## 4. O que os ajustes ensinam sobre o método
 

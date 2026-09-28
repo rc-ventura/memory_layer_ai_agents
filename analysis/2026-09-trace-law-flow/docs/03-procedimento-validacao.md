@@ -1191,7 +1191,15 @@ seção própria no 9.3 e `SINAL-HARNESS` no Sankey, mantendo a cor da família.
 unidade; só essa decisão muda; 11 → 10 candidatas, 440 erros (88%); por papel, 18 de 31 células (§1.15); auditoria nº 6
 com 0 divergências.
 
-**Pendente** (roadmap 30, 33, 34): o `?`, a comparação entre bases e a robustez do padrão e do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
+**Ajuste 8 (Etapa 5) — o `?`.** Os 7 erros, lidos no cru da base 2: 6 × "Code execution exceeded the maximum execution
+time of 30 seconds" (3 com o bloco chamando ferramentas — OBFCivel ×2, RespostaOficios; 3 no AgenteProcuracoes, que só
+concatenava resultados de busca enormes e chamava `final_answer`) e 1 × `Reached max steps.` (CalculoCivel, 48 steps
+de erros em cascata: sem `<code>`, `…` colado, `"e"` solto, variável de bloco que falhou, relatório concatenado). Regras:
+tempo do interpretador com ferramenta → `H_timeout_ferramenta`; sem ferramenta → `U_codigo_lento`; limite de passos →
+`C_limite_passos`, erro crítico. A chave `?` deu lugar a `sem nome de exceção: <tipo>`, que não conta como recorrência.
+Base 1: nenhum desses erros; CSVs iguais, só com as colunas novas; auditoria nº 6 com 0 divergências.
+
+**Pendente** (roadmap 33, 34): a comparação entre bases e a robustez do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
 fase desde a troca do relógio de 23/09 — usa o mês do lote (`202512`), não o da execução; não afeta as demais.
 
 ---
@@ -1251,6 +1259,7 @@ daquela base, não aqui.
 | **candidato** | Rodar a **mineração** da unidade (`06-racionais-mineracao-unidades-n2-n10.md` §9, Passos 1–8; notebook `mineracao_unidades_n2_n10.ipynb`): de qual ferramenta vem cada erro, schema real do retorno, o que o prompt declara × o que a ferramenta devolve, estabilidade no tempo, amostra conferida no cru, registro final | registro final com `status` — `derived-and-checked`, ou `parcial` com a cobertura explícita | notebook de mineração · pastas `resultados/evidencia/11.*` · `07-relatorio-mineracao` |
 | **não-memória** | Nomear quem corrige **fora do agente** (harness, infra, LLM) e escrever o **gatilho de reabertura**: quantos casos por mês ou que taxa por 1.000 steps reabrem a unidade (ex. do `H_bloco_code`: ≥2 casos/mês ou > 1/1k steps) | gatilho escrito e com dono | `04-roadmap.md` §Monitoramento |
 | **revisar — prioridade** | O **procedimento do resíduo** (abaixo), para cada padrão que passa na recorrência — e para todos os padrões, se o motivo for o alarme de cobertura | o padrão virou regra (saiu do resíduo) **ou** foi descartado com motivo escrito | `01` §7 Passo 2 (a regra) · Frente 1 deste doc (os casos) · roadmap |
+| **investigar — crítico** | O agente não se recuperou (esgotou os passos). **Todo caso**, sem limite mínimo: abrir `resultados/criticos.csv` (as unidades dos erros anteriores do papel, a primeira delas e o nº de steps) e achar o **passo crítico** — o erro que iniciou a cascata (AgentDebug). Pode ser humano ou com LLM; a classificação não muda. O que se achar vai para a unidade do passo crítico (ou vira regra nova) | cada caso com o passo crítico registrado | este doc (Frente 1) · `../../pipeline-entre-bases.md` |
 | **revisar — baixa prioridade** | Nada agora. Registrar o tamanho do balde como **cobertura**. Sobe para prioridade se: (a) o mesmo padrão aparecer em outra base; ou (b) o "Sintoma não reconhecido" passar de **5% de todos os erros** da base — o **alarme de cobertura**, que a `triagem()` aplica sozinha (`ALARME_COBERTURA`; a coluna "motivo (resíduo)" diz por que subiu) | próxima base | a tabela por padrão da base (notebook 9.2) |
 | **fora: sem recorrência** | Nada agora. Reavaliar quando houver mais dados: somando bases, se passar no teste, volta à triagem como qualquer outra | próxima base | nenhum — a tabela da triagem já mostra |
 

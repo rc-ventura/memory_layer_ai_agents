@@ -22,7 +22,8 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
-           "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao",
+           "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
+           "caminho_dos_criticos", "chama_ferramenta_declarada", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -56,16 +57,6 @@ def explodir_memoria(df):
             for i, st in enumerate(acts):
                 tu, tm = st.get("token_usage") or {}, st.get("timing") or {}
                 err = st.get("error") or {}
-                rec = {"exec_id": r["cod_idef_exeo"], "agente": r["cod_idef_aget"], "mes": r["mes"],
-                       "mes_particao": r["mes_particao"], "status": r["cod_idef_stat_exeo_aget"], "role": role,
-                       "idx": i, "n_steps_role": len(acts), "step": st.get("step_number"),
-                       "dur_s": tm.get("duration"), "tok_in": tu.get("input_tokens") or 0,
-                       "tok_out": tu.get("output_tokens") or 0, "tok_tot": tu.get("total_tokens") or 0,
-                       "err_type": err.get("type"), "err_msg": str(err.get("message") or ""),
-                       **sinais_de_parsing(str(err.get("message") or ""), st.get("code_action"), obs_ant),
-                       "is_final": bool(st.get("is_final_answer"))}
-                rows.append(rec)
-                obs_ant += str(st.get("observations") or "")
                 mim = st.get("model_input_messages")
                 # system prompt = PRIMEIRA mensagem apenas. É onde as ferramentas são declaradas.
                 # Ler o contexto inteiro contaminaria com as funções que o próprio agente define
@@ -75,6 +66,18 @@ def explodir_memoria(df):
                     m0 = mim[0] if isinstance(mim[0], dict) else {}
                     c = m0.get("content")
                     sysp = c[0].get("text", "") if isinstance(c, list) and c and isinstance(c[0], dict) else str(c or "")
+                rec = {"exec_id": r["cod_idef_exeo"], "agente": r["cod_idef_aget"], "mes": r["mes"],
+                       "mes_particao": r["mes_particao"], "status": r["cod_idef_stat_exeo_aget"], "role": role,
+                       "idx": i, "n_steps_role": len(acts), "step": st.get("step_number"),
+                       "dur_s": tm.get("duration"), "tok_in": tu.get("input_tokens") or 0,
+                       "tok_out": tu.get("output_tokens") or 0, "tok_tot": tu.get("total_tokens") or 0,
+                       "err_type": err.get("type"), "err_msg": str(err.get("message") or ""),
+                       **sinais_de_parsing(str(err.get("message") or ""), st.get("code_action"), obs_ant),
+                       "chama_ferramenta": chama_ferramenta_declarada(str(err.get("message") or ""),
+                                                                      st.get("code_action"), sysp),
+                       "is_final": bool(st.get("is_final_answer"))}
+                rows.append(rec)
+                obs_ant += str(st.get("observations") or "")
                 raw.append({**rec, "code": st.get("code_action") or "",
                             "thought": str(st.get("model_output") or ""),
                             "sysprompt": sysp,
@@ -94,6 +97,13 @@ def explodir_memoria(df):
 def classify(m):
     # limite de tempo do wrapper de ferramentas da esteira (mensagem em português): falha da plataforma, não do agente
     if 'excedeu o timeout' in m or 'TimeoutError' in m: return ('Infra / ferramenta','Ferramenta excedeu o timeout')
+    # limite de tempo do sandbox para o bloco inteiro (30 s): o sintoma é do sandbox; a causa (ferramenta lenta ×
+    # código lento do agente) se separa no submecanismo()
+    if 'exceeded the maximum execution time' in m:
+        return ('Ambiente & sandbox','Bloco de código excedeu o tempo do interpretador')
+    # o agente esgotou os passos sem resposta: desfecho de uma cascata, não causa (Ajuste 8)
+    if 'Reached max steps' in m or 'AgentMaxStepsError' in m:
+        return ('Protocolo do harness','Limite de passos atingido')
     if 'Could not index' in m:      return ('Contrato de retorno da ferramenta','Falha ao indexar o retorno (Could not index)')
     if 'does not support multiple positional' in m: return ('Convenção de chamada de ferramenta','Argumento posicional onde só cabe nomeado')
     if 'unterminated' in m:         return ('Geração de código','String não fechada (relatório longo em literal)')
@@ -182,6 +192,17 @@ def sinais_de_parsing(m, code, obs_ant):
     return {"linha_codigo_erro": lc, "chaves_vistas_antes": vistas, "em_final_answer": em_fa}
 
 
+def chama_ferramenta_declarada(m, code, sysp):
+    """Só no tempo esgotado do interpretador ("exceeded the maximum execution time"): o bloco chamou alguma ferramenta
+    declarada no system prompt do step (`def nome(`), fora o final_answer? Se sim, o tempo foi gasto na ferramenta
+    (plataforma); se não, no próprio código do agente. Aproximação declarada: se os dois foram lentos, conta como
+    ferramenta (pipeline-entre-bases.md, Ajuste 8)."""
+    if "exceeded the maximum execution time" not in m:
+        return False
+    declaradas = set(re.findall(r"def\s+(\w+)\s*\(", sysp or "")) - {"final_answer"}
+    return bool(declaradas & set(re.findall(r"\b(\w+)\s*\(", str(code or ""))))
+
+
 def linha_rejeitada(m, linha_codigo=""):
     """A linha de código que o parser rejeitou: a que a mensagem traz (formato antigo) ou, no formato novo, a linha N
     do code_action (`linha_do_codigo`, coluna `linha_codigo_erro`)."""
@@ -196,13 +217,18 @@ def e_texto(s):
     return len(toks) >= 3 and sum(t in PT_STOP for t in toks) / len(toks) >= 0.15
 
 
-def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False):
+def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False):
     if "regex pattern" in m:
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
         return "infra_llm"
     if "excedeu o timeout" in m or "TimeoutError" in m:
         return "timeout_ferramenta"   # pipeline-entre-bases.md, Ajuste 4
+    # tempo do interpretador (30 s) esgotado: numa chamada de ferramenta → plataforma; no código do agente → lição dele
+    if "exceeded the maximum execution time" in m:
+        return "timeout_interpretador" if chama_ferramenta else "codigo_lento"
+    if "Reached max steps" in m or "AgentMaxStepsError" in m:
+        return "limite_de_passos"   # desfecho: a execução morreu; a causa está nos erros anteriores (Ajuste 8)
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
         l = linha_rejeitada(m, linha_codigo)
         if re.search(r"truncad", l, re.I):
@@ -264,11 +290,17 @@ SUB2UNI = {
     "nome_nunca_definido": "U_nome_inventado",
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
+    "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
+    "limite_de_passos": "C_limite_passos",
     "harness_bloco_code": "H_bloco_code",
     "codigo_mal_escrito": "X_causa_nao_identificada", "causa_sem_regra": "X_causa_nao_identificada",
     "sintoma_nao_reconhecido": "X_sintoma_nao_reconhecido",
 }
 FACT, ESTR, NAO, SEM = "factual · ambiente", "experiencial · estratégia", "não-memória · harness/infra", "—"
+# erro crítico: o agente não se recuperou (a execução esgotou os passos). Não é lição, nem plataforma, nem resíduo:
+# todo caso vai para investigação — o passo crítico está nos erros anteriores (Ajuste 8)
+CRIT = "erro crítico · não se recuperou"
+INVESTIGAR_CRITICO = "investigar — crítico"
 UNI = {
     "U_contrato_dict": ("Retorno das ferramentas de documento é dict", FACT,
                         "Ferramentas de documento retornam {'result': [[...]]}: acessar r['result'][0] e iterar a lista interna; nunca r[0], nunca iterar o dict."),
@@ -302,9 +334,16 @@ UNI = {
     # base 2 for formalmente integrada ao pipeline; até então, tratar como candidato reaberto, não
     # como resolvido.
     "H_timeout_ferramenta": ("Ferramenta excedeu o timeout — correção na plataforma", NAO,
-                             "Limite de tempo do wrapper de ferramentas da esteira (600 s / 1800 s por ferramenta): revisar o "
-                             "limite das ferramentas longas ou torná-las assíncronas; o agente já segue o fallback do prompt. "
-                             "Gatilho: >= 2 casos num mês ou > 1/1k steps — acionado na base 2 (ago/2026)."),
+                             "Ferramenta mais longa que o limite de tempo: o do wrapper de ferramentas da esteira (600 s / "
+                             "1800 s por ferramenta) ou o do interpretador, que corta o bloco inteiro em 30 s — limites "
+                             "desencontrados. Revisar os limites das ferramentas longas ou torná-las assíncronas; o agente já "
+                             "segue o fallback do prompt. Gatilho: >= 2 casos num mês ou > 1/1k steps — acionado na base 2."),
+    "U_codigo_lento": ("Não manipular textos enormes dentro do bloco de código", ESTR,
+                       "O interpretador corta o bloco em 30 s: não concatenar nem devolver retornos enormes no código; "
+                       "filtrar e resumir antes (tamanho observado: a medir na base 2)."),
+    "C_limite_passos": ("Limite de passos atingido — o agente não se recuperou", CRIT,
+                        "Desfecho, não causa: a execução esgotou os passos sem resposta. Investigar cada caso — o passo "
+                        "crítico está nos erros anteriores do papel (resultados/criticos.csv)."),
     "H_bloco_code": ("Protocolo do harness", NAO,
                      "≥2 casos num mês, ou taxa > 1/1k steps, reabre o candidato (limiar = teto do IC95% do regime pós-incidente, a partir de mar/2026: ≤0,99/1k). REABERTO em 22/09/2026 (base 2) — ver diário de campo."),
     # os dois baldes de resíduo (01-racionais.md §7, "Os dois baldes de resíduo"): nunca viram memória; a triagem os
@@ -319,9 +358,10 @@ def montar_unidades(E):
     EU["seguidor"] = EU.groupby(["exec_id", "role"])["idx"].shift().eq(EU["idx"] - 1)
     EU["cascata"] = (~EU["seguidor"]).cumsum()
     col = lambda c, v: EU[c] if c in EU else pd.Series(v, index=EU.index)
-    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa)) for m, l, k, fa in
+    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf)) for m, l, k, fa, cf in
                           zip(EU["err_msg"], col("linha_codigo_erro", "").fillna(""),
-                              col("chaves_vistas_antes", 0).fillna(0), col("em_final_answer", False).fillna(False))]
+                              col("chaves_vistas_antes", 0).fillna(0), col("em_final_answer", False).fillna(False),
+                              col("chama_ferramenta", False).fillna(False))]
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
     # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece
@@ -334,7 +374,8 @@ def montar_unidades(E):
     EU["ocorrencia"] = EU["cascata"].astype(str) + "|" + EU["unidade"]
     res = EU["unidade"].str.startswith("X_")
     EU["padrao"] = None
-    EU.loc[res, "padrao"] = [padrao_residuo(m, sm) for m, sm in zip(EU.loc[res, "err_msg"], EU.loc[res, "submecanismo"])]
+    EU.loc[res, "padrao"] = [padrao_residuo(m, sm, t) for m, sm, t in
+                             zip(EU.loc[res, "err_msg"], EU.loc[res, "submecanismo"], col("err_type", None)[res])]
     return EU
 
 
@@ -345,7 +386,10 @@ def mascarar(frase):
     return re.sub(r"\d+", "<n>", frase).strip()
 
 
-def padrao_residuo(m, sub):
+SEM_NOME = "sem nome de exceção"
+
+
+def padrao_residuo(m, sub, err_type=None):
     """A impressão digital de um erro do resíduo, para contar recorrência por erro e não pelo balde inteiro:
     classe da exceção + frase mascarada. Na sintaxe, a frase é o motivo do parser (linha `Error:`), sem a posição —
     só a classe juntaria códigos quebrados de jeitos diferentes. Aproximação declarada: pode juntar erros que diferem
@@ -361,7 +405,10 @@ def padrao_residuo(m, sub):
     k = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]{0,90})", m)
     if k:
         return f"{k[-1][0]}: {mascarar(k[-1][1])}"
-    return (re.findall(r"\b\w+(?:Error|Exception)\b", m) or ["?"])[-1]
+    classe = re.findall(r"\b\w+(?:Error|Exception)\b", m)
+    # sem nome de exceção na mensagem: a chave diz o tipo do erro e NÃO conta como padrão recorrente — juntaria erros
+    # diferentes (na base 2, o antigo "?" juntava tempo do interpretador e limite de passos — Ajuste 8)
+    return classe[-1] if classe else f"{SEM_NOME}: {err_type or '?'}"
 
 
 MIN_EXECS, MIN_MESES = 3, 2
@@ -400,13 +447,38 @@ def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     t = (o.groupby(chave).agg(ocorrências=("ocorrencia", "size"), execuções=("exec_id", "nunique"),
                                meses=("mes", "nunique"), papéis=("role", "nunique"))
          .join(R.groupby(chave).size().rename("erros")).reset_index())
-    t["passa na recorrência"] = (t["execuções"] >= min_execs) & (t["meses"] >= min_meses)
+    t["chave"] = np.where(t["padrao"].astype(str).str.startswith(SEM_NOME), SEM_NOME, "identificada")
+    t["passa na recorrência"] = ((t["execuções"] >= min_execs) & (t["meses"] >= min_meses)
+                                 & (t["chave"] == "identificada"))
     return t.sort_values(["passa na recorrência", "execuções", "erros"], ascending=False).reset_index(drop=True)
+
+
+def caminho_dos_criticos(EU):
+    """A fila de investigação dos erros críticos: uma linha por execução em que o papel esgotou os passos, com as
+    unidades dos erros ANTERIORES do mesmo papel — o caminho até a morte. `primeira unidade` é o primeiro erro do
+    caminho, ponto de partida para achar o passo crítico (causa-raiz, no sentido do AgentDebug)."""
+    linhas = []
+    for (eid, role), g in EU.groupby(["exec_id", "role"]):
+        crit = g[g["submecanismo"] == "limite_de_passos"]
+        if crit.empty:
+            continue
+        i_crit = int(crit["idx"].min())
+        antes = g[g["idx"] < i_crit].sort_values("idx")
+        linhas.append({"exec_id": eid, "role": role, "mes": crit["mes"].iloc[0], "idx do erro crítico": i_crit,
+                       "steps no papel": int(crit["n_steps_role"].iloc[0]) if "n_steps_role" in crit else None,
+                       "erros antes": len(antes),
+                       "primeira unidade": antes["unidade"].iloc[0] if len(antes) else "",
+                       "unidades no caminho": " + ".join(antes["unidade"].value_counts().index)})
+    return pd.DataFrame(linhas, columns=["exec_id", "role", "mes", "idx do erro crítico", "steps no papel", "erros antes",
+                                         "primeira unidade", "unidades no caminho"])
 
 
 def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     # resíduo: recorrência contada por PADRÃO de erro, não pela unidade (que junta erros diferentes por construção)
     passa = residuo_por_padrao(EU, min_execs, min_meses).groupby("unidade")["passa na recorrência"].any()
+    # execuções mortas (limite de passos) em que cada unidade aparece no caminho — o peso de gravidade (Ajuste 8)
+    crit = caminho_dos_criticos(EU)
+    mortas = Counter(u for c in crit["unidades no caminho"] for u in c.split(" + ") if u)
     fracao_desconhecida = (EU["unidade"] == "X_sintoma_nao_reconhecido").mean()
     tri = []
     for u, g in EU.groupby("unidade"):
@@ -415,6 +487,8 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         execs_u, meses_u = o["exec_id"].nunique(), o["mes"].nunique()
         if tipo == NAO:
             decisao = "não-memória"
+        elif tipo == CRIT:  # o agente não se recuperou: todo caso vai para investigação, sem limite mínimo
+            decisao = INVESTIGAR_CRITICO
         elif tipo == SEM:  # resíduo: nunca candidato (falta a regra de causa); a fila de trabalho da taxonomia
             alarme = u == "X_sintoma_nao_reconhecido" and fracao_desconhecida > ALARME_COBERTURA
             decisao = REVISAR_PRIORIDADE if (passa.get(u, False) or alarme) else REVISAR_BAIXA
@@ -431,13 +505,14 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
                     "destino (mineração)": destino_mineracao(u) if tipo in (FACT, ESTR) else "",
                     "motivo (resíduo)": motivo if tipo == SEM else "",
                     "ocorrências": len(o), "erros": len(g), "reincidências na cascata": len(g) - len(o),
+                    "execuções mortas com esta unidade no caminho": mortas.get(u, 0),
                     "execuções": execs_u, "meses": meses_u, "papéis": o["role"].nunique(),
                     "tokens": int(g["tok_tot"].sum()),
                     "% ocorr. após outro erro": round(o["seguidor"].mean() * 100),
                     "assinaturas de origem": " + ".join(g["assinatura"].value_counts().index),
                     "conteúdo proposto": conteudo})
-    ordem = {"candidato": 0, SINAL_HARNESS: 1, "não-memória": 2, REVISAR_PRIORIDADE: 3, REVISAR_BAIXA: 4,
-             "fora: sem recorrência": 5}
+    ordem = {"candidato": 0, SINAL_HARNESS: 1, INVESTIGAR_CRITICO: 2, "não-memória": 3, REVISAR_PRIORIDADE: 4,
+             REVISAR_BAIXA: 5, "fora: sem recorrência": 6}
     t = pd.DataFrame(tri)
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
 

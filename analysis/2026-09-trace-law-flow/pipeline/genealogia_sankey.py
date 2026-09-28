@@ -61,7 +61,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.path import Path
 
-from base_pipeline import carregar_base, triagem, UNI, categoria_do_erro, SINAL_HARNESS
+from base_pipeline import carregar_base, triagem, UNI, categoria_do_erro, SINAL_HARNESS, INVESTIGAR_CRITICO
 from paleta import COR_ERRO, cor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -84,6 +84,8 @@ NOME_CURTO = {
     "Infra / LLM upstream": "Infra / LLM upstream",
     "Infra / ferramenta": "Infra / ferramenta",
     "Ferramenta excedeu o timeout": "Timeout de ferramenta",
+    "Bloco de código excedeu o tempo do interpretador": "Tempo do interpretador",
+    "Limite de passos atingido": "Limite de passos",
     "Protocolo do harness": "Protocolo do harness",
     "Suposição sobre estado": "Suposição sobre estado",
     "Suposição sobre dados": "Suposição sobre dados",
@@ -107,6 +109,8 @@ CURTO_MEM = {
     "U_nome_inventado": "não inventar nomes",
     "H_infra_llm": "retry/backoff LLM",
     "H_timeout_ferramenta": "timeout de ferramenta",
+    "U_codigo_lento": "nada de texto enorme no bloco",
+    "C_limite_passos": "limite de passos",
     "H_bloco_code": "gatilho bloco de código",
 }
 
@@ -132,6 +136,8 @@ def preparar_dados():
             return f"MEM {nome}"
         if d == SINAL_HARNESS:   # erro do agente; a mineração decidiu que o conserto é no ambiente (Ajuste 5)
             return f"SINAL-HARNESS {nome}"
+        if d == INVESTIGAR_CRITICO:   # o agente não se recuperou: investigar o caminho (Ajuste 8)
+            return f"CRÍTICO {nome}"
         if d == "não-memória":
             return f"HARNESS {nome}"
         if d.startswith("revisar"):

@@ -744,7 +744,10 @@ rejeitou**. Sem LLM, regras em ordem:
   `final_answer(..., docs=...)`) → *argumento inexistente*, na mesma unidade do argumento posicional — a lição é a
   mesma, usar a assinatura declarada; `AgentGenerationError`/422 → *infra do LLM*; `TimeoutError` / "excedeu o
   timeout" → *timeout de ferramenta* — o limite de tempo do wrapper de ferramentas da esteira (família própria,
-  `Infra / ferramenta`, e unidade de plataforma, não-memória). (`Import from` e o argumento inexistente entraram em
+  `Infra / ferramenta`, e unidade de plataforma, não-memória); "exceeded the maximum execution time" (o sandbox corta
+  o bloco em 30 s) → *tempo do interpretador numa ferramenta* (plataforma, a mesma unidade) se o bloco chama uma
+  ferramenta declarada, senão *código lento* (lição do agente: não manipular textos enormes no bloco); "Reached max
+  steps" → *limite de passos*, que não é causa: é o desfecho de uma cascata (ver Passo 5, erro crítico). (`Import from` e o argumento inexistente entraram em
   25/09/2026, Ajuste 3; o timeout, no Ajuste 4 — [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).)
 
 **Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** Duas funções leem a mesma
@@ -840,7 +843,13 @@ fez certo). A decisão vem de `DESTINO_MINERACAO` (`base_pipeline.py`), não da 
 Hoje só a nº10 ("Campo inexistente no retorno estruturado") tem esse destino (`07` §6.1; Ajuste 5 de
 [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md)), e **só na base 1**: as bases são independentes, e a decisão
 da mineração vale na base em que foi tomada (`BASE_ID`; Ajuste 7) — numa base nova a unidade volta a candidata até ser
-minerada lá. Sensibilidade: com ≥5 execuções e ≥3 meses, só uma unidade muda de lado
+minerada lá. **Erro crítico:** a execução em que o agente esgotou os passos (`Reached max steps`) não vai para
+lição nem para plataforma — o agente não se recuperou, e a causa está nos erros anteriores. É uma classe à parte,
+**"investigar — crítico"**, sem limite mínimo: todo caso vai para investigação (humana ou com LLM; a classificação
+continua determinística), a partir de `resultados/criticos.csv`, que lista o caminho até a morte; e cada unidade ganha
+a coluna "execuções mortas com esta unidade no caminho" — o peso de gravidade (Ajuste 8). **Chave sem nome de
+exceção:** no resíduo, erro cuja mensagem não tem palavra de exceção recebe a chave `sem nome de exceção: <tipo>` e
+não conta como padrão recorrente. Sensibilidade: com ≥5 execuções e ≥3 meses, só uma unidade muda de lado
 ("Após step com erro, o que ele definiria não existe") — marcada **limítrofe** na tabela e no gráfico.
 
 **Passo 6 — o antigo Passo 4, respondido com número.** A versão anterior dizia que cinco assinaturas ficaram de

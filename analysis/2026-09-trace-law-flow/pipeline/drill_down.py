@@ -670,7 +670,7 @@ def residuo():
                        "classe": CLASSE_RESIDUO.get(c["submecanismo"], c["submecanismo"]),
                        "assinatura": c["assinatura"], "error_type": tipo, "excecao": classe_exc,
                        "frase_mascarada": mascarar(frase),
-                       "padrao": padrao_residuo(m, c["submecanismo"]),
+                       "padrao": padrao_residuo(m, c["submecanismo"], tipo),
                        # estrutura da mensagem, só verdadeiro/falso: o formato que linha_rejeitada() espera existe?
                        "tem_due_to": bool(re.search(r"due to: \w+", m)),
                        "tem_linha_error": any(l.strip().startswith("Error:") for l in m.splitlines()),
