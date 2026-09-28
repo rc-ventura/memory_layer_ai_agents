@@ -132,7 +132,7 @@ contagens de steps/execuções/tokens. Nenhum embute uma decisão de "o que cont
 | §2.3 duração "Falha do LLM interno" — 115s | corte de amostra mínima por família | `n >= 3, 10, 20, 50` | ❌ **NÃO robusto — retirado como número, virou hipótese** (só 6 pontos, variância de 3 ordens de magnitude) |
 | §3.5 desperdício % por papel | corte `tok_total >= 50.000` | cortes de 10k, 50k, 100k | ✅ **robusto** — ranking idêntico |
 | §3.3 tokens por chamada, por papel | o que fazer com o step cujo código **não parseia** (sem árvore, sem como contar chamadas) | as duas contagens defensáveis: descartar o step inteiro × somar os tokens dele com `n_calls = 0` | ⚠️ **escolha fixada em 15/09** — contar os tokens. Inclusiva: 27.988 / 18.775 / agregada 22.280; exclusiva: 27.062 / 17.592 / 21.420. ✅ **robusto no que a seção conclui**: ranking, os múltiplos 11,6× e 4,2×, a mediana (12.192) e o destaque laranja do 8.9 são idênticos nas duas. Racional em [`01-racionais.md`](01-racionais.md) §3.3, Ressalva 2 |
-| §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 11 candidatas muda de lado (marcada limítrofe) |
+| §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 10 candidatas muda de lado (marcada limítrofe) |
 | `submecanismo()` — base das análises por mecanismo | ordem das regras e o limiar de 15% de stopwords | 6 casos abertos com `drill_down.py` (15/09) | ⚠️ **conferido por amostra, não testado por variação** — os 6 casos batem; variar as regras ainda não foi feito |
 | §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 1 — de qual ferramenta vem cada erro (nº2: 94,8%; nº10: 70%) | a regra de rastreio da variável (AST; comando → step → steps anteriores) | conferência manual de todos os casos fora da dominante + amostra de 4 da dominante (16/09) | ⚠️ **conferido por amostra, não testado por variação** — as atribuições conferem; 5 (nº2) e 1 (nº10) ficam não resolvidos; o veredito da nº2 resiste ao pior caso (ver §1.7) |
 | §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 2 — schema lido da mensagem | o método de leitura do objeto impresso | `ast.literal_eval` × regex tolerante | ✅ **robusto** — 89/89 e 7/7 concordam (ver §1.7); a descrição da forma foi **corrigida** (listas mistas) |
@@ -1090,8 +1090,8 @@ reagrupa `EU`; a auditoria nº 6 e os CSVs existentes não são afetados.
 3. **Fato estrutural conferido por exaustão**: zero células "reveladas" (candidata no papel sem passar na
    global) — impossível com a mesma régua: execuções/meses de um papel estão contidos nos da base.
 
-**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 19** células candidatas mudam de lado — a
-"limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 11 unidades): os volumes por
+**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 18** células candidatas mudam de lado — a
+"limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 10 unidades): os volumes por
 papel são menores por construção. As 8 *(refeito em 25/09/2026 depois dos Ajustes 2.2 e 3, §1.16; antes eram 8 das
 18 — "RoteadorCivel · Texto longo…" saiu porque os 3 erros dele foram para "Não colar retorno impresso", as duas
 células dessa unidade entraram, e "ConversationAgent · argumento nomeado" deixou de ser limítrofe ao ganhar o erro do
@@ -1109,8 +1109,8 @@ células dessa unidade entraram, e "ConversationAgent · argumento nomeado" deix
 | managerAgent | Explicação nunca solta no bloco de código |
 
 **Leitura honesta.** O veredito scoped por célula é frágil nos papéis pequenos — as células com 3–4 execuções
-vivem no limiar. O achado que não depende da régua é a **direção** do cruzamento: 14 das 33 células em que uma
-candidata global aparece num papel são **herdadas** (não se sustentam nele), e nenhuma "revelada" é sequer
+vivem no limiar. O achado que não depende da régua é a **direção** do cruzamento: 13 das 31 células em que uma
+candidata global aparece num papel são **herdadas** (desde 28/09 o sinal de harness, a nº10, fica fora do recorte) (não se sustentam nele), e nenhuma "revelada" é sequer
 possível. A decisão de escrever memória por papel deve olhar a tabela do 9.4 junto com o volume, não a cor da
 célula isolada.
 
@@ -1183,6 +1183,13 @@ passo 4). Regra: `classify()` → família nova `Infra / ferramenta`, assinatura
 `submecanismo()` → `timeout_ferramenta` → `H_timeout_ferramenta`, não-memória. A família reusa o cinza-médio da
 `Infra / LLM upstream` (§1.14: família nova só acrescenta; nenhuma cor muda). Base 1: nenhum CSV muda (não tem
 Timeout); auditoria nº 6 com 0 divergências. O gatilho de reabertura está no `04-roadmap.md` § Monitoramento.
+
+**Ajuste 5 (Etapa 4b) — a decisão da mineração entra na triagem.** A nº10 ("Campo inexistente") passa na triagem, mas
+a mineração decidiu `destino = harness` (§1.10; `07` §6.2): erro do agente induzido por um contrato contraditório, com o
+conserto no ambiente. Ela sai de "candidato" para **"sinal de harness"** (`DESTINO_MINERACAO`, `base_pipeline.py`), com
+seção própria no 9.3 e `SINAL-HARNESS` no Sankey, mantendo a cor da família. Conferido na base 1: nenhum erro muda de
+unidade; só essa decisão muda; 11 → 10 candidatas, 440 erros (88%); por papel, 18 de 31 células (§1.15); auditoria nº 6
+com 0 divergências.
 
 **Pendente** (roadmap 30, 33, 34): o `?`, a comparação entre bases e a robustez do padrão e do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
 fase desde a troca do relógio de 23/09 — usa o mês do lote (`202512`), não o da execução; não afeta as demais.

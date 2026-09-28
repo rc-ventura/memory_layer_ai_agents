@@ -376,19 +376,20 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 8 | 2 | 0,34M |
 | 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 4 | 2 | 0,29M |
 | 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
-| 10 | **Campo inexistente no retorno estruturado** — `quebra_sigilo` 7× | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
 | 11 | **Não colar retorno impresso de volta no código** — referenciar a variável que guardou o retorno (truncado ou inteiro); candidata desde 25/09/2026 | experiencial · estratégia | 6 | 6 | 6 | 4 | 2 | 0,09M |
+| — | **Sinal de harness — Campo inexistente no retorno estruturado** (a nº10: `quebra_sigilo` 7×; erro do agente, mas a mineração decidiu `destino = harness` — o prompt declara o mesmo nome de campo para o retorno e para o JSON final, 9/21 respostas com campo inválido, §6.2 do `07`) | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
 | — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)** | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |
 | — | **Causa não identificada** (nenhuma regra de causa reconheceu o erro) — revisar, prioridade | — | 7 | 7 | 7 | 5 | 2 | 0,10M |
 | — | **Sintoma não reconhecido** (erro que a taxonomia não conhece) — revisar, baixa prioridade | — | 1 | 1 | 1 | 1 | 1 | 0,01M |
 
-As 11 candidatas cobrem 450 dos 498 erros (90%) e 92% dos tokens em steps com erro. Sensibilidade: com ≥5
+As 10 candidatas cobrem 440 dos 498 erros (88%) e 91% dos tokens em steps com erro. Sensibilidade: com ≥5
 execuções e ≥3 meses, só a nº 9 deixa de passar. *(Até 25/09/2026 eram 10 candidatas e 447 erros: a nº 11 estava
 "fora, sem recorrência", com 2 erros em 1 mês, porque a regra só reconhecia o retorno colado quando o print vinha
 truncado; reconhecendo o inteiro — Ajuste 2.2, [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md) — 4 erros
 saíram da nº 1, de 186 para 182, e a nº 11 passou a 6 erros em 4 meses. No Ajuste 3, o erro do `final_answer`
-com argumento inexistente saiu do resíduo para a nº 6: 35 → 36 erros, 449 → 450 cobertos.)*
+com argumento inexistente saiu do resíduo para a nº 6: 35 → 36 erros, 449 → 450 cobertos. No Ajuste 5 (28/09), a
+nº10 saiu das candidatas para "sinal de harness", a decisão da mineração: 11 → 10 candidatas, 450 → 440 cobertos.)*
 
 **O que a triagem mudou** (detalhe em [`01-racionais.md`](01-racionais.md) §7 Passos 6–7):
 
@@ -408,14 +409,14 @@ nº 10 (`quebra_sigilo`) e a nº 3 somam 16 dos 24; e a nº 2 só existe no `Con
 ao papel resolveria quase tudo o que aquele papel erra, mesmo sendo pequena no agregado.
 
 **Medido (24/09/2026, refeito em 25/09 com a nº 11) — a triagem no recorte por papel (notebook 9.4/9.5).** Rodando
-a mesma régua (≥3 execuções e ≥2 meses, mesma deduplicação de cascata) **dentro de cada papel**: 19 células
+a mesma régua (≥3 execuções e ≥2 meses, mesma deduplicação de cascata) **dentro de cada papel**: 18 células
 (papel × unidade) são candidatas,
-de 33 com erro — `ConversationAgent` 9 unidades, `managerAgent` 3, `RespostaBacen` 2, `RoteadorCivel` 2,
-`CadastroCivel`/`CadastroTrabalhista`/`CalculoCivel` 1 cada. O cruzamento com a triagem global dá a medida do
-escopo: das 33 células em que uma candidata global aparece num papel, **14 são herdadas** — a unidade se repete na
+de 31 com erro — `ConversationAgent` 9 unidades, `managerAgent` 3, `RoteadorCivel` 2,
+`RespostaBacen`/`CadastroCivel`/`CadastroTrabalhista`/`CalculoCivel` 1 cada (o sinal de harness fica fora do recorte). O cruzamento com a triagem global dá a medida do
+escopo: das 31 células em que uma candidata global aparece num papel, **13 são herdadas** — a unidade se repete na
 base, mas não naquele papel, e uma memória escrita para ele não se sustentaria pela régua. Nenhuma célula
 "revelada" (candidata no papel sem passar na global) é sequer possível com a mesma régua: o papel está contido
-na base. Sensibilidade com a régua estrita (≥5 execuções, ≥3 meses): **8 das 19** células caem — o veredito por
+na base. Sensibilidade com a régua estrita (≥5 execuções, ≥3 meses): **8 das 18** células caem — o veredito por
 papel é frágil nos papéis pequenos e deve ser lido junto com o volume, não pela célula isolada (lista das
 limítrofes em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.15; racional em
 [`01-racionais.md`](01-racionais.md) §7 Passo 10).

@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 · **Estado:** ajustes 1 a 3 fechados e conferidos nas duas bases; ajuste 4 (Timeout) feito neste repo, falta conferir na base 2; depois, a Etapa 5 (§5).
+**Data:** 2026-09-25 (atualizado 28/09) · **Estado:** ajustes 1 a 3 conferidos nas duas bases; 4 (Timeout) e 5 (sinal de harness) feitos neste repo, falta conferir na base 2; depois, a Etapa 5 do plano (§5).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -59,6 +59,7 @@ reescritas.
 | 2.2 | 25/09 | os 7 caiam na unidade errada (`texto_solto`) | `sinais_de_parsing()`, regra do retorno colado inteiro | 4 erros mudam; **10 → 11 candidatas** | os 7 → `repr_colado` | `2943c1b` |
 | 3 | 25/09 | `Import from` (4) e `final_answer` com argumento inexistente (1) no resíduo da base 2; o segundo também na base 1 | `Import from` na regra do sandbox; mecanismo `argumento_inexistente` → unidade do argumento nomeado | 1 erro muda; 11 candidatas; 450 cobertos | causa não identificada 12 → 7; resíduo com 8 padrões | branch `2026-09-25-residuo-base2` |
 | 4 | 25/09 | 16 erros de Timeout no sintoma não reconhecido; alarme disparado (5,2%) | sintoma e causa novos: família `Infra / ferramenta` → `H_timeout_ferramenta` (não-memória) | nenhum CSV muda | esperado: sintoma não reconhecido 25 → 9, alarme desliga | branch `2026-09-25-residuo-base2` |
+| 5 | 28/09 | a nº10 aparecia como memória nas figuras, mas a mineração decidiu `harness` | `DESTINO_MINERACAO` + decisão "sinal de harness" na triagem | 1 decisão muda; **11 → 10 candidatas**, 440 cobertos | a nº10, se passar na triagem, também vira sinal | branch `2026-09-25-residuo-base2` |
 
 ### Ajuste 1 — evidência estrutural do resíduo
 
@@ -260,6 +261,43 @@ só por causa do `?` (Etapa 5).
 
 **Replicar na máquina 2:** `base_pipeline.py` (4 trechos), `paleta.py` (2), `genealogia_sankey.py` (2).
 
+### Ajuste 5 — a decisão da mineração entra na triagem: "sinal de harness"
+
+**Gatilho.** Ao definir a família do Timeout (Ajuste 4), a pergunta: a nº10 — "Campo inexistente no retorno
+estruturado", que a mineração mandou para o harness — é da mesma natureza das três famílias de plataforma?
+
+**Resposta (decidida com o Rafael, 28/09): não.** Nas três de plataforma, a plataforma falhou e o agente fez certo; a
+saída é ticket e monitoramento. Na nº10, **o agente errou**, induzido por um contrato contraditório — o system prompt
+declara o mesmo nome de campo para o retorno de `validar_quebra_sigilo` e para o JSON final — e **quem descobriu foi o
+próprio pipeline de memória** (a mineração: 9 de 21 respostas entregues com o campo inválido, `07` §6.2). Memória
+sozinha não protegeria a resposta; o conserto certo é mudar o ambiente. É uma **terceira saída do mecanismo**:
+
+| Saída | Quem errou | O que produz | Exemplo |
+|---|---|---|---|
+| **memória** | o agente | uma lição que o agente aprende | as 10 candidatas |
+| **sinal de harness** | o agente, induzido pelo ambiente | uma proposta de mudança no ambiente (contrato, validação) | a nº10 |
+| **não-memória operacional** | a plataforma | ticket e gatilho de monitoramento | harness, LLM, timeout |
+
+É a forma que a hipótese de arquitetura dá à saída de mudança de harness do Update Engine v2, e que ela registrava
+como lacuna ("o campo `validation.destino` existe só como código ad hoc") — `knowledge-as-infra-architecture-hypothesis.md` §C.
+
+**Mudança.** `base_pipeline.py`: `DESTINO_MINERACAO` (`U_contrato_dict: memória`, `U_campo_inexistente: harness`;
+ausente = em aberto) e, na `triagem()`, a unidade que passaria como candidata e tem destino `harness` vira **`sinal de
+harness`**; coluna nova `destino (mineração)`; ordem das seções candidato → sinal de harness → não-memória → revisar →
+fora. `triagem_por_papel()`: o sinal de harness fica fora do recorte por papel (não há memória por papel a escrever; sem
+isso o 9.5 mostraria células "reveladas", que não existem). Notebook: seção nova no 9.3, o 9.4 sem a unidade.
+`genealogia_sankey.py`: destino `SINAL-HARNESS <nome>`. `audit_recompute6.py`: a parte C confere a cobertura nova e a
+unidade sinalizada contra uma tabela escrita à parte. **Nenhuma cor muda**: a barra fica laranja (família Contrato de
+retorno — foi erro do agente); a seção e o rótulo dizem que o conserto é no ambiente.
+
+**Efeito na base 1.** Nenhum erro muda de unidade (`erros_mecanismo.csv` idêntico); muda **uma decisão**. Candidatas
+**11 → 10** (4 factual · 6 estratégia), cobrindo **440 dos 498 erros (88%)** e 91% dos tokens; 1 sinal de harness (10
+erros). Por papel: 18 células candidatas de 31 (antes 19 de 33), 13 herdadas, 8 das 18 caem na régua estrita. Auditoria
+nº 6: 0 divergências; cobertura e unidade sinalizada conferidas.
+
+**Replicar na máquina 2:** `base_pipeline.py` (a tabela, a `triagem()`, a ordem, a `triagem_por_papel()`, o `__all__`),
+`genealogia_sankey.py` (import e destino) e as 3 células do notebook (9.2, 9.3, 9.4).
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e
@@ -367,7 +405,7 @@ são afetadas.
 | | Base 1 | Base 2 |
 |---|---|---|
 | Erros | 498 (313 execuções) | ~479 (soma da tabela de assinaturas) |
-| Unidades | 15: **11 candidatas** (450 erros, 90%), 2 não-memória (40), 2 revisar (8) | não vista depois do 2.2 |
+| Unidades | 15: **10 candidatas** (440 erros, 88%), 1 sinal de harness (10), 2 não-memória (40), 2 revisar (8) | não vista depois do 2.2 |
 | Resíduo | 8 erros (1,6%): 7 causa + 1 sintoma; 1 padrão recorrente (parênteses) | 32 erros: 25 sintoma + 7 causa; 8 padrões, 1 passa (`?`) |
 | Alarme de cobertura | não dispara (1 erro, 0,2%) | **dispara**: 25 erros, 5,2% (sem o Timeout, 1,9%) |
 | `U_repr_colado` | candidata (6 erros, 4 meses) | 7 erros no `RoteadorCivel` (jun 1, jul 4, ago 2) |

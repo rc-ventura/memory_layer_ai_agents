@@ -107,7 +107,7 @@ flowchart TD
     N0 -- "{type, message} (8,6%)" --> N1["<b>N1 · error.type</b> — nativo do smolagents<br/>AgentExecutionError 465 · AgentParsingError 33<br/><i>falhou durante × antes de rodar</i>"]
     N1 --> N2["<b>N2 · assinatura = sintoma</b><br/>error.message → regras de substring (classify)<br/>9 famílias · 20 assinaturas<br/><i>o que o Python reclamou</i>"]
     N2 --> N3["<b>N3 · mecanismo</b><br/>message + linha de código rejeitada → submecanismo()<br/><i>o que o agente fez de errado</i>"]
-    N3 --> N4["<b>N4 · unidade de memória</b><br/>cascata (dedup de repetições) + triagem<br/>≥3 execuções · ≥2 meses<br/>15 unidades · 11 candidatas<br/><i>o conteúdo ensinável</i>"]
+    N3 --> N4["<b>N4 · unidade de memória</b><br/>cascata (dedup de repetições) + triagem<br/>≥3 execuções · ≥2 meses<br/>15 unidades · 10 candidatas · 1 sinal de harness<br/><i>o conteúdo ensinável</i>"]
     style N0 fill:#f2b824,stroke:#8a6d00,color:#000
     style N4 fill:#7cc47f,stroke:#1a6e1e,color:#000
 ```
@@ -161,7 +161,7 @@ iterações; o destino natural é "fora do escopo de memória", não uma unidade
 | Sintoma não reconhecido | 1 | — |
 
 E o nível mais específico — as **15 unidades de memória** (triagem: conteúdo único + ≥3 execuções +
-≥2 meses; cobrem 90% dos erros e 92% dos tokens em steps com erro):
+≥2 meses; as 10 candidatas cobrem 88% dos erros e 91% dos tokens em steps com erro):
 
 | Unidade | Erros | Execs | Meses | Decisão |
 |---|---:|---:|---:|---|
@@ -172,7 +172,7 @@ E o nível mais específico — as **15 unidades de memória** (triagem: conteú
 | Explicação nunca solta no bloco de código | 33 | 12 | 5 | candidato |
 | Inventário do sandbox | 17 | 17 | 8 | candidato |
 | next() sobre gerador falha no sandbox | 13 | 11 | 8 | candidato |
-| Campo inexistente no retorno estruturado | 10 | 10 | 6 | candidato → destino **harness** |
+| Campo inexistente no retorno estruturado | 10 | 10 | 6 | **sinal de harness** (passa na triagem; a mineração decidiu `destino = harness`) |
 | Nome usado sem ter sido definido | 5 | 5 | 4 | candidato |
 | Após step com erro, o que ele definiria não existe | 5 | 4 | 3 | candidato |
 | Não colar retorno impresso no código | 6 | 6 | 4 | candidato (era "fora" até 25/09/2026 — `pipeline-entre-bases.md`) |

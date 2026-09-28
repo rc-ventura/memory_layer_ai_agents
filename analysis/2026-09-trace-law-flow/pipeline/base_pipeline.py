@@ -22,6 +22,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
+           "DESTINO_MINERACAO", "SINAL_HARNESS",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -366,6 +367,14 @@ REVISAR_PRIORIDADE, REVISAR_BAIXA = "revisar — prioridade", "revisar — baixa
 # cobre a base e o balde sobe para prioridade mesmo sem padrão recorrente (03-procedimento-validacao.md, Frente 3)
 ALARME_COBERTURA = 0.05
 
+# decisão da mineração (Frente 3, procedimento de candidata), tomada DEPOIS da triagem com regra pré-registrada:
+# `validation.destino` de cada unidade minerada. Unidade fora daqui = destino em aberto (ainda não minerada).
+# "harness" = erro do agente cujo conserto certo é no ambiente (contrato do prompt, validação no harness) — a saída
+# "sinal de harness" do mecanismo, distinta da não-memória operacional (onde a plataforma falhou).
+# Fonte: 07-relatorio-mineracao-unidades-n2-n10.md §6.1–6.2; pipeline-entre-bases.md, Ajuste 5.
+DESTINO_MINERACAO = {"U_contrato_dict": "memória", "U_campo_inexistente": "harness"}
+SINAL_HARNESS = "sinal de harness"
+
 
 def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     """Uma linha por padrão de resíduo: erros, execuções e meses (sobre ocorrências, como a triagem) e se passa no
@@ -401,8 +410,10 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         elif execs_u < min_execs or meses_u < min_meses:
             decisao = "fora: sem recorrência"
         else:
-            decisao = "candidato"
+            # passou nas três perguntas; se a mineração já decidiu que o conserto é no ambiente, é sinal de harness
+            decisao = SINAL_HARNESS if DESTINO_MINERACAO.get(u) == "harness" else "candidato"
         tri.append({"unidade": u, "nome": nome, "tipo": tipo, "decisão": decisao,
+                    "destino (mineração)": DESTINO_MINERACAO.get(u, "em aberto") if tipo in (FACT, ESTR) else "",
                     "motivo (resíduo)": motivo if tipo == SEM else "",
                     "ocorrências": len(o), "erros": len(g), "reincidências na cascata": len(g) - len(o),
                     "execuções": execs_u, "meses": meses_u, "papéis": o["role"].nunique(),
@@ -410,7 +421,8 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
                     "% ocorr. após outro erro": round(o["seguidor"].mean() * 100),
                     "assinaturas de origem": " + ".join(g["assinatura"].value_counts().index),
                     "conteúdo proposto": conteudo})
-    ordem = {"candidato": 0, "não-memória": 1, REVISAR_PRIORIDADE: 2, REVISAR_BAIXA: 3, "fora: sem recorrência": 4}
+    ordem = {"candidato": 0, SINAL_HARNESS: 1, "não-memória": 2, REVISAR_PRIORIDADE: 3, REVISAR_BAIXA: 4,
+             "fora: sem recorrência": 5}
     t = pd.DataFrame(tri)
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
 
@@ -420,11 +432,12 @@ def triagem_por_papel(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     elegíveis a memória (tipo factual/estratégia): plataforma (não-memória) e resíduo (X_) ficam fora por
     decisão de desenho. Uma linha por (role, unidade) com erros no papel; a decisão é "candidato" quando a
     unidade se repete naquele papel (>= min_execs execuções e >= min_meses meses, sobre ocorrências
-    deduplicadas da cascata, como a global). Unidade ausente no papel simplesmente não gera linha."""
+    deduplicadas da cascata, como a global). Unidade ausente no papel simplesmente não gera linha. Unidade cujo
+    destino da mineração é harness também fica fora: o conserto é no ambiente, não há memória por papel a escrever."""
     tri = []
     for (role, u), g in EU.groupby(["role", "unidade"]):
         nome, tipo, _ = UNI[u]
-        if tipo not in (FACT, ESTR):
+        if tipo not in (FACT, ESTR) or DESTINO_MINERACAO.get(u) == "harness":
             continue
         o = g.drop_duplicates("ocorrencia")
         execs, meses = o["exec_id"].nunique(), o["mes"].nunique()

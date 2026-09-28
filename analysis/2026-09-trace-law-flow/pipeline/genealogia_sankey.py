@@ -1,7 +1,8 @@
 """Gera a figura da genealogia completa dos erros: família → assinatura → mecanismo → unidade → destino.
 
 O último estágio é o DESTINO nomeado — o artefato que nasce de cada unidade:
-`MEM <título>` para candidatas a memória, `HARNESS <título>` para correções de
+`MEM <título>` para candidatas a memória, `SINAL-HARNESS <título>` para o erro do
+agente cujo conserto a mineração pôs no ambiente, `HARNESS <título>` para correções de
 infra, `REVISAR <título>` para o resíduo (falta regra de causa — trabalho de
 taxonomia), `FORA <motivo>` para descartes (o prefixo carrega a decisão da triagem,
 o título é a lição real de `UNI` em base_pipeline.py — a mesma que já
@@ -60,7 +61,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.path import Path
 
-from base_pipeline import carregar_base, triagem, UNI, categoria_do_erro
+from base_pipeline import carregar_base, triagem, UNI, categoria_do_erro, SINAL_HARNESS
 from paleta import COR_ERRO, cor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -129,6 +130,8 @@ def preparar_dados():
         nome = CURTO_MEM.get(u, UNI[u][0])
         if d == "candidato":
             return f"MEM {nome}"
+        if d == SINAL_HARNESS:   # erro do agente; a mineração decidiu que o conserto é no ambiente (Ajuste 5)
+            return f"SINAL-HARNESS {nome}"
         if d == "não-memória":
             return f"HARNESS {nome}"
         if d.startswith("revisar"):

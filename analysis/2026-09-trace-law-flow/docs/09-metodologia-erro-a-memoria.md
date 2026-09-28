@@ -43,7 +43,8 @@ flowchart TD
     S --> M["mecanismo — 18 causas"]
     M -->|"SUB2UNI · N:1"| U["unidade — 15 lições"]
     U --> T["triagem()<br/>≥3 execs · ≥2 meses · não-harness"]
-    T --> D1["candidato — 11 unidades"]
+    T --> D1["candidato — 10 unidades"]
+    T --> D5["sinal de harness — 1 (pós-mineração)"]
     T --> D2["não-memória — 2"]
     T --> D4["revisar — 2 (resíduo: falta regra)"]
     T --> D3["fora — 0"]
@@ -78,8 +79,10 @@ de relance, da esquerda para a direita:
    `U_contrato_dict · 96`; `inventario_sandbox` 11 + `modulo_sem_import` 6
    fecham `U_sandbox · 17`;
 3. **decide** — a última coluna nomeia o destino de cada unidade (1:1, sem
-   nova fusão): `MEM <título>` para as 11 unidades que viram candidata a
-   memória (450 erros, 90%), `HARNESS <título>` para as 2 que apontam
+   nova fusão): `MEM <título>` para as 10 unidades que viram candidata a
+   memória (440 erros, 88%), `SINAL-HARNESS <título>` para a 1 que é erro do agente
+   mas cujo conserto a mineração pôs no ambiente (a nº10, 10 erros — Ajuste 5 de
+   `pipeline-entre-bases.md`), `HARNESS <título>` para as 2 que apontam
    correção de harness/infra (40 erros) e `REVISAR <título>` para os 2 baldes
    de resíduo (8 erros — a fila de trabalho da taxonomia: falta escrever a
    regra de causa/sintoma). `FORA <motivo>` nomearia uma unidade descartada por
@@ -135,7 +138,7 @@ sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
 
 **Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
 `montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
-candidata depende disso — testado: as 11 candidatas da base 1 saem idênticas com ou sem a separação.
+candidata depende disso — testado: as 10 candidatas (e o sinal de harness) da base 1 saem idênticas com ou sem a separação.
 
 Na triagem, os dois baldes vão para **revisar** (a fila de trabalho da taxonomia, não não-memória): com
 **prioridade** se algum padrão de erro recorre, contado por padrão e não pelo balde (`01-racionais.md` §7 Passo 5).

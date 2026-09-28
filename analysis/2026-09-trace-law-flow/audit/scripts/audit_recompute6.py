@@ -266,7 +266,12 @@ for u in sorted(agg, key=lambda x: -agg[x]["tok"]):
     ok = "OK" if mine == csvv else f"<< DIVERGE csv={csvv}"
     if c.get("decisão") == "candidato": tot_cand_err += a["err"]; tot_cand_tok += a["tok"]
     print(f"   {u:22s} {UNI_NOME.get(u,'')[:44]:46s} oc={mine[0]:3d} err={mine[1]:3d} ex={mine[2]:3d} me={mine[3]} pa={mine[4]} tok={mine[5]:>9,} {ok}")
-print(f"   cobertura candidatas: {tot_cand_err}/498 = {tot_cand_err/498:.1%} (esp. 447/89,8%) · tokens {tot_cand_tok/tot_tok_err:.1%} (esp. 92%)")
+print(f"   cobertura candidatas: {tot_cand_err}/498 = {tot_cand_err/498:.1%} (esp. 440/88,4% desde o Ajuste 5) · tokens {tot_cand_tok/tot_tok_err:.1%} (esp. 91%)")
+# destino decidido pela mineração (07 §6.1), escrito à parte: harness → a triagem não a chama de candidata
+DESTINO_SPEC = {"U_contrato_dict": "memória", "U_campo_inexistente": "harness"}
+sinal_csv = sorted(u for u, c in cand_csv.items() if c.get("decisão") == "sinal de harness")
+sinal_esp = sorted(u for u, d in DESTINO_SPEC.items() if d == "harness")
+print(f"   sinal de harness no CSV: {sinal_csv} · esperado {sinal_esp} · {'OK' if sinal_csv == sinal_esp else '<< DIVERGE'}")
 
 # ------------------------------------------------------ tabela papel × mecanismo
 print("D. papel × unidade (% dos erros DO papel, papéis com ≥5 erros):")
