@@ -8,9 +8,6 @@ Thumbs.db
 # de documentos jurídicos em claro. Nunca versionar sem anonimização.
 *.csv.xz
 *.csv
-# Exceção: a referência de composição das unidades (pipeline-entre-bases.md, Ajuste 6) — só nomes de papel,
-# assinatura, submecanismo e chave de schema, com contagens; nenhum texto de caso. Versionada para ir à outra máquina.
-!analysis/2026-09-trace-law-flow/pipeline/referencia/composicao_base1.csv
 
 # Python bytecode
 __pycache__/
