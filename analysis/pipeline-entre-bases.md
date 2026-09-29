@@ -361,7 +361,11 @@ tipos e "passava" na recorrência sem ser um padrão. Lidos no cru pelo Rafael:
    `?`, e `residuo_por_padrao()` marca essas chaves (coluna `chave`) como fora da recorrência.
 
 **Ainda por medir:** o número da lição do `U_codigo_lento` ("textos de ~N caracteres") — tamanhos das observações e das
-variáveis nos 6 casos de tempo, na máquina 2.
+variáveis nos 6 casos de tempo, na máquina 2. **Medido em 29/09 — ver Etapa 5b (§5): o tamanho não explica o estouro, e
+a lição está em aberto.**
+
+**Conferido na base 2 (29/09):** o `?` sumiu; sintoma não reconhecido com 2 erros, em baixa prioridade; 1 erro crítico
+(CalculoCivel) em "investigar — crítico".
 
 **Efeito na base 1.** Nenhum desses erros existe lá: `erros_mecanismo.csv` e a triagem idênticos; entram só as colunas
 novas (`chama_ferramenta`, `chave`, "execuções mortas…", todas zeradas/"identificada"); auditoria nº 6 com 0 divergências.
@@ -403,7 +407,8 @@ reconhecido** (Timeout e `?`), e só então o alarme, que depende dos dois.
 |---|---|---|---|---|
 | 3 | causa não identificada | `Import from` (4), `final_answer` com argumento inexistente (1); 7 de uma ocorrência ficam | nada | 1 erro — **feito** (Ajuste 3, §3) |
 | 4 | sintoma não reconhecido | Timeout de ferramenta → unidade de plataforma | — | não — **feito** (Ajuste 4, §3); falta conferir na base 2 |
-| 5 | sintoma não reconhecido | a chave `?` e a chave sem impressão digital | 1 categoria por caso, 6 casos | não deve (verificar) |
+| 5 | sintoma não reconhecido | a chave `?` e a chave sem impressão digital | 1 categoria por caso, 6 casos | não — **feito** (Ajuste 8, §3); conferido na base 2 |
+| 5b | — | o tempo esgotado do AgenteProcuracoes: plataforma ou agente? | rodar `drill_down.py tempo` na máquina 2 | não (só mede) |
 | 6 | — | o alarme de cobertura | decisões abaixo | não |
 | 7 | — | comparar bases; achados laterais; auditoria E | rodar na máquina 2 | não |
 
@@ -438,6 +443,45 @@ interpretador/harness ou outro (3 a 5 palavras).
 
 **Aceitação.** Base 1: `residuo_padroes.csv` idêntico (os 7 padrões dela têm palavra de exceção); base 2: o `?` deixa
 de passar, o `AgentMaxStepsError` aparece à parte, e o motivo do sintoma na triagem deixa de ser "padrão recorrente".
+
+### Etapa 5b — o tempo esgotado do AgenteProcuracoes: plataforma ou agente?
+
+**O que procuramos.** Nos 6 erros "o bloco passou de 30 s", quem gastou o tempo: uma ferramenta (plataforma, não vira
+memória) ou o código do agente (`U_codigo_lento`). O Ajuste 8 decide pelo código do step, sem contar o `final_answer`
+como ferramenta: OBFCivel e RespostaOficios (3) → ferramenta; AgenteProcuracoes (3) → código lento.
+
+**O que encontramos (máquina 2, 29/09, só tamanhos e estrutura).**
+
+| | OBFCivel / RespostaOficios | AgenteProcuracoes |
+|---|---|---|
+| Textos em jogo | 15 a 36 mil caracteres | 25 a 60 mil (`resultado_busca`, `resultado_busca_2`) |
+| Código do step | 431 a 607 caracteres; chama busca/transcrição (1 caso com laço) | 3 a 4 mil caracteres; **sem laço, sem `+=`** |
+| Chamadas | ferramentas de busca e de transcrição | **só `final_answer`** (e `strip`) |
+
+O tamanho das variáveis é o do fim da execução (`txt_vrvl_locl`), não o do step.
+
+**O que dá para concluir.** O código do AgenteProcuracoes não é lento: sem laço, roda uma vez, e 60 mil caracteres o
+Python processa em milissegundos. O tempo foi gasto **dentro do `final_answer`**, que recebeu o texto montado com as
+buscas de steps anteriores (as buscas já tinham terminado sem erro).
+
+**O que não sabemos.** Por que o `final_answer` demorou: independente do tamanho (grava, chama serviço, lentidão
+momentânea) → **plataforma**; ou porque o texto é grande → **plataforma + agente** (lição "resumir o resultado da busca
+antes de mandar para o `final_answer`").
+
+**Como descobrir.** `drill_down.py tempo` (subcomando novo, reutilizável em qualquer base): por erro de tempo, os
+tamanhos, a estrutura do código, o que ia para o `final_answer` e o que o agente fez depois no papel; por papel, os
+`final_answer` que deram certo (texto entregue e duração) como régua. Só números e nomes.
+
+**Decisão conforme o resultado** (nenhuma regra muda antes):
+
+| A medida mostra | Conclusão | Mudança proposta |
+|---|---|---|
+| os que deram certo entregam textos tão grandes quanto os que estouraram | tamanho não importa → plataforma | `final_answer` num bloco sem laço conta como ferramenta → `H_timeout_ferramenta` |
+| os que deram certo são bem menores, e o agente conseguiu depois de encurtar | tamanho importa → plataforma + agente | causa nova "texto grande demais para o `final_answer`" → lição "resumir antes de entregar" |
+| misturado ou poucos casos | não dá para decidir com 3 erros de 1 papel | nada muda; em aberto até a base 3 |
+
+**Nota de processo.** Uma primeira versão da regra (o primeiro caso da tabela) foi feita e revertida no mesmo dia
+(`7340154` → `6b15f37`): assumia a plataforma antes de medir se o tamanho importa.
 
 ### Etapa 6 — o alarme de cobertura
 

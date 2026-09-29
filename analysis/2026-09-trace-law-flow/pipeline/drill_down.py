@@ -69,6 +69,13 @@ Uso:
            procedimento de revisão (03-procedimento-validacao.md, Frente 3). Sem argumento, lista
            os padrões com erros, execuções e meses. Lê resultados/erros_mecanismo.csv.
 
+    python drill_down.py tempo [<role>] [--mecanismo=a,b]
+        -> quem gastou os 30 s? Para cada erro de tempo do interpretador (timeout_interpretador, codigo_lento):
+           tamanhos em jogo, estrutura do código do step (laços, chamadas), o que ia para o final_answer e o que o
+           agente fez depois no papel; por papel, os final_answer que deram certo, para comparar. Só números e
+           nomes — sem texto de caso nem exec_id. `--mecanismo=` troca os mecanismos (para testar em outra base).
+           Lê resultados/erros_mecanismo.csv. Ver pipeline-entre-bases.md, Etapa 5b.
+
     python drill_down.py caso <exec_id> <role>
         -> imprime a trajetória inteira daquele papel naquela execução, na ordem
            em que aconteceu: PlanningStep (plano) quando existir, e pra cada
@@ -90,7 +97,8 @@ script, não pelo diretório corrente — corrigido 16/09/2026, auditoria M2).
 Nunca commitar a saída deste script — ela reproduz nomes de clientes e
 números de processo em claro.
 """
-import sys, os, json, re, random
+import sys, os, json, re, random, ast
+from collections import Counter
 import pandas as pd
 
 from base_pipeline import TRACE, classify as _bp_classify
@@ -770,6 +778,89 @@ def padrao(trecho=None):
         print(f"  exec_id={c['exec_id']}  role={c['role']}  idx={c['idx']}  mes={c['mes']}  unidade={c['unidade']}")
     print("\nLer um caso no cru:  python drill_down.py caso <exec_id> <role>")
 
+MECANISMOS_TEMPO = ["timeout_interpretador", "codigo_lento"]
+
+def _nome_chamada(f):
+    if isinstance(f, ast.Name): return f.id
+    if isinstance(f, ast.Attribute):
+        return (_nome_chamada(f.value) + "." if isinstance(f.value, (ast.Name, ast.Attribute)) else ".") + f.attr
+    return "?"
+
+def _aninhamento(n, d=0):
+    laco = isinstance(n, (ast.For, ast.While, ast.comprehension))
+    return max([d + laco] + [_aninhamento(c, d + laco) for c in ast.iter_child_nodes(n)])
+
+def tempo(papel=None, mecanismos=None):
+    """Quem gastou os 30 s? Para cada erro de tempo do interpretador (`timeout_interpretador`, `codigo_lento`):
+    os tamanhos em jogo, a estrutura do código do step, o que ia para o final_answer e o que o agente fez depois no
+    mesmo papel; e, por papel, os final_answer que deram certo, para comparar. Só números e nomes (de variáveis e de
+    funções) — nenhum texto de caso, nenhum exec_id: a saída pode sair da máquina. Lê resultados/erros_mecanismo.csv
+    — rode o notebook antes. Plano da Etapa 5b (pipeline-entre-bases.md)."""
+    M = pd.read_csv(os.path.join(os.path.dirname(PASTA_EVIDENCIA), "erros_mecanismo.csv"), dtype={"exec_id": str})
+    F = M[M["submecanismo"].isin(mecanismos or MECANISMOS_TEMPO)]
+    if papel:
+        F = F[F["role"] == papel]
+    if F.empty:
+        print(f"nenhum erro de {', '.join(mecanismos or MECANISMOS_TEMPO)}" + (f" no papel {papel}" if papel else "") + "."); return
+    df = load().drop_duplicates("cod_idef_exeo").set_index("cod_idef_exeo")
+
+    def passos(r, role):
+        if not isinstance(r["txt_etap_memo"], str) or role not in r["txt_etap_memo"]: return []
+        return [s for s in json.loads(r["txt_etap_memo"]).get(role, []) if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
+    def dur(s): return (s.get("timing") or {}).get("duration") or 0
+    def ent(s): return len(str(s.get("action_output") or ""))
+
+    for role in sorted(F["role"].unique()):
+        # a régua: os final_answer que deram certo neste papel, na base inteira
+        tam, tmp = [], []
+        for _, r in df.iterrows():
+            for s in passos(r, role):
+                if s.get("is_final_answer") and not s.get("error"):
+                    tam.append(ent(s)); tmp.append(dur(s))
+        T, D = pd.Series(tam, dtype=float), pd.Series(tmp, dtype=float)
+        print(f"{'='*100}\n{role}: final_answer que deram certo = {len(T)}")
+        if len(T):
+            print(f"  texto entregue (caracteres): mediana={T.median():,.0f}  p90={T.quantile(.9):,.0f}  máx={T.max():,.0f}  "
+                  f"| >= 25 mil: {int((T >= 25000).sum())}")
+            print(f"  duração do step (s, inclui o LLM): mediana={D.median():.1f}  p90={D.quantile(.9):.1f}  máx={D.max():.1f}")
+        C = F[F["role"] == role].sort_values(["mes", "exec_id", "idx"])
+        for k, (_, c) in enumerate(C.iterrows(), 1):
+            r = df.loc[c["exec_id"]]; acts = passos(r, role); i = int(c["idx"])
+            st = acts[i]; code = str(st.get("code_action") or "")
+            obs = [len(str(s.get("observations") or "")) for s in acts[:i]]
+            try: loc = (json.loads(r["txt_vrvl_locl"]) or {}).get(role) or {}
+            except Exception: loc = {}
+            top = sorted(((n, len(str(v))) for n, v in loc.items()), key=lambda x: -x[1])[:3]
+            print(f"\n  caso {k} · idx={i} · {c['submecanismo']} · mês {c['mes']} · step {dur(st):.1f}s")
+            print(f"    tamanhos: maior observação anterior={max(obs or [0]):,}  soma={sum(obs):,}  "
+                  f"| maiores variáveis (estado final): {top}")
+            try:
+                t = ast.parse(code)
+            except SyntaxError:
+                print(f"    código: {len(code):,} caracteres · não parseia"); t = None
+            if t is not None:
+                chamadas = Counter(_nome_chamada(n.func) for n in ast.walk(t) if isinstance(n, ast.Call))
+                lacos = sum(isinstance(n, (ast.For, ast.While, ast.comprehension)) for n in ast.walk(t))
+                mais = sum(isinstance(n, ast.AugAssign) for n in ast.walk(t))
+                print(f"    código: {len(code):,} caracteres · laços={lacos} aninhamento={_aninhamento(t)} '+='={mais} "
+                      f"· chamadas: {dict(chamadas.most_common(8))}")
+                fixo, nomes = 0, []
+                for n in ast.walk(t):
+                    if isinstance(n, ast.Call) and _nome_chamada(n.func) == "final_answer":
+                        for a in list(n.args) + [kw.value for kw in n.keywords]:
+                            for x in ast.walk(a):
+                                if isinstance(x, ast.Constant) and isinstance(x.value, str): fixo += len(x.value)
+                                if isinstance(x, ast.Name): nomes.append((x.id, len(str(loc.get(x.id, "")))))
+                if "final_answer" in chamadas:
+                    print(f"    para o final_answer: texto fixo={fixo:,} caracteres · variáveis passadas (estado final): {nomes}")
+            for j in range(i + 1, len(acts)):
+                s = acts[j]
+                print(f"    depois idx={j}: {'ERRO' if s.get('error') else 'ok'}  final={bool(s.get('is_final_answer'))}  "
+                      f"entregue={ent(s):,} caracteres  step {dur(s):.1f}s")
+            if i + 1 >= len(acts):
+                print("    depois: nenhum step (o papel terminou aqui)")
+    print(f"{'='*100}\nLimites: a duração do step inclui o LLM pensando; o tamanho das variáveis é o do fim da execução.")
+
 def caso(exec_id, role, as_json=False):
     df = load()
     row = df[df["cod_idef_exeo"] == exec_id]
@@ -856,6 +947,10 @@ if __name__ == "__main__":
         residuo()
     elif cmd == "padrao":
         padrao(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "tempo":
+        args = [a for a in sys.argv[2:] if not a.startswith("--mecanismo=")]
+        mec = [a.split("=", 1)[1].split(",") for a in sys.argv[2:] if a.startswith("--mecanismo=")]
+        tempo(args[0] if args else None, mec[0] if mec else None)
     elif cmd == "caso":
         args = [a for a in sys.argv[2:] if a != "--json"]
         as_json = "--json" in sys.argv[2:]
