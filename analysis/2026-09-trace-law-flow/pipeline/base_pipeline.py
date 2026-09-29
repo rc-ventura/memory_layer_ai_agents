@@ -103,9 +103,10 @@ def classify(m):
     # código lento do agente) se separa no submecanismo()
     if 'exceeded the maximum execution time' in m:
         return ('Ambiente & sandbox','Bloco de código excedeu o tempo do interpretador')
-    # o agente esgotou os passos sem resposta: desfecho de uma cascata, não causa (Ajuste 8)
+    # o agente esgotou os passos sem resposta: desfecho de uma cascata, não causa (Ajuste 8); família própria, não
+    # protocolo do harness (Ajuste 10)
     if 'Reached max steps' in m or 'AgentMaxStepsError' in m:
-        return ('Protocolo do harness','Limite de passos atingido')
+        return ('Erro crítico','Limite de passos atingido')
     if 'Could not index' in m:      return ('Contrato de retorno da ferramenta','Falha ao indexar o retorno (Could not index)')
     if 'does not support multiple positional' in m: return ('Convenção de chamada de ferramenta','Argumento posicional onde só cabe nomeado')
     if 'unterminated' in m:         return ('Geração de código','String não fechada (relatório longo em literal)')

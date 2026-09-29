@@ -33,7 +33,7 @@ a lição e o destino. **Cor = a família do erro, carregada de ponta a ponta** 
 língua de cor comum das figuras, `COR_ERRO` em paleta.py via
 `base_pipeline.categoria_do_erro`): cada fita leva a cor da família dos erros
 que passam por ela; roxo = resíduo (nenhuma regra reconheceu a causa); cinzas =
-plataforma (harness/infra). Um nó que reúne categorias diferentes é desenhado em
+plataforma (harness/infra); preto = erro crítico (Ajuste 10). Um nó que reúne categorias diferentes é desenhado em
 fatias, e as fitas saem da fatia da sua categoria. Até 24/09/2026 a cor era
 herdada do nó anterior e um agregado cinza ("outros mecanismos") passava o cinza
 a tudo que saía dele, inclusive a uma memória candidata. Uso:
@@ -87,6 +87,7 @@ NOME_CURTO = {
     "Bloco de código excedeu o tempo do interpretador": "Tempo do interpretador",
     "Limite de passos atingido": "Limite de passos",
     "Protocolo do harness": "Protocolo do harness",
+    "Erro crítico": "Erro crítico",
     "Suposição sobre estado": "Suposição sobre estado",
     "Suposição sobre dados": "Suposição sobre dados",
 }
@@ -289,7 +290,7 @@ def render_png(EU, out_path):
     ax.invert_yaxis()
     ax.axis("off")
     ax.set_title(f"Genealogia dos {len(EU)} erros: família → assinatura → mecanismo → unidade → destino  ·  "
-                 "cor = família do erro (roxo = resíduo, cinza = plataforma)", fontsize=13, fontweight="bold",
+                 "cor = família do erro (roxo = resíduo, cinza = plataforma, preto = erro crítico)", fontsize=13, fontweight="bold",
                  pad=14, loc="left")
     presentes = [c for c in ORDEM_CAT if (EU["cat"] == c).any()]
     ax.legend(handles=[mpatches.Patch(color=cor(COR_ERRO, c), label=NOME_CURTO.get(c, c)) for c in presentes],

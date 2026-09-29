@@ -1074,6 +1074,9 @@ nó agregado na genealogia; no 8.8 cada painel soma 100% do papel; a cor de um e
 **Numa base nova.** Família nova sem cor → cinza e aviso (`paleta.cor`), até ganhar uma cor na `paleta.py`. Só se
 acrescenta: nenhuma cor existente muda. Primeiro caso (25/09/2026, base 2): `Infra / ferramenta` recebeu o mesmo
 cinza-médio da `Infra / LLM upstream` — as duas são infraestrutura externa ao harness, e o nome escrito separa as barras.
+Segundo caso (29/09/2026, Ajuste 10): o limite de passos saiu de `Protocolo do harness` (cinza = plataforma) para a
+família própria **`Erro crítico`**, em **preto** (`INK`) — o agente não se recuperou; não é plataforma, e o vermelho já
+é de `Suposição sobre dados`. Base 1 sem o erro: todos os CSVs idênticos.
 
 ### 1.15 · Candidatura por papel — a triagem scoped, 9.4/9.5 (24/09/2026)
 

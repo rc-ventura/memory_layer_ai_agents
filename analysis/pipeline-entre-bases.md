@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 (atualizado 29/09) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 feitos neste repo, falta conferir na base 2; depois, a Etapa 6 do plano (§5).
+**Data:** 2026-09-25 (atualizado 29/09) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 conferidos na base 2; 10 feito neste repo, falta conferir; depois, a Etapa 6 do plano (§5).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -64,6 +64,7 @@ reescritas.
 | 7 | 28/09 | a decisão da mineração vazava entre bases | `DESTINO_MINERACAO` guarda a base; `BASE_ID` ao lado do `TRACE` | nada muda | a nº10 volta a candidata (destino em aberto) | branch `2026-09-28-mineracao-base2` |
 | 8 | 28/09 | o `?` da base 2 juntava 7 erros de três tipos e "passava" na recorrência | tempo do interpretador (plataforma × código lento), limite de passos como erro crítico, chave sem nome de exceção fora da recorrência | nada muda (só colunas novas) | conferido: o `?` some; sintoma não reconhecido 9 → 2; 1 erro crítico | `d306666` |
 | 9 | 29/09 | Etapa 5b: os 3 "código lento" eram o resultado bruto da busca entregue no `final_answer` | causa `resultado_bruto_na_resposta` → `U_resultado_bruto`; lições do `U_codigo_lento` e do `H_timeout_ferramenta` corrigidas | idêntica (+1 coluna, toda falsa) | esperado: `U_codigo_lento` 3 → 0, `U_resultado_bruto` 3 ("fora") | branch `2026-09-28-mineracao-base2` |
+| 10 | 29/09 | o erro crítico saía cinza ("plataforma"), na família do protocolo do harness | família própria `Erro crítico`, cor preta; nenhuma cor muda | idêntica | esperado: 1 erro troca de família e cor | branch `2026-09-28-mineracao-base2` |
 
 ### Ajuste 1 — evidência estrutural do resíduo
 
@@ -419,6 +420,28 @@ falsa); auditoria nº 6 com 0 divergências.
 
 **Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`,
 `drill_down.py`.
+
+### Ajuste 10 — o erro crítico ganha família e cor próprias
+
+**Problema.** O Ajuste 8 pôs o limite de passos (`Reached max steps` / `AgentMaxStepsError`) na família `Protocolo do
+harness`, que a paleta pinta de **cinza** — e cinza quer dizer "plataforma, não é erro do agente". O erro crítico não é
+plataforma: é a execução que morreu depois de uma cascata. Além disso, ele somava aos números da família de protocolo
+(a do `H_bloco_code`), que vai ser investigada na base 2.
+
+**Solução.** `classify()`: o limite de passos vai para a família **`Erro crítico`** (assinatura igual). `paleta.py`:
+`COR_ERRO["Erro crítico"] = INK` (**preto**) — uma entrada nova, nenhuma cor existente muda (o vermelho já é de
+`Suposição sobre dados`). Genealogia: rótulo e legenda "preto = erro crítico".
+
+**Por quê.** A cor tem que dizer o que o erro é; e a família de protocolo fica só com erro de protocolo.
+
+**Verificação.** Base 1 (não tem o erro): todos os CSVs de `resultados/` idênticos; auditoria nº 6 com 0 divergências.
+Com um erro crítico sintético injetado na base 1, a genealogia mostra a família em nós pretos, `C_limite_passos` e o
+destino `CRÍTICO` (as fitas saem cinza-escuro, pela transparência).
+
+**Esperado na base 2.** O erro crítico do CalculoCivel troca de família (`Protocolo do harness` → `Erro crítico`) e de
+cor (preto); a família de protocolo perde 1 erro. Nenhuma decisão de triagem muda.
+
+**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`.
 
 ## 4. O que os ajustes ensinam sobre o método
 
