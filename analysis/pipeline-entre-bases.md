@@ -451,7 +451,7 @@ reconhecido** (Timeout e `?`), e só então o alarme, que depende dos dois.
 | 3 | causa não identificada | `Import from` (4), `final_answer` com argumento inexistente (1); 7 de uma ocorrência ficam | nada | 1 erro — **feito** (Ajuste 3, §3) |
 | 4 | sintoma não reconhecido | Timeout de ferramenta → unidade de plataforma | — | não — **feito** (Ajuste 4, §3); falta conferir na base 2 |
 | 5 | sintoma não reconhecido | a chave `?` e a chave sem impressão digital | 1 categoria por caso, 6 casos | não — **feito** (Ajuste 8, §3); conferido na base 2 |
-| 5b | — | o tempo esgotado do AgenteProcuracoes: plataforma ou agente? | rodar `drill_down.py tempo` na máquina 2 | não (só mede) |
+| 5b | — | o tempo esgotado do AgenteProcuracoes: plataforma ou agente? | rodar `drill_down.py tempo` na máquina 2 | não — **feito** (Ajuste 9, §3); conferido na base 2 |
 | 6 | — | o alarme de cobertura | decisões abaixo | não |
 | 7 | — | comparar bases; achados laterais; auditoria E | rodar na máquina 2 | não |
 
@@ -542,6 +542,11 @@ ali, ainda está por medir.
    chamada lenta mesmo com 180 s). No OBFCivel jul, o Rafael leu um `for` com `get_docs_from_filters` e o `tempo` mediu
    `laços=0`: um dos dois está errado. **Medida:** `drill_down.py tempo` passou a mostrar, por laço, a linha, o que se
    repete a cada volta e o que roda uma vez, e as linhas em que `for`/`while` aparece só como palavra (comentário, texto).
+   **Medido na máquina 2 (29/09) — fechado:** ago: `laço na linha 5 (for): repete {print, doc.get} · cabeçalho
+   {enumerate}` — o `extract_obf_requests` roda **uma vez, fora do laço** → uma chamada lenta mesmo com 180 s →
+   plataforma (Ajuste 8 certo). jul: `laços=0`; `for` só como palavra na linha 13 (comentário/texto); cada uma das 3
+   ferramentas chamada uma vez → é o achado 1 ("várias ferramentas num bloco"). **Nenhum caso de ferramenta em laço nem
+   de código lento na base 2: a regra acerta os 6.**
 3. **O contrato `['result']` generalizado.** RespostaOficios, step seguinte: `Could not index {qualidade_evidencias…}
    with 'result'` — o agente supôs `{'result': …}` numa ferramenta de validação. É o desvio já visto na base 1, agora
    confirmado na base 2 (já classificado; não é erro de tempo). A lição do contrato precisa dizer a quais ferramentas se
