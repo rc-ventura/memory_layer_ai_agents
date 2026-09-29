@@ -194,25 +194,13 @@ def sinais_de_parsing(m, code, obs_ant):
 
 def chama_ferramenta_declarada(m, code, sysp):
     """Só no tempo esgotado do interpretador ("exceeded the maximum execution time"): o bloco chamou alguma ferramenta
-    declarada no system prompt do step (`def nome(`)? Se sim, o tempo foi gasto na ferramenta (plataforma); se não, no
-    próprio código do agente. Aproximação declarada: se os dois foram lentos, conta como ferramenta
-    (pipeline-entre-bases.md, Ajuste 8). O final_answer só conta como ferramenta num bloco sem laço: com laço, o
-    tempo pode ter ido no laço que termina nele; sem laço, não há onde mais gastar 30 s (Ajuste 9)."""
+    declarada no system prompt do step (`def nome(`), fora o final_answer? Se sim, o tempo foi gasto na ferramenta
+    (plataforma); se não, no próprio código do agente. Aproximação declarada: se os dois foram lentos, conta como
+    ferramenta (pipeline-entre-bases.md, Ajuste 8)."""
     if "exceeded the maximum execution time" not in m:
         return False
-    code = str(code or "")
-    chamadas = set(re.findall(r"\b(\w+)\s*\(", code))
-    if (set(re.findall(r"def\s+(\w+)\s*\(", sysp or "")) - {"final_answer"}) & chamadas:
-        return True
-    return "final_answer" in chamadas and not tem_laco(code)
-
-
-def tem_laco(code):
-    """O bloco tem laço (for/while, inclusive dentro de compreensão)? Bloco que não parseia: procura a palavra."""
-    try:
-        return any(isinstance(n, (ast.For, ast.While, ast.comprehension)) for n in ast.walk(ast.parse(code)))
-    except SyntaxError:
-        return bool(re.search(r"^\s*(for|while)\b|\bfor\s+\w+.*?\s+in\s", code, re.M))
+    declaradas = set(re.findall(r"def\s+(\w+)\s*\(", sysp or "")) - {"final_answer"}
+    return bool(declaradas & set(re.findall(r"\b(\w+)\s*\(", str(code or ""))))
 
 
 def linha_rejeitada(m, linha_codigo=""):
@@ -350,10 +338,9 @@ UNI = {
                              "1800 s por ferramenta) ou o do interpretador, que corta o bloco inteiro em 30 s — limites "
                              "desencontrados. Revisar os limites das ferramentas longas ou torná-las assíncronas; o agente já "
                              "segue o fallback do prompt. Gatilho: >= 2 casos num mês ou > 1/1k steps — acionado na base 2."),
-    "U_codigo_lento": ("Código do agente excedeu o tempo do interpretador", ESTR,
-                       "O interpretador corta o bloco em 30 s: não rodar laço pesado sobre retornos longos dentro de um "
-                       "bloco; filtrar antes e dividir o trabalho em steps. Sem caso observado ainda: os 3 da base 2 eram "
-                       "o final_answer sem laço (Ajuste 9) — o tamanho do texto (25–60 mil caracteres) não era a causa."),
+    "U_codigo_lento": ("Não manipular textos enormes dentro do bloco de código", ESTR,
+                       "O interpretador corta o bloco em 30 s: não concatenar nem devolver retornos enormes no código; "
+                       "filtrar e resumir antes (tamanho observado: a medir na base 2)."),
     "C_limite_passos": ("Limite de passos atingido — o agente não se recuperou", CRIT,
                         "Desfecho, não causa: a execução esgotou os passos sem resposta. Investigar cada caso — o passo "
                         "crítico está nos erros anteriores do papel (resultados/criticos.csv)."),

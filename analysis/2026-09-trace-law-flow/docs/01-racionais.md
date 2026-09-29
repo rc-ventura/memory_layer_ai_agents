@@ -746,8 +746,7 @@ rejeitou**. Sem LLM, regras em ordem:
   timeout" → *timeout de ferramenta* — o limite de tempo do wrapper de ferramentas da esteira (família própria,
   `Infra / ferramenta`, e unidade de plataforma, não-memória); "exceeded the maximum execution time" (o sandbox corta
   o bloco em 30 s) → *tempo do interpretador numa ferramenta* (plataforma, a mesma unidade) se o bloco chama uma
-  ferramenta declarada — o `final_answer` conta só num bloco sem laço (Ajuste 9) —, senão *código lento* (lição do
-  agente: não rodar laço pesado sobre retornos longos no bloco); "Reached max
+  ferramenta declarada, senão *código lento* (lição do agente: não manipular textos enormes no bloco); "Reached max
   steps" → *limite de passos*, que não é causa: é o desfecho de uma cascata (ver Passo 5, erro crítico). (`Import from` e o argumento inexistente entraram em
   25/09/2026, Ajuste 3; o timeout, no Ajuste 4 — [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).)
 
