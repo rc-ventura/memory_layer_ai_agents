@@ -530,6 +530,30 @@ tamanhos, a estrutura do código, o que ia para o `final_answer` e o que o agent
 tempo (OBFCivel, RespostaOficios) chamam ferramentas de verdade e continuam plataforma; se há ferramenta dentro de laço
 ali, ainda está por medir.
 
+**Achados da leitura do cru (29/09), sem mudança de código:**
+
+1. **Várias chamadas pesadas num bloco.** OBFCivel jul (limite 30 s): `get_final_answer_schema`, `get_fields_definition`
+   e `get_docs_from_filters` no mesmo bloco; o pensamento seguinte diz "estou chamando muitas ferramentas de uma vez,
+   preciso quebrar em steps pequenos". RespostaOficios mar (30 s): `estrutura_subsidios` + `gera_transcricao_imagens`
+   no mesmo bloco, sem pensamento confirmando. Lição candidata: **"uma ferramenta pesada por step"**. Sem regra: 2 casos,
+   1 confirmado, e contar ferramentas não diz quais são pesadas. Espera a medida abaixo e a base 3.
+2. **Ferramenta dentro de laço?** OBFCivel ago (limite **180 s**, step de 222 s): `extract_obf_requests` + `for … in
+   enumerate(docs)` com `doc.get`. Dentro do laço → agente (a ferramenta repete a cada volta); fora → plataforma (uma
+   chamada lenta mesmo com 180 s). No OBFCivel jul, o Rafael leu um `for` com `get_docs_from_filters` e o `tempo` mediu
+   `laços=0`: um dos dois está errado. **Medida:** `drill_down.py tempo` passou a mostrar, por laço, a linha, o que se
+   repete a cada volta e o que roda uma vez, e as linhas em que `for`/`while` aparece só como palavra (comentário, texto).
+3. **O contrato `['result']` generalizado.** RespostaOficios, step seguinte: `Could not index {qualidade_evidencias…}
+   with 'result'` — o agente supôs `{'result': …}` numa ferramenta de validação. É o desvio já visto na base 1, agora
+   confirmado na base 2 (já classificado; não é erro de tempo). A lição do contrato precisa dizer a quais ferramentas se
+   aplica.
+4. **A busca de procurações só com CPF não achou; com nome + CPF achou** (AgenteProcuracoes, execução 1). Achado sobre
+   a ferramenta: pede o nome, ou a documentação dela não diz isso. Uma execução só.
+5. **Possível falso negativo** (AgenteProcuracoes, execução 1): a busca com nome + CPF achou procurações, e a resposta
+   final foi "não localizei procurações concluídas", dada "pelos trechos visíveis na observação". Em aberto: se o que
+   achou não eram concluídas, a resposta está certa; se eram, o erro custou uma resposta errada.
+6. **Limites diferentes no interpretador:** 30 s (jul, mar) e 180 s (ago). A lição do `H_timeout_ferramenta` já cita os
+   dois (Ajuste 9).
+
 ### Etapa 6 — o alarme de cobertura
 
 **Contexto.** `triagem()` calcula o alarme sobre **erros** (`(EU["unidade"] == "X_sintoma_nao_reconhecido").mean()`), e

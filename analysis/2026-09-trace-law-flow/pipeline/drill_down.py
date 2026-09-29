@@ -73,7 +73,8 @@ Uso:
         -> quem gastou os 30 s? Para cada erro de tempo do interpretador (timeout_interpretador, codigo_lento,
            resultado_bruto_na_resposta):
            tamanhos em jogo, estrutura do código do step (laços, chamadas), o que ia para o final_answer e o que o
-           agente fez depois no papel; por papel, os final_answer que deram certo, para comparar. Só números e
+           agente fez depois no papel; por papel, os final_answer que deram certo, para comparar. Para cada laço,
+           a linha e o que se repete a cada volta × o que roda uma vez (ferramenta dentro de laço?). Só números e
            nomes — sem texto de caso nem exec_id. `--mecanismo=` troca os mecanismos (para testar em outra base).
            Lê resultados/erros_mecanismo.csv. Ver pipeline-entre-bases.md, Etapa 5b.
 
@@ -791,6 +792,26 @@ def _aninhamento(n, d=0):
     laco = isinstance(n, (ast.For, ast.While, ast.comprehension))
     return max([d + laco] + [_aninhamento(c, d + laco) for c in ast.iter_child_nodes(n)])
 
+def _chamadas(nos):
+    return Counter(_nome_chamada(c.func) for n in nos for c in ast.walk(n) if isinstance(c, ast.Call))
+
+def _lacos(t):
+    """Cada laço do bloco: (linha, tipo, chamadas que se repetem a cada volta, chamadas do cabeçalho — rodam uma vez).
+    for: o corpo repete, o `in <expr>` roda uma vez; while: condição e corpo repetem; compreensão: o elemento e os
+    `if` repetem, o primeiro `in <expr>` roda uma vez."""
+    out = []
+    for n in ast.walk(t):
+        if isinstance(n, ast.For):
+            out.append((n.lineno, "for", _chamadas(n.body + n.orelse), _chamadas([n.iter])))
+        elif isinstance(n, ast.While):
+            out.append((n.lineno, "while", _chamadas([n.test] + n.body + n.orelse), Counter()))
+        elif isinstance(n, (ast.ListComp, ast.SetComp, ast.GeneratorExp, ast.DictComp)):
+            elt = [n.key, n.value] if isinstance(n, ast.DictComp) else [n.elt]
+            g0, resto = n.generators[0], n.generators[1:]
+            dentro = elt + list(g0.ifs) + [x for g in resto for x in [g.iter, *g.ifs]]
+            out.append((n.lineno, "compreensão", _chamadas(dentro), _chamadas([g0.iter])))
+    return sorted(out, key=lambda x: x[0])
+
 def tempo(papel=None, mecanismos=None):
     """Quem gastou os 30 s? Para cada erro de tempo do interpretador (`timeout_interpretador`, `codigo_lento`):
     os tamanhos em jogo, a estrutura do código do step, o que ia para o final_answer e o que o agente fez depois no
@@ -845,6 +866,16 @@ def tempo(papel=None, mecanismos=None):
                 mais = sum(isinstance(n, ast.AugAssign) for n in ast.walk(t))
                 print(f"    código: {len(code):,} caracteres · laços={lacos} aninhamento={_aninhamento(t)} '+='={mais} "
                       f"· chamadas: {dict(chamadas.most_common(8))}")
+                # o que se repete em cada laço (Etapa 5b: ferramenta dentro de laço × uma chamada só)
+                for lin, tipo, dentro, cab in _lacos(t):
+                    print(f"    laço na linha {lin} ({tipo}): repete a cada volta {dict(dentro) or '{}'} "
+                          f"· roda uma vez no cabeçalho {dict(cab) or '{}'}")
+                # a palavra for/while fora de um laço de verdade (comentário, texto): só os números das linhas
+                linhas_laco = {lin for lin, *_ in _lacos(t)}
+                so_palavra = [k for k, l in enumerate(code.splitlines(), 1)
+                              if re.search(r"\b(for|while)\b", l) and k not in linhas_laco]
+                if so_palavra:
+                    print(f"    'for'/'while' como palavra, sem ser laço (comentário ou texto), nas linhas: {so_palavra}")
                 fixo, nomes = 0, []
                 for n in ast.walk(t):
                     if isinstance(n, ast.Call) and _nome_chamada(n.func) == "final_answer":
