@@ -78,6 +78,11 @@ Uso:
            nomes — sem texto de caso nem exec_id. `--mecanismo=` troca os mecanismos (para testar em outra base).
            Lê resultados/erros_mecanismo.csv. Ver pipeline-entre-bases.md, Etapa 5b.
 
+    python drill_down.py protocolo
+        -> "resposta sem bloco de código" (H_bloco_code): por mês e papel (erros, por 1k steps, gatilho), o que o LLM
+           escreveu no lugar do bloco (só a forma), recuperação e cascata. Só contagens; os casos com exec_id vão para
+           resultados/evidencia/protocolo/casos.csv. Ver pipeline-entre-bases.md, Ajuste 10b.
+
     python drill_down.py caso <exec_id> <role>
         -> imprime a trajetória inteira daquele papel naquela execução, na ordem
            em que aconteceu: PlanningStep (plano) quando existir, e pra cada
@@ -893,6 +898,98 @@ def tempo(papel=None, mecanismos=None):
                 print("    depois: nenhum step (o papel terminou aqui)")
     print(f"{'='*100}\nLimites: a duração do step inclui o LLM pensando; o tamanho das variáveis é o do fim da execução.")
 
+def _forma_da_resposta(mo):
+    """O que o LLM escreveu no lugar do bloco de código — só pela forma, sem ler o conteúdo."""
+    if len(mo.strip()) < 20:
+        return "vazio"
+    if mo.count("<code>") > mo.count("</code>"):
+        return "abriu <code> e não fechou (cortado?)"
+    if re.search(r"```(py|python)?\s*\n", mo):
+        return "bloco em ``` em vez de <code>"
+    return "texto sem nenhum marcador de código"
+
+def protocolo():
+    """"Resposta sem bloco de código" (H_bloco_code): o harness não achou o bloco <code>…</code> na resposta do LLM.
+    Incidente ou crônico? Um papel ou todos? O que o LLM escreveu no lugar (só a forma)? O agente se recuperou? O que
+    vem depois na cascata? Só contagens — nenhum texto de caso, nenhum exec_id na tela. Os casos, com exec_id, vão para
+    resultados/evidencia/protocolo/casos.csv (git-ignored), para escolher o que ler com `evidencia`. Lê
+    resultados/erros_mecanismo.csv e execucoes.csv — rode o notebook antes. Ajuste 10b (pipeline-entre-bases.md)."""
+    res = os.path.dirname(PASTA_EVIDENCIA)
+    M = pd.read_csv(os.path.join(res, "erros_mecanismo.csv"), dtype={"exec_id": str})
+    X = pd.read_csv(os.path.join(res, "execucoes.csv"), dtype={"exec_id": str}).set_index("exec_id")
+    unid = {(r.exec_id, r.role, int(r.idx)): r.unidade for r in M.itertuples()}
+    df = load().drop_duplicates("cod_idef_exeo")
+    passos, casos = Counter(), []
+    for _, r in df.iterrows():
+        eid = r["cod_idef_exeo"]
+        if not isinstance(r["txt_etap_memo"], str) or eid not in X.index:
+            continue
+        mes = X.loc[eid, "mes"]
+        for role, lst in json.loads(r["txt_etap_memo"]).items():
+            if not isinstance(lst, list): continue
+            acts = [s for s in lst if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
+            passos[(mes, role)] += len(acts)
+            for i, s in enumerate(acts):
+                if "regex pattern" not in str((s.get("error") or {}).get("message") or ""):
+                    continue
+                mo = str(s.get("model_output") or "")
+                depois = [unid.get((eid, role, j)) for j in range(i + 1, len(acts))]
+                cascata = []
+                for u in depois:          # erros seguidos logo depois, até o primeiro step sem erro
+                    if u is None: break
+                    cascata.append(u)
+                casos.append({"exec_id": eid, "role": role, "idx": i, "mes": mes,
+                              "forma": _forma_da_resposta(mo), "chars": len(mo),
+                              "tok_out": (s.get("token_usage") or {}).get("output_tokens") or 0,
+                              "comeca_markdown": bool(re.match(r"\s*(#|\||- |\*\*)", mo)),
+                              "cita_final_answer": "final_answer" in mo,
+                              "papel_entregou_depois": any(a.get("is_final_answer") and not a.get("error") for a in acts[i + 1:]),
+                              "execucao_com_resposta": bool(X.loc[eid, "tem_final"]),
+                              "proximo": cascata[0] if cascata else "(step sem erro)",
+                              "cascata_depois": len(cascata),
+                              "repetiu_logo_depois": bool(cascata) and cascata[0] == "H_bloco_code"})
+    C = pd.DataFrame(casos)
+    if C.empty:
+        print("nenhum erro 'resposta sem bloco de código' nesta base."); return
+    pasta = os.path.join(PASTA_EVIDENCIA, "protocolo")
+    os.makedirs(pasta, exist_ok=True)
+    C.sort_values(["mes", "role", "exec_id", "idx"]).to_csv(os.path.join(pasta, "casos.csv"), index=False)
+    P = pd.Series(passos)
+    tot_steps = int(P.sum())
+    print(f"{'='*100}\nResposta sem bloco de código (H_bloco_code): {len(C)} erros · {C['exec_id'].nunique()} execuções · "
+          f"{C['role'].nunique()} papéis · {len(C) / tot_steps * 1000:.2f} por 1k steps ({tot_steps:,} steps)")
+    print("gatilho de reabertura (base 1): >= 2 casos num mês, ou > 1 por 1k steps")
+    por_mes = P.groupby(level=0).sum()
+    print("\n[1] por mês (mês da execução):  erros · steps · por 1k steps · execuções · papéis")
+    for mes, n_st in por_mes.items():
+        c = C[C["mes"] == mes]
+        marca = "  ← gatilho" if len(c) >= 2 or (n_st and len(c) / n_st * 1000 > 1) else ""
+        print(f"  {mes}  {len(c):4d} · {n_st:7,} · {len(c) / n_st * 1000 if n_st else 0:6.2f} · {c['exec_id'].nunique():4d} · "
+              f"{c['role'].nunique():2d}{marca}")
+    por_papel = P.groupby(level=1).sum()
+    print("\n[2] por papel:  erros · steps · por 1k steps · meses com erro")
+    for role in C["role"].value_counts().index:
+        c = C[C["role"] == role]; n_st = int(por_papel.get(role, 0))
+        print(f"  {role:24s} {len(c):4d} · {n_st:7,} · {len(c) / n_st * 1000 if n_st else 0:6.2f} · {c['mes'].nunique():2d}")
+    print("\n[3] mês × papel (erros):")
+    print("  " + pd.crosstab(C["mes"], C["role"]).to_string().replace("\n", "\n  "))
+    print("\n[4] o que o LLM escreveu no lugar do bloco (só a forma):")
+    for k, n in C["forma"].value_counts().items():
+        print(f"  {n:4d}  {k}")
+    print(f"  começa como markdown (#, |, -, **): {int(C['comeca_markdown'].sum())} · cita final_answer: "
+          f"{int(C['cita_final_answer'].sum())} · tamanho mediano {C['chars'].median():,.0f} caracteres · tokens de saída: "
+          f"mediana {C['tok_out'].median():,.0f}, máx {C['tok_out'].max():,}")
+    print("\n[5] recuperação:")
+    print(f"  o papel ainda entregou final_answer depois: {int(C['papel_entregou_depois'].sum())}/{len(C)} · "
+          f"execução terminou com resposta: {int(C['execucao_com_resposta'].sum())}/{len(C)}")
+    print("\n[6] cascata — o que vem logo depois:")
+    for k, n in C["proximo"].value_counts().items():
+        print(f"  {n:4d}  {k}")
+    print(f"  repetiu o mesmo erro logo depois: {int(C['repetiu_logo_depois'].sum())} · erros seguidos depois: "
+          f"total {int(C['cascata_depois'].sum())}, máx {int(C['cascata_depois'].max())}")
+    print(f"\nCasos (com exec_id, para `evidencia`): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
+    print(f"{'='*100}")
+
 def caso(exec_id, role, as_json=False):
     df = load()
     row = df[df["cod_idef_exeo"] == exec_id]
@@ -979,6 +1076,8 @@ if __name__ == "__main__":
         residuo()
     elif cmd == "padrao":
         padrao(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "protocolo":
+        protocolo()
     elif cmd == "tempo":
         args = [a for a in sys.argv[2:] if not a.startswith("--mecanismo=")]
         mec = [a.split("=", 1)[1].split(",") for a in sys.argv[2:] if a.startswith("--mecanismo=")]

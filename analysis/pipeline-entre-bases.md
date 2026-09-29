@@ -582,6 +582,23 @@ ali, ainda está por medir.
 6. **Limites diferentes no interpretador:** 30 s (jul, mar) e 180 s (ago). A lição do `H_timeout_ferramenta` já cita os
    dois (Ajuste 9).
 
+### Etapa 10b — "resposta sem bloco de código" (`H_bloco_code`) na base 2
+
+**Contexto.** Na base 1, 33 erros num incidente (out/2025, cauda até fev/2026, zero desde mar/2026), não-memória e
+monitorado com gatilho (≥ 2 casos num mês ou > 1 por 1k steps). Na base 2 o gatilho disparou (~68 erros na família) e
+a decisão "não-memória" — tomada na base 1 — ainda não tem evidência própria (as bases são independentes, Ajuste 7).
+
+**Medida.** `drill_down.py protocolo` (só contagens): por mês e por papel (erros, por 1k steps, gatilho), mês × papel,
+**o que o LLM escreveu no lugar do bloco** — só a forma: vazio; abriu `<code>` e não fechou (cortado?); bloco em ```
+em vez de `<code>`; texto sem nenhum marcador de código —, recuperação e cascata. Os casos, com `exec_id`, vão para
+`resultados/evidencia/protocolo/casos.csv` (git-ignored). **Conferido na base 1:** 33 erros; out/2025 24, nov 1, dez 7,
+fev 1, zero desde mar; forma: 31 texto sem marcador, 2 em ```; 33/33 recuperados; logo depois, 7 `U_texto_solto` —
+tudo como no relatório.
+
+**Decisão conforme o resultado.** Concentrado num período → incidente de plataforma, "não-memória" continua (registrar
+as datas). Espalhado e com uma forma dominante → ver se há lição (ex.: "sempre responder com bloco de código, inclusive a
+resposta final") — ajuste próprio, com evidência.
+
 ### Etapa 6 — o alarme de cobertura
 
 **Contexto.** `triagem()` calcula o alarme sobre **erros** (`(EU["unidade"] == "X_sintoma_nao_reconhecido").mean()`), e
