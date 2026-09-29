@@ -1198,6 +1198,9 @@ de erros em cascata: sem `<code>`, `…` colado, `"e"` solto, variável de bloco
 tempo do interpretador com ferramenta → `H_timeout_ferramenta`; sem ferramenta → `U_codigo_lento`; limite de passos →
 `C_limite_passos`, erro crítico. A chave `?` deu lugar a `sem nome de exceção: <tipo>`, que não conta como recorrência.
 Base 1: nenhum desses erros; CSVs iguais, só com as colunas novas; auditoria nº 6 com 0 divergências.
+**Ajuste 9 (29/09):** a medida no cru mostrou que os 3 do AgenteProcuracoes não tinham laço nem `+=` — só
+`final_answer` — e que o tamanho (25–60 mil caracteres) não explica 30 s; o `final_answer` num bloco sem laço passa a
+contar como ferramenta (`H_timeout_ferramenta`). Base 1: CSVs idênticos.
 
 **Pendente** (roadmap 33, 34): a comparação entre bases e a robustez do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
 fase desde a troca do relógio de 23/09 — usa o mês do lote (`202512`), não o da execução; não afeta as demais.

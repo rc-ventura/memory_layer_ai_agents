@@ -58,7 +58,7 @@ NOME_ERRO = {
     "infra_llm": "Falha do LLM upstream",
     "timeout_ferramenta": "Ferramenta excedeu o timeout",
     "timeout_interpretador": "Ferramenta excedeu o tempo do interpretador",
-    "codigo_lento": "Código lento (texto enorme no bloco)",
+    "codigo_lento": "Código lento (laço pesado no bloco)",
     "limite_de_passos": "Limite de passos atingido",
     "argumento_inexistente": "Argumento com nome inexistente",
     "codigo_mal_escrito": "Código Python mal escrito",
