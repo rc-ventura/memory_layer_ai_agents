@@ -83,10 +83,15 @@ def submecanismo_spec(m, code="", obs_ant="", sysp=""):
         return "infra_llm"
     # limite de tempo do wrapper de ferramentas (mensagem em português): plataforma
     if "excedeu o timeout" in m or "TimeoutError" in m: return "timeout_ferramenta"
-    # tempo do interpretador (30 s): chamou ferramenta declarada (fora final_answer) → plataforma; senão, código lento
+    # tempo do interpretador: chamou ferramenta declarada (fora final_answer) → plataforma; só final_answer, num bloco
+    # sem for/while → resultado bruto na resposta (Ajuste 9); senão, código lento
     if "exceeded the maximum execution time" in m:
         decl = set(re.findall(r"def\s+(\w+)\s*\(", sysp or "")) - {"final_answer"}
-        return "timeout_interpretador" if decl & set(re.findall(r"\b(\w+)\s*\(", code or "")) else "codigo_lento"
+        chamou = set(re.findall(r"\b(\w+)\s*\(", code or ""))
+        if decl & chamou: return "timeout_interpretador"
+        sem_strings = re.sub(r"(\"\"\"|''').*?\1|\"[^\"\n]*\"|'[^'\n]*'|#[^\n]*", "", code or "", flags=re.S)
+        if "final_answer" in chamou and not re.search(r"\b(for|while)\b", sem_strings): return "resultado_bruto_na_resposta"
+        return "codigo_lento"
     if "Reached max steps" in m or "AgentMaxStepsError" in m: return "limite_de_passos"
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
         l = linha_rejeitada(m, code)
@@ -125,7 +130,7 @@ SUB2UNI = {
     "next_sobre_gerador":"U_next_gerador", "nome_de_step_que_falhou":"U_estado_perdido",
     "nome_nunca_definido":"U_nome_inventado", "repr_colado":"U_repr_colado",
     "infra_llm":"H_infra_llm", "timeout_ferramenta":"H_timeout_ferramenta",
-    "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code",
+    "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "resultado_bruto_na_resposta":"U_resultado_bruto", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code",
     "codigo_mal_escrito":"X_causa_nao_identificada", "causa_sem_regra":"X_causa_nao_identificada",
     "sintoma_nao_reconhecido":"X_sintoma_nao_reconhecido",
 }

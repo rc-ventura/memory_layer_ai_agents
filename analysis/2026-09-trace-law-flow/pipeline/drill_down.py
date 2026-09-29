@@ -70,7 +70,8 @@ Uso:
            os padrões com erros, execuções e meses. Lê resultados/erros_mecanismo.csv.
 
     python drill_down.py tempo [<role>] [--mecanismo=a,b]
-        -> quem gastou os 30 s? Para cada erro de tempo do interpretador (timeout_interpretador, codigo_lento):
+        -> quem gastou os 30 s? Para cada erro de tempo do interpretador (timeout_interpretador, codigo_lento,
+           resultado_bruto_na_resposta):
            tamanhos em jogo, estrutura do código do step (laços, chamadas), o que ia para o final_answer e o que o
            agente fez depois no papel; por papel, os final_answer que deram certo, para comparar. Só números e
            nomes — sem texto de caso nem exec_id. `--mecanismo=` troca os mecanismos (para testar em outra base).
@@ -778,7 +779,7 @@ def padrao(trecho=None):
         print(f"  exec_id={c['exec_id']}  role={c['role']}  idx={c['idx']}  mes={c['mes']}  unidade={c['unidade']}")
     print("\nLer um caso no cru:  python drill_down.py caso <exec_id> <role>")
 
-MECANISMOS_TEMPO = ["timeout_interpretador", "codigo_lento"]
+MECANISMOS_TEMPO = ["timeout_interpretador", "codigo_lento", "resultado_bruto_na_resposta"]
 
 def _nome_chamada(f):
     if isinstance(f, ast.Name): return f.id

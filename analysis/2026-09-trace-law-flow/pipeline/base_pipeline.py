@@ -23,7 +23,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
-           "caminho_dos_criticos", "chama_ferramenta_declarada", "SEM_NOME",
+           "caminho_dos_criticos", "chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -75,6 +75,8 @@ def explodir_memoria(df):
                        **sinais_de_parsing(str(err.get("message") or ""), st.get("code_action"), obs_ant),
                        "chama_ferramenta": chama_ferramenta_declarada(str(err.get("message") or ""),
                                                                       st.get("code_action"), sysp),
+                       "final_answer_sem_laco": final_answer_sem_laco(str(err.get("message") or ""),
+                                                                      st.get("code_action")),
                        "is_final": bool(st.get("is_final_answer"))}
                 rows.append(rec)
                 obs_ant += str(st.get("observations") or "")
@@ -203,6 +205,24 @@ def chama_ferramenta_declarada(m, code, sysp):
     return bool(declaradas & set(re.findall(r"\b(\w+)\s*\(", str(code or ""))))
 
 
+def final_answer_sem_laco(m, code):
+    """Só no tempo esgotado do interpretador: o bloco chama o final_answer e não tem laço (for/while/compreensão)? Sem
+    laço, cada linha roda uma vez e o Python do agente não gasta 30 s; se nenhuma outra ferramenta foi chamada, o tempo
+    foi no final_answer — na base 2, o resultado bruto da busca entregue inteiro (pipeline-entre-bases.md, Ajuste 9)."""
+    if "exceeded the maximum execution time" not in m:
+        return False
+    code = str(code or "")
+    return "final_answer" in set(re.findall(r"\b(\w+)\s*\(", code)) and not tem_laco(code)
+
+
+def tem_laco(code):
+    """O bloco tem laço (for/while, inclusive em compreensão)? Bloco que não parseia: procura a palavra."""
+    try:
+        return any(isinstance(n, (ast.For, ast.While, ast.comprehension)) for n in ast.walk(ast.parse(code)))
+    except SyntaxError:
+        return bool(re.search(r"^\s*(for|while)\b|\bfor\s+\w+.*?\s+in\s", code, re.M))
+
+
 def linha_rejeitada(m, linha_codigo=""):
     """A linha de código que o parser rejeitou: a que a mensagem traz (formato antigo) ou, no formato novo, a linha N
     do code_action (`linha_do_codigo`, coluna `linha_codigo_erro`)."""
@@ -217,16 +237,20 @@ def e_texto(s):
     return len(toks) >= 3 and sum(t in PT_STOP for t in toks) / len(toks) >= 0.15
 
 
-def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False):
+def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False,
+                 fa_sem_laco=False):
     if "regex pattern" in m:
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
         return "infra_llm"
     if "excedeu o timeout" in m or "TimeoutError" in m:
         return "timeout_ferramenta"   # pipeline-entre-bases.md, Ajuste 4
-    # tempo do interpretador (30 s) esgotado: numa chamada de ferramenta → plataforma; no código do agente → lição dele
+    # tempo do interpretador esgotado: numa chamada de ferramenta → plataforma; só no final_answer, sem laço → o
+    # resultado bruto entregue na resposta (Ajuste 9); no código do agente → lição dele
     if "exceeded the maximum execution time" in m:
-        return "timeout_interpretador" if chama_ferramenta else "codigo_lento"
+        if chama_ferramenta:
+            return "timeout_interpretador"
+        return "resultado_bruto_na_resposta" if fa_sem_laco else "codigo_lento"
     if "Reached max steps" in m or "AgentMaxStepsError" in m:
         return "limite_de_passos"   # desfecho: a execução morreu; a causa está nos erros anteriores (Ajuste 8)
     if "Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m:
@@ -291,6 +315,7 @@ SUB2UNI = {
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
+    "resultado_bruto_na_resposta": "U_resultado_bruto",
     "limite_de_passos": "C_limite_passos",
     "harness_bloco_code": "H_bloco_code",
     "codigo_mal_escrito": "X_causa_nao_identificada", "causa_sem_regra": "X_causa_nao_identificada",
@@ -335,12 +360,19 @@ UNI = {
     # como resolvido.
     "H_timeout_ferramenta": ("Ferramenta excedeu o timeout — correção na plataforma", NAO,
                              "Ferramenta mais longa que o limite de tempo: o do wrapper de ferramentas da esteira (600 s / "
-                             "1800 s por ferramenta) ou o do interpretador, que corta o bloco inteiro em 30 s — limites "
+                             "1800 s por ferramenta) ou o do interpretador, que corta o bloco inteiro em 30 s ou 180 s, "
+                             "conforme o agente e a época (base 2) — limites "
                              "desencontrados. Revisar os limites das ferramentas longas ou torná-las assíncronas; o agente já "
                              "segue o fallback do prompt. Gatilho: >= 2 casos num mês ou > 1/1k steps — acionado na base 2."),
-    "U_codigo_lento": ("Não manipular textos enormes dentro do bloco de código", ESTR,
-                       "O interpretador corta o bloco em 30 s: não concatenar nem devolver retornos enormes no código; "
-                       "filtrar e resumir antes (tamanho observado: a medir na base 2)."),
+    "U_codigo_lento": ("Não rodar laço pesado dentro do bloco de código", ESTR,
+                       "O interpretador corta o bloco inteiro (30 s ou 180 s): não percorrer dados longos em laço num só "
+                       "bloco; filtrar antes e dividir o trabalho em steps. Sem caso observado — os 3 da base 2 eram "
+                       "resultado bruto na resposta final (Ajuste 9)."),
+    "U_resultado_bruto": ("Não entregar o resultado bruto de uma ferramenta na resposta final", ESTR,
+                          "O final_answer não aguenta o retorno inteiro de uma busca no tempo do interpretador (base 2: "
+                          "~27 a ~63 mil caracteres estouraram; os que passaram tinham até ~3 mil). Extrair no código o "
+                          "trecho que responde — procurar no texto o que a pergunta pede — e entregar a conclusão com esse "
+                          "trecho; não resumir às cegas pelo que ficou visível na observação."),
     "C_limite_passos": ("Limite de passos atingido — o agente não se recuperou", CRIT,
                         "Desfecho, não causa: a execução esgotou os passos sem resposta. Investigar cada caso — o passo "
                         "crítico está nos erros anteriores do papel (resultados/criticos.csv)."),
@@ -358,10 +390,11 @@ def montar_unidades(E):
     EU["seguidor"] = EU.groupby(["exec_id", "role"])["idx"].shift().eq(EU["idx"] - 1)
     EU["cascata"] = (~EU["seguidor"]).cumsum()
     col = lambda c, v: EU[c] if c in EU else pd.Series(v, index=EU.index)
-    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf)) for m, l, k, fa, cf in
+    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl)) for m, l, k, fa, cf, fsl in
                           zip(EU["err_msg"], col("linha_codigo_erro", "").fillna(""),
                               col("chaves_vistas_antes", 0).fillna(0), col("em_final_answer", False).fillna(False),
-                              col("chama_ferramenta", False).fillna(False))]
+                              col("chama_ferramenta", False).fillna(False),
+                              col("final_answer_sem_laco", False).fillna(False))]
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
     # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece

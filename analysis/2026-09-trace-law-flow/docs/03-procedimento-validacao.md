@@ -1198,6 +1198,10 @@ de erros em cascata: sem `<code>`, `…` colado, `"e"` solto, variável de bloco
 tempo do interpretador com ferramenta → `H_timeout_ferramenta`; sem ferramenta → `U_codigo_lento`; limite de passos →
 `C_limite_passos`, erro crítico. A chave `?` deu lugar a `sem nome de exceção: <tipo>`, que não conta como recorrência.
 Base 1: nenhum desses erros; CSVs iguais, só com as colunas novas; auditoria nº 6 com 0 divergências.
+**Ajuste 9 (29/09):** os 3 do AgenteProcuracoes, lidos no cru e medidos com `drill_down.py tempo`, não eram código
+lento: bloco sem laço cuja única chamada é o `final_answer` com o resultado bruto da busca (~27 a ~63 mil caracteres;
+os que passaram tinham até ~3 mil). Causa nova `resultado_bruto_na_resposta` → `U_resultado_bruto`. Base 1: CSVs
+iguais (só a coluna nova `final_answer_sem_laco`, toda falsa); auditoria nº 6 com 0 divergências.
 
 **Pendente** (roadmap 33, 34): a comparação entre bases e a robustez do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
 fase desde a troca do relógio de 23/09 — usa o mês do lote (`202512`), não o da execução; não afeta as demais.

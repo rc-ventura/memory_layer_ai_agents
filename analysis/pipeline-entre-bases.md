@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 (atualizado 28/09) · **Estado:** ajustes 1 a 5 conferidos nas duas bases; 6 revertido; 7 e 8 feitos neste repo, falta conferir na base 2; depois, a Etapa 6 do plano (§5).
+**Data:** 2026-09-25 (atualizado 29/09) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 feitos neste repo, falta conferir na base 2; depois, a Etapa 6 do plano (§5).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -62,7 +62,8 @@ reescritas.
 | 5 | 28/09 | a nº10 aparecia como memória nas figuras, mas a mineração decidiu `harness` | `DESTINO_MINERACAO` + decisão "sinal de harness" na triagem | 1 decisão muda; **11 → 10 candidatas**, 440 cobertos | a nº10, se passar na triagem, também vira sinal | branch `2026-09-25-residuo-base2` |
 | 6 | 28/09 | a nº10 herdou "harness" na base 2; "Nome usado sem ter sido definido" foi de 5 para ~117 erros | comparar a composição de cada unidade com a base de referência | **revertido** (overengineering para a fase atual — ver Ajuste 7) | — | `c39fdb2`, revertido em `d2f2ec8` |
 | 7 | 28/09 | a decisão da mineração vazava entre bases | `DESTINO_MINERACAO` guarda a base; `BASE_ID` ao lado do `TRACE` | nada muda | a nº10 volta a candidata (destino em aberto) | branch `2026-09-28-mineracao-base2` |
-| 8 | 28/09 | o `?` da base 2 juntava 7 erros de três tipos e "passava" na recorrência | tempo do interpretador (plataforma × código lento), limite de passos como erro crítico, chave sem nome de exceção fora da recorrência | nada muda (só colunas novas) | esperado: o `?` some; sintoma não reconhecido 9 → 2 | branch `2026-09-28-mineracao-base2` |
+| 8 | 28/09 | o `?` da base 2 juntava 7 erros de três tipos e "passava" na recorrência | tempo do interpretador (plataforma × código lento), limite de passos como erro crítico, chave sem nome de exceção fora da recorrência | nada muda (só colunas novas) | conferido: o `?` some; sintoma não reconhecido 9 → 2; 1 erro crítico | `d306666` |
+| 9 | 29/09 | Etapa 5b: os 3 "código lento" eram o resultado bruto da busca entregue no `final_answer` | causa `resultado_bruto_na_resposta` → `U_resultado_bruto`; lições do `U_codigo_lento` e do `H_timeout_ferramenta` corrigidas | idêntica (+1 coluna, toda falsa) | esperado: `U_codigo_lento` 3 → 0, `U_resultado_bruto` 3 ("fora") | branch `2026-09-28-mineracao-base2` |
 
 ### Ajuste 1 — evidência estrutural do resíduo
 
@@ -377,6 +378,48 @@ sem recorrência"; 1 erro crítico (CalculoCivel) em "investigar — crítico", 
 **Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`, `paleta.py`,
 `genealogia_sankey.py` e o notebook.
 
+### Ajuste 9 — o resultado bruto entregue na resposta final
+
+**Problema.** O Ajuste 8 chamou de "código lento" os 3 erros de tempo do AgenteProcuracoes, com a lição "não manipular
+textos enormes no bloco". A leitura (Etapa 5b, §5) mostrou que não era isso.
+
+**Evidência (máquina 2, 29/09; `drill_down.py tempo` e leitura do cru pelo Rafael — só tamanhos, nomes e o sentido dos
+pensamentos, sem texto de caso).**
+
+| # | O quê | Onde |
+|---|---|---|
+| 1 | Código do step: sem laço, sem `+=`; a única chamada é o `final_answer` (e `strip`) | `tempo` |
+| 2 | O que ia para o `final_answer`: `resposta` (2.857) + `resultado_busca` (60.539); `answer_final` (26.762, ≈ os dois `resultado_busca` somados + texto) | `tempo` (variáveis no estado final) |
+| 3 | Régua do papel: os 3 `final_answer` que deram certo entregaram mediana 441, máximo 2.921 caracteres; nenhum ≥ 25 mil | `tempo` |
+| 4 | Recuperação: execução 1 entregou 2.921 (a `resposta` sem o `resultado_busca`) em 39,8 s; execução 2 repetiu a tentativa grande, estourou de novo, e entregou 441 | `tempo` + cru |
+| 5 | Pensamento, execução 1: "o timeout ocorreu por concatenar e devolver o `resultado_busca` inteiro, muito extenso" | cru |
+| 6 | Custo: sem o texto, respondeu "pelos trechos visíveis na observação" — execução 1: "não localizei procurações concluídas" (possível falso negativo, em aberto); execução 2: pedido de ajuda humana ("preciso do PDF integral…") | cru |
+
+**Solução.** `final_answer_sem_laco()` (coluna nova em `explodir_memoria`): tempo do interpretador + o bloco chama o
+`final_answer` + sem laço (`tem_laco()`, via `ast`). Em `submecanismo()`: chamou ferramenta declarada →
+`timeout_interpretador` (como antes); senão, `final_answer` sem laço → **`resultado_bruto_na_resposta`** →
+**`U_resultado_bruto`** (estratégia: *"extrair no código o trecho que responde e entregar a conclusão com esse trecho;
+não resumir às cegas pelo que ficou visível na observação"*); senão → `codigo_lento`. O `U_codigo_lento` fica para laço
+pesado sem ferramenta, com a lição corrigida e sem caso observado (opção (a), decisão do Rafael). A lição do
+`H_timeout_ferramenta` passa a citar os dois limites do interpretador vistos na base 2: 30 s e **180 s** (OBFCivel, ago).
+
+**Por que "extrair" e não "resumir".** Resumir às cegas foi o que levou ao pedido de ajuda humana e ao possível falso
+negativo. **Por que não é o `repr_colado`:** lá o agente cola o texto impresso **no código** (erro de sintaxe; lição
+"use a variável"); aqui ele usa a variável e entrega o conteúdo inteiro (tempo esgotado; lição "extraia o trecho").
+**Por que sem tamanho na regra:** o trace só guarda o tamanho das variáveis no fim da execução; a regra lê a forma do
+código, e o `drill_down.py tempo` confere o tamanho em cada base nova.
+
+**Verificação.** 6 formatos sintéticos (ferramenta sem/com laço, só `final_answer`, laço + `final_answer`, sem
+ferramenta, compreensão no `final_answer`): pipeline e auditoria (regex, strings e comentários removidos) concordam.
+Base 1: todos os CSVs idênticos, exceto a coluna nova `final_answer_sem_laco` em `erros_classificados.csv` (toda
+falsa); auditoria nº 6 com 0 divergências.
+
+**Esperado na base 2.** `U_codigo_lento` 3 → 0 (some da triagem); **`U_resultado_bruto` com 3 erros, 2 execuções, 1 mês
+→ "fora: sem recorrência"**. Nada mais muda.
+
+**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`,
+`drill_down.py`.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e
@@ -482,6 +525,10 @@ tamanhos, a estrutura do código, o que ia para o `final_answer` e o que o agent
 
 **Nota de processo.** Uma primeira versão da regra (o primeiro caso da tabela) foi feita e revertida no mesmo dia
 (`7340154` → `6b15f37`): assumia a plataforma antes de medir se o tamanho importa.
+
+**Resultado (29/09): a segunda linha da tabela** — o tamanho importa. Virou o **Ajuste 9** (§3). Os outros 3 casos de
+tempo (OBFCivel, RespostaOficios) chamam ferramentas de verdade e continuam plataforma; se há ferramenta dentro de laço
+ali, ainda está por medir.
 
 ### Etapa 6 — o alarme de cobertura
 
