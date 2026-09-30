@@ -734,6 +734,17 @@ base 1 é concentrado, não crônico):
   por dentro narrando a conclusão (hipótese: as chamadas ficaram no raciocínio oculto) em vez de escrever o código. O
   harness pega (não há código) e ele se recupera; o risco é de qualidade: **uma declaração de sucesso falsa**, que só não
   passou porque o formato quebrou.
+
+**Hipótese do Rafael — sinal de harness: o prompt torna o momento da resposta final ambíguo** (30/09). O modelo lê no
+começo do prompt (modelo do smolagents, em inglês) que precisa pôr o código em `<code>`; quando chega à resposta final,
+lembra da instrução do negócio no fim do prompt (em português: "devolva um JSON no formato…", "responda em markdown…") e
+escreve **o conteúdo** pedido — o JSON, o relatório — esquecendo o envelope `<code>final_answer(…)</code>`. No step
+seguinte, com a mensagem de erro mostrando o formato, ele põe o `<code>`. Evidência até aqui: RespostaBacen caso 1 (o JSON
+do negócio, em ```` ``` ````, sem `<code>`; depois `final_answer({…})` com o mesmo JSON); managerAgent casos 1 e 3 (o
+relatório em markdown; o 3 abre com *"conforme solicitado"*). Se vale, **o erro se concentra no step da resposta final**
+e o conserto é de prompt/harness: a instrução do negócio dizer explicitamente *"entregue esse JSON/relatório com
+`final_answer(...)` dentro de `<code>`"*, ou o harness aceitar a resposta final estruturada (modo JSON). Teste possível,
+determinístico: em quantos erros o step seguinte é o `final_answer` (managerAgent: 15/21 anteciparam a resposta final).
 ConversationAgent e CalculoCivel (5): textos longos, nem cópia nem antecipação — sem mecanismo claro.
 
 ### Etapa 6 — o alarme de cobertura
