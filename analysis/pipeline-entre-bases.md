@@ -721,9 +721,19 @@ possível. Responda … em formato markdown"*): o modelo segue a instrução do 
 de `final_answer(..., human_request=…)`; 44% veio da observação anterior; a recuperação falhou (o código seguinte começa
 com texto solto) — a cascata para `U_texto_solto`.
 
-**RespostaBacen — mecanismo B, "frase curta sem código"** (`o4-mini`, modelo que raciocina por dentro): 7 textos de ~100
-caracteres, nem cópia da ferramenta nem antecipação. O prompt termina com um modelo de JSON montado com as saídas das
-ferramentas, mas os erros não são esse JSON — a hipótese "devolva um JSON" não se confirma pela forma. A ler.
+**RespostaBacen — lidos os 7 casos** (`protocolo --casos RespostaBacen 7`; todos `o4-mini`, todos em dez/2025 — na
+base 1 é concentrado, não crônico):
+- **1/7 — mecanismo A com o JSON do negócio:** *"I have successfully drafted and validated the response. The final
+  structured JSON is:"* e o JSON da resposta dentro de ```` ``` ````, sem `<code>`; no step seguinte, `final_answer({…})`
+  com o mesmo JSON (95%). O "devolva um JSON" do fim do prompt **foi** seguido — o teste pela primeira letra não o viu
+  porque há uma frase antes.
+- **6/7 — mecanismo B, "anunciou que terminou sem ter feito":** frases de 44–124 caracteres dizendo que a tarefa acabou —
+  *"I have generated and validated the response, and submitted the final JSON via resposta_final"*, *"Tarefa completa:
+  a resposta … foi gerada e validada, e enviada…"*, *"…invoked `resposta_final` with all required fields"* — **sem ter
+  feito**: no step seguinte o agente executa de fato `validar_quebra_sigilo` / `resposta_final`. É o modelo que raciocina
+  por dentro narrando a conclusão (hipótese: as chamadas ficaram no raciocínio oculto) em vez de escrever o código. O
+  harness pega (não há código) e ele se recupera; o risco é de qualidade: **uma declaração de sucesso falsa**, que só não
+  passou porque o formato quebrou.
 ConversationAgent e CalculoCivel (5): textos longos, nem cópia nem antecipação — sem mecanismo claro.
 
 ### Etapa 6 — o alarme de cobertura
