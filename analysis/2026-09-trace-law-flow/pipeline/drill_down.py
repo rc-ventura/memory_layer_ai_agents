@@ -81,7 +81,11 @@ Uso:
     python drill_down.py protocolo
         -> "resposta sem bloco de código" (H_bloco_code): por mês e papel (erros, por 1k steps, gatilho), o que o LLM
            escreveu no lugar do bloco (só a forma), recuperação e cascata. Só contagens; os casos com exec_id vão para
-           resultados/evidencia/protocolo/casos.csv. Ver pipeline-entre-bases.md, Ajuste 10b.
+           resultados/evidencia/protocolo/casos.csv. [7]: as versões do system prompt por papel (hash), com meses,
+           erros e o formato que ensinam. Ver pipeline-entre-bases.md, Ajuste 10b.
+
+    python drill_down.py protocolo --prompt <versão>
+        -> grava o texto daquela versão do system prompt em resultados/evidencia/protocolo/ para ler na máquina.
 
     python drill_down.py caso <exec_id> <role>
         -> imprime a trajetória inteira daquele papel naquela execução, na ordem
@@ -899,16 +903,36 @@ def tempo(papel=None, mecanismos=None):
     print(f"{'='*100}\nLimites: a duração do step inclui o LLM pensando; o tamanho das variáveis é o do fim da execução.")
 
 def _forma_da_resposta(mo):
-    """O que o LLM escreveu no lugar do bloco de código — só pela forma, sem ler o conteúdo."""
-    if len(mo.strip()) < 20:
+    """O que o LLM escreveu no lugar do bloco de código — só pela forma, sem ler o conteúdo. O `</code>` do fim é
+    ignorado: é a sequência de parada, e o próprio harness a acrescenta de volta à resposta."""
+    mo = re.sub(r"\s*</code>\s*$", "", mo).strip()
+    if len(mo) < 20:
         return "vazio"
-    if mo.count("<code>") > mo.count("</code>"):
-        return "abriu <code> e não fechou (cortado?)"
     if re.search(r"```(py|python)?\s*\n", mo):
         return "bloco em ``` em vez de <code>"
-    return "texto sem nenhum marcador de código"
+    if mo[0] in "{[":
+        return "resposta em dict/JSON (sem código)"
+    return "frase ou texto (sem código)"
 
-def protocolo():
+_MARCA_FORMATO = re.compile(r"<code>|</code>|```|<end_code>|Thought:|final_answer\(")
+
+def _variante_prompt(sysp):
+    """Versão do FORMATO que o system prompt ensina: hash só das linhas que citam as marcas de código (<code>, ```,
+    <end_code>, Thought:, final_answer( ), com dígitos mascarados. O prompt inteiro muda a cada execução; as linhas de
+    formato, não — na base 1 são 1 ou 2 versões por papel. Só o identificador sai na tela; o texto, com --prompt."""
+    import hashlib
+    if not sysp:
+        return "(sem prompt)"
+    linhas = [re.sub(r"\d", "0", l.strip()) for l in sysp.splitlines() if _MARCA_FORMATO.search(l)]
+    return hashlib.md5("\n".join(linhas).encode("utf-8")).hexdigest()[:8]
+
+def _marcas_prompt(sysp):
+    """Que formato de código o system prompt ensina — só presença de marcas, sem texto."""
+    return {"<code>": "<code>" in sysp and "</code>" in sysp,
+            "```py/<end_code>": bool(re.search(r"```py|<end_code>", sysp)),
+            "linhas de formato": sum(bool(_MARCA_FORMATO.search(l)) for l in sysp.splitlines())}
+
+def protocolo(prompt=None):
     """"Resposta sem bloco de código" (H_bloco_code): o harness não achou o bloco <code>…</code> na resposta do LLM.
     Incidente ou crônico? Um papel ou todos? O que o LLM escreveu no lugar (só a forma)? O agente se recuperou? O que
     vem depois na cascata? Só contagens — nenhum texto de caso, nenhum exec_id na tela. Os casos, com exec_id, vão para
@@ -920,6 +944,7 @@ def protocolo():
     unid = {(r.exec_id, r.role, int(r.idx)): r.unidade for r in M.itertuples()}
     df = load().drop_duplicates("cod_idef_exeo")
     passos, casos = Counter(), []
+    variantes = {}   # (role, variante) -> {"meses": Counter, "steps", "erros", "marcas", "chars", "texto"}
     for _, r in df.iterrows():
         eid = r["cod_idef_exeo"]
         if not isinstance(r["txt_etap_memo"], str) or eid not in X.index:
@@ -930,15 +955,21 @@ def protocolo():
             acts = [s for s in lst if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
             passos[(mes, role)] += len(acts)
             for i, s in enumerate(acts):
+                sp = system_prompt(s)
+                v = variantes.setdefault((role, _variante_prompt(sp)), {"meses": Counter(), "steps": 0, "erros": 0,
+                                                                      "marcas": _marcas_prompt(sp), "chars": len(sp),
+                                                                      "texto": sp})
+                v["meses"][mes] += 1; v["steps"] += 1
                 if "regex pattern" not in str((s.get("error") or {}).get("message") or ""):
                     continue
+                v["erros"] += 1
                 mo = str(s.get("model_output") or "")
                 depois = [unid.get((eid, role, j)) for j in range(i + 1, len(acts))]
                 cascata = []
                 for u in depois:          # erros seguidos logo depois, até o primeiro step sem erro
                     if u is None: break
                     cascata.append(u)
-                casos.append({"exec_id": eid, "role": role, "idx": i, "mes": mes,
+                casos.append({"exec_id": eid, "role": role, "idx": i, "mes": mes, "variante_prompt": _variante_prompt(sp),
                               "forma": _forma_da_resposta(mo), "chars": len(mo),
                               "tok_out": (s.get("token_usage") or {}).get("output_tokens") or 0,
                               "comeca_markdown": bool(re.match(r"\s*(#|\||- |\*\*)", mo)),
@@ -949,10 +980,20 @@ def protocolo():
                               "cascata_depois": len(cascata),
                               "repetiu_logo_depois": bool(cascata) and cascata[0] == "H_bloco_code"})
     C = pd.DataFrame(casos)
-    if C.empty:
-        print("nenhum erro 'resposta sem bloco de código' nesta base."); return
     pasta = os.path.join(PASTA_EVIDENCIA, "protocolo")
     os.makedirs(pasta, exist_ok=True)
+    if prompt:   # grava o texto de uma versão do system prompt, para ler na máquina (não sai dela)
+        achou = [(r, v) for (r, vid), v in variantes.items() if vid == prompt]
+        if not achou:
+            print(f"versão {prompt} não encontrada. Rode `protocolo` sem argumento para ver as versões."); return
+        for r, v in achou:
+            arq = os.path.join(pasta, f"prompt_{r}_{prompt}.txt")
+            with open(arq, "w", encoding="utf-8") as fh:
+                fh.write(v["texto"])
+            print(f"gravado: {os.path.relpath(arq)} ({v['chars']:,} caracteres) — texto do prompt: ler aqui, não copiar para fora.")
+        return
+    if C.empty:
+        print("nenhum erro 'resposta sem bloco de código' nesta base."); return
     C.sort_values(["mes", "role", "exec_id", "idx"]).to_csv(os.path.join(pasta, "casos.csv"), index=False)
     P = pd.Series(passos)
     tot_steps = int(P.sum())
@@ -987,6 +1028,15 @@ def protocolo():
         print(f"  {n:4d}  {k}")
     print(f"  repetiu o mesmo erro logo depois: {int(C['repetiu_logo_depois'].sum())} · erros seguidos depois: "
           f"total {int(C['cascata_depois'].sum())}, máx {int(C['cascata_depois'].max())}")
+    print("\n[7] versões do FORMATO ensinado pelo system prompt, nos papéis com o erro (hash das linhas de formato):")
+    print("  papel · versão · meses (steps) · steps · erros · por 1k · ensina <code> · ensina ```py/<end_code> · linhas de formato")
+    for (role, vid), v in sorted(variantes.items(), key=lambda x: (x[0][0], min(x[1]["meses"]))):
+        if role not in set(C["role"]): continue
+        mk = v["marcas"]; meses = ", ".join(f"{m} ({n})" for m, n in sorted(v["meses"].items()))
+        print(f"  {role:20s} {vid} · {meses} · {v['steps']:5d} · {v['erros']:3d} · "
+              f"{v['erros'] / v['steps'] * 1000:6.1f} · {'sim' if mk['<code>'] else 'NÃO':3s} · "
+              f"{'sim' if mk['```py/<end_code>'] else 'não':3s} · {mk['linhas de formato']}")
+    print("  ler o texto de uma versão:  python drill_down.py protocolo --prompt <versão>")
     print(f"\nCasos (com exec_id, para `evidencia`): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
     print(f"{'='*100}")
 
@@ -1077,7 +1127,10 @@ if __name__ == "__main__":
     elif cmd == "padrao":
         padrao(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "protocolo":
-        protocolo()
+        pr = [a.split("=", 1)[1] if "=" in a else None for a in sys.argv[2:] if a.startswith("--prompt")]
+        if pr and pr[0] is None and len(sys.argv) > 3:
+            pr = [sys.argv[sys.argv.index("--prompt") + 1]]
+        protocolo(pr[0] if pr else None)
     elif cmd == "tempo":
         args = [a for a in sys.argv[2:] if not a.startswith("--mecanismo=")]
         mec = [a.split("=", 1)[1].split(",") for a in sys.argv[2:] if a.startswith("--mecanismo=")]

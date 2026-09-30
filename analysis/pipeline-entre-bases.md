@@ -627,6 +627,24 @@ código, resposta em texto, cortado, outro. Nomearia a mudança de plataforma; n
 **Achado de método (Etapa 6):** o gatilho dispara com 1 caso em mês pequeno (dez/2025: 1 em 21 steps = 47,6/1k),
 porque a regra é "≥ 2 casos **ou** > 1/1k steps". Rever junto com a robustez do alarme.
 
+**Leitura de 3 casos do RoteadorCivel (Rafael, 30/09):** (1) o modelo escreveu só uma frase, e no step seguinte usou
+`textos_decisoes` como se o step tivesse rodado → `U_estado_perdido`; (2) escreveu **a própria decisão final como dict**
+(`{fluxo_encerramento: …, resultado_ultima_decisao: …}`), sem código — o `</code>` do fim é o harness devolvendo a
+sequência de parada; (3) recuperação: no step seguinte, `<code>final_answer(answer=…, human_request=…)</code>`, `error =
+null`. O erro é do agente (o LLM quebrou o formato), mas **uma memória não o evitaria**: o prompt já ensina o formato,
+a mensagem de erro mostra o exemplo e ele acerta no step seguinte. A parte aprendível — não supor que o step que falhou
+rodou — já é o `U_estado_perdido`.
+
+**Hipótese do Rafael: o prompt.** `drill_down.py protocolo` ganhou o bloco [7] — versões do **formato** que o system
+prompt ensina (hash só das linhas com `<code>`, ```` ``` ````, `<end_code>`, `Thought:`, `final_answer(`; o prompt
+inteiro muda a cada execução, essas linhas não) por papel, com meses, erros e as marcas — e `--prompt <versão>`, que
+grava o texto da versão para ler na máquina. As formas de [4] ficaram: frase/texto, dict/JSON, ```` ``` ````, vazio (o
+`</code>` do fim é ignorado). **Na base 1, todos os 33 erros estão em versões que ensinam os dois formatos (`<code>` e
+```` ```py ````/`<end_code>`, 49–51 linhas de formato); as versões que ensinam só um formato (12–14 linhas) têm zero
+erros em 4.590 steps.** O incidente de out/2025 está inteiro em duas versões que só existiram naquele mês
+(managerAgent `82de8f07`: 21 erros em 130 steps; ConversationAgent `2f96aa69`: 3 em 83). Causa candidata, até aqui
+nunca achada: **prompt com dois formatos de código** — desencontro prompt × harness, da plataforma. Falta a base 2.
+
 ### Etapa 6 — o alarme de cobertura
 
 **Contexto.** `triagem()` calcula o alarme sobre **erros** (`(EU["unidade"] == "X_sintoma_nao_reconhecido").mean()`), e
