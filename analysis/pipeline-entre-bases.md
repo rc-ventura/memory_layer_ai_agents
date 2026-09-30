@@ -727,13 +727,24 @@ base 1 é concentrado, não crônico):
   structured JSON is:"* e o JSON da resposta dentro de ```` ``` ````, sem `<code>`; no step seguinte, `final_answer({…})`
   com o mesmo JSON (95%). O "devolva um JSON" do fim do prompt **foi** seguido — o teste pela primeira letra não o viu
   porque há uma frase antes.
-- **6/7 — mecanismo B, "anunciou que terminou sem ter feito":** frases de 44–124 caracteres dizendo que a tarefa acabou —
-  *"I have generated and validated the response, and submitted the final JSON via resposta_final"*, *"Tarefa completa:
-  a resposta … foi gerada e validada, e enviada…"*, *"…invoked `resposta_final` with all required fields"* — **sem ter
-  feito**: no step seguinte o agente executa de fato `validar_quebra_sigilo` / `resposta_final`. É o modelo que raciocina
-  por dentro narrando a conclusão (hipótese: as chamadas ficaram no raciocínio oculto) em vez de escrever o código. O
-  harness pega (não há código) e ele se recupera; o risco é de qualidade: **uma declaração de sucesso falsa**, que só não
-  passou porque o formato quebrou.
+- **6/7 — "achou que terminou" (corrigido após a leitura do Rafael, 30/09).** Os 7 erros são de **3 execuções**. Na
+  sequência de ferramentas de cada uma: em **4** dos 6, o `resposta_final` **já tinha rodado** — o modelo viu na
+  observação o JSON da resposta, concluiu que terminou e escreveu a mensagem de sucesso **em texto, sem `<code>` e sem
+  `final_answer`**. Em **2**, **sucesso falso**: *"generated and validated … and submitted"* quando só o rascunho tinha
+  rodado; e *"invoked `resposta_final` with all required fields"* logo depois de a observação mostrar *"Error calling
+  tool 'resposta_final': resposta_cliente must be a dict with 'texto_resposta', 'anexos' keys"*. Numa das execuções o
+  agente chama o `resposta_final` **5 vezes e nunca o `final_answer`**: chama, escreve "pronto!" em texto, leva o erro
+  de formato, chama de novo.
+- **A causa candidata — sinal de harness, não só protocolo:** `resposta_final` é uma **ferramenta real** do negócio
+  (`drill_down.py ferramenta resposta_final`), descrita como a que devolve *"json da resposta gerada para o cliente"* — o
+  nome e o papel competem com o `final_answer` do harness. E ela tem **duas versões**: a 1 (jan–jun/2026, 88 steps, 20
+  execuções; recebe `resposta_gerada: string`) com **0 erros**, e a 2 (**só dez/2025**, 47 steps, 6 execuções; recebe
+  `json_resposta` — dict aninhado com `resposta_cliente`, `anexos` bacen/cliente e `quebra_sigilo` — e
+  `validade_resposta`) com **os 7**. Mesmo modelo (`o4-mini`) nos dois períodos: o que mudou foi o contrato da
+  ferramenta. Correlação forte (6 × 20 execuções), não prova; o texto do negócio no fim do prompt pode ter mudado junto
+  (o hash de formato `b0f37eea` é o mesmo). **Conserto, da plataforma:** renomear a ferramenta (ex.:
+  `enviar_resposta_bacen`), ou dizer no prompt "depois do `resposta_final`, encerre com `final_answer(...)` em
+  `<code>`", ou o modo JSON.
 
 **Hipótese do Rafael — sinal de harness: o prompt torna o momento da resposta final ambíguo** (30/09). O modelo lê no
 começo do prompt (modelo do smolagents, em inglês) que precisa pôr o código em `<code>`; quando chega à resposta final,
