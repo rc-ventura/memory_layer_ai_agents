@@ -745,6 +745,11 @@ base 1 é concentrado, não crônico):
   (o hash de formato `b0f37eea` é o mesmo). **Conserto, da plataforma:** renomear a ferramenta (ex.:
   `enviar_resposta_bacen`), ou dizer no prompt "depois do `resposta_final`, encerre com `final_answer(...)` em
   `<code>`", ou o modo JSON.
+- **Destino: sinal de harness (decisão do Rafael, 30/09)** — não memória: o conserto na origem (nome/contrato no prompt)
+  resolve todas as execuções, e na base 1 o problema sumiu quando o contrato mudou (versão 2 só em dez/2025) — uma
+  memória hoje seria sobre um contrato já trocado. **Memória candidata por ferramenta, se reaparecer** com o contrato
+  atual e a plataforma não corrigir: *"`resposta_final` não encerra a tarefa; depois dele, `final_answer(...)` em
+  `<code>`"*. Teste: os 4 erros do RespostaBacen na base 2 (3 meses) — mesmo mecanismo?
 
 **Hipótese do Rafael — sinal de harness: o prompt torna o momento da resposta final ambíguo** (30/09). O modelo lê no
 começo do prompt (modelo do smolagents, em inglês) que precisa pôr o código em `<code>`; quando chega à resposta final,
