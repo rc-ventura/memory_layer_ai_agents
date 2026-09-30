@@ -96,8 +96,10 @@ o que mudou de conclusão (incidente em out/2025; leitura de estabilidade do sch
   Etapa 6. → `../../pipeline-entre-bases.md` Etapa 10b
   **Causa candidata (30/09):** o erro só existe no **modo texto com `<code>`** do CodeAgent; no modo JSON estruturado ele
   não acontece. Base 1: o incidente de out/2025 = managerAgent e ConversationAgent rodando em texto só naquele mês; o
-  resto do tempo em JSON, 0 erros em 4.590 steps. **Dono:** plataforma (configuração do modo). Base 2: a conferir com
-  `drill_down.py protocolo` [7].
+  resto do tempo em JSON, 0 erros em 4.590 steps. **Dono:** plataforma (configuração do modo). **Base 2 (30/09):** todos
+  em modo texto; o surto de ago/2026 é **troca de modelo** — `gpt-5.6-terra-2026-07-09`, só em agosto: RoteadorCivel 54
+  erros em 478 steps contra 0 em 381 do `gpt-4.1` no mesmo mês e prompt; OBFCivel 4 em 22. **Ação:** modo JSON com esse
+  modelo, ou `gpt-4.1` nesses papéis, ou teste de formato ao trocar de modelo. Monitor: `drill_down.py protocolo` [7]/[8].
 
 ## Fora de escopo / adiado
 

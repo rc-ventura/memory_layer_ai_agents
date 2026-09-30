@@ -675,6 +675,31 @@ raciocina por dentro (`o4-mini`, `gpt-5.2`). Na base 1, o RespostaBacen roda em 
 quase sempre vazio ou 0 — pouco informativo lá. **Hipótese para ago/2026:** o RoteadorCivel trocou de modelo, e o modelo
 novo esquece as marcas `<code>` no modo texto (e entrega o dict direto, como no caso 2).
 
+**Resultado ([8], máquina 2, 30/09) — a causa do incidente 2: troca de modelo.**
+
+| Papel | Modelo | Meses | Steps | Erros | Por 1k |
+|---|---|---|---:|---:|---:|
+| RoteadorCivel | `gpt-4.1-2025-04-14` | mai → ago (381 em ago) | 1.341 | **0** | 0 |
+| RoteadorCivel | **`gpt-5.6-terra-2026-07-09`** | **só ago** | 478 | **54** | **113** |
+| RoteadorCivel | (não registrado) | jul, ago | 17 | 2 | 118 |
+| OBFCivel | `claude-sonnet-4-5` | abr → ago | 721 | 0 | 0 |
+| OBFCivel | **`gpt-5.6-terra-2026-07-09`** | **só ago** | 22 | **4** | **182** |
+
+(Somas conferidas contra o [7]: RoteadorCivel 1.836 steps e 56 erros; OBFCivel 750 e 4.) **Mesmo papel, mesmo mês,
+mesmo prompt, mesmo modo texto: `gpt-4.1` 0 erros em 381 steps de agosto; `gpt-5.6-terra` 54 em 478** — quase um
+experimento controlado. Dos 61 erros de agosto, 58 estão no modelo novo ou em steps sem modelo registrado (1 no
+`gpt-4.1` do CalculoTrabalhista). `cod_vers_aget` é sempre 0 na base 2 — não informa.
+
+**Conclusão: incidente 2 = o modelo `gpt-5.6-terra` (só em ago/2026, parte das execuções do RoteadorCivel e do
+OBFCivel) rodando no modo texto com `<code>` — esquece as marcas em ~11% dos steps (18% no OBFCivel).** Explica as outras
+pistas: 242 tokens para 138 caracteres visíveis (padrão de modelo que raciocina por dentro — a confirmar) e o dict de
+roteamento entregue direto (caso 2). Na base 1, sinal parecido: RespostaBacen em `o4-mini`, 60/1k.
+
+**Destino: não-memória — achado para a plataforma**, com causa, dono e correção: usar o modo JSON com esse modelo (o
+formato é imposto na geração), ou manter o `gpt-4.1` nesses papéis, ou testar o formato ao trocar de modelo antes de
+produção. **Método:** o surto se explica cruzando **modo × modelo** por papel e mês — tudo registrado no trace, lido de
+forma determinística, sem LLM na análise. Vale como monitor: modelo novo num papel → conferir a taxa do erro de formato.
+
 ### Etapa 6 — o alarme de cobertura
 
 **Contexto.** `triagem()` calcula o alarme sobre **erros** (`(EU["unidade"] == "X_sintoma_nao_reconhecido").mean()`), e
