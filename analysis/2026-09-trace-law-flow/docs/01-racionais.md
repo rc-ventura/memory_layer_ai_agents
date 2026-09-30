@@ -85,7 +85,7 @@ uma base específica):
 | "ValueError ao manipular resultado" (37) | tratado como erro de dados | **35 eram erro de convenção de chamada de ferramenta** (posicional × nomeado), em 12 ferramentas |
 | "KeyError campo ausente" (98) | genérico | **136 erros têm uma causa única**: o retorno da ferramenta é `dict`, o agente indexa como lista |
 | "SyntaxError" (223) | um balde | **159 são string não fechada** (relatório jurídico longo dentro de literal) |
-| "Protocolo do harness" (33) | candidato a memória | **incidente de out/2025; não-memória na base 1 — gatilho de reabertura acionado na base 2 (22/09/2026, ver diário)** |
+| "Protocolo do harness" (33) | candidato a memória | **incidente de out/2025; não-memória na base 1 — gatilho de reabertura acionado na base 2 (22/09/2026, ver diário)**; lógica e mecanismos da família em [`10-racionais-protocolo-harness.md`](10-racionais-protocolo-harness.md) |
 | — | não analisado | posição na trajetória, propagação, reincidência entre execuções, falhas silenciosas |
 
 ### Como cada execução é datada (decisão de 23/09/2026)

@@ -11,6 +11,8 @@ revisado; é o caminho mais curto pra revisar direito. Este documento é o "como
 O procedimento tem duas frentes independentes — uma mecânica, outra de leitura —, uma terceira que diz o que fazer
 com cada decisão da triagem (Frente 3), e um eixo que atravessa todas: **nunca apresentar um número agregado sem saber apontar o caso concreto no trace cru que o sustenta.**
 
+A família "Protocolo do harness" tem roteiro próprio: [`12-procedimento-protocolo-harness.md`](12-procedimento-protocolo-harness.md).
+
 ---
 
 ## Frente 1 — Auditar o pipeline (não depende de nenhum paper)

@@ -584,6 +584,11 @@ ali, ainda está por medir.
 
 ### Etapa 10b — "resposta sem bloco de código" (`H_bloco_code`) na base 2
 
+> **Leitura consolidada (30/09):** esta seção é a história, na ordem, com as correções. O estado atual da família — o
+> catálogo de mecanismos M1–M5, os resultados por base e o roteiro para uma base nova — está em
+> `2026-09-trace-law-flow/docs/10-racionais-protocolo-harness.md`, `11-relatorio-protocolo-harness.md` e
+> `12-procedimento-protocolo-harness.md`.
+
 **Contexto.** Na base 1, 33 erros num incidente (out/2025, cauda até fev/2026, zero desde mar/2026), não-memória e
 monitorado com gatilho (≥ 2 casos num mês ou > 1 por 1k steps). Na base 2 o gatilho disparou (~68 erros na família) e
 a decisão "não-memória" — tomada na base 1 — ainda não tem evidência própria (as bases são independentes, Ajuste 7).
@@ -761,7 +766,24 @@ relatório em markdown; o 3 abre com *"conforme solicitado"*). Se vale, **o erro
 e o conserto é de prompt/harness: a instrução do negócio dizer explicitamente *"entregue esse JSON/relatório com
 `final_answer(...)` dentro de `<code>`"*, ou o harness aceitar a resposta final estruturada (modo JSON). Teste possível,
 determinístico: em quantos erros o step seguinte é o `final_answer` (managerAgent: 15/21 anteciparam a resposta final).
-ConversationAgent e CalculoCivel (5): textos longos, nem cópia nem antecipação — sem mecanismo claro.
+ConversationAgent e CalculoCivel (5): textos longos, nem cópia nem antecipação — sem mecanismo claro pela medida.
+**Lidos depois (30/09):** ConversationAgent 3/3 = M1 (o relatório de sub-agente fora do envelope; a medida não viu porque
+o LLM reescreveu ao reembrulhar; o prompt desse papel diz "pode responder diretamente"); CalculoCivel 2/2 = M3 (só o
+plano; `</code>` no lugar de `<code>`). Base 1 fechada — `11-relatorio-protocolo-harness.md` §1.
+
+**Base 2, RoteadorCivel — 7 casos lidos + `metadados_steps.py` (30/09).** A leitura "antecipou a saída / inventou a
+falha" foi feita e **retirada**: nos steps do erro, 200–300 tokens de saída para 9–184 caracteres visíveis (nos steps que
+funcionam, ~3 caracteres por token), `finish = stop`, sem filtro; em 3 casos o step anterior veio **vazio sem erro**.
+Hipóteses M4 (texto que não chega) e M5 (step vazio silencioso) — `11-relatorio-protocolo-harness.md` §2.3.
+**Campos crus (30/09, `metadados_steps.py` linha `cru:`):** só o `content` da API vem preenchido (os outros campos ∅,
+`usage` sem detalhe de raciocínio), e ele já vem curto ou vazio — o smolagents leu o mesmo mais o `</code>`. Descartado
+"conteúdo em outro campo"; M4 = o terra gasta a saída e entrega pouco ou nada (causa provável: raciocínio interno, não
+comprovável pelo trace); M5 = o harness aceita o `content` vazio sem erro (achado de harness).
+
+**Estado da família em 30/09.** Base 1 **fechada** (33: M1 20, M2 6, M3 2, 5 do managerAgent declarados "não lidos" —
+decisão do Rafael). Base 2: plataforma (modelo); sem lição aprendida e sem sinal de harness nos 56 do RoteadorCivel; 1
+achado de harness (M5). **Próximo:** CalculoCivel (4 erros numa execução — é a do erro crítico?) e RespostaBacen (M2 de
+novo? → memória candidata por ferramenta). `11-relatorio-protocolo-harness.md` §2.4–2.5.
 
 ### Etapa 6 — o alarme de cobertura
 

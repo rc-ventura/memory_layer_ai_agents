@@ -62,7 +62,7 @@ Números gerais: 840 execuções com memória preservada · 5.781 ActionSteps ·
 | **Geração de código** | 225 | 45,2% | String não fechada — relatório longo em literal (159) |
 | **Contrato de retorno da ferramenta** | 168 | 33,7% | Retorno é `dict`, agente indexa como lista (136) |
 | **Convenção de chamada de ferramenta** | 35 | 7,0% | Argumento posicional onde só cabe nomeado (12 ferramentas) |
-| **Protocolo do harness** | 33 | 6,6% | Resposta sem bloco de código — **incidente resolvido** |
+| **Protocolo do harness** | 33 | 6,6% | Resposta sem bloco de código — **incidente resolvido** (por mecanismo: [`11-relatorio-protocolo-harness.md`](11-relatorio-protocolo-harness.md)) |
 | **Ambiente & sandbox** | 19 | 3,8% | Import não autorizado (11), módulo sem import (6) |
 | **Suposição sobre estado** | 8 | 1,6% | Variável de step que falhou |
 | **Infra / LLM upstream** | 7 | 1,4% | `AgentGenerationError` (6) |
@@ -378,7 +378,7 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
 | 11 | **Não colar retorno impresso de volta no código** — referenciar a variável que guardou o retorno (truncado ou inteiro); candidata desde 25/09/2026 | experiencial · estratégia | 6 | 6 | 6 | 4 | 2 | 0,09M |
 | — | **Sinal de harness — Campo inexistente no retorno estruturado** (a nº10: `quebra_sigilo` 7×; erro do agente, mas a mineração decidiu `destino = harness` — o prompt declara o mesmo nome de campo para o retorno e para o JSON final, 9/21 respostas com campo inválido, §6.2 do `07`) | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
-| — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)** | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
+| — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)**; mecanismos e destinos em `11-relatorio-protocolo-harness.md` | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |
 | — | **Causa não identificada** (nenhuma regra de causa reconheceu o erro) — revisar, prioridade | — | 7 | 7 | 7 | 5 | 2 | 0,10M |
 | — | **Sintoma não reconhecido** (erro que a taxonomia não conhece) — revisar, baixa prioridade | — | 1 | 1 | 1 | 1 | 1 | 0,01M |
