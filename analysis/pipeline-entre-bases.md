@@ -700,6 +700,32 @@ formato é imposto na geração), ou manter o `gpt-4.1` nesses papéis, ou testa
 produção. **Método:** o surto se explica cruzando **modo × modelo** por papel e mês — tudo registrado no trace, lido de
 forma determinística, sem LLM na análise. Vale como monitor: modelo novo num papel → conferir a taxa do erro de formato.
 
+**Base 1, investigação por papel (30/09; cenário 4 — managerAgent, RespostaBacen, ConversationAgent, CalculoCivel =
+os 33 erros).** Medida determinística aqui (fração dos trechos de 5 palavras do que o modelo escreveu que aparece na
+observação anterior e na resposta final entregue depois) + leitura de casos com `drill_down.py protocolo --casos`:
+
+| Papel | Erros | Modelo | O que escreveu | Tamanho mediano | Cópia da ferramenta | **Antecipou a resposta final** |
+|---|---:|---|---|---:|---:|---:|
+| managerAgent | 21 | `gpt-4.1` (12) + não registrado (9) | 11 markdown, 10 texto | 3.254 | 2/21 | **15/21** (mediana 97%) |
+| RespostaBacen | 7 | `o4-mini` (7) | 6 texto, 1 ```` ``` ```` | 101 | 1/7 | 1/7 |
+| ConversationAgent | 3 | `gpt-4.1` | 2 texto, 1 ```` ``` ```` | 3.295 | 0/3 | 0/3 |
+| CalculoCivel | 2 | `gpt-4.1` | 2 texto | 4.084 | 0/2 | 0/2 |
+
+**managerAgent — mecanismo A, "entregou a resposta final em texto, sem código" (15/21), confirmado na leitura de 3
+casos** (`protocolo --casos managerAgent 82de8f07 3`): nos casos 1 e 3 o modelo escreveu a resposta completa ao usuário
+em markdown, sem `<code>`, e no step seguinte embrulhou **o mesmo texto** em `final_answer("""…""")` (100% e 97% de
+sobreposição com o código seguinte e com a resposta final). O caso 3 começa com *"Resposta detalhada em formato markdown
+**conforme solicitado**"* — cita a instrução do negócio no fim do prompt (*"Sempre dê a resposta mais detalhada
+possível. Responda … em formato markdown"*): o modelo segue a instrução do negócio e esquece a regra do `<code>`. Caso
+2, variação: o modelo quis **falar com o usuário** (tabela parcial + perguntas, esperando confirmação) em texto, em vez
+de `final_answer(..., human_request=…)`; 44% veio da observação anterior; a recuperação falhou (o código seguinte começa
+com texto solto) — a cascata para `U_texto_solto`.
+
+**RespostaBacen — mecanismo B, "frase curta sem código"** (`o4-mini`, modelo que raciocina por dentro): 7 textos de ~100
+caracteres, nem cópia da ferramenta nem antecipação. O prompt termina com um modelo de JSON montado com as saídas das
+ferramentas, mas os erros não são esse JSON — a hipótese "devolva um JSON" não se confirma pela forma. A ler.
+ConversationAgent e CalculoCivel (5): textos longos, nem cópia nem antecipação — sem mecanismo claro.
+
 ### Etapa 6 — o alarme de cobertura
 
 **Contexto.** `triagem()` calcula o alarme sobre **erros** (`(EU["unidade"] == "X_sintoma_nao_reconhecido").mean()`), e
