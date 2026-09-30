@@ -90,6 +90,10 @@ o que mudou de conclusão (incidente em out/2025; leitura de estabilidade do sch
   **Pendente:** reclassificar formalmente (tipo/decisão) esta unidade quando a base 2 for integrada ao
   pipeline (item 1) — hoje ela segue com `tipo=NAO` porque a integração ainda não aconteceu, não porque o
   achado tenha sido revalidado. → `02-relatorio-achados.md` §6
+  **Revalidado na base 2 (30/09/2026, `drill_down.py protocolo`):** 69 erros, 61 em ago/2026 (56 do RoteadorCivel) —
+  incidente 2 de plataforma; 69/69 execuções com resposta, nunca repetiu. `tipo=NAO` mantido com evidência própria.
+  Forma diferente da base 1 (frase curta, não relatório). O gatilho dispara com 1 caso em mês pequeno — rever na
+  Etapa 6. → `../../pipeline-entre-bases.md` Etapa 10b
 
 ## Fora de escopo / adiado
 

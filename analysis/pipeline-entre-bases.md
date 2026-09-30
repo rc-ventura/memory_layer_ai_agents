@@ -599,6 +599,34 @@ tudo como no relatório.
 as datas). Espalhado e com uma forma dominante → ver se há lição (ex.: "sempre responder com bloco de código, inclusive a
 resposta final") — ajuste próprio, com evidência.
 
+**Resultado na base 2 (máquina 2, 30/09; só contagens).**
+
+| Bloco | Fato |
+|---|---|
+| total | **69 erros** (os 69 vistos antes já eram só o `H_bloco_code`; a família, com o erro crítico, tinha 70) |
+| mês | **ago/2026: 61** (37,8 por 1k steps, 58 execuções, 3 papéis); resto espalhado — dez/2025 1, fev 4, abr 2, mai 1 |
+| papel | **RoteadorCivel 56, todos em ago**; em ago também OBFCivel 4 e CalculoTrabalhista 1; fora de ago, CalculoCivel 4 (fev, 1 execução) e RespostaBacen 4 (3 meses) |
+| forma | 67 texto sem marcador de código, 2 vazios; 1 começa como markdown; 0 citam `final_answer`; mediana **138 caracteres**; tokens de saída mediana **242**, máx 2.604 |
+| recuperação | o papel entregou resposta depois em 66/69; execução com resposta em 69/69 |
+| cascata | 61 seguidos de step sem erro; 5 `U_estado_perdido`, 3 `U_texto_solto`; nunca repetiu; 14 erros seguidos no total, máx 4 |
+
+**Conclusão: incidente 2 de plataforma** — concentrado em ago/2026 (88% dos casos), quase todo num papel, e três papéis
+começando no mesmo mês. **"Não-memória" continua, agora com evidência da base 2**: o agente se recupera no step
+seguinte e nunca repete; o custo é um step desperdiçado por erro. Nenhuma regra muda.
+
+**A forma mudou em relação à base 1:** lá, relatório longo em texto (mediana 2.859 caracteres, 12 em markdown — "achou
+que tinha terminado"); aqui, **frase curta** sem código. E 242 tokens de saída para 138 caracteres visíveis (~35
+tokens) sugerem tokens que não aparecem no texto — raciocínio interno de outro modelo, ou resposta cortada/filtrada.
+**Não verificado.** Coincide com outros sinais de mudança no mesmo período: a mensagem de parsing em formato novo no
+RoteadorCivel (desde jun/2026, Ajuste 2.1) e o pico de Timeout de ferramenta em 10–11/08 (Ajuste 4).
+
+**Em aberto (opcional):** ler 2–3 casos do RoteadorCivel de ago e 1 dos vazios (`evidencia`, trecho `model_output` do
+step do erro; exec_id em `resultados/evidencia/protocolo/casos.csv`) e classificar o que o LLM escreveu: plano sem
+código, resposta em texto, cortado, outro. Nomearia a mudança de plataforma; não muda a decisão.
+
+**Achado de método (Etapa 6):** o gatilho dispara com 1 caso em mês pequeno (dez/2025: 1 em 21 steps = 47,6/1k),
+porque a regra é "≥ 2 casos **ou** > 1/1k steps". Rever junto com a robustez do alarme.
+
 ### Etapa 6 — o alarme de cobertura
 
 **Contexto.** `triagem()` calcula o alarme sobre **erros** (`(EU["unidade"] == "X_sintoma_nao_reconhecido").mean()`), e
