@@ -48,6 +48,33 @@ def _finish_e_filtro(s):
     return ch.get("finish_reason"), filtro
 
 
+def _tam(v):
+    """Tamanho de um campo sem mostrar o conteúdo: ∅ = ausente/None; lista → nº de itens e caracteres; resto → caracteres."""
+    if v is None:
+        return "∅"
+    if isinstance(v, list):
+        return f"{len(v)}it/{len(json.dumps(v, ensure_ascii=False, default=str))}c"
+    return f"{len(v if isinstance(v, str) else json.dumps(v, ensure_ascii=False, default=str))}c"
+
+
+def _campos_crus(s):
+    """Onde a resposta do LLM foi parar: os campos da mensagem crua da API e do smolagents, só nome e tamanho.
+    Pergunta do M4/M5 (10-racionais-protocolo-harness.md §4): tokens de saída sem texto — raciocínio oculto, ou conteúdo
+    num campo que o smolagents não lê (tool_calls, reasoning_content, refusal…)?"""
+    mom = s.get("model_output_message") or {}
+    raw = mom.get("raw") or {}
+    ch = ((raw.get("choices") or [{}])[0] or {}) if isinstance(raw, dict) else {}
+    msg = ch.get("message") or {}
+    us = raw.get("usage") or {} if isinstance(raw, dict) else {}
+    padrao_raw = {"id", "choices", "created", "model", "object", "system_fingerprint", "service_tier", "usage", "_type"}
+    extra = sorted(set(raw) - padrao_raw) if isinstance(raw, dict) else []
+    usage = [k if not isinstance(v, dict) else f"{k}{{{','.join(sorted(v))}}}" for k, v in us.items() if k != "_type"]
+    return (f"cru: msg{{{', '.join(f'{k}={_tam(v)}' for k, v in msg.items() if k != '_type') or 'vazio'}}} · "
+            f"smolagents{{content={_tam(mom.get('content'))}, tool_calls={_tam(mom.get('tool_calls'))}}} · "
+            f"usage{{{', '.join(usage) or 'vazio'}}}" + (f" · raw+{{{', '.join(extra)}}}" if extra else "")
+            + ("" if raw else " · raw vazio"))
+
+
 def _tarefa(s):
     """Texto da mensagem 'New task:' do step (a tarefa que o papel recebeu), ou ''."""
     for m in s.get("model_input_messages") or []:
@@ -101,7 +128,10 @@ def main(papel, quantos=4):
             print(f"  {s.get('step_number')!s:>4} {len(str(s.get('model_output') or '')):>9} "
                   f"{len(str(s.get('code_action') or '')):>10} {erro:>4} {fin!s:>14} {ent!s:>11} {sai!s:>9} "
                   f"{rac!s:>14} {'sim' if filtro else 'não':>6}")
+            print(f"       {_campos_crus(s)}")
     print("\nerro: P = erro de parse do <code> (resposta sem bloco de código). Sem texto de caso nem exec_id nesta saída.")
+    print("cru: cada campo da mensagem da API (msg), do smolagents e do usage, só com tamanho — c = caracteres, "
+          "it = itens de lista, ∅ = ausente/None.")
 
 
 if __name__ == "__main__":
