@@ -662,8 +662,18 @@ conferido na configuração de vocês); o que se afirma são os números.
 (`<code>` e ```` ```py ````)". Errado: o ```` ```python ```` aparece nas duas só para listar as ferramentas. A diferença
 real é JSON × texto; o [7] passou a mostrar o modo.
 
-**Falta a base 2:** o RoteadorCivel mudou de modo em ago/2026? Se os 56 erros estiverem numa versão "texto com
-`<code>`" que só aparece em agosto, o incidente 2 tem a mesma explicação do 1.
+**Base 2 ([7], máquina 2, 30/09):** **todos os papéis com o erro rodam no modo texto, o tempo todo** — RoteadorCivel e
+OBFCivel na versão `168d70e2`, RespostaBacen, CalculoCivel e CalculoTrabalhista na `b0f37eea`. **Ninguém mudou de modo.**
+O RoteadorCivel usa a mesma versão de mai a ago: **965 steps e 0 erros em mai–jul; 871 steps e 56 erros em ago**. O modo
+explica por que o erro **pode** acontecer na base 2 inteira, mas **não explica o surto de agosto** — outra coisa mudou.
+
+**Próxima medida — o modelo.** O trace registra, por step, o modelo que respondeu (`model_output_message.raw.model`) e,
+por execução, a versão do agente (`cod_vers_aget`). `drill_down.py protocolo` ganhou o [8]: papel × modelo e papel ×
+versão, com meses, steps, erros e taxa. Pista: 242 tokens de saída para 138 caracteres visíveis é o padrão de modelo que
+raciocina por dentro (`o4-mini`, `gpt-5.2`). Na base 1, o RespostaBacen roda em `o4-mini` e tem a maior taxa do erro
+(7 em 116 steps, 60/1k); o managerAgent em `gpt-4.1` erra só em out/2025, no modo texto. `cod_vers_aget` na base 1 é
+quase sempre vazio ou 0 — pouco informativo lá. **Hipótese para ago/2026:** o RoteadorCivel trocou de modelo, e o modelo
+novo esquece as marcas `<code>` no modo texto (e entrega o dict direto, como no caso 2).
 
 ### Etapa 6 — o alarme de cobertura
 

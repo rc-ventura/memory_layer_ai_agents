@@ -82,7 +82,8 @@ Uso:
         -> "resposta sem bloco de código" (H_bloco_code): por mês e papel (erros, por 1k steps, gatilho), o que o LLM
            escreveu no lugar do bloco (só a forma), recuperação e cascata. Só contagens; os casos com exec_id vão para
            resultados/evidencia/protocolo/casos.csv. [7]: as versões do system prompt por papel (hash), com meses,
-           erros e o formato que ensinam. Ver pipeline-entre-bases.md, Ajuste 10b.
+           erros e o modo (JSON estruturado × texto com <code>); [8]: o modelo que respondeu (raw.model) e a versão
+           do agente (cod_vers_aget), com meses, steps e erros. Ver pipeline-entre-bases.md, Ajuste 10b.
 
     python drill_down.py protocolo --prompt <versão>
         -> grava o texto daquela versão do system prompt em resultados/evidencia/protocolo/ para ler na máquina.
@@ -926,6 +927,11 @@ def _variante_prompt(sysp):
     linhas = [re.sub(r"\d", "0", l.strip()) for l in sysp.splitlines() if _MARCA_FORMATO.search(l)]
     return hashlib.md5("\n".join(linhas).encode("utf-8")).hexdigest()[:8]
 
+def _modelo_do_step(s):
+    """O modelo que respondeu o step: `model_output_message.raw.model`, gravado pela API do provedor."""
+    raw = (s.get("model_output_message") or {}).get("raw") if isinstance(s.get("model_output_message"), dict) else None
+    return str(raw.get("model")) if isinstance(raw, dict) and raw.get("model") else "(não registrado)"
+
 def _modo_prompt(sysp):
     """Em que modo do CodeAgent (smolagents) o system prompt põe o agente — só pela presença de marcas, sem texto.
     JSON estruturado: o modelo responde {"thought": …, "code": …} e o harness lê o JSON (não há regex de <code>, então
@@ -949,7 +955,8 @@ def protocolo(prompt=None):
     unid = {(r.exec_id, r.role, int(r.idx)): r.unidade for r in M.itertuples()}
     df = load().drop_duplicates("cod_idef_exeo")
     passos, casos = Counter(), []
-    variantes = {}   # (role, variante) -> {"meses": Counter, "steps", "erros", "marcas", "chars", "texto"}
+    variantes = {}   # (role, variante) -> {"meses": Counter, "steps", "erros", "modo", "chars", "texto"}
+    por_modelo = {}  # (role, eixo, valor) -> {"meses": Counter, "steps", "erros"}; eixo = modelo | versão do agente
     for _, r in df.iterrows():
         eid = r["cod_idef_exeo"]
         if not isinstance(r["txt_etap_memo"], str) or eid not in X.index:
@@ -965,7 +972,11 @@ def protocolo(prompt=None):
                                                                       "modo": _modo_prompt(sp), "chars": len(sp),
                                                                       "texto": sp})
                 v["meses"][mes] += 1; v["steps"] += 1
-                if "regex pattern" not in str((s.get("error") or {}).get("message") or ""):
+                erro_aqui = "regex pattern" in str((s.get("error") or {}).get("message") or "")
+                for eixo, valor in (("modelo", _modelo_do_step(s)), ("versão do agente", str(r.get("cod_vers_aget")))):
+                    pm = por_modelo.setdefault((role, eixo, valor), {"meses": Counter(), "steps": 0, "erros": 0})
+                    pm["meses"][mes] += 1; pm["steps"] += 1; pm["erros"] += erro_aqui
+                if not erro_aqui:
                     continue
                 v["erros"] += 1
                 mo = str(s.get("model_output") or "")
@@ -1041,6 +1052,12 @@ def protocolo(prompt=None):
         print(f"  {role:20s} {vid} · {v['modo']:16s} · {meses} · {v['steps']:5d} · {v['erros']:3d} · "
               f"{v['erros'] / v['steps'] * 1000:6.1f}")
     print("  ler o texto de uma versão:  python drill_down.py protocolo --prompt <versão>")
+    for eixo in ("modelo", "versão do agente"):
+        print(f"\n[8] {eixo} que respondeu, nos papéis com o erro:  papel · {eixo} · meses (steps) · steps · erros · por 1k")
+        for (role, ex, valor), v in sorted(por_modelo.items(), key=lambda x: (x[0][0], min(x[1]["meses"]))):
+            if ex != eixo or role not in set(C["role"]): continue
+            meses = ", ".join(f"{m} ({n})" for m, n in sorted(v["meses"].items()))
+            print(f"  {role:20s} {valor:40s} · {meses} · {v['steps']:5d} · {v['erros']:3d} · {v['erros'] / v['steps'] * 1000:6.1f}")
     print(f"\nCasos (com exec_id, para `evidencia`): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
     print(f"{'='*100}")
 
