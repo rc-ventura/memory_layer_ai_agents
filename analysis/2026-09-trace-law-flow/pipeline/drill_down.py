@@ -88,6 +88,11 @@ Uso:
     python drill_down.py protocolo --prompt <versão>
         -> grava o texto daquela versão do system prompt em resultados/evidencia/protocolo/ para ler na máquina.
 
+    python drill_down.py protocolo --casos <papel> [<versão>] [<quantos>]
+        -> um arquivo por erro do papel (e da versão, se dada; padrão 3 erros, alternando as formas) com, na ordem: o
+           system prompt exato do step, a observação anterior, o que o modelo escreveu no lugar do código, o erro, o
+           step seguinte e a resposta final. Rode `protocolo` antes. Caso em claro: ler na máquina.
+
     python drill_down.py caso <exec_id> <role>
         -> imprime a trajetória inteira daquele papel naquela execução, na ordem
            em que aconteceu: PlanningStep (plano) quando existir, e pra cada
@@ -943,6 +948,60 @@ def _modo_prompt(sysp):
         return "texto com <code>"
     return "outro"
 
+def protocolo_casos(papel, versao=None, n=3):
+    """Um arquivo de texto por erro de "resposta sem bloco de código" do papel (e da versão do prompt, se dada), para
+    ler prompt, erro e recuperação juntos: o system prompt exato do step, a observação que o agente acabara de ver, o
+    que ele escreveu no lugar do código, o erro, o step seguinte e a resposta final. Escolhe até `n` erros, alternando
+    entre as formas (frase, markdown, dict, ...). Lê resultados/evidencia/protocolo/casos.csv — rode `protocolo` antes.
+    Os arquivos têm o caso em claro: ficam em resultados/ (git-ignored), para ler na máquina."""
+    pasta = os.path.join(PASTA_EVIDENCIA, "protocolo")
+    arq_casos = os.path.join(pasta, "casos.csv")
+    if not os.path.exists(arq_casos):
+        print("rode antes: python drill_down.py protocolo"); return
+    C = pd.read_csv(arq_casos, dtype={"exec_id": str})
+    sel = C[C["role"] == papel]
+    if versao:
+        sel = sel[sel["variante_prompt"] == versao]
+    if sel.empty:
+        print(f"nenhum erro para papel={papel}" + (f", versão={versao}" if versao else "") +
+              f". Papéis com erro: {sorted(C['role'].unique())}"); return
+    print(f"{papel}" + (f" · versão {versao}" if versao else "") + f": {len(sel)} erros. Por versão e forma:")
+    print("  " + sel.groupby(["variante_prompt", "forma"]).size().to_string().replace("\n", "\n  "))
+    # até n casos, alternando as formas (um de cada forma antes de repetir), em ordem de mês/execução
+    sel = sel.sort_values(["mes", "exec_id", "idx"])
+    grupos = [g for _, g in sel.groupby("forma")]
+    escolha, k = [], 0
+    while len(escolha) < min(n, len(sel)):
+        for g in grupos:
+            if k < len(g) and len(escolha) < n:
+                escolha.append(g.iloc[k])
+        k += 1
+    df = load().drop_duplicates("cod_idef_exeo").set_index("cod_idef_exeo")
+    for j, c in enumerate(escolha, 1):
+        acts = [st for st in json.loads(df.loc[c["exec_id"], "txt_etap_memo"])[papel]
+                if isinstance(st, dict) and st.get("__class__") == "ActionStep"]
+        i = int(c["idx"]); st = acts[i]; seg = acts[i + 1] if i + 1 < len(acts) else {}
+        fins = [a for a in acts[i + 1:] if a.get("is_final_answer") and not a.get("error")]
+        partes = [
+            f"papel {papel} · versão do prompt {c['variante_prompt']} · modo {_modo_prompt(system_prompt(st))} · "
+            f"modelo {_modelo_do_step(st)} · mês {c['mes']} · idx {i} · exec_id {c['exec_id']}",
+            ("1. SYSTEM PROMPT (exato, deste step)", system_prompt(st)),
+            ("2. O QUE ELE TINHA ACABADO DE VER (observação do step anterior)",
+             str(acts[i - 1].get("observations") or "") if i > 0 else "(primeiro step do papel)"),
+            ("3. O QUE O MODELO ESCREVEU NO LUGAR DO CÓDIGO (model_output do step do erro)", str(st.get("model_output") or "")),
+            ("4. ERRO DO HARNESS", str((st.get("error") or {}).get("message") or "")),
+            ("5. STEP SEGUINTE — o que escreveu", str(seg.get("model_output") or "(não há)")),
+            ("5b. STEP SEGUINTE — código executado", str(seg.get("code_action") or "(não há)")),
+            ("6. RESPOSTA FINAL ENTREGUE PELO PAPEL", str(fins[0].get("action_output") or "") if fins else "(nenhuma)"),
+        ]
+        arq = os.path.join(pasta, f"erro_{papel}_{c['variante_prompt']}_{j}.txt")
+        with open(arq, "w", encoding="utf-8") as fh:
+            fh.write(partes[0] + "\n")
+            for titulo, texto in partes[1:]:
+                fh.write(f"\n{'=' * 100}\n===== {titulo}\n{'=' * 100}\n{texto}\n")
+        print(f"  gravado: {os.path.relpath(arq)} · forma {c['forma']} · {int(c['chars']):,} caracteres")
+    print("Os arquivos têm o caso em claro: ler aqui, não copiar para fora.")
+
 def protocolo(prompt=None):
     """"Resposta sem bloco de código" (H_bloco_code): o harness não achou o bloco <code>…</code> na resposta do LLM.
     Incidente ou crônico? Um papel ou todos? O que o LLM escreveu no lugar (só a forma)? O agente se recuperou? O que
@@ -1147,6 +1206,13 @@ if __name__ == "__main__":
         residuo()
     elif cmd == "padrao":
         padrao(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "protocolo" and "--casos" in sys.argv:
+        resto = sys.argv[sys.argv.index("--casos") + 1:]
+        if not resto:
+            print("uso: python drill_down.py protocolo --casos <papel> [<versão>] [<quantos>]"); sys.exit(1)
+        ver = next((a for a in resto[1:] if re.fullmatch(r"[0-9a-f]{8}", a)), None)
+        qtd = next((int(a) for a in resto[1:] if a.isdigit() and not re.fullmatch(r"[0-9a-f]{8}", a)), 3)
+        protocolo_casos(resto[0], ver, qtd)
     elif cmd == "protocolo":
         pr = [a.split("=", 1)[1] if "=" in a else None for a in sys.argv[2:] if a.startswith("--prompt")]
         if pr and pr[0] is None and len(sys.argv) > 3:
