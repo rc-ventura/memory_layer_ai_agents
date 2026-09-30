@@ -94,6 +94,10 @@ o que mudou de conclusão (incidente em out/2025; leitura de estabilidade do sch
   incidente 2 de plataforma; 69/69 execuções com resposta, nunca repetiu. `tipo=NAO` mantido com evidência própria.
   Forma diferente da base 1 (frase curta, não relatório). O gatilho dispara com 1 caso em mês pequeno — rever na
   Etapa 6. → `../../pipeline-entre-bases.md` Etapa 10b
+  **Causa candidata (30/09):** o erro só existe no **modo texto com `<code>`** do CodeAgent; no modo JSON estruturado ele
+  não acontece. Base 1: o incidente de out/2025 = managerAgent e ConversationAgent rodando em texto só naquele mês; o
+  resto do tempo em JSON, 0 erros em 4.590 steps. **Dono:** plataforma (configuração do modo). Base 2: a conferir com
+  `drill_down.py protocolo` [7].
 
 ## Fora de escopo / adiado
 

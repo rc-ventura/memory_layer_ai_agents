@@ -635,15 +635,35 @@ null`. O erro é do agente (o LLM quebrou o formato), mas **uma memória não o 
 a mensagem de erro mostra o exemplo e ele acerta no step seguinte. A parte aprendível — não supor que o step que falhou
 rodou — já é o `U_estado_perdido`.
 
-**Hipótese do Rafael: o prompt.** `drill_down.py protocolo` ganhou o bloco [7] — versões do **formato** que o system
-prompt ensina (hash só das linhas com `<code>`, ```` ``` ````, `<end_code>`, `Thought:`, `final_answer(`; o prompt
-inteiro muda a cada execução, essas linhas não) por papel, com meses, erros e as marcas — e `--prompt <versão>`, que
-grava o texto da versão para ler na máquina. As formas de [4] ficaram: frase/texto, dict/JSON, ```` ``` ````, vazio (o
-`</code>` do fim é ignorado). **Na base 1, todos os 33 erros estão em versões que ensinam os dois formatos (`<code>` e
-```` ```py ````/`<end_code>`, 49–51 linhas de formato); as versões que ensinam só um formato (12–14 linhas) têm zero
-erros em 4.590 steps.** O incidente de out/2025 está inteiro em duas versões que só existiram naquele mês
-(managerAgent `82de8f07`: 21 erros em 130 steps; ConversationAgent `2f96aa69`: 3 em 83). Causa candidata, até aqui
-nunca achada: **prompt com dois formatos de código** — desencontro prompt × harness, da plataforma. Falta a base 2.
+**Hipótese do Rafael: o prompt — o achado: o MODO do agente.** `drill_down.py protocolo` ganhou o bloco [7]: as
+versões do formato no system prompt por papel (hash só das linhas com `<code>`, ```` ``` ````, `<end_code>`,
+`Thought:`, `final_answer(` — o prompt inteiro muda a cada execução, essas linhas não), com o **modo**, os meses e os
+erros de cada versão; e `--prompt <versão>`, que grava o texto da versão para ler na máquina. As formas de [4] ficaram:
+frase/texto, dict/JSON, ```` ``` ````, vazio (o `</code>` do fim é o harness devolvendo a sequência de parada).
+
+As versões são **os dois modos do CodeAgent do smolagents**, cada um com o seu modelo de prompt:
+
+| Modo | O que o modelo entrega | Como o harness acha o código | O erro "regex pattern" |
+|---|---|---|---|
+| **JSON estruturado** | `{"thought": …, "code": …}` — formato imposto na geração | lê o campo `code` | **não existe** |
+| **texto com `<code>`** | texto livre com `Thought:` e `<code>…</code>` — as marcas são só instrução | procura o bloco com a regex | **só aqui** |
+
+**Base 1:** managerAgent e ConversationAgent rodam em JSON (`a34f495f`, `febfeb55`: 0 erros em 4.590 steps, out/2025 →
+ago/2026), **exceto em out/2025**, quando parte das execuções rodou em texto (`82de8f07`: 21 erros em 130 steps;
+`2f96aa69`: 3 em 83) — **é o incidente 1, cuja causa nunca tinha sido achada**. RespostaBacen e CalculoCivel rodam
+sempre em texto (`b0f37eea`: 9 em 193 steps, taxa de fundo). Ou seja: o erro é do modelo (esquece as marcas ou entrega
+a resposta direto — o dict do caso 2), mas **só pode acontecer no modo texto**, e os surtos coincidem com execuções
+mudando de modo. **Não vira memória:** o agente não escolhe o modo; o conserto é configuração da plataforma (qual modo,
+e mantê-lo); a parte aprendível — não supor que o step que falhou rodou — já é o `U_estado_perdido`. **Vira achado para a
+plataforma.** Ressalva: que o modo JSON imponha o formato depende de a API do modelo aceitar saída estruturada (não
+conferido na configuração de vocês); o que se afirma são os números.
+
+**Correção registrada:** um commit anterior (`4f6ecaa`) leu as versões como "prompt que mistura dois formatos
+(`<code>` e ```` ```py ````)". Errado: o ```` ```python ```` aparece nas duas só para listar as ferramentas. A diferença
+real é JSON × texto; o [7] passou a mostrar o modo.
+
+**Falta a base 2:** o RoteadorCivel mudou de modo em ago/2026? Se os 56 erros estiverem numa versão "texto com
+`<code>`" que só aparece em agosto, o incidente 2 tem a mesma explicação do 1.
 
 ### Etapa 6 — o alarme de cobertura
 

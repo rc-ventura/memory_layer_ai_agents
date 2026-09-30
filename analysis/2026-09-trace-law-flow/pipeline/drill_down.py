@@ -926,11 +926,16 @@ def _variante_prompt(sysp):
     linhas = [re.sub(r"\d", "0", l.strip()) for l in sysp.splitlines() if _MARCA_FORMATO.search(l)]
     return hashlib.md5("\n".join(linhas).encode("utf-8")).hexdigest()[:8]
 
-def _marcas_prompt(sysp):
-    """Que formato de código o system prompt ensina — só presença de marcas, sem texto."""
-    return {"<code>": "<code>" in sysp and "</code>" in sysp,
-            "```py/<end_code>": bool(re.search(r"```py|<end_code>", sysp)),
-            "linhas de formato": sum(bool(_MARCA_FORMATO.search(l)) for l in sysp.splitlines())}
+def _modo_prompt(sysp):
+    """Em que modo do CodeAgent (smolagents) o system prompt põe o agente — só pela presença de marcas, sem texto.
+    JSON estruturado: o modelo responde {"thought": …, "code": …} e o harness lê o JSON (não há regex de <code>, então
+    o erro "regex pattern" não acontece). Texto com <code>: o modelo escreve Thought + <code>…</code> e o harness procura
+    o bloco com a regex — o único modo em que o erro existe. (Os ```python do prompt só mostram as ferramentas.)"""
+    if re.search(r'\{"thought":', sysp):
+        return "JSON estruturado"
+    if "<code>" in sysp and "</code>" in sysp:
+        return "texto com <code>"
+    return "outro"
 
 def protocolo(prompt=None):
     """"Resposta sem bloco de código" (H_bloco_code): o harness não achou o bloco <code>…</code> na resposta do LLM.
@@ -957,7 +962,7 @@ def protocolo(prompt=None):
             for i, s in enumerate(acts):
                 sp = system_prompt(s)
                 v = variantes.setdefault((role, _variante_prompt(sp)), {"meses": Counter(), "steps": 0, "erros": 0,
-                                                                      "marcas": _marcas_prompt(sp), "chars": len(sp),
+                                                                      "modo": _modo_prompt(sp), "chars": len(sp),
                                                                       "texto": sp})
                 v["meses"][mes] += 1; v["steps"] += 1
                 if "regex pattern" not in str((s.get("error") or {}).get("message") or ""):
@@ -1028,14 +1033,13 @@ def protocolo(prompt=None):
         print(f"  {n:4d}  {k}")
     print(f"  repetiu o mesmo erro logo depois: {int(C['repetiu_logo_depois'].sum())} · erros seguidos depois: "
           f"total {int(C['cascata_depois'].sum())}, máx {int(C['cascata_depois'].max())}")
-    print("\n[7] versões do FORMATO ensinado pelo system prompt, nos papéis com o erro (hash das linhas de formato):")
-    print("  papel · versão · meses (steps) · steps · erros · por 1k · ensina <code> · ensina ```py/<end_code> · linhas de formato")
+    print("\n[7] versões do formato no system prompt, nos papéis com o erro (hash das linhas de formato) — o MODO do agente:")
+    print("  papel · versão · modo · meses (steps) · steps · erros · por 1k")
     for (role, vid), v in sorted(variantes.items(), key=lambda x: (x[0][0], min(x[1]["meses"]))):
         if role not in set(C["role"]): continue
-        mk = v["marcas"]; meses = ", ".join(f"{m} ({n})" for m, n in sorted(v["meses"].items()))
-        print(f"  {role:20s} {vid} · {meses} · {v['steps']:5d} · {v['erros']:3d} · "
-              f"{v['erros'] / v['steps'] * 1000:6.1f} · {'sim' if mk['<code>'] else 'NÃO':3s} · "
-              f"{'sim' if mk['```py/<end_code>'] else 'não':3s} · {mk['linhas de formato']}")
+        meses = ", ".join(f"{m} ({n})" for m, n in sorted(v["meses"].items()))
+        print(f"  {role:20s} {vid} · {v['modo']:16s} · {meses} · {v['steps']:5d} · {v['erros']:3d} · "
+              f"{v['erros'] / v['steps'] * 1000:6.1f}")
     print("  ler o texto de uma versão:  python drill_down.py protocolo --prompt <versão>")
     print(f"\nCasos (com exec_id, para `evidencia`): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
     print(f"{'='*100}")
