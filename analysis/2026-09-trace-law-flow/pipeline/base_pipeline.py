@@ -23,7 +23,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
-           "caminho_dos_criticos", "FALHA_FERRAMENTA", "falhas_silenciosas", "chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
+           "caminho_dos_criticos", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -541,15 +541,28 @@ def falhas_silenciosas(df):
                 chamadas = declaradas & set(re.findall(r"\b(\w+)\s*\(", code))
                 err = st.get("error") or {}
                 obs = str(st.get("observations") or "") + " " + str(st.get("action_output") or "")
-                falhou = set(FALHA_FERRAMENTA.findall(obs)) | set(FALHA_FERRAMENTA.findall(str(err.get("message") or "")))
+                texto = obs + " " + str(err.get("message") or "")
+                falhou = set(FALHA_FERRAMENTA.findall(texto))
                 prox_final = next((f for f in finais if f > i), None)
                 for t in sorted(chamadas | falhou):
+                    # o motivo: o texto da ferramenta depois de "Error calling tool '<nome>':" (1ª linha). Pode conter
+                    # valores do caso (filtros) — mascarar_motivo() antes de mostrar.
+                    m = re.search(rf"Error calling tool '{t}':?\s*([^\n]*)", texto) if t in falhou else None
                     linhas.append({"exec_id": r["cod_idef_exeo"], "role": role, "idx": i, "mes": r["mes"],
                                    "ferramenta": t, "chamou": t in chamadas,
                                    "falha": ("excecao" if err else "silenciosa") if t in falhou else None,
+                                   "motivo": m.group(1)[:300] if m else "",
                                    "idx_final_depois": prox_final})
-    return pd.DataFrame(linhas, columns=["exec_id", "role", "idx", "mes", "ferramenta", "chamou", "falha",
+    return pd.DataFrame(linhas, columns=["exec_id", "role", "idx", "mes", "ferramenta", "chamou", "falha", "motivo",
                                          "idx_final_depois"])
+
+
+def mascarar_motivo(s, n=60):
+    """O motivo de uma falha de ferramenta sem dado de caso: o que está entre aspas e o valor depois de '=' viram <v>,
+    dígitos viram 9, corta em `n` caracteres. Sobra o texto que o dev da ferramenta escreveu."""
+    s = re.sub(r"'[^']*'|\"[^\"]*\"", "<v>", str(s))
+    s = re.sub(r"=\s*[^\s,;)]+", "=<v>", s)
+    return re.sub(r"\d", "9", s).strip()[:n]
 
 
 def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):

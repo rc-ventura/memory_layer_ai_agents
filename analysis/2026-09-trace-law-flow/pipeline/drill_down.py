@@ -101,6 +101,10 @@ Uso:
            que entregaram final_answer depois da falha sem chamada bem-sucedida (candidato a sucesso falso). Só
            números e nomes; casos em resultados/evidencia/silenciosas/casos.csv. Função: falhas_silenciosas().
 
+    python drill_down.py silenciosas --motivos [<ferramenta>]
+        -> os motivos das falhas de ferramenta, por ferramenta, mascarados (o que está entre aspas e depois de '=' vira
+           <v>, dígito vira 9, 60 caracteres): sobra o texto que o dev da ferramenta escreveu. Pode ser fotografado.
+
     python drill_down.py critico [<papel>]
         -> os erros críticos (o papel esgotou os passos): uma linha por execução morta — papel, mês, idx do crítico,
            steps, erros antes, primeira unidade, unidades no caminho —, se a execução tem "resposta sem bloco de
@@ -967,18 +971,31 @@ def _modo_prompt(sysp):
 UNIDADES_CONTRATO = ["U_tipo_retorno", "U_contrato_dict", "U_campo_inexistente"]
 
 
-def silenciosas(ferramenta=None, janela=3):
+def silenciosas(ferramenta=None, janela=3, motivos=False):
     """Falhas silenciosas de ferramenta: a ferramenta falha, o wrapper devolve "Error calling tool '<nome>'" como
     STRING, o step fica com error: null, e o pipeline o conta como ok. Só números e nomes, sem exec_id. Os casos vão
     para resultados/evidencia/silenciosas/casos.csv (git-ignored). Mesma função do notebook: falhas_silenciosas()
-    (base_pipeline.py). Origem: 11-relatorio-protocolo-harness.md §2.5; roadmap item 26."""
-    from base_pipeline import carregar_trace, falhas_silenciosas
+    (base_pipeline.py). Origem: 11-relatorio-protocolo-harness.md §2.5; roadmap item 26.
+    `motivos=True` (--motivos): só a lista dos motivos por ferramenta, mascarados (mascarar_motivo), com a contagem —
+    para escrever as regras de motivo olhando as duas bases (S2b)."""
+    from base_pipeline import carregar_trace, falhas_silenciosas, mascarar_motivo
     F = falhas_silenciosas(carregar_trace())
     if ferramenta:
         F = F[F["ferramenta"] == ferramenta]
     if F.empty:
         print("nenhuma chamada ou falha de ferramenta encontrada."); return
     sil = F[F["falha"] == "silenciosa"]
+    if motivos:
+        fal = F[F["falha"].notna()].copy()
+        fal["motivo_m"] = fal["motivo"].map(mascarar_motivo)
+        print(f"{'='*100}\nMotivos das falhas de ferramenta (mascarados: <v> = valor do caso, 9 = dígito)"
+              f"{' · ' + ferramenta if ferramenta else ''}\n{'='*100}")
+        for t, g in fal.groupby("ferramenta"):
+            print(f"\n{t}  ({len(g)} falhas: {(g['falha'] == 'silenciosa').sum()} silenciosas, "
+                  f"{(g['falha'] == 'excecao').sum()} com exceção)")
+            for (mot, tipo), n in g.groupby(["motivo_m", "falha"]).size().sort_values(ascending=False).items():
+                print(f"  {n:>4} · {'silenc.' if tipo == 'silenciosa' else 'exceção'} · {mot or '(vazio)'}")
+        return
     print(f"{'='*100}\nFalhas silenciosas de ferramenta — 'Error calling tool' com error: null"
           f"{' · ' + ferramenta if ferramenta else ''}\n{'='*100}")
     print(f"steps com a ferramenta (chamada ou falha): {len(F):,} · falhas com exceção: "
@@ -1352,7 +1369,8 @@ if __name__ == "__main__":
     elif cmd == "padrao":
         padrao(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "silenciosas":
-        silenciosas(sys.argv[2] if len(sys.argv) > 2 else None)
+        args = [a for a in sys.argv[2:] if a != "--motivos"]
+        silenciosas(args[0] if args else None, motivos="--motivos" in sys.argv[2:])
     elif cmd == "critico":
         critico(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "protocolo" and "--casos" in sys.argv:
