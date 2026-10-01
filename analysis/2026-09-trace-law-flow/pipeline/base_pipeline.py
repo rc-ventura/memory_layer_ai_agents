@@ -23,7 +23,8 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
-           "caminho_dos_criticos", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
+           "caminho_dos_criticos", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
+           "GRUPOS_FALHA_REAL", "motivo_da_falha", "chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -552,9 +553,58 @@ def falhas_silenciosas(df):
                                    "ferramenta": t, "chamou": t in chamadas,
                                    "falha": ("excecao" if err else "silenciosa") if t in falhou else None,
                                    "motivo": m.group(1)[:300] if m else "",
+                                   "grupo": motivo_da_falha(m.group(1)) if m else None,
                                    "idx_final_depois": prox_final})
     return pd.DataFrame(linhas, columns=["exec_id", "role", "idx", "mes", "ferramenta", "chamou", "falha", "motivo",
-                                         "idx_final_depois"])
+                                         "grupo", "idx_final_depois"])
+
+
+# Grupos do motivo de uma falha de ferramenta (S2b, 01/10). Regras por palavra-chave, na ordem; a 1ª que casar
+# decide. Cada uma anota a base de onde veio (b1/b2) — as mensagens são escritas pelo dev de cada ferramenta, e uma base
+# nova traz ferramentas novas: o que não casar cai em "nao_reconhecido" e é lido como cobertura, como o resíduo.
+# Evidência: `drill_down.py silenciosas --motivos` nas duas bases (11-relatorio-protocolo-harness.md §2.5; ledger).
+MOTIVO_REGRAS = [
+    ("json_invalido", r"expecting property name enclosed in double quotes", "b1 b2"),
+    ("json_invalido", r"expecting .{0,8}delimiter", "b2"),
+    ("sem_resultado", r"nao foram encontrados", "b1"),
+    ("sem_resultado", r"no text of initial complaints found", "b1 b2"),
+    ("sem_resultado", r"\bnot found\b", "b1"),
+    ("sem_resultado", r"nao foi possivel recuperar", "b1 b2"),
+    ("fora_da_cobertura", r"assunto nao previsto", "b1 b2"),
+    ("fora_da_cobertura", r"coeficiente nao encontrado", "b2"),
+    ("fora_da_cobertura", r"outside available range|no data available", "b1"),
+    ("argumento_do_agente", r"necessario passar", "b1"),
+    ("argumento_do_agente", r"invalid key=value", "b1"),
+    ("argumento_do_agente", r"same amount of documents|maximum amount of documents", "b1"),
+    ("argumento_do_agente", r"formato de arquivo nao suportado|file format cannot be determined", "b1"),
+    ("argumento_do_agente", r"deve passar versao", "b1"),
+    ("argumento_do_agente", r"deve ser anterior ou igual|data_inicial/data_final invalida|indice deve ser", "b1 b2"),
+    ("argumento_do_agente", r"validation error for call", "b2"),
+    ("argumento_do_agente", r"deve ser um numero", "b2"),
+    ("argumento_do_agente", r"query falhou", "b1 b2"),
+    ("argumento_do_agente", r"could not convert", "b2"),
+    ("argumento_do_agente", r"must be a dict with", "b1"),
+    ("argumento_do_agente", r"doesn't exist, use tool", "b1"),
+    ("plataforma", r"internally hosted model failed", "b1 b2"),
+    ("plataforma", r"litellm|apierror", "b1"),
+    ("plataforma", r"failed to fetch", "b1 b2"),
+    ("plataforma", r"wrong credentials", "b2"),
+    ("plataforma", r"ongoing worker", "b1"),
+    ("plataforma", r"object has no attribute|too many values to unpack", "b1 b2"),
+    ("plataforma", r"structured_content must be", "b1 b2"),
+    ("plataforma", r"^'default'$", "b2"),
+]
+GRUPOS_FALHA_REAL = ("argumento_do_agente", "plataforma", "json_invalido", "nao_reconhecido")
+
+
+def motivo_da_falha(motivo):
+    """Grupo do motivo de uma falha de ferramenta (texto depois de "Error calling tool '<nome>':"): sem_resultado,
+    fora_da_cobertura, argumento_do_agente, plataforma, json_invalido ou nao_reconhecido. Sem acento, minúsculo."""
+    s = unicodedata.normalize("NFKD", str(motivo or "")).encode("ascii", "ignore").decode().lower().strip()
+    for grupo, padrao, _ in MOTIVO_REGRAS:
+        if re.search(padrao, s):
+            return grupo
+    return "nao_reconhecido"
 
 
 def mascarar_motivo(s, n=60):

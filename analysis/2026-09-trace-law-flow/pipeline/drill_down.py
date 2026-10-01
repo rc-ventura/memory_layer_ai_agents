@@ -978,7 +978,7 @@ def silenciosas(ferramenta=None, janela=3, motivos=False):
     (base_pipeline.py). Origem: 11-relatorio-protocolo-harness.md §2.5; roadmap item 26.
     `motivos=True` (--motivos): só a lista dos motivos por ferramenta, mascarados (mascarar_motivo), com a contagem —
     para escrever as regras de motivo olhando as duas bases (S2b)."""
-    from base_pipeline import carregar_trace, falhas_silenciosas, mascarar_motivo
+    from base_pipeline import carregar_trace, falhas_silenciosas, mascarar_motivo, GRUPOS_FALHA_REAL
     F = falhas_silenciosas(carregar_trace())
     if ferramenta:
         F = F[F["ferramenta"] == ferramenta]
@@ -993,8 +993,8 @@ def silenciosas(ferramenta=None, janela=3, motivos=False):
         for t, g in fal.groupby("ferramenta"):
             print(f"\n{t}  ({len(g)} falhas: {(g['falha'] == 'silenciosa').sum()} silenciosas, "
                   f"{(g['falha'] == 'excecao').sum()} com exceção)")
-            for (mot, tipo), n in g.groupby(["motivo_m", "falha"]).size().sort_values(ascending=False).items():
-                print(f"  {n:>4} · {'silenc.' if tipo == 'silenciosa' else 'exceção'} · {mot or '(vazio)'}")
+            for (mot, tipo, grp), n in g.groupby(["motivo_m", "falha", "grupo"]).size().sort_values(ascending=False).items():
+                print(f"  {n:>4} · {'silenc.' if tipo == 'silenciosa' else 'exceção'} · {grp:<19} · {mot or '(vazio)'}")
         return
     print(f"{'='*100}\nFalhas silenciosas de ferramenta — 'Error calling tool' com error: null"
           f"{' · ' + ferramenta if ferramenta else ''}\n{'='*100}")
@@ -1013,6 +1013,21 @@ def silenciosas(ferramenta=None, janela=3, motivos=False):
         print(f"  {t:<40} {row['steps']:>6} · {row['excecao']:>3} · {row['silenciosa']:>4} · "
               f"{row['silenciosa'] / row['steps']:>5.0%} · {', '.join(sorted(s['role'].unique())) or '—'} · "
               f"{', '.join(sorted(s['mes'].unique())) or '—'}")
+
+    # [1b] o motivo, por grupo (motivo_da_falha, S2b): quem é o dono da falha
+    DONO = {"sem_resultado": "ninguém — não é falha", "fora_da_cobertura": "negócio — pedido fora do que a ferramenta cobre",
+            "argumento_do_agente": "agente — candidato a memória que a taxonomia não vê",
+            "plataforma": "plataforma / ferramenta", "json_invalido": "a conferir: agente ou ferramenta",
+            "nao_reconhecido": "cobertura — sem regra de motivo"}
+    fal = F[F["falha"].notna()]
+    print("\n[1b] por grupo do motivo:  silenciosas · com exceção · ferramentas principais · dono")
+    for grp in DONO:
+        gg = fal[fal["grupo"] == grp]
+        if gg.empty:
+            continue
+        top = ", ".join(f"{t} {n}" for t, n in gg["ferramenta"].value_counts().head(3).items())
+        print(f"  {grp:<20} {(gg['falha'] == 'silenciosa').sum():>4} · {(gg['falha'] == 'excecao').sum():>3} · "
+              f"{top} · {DONO[grp]}")
 
     arq_mec = os.path.join(os.path.dirname(PASTA_EVIDENCIA), "erros_mecanismo.csv")
     if os.path.exists(arq_mec) and len(sil):
@@ -1041,17 +1056,22 @@ def silenciosas(ferramenta=None, janela=3, motivos=False):
 
     # [4] candidato a sucesso falso: o papel entregou final_answer depois da falha, sem chamada bem-sucedida da mesma
     # ferramenta entre a falha e o final
-    if len(sil):
+    # Só as falhas reais (GRUPOS_FALHA_REAL): responder "não encontrei" depois de uma busca vazia, ou "assunto não
+    # parametrizado", é a resposta certa, não sucesso falso.
+    real = sil[sil["grupo"].isin(GRUPOS_FALHA_REAL)]
+    if len(real):
         ok = F[F["chamou"] & F["falha"].isna()]
-        cand = 0
-        for _, s in sil.iterrows():
+        cand = Counter()
+        for _, s in real.iterrows():
             if pd.isna(s["idx_final_depois"]):
                 continue
             depois_ok = ok[(ok["exec_id"] == s["exec_id"]) & (ok["role"] == s["role"]) & (ok["ferramenta"] == s["ferramenta"])
                            & (ok["idx"] > s["idx"]) & (ok["idx"] <= s["idx_final_depois"])]
-            cand += depois_ok.empty
-        print(f"\n[4] o papel entregou final_answer depois da falha silenciosa, sem nenhuma chamada sem falha da mesma "
-              f"ferramenta no meio: {cand} de {len(sil)} (candidato a sucesso falso — conferir no caso)")
+            if depois_ok.empty:
+                cand[s["grupo"]] += 1
+        print(f"\n[4] falhas reais ({len(real)} de {len(sil)}; fora sem_resultado e fora_da_cobertura): o papel entregou "
+              f"final_answer depois, sem chamada sem falha da mesma ferramenta no meio: {sum(cand.values())} "
+              f"({', '.join(f'{g} {n}' for g, n in cand.most_common())}) — candidato a sucesso falso, conferir no caso")
 
     pasta = os.path.join(PASTA_EVIDENCIA, "silenciosas")
     os.makedirs(pasta, exist_ok=True)
