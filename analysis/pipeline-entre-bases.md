@@ -464,6 +464,9 @@ cor (preto); a família de protocolo perde 1 erro. Nenhuma decisão de triagem m
 
 ## 5. Próximas etapas — o plano
 
+> **O plano vivo está em [`plano-atual.md`](plano-atual.md) (desde 01/10/2026):** o que vale, o que foi feito, o que
+> ficou velho e o que vem agora. Esta seção ficou como **registro de cada etapa**. A tabela abaixo é a ordem de 25/09.
+
 Cada etapa segue o combinado: **contexto verificado → solução → por que ela e não outra → o que falta de você →
 critério de aceitação.** Uma etapa por vez; cada uma abre uma nova conversa de plano. A ordem segue os baldes: primeiro
 fecha-se a **causa não identificada** (o balde em que a sintaxe da Etapa 2 estava), depois o **sintoma não
@@ -870,7 +873,9 @@ comum.** Ele:
 **Onde isto vai morar.** O roadmap item 26 já decidiu (22/09) que erro invisível ganha notebook próprio (§13.x), fora
 do notebook da esteira. `falhas_silenciosas()` e `motivo_da_falha()` são a primeira peça dele, e não uma célula do
 notebook da esteira (proposta de 01/10, revista). O nome do par de docs reservado lá (`10-/11-…-falhas-silenciosas.md`)
-colide com os docs 10/11 da família Protocolo do harness: decisão do Rafael.
+colidia com os docs 10/11 da família Protocolo do harness. **Decidido (Rafael, 01/10):** o conjunto das falhas
+silenciosas fica `13-racionais`, `14-relatorio`, `15-procedimento-falhas-silenciosas.md` + notebook próprio
+(`plano-atual.md` §4.2).
 
 ### Etapa 6 — o alarme de cobertura
 
