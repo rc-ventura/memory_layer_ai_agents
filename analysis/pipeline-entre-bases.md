@@ -585,7 +585,7 @@ ali, ainda está por medir.
 ### Etapa 10b — "resposta sem bloco de código" (`H_bloco_code`) na base 2
 
 > **Leitura consolidada (30/09):** esta seção é a história, na ordem, com as correções. O estado atual da família — o
-> catálogo de mecanismos M1–M5, os resultados por base e o roteiro para uma base nova — está em
+> catálogo de mecanismos M1–M6, os resultados por base e o roteiro para uma base nova — está em
 > `2026-09-trace-law-flow/docs/10-racionais-protocolo-harness.md`, `11-relatorio-protocolo-harness.md` e
 > `12-procedimento-protocolo-harness.md`.
 
@@ -784,6 +784,22 @@ comprovável pelo trace); M5 = o harness aceita o `content` vazio sem erro (acha
 decisão do Rafael). Base 2: plataforma (modelo); sem lição aprendida e sem sinal de harness nos 56 do RoteadorCivel; 1
 achado de harness (M5). **Próximo:** CalculoCivel (4 erros numa execução — é a do erro crítico?) e RespostaBacen (M2 de
 novo? → memória candidata por ferramenta). `11-relatorio-protocolo-harness.md` §2.4–2.5.
+
+**CalculoCivel e o erro crítico da base 2 (01/10).**
+
+- **Fontes:** `drill_down.py critico` (novo, `7c1625d`), a leitura dos 4 casos e duas leituras assistidas por LLM
+  na máquina 2.
+- **A execução:** os 4 erros de protocolo estão na execução do único crítico. Ela tem **4 chamadas** do papel; as 3
+  primeiras terminam com `final_answer`, e a 4ª (idx 28–48, 11 erros) morre no limite.
+- **A cadeia da 4ª chamada:**
+  1. a calculadora devolve uma string de erro (`'DEFAULT'`) com `error: null` — falha silenciosa;
+  2. resposta em texto (M1);
+  3. **narração com `<code>`/`</code>` capturada como código (M6, novo)** — os rótulos `U_estado_perdido`/`U_texto_solto`
+     dessa chamada são o harness executando narração;
+  4. repetição, sem nenhum `final_answer`.
+- **Leitura retirada:** a anterior ("4 ciclos de um loop desde o idx 20; morte por 25 erros") — o `critico` mistura as
+  chamadas.
+- **Registro:** `11` §2.5, `10` §4 (M1, M6); roadmap item 39.
 
 ### Etapa 6 — o alarme de cobertura
 

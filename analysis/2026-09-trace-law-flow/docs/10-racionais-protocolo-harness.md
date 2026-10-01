@@ -86,6 +86,9 @@ entra aqui.
   "responda em markdown", "devolva um JSON no formato…", e — no ConversationAgent — *"Se voce não precisar de nenhuma
   tool para responder a pergunta do usuario **pode responder diretamente**"*, que contradiz a regra 1 do próprio prompt.
 - **Variante:** "falar com o usuário" em texto (tabela parcial + perguntas) em vez de `final_answer(..., human_request=…)`.
+- **Nem sempre se recupera:** na base 2 (CalculoCivel, `11` §2.5), o M1 aparece no meio da cadeia que matou uma
+  execução. Veio depois de uma falha silenciosa da ferramenta e foi seguido do M6. O agente alternou entre `print`,
+  texto e correção de formato, e nunca chamou o `final_answer`.
 - **Destino:** sinal de harness (§5). **Status:** confirmado na base 1.
 
 ### M2 — Ferramenta do negócio que concorre com o `final_answer`
@@ -144,6 +147,27 @@ entra aqui.
 - **Destino:** plataforma — **achado de harness** (não "sinal de harness": não é o desenho do prompt induzindo o
   agente, é o harness aceitando uma resposta vazia sem acusar). **Status:** medido em 3 casos (1, 6, 7) e em 2 steps do
   caso 4.
+
+### M6 — Narração com delimitadores capturada como código *(base 2)*
+
+- **O que é:** ao corrigir um erro de formato, o LLM **escreve os delimitadores `<code>`/`</code>` na própria
+  explicação** (ex.: "o código deve ficar entre `<code>` e `</code>`"). A regex do harness extrai **tudo** o que está
+  entre delimitadores e executa como Python: frases da explicação, a letra "e", reticências.
+- **Como reconhecer:**
+  - o `model_output` tem mais de um bloco `<code>`, ou delimitadores dentro do pensamento;
+  - o `code_action` contém (ou é só) um fragmento de narração;
+  - o erro que sai é de sintaxe ou "variável não definida" (`name 'e' is not defined`).
+- **O que ele esconde:** os rótulos que o pipeline dá hoje — `U_texto_solto`, `U_estado_perdido`, `U_nome_inventado`,
+  `X_causa_nao_identificada` — tratam como erro de código do agente o que é o **harness executando narração**. Contar
+  só o `H_bloco_code` subestima o alcance desta família.
+- **Gatilho:** um erro de protocolo anterior (o LLM tenta explicar o formato e repete os delimitadores) e o parser que
+  junta todos os blocos achados.
+- **Destino (proposta):** **sinal de harness** — o parser deveria rejeitar delimitadores no pensamento ou blocos
+  ambíguos, ou separar pensamento e ação em campos estruturados (o modo JSON). A lição procedural ("ao corrigir o
+  formato, não escreva os delimitadores na explicação; um bloco só; entregue com `final_answer` — `print` não encerra")
+  fica **candidata, não promovida**: um caso só.
+- **Status:** 1 execução (base 2, CalculoCivel, a do erro crítico; `11` §2.5), 12 steps. A regex reproduzida bate com o
+  `code_action` nos 12 (conferido na máquina 2). Frequência nas duas bases: a medir.
 
 ## 5 · Quem corrige, e por que (quase) nunca é memória
 

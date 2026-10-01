@@ -2,7 +2,7 @@
 
 **Para que serve este documento:** o roteiro para repetir, numa base nova (ou na base 2, onde está em andamento), a
 investigação que fechou a base 1. Mesmo papel do [`03-procedimento-validacao.md`](03-procedimento-validacao.md), só para
-esta família. O **porquê** de cada passo e o **catálogo de mecanismos** (M1–M5) estão em
+esta família. O **porquê** de cada passo e o **catálogo de mecanismos** (M1–M6) estão em
 [`10-racionais-protocolo-harness.md`](10-racionais-protocolo-harness.md); os resultados por base, em
 [`11-relatorio-protocolo-harness.md`](11-relatorio-protocolo-harness.md).
 
@@ -98,7 +98,7 @@ quantas vezes o papel foi chamado; e se a tarefa menciona "não foi possível" o
 
 ## Passo 6 — Classificar no catálogo
 
-Para cada caso, o mecanismo (M1–M5 do `10` §4) ou "novo". Um mecanismo novo precisa de: como reconhecer, gatilho,
+Para cada caso, o mecanismo (M1–M6 do `10` §4) ou "novo". Um mecanismo novo precisa de: como reconhecer, gatilho,
 casos que o sustentam — entra no `10` como hipótese. Resultado por papel: tabela papel × mecanismo, como o `11` §1.3.
 
 ## Passo 7 — Destino e registro
@@ -115,4 +115,9 @@ casos que o sustentam — entra no `10` como hipótese. Resultado por papel: tab
 - A soma por papel e por mês bate com o total de [1].
 - Todo mecanismo atribuído aponta os casos (arquivo `erro_<papel>_<versão>_<k>`) que o sustentam.
 - Leitura que depender só do texto de um step com M4 não vale como mecanismo.
+- **O `idx` conta todas as chamadas do papel juntas.** Antes de ler uma sequência de erros como "loop", confira onde o
+  `step_number` volta a 1 (`metadados_steps.py`: "papel chamado Nx"). A seção 2 do `protocolo --casos` pode mostrar o fim
+  da chamada anterior. Essa foi a origem da leitura errada no CalculoCivel (`11` §2.5).
+- **Rótulos de memória logo depois de um erro de protocolo** (`U_texto_solto`, `U_estado_perdido`, `U_nome_inventado`)
+  podem ser o M6: conferir se o código executado é um fragmento da explicação.
 - A base 1 é o teste de regressão: uma mudança no procedimento ou nos scripts tem que reproduzir o `11` §1.

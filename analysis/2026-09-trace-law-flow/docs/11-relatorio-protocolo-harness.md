@@ -1,6 +1,6 @@
 # Relatório da família "Protocolo do harness" — continuação de `02-relatorio-achados.md`
 
-**Data:** 30/09/2026 · **Lógica e catálogo de mecanismos (M1–M5):**
+**Data:** 30/09/2026 · **Lógica e catálogo de mecanismos (M1–M6):**
 [`10-racionais-protocolo-harness.md`](10-racionais-protocolo-harness.md) · **Como replicar:**
 [`12-procedimento-protocolo-harness.md`](12-procedimento-protocolo-harness.md) · **História e correções:**
 [`../../pipeline-entre-bases.md`](../../pipeline-entre-bases.md), Etapa 10b.
@@ -16,8 +16,8 @@ leituras do Rafael (nenhum texto de caso sai de lá).
 | Erros | 33 | 69 |
 | Padrão no tempo | incidente em out/2025 (24) + dez/2025 (7) + 2 isolados; **0 desde mar/2026** | **incidente em ago/2026 (61)** + 8 espalhados |
 | Camada que explica o surto | **modo** (out/2025) e **contrato de ferramenta** (dez/2025) | **modelo** (`gpt-5.6-terra`, só em ago) |
-| Mecanismos | M1 (20), M2 (6), M3 (2), 5 não lidos | M4/M5 no RoteadorCivel (7 casos lidos; a causa dos tokens gastos é hipótese); resto não lido |
-| Investigação | **fechada** (28 com mecanismo lido; 5 do managerAgent declarados "não lidos") | RoteadorCivel explicado (7 casos + metadados + campos crus); CalculoCivel e RespostaBacen a seguir |
+| Mecanismos | M1 (20), M2 (6), M3 (2), 5 não lidos | M4/M5 no RoteadorCivel (7 casos lidos; a causa dos tokens gastos é hipótese); CalculoCivel: M1 + **M6** na cadeia do erro crítico; resto não lido |
+| Investigação | **fechada** (28 com mecanismo lido; 5 do managerAgent declarados "não lidos") | RoteadorCivel explicado (7 casos + metadados + campos crus); CalculoCivel e o erro crítico explicados (§2.5); RespostaBacen a seguir |
 | Destino | não-memória / sinal de harness | não-memória, achado para a plataforma (modelo) |
 
 ---
@@ -157,11 +157,94 @@ projeto (nenhum prompt ou ferramenta induzindo o erro). **Um achado de harness**
 `content` vazio sem erro (M5), aviso à plataforma. Os mecanismos da base 1 (M1/M2) **não** aparecem no RoteadorCivel;
 nos 13 erros dos outros papéis, **não verificado**.
 
-### 2.5 O que falta na base 2
+### 2.5 CalculoCivel — os 4 erros e o único erro crítico da base 2 (01/10)
+
+**Fontes.**
+
+| Fonte | Tipo | Conteúdo |
+|---|---|---|
+| `drill_down.py critico CalculoCivel` | determinística, máquina 2 | a fila dos críticos, a ligação ao protocolo e a trajetória por tipo |
+| 4 arquivos `protocolo --casos CalculoCivel 4` | leitura do Rafael | — |
+| relatório "cascata crítica" (12 fotos) | leitura assistida por LLM (GPT-6.1 Sol, máquina 2) | — |
+| relatório "calculadora" (5 fotos) | leitura assistida por LLM (GPT-6.1 Sol, máquina 2) | — |
+
+Abaixo, **[conferido]** = verificado no cru de forma determinística (AST, reprodução da regex, tipo da variável,
+contagem); **[assistido]** = leitura do LLM, hipótese.
+
+**Mesma execução.** Os 4 erros de protocolo (idx 20, 30, 35, 40) estão na execução do único erro crítico da base 2
+(fev/2026, 49 steps no papel, limite de passos no idx 48). **[conferido: `critico`]**
+
+**A execução tem 4 chamadas do papel**, não uma tentativa contínua. O `idx` do pipeline conta as chamadas juntas, e o
+`step_number` recomeça a cada uma. **[conferido: 4 `TaskStep`]**
+
+| Chamada | idx | Steps | Erros | Como terminou |
+|---|---|---:|---:|---|
+| 1 | 0–16 | 17 | 9 | `final_answer` |
+| 2 | 17–19 | 3 | 0 | `final_answer` |
+| 3 | 20–27 | 8 | 5 | `final_answer` (a mensagem de que o cálculo não pode ser feito para a data pedida) |
+| **4** | **28–48** | **21** | **11** + o limite | **`AgentMaxStepsError`, sem `final_answer`** |
+
+**A cadeia que matou a 4ª chamada:**
+
+1. **idx 28 — a calculadora falha em silêncio.** `calculo_correcoes_monetarias` devolve a string
+   `"Error calling tool 'calculo_correcoes_monetarias': 'DEFAULT'"` no lugar do `dict` declarado (`valor_corrigido`,
+   `valor_correcao`). A falha volta como **valor**, não como exceção, e o step fica com `error: null`. A variável
+   `resultado_corr` no namespace (`txt_vrvl_locl`) é `str`. **[conferido]**
+   - Nas 5 chamadas da ferramenta na execução: 4 devolvem esse texto; 1 devolve "data_inicial deve ser anterior ou igual
+     a data_final", porque o fallback de data do agente inverteu o intervalo.
+   - O que é o `DEFAULT` — provável `KeyError` numa chave ausente da calculadora — **não** se fecha pelo trace: faltam a
+     exceção original, o traceback e a implementação. **[assistido]**
+   - "O índice não estava disponível" foi a explicação **do agente**, não da ferramenta.
+2. **idx 29 — o agente monta e imprime as tabelas.**
+3. **idx 30 — responde em texto, sem `<code>`** → erro de protocolo (**M1**). **[conferido]**
+4. **idx 31–46 — narração capturada como código (M6, `10` §4).** Ao corrigir o formato, o agente escreve no pensamento
+   que o código deve ficar "entre `<code>` e `</code>`". A regex do harness extrai o que está entre os delimitadores e o
+   executa. **[conferido: a reprodução da regex bate com o `code_action` nos 12 steps do padrão]**
+   - Os casos: frases da explicação viram código (31–32); a letra "e" é executada antes do `print` (33, 41); só "e"
+     (44); reticências (46).
+   - Os erros resultantes ("variável não definida", sintaxe) recebem os rótulos `U_estado_perdido`, `U_nome_inventado`,
+     `U_texto_solto` e `X_causa_nao_identificada`. **Não** são perda de estado nem nome inventado.
+5. **O agente diagnostica errado e repete:** atribui a texto oculto, colagem, caracteres especiais. Alterna entre
+   imprimir as tabelas, imprimir "ok", responder em texto e corrigir de novo. **Nenhum step da 4ª chamada chama o
+   `final_answer`; o `print` não entrega nada ao usuário.** **[conferido]**
+6. **idx 48 — limite de passos.**
+
+**Custo da 4ª chamada:** ~2,09 milhões de tokens (entrada + saída, somados por step, com o contexto relido) e ~8,8
+min. **[conferido]**
+
+**Persistência.** O `txt_rspa_fina` da execução guarda a resposta da **3ª** chamada; o registro terminal tem
+`AgentMaxStepsError`. "Execução com resposta" **não** prova que a última solicitação foi atendida. **[conferido]**
+
+**Leitura retirada (01/10).** Antes do cru, este relatório chegou a dizer:
+
+| Leitura anterior | O que o cru mostrou |
+|---|---|
+| "4 ciclos do mesmo loop, desde o idx 20" | 4 **chamadas**; a 3ª, que começa no idx 20, terminou bem |
+| "morte por acúmulo de 25 erros" | a morte é da 4ª chamada, com 11 erros |
+| "o passo crítico é o idx 20" | a cadeia terminal começa no idx 28 (calculadora) e no 30 (protocolo) |
+
+O `critico` induziu ao erro porque a "primeira unidade" mistura as chamadas: mostrou `U_nome_inventado` no idx 1.
+Nesse idx 1, aliás, a causa também é outra: o código do idx 0 ficou numa linha só, e tudo depois do primeiro `#` virou
+comentário. **[conferido: AST]**
+
+**O que muda para a família:**
+
+- **é a primeira exceção ao "o agente se recupera no step seguinte"**: aqui ele corrigiu o formato, mas não a tarefa;
+- o protocolo aparece **no meio de uma cadeia**, depois de uma falha silenciosa da ferramenta;
+- **contar só o `H_bloco_code` subestima o alcance** desta família, porque os efeitos do M6 aparecem como erros de
+  execução com rótulos de memória.
+
+**Em aberto (não muda a leitura):**
+
+- se o `request`/`accepted` do fim de cada chamada é o pedido ao humano ou o registro da resposta final;
+- o que a 4ª tarefa dizia;
+- o `DEFAULT` da calculadora.
+
+### 2.6 O que falta na base 2
 
 | Papel | Erros | Pergunta | Prioridade |
 |---|---:|---|---|
-| **CalculoCivel** | 4 | 4 erros numa execução só (fev) — o agente **não** se recuperou? É a execução do único erro crítico da base 2 (limite de passos, 48 steps; item 39)? Se for, é o único caso em que esta família pode ter contribuído para matar uma execução | **1ª** |
+| ~~CalculoCivel~~ | 4 | feito — §2.5 | — |
 | **RespostaBacen** | 4 | M2 de novo? Pelo menos parte cai na declaração `resposta_gerada` (55 execuções × 1 com `json_resposta`). Se for M2, o mecanismo reapareceu em outra base e com outro contrato — pela regra do `10` §5, **vira memória candidata por ferramenta** | **2ª** |
 | RoteadorCivel | 56 | os 49 não lidos seguem o mesmo padrão de metadados (M4/M5)? | baixa |
 | OBFCivel | 4 | mesmo modelo novo, mesmo mês — provavelmente M4/M5 | baixa |
