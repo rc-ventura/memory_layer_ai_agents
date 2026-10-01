@@ -108,7 +108,8 @@ Uso:
     python drill_down.py silenciosas --forma <ferramenta>
         -> em cada falha silenciosa da ferramenta, como o 1º argumento foi passado — json.dumps, str(...), dict ou
            string montados à mão, variável devolvida por outra ferramenta — só a contagem por tipo, sem conteúdo.
-           Decide o dono do json_invalido (agente × ferramenta).
+           Decide o dono do json_invalido (agente × ferramenta). Abre o str(...) e separa o literal colado de um
+           retorno impresso (mesmo critério do repr_colado: ≥2 chaves já impressas antes no papel) do montado à mão.
 
     python drill_down.py critico [<papel>]
         -> os erros críticos (o papel esgotou os passos): uma linha por execução morta — papel, mês, idx do crítico,
@@ -976,27 +977,49 @@ def _modo_prompt(sysp):
 UNIDADES_CONTRATO = ["U_tipo_retorno", "U_contrato_dict", "U_campo_inexistente"]
 
 
-def _forma_argumento(ferramenta, codes):
+def _variavel(a, codes):
+    """`a` começa com um nome de variável → de onde ela veio: a ferramenta cuja chamada a atribuiu, ou o agente."""
+    v = re.match(r"(\w+)\s*[,)]", a)
+    if not v:
+        return None
+    origem = next((t for c in codes for t in re.findall(rf"\b{v.group(1)}\s*=\s*(\w+)\s*\(", c)), None)
+    return f"variável devolvida por {origem}(...)" if origem else "variável montada pelo agente"
+
+
+def _colado(a, obs_ant):
+    """O literal em `a` é um retorno impresso colado? Mesmo critério do repr_colado no submecanismo(): ≥2 pares
+    "chave": "texto" e ≥2 dessas chaves já impressas como chave numa observação anterior do mesmo papel."""
+    from base_pipeline import PAR_CHAVE_TEXTO
+    chaves = set(PAR_CHAVE_TEXTO.findall(a))
+    vistas = sum(bool(re.search(r"[\"']" + re.escape(ch) + r"[\"']\s*:", obs_ant)) for ch in chaves)
+    return len(chaves) >= 2 and vistas >= 2
+
+
+def _forma_argumento(ferramenta, codes, obs_ant=""):
     """Como o 1º argumento de `ferramenta` foi passado no último código de `codes` (os steps do papel até a falha) —
     só o tipo, sem conteúdo. Para decidir o dono do json_invalido: str(dict) com aspas simples / dict ou string montados
-    à mão → agente; json.dumps ou a variável que outra ferramenta devolveu → a ferramenta."""
-    m = re.search(rf"\b{ferramenta}\s*\((.{{0,300}})", codes[-1], re.S)
+    à mão → agente; json.dumps ou a variável que outra ferramenta devolveu → a ferramenta. `obs_ant` (as observações dos
+    steps anteriores do papel) separa o literal colado de um retorno impresso — o gesto do repr_colado — do montado."""
+    m = re.search(rf"\b{ferramenta}\s*\((.{{0,600}})", codes[-1], re.S)
     if not m:
         return "sem chamada visível no código"
     a = re.sub(r"^\s*\w+\s*=(?!=)\s*", "", m.group(1)).lstrip()   # tira o "nome_do_argumento="
     if a.startswith("json.dumps"):
         return "json.dumps(...)"
     if a.startswith("str("):
-        return "str(...) — repr com aspas simples"
+        dentro = a[4:].lstrip()
+        if dentro[:1] in "{[":
+            return ("str(dict/lista colado de um retorno impresso) — gesto do repr_colado" if _colado(dentro, obs_ant)
+                    else "str(dict/lista literal montado pelo agente)")
+        v = _variavel(dentro, codes)
+        return f"str({v})" if v else "str(...) — outro"
     if a[:1] in "{[":
-        return "dict/lista literal montado pelo agente"
+        return ("dict/lista colado de um retorno impresso — gesto do repr_colado" if _colado(a, obs_ant)
+                else "dict/lista literal montado pelo agente")
     if re.match(r"[fFrR]?[\"']", a):
-        return "string literal montada pelo agente"
-    v = re.match(r"(\w+)\s*[,)]", a)
-    if v:
-        origem = next((t for c in codes for t in re.findall(rf"\b{v.group(1)}\s*=\s*(\w+)\s*\(", c)), None)
-        return f"variável devolvida por {origem}(...)" if origem else "variável montada pelo agente"
-    return "outro"
+        return ("string literal colada de um retorno impresso — gesto do repr_colado" if _colado(a, obs_ant)
+                else "string literal montada pelo agente")
+    return _variavel(a, codes) or "outro"
 
 
 def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
@@ -1022,8 +1045,9 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
         for _, s in sil.iterrows():
             acts = [x for x in json.loads(df.loc[s["exec_id"], "txt_etap_memo"])[s["role"]]
                     if isinstance(x, dict) and x.get("__class__") == "ActionStep"]
-            cont[(s["grupo"], _forma_argumento(ferramenta, [str(x.get("code_action") or "")
-                                                          for x in acts[: int(s["idx"]) + 1]]))] += 1
+            ate = acts[: int(s["idx"]) + 1]
+            cont[(s["grupo"], _forma_argumento(ferramenta, [str(x.get("code_action") or "") for x in ate],
+                                               "".join(str(x.get("observations") or "") for x in ate[:-1])))] += 1
         print(f"{'='*100}\n{ferramenta} — falhas silenciosas: {len(sil)} · como o 1º argumento foi passado "
               f"(só o tipo, sem conteúdo)\n{'='*100}")
         for (grp, f), n in cont.most_common():
