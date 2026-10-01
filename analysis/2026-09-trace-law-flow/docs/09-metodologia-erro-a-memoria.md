@@ -274,6 +274,16 @@ A divisão de trabalho correta é a que o pipeline encarna:
 | unidade → decisão | §9.3 | tokens + veredito da triagem |
 | **a cadeia inteira numa figura** | **§1.1 Sankey da genealogia** (contagem real por nó e por aresta) | contagens |
 
+**Limite da fonte de erros (01/10).** A cadeia parte de `ActionStep.error`, ou seja, só do erro que virou exceção.
+Nas duas bases, ~90% das falhas de ferramenta não chegam a ela:
+
+- a ferramenta devolve `"Error calling tool '<nome>': …"` como valor e o step fica com `error: null` (base 1: 120
+  silenciosas × 9 com exceção; base 2: 134 × 20);
+- entre elas há erros de argumento do agente (41 na base 1) que nenhum nó da genealogia mostra.
+
+Medida e grupos: `../../pipeline-entre-bases.md` Etapa 10c; o lugar definitivo é o notebook de erro invisível (roadmap
+item 26).
+
 Duas medidas convivem e não se confundem: **contagem de erros** (frequência —
 "o que mais ocorre") × **soma de tokens** (custo — "o que mais dói").
 `U_texto_solto`: 33 erros (frequência média) mas 1,39M tokens (3º mais caro).

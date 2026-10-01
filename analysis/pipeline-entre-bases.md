@@ -801,6 +801,77 @@ novo? → memória candidata por ferramenta). `11-relatorio-protocolo-harness.md
   chamadas.
 - **Registro:** `11` §2.5, `10` §4 (M1, M6); roadmap item 39.
 
+### Etapa 10c — falhas silenciosas de ferramenta (S2/S2b, 01/10)
+
+**Gatilho.** No erro crítico da base 2, a calculadora devolveu `"Error calling tool 'calculo_correcoes_monetarias':
+'DEFAULT'"` como **valor**: `resultado_corr` é `str` (o contrato declara `dict`), o step ficou com `error: null`, e a
+falha só aparece na observação. **Pergunta:** isso é um caso só, ou um canal de falha que a taxonomia não vê?
+
+**Medida (determinística, sem LLM).**
+
+- `falhas_silenciosas()` (`base_pipeline.py`) percorre os steps e procura `Error calling tool '<nome>'` na observação
+  ou no `action_output`:
+  - com `error: null` → **silenciosa**;
+  - com erro → **com exceção**.
+- `motivo_da_falha()` (S2b) põe o texto depois do `:` num de 6 grupos, por palavras-chave. Cada regra anota a base de
+  origem.
+- Comandos: `drill_down.py silenciosas [--motivos] [<ferramenta>]`. Saída só com contagens e motivos mascarados
+  (`mascarar_motivo`). Commits `78ed696`, `0a69ad0`, `41b43b9`.
+
+**Resultado nas duas bases.** Base 2 pelas fotos de 01/10; o [1b] foi calculado aplicando as regras às contagens do
+`--motivos` — **a confirmar rodando**.
+
+| | Base 1 | Base 2 |
+|---|---:|---:|
+| falhas de ferramenta com exceção | 9 | 20 |
+| **falhas silenciosas** | **120** (90 execuções, 10 meses) | **134** (124 execuções, 7 meses) |
+| % silenciosas entre as falhas de ferramenta | 93% | 87% |
+| sem nenhum erro nos 3 steps seguintes | 107 | 122 |
+| `U_tipo_retorno` precedido de falha silenciosa (até 3 steps) | 4/47 (9%) | 5/79 (6%) |
+| `U_campo_inexistente` precedido | 0/10 | 3/38 (8%) |
+| grupo **sem resultado** ("não foram encontrados…", "No text … found") | 43 | 8 |
+| grupo **argumento do agente** ("necessário passar", "maximum amount of documents", "validation error for call", "Query falhou"…) | **41** | 6 |
+| grupo **plataforma** ("internally hosted model failed", "Failed to fetch", "Wrong credentials", "object has no attribute", `'DEFAULT'`…) | 19 | 22 |
+| grupo **JSON inválido** (`busca_obf`: "Expecting property name enclosed in double quotes") | 6 | **86** |
+| grupo **fora da cobertura** ("Assunto não previsto…", "Coeficiente não encontrado") | 2 | 10 |
+| não reconhecido | 9 | 2 |
+| [4] final_answer depois de uma falha real, sem chamada bem-sucedida da mesma ferramenta (teto de sucesso falso) | 53/75 | a rodar |
+
+**Conclusões:**
+
+1. **A maior parte das falhas de ferramenta é silenciosa nas duas bases.** A taxonomia, construída sobre `ActionStep.error`,
+   não vê ~90% delas.
+2. **As memórias de contrato continuam bem atribuídas.** `U_tipo_retorno` e `U_campo_inexistente` não nascem de falha
+   silenciosa (91–94%). **Nenhum Ajuste.**
+3. **A composição é de cada base.** Os grupos se repetem; as mensagens não (são do dev de cada ferramenta). As regras foram
+   escritas olhando as duas bases (decisão do Rafael), e o resto fica como cobertura.
+
+**Hipótese forte.** **O contrato da plataforma — a ferramenta devolver a falha como texto, não como erro — é a causa
+comum.** Ele:
+
+- (a) esconde do aprendizado os erros de argumento do agente (41 na base 1), que nunca viram exceção;
+- (b) deixa o agente seguir sem o resultado (sucesso falso; o "índice indisponível" do CalculoCivel);
+- (c) é o primeiro elo da cascata do erro crítico.
+
+**Destinos:**
+
+- **sinal de harness** (exceção tipada ou resultado estruturado, uma mudança só para todas as ferramentas);
+- **canal novo de candidatos a memória** (o grupo argumento do agente, lido das observações);
+- **método:** a fonte de erros de uma taxonomia de traces não pode ser só o campo de exceção;
+- **métricas:** step sem erro ≠ ferramenta funcionou ≠ tarefa concluída.
+
+**Em aberto:**
+
+- o dono dos 86 do `busca_obf` — o agente montou o argumento como texto/`str(dict)`, ou o JSON quebrado é gerado dentro
+  da ferramenta? Leitura de 2–3 casos na máquina 2;
+- o [4] é teto: precisa ler casos;
+- o [1b] da base 2 confirmado rodando.
+
+**Onde isto vai morar.** O roadmap item 26 já decidiu (22/09) que erro invisível ganha notebook próprio (§13.x), fora
+do notebook da esteira. `falhas_silenciosas()` e `motivo_da_falha()` são a primeira peça dele, e não uma célula do
+notebook da esteira (proposta de 01/10, revista). O nome do par de docs reservado lá (`10-/11-…-falhas-silenciosas.md`)
+colide com os docs 10/11 da família Protocolo do harness: decisão do Rafael.
+
 ### Etapa 6 — o alarme de cobertura
 
 **Contexto.** `triagem()` calcula o alarme sobre **erros** (`(EU["unidade"] == "X_sintoma_nao_reconhecido").mean()`), e
