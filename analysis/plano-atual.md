@@ -30,6 +30,16 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
     `15-procedimento-falhas-silenciosas.md`** (decisão de 01/10). Isso confirma o item 26 do roadmap (22/09) e troca a
     numeração reservada lá (10/11), que colidia com a do protocolo. O notebook da esteira fica só com o erro visível por
     exceção.
+- **Três notebooks: visível, invisível, consolidação** (decisão de 01/10). Um funil de detecção único separa os steps
+  em dois baldes sem sobreposição — step com exceção → **visível**; sem exceção e com `Error calling tool` no texto →
+  **invisível** —, e cada balde é classificado à parte, com regras de entrada próprias (exceção × motivo e forma) e o
+  **mesmo catálogo de unidades** (mecanismo → unidade → destino). No fim, os resultados se consolidam.
+  - **visível** = o notebook da esteira (não muda);
+  - **invisível** = o notebook das falhas silenciosas (docs 13–15);
+  - **consolidação** = notebook próprio: junta as tabelas **de ocorrências** dos dois baldes (mesmo formato: `exec_id`,
+    papel, `idx`, mês, unidade, canal) e faz a triagem final — recorrência contada sobre a união, nunca somando totais
+    (a mesma execução pode ter a unidade nos dois canais). Sem conjunto de docs novo: é a etapa final do método erro →
+    memória, documentada no `09`.
 - **Código compartilhado:** as funções de medida ficam no `base_pipeline.py` (ou no `analysis/base_utils.py`). O
   notebook e o `drill_down.py` chamam as mesmas.
 
@@ -86,17 +96,6 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-### 4.1 O `json_invalido` do `busca_obf` entra no `U_repr_colado`? *(decisão do Rafael)*
-
-- **Contexto:** nas duas bases, as falhas silenciosas do `busca_obf` são o mesmo gesto do `repr_colado` — colar o print
-  do `puxa_doc_decisao` em vez de passar a variável (6/6, 86/86). Na base 2 o canal silencioso é ~12× o visível (86 × 7).
-- **Opções:**
-  - (a) canal silencioso da `U_repr_colado`: a unidade conta as duas saídas e a lição ganha "converta com `json.dumps`,
-    nunca `str()`" → **Ajuste próprio** (muda contagem e texto da unidade, e o `09`);
-  - (b) unidade separada, ligada à `U_repr_colado` pelo mecanismo.
-- **Evidência:** livro-razão Etapa 10c, "Achado (01/10)".
-- **Tipo:** mudança de método.
-
 ### 4.1b Conferir os sucessos falsos de plataforma *(Rafael roda; aguarda aprovação)*
 
 - **Contexto:** o [4] é teto. Plataforma: 16/19 (base 1), 16/22 (base 2) terminam em `final_answer` sem a ferramenta ter
@@ -105,19 +104,38 @@ Cada item: **contexto · solução · evidência · tipo · status.** Nada come�
   `final_answer` usa um dado que deveria ter vindo da ferramenta? Sai só sim/não e a contagem.
 - **Tipo:** leitura; nenhum código.
 
-### 4.2 Criar o conjunto das falhas silenciosas *(proposta; aguarda aprovação)*
+### 4.2 O balde invisível — o conjunto das falhas silenciosas *(proposta; aguarda aprovação)*
 
-- **Contexto:** a análise das falhas silenciosas (Etapa 10c) mora hoje no livro-razão. Pela decisão da §1, ela ganha
-  notebook e docs próprios.
+- **Contexto:** a análise das falhas silenciosas (Etapa 10c) mora hoje no livro-razão. Pela decisão da §1, ela é o balde
+  invisível: notebook e docs próprios.
 - **Solução:**
-  - `pipeline/falhas_silenciosas.ipynb` (§13.x), chamando `falhas_silenciosas()` e `motivo_da_falha()`;
-  - `docs/13-racionais` (por que a fonte de erros não pode ser só a exceção; o contrato da plataforma; os 6 grupos);
+  - `pipeline/falhas_silenciosas.ipynb`: `falhas_silenciosas()` → grupo do motivo (`motivo_da_falha()`) → forma
+    (a regra "colado" sai do `drill_down.py` para o `base_pipeline.py`; o `drill_down` passa a chamá-la) → unidade do
+    catálogo; o que ainda não tem unidade (ex.: argumento do agente) fica como resíduo, como os `X_` do visível;
+  - **entrega a tabela de ocorrências** no formato comum (para a consolidação);
+  - `docs/13-racionais` (por que a fonte de erros não pode ser só a exceção; o funil e os dois baldes; o contrato da
+    plataforma; os 6 grupos; o gesto colado);
   - `docs/14-relatorio` (base 1 e base 2);
   - `docs/15-procedimento` (comandos, o que sai da máquina 2, como validar regras nas duas bases);
   - o §7 atual do notebook da esteira (Result-Ignore/RAC/Tool-Skip) migra para cá, como o item 26 já previa —
-    **ponto de corte a decidir**.
+    **ponto de corte a decidir** (recomendação: o §7 inteiro; na esteira fica um parágrafo de limite com o link).
 - **Evidência:** item 26 (22/09); Etapa 10c (01/10).
 - **Tipo:** organização + documentação; não muda número publicado.
+
+### 4.2b A consolidação — e o `json_invalido` colado entra na `U_repr_colado` *(Ajuste; depois do 4.2)*
+
+- **Contexto:** nas duas bases, as falhas silenciosas do `busca_obf` são o gesto do `repr_colado` — colar o print do
+  `puxa_doc_decisao` em vez de passar a variável (6/6, 86/86). **Decidido (Rafael, 01/10): (a)** — uma unidade só, com os
+  dois canais.
+- **Solução:** `pipeline/consolidacao_unidades.ipynb` + uma função no `base_pipeline.py` que recebe as tabelas de
+  ocorrências do visível e do invisível e faz a triagem final, com colunas por canal (visíveis · silenciosas · total).
+  Regra do balde invisível, sem nome de ferramenta: `json_invalido` + argumento colado → `U_repr_colado`. A lição ganha
+  "converta com `json.dumps`, nunca `str()`". Tokens das silenciosas fora da coluna de tokens da unidade (o custo delas é
+  retrabalho, medido no invisível).
+- **Esperado:** a decisão da `U_repr_colado` não muda (já é candidata nas duas bases); muda o tamanho — base 1: 6 → 12,
+  base 2: 7 → 93 — e o texto. Na base 1: nenhuma outra unidade se mexe; o notebook da esteira fica idêntico.
+- **Evidência:** livro-razão Etapa 10c, "Achado (01/10)".
+- **Tipo:** **Ajuste** (muda contagem e texto publicados no `09`).
 
 ### 4.3 S3 — medir o M6 (narração capturada como código) nas duas bases *(aguarda aprovação)*
 
