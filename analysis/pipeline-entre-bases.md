@@ -821,8 +821,9 @@ falha só aparece na observação. **Pergunta:** isso é um caso só, ou um cana
 - Comandos: `drill_down.py silenciosas [--motivos] [<ferramenta>]`. Saída só com contagens e motivos mascarados
   (`mascarar_motivo`). Commits `78ed696`, `0a69ad0`, `41b43b9`.
 
-**Resultado nas duas bases.** Base 2 pelas fotos de 01/10; o [1b] foi calculado aplicando as regras às contagens do
-`--motivos` — **a confirmar rodando**.
+**Resultado nas duas bases.** Base 2 **conferida rodando** (fotos de 01/10: `silenciosas` e `silenciosas --forma
+busca_obf`, commits `6123716`, `de5b601`); o [1b] bate grupo a grupo com o que fora calculado sobre as contagens do
+`--motivos`.
 
 | | Base 1 | Base 2 |
 |---|---:|---:|
@@ -838,7 +839,12 @@ falha só aparece na observação. **Pergunta:** isso é um caso só, ou um cana
 | grupo **JSON inválido** (`busca_obf`: "Expecting property name enclosed in double quotes") | 6 | **86** |
 | grupo **fora da cobertura** ("Assunto não previsto…", "Coeficiente não encontrado") | 2 | 10 |
 | não reconhecido | 9 | 2 |
-| [4] final_answer depois de uma falha real, sem chamada bem-sucedida da mesma ferramenta (teto de sucesso falso) | 53/75 | a rodar |
+| [4] final_answer depois de uma falha real, sem chamada bem-sucedida da mesma ferramenta (teto de sucesso falso) | 53/75 | 20/116 |
+| … dos quais **plataforma** | 16/19 | 16/22 |
+| … dos quais **argumento do agente** | 30/41 | 2/6 |
+| … dos quais **JSON inválido** | **0/6** | **0/86** |
+| … dos quais não reconhecido | 7/9 | 2/2 |
+| `busca_obf`: forma do 1º argumento (`--forma`) | 6 `str(dict colado de um retorno impresso)` | 80 `str(dict colado…)` + 6 string colada |
 
 **Conclusões:**
 
@@ -852,7 +858,8 @@ falha só aparece na observação. **Pergunta:** isso é um caso só, ou um cana
 **Hipótese forte.** **O contrato da plataforma — a ferramenta devolver a falha como texto, não como erro — é a causa
 comum.** Ele:
 
-- (a) esconde do aprendizado os erros de argumento do agente (41 na base 1), que nunca viram exceção;
+- (a) esconde do aprendizado os erros de argumento do agente (41 na base 1) e o `repr_colado` silencioso (6 e 86, abaixo),
+  que nunca viram exceção;
 - (b) deixa o agente seguir sem o resultado (sucesso falso; o "índice indisponível" do CalculoCivel);
 - (c) é o primeiro elo da cascata do erro crítico.
 
@@ -863,12 +870,34 @@ comum.** Ele:
 - **método:** a fonte de erros de uma taxonomia de traces não pode ser só o campo de exceção;
 - **métricas:** step sem erro ≠ ferramenta funcionou ≠ tarefa concluída.
 
+**Achado (01/10, duas bases): o JSON inválido do `busca_obf` é o `repr_colado` no canal silencioso.**
+
+- **O gesto.** O `RoteadorCivel` recebe o dict do `puxa_doc_decisao` (`{"anteriores": [{"resultado": …, "resumo": …}]}`)
+  e, ao chamar o `busca_obf`, **cola o print** em vez de passar a variável — o mesmo gesto do Ajuste 2.2. Quando a
+  colagem quebra a sintaxe → `SyntaxError` → `U_repr_colado` (visível). Quando a colagem é Python válido e vem dentro de
+  `str()` (ou como string) → aspas simples → o `json.loads` da ferramenta falha → falha **silenciosa**.
+- **A medida.** `silenciosas --forma busca_obf` (determinístico; "colado" = o critério do `repr_colado`: ≥2 pares
+  `"chave": "texto"` e ≥2 chaves já impressas numa observação anterior do papel). Base 1: 6/6. Base 2: 86/86 (80
+  `str(dict colado)`, 6 string colada). **Nenhum** `json.dumps` nem variável — o JSON quebrado não vem da ferramenta.
+- **O contrato.** `textos_decisoes (str)`: "… em JSON formatado como string" (declaração lida na máquina 2). O texto pede
+  JSON; o tipo `(str)` convida ao `str(...)`. O dict vem de outra ferramenta da mesma esteira.
+- **O peso.** Na base 2 o canal silencioso é ~12× o visível (86 contra os 7 do `repr_colado`): a unidade foi medida pela
+  parte pequena.
+- **O custo é retrabalho, não resposta errada.** 0/6 e 0/86 viram sucesso falso — o agente refaz a chamada e acerta.
+  A falha de plataforma é o oposto (16/19, 16/22). O grupo argumento do agente **não** segue um padrão (30/41 contra 2/6):
+  "erro do agente se recupera" não vale nas duas bases.
+- **Dono:** o agente (quem precisa mudar para o erro não acontecer: passar a variável com `json.dumps`). O rótulo do
+  grupo `json_invalido` no `drill_down.py` **continua "a conferir"** — o grupo é genérico, e em outra base o dono pode ser
+  a ferramenta; quem decide em cada base é o `--forma` (decisão do Rafael).
+- **Destinos:** memória (a lição do `repr_colado` estendida: "use a variável; converta com `json.dumps`, nunca cole o
+  print nem use `str()`") **e** aviso à plataforma (o passe dict → string JSON entre duas ferramentas da esteira: o
+  `busca_obf` aceitar dict, ou a declaração pedir `json.dumps`).
+
 **Em aberto:**
 
-- o dono dos 86 do `busca_obf` — o agente montou o argumento como texto/`str(dict)`, ou o JSON quebrado é gerado dentro
-  da ferramenta? Leitura de 2–3 casos na máquina 2;
-- o [4] é teto: precisa ler casos;
-- o [1b] da base 2 confirmado rodando.
+- **decisão de método (Rafael):** as falhas silenciosas `json_invalido` com o gesto colado entram como canal silencioso de
+  `U_repr_colado` (a contagem e a lição da unidade mudam — Ajuste próprio) ou ficam como unidade separada;
+- o [4] é teto: conferir no caso os 16 de plataforma de cada base (sai só sim/não e contagem).
 
 **Onde isto vai morar.** O roadmap item 26 já decidiu (22/09) que erro invisível ganha notebook próprio (§13.x), fora
 do notebook da esteira. `falhas_silenciosas()` e `motivo_da_falha()` são a primeira peça dele, e não uma célula do

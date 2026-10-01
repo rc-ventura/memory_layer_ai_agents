@@ -41,6 +41,8 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | M5 (resposta vazia aceita), M6 (narração capturada como código) | achado de harness / plataforma |
 | Surto da base 1 (modo) e da base 2 (modelo `gpt-5.6-terra`) | não-memória, achado para a plataforma |
 | `U_tipo_retorno`, `U_campo_inexistente` | **continuam memória candidata** — não nascem de falha silenciosa (91–94%, duas bases) |
+| `json_invalido` do `busca_obf` (6 e 86) | **dono: o agente** — é o gesto do `U_repr_colado` no canal silencioso (6/6, 86/86); memória **e** aviso à plataforma; unir à unidade é decisão à parte (4.1) |
+| rótulo do grupo `json_invalido` no `drill_down.py` | **fica "a conferir"** — o grupo é genérico; o `--forma` decide em cada base |
 | Base 1, família Protocolo do harness | fechada (5 do managerAgent declarados "não lidos") |
 
 ---
@@ -57,6 +59,8 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | `silenciosas --motivos` (mascarado) | `0a69ad0` | idem |
 | **S2b** — `motivo_da_falha()`, 6 grupos, regras das duas bases | `41b43b9` | idem |
 | Registro das falhas silenciosas (Etapa 10c, item 26, limite no `09`) | `8ddf2c7` | livro-razão, `04`, `09` |
+| `silenciosas --forma` (forma do 1º argumento; abre o `str(...)`: colado × montado × variável) | `6123716`, `de5b601` | livro-razão Etapa 10c |
+| **4.1** — S2 fechado na base 2: [1b] conferido, [4] por grupo nas duas bases, `json_invalido` = `repr_colado` silencioso | registro de 01/10 | livro-razão Etapa 10c |
 
 ---
 
@@ -72,6 +76,9 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | item 26: docs `10-/11-…-falhas-silenciosas.md` | `13`/`14`/`15` |
 | arquivo de plano fora do repo; §5 do livro-razão ("Próximas etapas", 25/09) | **este arquivo** |
 | "o [4] da base 1 = 93 sucessos falsos" | teto; só falhas reais: 53/75, ainda teto |
+| o [1b] da base 2 "calculado sobre as fotos" | conferido rodando |
+| dono do `json_invalido`: "a conferir" / "ler 2–3 casos" | o agente, o gesto do `repr_colado` (duas bases, pelo `--forma`) |
+| "o erro do agente se recupera, o de plataforma não" | só o `json_invalido` se recupera (0/6, 0/86); argumento do agente 30/41 × 2/6 |
 
 ---
 
@@ -79,20 +86,24 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-### 4.1 Fechar o S2 na base 2 *(Rafael roda; status: aguardando)*
+### 4.1 O `json_invalido` do `busca_obf` entra no `U_repr_colado`? *(decisão do Rafael)*
 
-- **Contexto:** o [1b] (grupos) da base 2 foi calculado aplicando as regras às fotos do `--motivos`; falta confirmar
-  rodando. E 86 das 134 falhas silenciosas da base 2 são o `busca_obf` (JSON inválido), de dono desconhecido.
-- **Comandos (máquina 2):**
-  1. `git pull origin 2026-09-28-mineracao-base2` → `uv run drill_down.py silenciosas` → foto do [1b] e do [4].
-     Esperado: JSON 86, plataforma 22, fora da cobertura 10, sem resultado 8, argumento 6, não reconhecido 2.
-  2. Em `resultados/evidencia/silenciosas/casos.csv`, 2–3 `exec_id` do `busca_obf` de meses diferentes →
-     `uv run drill_down.py caso <exec_id> RoteadorCivel` → no step que chama o `busca_obf`, a **forma** de montar o
-     `textos_decisoes`:
-     - `json.dumps` → ferramenta (plataforma);
-     - texto à mão / f-string / `str(...)` → agente (memória);
-     - saída de outra ferramenta → qual.
-- **Tipo:** confirmação + leitura; nenhum código.
+- **Contexto:** nas duas bases, as falhas silenciosas do `busca_obf` são o mesmo gesto do `repr_colado` — colar o print
+  do `puxa_doc_decisao` em vez de passar a variável (6/6, 86/86). Na base 2 o canal silencioso é ~12× o visível (86 × 7).
+- **Opções:**
+  - (a) canal silencioso da `U_repr_colado`: a unidade conta as duas saídas e a lição ganha "converta com `json.dumps`,
+    nunca `str()`" → **Ajuste próprio** (muda contagem e texto da unidade, e o `09`);
+  - (b) unidade separada, ligada à `U_repr_colado` pelo mecanismo.
+- **Evidência:** livro-razão Etapa 10c, "Achado (01/10)".
+- **Tipo:** mudança de método.
+
+### 4.1b Conferir os sucessos falsos de plataforma *(Rafael roda; aguarda aprovação)*
+
+- **Contexto:** o [4] é teto. Plataforma: 16/19 (base 1), 16/22 (base 2) terminam em `final_answer` sem a ferramenta ter
+  funcionado — o risco à correção da resposta.
+- **Solução:** 2–3 casos do grupo plataforma por base (`casos.csv`) → `drill_down.py caso <exec_id> <papel>` → o
+  `final_answer` usa um dado que deveria ter vindo da ferramenta? Sai só sim/não e a contagem.
+- **Tipo:** leitura; nenhum código.
 
 ### 4.2 Criar o conjunto das falhas silenciosas *(proposta; aguarda aprovação)*
 
@@ -165,6 +176,8 @@ figuras. Usa as fronteiras de chamada (S4).
 - M5 (resposta vazia aceita);
 - M6 (o parser concatena blocos e executa narração);
 - **ferramenta devolve falha como texto** (exceção tipada ou resultado estruturado);
+- o passe dict → string JSON entre `puxa_doc_decisao` e `busca_obf`: o tipo `(str)` convida ao `str(...)` (aceitar dict, ou
+  a declaração pedir `json.dumps`);
 - "Wrong credentials", APIs, bugs dentro das ferramentas;
 - relatório pronto seguido só de `print`.
 
