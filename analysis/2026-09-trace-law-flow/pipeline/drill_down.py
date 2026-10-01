@@ -93,6 +93,14 @@ Uso:
            system prompt exato do step, a observação anterior, o que o modelo escreveu no lugar do código, o erro, o
            step seguinte e a resposta final. Rode `protocolo` antes. Caso em claro: ler na máquina.
 
+    python drill_down.py silenciosas [<ferramenta>]
+        -> falhas silenciosas de ferramenta: "Error calling tool '<nome>'" na observação com error: null (o step conta
+           como ok, mas a ferramenta falhou). [1] por ferramenta: steps, falhas com exceção, silenciosas, papéis,
+           meses; [2] o 1º erro do mesmo papel depois de cada falha; [3] quanto dos erros de contrato de retorno
+           (U_tipo_retorno, U_contrato_dict, U_campo_inexistente) vem logo depois de uma falha silenciosa; [4] papéis
+           que entregaram final_answer depois da falha sem chamada bem-sucedida (candidato a sucesso falso). Só
+           números e nomes; casos em resultados/evidencia/silenciosas/casos.csv. Função: falhas_silenciosas().
+
     python drill_down.py critico [<papel>]
         -> os erros críticos (o papel esgotou os passos): uma linha por execução morta — papel, mês, idx do crítico,
            steps, erros antes, primeira unidade, unidades no caminho —, se a execução tem "resposta sem bloco de
@@ -956,6 +964,84 @@ def _modo_prompt(sysp):
         return "texto com <code>"
     return "outro"
 
+UNIDADES_CONTRATO = ["U_tipo_retorno", "U_contrato_dict", "U_campo_inexistente"]
+
+
+def silenciosas(ferramenta=None, janela=3):
+    """Falhas silenciosas de ferramenta: a ferramenta falha, o wrapper devolve "Error calling tool '<nome>'" como
+    STRING, o step fica com error: null, e o pipeline o conta como ok. Só números e nomes, sem exec_id. Os casos vão
+    para resultados/evidencia/silenciosas/casos.csv (git-ignored). Mesma função do notebook: falhas_silenciosas()
+    (base_pipeline.py). Origem: 11-relatorio-protocolo-harness.md §2.5; roadmap item 26."""
+    from base_pipeline import carregar_trace, falhas_silenciosas
+    F = falhas_silenciosas(carregar_trace())
+    if ferramenta:
+        F = F[F["ferramenta"] == ferramenta]
+    if F.empty:
+        print("nenhuma chamada ou falha de ferramenta encontrada."); return
+    sil = F[F["falha"] == "silenciosa"]
+    print(f"{'='*100}\nFalhas silenciosas de ferramenta — 'Error calling tool' com error: null"
+          f"{' · ' + ferramenta if ferramenta else ''}\n{'='*100}")
+    print(f"steps com a ferramenta (chamada ou falha): {len(F):,} · falhas com exceção: "
+          f"{(F['falha'] == 'excecao').sum():,} · **falhas silenciosas: {len(sil):,}** em "
+          f"{sil['exec_id'].nunique()} execuções, {sil['mes'].nunique()} meses")
+
+    print("\n[1] por ferramenta (ordenado pelas silenciosas):  steps · com exceção · silenciosas · % silenciosa · papéis · meses")
+    g = F.groupby("ferramenta")
+    tab = pd.DataFrame({"steps": g.size(),
+                        "excecao": g["falha"].apply(lambda s: (s == "excecao").sum()),
+                        "silenciosa": g["falha"].apply(lambda s: (s == "silenciosa").sum())})
+    tab = tab[(tab["excecao"] + tab["silenciosa"]) > 0].sort_values("silenciosa", ascending=False)
+    for t, row in tab.iterrows():
+        s = sil[sil["ferramenta"] == t]
+        print(f"  {t:<40} {row['steps']:>6} · {row['excecao']:>3} · {row['silenciosa']:>4} · "
+              f"{row['silenciosa'] / row['steps']:>5.0%} · {', '.join(sorted(s['role'].unique())) or '—'} · "
+              f"{', '.join(sorted(s['mes'].unique())) or '—'}")
+
+    arq_mec = os.path.join(os.path.dirname(PASTA_EVIDENCIA), "erros_mecanismo.csv")
+    if os.path.exists(arq_mec) and len(sil):
+        M = pd.read_csv(arq_mec, dtype={"exec_id": str})
+        M["idx"] = M["idx"].astype(int)
+        # [2] o primeiro erro do mesmo papel depois de cada falha silenciosa, até `janela` steps adiante
+        prox = []
+        for _, s in sil.iterrows():
+            e = M[(M["exec_id"] == s["exec_id"]) & (M["role"] == s["role"]) & (M["idx"] > s["idx"])
+                  & (M["idx"] <= s["idx"] + janela)].sort_values("idx")
+            prox.append(e["unidade"].iloc[0] if len(e) else "(nenhum erro)")
+        print(f"\n[2] o que veio depois de cada falha silenciosa (1º erro do mesmo papel em até {janela} steps):")
+        for u, n in Counter(prox).most_common(10):
+            print(f"  {u:<40} {n:>4}")
+        # [3] quanto dos erros de contrato de retorno vem logo depois de uma falha silenciosa
+        print(f"\n[3] erros de contrato de retorno precedidos por falha silenciosa no mesmo papel (até {janela} steps antes):")
+        chaves = set(zip(sil["exec_id"], sil["role"]))
+        for u in UNIDADES_CONTRATO:
+            E = M[M["unidade"] == u]
+            n_prec = sum(1 for _, e in E.iterrows() if (e["exec_id"], e["role"]) in chaves and
+                         ((sil["exec_id"] == e["exec_id"]) & (sil["role"] == e["role"]) & (sil["idx"] < e["idx"])
+                          & (sil["idx"] >= e["idx"] - janela)).any())
+            print(f"  {u:<24} {len(E):>4} erros · {n_prec:>4} precedidos ({(n_prec / len(E)) if len(E) else 0:.0%})")
+    elif not os.path.exists(arq_mec):
+        print(f"\n[2]/[3] precisam de {os.path.relpath(arq_mec)} — rode o notebook antes.")
+
+    # [4] candidato a sucesso falso: o papel entregou final_answer depois da falha, sem chamada bem-sucedida da mesma
+    # ferramenta entre a falha e o final
+    if len(sil):
+        ok = F[F["chamou"] & F["falha"].isna()]
+        cand = 0
+        for _, s in sil.iterrows():
+            if pd.isna(s["idx_final_depois"]):
+                continue
+            depois_ok = ok[(ok["exec_id"] == s["exec_id"]) & (ok["role"] == s["role"]) & (ok["ferramenta"] == s["ferramenta"])
+                           & (ok["idx"] > s["idx"]) & (ok["idx"] <= s["idx_final_depois"])]
+            cand += depois_ok.empty
+        print(f"\n[4] o papel entregou final_answer depois da falha silenciosa, sem nenhuma chamada sem falha da mesma "
+              f"ferramenta no meio: {cand} de {len(sil)} (candidato a sucesso falso — conferir no caso)")
+
+    pasta = os.path.join(PASTA_EVIDENCIA, "silenciosas")
+    os.makedirs(pasta, exist_ok=True)
+    sil.to_csv(os.path.join(pasta, "casos.csv"), index=False)
+    print(f"\nCasos (com exec_id): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
+
+
 def critico(papel=None):
     """Fila dos erros críticos (limite de passos) com a ligação ao "resposta sem bloco de código" e a trajetória do
     papel por tipo de erro — para achar o passo crítico (o primeiro erro da cascata) sem abrir o texto do caso.
@@ -1265,6 +1351,8 @@ if __name__ == "__main__":
         residuo()
     elif cmd == "padrao":
         padrao(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "silenciosas":
+        silenciosas(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "critico":
         critico(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "protocolo" and "--casos" in sys.argv:

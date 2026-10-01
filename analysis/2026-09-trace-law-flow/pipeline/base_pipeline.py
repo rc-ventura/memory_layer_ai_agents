@@ -23,7 +23,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
-           "caminho_dos_criticos", "chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
+           "caminho_dos_criticos", "FALHA_FERRAMENTA", "falhas_silenciosas", "chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -505,6 +505,51 @@ def caminho_dos_criticos(EU):
                        "unidades no caminho": " + ".join(antes["unidade"].value_counts().index)})
     return pd.DataFrame(linhas, columns=["exec_id", "role", "mes", "idx do erro crítico", "steps no papel", "erros antes",
                                          "primeira unidade", "unidades no caminho"])
+
+
+FALHA_FERRAMENTA = re.compile(r"Error calling tool '(\w+)'")
+
+
+def falhas_silenciosas(df):
+    """Uma linha por (step, ferramenta) em que uma ferramenta declarada foi chamada ou falhou. É uma medida, não uma
+    regra de classificação. `falha`:
+      - "excecao": o step tem erro e a ferramenta aparece em `Error calling tool '<nome>'`;
+      - "silenciosa": a mesma mensagem está na observação (ou no action_output), mas o step tem `error: null`. A
+        ferramenta falhou, o wrapper devolveu o erro como STRING e o Python seguiu. Para o pipeline, o step foi "ok";
+      - None: chamada sem falha visível.
+    `idx` é o mesmo de explodir_memoria (posição entre os ActionSteps do papel), para cruzar com erros_mecanismo.csv.
+    `idx_final_depois`: o primeiro step do papel com is_final_answer depois deste (ou None).
+    Origem: 11-relatorio-protocolo-harness.md §2.5 (a calculadora do CalculoCivel, base 2) e o item 26 do roadmap.
+    Limite: só a forma "Error calling tool"; validações e resultados vazios ou errados não entram."""
+    linhas = []
+    for _, r in df[df["txt_etap_memo"].notna()].iterrows():
+        try: memo = json.loads(r["txt_etap_memo"])
+        except Exception: continue
+        for role, steps in memo.items():
+            if not isinstance(steps, list): continue
+            acts = [s for s in steps if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
+            finais = [i for i, s in enumerate(acts) if s.get("is_final_answer")]
+            for i, st in enumerate(acts):
+                mim = st.get("model_input_messages")
+                sysp = ""
+                if mim:
+                    m0 = mim[0] if isinstance(mim[0], dict) else {}
+                    c = m0.get("content")
+                    sysp = c[0].get("text", "") if isinstance(c, list) and c and isinstance(c[0], dict) else str(c or "")
+                declaradas = set(re.findall(r"def\s+(\w+)\s*\(", sysp)) - {"final_answer"}
+                code = str(st.get("code_action") or "")
+                chamadas = declaradas & set(re.findall(r"\b(\w+)\s*\(", code))
+                err = st.get("error") or {}
+                obs = str(st.get("observations") or "") + " " + str(st.get("action_output") or "")
+                falhou = set(FALHA_FERRAMENTA.findall(obs)) | set(FALHA_FERRAMENTA.findall(str(err.get("message") or "")))
+                prox_final = next((f for f in finais if f > i), None)
+                for t in sorted(chamadas | falhou):
+                    linhas.append({"exec_id": r["cod_idef_exeo"], "role": role, "idx": i, "mes": r["mes"],
+                                   "ferramenta": t, "chamou": t in chamadas,
+                                   "falha": ("excecao" if err else "silenciosa") if t in falhou else None,
+                                   "idx_final_depois": prox_final})
+    return pd.DataFrame(linhas, columns=["exec_id", "role", "idx", "mes", "ferramenta", "chamou", "falha",
+                                         "idx_final_depois"])
 
 
 def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
