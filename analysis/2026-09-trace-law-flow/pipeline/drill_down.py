@@ -93,6 +93,14 @@ Uso:
            system prompt exato do step, a observação anterior, o que o modelo escreveu no lugar do código, o erro, o
            step seguinte e a resposta final. Rode `protocolo` antes. Caso em claro: ler na máquina.
 
+    python drill_down.py critico [<papel>]
+        -> os erros críticos (o papel esgotou os passos): uma linha por execução morta — papel, mês, idx do crítico,
+           steps, erros antes, primeira unidade, unidades no caminho —, se a execução tem "resposta sem bloco de
+           código" (quantos e em que idx) e a trajetória do papel step a step, só o tipo (ok ou unidade do erro),
+           com repetições agrupadas. Só números e nomes — sem texto de caso nem exec_id; pode ser fotografada.
+           Lê resultados/criticos.csv (ou recalcula com caminho_dos_criticos) e resultados/erros_mecanismo.csv.
+           Ver 12-procedimento-protocolo-harness.md e o item 39 do roadmap.
+
     python drill_down.py caso <exec_id> <role>
         -> imprime a trajetória inteira daquele papel naquela execução, na ordem
            em que aconteceu: PlanningStep (plano) quando existir, e pra cada
@@ -948,6 +956,57 @@ def _modo_prompt(sysp):
         return "texto com <code>"
     return "outro"
 
+def critico(papel=None):
+    """Fila dos erros críticos (limite de passos) com a ligação ao "resposta sem bloco de código" e a trajetória do
+    papel por tipo de erro — para achar o passo crítico (o primeiro erro da cascata) sem abrir o texto do caso.
+    Mesmo cálculo do notebook: `caminho_dos_criticos()` (base_pipeline.py). Saída sem exec_id."""
+    from base_pipeline import caminho_dos_criticos
+    pasta = os.path.dirname(PASTA_EVIDENCIA)
+    arq_mec = os.path.join(pasta, "erros_mecanismo.csv")
+    if not os.path.exists(arq_mec):
+        print(f"falta {os.path.relpath(arq_mec)} — rode o notebook antes."); return
+    M = pd.read_csv(arq_mec, dtype={"exec_id": str})
+    arq_crit = os.path.join(pasta, "criticos.csv")
+    C = pd.read_csv(arq_crit, dtype={"exec_id": str}) if os.path.exists(arq_crit) else caminho_dos_criticos(M)
+    fonte = "criticos.csv" if os.path.exists(arq_crit) else "recalculado de erros_mecanismo.csv"
+    if papel:
+        C = C[C["role"] == papel]
+    print(f"{'='*100}\nErros críticos (limite de passos){' do papel ' + papel if papel else ''}: {len(C)} "
+          f"execução(ões) · fonte: {fonte}\n{'='*100}")
+    if C.empty:
+        print("nenhum erro crítico."); return
+    for k, (_, c) in enumerate(C.iterrows(), 1):
+        g = M[(M["exec_id"] == c["exec_id"]) & (M["role"] == c["role"])].sort_values("idx")
+        i_crit = int(c["idx do erro crítico"])
+        n = c.get("steps no papel")
+        n = int(n) if pd.notna(n) else i_crit + 1
+        prot = g[g["submecanismo"] == "harness_bloco_code"]
+        print(f"\n[{k}] {c['role']} · {c['mes']} · {n} steps no papel · erro crítico no idx {i_crit} · "
+              f"{int(c['erros antes'])} erros antes")
+        print(f"    primeira unidade: {c['primeira unidade'] or '—'}")
+        print(f"    unidades no caminho: {c['unidades no caminho'] or '—'}")
+        print(f"    'resposta sem bloco de código' nesta execução: {'sim' if len(prot) else 'não'}"
+              + (f" — {len(prot)} erro(s), idx {sorted(prot['idx'].astype(int))}" if len(prot) else ""))
+        # trajetória: um rótulo por idx (ok ou a unidade do erro), repetições seguidas agrupadas
+        por_idx = g.drop_duplicates("idx").set_index("idx")["unidade"].to_dict()
+        rot = [por_idx.get(i, "ok") for i in range(n)]
+        print(f"    trajetória (idx: tipo; ×N = repetido em sequência):")
+        i = 0
+        while i < n:
+            j = i
+            while j + 1 < n and rot[j + 1] == rot[i]:
+                j += 1
+            faixa = f"{i}" if i == j else f"{i}–{j}"
+            print(f"      {faixa:>7}: {rot[i]}{f'  ×{j - i + 1}' if j > i else ''}")
+            i = j + 1
+        nomes = g.drop_duplicates("unidade").set_index("unidade")["assinatura"].to_dict()
+        print("    legenda (unidade → assinatura): "
+              + "; ".join(f"{u} → {a}" for u, a in nomes.items()))
+    print(f"\nPasso crítico: o primeiro erro da trajetória que inicia a cascata (ver 'primeira unidade'). Leitura do "
+          f"caso, se precisar: `caso <exec_id> <papel>` — o exec_id está em "
+          f"{os.path.relpath(arq_crit if os.path.exists(arq_crit) else arq_mec)}, não sai da máquina.")
+
+
 def protocolo_casos(papel, versao=None, n=3):
     """Um arquivo de texto por erro de "resposta sem bloco de código" do papel (e da versão do prompt, se dada), para
     ler prompt, erro e recuperação juntos: o system prompt exato do step, a observação que o agente acabara de ver, o
@@ -1206,6 +1265,8 @@ if __name__ == "__main__":
         residuo()
     elif cmd == "padrao":
         padrao(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "critico":
+        critico(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "protocolo" and "--casos" in sys.argv:
         resto = sys.argv[sys.argv.index("--casos") + 1:]
         if not resto:
