@@ -105,6 +105,11 @@ Uso:
         -> os motivos das falhas de ferramenta, por ferramenta, mascarados (o que está entre aspas e depois de '=' vira
            <v>, dígito vira 9, 60 caracteres): sobra o texto que o dev da ferramenta escreveu. Pode ser fotografado.
 
+    python drill_down.py silenciosas --forma <ferramenta>
+        -> em cada falha silenciosa da ferramenta, como o 1º argumento foi passado — json.dumps, str(...), dict ou
+           string montados à mão, variável devolvida por outra ferramenta — só a contagem por tipo, sem conteúdo.
+           Decide o dono do json_invalido (agente × ferramenta).
+
     python drill_down.py critico [<papel>]
         -> os erros críticos (o papel esgotou os passos): uma linha por execução morta — papel, mês, idx do crítico,
            steps, erros antes, primeira unidade, unidades no caminho —, se a execução tem "resposta sem bloco de
@@ -971,7 +976,30 @@ def _modo_prompt(sysp):
 UNIDADES_CONTRATO = ["U_tipo_retorno", "U_contrato_dict", "U_campo_inexistente"]
 
 
-def silenciosas(ferramenta=None, janela=3, motivos=False):
+def _forma_argumento(ferramenta, codes):
+    """Como o 1º argumento de `ferramenta` foi passado no último código de `codes` (os steps do papel até a falha) —
+    só o tipo, sem conteúdo. Para decidir o dono do json_invalido: str(dict) com aspas simples / dict ou string montados
+    à mão → agente; json.dumps ou a variável que outra ferramenta devolveu → a ferramenta."""
+    m = re.search(rf"\b{ferramenta}\s*\((.{{0,300}})", codes[-1], re.S)
+    if not m:
+        return "sem chamada visível no código"
+    a = re.sub(r"^\s*\w+\s*=(?!=)\s*", "", m.group(1)).lstrip()   # tira o "nome_do_argumento="
+    if a.startswith("json.dumps"):
+        return "json.dumps(...)"
+    if a.startswith("str("):
+        return "str(...) — repr com aspas simples"
+    if a[:1] in "{[":
+        return "dict/lista literal montado pelo agente"
+    if re.match(r"[fFrR]?[\"']", a):
+        return "string literal montada pelo agente"
+    v = re.match(r"(\w+)\s*[,)]", a)
+    if v:
+        origem = next((t for c in codes for t in re.findall(rf"\b{v.group(1)}\s*=\s*(\w+)\s*\(", c)), None)
+        return f"variável devolvida por {origem}(...)" if origem else "variável montada pelo agente"
+    return "outro"
+
+
+def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
     """Falhas silenciosas de ferramenta: a ferramenta falha, o wrapper devolve "Error calling tool '<nome>'" como
     STRING, o step fica com error: null, e o pipeline o conta como ok. Só números e nomes, sem exec_id. Os casos vão
     para resultados/evidencia/silenciosas/casos.csv (git-ignored). Mesma função do notebook: falhas_silenciosas()
@@ -985,6 +1013,22 @@ def silenciosas(ferramenta=None, janela=3, motivos=False):
     if F.empty:
         print("nenhuma chamada ou falha de ferramenta encontrada."); return
     sil = F[F["falha"] == "silenciosa"]
+    if forma:
+        # --forma <ferramenta>: como o 1º argumento foi passado em cada falha silenciosa dela, só contagem por tipo
+        if not ferramenta:
+            print("uso: python drill_down.py silenciosas --forma <ferramenta>"); return
+        df = load().set_index("cod_idef_exeo")
+        cont = Counter()
+        for _, s in sil.iterrows():
+            acts = [x for x in json.loads(df.loc[s["exec_id"], "txt_etap_memo"])[s["role"]]
+                    if isinstance(x, dict) and x.get("__class__") == "ActionStep"]
+            cont[(s["grupo"], _forma_argumento(ferramenta, [str(x.get("code_action") or "")
+                                                          for x in acts[: int(s["idx"]) + 1]]))] += 1
+        print(f"{'='*100}\n{ferramenta} — falhas silenciosas: {len(sil)} · como o 1º argumento foi passado "
+              f"(só o tipo, sem conteúdo)\n{'='*100}")
+        for (grp, f), n in cont.most_common():
+            print(f"  {n:>4} · {grp:<19} · {f}")
+        return
     if motivos:
         fal = F[F["falha"].notna()].copy()
         fal["motivo_m"] = fal["motivo"].map(mascarar_motivo)
@@ -1389,8 +1433,8 @@ if __name__ == "__main__":
     elif cmd == "padrao":
         padrao(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "silenciosas":
-        args = [a for a in sys.argv[2:] if a != "--motivos"]
-        silenciosas(args[0] if args else None, motivos="--motivos" in sys.argv[2:])
+        args = [a for a in sys.argv[2:] if a not in ("--motivos", "--forma")]
+        silenciosas(args[0] if args else None, motivos="--motivos" in sys.argv[2:], forma="--forma" in sys.argv[2:])
     elif cmd == "critico":
         critico(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "protocolo" and "--casos" in sys.argv:
