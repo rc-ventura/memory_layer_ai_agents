@@ -3,7 +3,8 @@
 Módulo só de apresentação (a espinha computacional continua em base_pipeline.py). Toda figura que pinta erros usa a
 mesma regra (`COR_ERRO`, via `base_pipeline.categoria_do_erro`): a cor é a da **família** do erro; o **resíduo**
 (nenhuma regra reconheceu a causa) é sempre roxo; as famílias de **plataforma** (harness/infra — não é erro do
-agente, não vira memória) são cinzas; "outros" agrupados são cinza-claro. O mesmo erro tem a mesma cor no 8.8, no
+agente, não vira memória) são cinzas; o **erro crítico** (o agente não se recuperou) é preto; "outros" agrupados são
+cinza-claro. O mesmo erro tem a mesma cor no 8.8, no
 9.3 e na genealogia, em qualquer base.
 
     from paleta import *
@@ -33,6 +34,8 @@ COR_ERRO = {
     "Infra / LLM upstream": MUTED,                     # cinza-médio
     "Infra / ferramenta": MUTED,                       # o mesmo cinza-médio: as duas "Infra" são externas ao harness;
                                                      # o nome na barra as separa (nenhuma cor nova, nenhuma mudada)
+    # o agente não se recuperou (limite de passos): nem erro comum do agente, nem plataforma (Ajuste 10)
+    "Erro crítico": INK,                               # preto
     # reservadas
     "Resíduo": RESIDUO,
     "Sintoma não reconhecido": RESIDUO,                # família de quem nem o sintoma é reconhecido: é resíduo
@@ -57,6 +60,10 @@ NOME_ERRO = {
     "harness_bloco_code": "Resposta sem bloco de código",
     "infra_llm": "Falha do LLM upstream",
     "timeout_ferramenta": "Ferramenta excedeu o timeout",
+    "timeout_interpretador": "Ferramenta excedeu o tempo do interpretador",
+    "codigo_lento": "Código lento (laço pesado no bloco)",
+    "resultado_bruto_na_resposta": "Resultado bruto na resposta final",
+    "limite_de_passos": "Limite de passos atingido",
     "argumento_inexistente": "Argumento com nome inexistente",
     "codigo_mal_escrito": "Código Python mal escrito",
     "causa_sem_regra": "Erro conhecido, causa sem regra",

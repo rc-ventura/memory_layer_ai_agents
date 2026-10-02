@@ -13,7 +13,8 @@ motivo (§8) — além dos conceitos de robustez (§2). A mineração do schema 
 §9) virou documento próprio: [`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md). **Não têm**
 tratamento passo-a-passo próprio, só cobertura conceitual no §1: a recuperação 0/1.550, a reincidência entre
 execuções, o teste ToolScan IAN/IAV e os detectores silenciosos (Result-Ignore / RAC / Tool-Skip) — para esses,
-o caminho é a célula correspondente do notebook mais o [`02-relatorio-achados.md`](02-relatorio-achados.md).
+o caminho é a célula correspondente do notebook mais o [`02-relatorio-achados.md`](02-relatorio-achados.md) (os
+detectores silenciosos têm, desde 01/10, conjunto próprio: [`13-racionais-falhas-silenciosas.md`](13-racionais-falhas-silenciosas.md)).
 Essa assimetria foi apontada por auditoria independente em 08/09/2026; o §3 (o mais importante dos que
 faltavam) foi escrito em resposta, e o §7 em resposta a uma pergunta em sessão posterior sobre a mesma tabela.
 
@@ -85,7 +86,7 @@ uma base específica):
 | "ValueError ao manipular resultado" (37) | tratado como erro de dados | **35 eram erro de convenção de chamada de ferramenta** (posicional × nomeado), em 12 ferramentas |
 | "KeyError campo ausente" (98) | genérico | **136 erros têm uma causa única**: o retorno da ferramenta é `dict`, o agente indexa como lista |
 | "SyntaxError" (223) | um balde | **159 são string não fechada** (relatório jurídico longo dentro de literal) |
-| "Protocolo do harness" (33) | candidato a memória | **incidente de out/2025; não-memória na base 1 — gatilho de reabertura acionado na base 2 (22/09/2026, ver diário)** |
+| "Protocolo do harness" (33) | candidato a memória | **incidente de out/2025; não-memória na base 1 — gatilho de reabertura acionado na base 2 (22/09/2026, ver diário)**; lógica e mecanismos da família em [`10-racionais-protocolo-harness.md`](10-racionais-protocolo-harness.md) |
 | — | não analisado | posição na trajetória, propagação, reincidência entre execuções, falhas silenciosas |
 
 ### Como cada execução é datada (decisão de 23/09/2026)
@@ -744,7 +745,12 @@ rejeitou**. Sem LLM, regras em ordem:
   `final_answer(..., docs=...)`) → *argumento inexistente*, na mesma unidade do argumento posicional — a lição é a
   mesma, usar a assinatura declarada; `AgentGenerationError`/422 → *infra do LLM*; `TimeoutError` / "excedeu o
   timeout" → *timeout de ferramenta* — o limite de tempo do wrapper de ferramentas da esteira (família própria,
-  `Infra / ferramenta`, e unidade de plataforma, não-memória). (`Import from` e o argumento inexistente entraram em
+  `Infra / ferramenta`, e unidade de plataforma, não-memória); "exceeded the maximum execution time" (o sandbox corta
+  o bloco em 30 s) → *tempo do interpretador numa ferramenta* (plataforma, a mesma unidade) se o bloco chama uma
+  ferramenta declarada; se a única chamada é o `final_answer`, num bloco sem laço, *resultado bruto na resposta final*
+  (lição do agente: extrair no código o trecho que responde — Ajuste 9); senão *código lento* (lição: não rodar laço
+  pesado no bloco); "Reached max
+  steps" → *limite de passos*, que não é causa: é o desfecho de uma cascata (ver Passo 5, erro crítico). (`Import from` e o argumento inexistente entraram em
   25/09/2026, Ajuste 3; o timeout, no Ajuste 4 — [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).)
 
 **Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** Duas funções leem a mesma
@@ -773,7 +779,7 @@ sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
 
 **Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
 `montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
-candidata depende disso — testado: as 11 candidatas da base 1 saem idênticas com ou sem a separação.
+candidata depende disso — testado: as 10 candidatas (e o sinal de harness) da base 1 saem idênticas com ou sem a separação.
 
 O nome "causa não identificada" diz o que aconteceu com a regra, não com o erro: **não quer dizer que o erro
 aconteceu uma vez só** (até 23/09/2026 o balde chamava "erros pontuais", o que sugeria isso sem que a regra
@@ -832,7 +838,21 @@ ablação); **a operacionalização por cascata é nossa**, não do paper.
 3. **Volta em execuções diferentes?** Memória entre execuções só se justifica se o problema recorre: **≥3
    execuções e ≥2 meses** com ocorrência. Abaixo disso → fora.
 
-O que passa nas três é **candidato**. Sensibilidade: com ≥5 execuções e ≥3 meses, só uma unidade muda de lado
+O que passa nas três é **candidato**. **Depois da mineração** (o procedimento de candidata, `03` Frente 3), a unidade
+pode ganhar `destino = harness`: o agente errou, mas o conserto certo é no ambiente (contrato do prompt, validação
+no harness), e memória sozinha não protegeria a resposta. Essa unidade sai de "candidato" e vira **sinal de
+harness** — a terceira saída do mecanismo, distinta da não-memória operacional (onde a plataforma falhou e o agente
+fez certo). A decisão vem de `DESTINO_MINERACAO` (`base_pipeline.py`), não da régua; a triagem automática não muda.
+Hoje só a nº10 ("Campo inexistente no retorno estruturado") tem esse destino (`07` §6.1; Ajuste 5 de
+[`pipeline-entre-bases.md`](../../pipeline-entre-bases.md)), e **só na base 1**: as bases são independentes, e a decisão
+da mineração vale na base em que foi tomada (`BASE_ID`; Ajuste 7) — numa base nova a unidade volta a candidata até ser
+minerada lá. **Erro crítico:** a execução em que o agente esgotou os passos (`Reached max steps`) não vai para
+lição nem para plataforma — o agente não se recuperou, e a causa está nos erros anteriores. É uma classe à parte,
+**"investigar — crítico"**, sem limite mínimo: todo caso vai para investigação (humana ou com LLM; a classificação
+continua determinística), a partir de `resultados/criticos.csv`, que lista o caminho até a morte; e cada unidade ganha
+a coluna "execuções mortas com esta unidade no caminho" — o peso de gravidade (Ajuste 8). **Chave sem nome de
+exceção:** no resíduo, erro cuja mensagem não tem palavra de exceção recebe a chave `sem nome de exceção: <tipo>` e
+não conta como padrão recorrente. Sensibilidade: com ≥5 execuções e ≥3 meses, só uma unidade muda de lado
 ("Após step com erro, o que ele definiria não existe") — marcada **limítrofe** na tabela e no gráfico.
 
 **Passo 6 — o antigo Passo 4, respondido com número.** A versão anterior dizia que cinco assinaturas ficaram de
@@ -851,8 +871,10 @@ Três eram a mesma causa de um candidato existente, escrita com outra exceção;
 critério "causa única, conteúdo numa frase" continua certo — o erro era aplicá-lo à assinatura em vez de a cada
 erro.
 
-**Passo 7 — o resultado.** 15 unidades: **11 candidatas** (5 factual · ambiente, 6 experiencial · estratégia),
-2 não-memória e 2 a revisar (resíduo). As candidatas cobrem 450 dos 498 erros (90%) e 92% dos tokens gastos em steps com erro.
+**Passo 7 — o resultado.** 15 unidades: **10 candidatas** (4 factual · ambiente, 6 experiencial · estratégia),
+**1 sinal de harness** (a nº10, pós-mineração), 2 não-memória e 2 a revisar (resíduo). As candidatas cobrem 440 dos
+498 erros (88%) e 91% dos tokens gastos em steps com erro. (Até 28/09/2026 a nº10 contava como candidata: 11
+candidatas, 450 erros, 90%, 92% dos tokens.)
 (Até 25/09/2026 eram 10 candidatas, 447 erros e 1 unidade "fora": "Não colar retorno impresso" tinha 2 erros; o
 Ajuste 2.2 passou a reconhecer o retorno colado inteiro, ela foi a 6 erros em 4 meses e virou candidata — e a
 maior, "Texto longo nunca dentro de literal", perdeu 4 erros, de 186 para 182.)
@@ -928,14 +950,14 @@ junta ≥3 execuções e ≥2 meses dentro de um papel, essas mesmas execuções
 (o papel está contido na base). A escolha informada é no sentido contrário: as **herdadas** mostram onde a
 triagem global empresta candidatura a um papel no qual a memória não se sustentaria sozinha.
 
-**O resultado** (base 1): 19 células (papel × unidade) candidatas de 33 com erro; 14 herdadas — quase metade das
+**O resultado** (base 1): 18 células (papel × unidade) candidatas de 31 com erro; 13 herdadas — quase metade das
 células onde uma candidata global aparece num papel não se sustenta nele. A candidatura scoped concentra-se no
-`ConversationAgent` (9 unidades), com 3 no `managerAgent`, 2 no `RespostaBacen`, 2 no `RoteadorCivel` e 1 em
-cada um de `CadastroCivel`, `CadastroTrabalhista` e `CalculoCivel`. Sensibilidade com a régua estrita (≥5
-execuções, ≥3 meses): **8 das 19** células candidatas caem — a régua scoped é bem mais sensível que a global
-(1 das 11 unidades), porque os volumes por papel são menores por construção; a lista de limítrofes está em
-`03-procedimento-validacao.md` §1.15. (Números de 25/09/2026, depois dos Ajustes 2.2 e 3; antes eram 18 células, 8
-das 18 e 1 das 10.)
+`ConversationAgent` (9 unidades), com 3 no `managerAgent`, 2 no `RoteadorCivel` e 1 em cada um de `RespostaBacen`,
+`CadastroCivel`, `CadastroTrabalhista` e `CalculoCivel`. Sensibilidade com a régua estrita (≥5
+execuções, ≥3 meses): **8 das 18** células candidatas caem — a régua scoped é bem mais sensível que a global
+(1 das 10 unidades), porque os volumes por papel são menores por construção; a lista de limítrofes está em
+`03-procedimento-validacao.md` §1.15. (Números de 28/09/2026, depois dos Ajustes 2.2, 3 e 5 — o sinal de harness fica
+fora da candidatura por papel; antes eram 18 células de 33, 8 das 18 e 1 das 10.)
 
 ---
 

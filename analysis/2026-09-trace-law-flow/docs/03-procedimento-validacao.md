@@ -11,6 +11,8 @@ revisado; é o caminho mais curto pra revisar direito. Este documento é o "como
 O procedimento tem duas frentes independentes — uma mecânica, outra de leitura —, uma terceira que diz o que fazer
 com cada decisão da triagem (Frente 3), e um eixo que atravessa todas: **nunca apresentar um número agregado sem saber apontar o caso concreto no trace cru que o sustenta.**
 
+A família "Protocolo do harness" tem roteiro próprio: [`12-procedimento-protocolo-harness.md`](12-procedimento-protocolo-harness.md).
+
 ---
 
 ## Frente 1 — Auditar o pipeline (não depende de nenhum paper)
@@ -132,7 +134,7 @@ contagens de steps/execuções/tokens. Nenhum embute uma decisão de "o que cont
 | §2.3 duração "Falha do LLM interno" — 115s | corte de amostra mínima por família | `n >= 3, 10, 20, 50` | ❌ **NÃO robusto — retirado como número, virou hipótese** (só 6 pontos, variância de 3 ordens de magnitude) |
 | §3.5 desperdício % por papel | corte `tok_total >= 50.000` | cortes de 10k, 50k, 100k | ✅ **robusto** — ranking idêntico |
 | §3.3 tokens por chamada, por papel | o que fazer com o step cujo código **não parseia** (sem árvore, sem como contar chamadas) | as duas contagens defensáveis: descartar o step inteiro × somar os tokens dele com `n_calls = 0` | ⚠️ **escolha fixada em 15/09** — contar os tokens. Inclusiva: 27.988 / 18.775 / agregada 22.280; exclusiva: 27.062 / 17.592 / 21.420. ✅ **robusto no que a seção conclui**: ranking, os múltiplos 11,6× e 4,2×, a mediana (12.192) e o destaque laranja do 8.9 são idênticos nas duas. Racional em [`01-racionais.md`](01-racionais.md) §3.3, Ressalva 2 |
-| §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 11 candidatas muda de lado (marcada limítrofe) |
+| §7 dos racionais — candidatos a memória | limiar de recorrência (≥3 execuções e ≥2 meses) | ≥5 execuções e ≥3 meses | ✅ **robusto** — só 1 das 10 candidatas muda de lado (marcada limítrofe) |
 | `submecanismo()` — base das análises por mecanismo | ordem das regras e o limiar de 15% de stopwords | 6 casos abertos com `drill_down.py` (15/09) | ⚠️ **conferido por amostra, não testado por variação** — os 6 casos batem; variar as regras ainda não foi feito |
 | §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 1 — de qual ferramenta vem cada erro (nº2: 94,8%; nº10: 70%) | a regra de rastreio da variável (AST; comando → step → steps anteriores) | conferência manual de todos os casos fora da dominante + amostra de 4 da dominante (16/09) | ⚠️ **conferido por amostra, não testado por variação** — as atribuições conferem; 5 (nº2) e 1 (nº10) ficam não resolvidos; o veredito da nº2 resiste ao pior caso (ver §1.7) |
 | §9 de `06-racionais-mineracao-unidades-n2-n10.md`, Passo 2 — schema lido da mensagem | o método de leitura do objeto impresso | `ast.literal_eval` × regex tolerante | ✅ **robusto** — 89/89 e 7/7 concordam (ver §1.7); a descrição da forma foi **corrigida** (listas mistas) |
@@ -1074,6 +1076,9 @@ nó agregado na genealogia; no 8.8 cada painel soma 100% do papel; a cor de um e
 **Numa base nova.** Família nova sem cor → cinza e aviso (`paleta.cor`), até ganhar uma cor na `paleta.py`. Só se
 acrescenta: nenhuma cor existente muda. Primeiro caso (25/09/2026, base 2): `Infra / ferramenta` recebeu o mesmo
 cinza-médio da `Infra / LLM upstream` — as duas são infraestrutura externa ao harness, e o nome escrito separa as barras.
+Segundo caso (29/09/2026, Ajuste 10): o limite de passos saiu de `Protocolo do harness` (cinza = plataforma) para a
+família própria **`Erro crítico`**, em **preto** (`INK`) — o agente não se recuperou; não é plataforma, e o vermelho já
+é de `Suposição sobre dados`. Base 1 sem o erro: todos os CSVs idênticos.
 
 ### 1.15 · Candidatura por papel — a triagem scoped, 9.4/9.5 (24/09/2026)
 
@@ -1090,8 +1095,8 @@ reagrupa `EU`; a auditoria nº 6 e os CSVs existentes não são afetados.
 3. **Fato estrutural conferido por exaustão**: zero células "reveladas" (candidata no papel sem passar na
    global) — impossível com a mesma régua: execuções/meses de um papel estão contidos nos da base.
 
-**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 19** células candidatas mudam de lado — a
-"limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 11 unidades): os volumes por
+**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 18** células candidatas mudam de lado — a
+"limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 10 unidades): os volumes por
 papel são menores por construção. As 8 *(refeito em 25/09/2026 depois dos Ajustes 2.2 e 3, §1.16; antes eram 8 das
 18 — "RoteadorCivel · Texto longo…" saiu porque os 3 erros dele foram para "Não colar retorno impresso", as duas
 células dessa unidade entraram, e "ConversationAgent · argumento nomeado" deixou de ser limítrofe ao ganhar o erro do
@@ -1109,8 +1114,8 @@ células dessa unidade entraram, e "ConversationAgent · argumento nomeado" deix
 | managerAgent | Explicação nunca solta no bloco de código |
 
 **Leitura honesta.** O veredito scoped por célula é frágil nos papéis pequenos — as células com 3–4 execuções
-vivem no limiar. O achado que não depende da régua é a **direção** do cruzamento: 14 das 33 células em que uma
-candidata global aparece num papel são **herdadas** (não se sustentam nele), e nenhuma "revelada" é sequer
+vivem no limiar. O achado que não depende da régua é a **direção** do cruzamento: 13 das 31 células em que uma
+candidata global aparece num papel são **herdadas** (desde 28/09 o sinal de harness, a nº10, fica fora do recorte) (não se sustentam nele), e nenhuma "revelada" é sequer
 possível. A decisão de escrever memória por papel deve olhar a tabela do 9.4 junto com o volume, não a cor da
 célula isolada.
 
@@ -1184,7 +1189,26 @@ passo 4). Regra: `classify()` → família nova `Infra / ferramenta`, assinatura
 `Infra / LLM upstream` (§1.14: família nova só acrescenta; nenhuma cor muda). Base 1: nenhum CSV muda (não tem
 Timeout); auditoria nº 6 com 0 divergências. O gatilho de reabertura está no `04-roadmap.md` § Monitoramento.
 
-**Pendente** (roadmap 30, 33, 34): o `?`, a comparação entre bases e a robustez do padrão e do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
+**Ajuste 5 (Etapa 4b) — a decisão da mineração entra na triagem.** A nº10 ("Campo inexistente") passa na triagem, mas
+a mineração decidiu `destino = harness` (§1.10; `07` §6.2): erro do agente induzido por um contrato contraditório, com o
+conserto no ambiente. Ela sai de "candidato" para **"sinal de harness"** (`DESTINO_MINERACAO`, `base_pipeline.py`), com
+seção própria no 9.3 e `SINAL-HARNESS` no Sankey, mantendo a cor da família. Conferido na base 1: nenhum erro muda de
+unidade; só essa decisão muda; 11 → 10 candidatas, 440 erros (88%); por papel, 18 de 31 células (§1.15); auditoria nº 6
+com 0 divergências.
+
+**Ajuste 8 (Etapa 5) — o `?`.** Os 7 erros, lidos no cru da base 2: 6 × "Code execution exceeded the maximum execution
+time of 30 seconds" (3 com o bloco chamando ferramentas — OBFCivel ×2, RespostaOficios; 3 no AgenteProcuracoes, que só
+concatenava resultados de busca enormes e chamava `final_answer`) e 1 × `Reached max steps.` (CalculoCivel, 48 steps
+de erros em cascata: sem `<code>`, `…` colado, `"e"` solto, variável de bloco que falhou, relatório concatenado). Regras:
+tempo do interpretador com ferramenta → `H_timeout_ferramenta`; sem ferramenta → `U_codigo_lento`; limite de passos →
+`C_limite_passos`, erro crítico. A chave `?` deu lugar a `sem nome de exceção: <tipo>`, que não conta como recorrência.
+Base 1: nenhum desses erros; CSVs iguais, só com as colunas novas; auditoria nº 6 com 0 divergências.
+**Ajuste 9 (29/09):** os 3 do AgenteProcuracoes, lidos no cru e medidos com `drill_down.py tempo`, não eram código
+lento: bloco sem laço cuja única chamada é o `final_answer` com o resultado bruto da busca (~27 a ~63 mil caracteres;
+os que passaram tinham até ~3 mil). Causa nova `resultado_bruto_na_resposta` → `U_resultado_bruto`. Base 1: CSVs
+iguais (só a coluna nova `final_answer_sem_laco`, toda falsa); auditoria nº 6 com 0 divergências.
+
+**Pendente** (roadmap 33, 34): a comparação entre bases e a robustez do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
 fase desde a troca do relógio de 23/09 — usa o mês do lote (`202512`), não o da execução; não afeta as demais.
 
 ---
@@ -1244,6 +1268,7 @@ daquela base, não aqui.
 | **candidato** | Rodar a **mineração** da unidade (`06-racionais-mineracao-unidades-n2-n10.md` §9, Passos 1–8; notebook `mineracao_unidades_n2_n10.ipynb`): de qual ferramenta vem cada erro, schema real do retorno, o que o prompt declara × o que a ferramenta devolve, estabilidade no tempo, amostra conferida no cru, registro final | registro final com `status` — `derived-and-checked`, ou `parcial` com a cobertura explícita | notebook de mineração · pastas `resultados/evidencia/11.*` · `07-relatorio-mineracao` |
 | **não-memória** | Nomear quem corrige **fora do agente** (harness, infra, LLM) e escrever o **gatilho de reabertura**: quantos casos por mês ou que taxa por 1.000 steps reabrem a unidade (ex. do `H_bloco_code`: ≥2 casos/mês ou > 1/1k steps) | gatilho escrito e com dono | `04-roadmap.md` §Monitoramento |
 | **revisar — prioridade** | O **procedimento do resíduo** (abaixo), para cada padrão que passa na recorrência — e para todos os padrões, se o motivo for o alarme de cobertura | o padrão virou regra (saiu do resíduo) **ou** foi descartado com motivo escrito | `01` §7 Passo 2 (a regra) · Frente 1 deste doc (os casos) · roadmap |
+| **investigar — crítico** | O agente não se recuperou (esgotou os passos). **Todo caso**, sem limite mínimo: abrir `resultados/criticos.csv` (as unidades dos erros anteriores do papel, a primeira delas e o nº de steps) e achar o **passo crítico** — o erro que iniciou a cascata (AgentDebug). Pode ser humano ou com LLM; a classificação não muda. O que se achar vai para a unidade do passo crítico (ou vira regra nova) | cada caso com o passo crítico registrado | este doc (Frente 1) · `../../pipeline-entre-bases.md` |
 | **revisar — baixa prioridade** | Nada agora. Registrar o tamanho do balde como **cobertura**. Sobe para prioridade se: (a) o mesmo padrão aparecer em outra base; ou (b) o "Sintoma não reconhecido" passar de **5% de todos os erros** da base — o **alarme de cobertura**, que a `triagem()` aplica sozinha (`ALARME_COBERTURA`; a coluna "motivo (resíduo)" diz por que subiu) | próxima base | a tabela por padrão da base (notebook 9.2) |
 | **fora: sem recorrência** | Nada agora. Reavaliar quando houver mais dados: somando bases, se passar no teste, volta à triagem como qualquer outra | próxima base | nenhum — a tabela da triagem já mostra |
 
