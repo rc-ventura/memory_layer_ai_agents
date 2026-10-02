@@ -23,7 +23,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
-           "caminho_dos_criticos", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
+           "caminho_dos_criticos", "sobreposicao", "M1_LIMIAR", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
            "GRUPOS_FALHA_REAL", "motivo_da_falha", "DONO_DO_GRUPO", "UNIDADES_CONTRATO", "forma_argumento",
            "formas_das_falhas", "erro_depois_da_falha", "contrato_precedido", "sucesso_falso_candidato","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
@@ -509,6 +509,24 @@ def caminho_dos_criticos(EU):
                                          "primeira unidade", "unidades no caminho"])
 
 
+# M1 da família Protocolo do harness (10-racionais-protocolo-harness.md §4): a resposta final escrita fora do envelope
+# <code> e reembrulhada depois em final_answer. A medida (30/09) era avulsa; virou função em 02/10 (ressalva D da
+# auditoria de 02/10). O limiar não foi registrado em 30/09: 0,5 é o reconstruído — reproduz as 4 linhas publicadas
+# da base 1 (qualquer valor em (0,479; 0,523] reproduz; 1 caso de cada lado da margem). Falso negativo conhecido: o LLM que reescreve ao reembrulhar.
+M1_LIMIAR = 0.5
+
+
+def sobreposicao(texto, outro, n=5):
+    """Fração dos trechos de `n` palavras de `texto` que reaparecem em `outro` (0 se `texto` tem menos de `n`
+    palavras). Palavra = sequência alfanumérica, em minúsculo. Usada no `drill_down.py protocolo` [9]: o que o modelo escreveu no lugar do
+    bloco × a resposta final entregue depois (antecipou?) e × a observação anterior (copiou da ferramenta?)."""
+    def trechos(t):
+        w = re.findall(r"\w+", str(t or "").lower())
+        return {tuple(w[i:i + n]) for i in range(len(w) - n + 1)}
+    a = trechos(texto)
+    return len(a & trechos(outro)) / len(a) if a else 0.0
+
+
 FALHA_FERRAMENTA = re.compile(r"Error calling tool '(\w+)'")
 
 
@@ -520,7 +538,11 @@ def falhas_silenciosas(df):
         ferramenta falhou, o wrapper devolveu o erro como STRING e o Python seguiu. Para o pipeline, o step foi "ok";
       - None: chamada sem falha visível.
     `idx` é o mesmo de explodir_memoria (posição entre os ActionSteps do papel), para cruzar com erros_mecanismo.csv.
-    `idx_final_depois`: o primeiro step do papel com is_final_answer depois deste (ou None).
+    `chamada`: quantos TaskStep vêm antes do step na lista do papel (o papel pode ser chamado várias vezes na mesma
+    execução; o `idx` conta as chamadas juntas — plano S4).
+    `idx_final_depois`: o primeiro step do papel com is_final_answer a partir deste (o próprio step, se ele for o final)
+    e na mesma chamada, ou None. Ajuste 11 (02/10): antes era o 1º final estritamente depois, em qualquer chamada — a
+    falha no próprio step do final_answer ficava fora do [4], e um final de outra chamada entrava.
     Origem: 11-relatorio-protocolo-harness.md §2.5 (a calculadora do CalculoCivel, base 2) e o item 26 do roadmap.
     Limite: só a forma "Error calling tool"; validações e resultados vazios ou errados não entram."""
     linhas = []
@@ -529,7 +551,11 @@ def falhas_silenciosas(df):
         except Exception: continue
         for role, steps in memo.items():
             if not isinstance(steps, list): continue
-            acts = [s for s in steps if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
+            acts, chamada_de, n_task = [], [], 0
+            for s in steps:
+                if not isinstance(s, dict): continue
+                if s.get("__class__") == "TaskStep": n_task += 1
+                elif s.get("__class__") == "ActionStep": acts.append(s); chamada_de.append(n_task)
             finais = [i for i, s in enumerate(acts) if s.get("is_final_answer")]
             for i, st in enumerate(acts):
                 mim = st.get("model_input_messages")
@@ -545,19 +571,20 @@ def falhas_silenciosas(df):
                 obs = str(st.get("observations") or "") + " " + str(st.get("action_output") or "")
                 texto = obs + " " + str(err.get("message") or "")
                 falhou = set(FALHA_FERRAMENTA.findall(texto))
-                prox_final = next((f for f in finais if f > i), None)
+                prox_final = next((f for f in finais if f >= i and chamada_de[f] == chamada_de[i]), None)
                 for t in sorted(chamadas | falhou):
                     # o motivo: o texto da ferramenta depois de "Error calling tool '<nome>':" (1ª linha). Pode conter
                     # valores do caso (filtros) — mascarar_motivo() antes de mostrar.
                     m = re.search(rf"Error calling tool '{t}':?\s*([^\n]*)", texto) if t in falhou else None
-                    linhas.append({"exec_id": r["cod_idef_exeo"], "role": role, "idx": i, "mes": r["mes"],
+                    linhas.append({"exec_id": r["cod_idef_exeo"], "role": role, "idx": i, "chamada": chamada_de[i],
+                                   "mes": r["mes"],
                                    "ferramenta": t, "chamou": t in chamadas,
                                    "falha": ("excecao" if err else "silenciosa") if t in falhou else None,
                                    "motivo": m.group(1)[:300] if m else "",
                                    "grupo": motivo_da_falha(m.group(1)) if m else None,
                                    "idx_final_depois": prox_final})
-    return pd.DataFrame(linhas, columns=["exec_id", "role", "idx", "mes", "ferramenta", "chamou", "falha", "motivo",
-                                         "grupo", "idx_final_depois"])
+    return pd.DataFrame(linhas, columns=["exec_id", "role", "idx", "chamada", "mes", "ferramenta", "chamou", "falha",
+                                         "motivo", "grupo", "idx_final_depois"])
 
 
 # Grupos do motivo de uma falha de ferramenta (S2b, 01/10). Regras por palavra-chave, na ordem; a 1ª que casar
@@ -593,7 +620,7 @@ MOTIVO_REGRAS = [
     ("plataforma", r"ongoing worker", "b1"),
     ("plataforma", r"object has no attribute|too many values to unpack", "b1 b2"),
     ("plataforma", r"structured_content must be", "b1 b2"),
-    ("plataforma", r"^'default'$", "b2"),
+    ("plataforma", r"^'default'$", "b1 b2"),   # b1 desde 02/10: 2 na base 1 (CalculoCivel, a mesma calculadora; audit_recompute9)
 ]
 GRUPOS_FALHA_REAL = ("argumento_do_agente", "plataforma", "json_invalido", "nao_reconhecido")
 
@@ -715,8 +742,9 @@ def contrato_precedido(sil, EU, janela=3):
 
 
 def sucesso_falso_candidato(F, sil):
-    """[4] para cada falha REAL de `sil` (GRUPOS_FALHA_REAL): o papel entregou final_answer depois sem nenhuma chamada
-    sem falha da mesma ferramenta no meio? Série booleana só sobre as falhas reais. É teto: conferir no caso."""
+    """[4] para cada falha REAL de `sil` (GRUPOS_FALHA_REAL): o papel entregou final_answer — no próprio step da falha
+    ou depois, na mesma chamada (`idx_final_depois`, Ajuste 11) — sem nenhuma chamada sem falha da mesma ferramenta no
+    meio? Série booleana só sobre as falhas reais. É teto: conferir no caso."""
     real = sil[sil["grupo"].isin(GRUPOS_FALHA_REAL)]
     ok = F[F["chamou"] & F["falha"].isna()]
     out = []

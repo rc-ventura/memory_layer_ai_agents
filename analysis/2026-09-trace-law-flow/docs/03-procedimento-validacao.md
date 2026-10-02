@@ -1208,8 +1208,8 @@ lento: bloco sem laço cuja única chamada é o `final_answer` com o resultado b
 os que passaram tinham até ~3 mil). Causa nova `resultado_bruto_na_resposta` → `U_resultado_bruto`. Base 1: CSVs
 iguais (só a coluna nova `final_answer_sem_laco`, toda falsa); auditoria nº 6 com 0 divergências.
 
-**Pendente** (roadmap 33, 34): a comparação entre bases e a robustez do alarme. A checagem E da auditoria nº 6 ("Explicação solta em dez/2025", esperado 26/33) está fora de
-fase desde a troca do relógio de 23/09 — usa o mês do lote (`202512`), não o da execução; não afeta as demais.
+**Pendente** (roadmap 33, 34): a comparação entre bases e a robustez do alarme. A checagem E da auditoria nº 6 ficou fora de fase de 23/09 a 02/10 (usava o mês do lote, `202512`, e esperava 26/33
+em dez/2025); **corrigida em 02/10** (roadmap 36): mês da execução, 25/33 em out/2025, 0 divergências.
 
 ---
 

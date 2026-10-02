@@ -1,5 +1,7 @@
 # Racionais das falhas silenciosas — o balde invisível
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** o mesmo papel do [`01-racionais.md`](01-racionais.md), só para o erro que **não**
 vira exceção. Explica **por que** a fonte de erros não pode ser só a exceção, **como** o funil separa os dois baldes e
 **o que** cada medida do balde invisível quer dizer. Os números por base estão em
@@ -86,9 +88,12 @@ da ferramenta (decisão do Rafael, 01/10).
 - **[3] contrato de retorno precedido** — quanto de `U_tipo_retorno`, `U_contrato_dict` e `U_campo_inexistente` vem logo
   depois de uma falha silenciosa. Pergunta se essas memórias são, na verdade, efeito da plataforma (a ferramenta
   devolveu texto onde o contrato prometia `dict`). Se fossem, a lição estaria no lugar errado.
-- **[4] candidato a sucesso falso** — numa falha **real**, o papel entregou `final_answer` depois sem nenhuma chamada
-  sem falha da mesma ferramenta no meio. É **teto**: a resposta pode não depender daquele dado. Só a leitura do caso
-  confirma.
+- **[4] candidato a sucesso falso** — numa falha **real**, o papel entregou `final_answer` — no próprio step da falha
+  ou depois, **na mesma chamada do papel** — sem nenhuma chamada sem falha da mesma ferramenta no meio. É **teto**: a
+  resposta pode não depender daquele dado. Só a leitura do caso confirma. *Ajuste 11 (02/10):* a regra antiga olhava
+  só o 1º final **estritamente depois** e em **qualquer chamada**. Com isso, deixava fora a falha mais direta (a
+  ferramenta falha e o mesmo bloco entrega o `final_answer`) e aceitava um final que respondia a outra tarefa. Isso
+  violava o próprio "teto" (livro-razão, Ajuste 11).
 
 Três níveis que [4] separa e as métricas de sucesso confundem: o step não teve exceção ≠ a ferramenta funcionou ≠ a
 tarefa foi concluída (plano S5).
@@ -149,6 +154,12 @@ Inventário: o que o system prompt **declara** (`def nome(...)`), não o que apa
 - **Grupos por palavra-chave.** Uma regra pode errar de grupo numa ferramenta nova; o `nao_reconhecido` e a conferência
   nas duas bases são a proteção.
 - **A forma lê só o código do step da falha**, por regex, e só o 1º argumento. É contagem de forma, não leitura de caso.
-- **[4] é teto.** Candidato a sucesso falso não é sucesso falso confirmado.
+- **[4] é teto — e frouxo.** Candidato a sucesso falso não é sucesso falso confirmado. Na leitura de 6 casos da base 2
+  (02/10), nenhum era: em 3, a resposta veio de outra fonte; nos 3 do `json_invalido`, ela **declara a falha**. A
+  "falha declarada" é uma terceira categoria que o [4] não separa (plano 4.1c e S5). A fronteira de chamada vem dos `TaskStep`
+  do papel; o resto das ferramentas ainda mistura as chamadas (plano S4).
+- **A ocorrência do balde invisível é uma falha (uma linha por step × ferramenta), não uma cascata.** Para consolidar
+  com o visível (ocorrência = cascata × unidade), a regra precisa ser escolhida na 4.2b. Base 1: 120 falhas em 119
+  steps, 100 sequências de steps consecutivos; no `json_invalido`, 6 = 6 (`audit_recompute9`, sonda F).
 - **Groundedness da resposta final** (o valor no `final_answer` tem suporte nas observações?) — o erro de maior impacto
   no TRAIL — ainda não é medido aqui ([`02-relatorio-achados.md`](02-relatorio-achados.md) §5).
