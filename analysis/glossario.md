@@ -75,8 +75,10 @@ Os números entre colchetes são as seções da saída do `drill_down.py silenci
 | **[4b]** | sucesso falso conferido (proposta) | o mesmo, conferido pelo estado final das variáveis (`txt_vrvl_locl`) — plano-atual 4.1c |
 
 **Sucesso falso** = a execução parece ter dado certo, mas a resposta usa um dado que a ferramenta não entregou.
-**Falha declarada** = a ferramenta falhou e a resposta **diz** ao usuário que não conseguiu (não é sucesso, nem sucesso
-falso).
+**Desfecho de uma falha real de ferramenta** (o que aconteceu com a tarefa — não é família, submecanismo nem unidade;
+decidido em 02/10): **recuperou** (a ferramenta funcionou numa nova tentativa) · **não dependia** (a resposta não
+precisava do dado, ou ele veio de outra fonte) · **falha declarada** (a resposta diz ao usuário que não conseguiu) ·
+**sucesso falso** (a resposta usa o dado que não veio — inventa, ou omite a falha).
 
 ## 5 · As seções do `drill_down.py protocolo` ([1]–[9])
 

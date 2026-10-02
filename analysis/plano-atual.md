@@ -61,14 +61,58 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 | Achado | Destino |
 |---|---|
-| M1 (resposta final fora do envelope), M2 (ferramenta que concorre com o `final_answer`) | sinal de harness; o M2 **já corrigido pela plataforma** (segue a declaração `json_resposta` nas duas bases e sumiu com `resposta_gerada`, jan/2026) |
+| M1 (resposta final fora do envelope), M2 (ferramenta que concorre com o `final_answer`) | sinal de harness. A ferramenta concorrente do `final_answer` aparece só com a declaração antiga `json_resposta` (dez/2025, nas duas bases). Ela some com `resposta_gerada` (jan/2026), mas são duas janelas de 1.000 execuções: **monitorar, não dar como corrigido** (decisão de 02/10) |
 | "o risco à resposta está na plataforma" (o [4]) | **hipótese, não achado**: 0/6 sucessos falsos na leitura da base 2; a falha declarada é uma 3ª categoria (4.1c, S5) |
 | M5 (resposta vazia aceita), M6 (narração capturada como código) | achado de harness / plataforma |
 | Surto da base 1 (modo) e da base 2 (modelo `gpt-5.6-terra`) | não-memória, achado para a plataforma |
 | `U_tipo_retorno`, `U_campo_inexistente` | **continuam memória candidata** — não nascem de falha silenciosa (91–94%, duas bases) |
-| `json_invalido` do `busca_obf` (6 e 86) | **dono: o agente** — é o gesto do `U_repr_colado` no canal silencioso (6/6, 86/86); memória **e** aviso à plataforma; unir à unidade é decisão à parte (4.1) |
+| `json_invalido` do `busca_obf` (6 e 86) | **dono: o agente** — é o gesto do `U_repr_colado` no canal silencioso (6/6, 86/86); memória **e** sinal de harness: a declaração `textos_decisoes (str)` convida ao `str()`. Testar outra declaração e monitorar na base 3 (decisão de 02/10). Unir os dois canais numa unidade: decidido em 01/10 |
 | rótulo do grupo `json_invalido` no `drill_down.py` | **fica "a conferir"** — o grupo é genérico; o `--forma` decide em cada base |
 | Base 1, família Protocolo do harness | fechada (5 do managerAgent declarados "não lidos") |
+
+**Decidido e entendido na revisão dos achados da base 2 (02/10, Rafael + Claude, duas rodadas):**
+
+*Decisões:*
+
+- **Erro crítico: investigar a chamada que morreu antes de decidir o destino.** Substitui a proposta de "erro crítico →
+  sinal de harness direto" (4.6). Motivo: no único caso, o papel foi chamado 4 vezes, e só a última chamada é a
+  cascata fatal. É preciso achar o step que a iniciou e decidir pela causa. A leitura do Rafael é que deve ser mais
+  memória que sinal de harness, mas isso fica a investigar (o papel do `'DEFAULT'` é hipótese).
+- **"Campo inexistente no retorno": destino por base até haver evidência de que é o mesmo erro.** Minerar a base 2. Se
+  a essência for a mesma da base 1 (o prompt induz a chave errada), o destino passa a valer para as duas.
+- **Alarme de cobertura:** a saída passa a mostrar a concentração — o maior padrão, a taxa sem ele, os meses — para
+  separar "ferramenta nova sem regra" de "um incidente" (Etapa 6, roadmap #34).
+- **Ferramenta concorrente do `final_answer`:** "monitorar" no lugar de "já corrigido" (tabela acima).
+- **Declaração do argumento do `busca_obf`:** memória candidata e sinal de harness ao mesmo tempo (tabela acima).
+- **Candidatos a sucesso falso:** examinar **os 24** da base 2, não uma amostra de 6, cruzando a falha da ferramenta, a
+  resposta final e o estado final das variáveis (`txt_vrvl_locl`; 4.1c).
+
+*Entendimentos (corrigem ou explicam textos):*
+
+- **Dois caminhos de falha.** Quando a ferramenta falha por dentro, o embrulho dela devolve a falha como texto e o step
+  **não** quebra: é a falha silenciosa. Quando o código Python do agente erra (por exemplo, ao tratar esse texto como
+  dicionário), há exceção e o step quebra: é o erro visível.
+- **Por que a suspeita sobre as memórias de contrato caiu sem a prova perfeita.** A medida conta toda falha silenciosa
+  até 3 steps antes no mesmo papel, inclusive as que nada têm a ver com o erro. Então ela conta a mais: é um teto. O
+  teto deu 5 de 79 e 3 de 38, e o número real é menor ou igual a isso. A prova perfeita seria o fluxo de dado — a
+  variável que recebeu o texto de erro ser a mesma que o erro acessa como dicionário.
+- **"Falha declarada" não é família, submecanismo nem unidade.** Ela é um **desfecho** da tarefa depois de uma falha
+  real de ferramenta. São quatro desfechos: recuperou (a ferramenta funcionou depois) · não dependia (a resposta não
+  precisava do dado, ou veio de outra fonte) · falha declarada (a resposta diz que não conseguiu) · sucesso falso (a
+  resposta usa o dado que não veio). Vai numa coluna nova do balde invisível e alimenta o "sucesso em três níveis"
+  (4.5).
+- **O surto da base 2 é o modelo novo, pelo mecanismo "resposta esvaziada + step vazio aceito".** A causa dentro do
+  modelo (raciocínio interno) não é comprovável com o trace. O prompt ambíguo explica a base 1 e o RespostaBacen da
+  base 2, não o RoteadorCivel.
+- **O "sinal de harness" da família de protocolo só existe nos docs.** No pipeline, a família inteira é uma unidade
+  com destino não-memória. Virar regra depende da mineração da família (4.8).
+- **O `'DEFAULT'` da calculadora é falha silenciosa de ferramenta (grupo plataforma), não protocolo do harness.** A
+  ferramenta devolve um valor sem informação no lugar de um erro com motivo (aviso à plataforma, 4.9). "O agente não
+  entende o `'DEFAULT'`" era suposição, sem evidência: virou pergunta a medir no erro crítico.
+- **O texto repetido da observação no CalculoCivel (3 de 4)** pertence à investigação do erro crítico, não à da maior
+  candidata da base 2.
+- **Detectores de comportamento** (retorno ignorado, chamada repetida, ferramenta não chamada): o Rafael retoma depois
+  das leituras de artigos pendentes.
 
 ---
 
@@ -277,9 +321,15 @@ da auditoria.
   (a última chamada terminou com `final_answer`). Medir quanto o "69/69" muda.
 - **Tipo:** medição; pode corrigir um número publicado.
 
-### 4.6 S6 — erro crítico como gatilho de destino *(decisão do Rafael)*
+### 4.6 Erro crítico — investigar a chamada que morreu antes do destino *(decidido em 02/10; substitui a proposta de gatilho direto)*
 
-- **Proposta:**
+- **Decisão:** erro crítico → investigação obrigatória da **chamada terminal**: achar o step que iniciou a cascata
+  dela e decidir o destino pela causa (memória, prompt ou ferramenta). Depende das ferramentas que separam as
+  chamadas (4.4).
+- **Perguntas abertas do único caso (CalculoCivel, base 2):** o `'DEFAULT'` aparece também nas chamadas 1–3, e elas se
+  recuperaram? O pensamento menciona a falha logo depois? A calculadora é chamada de novo? O texto que o modelo
+  escreve fora do bloco repete a observação (3 de 4)?
+- **Proposta anterior (descartada em 02/10):**
   - sinal de harness → gatilho direto, mesmo com um caso;
   - memória → candidata provisória (não ativa até reaparecer).
 - **Evidência:** custo de um crítico (~2,1 M tokens); o risco de memória de caso único (o "índice indisponível" era
