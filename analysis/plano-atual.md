@@ -134,7 +134,7 @@ da auditoria.
   chamada** da falha, e incluir 1 caso de falha no próprio step final (base 1: `trigger_worker_execution`).
 - **Tipo:** leitura; nenhum código.
 
-### 4.2a Rodar o balde invisível na base 2 — **prompt pronto para o agente da máquina 2:** [`maquina2/2026-10-02-prompt-base2.md`](maquina2/2026-10-02-prompt-base2.md) (passos 1–5 = 4.2a + 4.2b-0 + 4.1b + D2) *(em andamento — 02/10: `silenciosas`, `protocolo` e `audit_recompute9` rodados, 0 divergências; Ajuste 11 conferido; falta a foto das §13.1/§13.7 do notebook)*
+### 4.2a Rodar o balde invisível na base 2 — **prompt entregue ao agente da máquina 2** (passos 1–5 = 4.2a + 4.2b-0 + 4.1b + D2; removido do repo depois de copiado, recuperável em `git show cdd04a1:analysis/maquina2/2026-10-02-prompt-base2.md`) *(em andamento — 02/10: `silenciosas`, `protocolo` e `audit_recompute9` rodados, 0 divergências; Ajuste 11 conferido; falta a foto das §13.1/§13.7 do notebook)*
 
 - **Contexto:** o notebook novo rodou na base 1; na base 2 só rodaram os comandos do `drill_down.py`. Faltam o funil por
   step (sobreposição = 0), os detectores da §13.7 e a tabela de ocorrências (entrada da consolidação).
