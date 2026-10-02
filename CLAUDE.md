@@ -15,6 +15,7 @@ This file is an index, not a rulebook — each doc below is the actual source of
 - **Raw-trace analyses (notebooks, findings reports, PII rules for derived data)** → [`analysis/README.md`](analysis/README.md)
 - **The error-genealogy methodology (family → signature → mechanism → unit → destination, all deterministic/rule-based — no LLM in the classification path)** → generic hypothesis (pre-article) in [`discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md`](discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md); schema + taxonomy groundwork in [`analysis/schema-e-taxonomia-de-erros.md`](analysis/schema-e-taxonomia-de-erros.md); the verified instantiation (numbers, functions, the genealogy Sankey) in [`analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md`](analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md)
 - **How the pipeline/method changes between trace bases (adjustment ledger: trigger → evidence → change → verification → what to replicate on the compliance-side machine; plan for the next steps)** → [`analysis/pipeline-entre-bases.md`](analysis/pipeline-entre-bases.md)
+- **Blueprint das POCs de agentes mínimos do M1 (Sub 1.6/1.7): etapas de construção + experimentos EX-1..EX-7** → [`pocs/blueprint-m1-pocs-minimos.md`](pocs/blueprint-m1-pocs-minimos.md); o código das POCs vive em `pocs/2026-09-min-agents/` (a criar na etapa E0), seguindo a convenção datada de `analysis/`
 
 ## Session-specific operational notes
 
