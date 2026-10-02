@@ -1,5 +1,7 @@
 # Racionais da família "Protocolo do harness" — continuação de `01-racionais.md`
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** o mesmo papel do [`01-racionais.md`](01-racionais.md), mas só para uma família de
 erro: "Protocolo do harness" — o erro *"Your code snippet is invalid, because the regex pattern `<code>(.*?)</code>`
 was not found in it"* (assinatura "Resposta sem bloco de código", unidade `H_bloco_code`). Explica **por que** a

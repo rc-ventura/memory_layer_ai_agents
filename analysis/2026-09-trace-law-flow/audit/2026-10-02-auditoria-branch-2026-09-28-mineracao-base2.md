@@ -1,5 +1,7 @@
 # Auditoria independente — branch `2026-09-28-mineracao-base2` (PR #29, aberto)
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 > **Fechada em 02/10/2026 — ver a [Parte II](#parte-ii--revisão-do-autor-e-fechamento-02102026).** A Parte I é o
 > parecer do auditor, mantido como foi entregue (o PR #29 foi mergeado depois dele). A Parte II é a resposta do autor:
 > confere a auditoria, fecha as ressalvas, cobre a lacuna de método que ela deixou e registra o que ainda depende da

@@ -1,5 +1,7 @@
 # Racionais das falhas silenciosas — o balde invisível
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** o mesmo papel do [`01-racionais.md`](01-racionais.md), só para o erro que **não**
 vira exceção. Explica **por que** a fonte de erros não pode ser só a exceção, **como** o funil separa os dois baldes e
 **o que** cada medida do balde invisível quer dizer. Os números por base estão em

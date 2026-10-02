@@ -1,5 +1,7 @@
 # Plano atual — o roadmap geral das análises: o que vale, o que está feito, o que vem agora
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](glossario.md).
+
 **Atualizado:** 02/10/2026 (noite) · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
 `dc89992`). O PR #29 (balde invisível) foi auditado e mergeado. A auditoria foi **fechada nas duas bases** em 02/10: as
 ressalvas foram resolvidas, o balde invisível ganhou verificação independente (`audit_recompute9`, 0 divergências na

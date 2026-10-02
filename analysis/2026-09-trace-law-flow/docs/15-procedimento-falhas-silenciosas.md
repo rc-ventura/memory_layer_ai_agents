@@ -1,5 +1,7 @@
 # Procedimento — medir as falhas silenciosas numa base
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** o roteiro para rodar o balde invisível numa base nova (ou na base 2) e validar as
 regras. Mesmo papel do [`03-procedimento-validacao.md`](03-procedimento-validacao.md), só para o erro que não vira
 exceção. O **porquê** de cada passo está em [`13-racionais-falhas-silenciosas.md`](13-racionais-falhas-silenciosas.md);

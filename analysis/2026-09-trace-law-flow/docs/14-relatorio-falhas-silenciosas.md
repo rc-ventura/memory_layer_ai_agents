@@ -1,5 +1,7 @@
 # Relatório das falhas silenciosas — o balde invisível, por base
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** os números do balde invisível em cada base, e o que eles querem dizer. Mesmo papel
 do [`02-relatorio-achados.md`](02-relatorio-achados.md), só para o erro que não vira exceção. O **porquê** de cada
 medida está em [`13-racionais-falhas-silenciosas.md`](13-racionais-falhas-silenciosas.md); como repetir numa base nova,

@@ -1,5 +1,7 @@
 # Relatório da família "Protocolo do harness" — continuação de `02-relatorio-achados.md`
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Data:** 30/09/2026 · **Lógica e catálogo de mecanismos (M1–M6):**
 [`10-racionais-protocolo-harness.md`](10-racionais-protocolo-harness.md) · **Como replicar:**
 [`12-procedimento-protocolo-harness.md`](12-procedimento-protocolo-harness.md) · **História e correções:**
@@ -16,8 +18,8 @@ leituras do Rafael (nenhum texto de caso sai de lá).
 | Erros | 33 | 69 |
 | Padrão no tempo | incidente em out/2025 (24) + dez/2025 (7) + 2 isolados; **0 desde mar/2026** | **incidente em ago/2026 (61)** + 8 espalhados |
 | Camada que explica o surto | **modo** (out/2025) e **contrato de ferramenta** (dez/2025) | **modelo** (`gpt-5.6-terra`, só em ago) |
-| Mecanismos | M1 (20), M2 (6), M3 (2), 5 não lidos | M4/M5 no RoteadorCivel (7 casos lidos; a causa dos tokens gastos é hipótese); CalculoCivel: M1 + **M6** na cadeia do erro crítico; RespostaBacen: **M1 3, M2 1** (o M2 com `json_resposta`, dez/2025; lido 02/10, assistido); OBFCivel e CalculoTrabalhista não lidos |
-| Investigação | **fechada** (28 com mecanismo lido; 5 do managerAgent declarados "não lidos") | RoteadorCivel explicado (7 casos + metadados + campos crus); CalculoCivel e o erro crítico explicados (§2.5); RespostaBacen a seguir |
+| Mecanismos | resposta final fora do bloco (20), ferramenta concorrente do `final_answer` (6), marca do bloco digitada errada (2), 5 não lidos | RoteadorCivel: resposta esvaziada pelo modelo + step vazio aceito (7 casos lidos; a causa dos tokens gastos é hipótese). CalculoCivel: resposta fora do bloco + narração executada como código na cadeia do erro crítico. RespostaBacen: resposta fora do bloco 3, ferramenta concorrente 1 (com o contrato antigo `json_resposta`, dez/2025; leitura assistida de 02/10). OBFCivel e CalculoTrabalhista não lidos |
+| Investigação | **fechada** (28 com mecanismo lido; 5 do managerAgent declarados "não lidos") | RoteadorCivel explicado (7 casos + metadados + campos crus); CalculoCivel e o erro crítico explicados (§2.5); RespostaBacen lido (§2.6, 02/10) |
 | Destino | não-memória / sinal de harness | não-memória, achado para a plataforma (modelo) |
 
 ---

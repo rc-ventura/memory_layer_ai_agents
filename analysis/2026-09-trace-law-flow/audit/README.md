@@ -1,5 +1,7 @@
 # Auditorias — o que já foi auditado, por quem, e em que estado
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve:** responder "isso já foi auditado?" sem abrir cada relatório. Uma linha por auditoria e uma por
 script de recomputação. Quando uma auditoria nova chegar: o relatório entra aqui com o estado **aberta**, as
 ressalvas viram item no [`../../plano-atual.md`](../../plano-atual.md), e a resposta do autor entra no próprio

@@ -1,5 +1,7 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](glossario.md).
+
 **Data:** 2026-09-25 (atualizado 02/10) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 conferidos na base 2; 10 e 11 feitos neste repo, falta conferir na base 2; Etapas 10b/10c (protocolo do harness, falhas silenciosas) registradas; o "o que fazer agora" vive em [`plano-atual.md`](plano-atual.md).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs

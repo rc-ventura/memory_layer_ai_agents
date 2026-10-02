@@ -1,5 +1,7 @@
 # Roadmap — o backlog numerado da análise trace-law-flow
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 > **O que fazer agora — nesta ou em qualquer análise — está em [`../../plano-atual.md`](../../plano-atual.md)**: a fila
 > ativa (§4) e o backlog geral (§5), com uma linha por item e um ponteiro para cá. Este arquivo guarda o **backlog
 > numerado desta análise**: o detalhe de cada item, o monitoramento e o que foi fechado. Desde 02/10/2026 ele não

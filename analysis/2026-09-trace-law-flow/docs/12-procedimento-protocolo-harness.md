@@ -1,5 +1,7 @@
 # Procedimento — investigar a família "Protocolo do harness" numa base
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** o roteiro para repetir, numa base nova (ou na base 2, onde está em andamento), a
 investigação que fechou a base 1. Mesmo papel do [`03-procedimento-validacao.md`](03-procedimento-validacao.md), só para
 esta família. O **porquê** de cada passo e o **catálogo de mecanismos** (M1–M6) estão em
