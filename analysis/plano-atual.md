@@ -134,6 +134,25 @@ da auditoria.
   chamada** da falha, e incluir 1 caso de falha no próprio step final (base 1: `trigger_worker_execution`).
 - **Tipo:** leitura; nenhum código.
 
+### 4.1c [4b] — o sucesso falso conferido pelo `txt_vrvl_locl` *(proposta; aguarda aprovação; melhoria das falhas silenciosas)*
+
+- **Contexto:** o [4] só olha se **existe** um `final_answer` na mesma chamada sem chamada bem-sucedida da ferramenta no
+  meio. Não olha o que a ferramenta devolveu nem o que a resposta usou: por isso é teto, e a confirmação depende da
+  leitura assistida (4.1b). O `drill_down.py caso` ainda corta a observação em 400 caracteres e não mostra o
+  `action_output` (só com `--json`). Nenhuma medida lê o `txt_vrvl_locl`, o estado final das variáveis do agente por
+  papel (`05-schema.md`); hoje só o `tempo` lê, e só o tamanho.
+- **Solução:** para cada candidato do [4], um teste determinístico em três partes:
+  1. a variável que recebeu o retorno da ferramenta no step da falha (`x = ferramenta(...)`, via AST);
+  2. o valor final de `x` no `txt_vrvl_locl[papel]` ainda é `"Error calling tool…"`?
+  3. `x`, ou uma variável derivada dela, é usada no código do `final_answer`?
+
+  Os três **sim** contam como sucesso falso **[conferido]**; os casos ambíguos ficam para a leitura. A implementação
+  é uma função no `base_pipeline.py`, uma coluna no `casos.csv` das silenciosas e um `[4b]` no `drill_down.py
+  silenciosas`, testada na base 1 e depois rodada na máquina 2.
+- **Limites:** é o estado **final** (variável sobrescrita, ou papel chamado várias vezes, perde o valor do momento da
+  falha); a coluna está presente em ~90% das execuções; tem conteúdo de caso, então só saem contagens e sim/não.
+- **Tipo:** medição; não muda número publicado. Reduz o teto do [4] e a dependência de leitura por LLM.
+
 ### 4.2a Rodar o balde invisível na base 2 — **prompt entregue ao agente da máquina 2** (passos 1–5 = 4.2a + 4.2b-0 + 4.1b + D2; removido do repo depois de copiado, recuperável em `git show cdd04a1:analysis/maquina2/2026-10-02-prompt-base2.md`) *(em andamento — 02/10: `silenciosas`, `protocolo` e `audit_recompute9` rodados, 0 divergências; Ajuste 11 conferido; falta a foto das §13.1/§13.7 do notebook)*
 
 - **Contexto:** o notebook novo rodou na base 1; na base 2 só rodaram os comandos do `drill_down.py`. Faltam o funil por
