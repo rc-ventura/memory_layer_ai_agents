@@ -1,6 +1,6 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 (atualizado 29/09) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 conferidos na base 2; 10 feito neste repo, falta conferir; depois, a Etapa 6 do plano (§5).
+**Data:** 2026-09-25 (atualizado 02/10) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 conferidos na base 2; 10 e 11 feitos neste repo, falta conferir na base 2; Etapas 10b/10c (protocolo do harness, falhas silenciosas) registradas; o "o que fazer agora" vive em [`plano-atual.md`](plano-atual.md).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -443,6 +443,48 @@ cor (preto); a família de protocolo perde 1 erro. Nenhuma decisão de triagem m
 
 **Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`.
 
+### Ajuste 11 — o [4] (candidato a sucesso falso) respeita o step final e a fronteira de chamada
+
+**Gatilho.** A revisão da auditoria de 02/10 (`2026-09-trace-law-flow/audit/2026-10-02-auditoria-…md`, Parte II).
+Conferindo o balde invisível com uma implementação independente (`audit_recompute9.py`), a definição do [4] se
+mostrou mais estreita que a prosa do `13` §4. O `idx_final_depois` era o 1º `final_answer` **estritamente depois**
+da falha, em **qualquer chamada** do papel.
+
+**Evidência (base 1, rodando).**
+
+| # | O quê | Contagem |
+|---|---|---:|
+| 1 | falhas reais no **próprio step** do `final_answer` (a ferramenta falha e o mesmo bloco entrega a resposta: o caso mais direto de sucesso falso) | 2 |
+| 2 | … das quais a regra antiga contava | 1 (por acaso: achou um final de **outra** chamada) |
+| 3 | falhas reais cujo "final seguinte" era de outra chamada (um `TaskStep` no meio) | 2 |
+| 4 | papéis chamados mais de uma vez na mesma execução (o `idx` junta as chamadas — plano S4) | 491 de 2.252 |
+
+**Solução.** `falhas_silenciosas()` ganha a coluna `chamada` (os `TaskStep` antes do step, na lista do papel), e o
+`idx_final_depois` passa a ser o 1º `final_answer` **com `f >= i` e na mesma chamada**. O
+`sucesso_falso_candidato()` não muda: na falha do próprio step final não há chamada sem falha no meio, então ela
+vira candidato.
+
+**Por quê.** O [4] é declarado **teto**, e um teto que deixa fora o caso mais direto não é teto. E um final que
+responde a outra tarefa não diz nada sobre a falha. É a mesma lição do S4: o `idx` mistura as chamadas.
+
+**Verificação (base 1).** [4] 53/75 → **54/75**: `nao_reconhecido` 7/9 → 8/9; plataforma continua 16/19 (o caso 2
+mudou de motivo, não de resultado); argumento 30/41 e `json_invalido` 0/6 iguais. O `drill_down.py silenciosas` e o
+notebook (reexecutado) dão o mesmo número; o `audit_recompute9.py` (implementação independente) também, com 0
+divergências. Nenhuma outra saída do notebook muda; a `ocorrencias.csv` e os CSVs da esteira ficam iguais.
+
+**Esperado na base 2.** O [4] pode mudar em poucos casos (o publicado era 20/116, plataforma 16/22). A leitura
+"plataforma quase sempre termina sem a ferramenta ter funcionado × `json_invalido` nunca" só cai se a plataforma
+mudar muito — improvável, porque a regra nova só **acrescenta** falhas no step final e **tira** finais de outra
+chamada.
+
+**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`) e `drill_down.py` →
+`falhas_silenciosas.ipynb` → `audit/scripts/audit_recompute9.py --base base2 --trace <xz> --em <erros_mecanismo.csv>
+--fonte <base_pipeline.py>`. Trazer a foto do [4] por grupo.
+
+**Junto, sem mudar número:** a regra `^'default'$` de `MOTIVO_REGRAS` era anotada só `b2`; ela dispara 2 vezes na
+base 1 (CalculoCivel, `calculo_correcoes_monetarias`, fev/2026 — a mesma calculadora do erro crítico da base 2). A
+anotação passa a `b1 b2`.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e
@@ -600,8 +642,8 @@ a decisão "não-memória" — tomada na base 1 — ainda não tem evidência pr
 **o que o LLM escreveu no lugar do bloco** — só a forma: vazio; abriu `<code>` e não fechou (cortado?); bloco em ```
 em vez de `<code>`; texto sem nenhum marcador de código —, recuperação e cascata. Os casos, com `exec_id`, vão para
 `resultados/evidencia/protocolo/casos.csv` (git-ignored). **Conferido na base 1:** 33 erros; out/2025 24, nov 1, dez 7,
-fev 1, zero desde mar; forma: 31 texto sem marcador, 2 em ```; 33/33 recuperados; logo depois, 7 `U_texto_solto` —
-tudo como no relatório.
+fev 1, zero desde mar; forma: 31 texto sem marcador, 2 em ```; 33/33 recuperados; logo depois, 25 steps sem erro, 7 `U_texto_solto` e 1
+`U_estado_perdido` — tudo como no relatório (o `U_estado_perdido` foi acrescentado em 02/10, ressalva B da auditoria).
 
 **Decisão conforme o resultado.** Concentrado num período → incidente de plataforma, "não-memória" continua (registrar
 as datas). Espalhado e com uma forma dominante → ver se há lição (ex.: "sempre responder com bloco de código, inclusive a
@@ -844,6 +886,9 @@ busca_obf`, commits `6123716`, `de5b601`); o [1b] bate grupo a grupo com o que f
 | … dos quais **argumento do agente** | 30/41 | 2/6 |
 | … dos quais **JSON inválido** | **0/6** | **0/86** |
 | … dos quais não reconhecido | 7/9 | 2/2 |
+
+*(Os números do [4] acima são de antes do Ajuste 11, de 02/10: base 1 agora 54/75, com não reconhecido 8/9; base 2 a
+reconferir. Ver §3, Ajuste 11.)*
 | `busca_obf`: forma do 1º argumento (`--forma`) | 6 `str(dict colado de um retorno impresso)` | 80 `str(dict colado…)` + 6 string colada |
 
 **Conclusões:**
@@ -945,9 +990,9 @@ falha em "Could not index" com causa de raiz de **contrato dict** — `docs_summ
 vazia; conferir se o `submecanismo()` manda esses casos a `U_contrato_dict`; (b) a resposta final diz "Nenhum documento
 encontrado" com a ferramenta tendo devolvido documentos — falha **silenciosa**, para o roadmap item 26.
 
-**Auditoria nº 6, checagem E.** Usa o mês do lote (`202512`) e espera 26/33 erros de "Explicação solta" em dez/2025;
-com o relógio da execução são 25/33 em out/2025 (`01` §7 Passo 7). Atualizar a expectativa; as checagens A, B, C e G não
-são afetadas.
+**Auditoria nº 6, checagem E.** Usava o mês do lote (`202512`) e esperava 26/33 erros de "Explicação solta" em
+dez/2025; com o relógio da execução são 25/33 em out/2025 (`01` §7 Passo 7). **Corrigida em 02/10** (ressalva A da
+auditoria de 02/10; roadmap 36): a expectativa é a do mês da execução e a checagem roda sem divergência.
 
 ## 6. Estado das duas bases (25/09/2026)
 

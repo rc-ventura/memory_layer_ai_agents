@@ -11,9 +11,10 @@ Audita o que a auditoria de 08/09 ainda não cobria (foi criado em 15/09):
      tokens) vs. docs/02-relatorio-achados.md §6 e o CSV candidatos_memoria.csv;
   d) a cobertura 447/498 (90%) e 92% dos tokens;
   e) a tabela papel × mecanismo (§2.2 e §7 do racionais, Passo 5);
-  f) as ressalvas documentadas: concentração de "Explicação solta" em dez/2025
-     (26/33 erros, 92% tokens, 7 das 12 ocorrências logo após erro de protocolo,
-     4 ocorrências próprias abr–jun), e a regra oficial dos steps não parseáveis
+  f) as ressalvas documentadas: concentração de "Explicação solta" em out/2025
+     (25/33 erros, 90% tokens, 7 das 12 ocorrências logo após erro de protocolo,
+     4 ocorrências próprias mar–jun/2026 — mês de EXECUÇÃO; até 02/10/2026 a checagem
+     esperava o mês de lote, 26/33 em dez/2025), e a regra oficial dos steps não parseáveis
      no §3.3 (tokens/chamada por papel e agregada 22.280; mediana/exec 12.192);
   g) a quarta régua do achado central: 58 (13,5%) por mecanismo vs. 51 por mensagem.
 
@@ -296,9 +297,9 @@ for role in ["CadastroTrabalhista","CalculoCivel","managerAgent","ConversationAg
     top = ", ".join(f"{n}={v} ({v/t:.0%})" for n,v in c.most_common(3))
     print(f"   {role:20s} n={t}: {top}")
 
-# ---------------- ressalva "Explicação solta" (dez/2025, após protocolo, abr–jun)
+# ---------------- ressalva "Explicação solta" (out/2025, após protocolo, mar–jun/2026) — mês de execução
 ru = [r for r in rows if r["uni"]=="U_texto_solto"]
-dz = [r for r in ru if r["mes"]=="202512"]
+dz = [r for r in ru if r["mes"]=="202510"]
 tok_dz = sum(r["tok"] for r in dz); tok_ru = sum(r["tok"] for r in ru)
 oc_ru = sorted({(r["cascata"], r["eid"], r["role"], r["mes"]) for r in ru})
 # ocorrência "logo após protocolo": a cascata começa imediatamente depois de erro H_bloco_code
@@ -317,11 +318,11 @@ for r in ru:
     for rr in ru:
         if rr["ocorrencia"]==r["ocorrencia"]:
             oc_meses[r["ocorrencia"]].add(rr["mes"])
-own = sum(1 for oc, mm in oc_meses.items() if mm and not ("2025-12" in mm and len(mm)==1))
-# ^ "ocorrências próprias fora de dez"?
+own = sum(1 for oc, mm in oc_meses.items() if mm and not ("202510" in mm and len(mm)==1))
+# ^ ocorrências que não ficam só em out/2025 (o mês do incidente de protocolo) — não impresso; o que vale é o "por mês"
 own_mes = defaultdict(list)
 for oc, mm in oc_meses.items(): own_mes[len(mm)].append(oc)
-print(f"E. 'Explicação solta': {len(dz)}/{len(ru)} erros em dez/2025 ({tok_dz/tok_ru:.0%} dos tokens) (esp. 26/33, 92%)")
+print(f"E. 'Explicação solta': {len(dz)}/{len(ru)} erros em out/2025 ({tok_dz/tok_ru:.0%} dos tokens) (esp. 25/33, 90%)")
 print(f"   ocorrências={len(seen_oc)} (esp. 12) · logo após erros de protocolo: {oc_after} (esp. 7)")
 mesq = Counter()
 seen=set()
@@ -329,7 +330,7 @@ for r in sorted(ru, key=lambda x:(x["eid"],x["role"],x["idx"])):
     key=(r["cascata"],r["eid"],r["role"])
     if key in seen: continue
     seen.add(key); mesq[r["mes"]] += 1
-print(f"   ocorrências por mês: {dict(sorted(mesq.items()))} (esp. abr–jun somando 4 próprias)")
+print(f"   ocorrências por mês: {dict(sorted(mesq.items()))} (esp. mar–jun/2026 somando 4 próprias)")
 
 # ---------------------------------------------- §3.3 tokens/chamada (regra oficial)
 import statistics as stt

@@ -47,6 +47,11 @@ cascata.
      "Now Begin!": pede formato (markdown, JSON)? diz "pode responder diretamente"? define a resposta final como a saída de
      uma ferramenta? (M1)
 
+4. **M1 medido** — `protocolo` [9]: por papel, quantos erros têm o texto (trechos de 5 palavras) reaparecendo na
+   resposta final entregue depois (≥ 50%: **antecipou** a resposta → M1) e quantos o copiaram da observação anterior.
+   Falso negativo conhecido: o LLM que reescreve ao reembrulhar (ConversationAgent, base 1) — por isso o [9] indica, a
+   leitura confirma. As duas sobreposições por caso estão no `casos.csv`.
+
 Anotar a camada que explica o surto **antes** de ler casos.
 
 ## Passo 3 — O cenário de cobertura

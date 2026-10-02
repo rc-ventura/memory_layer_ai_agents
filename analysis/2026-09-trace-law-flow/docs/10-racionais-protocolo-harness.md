@@ -78,9 +78,12 @@ entra aqui.
 
 - **O que é:** o LLM chega ao fim da tarefa e escreve **o conteúdo** da resposta — relatório em markdown, o JSON pedido
   pelo negócio, uma pergunta ao usuário, ou até `final_answer("""…""")` — **sem o envelope** `<code>…</code>`.
-- **Como reconhecer:** o step seguinte é um `final_answer` com o mesmo conteúdo (reembrulhado). Medida usada em 30/09:
-  fração dos trechos de 5 palavras do texto do erro que reaparece no `final_answer` seguinte (managerAgent: 15/21, mediana
-  97%). **Limite:** quando o LLM reescreve o texto ao reembrulhar (ConversationAgent, base 1), a sobreposição cai e a
+- **Como reconhecer:** o step seguinte é um `final_answer` com o mesmo conteúdo (reembrulhado). Medida: fração dos
+  trechos de 5 palavras do texto do erro que reaparece na resposta do 1º `final_answer` seguinte do papel; antecipou se
+  ≥ 50% (`sobreposicao()` e `M1_LIMIAR`, `base_pipeline.py`; `drill_down.py protocolo` [9]). Base 1: managerAgent
+  15/21, mediana 97%; RespostaBacen 1/7; ConversationAgent 0/3; CalculoCivel 0/2. A medida foi feita avulsa em 30/09 e
+  virou função em 02/10. O limiar de 30/09 não foi registrado: 0,5 é o reconstruído, e reproduz as 4 linhas
+  publicadas (qualquer valor em (0,48; 0,52] reproduz). **Limite:** quando o LLM reescreve o texto ao reembrulhar (ConversationAgent, base 1), a sobreposição cai e a
   medida não vê — a leitura confirmou os 3.
 - **Gatilho:** modo texto **mais** uma instrução do negócio no fim do prompt que pede o conteúdo sem lembrar o envelope:
   "responda em markdown", "devolva um JSON no formato…", e — no ConversationAgent — *"Se voce não precisar de nenhuma
@@ -204,8 +207,8 @@ envelope.
 
 - **A forma** no `protocolo` [4] (vazio / ```` ``` ```` / dict-JSON / frase) é grossa: não separa M1 de M3 nem M4. O
   mecanismo vem da leitura e dos metadados.
-- **A medida de sobreposição** do M1 foi feita avulsa em 30/09, não está no `drill_down.py`, e tem falso negativo
-  quando o LLM reescreve.
+- **A medida de sobreposição** do M1 (`protocolo` [9], desde 02/10) tem falso negativo quando o LLM reescreve, e o
+  limiar 0,5 foi reconstruído (o de 30/09 não ficou registrado): indica, não classifica.
 - **M4 e M5:** o fato está medido (a API entrega pouco ou nada; o harness aceita o vazio); a causa dos tokens gastos
   (raciocínio oculto) não dá para comprovar com o que o trace grava.
 - **Cobertura por leitura é amostral**: 5 dos 21 erros do managerAgent (os que não anteciparam a resposta final) não

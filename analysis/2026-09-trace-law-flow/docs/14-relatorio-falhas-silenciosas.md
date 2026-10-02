@@ -4,7 +4,9 @@
 do [`02-relatorio-achados.md`](02-relatorio-achados.md), só para o erro que não vira exceção. O **porquê** de cada
 medida está em [`13-racionais-falhas-silenciosas.md`](13-racionais-falhas-silenciosas.md); como repetir numa base nova,
 em [`15-procedimento-falhas-silenciosas.md`](15-procedimento-falhas-silenciosas.md). Base 1: saída do notebook
-[`../pipeline/falhas_silenciosas.ipynb`](../pipeline/falhas_silenciosas.ipynb) (01/10). Base 2: fotos da máquina 2 do
+[`../pipeline/falhas_silenciosas.ipynb`](../pipeline/falhas_silenciosas.ipynb) (01/10; reexecutado em 02/10 com o
+Ajuste 11). Base 1 conferida também por uma implementação independente
+([`../audit/scripts/audit_recompute9.py`](../audit/scripts/audit_recompute9.py), 0 divergências). Base 2: fotos da máquina 2 do
 `drill_down.py silenciosas` e `silenciosas --forma busca_obf` (01/10) — as mesmas funções; o notebook ainda não rodou lá.
 
 ---
@@ -16,7 +18,8 @@ em [`15-procedimento-falhas-silenciosas.md`](15-procedimento-falhas-silenciosas.
 - **Elas passam sem rastro:** em 89–91% dos casos, o mesmo papel não tem nenhum erro com exceção nos 3 steps seguintes.
 - **As memórias de contrato de retorno não nascem delas:** só 0–9% de `U_tipo_retorno` / `U_campo_inexistente` vêm logo
   depois de uma falha silenciosa. Continuam memória candidata.
-- **O risco à resposta está na plataforma:** 16/19 e 16/22 das falhas de plataforma terminam em `final_answer` sem a
+- **O risco à resposta está na plataforma:** 16/19 e 16/22 das falhas de plataforma terminam em `final_answer` (na mesma
+  chamada — Ajuste 11; base 2 a reconferir) sem a
   ferramenta ter funcionado (candidatos a sucesso falso, teto).
 - **O `json_invalido` é o `repr_colado` no canal silencioso:** 6/6 e 86/86 são o agente colando o print do
   `puxa_doc_decisao` no `busca_obf`. Na base 2, o canal silencioso é ~12× o visível (86 × 7). Nunca vira sucesso falso
@@ -88,13 +91,18 @@ rodando.
 
 ## 5 · Candidato a sucesso falso [4]
 
-| Grupo | Base 1 | Base 2 |
+| Grupo | Base 1 | Base 2 *(antes do Ajuste 11 — a reconferir)* |
 |---|---|---|
 | `plataforma` | **16/19 (84%)** | **16/22 (73%)** |
 | `argumento_do_agente` | 30/41 (73%) | 2/6 |
-| `nao_reconhecido` | 7/9 | 2/2 |
+| `nao_reconhecido` | 8/9 | 2/2 |
 | `json_invalido` | **0/6** | **0/86** |
-| **total** | **53/75** | **20/116** |
+| **total** | **54/75** | **20/116** |
+
+**Ajuste 11 (02/10).** Candidato = o papel entregou `final_answer` **no próprio step da falha ou depois, na mesma
+chamada**. Antes valia o 1º final estritamente depois, em qualquer chamada. Base 1: 53 → 54. Entrou 1 `nao_reconhecido`
+(falha no próprio step do `final_answer`). Plataforma continua 16/19, mas um caso mudou de motivo: a falha estava no
+step final, e a regra antiga o contava por um final de **outra** chamada. Base 2: a reconferir (plano 4.2a).
 
 **Leitura:** o que vale nas duas bases é o contraste entre `plataforma` (quase sempre termina sem a ferramenta ter
 funcionado) e `json_invalido` (nunca: o agente refaz a chamada e acerta). O grupo argumento do agente não tem padrão
@@ -136,7 +144,8 @@ Base 2: a rodar (o notebook novo, na máquina 2).
 
 ## 8 · O que falta
 
-- **Base 2:** rodar o notebook (`falhas_silenciosas.ipynb`) — funil por step, sobreposição, detectores da §13.7.
+- **Base 2:** rodar o notebook (`falhas_silenciosas.ipynb`) — funil por step, sobreposição, detectores da §13.7 — e
+  o `audit/scripts/audit_recompute9.py --base base2 …` (conferência independente; dá o [4] novo, do Ajuste 11).
 - **4.1b:** conferir no caso os 16 candidatos a sucesso falso de plataforma de cada base.
 - **4.2b:** a consolidação — o `json_invalido` colado entra na `U_repr_colado`.
 - **Aviso à plataforma (4.9):** a ferramenta devolve falha como texto; o passe dict → string JSON entre

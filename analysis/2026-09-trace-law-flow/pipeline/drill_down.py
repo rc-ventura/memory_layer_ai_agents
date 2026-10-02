@@ -83,7 +83,9 @@ Uso:
            escreveu no lugar do bloco (só a forma), recuperação e cascata. Só contagens; os casos com exec_id vão para
            resultados/evidencia/protocolo/casos.csv. [7]: as versões do system prompt por papel (hash), com meses,
            erros e o modo (JSON estruturado × texto com <code>); [8]: o modelo que respondeu (raw.model) e a versão
-           do agente (cod_vers_aget), com meses, steps e erros. Ver pipeline-entre-bases.md, Ajuste 10b.
+           do agente (cod_vers_aget), com meses, steps e erros; [9]: o M1 — o texto escrito no lugar do bloco
+           reaparece na resposta final entregue depois (antecipou) ou veio da observação anterior (sobreposicao(),
+           M1_LIMIAR). Ver pipeline-entre-bases.md, Ajuste 10b; 10-racionais-protocolo-harness.md §4 M1.
 
     python drill_down.py protocolo --prompt <versão>
         -> grava o texto daquela versão do system prompt em resultados/evidencia/protocolo/ para ler na máquina.
@@ -1016,7 +1018,10 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
         return
     print(f"{'='*100}\nFalhas silenciosas de ferramenta — 'Error calling tool' com error: null"
           f"{' · ' + ferramenta if ferramenta else ''}\n{'='*100}")
-    print(f"steps com a ferramenta (chamada ou falha): {len(F):,} · falhas com exceção: "
+    # uma linha de F = um par step × ferramenta: um step que chama duas ferramentas conta duas vezes (ressalva C da
+    # auditoria de 02/10 — o notebook §13.1 conta steps distintos)
+    n_steps = F[["exec_id", "role", "idx"]].drop_duplicates().shape[0]
+    print(f"chamadas de ferramenta (step × ferramenta, chamada ou falha): {len(F):,} em {n_steps:,} steps · falhas com exceção: "
           f"{(F['falha'] == 'excecao').sum():,} · **falhas silenciosas: {len(sil):,}** em "
           f"{sil['exec_id'].nunique()} execuções, {sil['mes'].nunique()} meses")
 
@@ -1187,6 +1192,7 @@ def protocolo(prompt=None):
     vem depois na cascata? Só contagens — nenhum texto de caso, nenhum exec_id na tela. Os casos, com exec_id, vão para
     resultados/evidencia/protocolo/casos.csv (git-ignored), para escolher o que ler com `evidencia`. Lê
     resultados/erros_mecanismo.csv e execucoes.csv — rode o notebook antes. Ajuste 10b (pipeline-entre-bases.md)."""
+    from base_pipeline import sobreposicao, M1_LIMIAR
     res = os.path.dirname(PASTA_EVIDENCIA)
     M = pd.read_csv(os.path.join(res, "erros_mecanismo.csv"), dtype={"exec_id": str})
     X = pd.read_csv(os.path.join(res, "execucoes.csv"), dtype={"exec_id": str}).set_index("exec_id")
@@ -1223,6 +1229,11 @@ def protocolo(prompt=None):
                 for u in depois:          # erros seguidos logo depois, até o primeiro step sem erro
                     if u is None: break
                     cascata.append(u)
+                # [9] M1: o texto escrito no lugar do bloco reaparece na resposta final entregue depois (o 1º
+                # final_answer do papel) ou veio da observação anterior? (sobreposicao(), base_pipeline.py)
+                fin = next((a for a in acts[i + 1:] if a.get("is_final_answer")), None)
+                antecipou = sobreposicao(mo, str(fin.get("action_output") or "")) if fin else 0.0
+                copia = sobreposicao(mo, str(acts[i - 1].get("observations") or "")) if i > 0 else 0.0
                 casos.append({"exec_id": eid, "role": role, "idx": i, "mes": mes, "variante_prompt": _variante_prompt(sp),
                               "forma": _forma_da_resposta(mo), "chars": len(mo),
                               "tok_out": (s.get("token_usage") or {}).get("output_tokens") or 0,
@@ -1232,7 +1243,8 @@ def protocolo(prompt=None):
                               "execucao_com_resposta": bool(X.loc[eid, "tem_final"]),
                               "proximo": cascata[0] if cascata else "(step sem erro)",
                               "cascata_depois": len(cascata),
-                              "repetiu_logo_depois": bool(cascata) and cascata[0] == "H_bloco_code"})
+                              "repetiu_logo_depois": bool(cascata) and cascata[0] == "H_bloco_code",
+                              "sobreposicao_final": round(antecipou, 3), "sobreposicao_obs_anterior": round(copia, 3)})
     C = pd.DataFrame(casos)
     pasta = os.path.join(PASTA_EVIDENCIA, "protocolo")
     os.makedirs(pasta, exist_ok=True)
@@ -1296,6 +1308,13 @@ def protocolo(prompt=None):
             if ex != eixo or role not in set(C["role"]): continue
             meses = ", ".join(f"{m} ({n})" for m, n in sorted(v["meses"].items()))
             print(f"  {role:20s} {valor:40s} · {meses} · {v['steps']:5d} · {v['erros']:3d} · {v['erros'] / v['steps'] * 1000:6.1f}")
+    print(f"\n[9] M1 — resposta final fora do envelope (trechos de 5 palavras do que o modelo escreveu; limiar {M1_LIMIAR:.0%}):")
+    print("  papel · erros · antecipou a resposta final entregue depois · mediana da sobreposição · copiou da observação anterior")
+    for role in C["role"].value_counts().index:
+        c = C[C["role"] == role]
+        print(f"  {role:24s} {len(c):4d} · {int((c['sobreposicao_final'] >= M1_LIMIAR).sum()):3d}/{len(c)} · "
+              f"{c['sobreposicao_final'].median():4.0%} · {int((c['sobreposicao_obs_anterior'] >= M1_LIMIAR).sum()):3d}/{len(c)}")
+    print("  falso negativo conhecido: o LLM reescreve ao reembrulhar (10-racionais-protocolo-harness.md §4 M1)")
     print(f"\nCasos (com exec_id, para `evidencia`): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
     print(f"{'='*100}")
 
