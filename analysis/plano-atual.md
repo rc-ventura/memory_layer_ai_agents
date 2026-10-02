@@ -1,7 +1,8 @@
 # Plano atual — o que vale, o que está feito, o que vem agora
 
-**Atualizado:** 02/10/2026 · **Branch:** `2026-09-28-mineracao-base2` (PR #29) fecha aqui, com o balde invisível; o
-que falta (4.1b, 4.2a em diante) segue na branch `2026-10-02-consolidacao-unidades`, a partir da `main`.
+**Atualizado:** 02/10/2026 · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
+`dc89992`). O PR #29 (balde invisível) foi auditado (`2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`:
+números da base 1 reproduzem; ressalvas A–H) e mergeado.
 
 **Para que serve:** a **única fonte** do "o que fazer agora". O histórico de cada ajuste e de cada etapa continua no
 livro-razão ([`pipeline-entre-bases.md`](pipeline-entre-bases.md)); os números, nos relatórios de cada análise. Quando
@@ -73,6 +74,8 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | `silenciosas --forma` (forma do 1º argumento; abre o `str(...)`: colado × montado × variável) | `6123716`, `de5b601` | livro-razão Etapa 10c |
 | **4.1** — S2 fechado na base 2: [1b] conferido, [4] por grupo nas duas bases, `json_invalido` = `repr_colado` silencioso | registro de 01/10 | livro-razão Etapa 10c |
 | **4.2** — o balde invisível: `falhas_silenciosas.ipynb` (§13.x) + docs 13–15; §7 da esteira migrado inteiro; medidas no `base_pipeline.py` | registro de 01/10 (noite) | livro-razão Etapa 10c, `04` item 26 |
+| PR #29 auditado e mergeado; worktree `wt-mineracao` removido; PR #30 (skill `investiga-trace`) fechado sem merge (decisão do Rafael) | `dc89992` · 02/10 | auditoria de 02/10 |
+| Auditoria, blueprint das POCs do M1 e diário da semana de 28/09 versionados | `e01238b` | `audit/`, `pocs/`, `research-diary/Out/` |
 
 ---
 
@@ -97,6 +100,23 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 ## 4. Próximo, em ordem
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
+
+**Ordem sugerida:** 4.2a (Rafael, máquina 2) → 4.0 (ressalvas da auditoria, um commit) → 4.2b (Ajuste) → 4.2c →
+S4(a) → S5 → D2. O 4.1b vai em paralelo, quando o Rafael estiver na máquina 2.
+
+### 4.0 Ressalvas da auditoria de 02/10 *(proposta; aguarda aprovação)*
+
+Pequenas, nenhuma muda número publicado. Fonte: `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md` §3.
+
+- **A** — checagem E do `audit_recompute6.py`: a expectativa ainda é a do mês de lote (26/33 em dez/2025); pelo mês de
+  execução são 25/33 em out/2025. Hoje imprime divergência crônica. Atualizar fecha o roadmap item 36.
+- **B** — cascata do protocolo da base 1 (`11` §1.1 e livro-razão): falta o 1 `U_estado_perdido` ao lado dos 7
+  `U_texto_solto`.
+- **C** — `drill_down.py silenciosas`: o rótulo "steps com a ferramenta" conta pares step × ferramenta (3.573); o
+  notebook §13.1 conta steps (3.373). Trocar o rótulo para "chamadas".
+- **D** — a sobreposição do M1 ("managerAgent 15/21, mediana 97%") foi medida avulsa; virar função versionada para a
+  base ser reauditável. *(Maior que A–C: pode ir junto com o S4.)*
+- **F** — cabeçalho do livro-razão diz "atualizado 29/09".
 
 ### 4.1b Conferir os sucessos falsos de plataforma *(Rafael roda; aguarda aprovação)*
 
