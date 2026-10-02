@@ -74,6 +74,9 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 *Decisões:*
 
+- **Ocorrência no balde invisível = a mesma régua do balde visível** (sequência de steps seguidos do mesmo papel com a
+  mesma unidade). Ver 4.2b-0.
+
 - **Erro crítico: investigar a chamada que morreu antes de decidir o destino.** Substitui a proposta de "erro crítico →
   sinal de harness direto" (4.6). Motivo: no único caso, o papel foi chamado 4 vezes, e só a última chamada é a
   cascata fatal. É preciso achar o step que a iniciou e decidir pela causa. A leitura do Rafael é que deve ser mais
@@ -241,7 +244,7 @@ da auditoria.
   [1]–[3] devem repetir os das fotos de 01/10.
 - **Tipo:** confirmação; nenhum código. Fecha a ressalva E da auditoria de 02/10 e o Ajuste 11 na base 2.
 
-### 4.2b-0 A regra de ocorrência do balde invisível *(antes do 4.2b; dados das duas bases prontos — decisão do Rafael)*
+### 4.2b-0 A regra de ocorrência do balde invisível — **decidido (Rafael, 02/10): a mesma régua do balde visível**
 
 - **Contexto:** no visível, ocorrência = cascata × unidade; no invisível, a `ocorrencias.csv` tem uma linha por falha.
   Consolidar sem regra conta o mesmo gesto repetido de jeitos diferentes nos dois canais (auditoria de 02/10, Parte II
@@ -253,9 +256,10 @@ da auditoria.
   RoteadorCivel: jun 3, jul 10, ago 5), conferido na triagem. O tamanho consolidado é 18 + 86 = **104**, não 93. Com
   as duas bases medidas, a regra de ocorrência (a) ou (b) não muda o canal silencioso. A decisão só pesa nos outros
   grupos (134 steps em 129 sequências na base 2; 119 em 100 na base 1).
-- **Solução (a decidir com os dados das duas bases):** (a) ocorrência silenciosa = sequência de steps consecutivos do
-  mesmo papel com a mesma unidade, como no visível; ou (b) uma por falha, declarando a diferença. Recomendo **(a)**: a
-  mesma régua nos dois canais é o que permite somar.
+- **Decisão (02/10):** ocorrência silenciosa = **sequência de steps consecutivos do mesmo papel com a mesma unidade**,
+  exatamente como a cascata do balde visível. A mesma régua nos dois canais é o que permite somar. Entra na
+  consolidação (4.2b). Efeito medido: no `json_invalido`, nenhum (6 = 6 e 86 = 86 sequências). Nas silenciosas em
+  geral: base 1, 119 steps → 100 sequências; base 2, 134 → 129.
 - **Tipo:** decisão de método; entra no 4.2b.
 
 
