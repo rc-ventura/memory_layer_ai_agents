@@ -1,6 +1,7 @@
 # Plano atual — o que vale, o que está feito, o que vem agora
 
-**Atualizado:** 01/10/2026 · **Branch:** `2026-09-28-mineracao-base2` (PR #29)
+**Atualizado:** 02/10/2026 · **Branch:** `2026-09-28-mineracao-base2` (PR #29) fecha aqui, com o balde invisível; o
+que falta (4.1b, 4.2a em diante) segue na branch `2026-10-02-consolidacao-unidades`, a partir da `main`.
 
 **Para que serve:** a **única fonte** do "o que fazer agora". O histórico de cada ajuste e de cada etapa continua no
 livro-razão ([`pipeline-entre-bases.md`](pipeline-entre-bases.md)); os números, nos relatórios de cada análise. Quando
@@ -215,6 +216,4 @@ figuras. Usa as fronteiras de chamada (S4).
 - intake da base 3;
 - OBFCivel jul 30 × 180 s;
 - falso negativo do AgenteProcuracoes;
-- escopo de memória em `open-questions`;
-- merge do PR #29;
-- remover o worktree local `wt-mineracao`.
+- escopo de memória em `open-questions`.
