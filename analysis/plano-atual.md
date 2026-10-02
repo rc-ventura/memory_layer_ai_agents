@@ -1,8 +1,10 @@
 # Plano atual — o que vale, o que está feito, o que vem agora
 
-**Atualizado:** 02/10/2026 · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
-`dc89992`). O PR #29 (balde invisível) foi auditado (`2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`:
-números da base 1 reproduzem; ressalvas A–H) e mergeado.
+**Atualizado:** 02/10/2026 (noite) · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
+`dc89992`). O PR #29 (balde invisível) foi auditado e mergeado. A auditoria foi **fechada na base 1** em 02/10: as
+ressalvas foram resolvidas, o balde invisível ganhou verificação independente (`audit_recompute9`, 0 divergências) e
+saiu o Ajuste 11 (Parte II de `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`). Índice do que já foi
+auditado: [`2026-09-trace-law-flow/audit/README.md`](2026-09-trace-law-flow/audit/README.md).
 
 **Para que serve:** a **única fonte** do "o que fazer agora". O histórico de cada ajuste e de cada etapa continua no
 livro-razão ([`pipeline-entre-bases.md`](pipeline-entre-bases.md)); os números, nos relatórios de cada análise. Quando
@@ -76,6 +78,10 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | **4.2** — o balde invisível: `falhas_silenciosas.ipynb` (§13.x) + docs 13–15; §7 da esteira migrado inteiro; medidas no `base_pipeline.py` | registro de 01/10 (noite) | livro-razão Etapa 10c, `04` item 26 |
 | PR #29 auditado e mergeado; worktree `wt-mineracao` removido; PR #30 (skill `investiga-trace`) fechado sem merge (decisão do Rafael) | `dc89992` · 02/10 | auditoria de 02/10 |
 | Auditoria, blueprint das POCs do M1 e diário da semana de 28/09 versionados | `e01238b` | `audit/`, `pocs/`, `research-diary/Out/` |
+| **4.0** — ressalvas da auditoria de 02/10: A (checagem E pelo mês da execução; roadmap 36), B (cascata com o `U_estado_perdido`), C (rótulo "chamadas" no `silenciosas`), **D (M1 virou função: `sobreposicao()`, `protocolo` [9])**, F (cabeçalho do livro-razão), H (worktree da auditoria removido) | `675523b` | auditoria de 02/10, Parte II |
+| **Ajuste 11** — o [4] conta a falha no próprio step final e respeita a fronteira de chamada; base 1 53/75 → 54/75 | `675523b` | livro-razão §3, `13` §4, `14` §5 |
+| `audit_recompute9.py` — verificação independente do balde invisível (0 divergências na base 1; roda na base 2) | `675523b` | `audit/README.md` |
+| Auditoria de 02/10 fechada na base 1 (Parte II: contexto → solução → porquê → evidência → verificação) + índice `audit/README.md` | (commit do fechamento) | `audit/` |
 
 ---
 
@@ -94,6 +100,11 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | o [1b] da base 2 "calculado sobre as fotos" | conferido rodando |
 | dono do `json_invalido`: "a conferir" / "ler 2–3 casos" | o agente, o gesto do `repr_colado` (duas bases, pelo `--forma`) |
 | "o erro do agente se recupera, o de plataforma não" | só o `json_invalido` se recupera (0/6, 0/86); argumento do agente 30/41 × 2/6 |
+| [4] base 1 = 53/75; "o 1º final depois da falha" | **54/75** (Ajuste 11: final no próprio step ou depois, **na mesma chamada**); base 2 (20/116) a reconferir |
+| "a sobreposição do M1 foi medida avulsa" | `drill_down.py protocolo` [9] (`sobreposicao()`, limiar 0,5 reconstruído) |
+| "checagem E da auditoria nº 6 fora de fase" | corrigida (25/33 em out/2025); A–G com 0 divergências |
+| regra `'DEFAULT'` do motivo: "só base 2" | `b1 b2` — a mesma calculadora devolve `'DEFAULT'` na base 1 (2×, CalculoCivel) |
+| balde invisível "conferido" pela auditoria | era **reexecutado**; conferido de forma independente só desde o `audit_recompute9` |
 
 ---
 
@@ -101,22 +112,15 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-**Ordem sugerida:** 4.2a (Rafael, máquina 2) → 4.0 (ressalvas da auditoria, um commit) → 4.2b (Ajuste) → 4.2c →
-S4(a) → S5 → D2. O 4.1b vai em paralelo, quando o Rafael estiver na máquina 2.
+**Ordem sugerida:** **4.2a** (Rafael, máquina 2 — agora com o `audit_recompute9` e o Ajuste 11) → **4.2b-0** (regra
+de ocorrência do balde invisível) → 4.2b (Ajuste) → 4.2c → S4(a) → S5 → D2. O 4.1b vai em paralelo, na mesma ida à
+máquina 2.
 
-### 4.0 Ressalvas da auditoria de 02/10 *(proposta; aguarda aprovação)*
+### 4.0 Ressalvas da auditoria de 02/10 — **feito** (`675523b`; §2)
 
-Pequenas, nenhuma muda número publicado. Fonte: `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md` §3.
-
-- **A** — checagem E do `audit_recompute6.py`: a expectativa ainda é a do mês de lote (26/33 em dez/2025); pelo mês de
-  execução são 25/33 em out/2025. Hoje imprime divergência crônica. Atualizar fecha o roadmap item 36.
-- **B** — cascata do protocolo da base 1 (`11` §1.1 e livro-razão): falta o 1 `U_estado_perdido` ao lado dos 7
-  `U_texto_solto`.
-- **C** — `drill_down.py silenciosas`: o rótulo "steps com a ferramenta" conta pares step × ferramenta (3.573); o
-  notebook §13.1 conta steps (3.373). Trocar o rótulo para "chamadas".
-- **D** — a sobreposição do M1 ("managerAgent 15/21, mediana 97%") foi medida avulsa; virar função versionada para a
-  base ser reauditável. *(Maior que A–C: pode ir junto com o S4.)*
-- **F** — cabeçalho do livro-razão diz "atualizado 29/09".
+Fechadas A, B, C, D, F e H; G não pede ação; E é o 4.2a. A revisão da auditoria achou mais três coisas. Duas já
+estão resolvidas: o **Ajuste 11** e a anotação `'DEFAULT'`. A terceira virou o 4.2b-0. Detalhe e evidência: Parte II
+da auditoria.
 
 ### 4.1b Conferir os sucessos falsos de plataforma *(Rafael roda; aguarda aprovação)*
 
@@ -124,6 +128,8 @@ Pequenas, nenhuma muda número publicado. Fonte: `2026-09-trace-law-flow/audit/2
   funcionado — o risco à correção da resposta.
 - **Solução:** 2–3 casos do grupo plataforma por base (`casos.csv`) → `drill_down.py caso <exec_id> <papel>` → o
   `final_answer` usa um dado que deveria ter vindo da ferramenta? Sai só sim/não e a contagem.
+- **Depois do Ajuste 11:** o `casos.csv` das silenciosas tem a coluna `chamada`. Ler o `final_answer` **da mesma
+  chamada** da falha, e incluir 1 caso de falha no próprio step final (base 1: `trigger_worker_execution`).
 - **Tipo:** leitura; nenhum código.
 
 ### 4.2a Rodar o balde invisível na base 2 *(Rafael roda; aguarda aprovação)*
@@ -131,9 +137,33 @@ Pequenas, nenhuma muda número publicado. Fonte: `2026-09-trace-law-flow/audit/2
 - **Contexto:** o notebook novo rodou na base 1; na base 2 só rodaram os comandos do `drill_down.py`. Faltam o funil por
   step (sobreposição = 0), os detectores da §13.7 e a tabela de ocorrências (entrada da consolidação).
 - **Comandos (máquina 2):** copiar para a `-second` `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`,
-  `falhas_silenciosas.ipynb` e o notebook da esteira → `uv run jupyter nbconvert --to notebook --execute --inplace
-  falhas_silenciosas.ipynb` → fotos das §13.1 e §13.7 (os números de [1]–[4] devem repetir os das fotos de 01/10).
-- **Tipo:** confirmação; nenhum código.
+  `falhas_silenciosas.ipynb`, o notebook da esteira e `audit/scripts/audit_recompute9.py` →
+  ```
+  uv run jupyter nbconvert --to notebook --execute --inplace falhas_silenciosas.ipynb
+  uv run python drill_down.py silenciosas
+  uv run python drill_down.py protocolo
+  uv run python ../audit/scripts/audit_recompute9.py --base base2 --trace ../data/<trace>.csv.xz \
+         --em resultados/erros_mecanismo.csv --fonte base_pipeline.py
+  ```
+- **Trazer (fotos; só contagens):** (1) a saída inteira do `audit_recompute9` — os blocos A–C e E têm o publicado da
+  base 2 como expectativa, e qualquer `DIVERGE` vira item; (2) o **[4] novo** por grupo (bloco D), que substitui o
+  20/116 no `14` §5; (3) o bloco F (`json_invalido` em sequências; execuções em comum com o `U_repr_colado` visível) —
+  a entrada do 4.2b-0; (4) o `protocolo` [9] (M1 medido na base 2); (5) as §13.1 e §13.7 do notebook. Os números de
+  [1]–[3] devem repetir os das fotos de 01/10.
+- **Tipo:** confirmação; nenhum código. Fecha a ressalva E da auditoria de 02/10 e o Ajuste 11 na base 2.
+
+### 4.2b-0 A regra de ocorrência do balde invisível *(antes do 4.2b; aguarda os dados do 4.2a)*
+
+- **Contexto:** no visível, ocorrência = cascata × unidade; no invisível, a `ocorrencias.csv` tem uma linha por falha.
+  Consolidar sem regra conta o mesmo gesto repetido de jeitos diferentes nos dois canais (auditoria de 02/10, Parte II
+  II.3.3).
+- **Evidência:** base 1 — 120 falhas em 119 steps e 100 sequências; `json_invalido` 6 = 6 sequências, 0 execuções em
+  comum com o `U_repr_colado` visível. Ou seja, "6 → 12" vale com as duas regras. Base 2: a sonda F do 4.2a.
+- **Solução (a decidir com os dados das duas bases):** (a) ocorrência silenciosa = sequência de steps consecutivos do
+  mesmo papel com a mesma unidade, como no visível; ou (b) uma por falha, declarando a diferença. Recomendo **(a)**: a
+  mesma régua nos dois canais é o que permite somar.
+- **Tipo:** decisão de método; entra no 4.2b.
+
 
 ### 4.2b A consolidação — e o `json_invalido` colado entra na `U_repr_colado` *(Ajuste; depois do 4.2)*
 
@@ -145,8 +175,8 @@ Pequenas, nenhuma muda número publicado. Fonte: `2026-09-trace-law-flow/audit/2
   Regra do balde invisível, sem nome de ferramenta: `json_invalido` + argumento colado → `U_repr_colado`. A lição ganha
   "converta com `json.dumps`, nunca `str()`". Tokens das silenciosas fora da coluna de tokens da unidade (o custo delas é
   retrabalho, medido no invisível).
-- **Esperado:** a decisão da `U_repr_colado` não muda (já é candidata nas duas bases); muda o tamanho — base 1: 6 → 12,
-  base 2: 7 → 93 — e o texto. Na base 1: nenhuma outra unidade se mexe; o notebook da esteira fica idêntico.
+- **Esperado:** a decisão da `U_repr_colado` não muda (já é candidata nas duas bases); muda o tamanho — base 1: 6 → 12
+  (conferido: sem sequência e sem execução em comum), base 2: 7 → até 93 (depende do 4.2b-0) — e o texto. Na base 1: nenhuma outra unidade se mexe; o notebook da esteira fica idêntico.
 - **Evidência:** livro-razão Etapa 10c, "Achado (01/10)".
 - **Tipo:** **Ajuste** (muda contagem e texto publicados no `09`).
 
@@ -183,7 +213,9 @@ Pequenas, nenhuma muda número publicado. Fonte: `2026-09-trace-law-flow/audit/2
 - **Contexto:** o `idx` conta as chamadas juntas; o `critico` e a seção 2 do `protocolo --casos` misturaram as
   chamadas e induziram a leitura errada.
 - **Solução:**
-  - (a) `critico` e `protocolo --casos` marcam as fronteiras (TaskStep) e calculam o caminho da chamada que morreu;
+  - (a) `critico` e `protocolo --casos` marcam as fronteiras (TaskStep) e calculam o caminho da chamada que morreu —
+    reusar a contagem de `TaskStep` que o Ajuste 11 pôs em `falhas_silenciosas()` (coluna `chamada`; base 1: 491 de
+    2.252 papéis têm mais de uma chamada);
   - (b) `caminho_dos_criticos()` passa a usar a chamada terminal — muda o `criticos.csv` → **Ajuste**, aprovado à parte.
 - **Tipo:** (a) ferramenta; (b) ajuste de regra.
 
@@ -221,7 +253,8 @@ figuras. Usa as fronteiras de chamada (S4).
 - modo/modelo;
 - M5 (resposta vazia aceita);
 - M6 (o parser concatena blocos e executa narração);
-- **ferramenta devolve falha como texto** (exceção tipada ou resultado estruturado);
+- **ferramenta devolve falha como texto** (exceção tipada ou resultado estruturado); a calculadora
+  `calculo_correcoes_monetarias` devolve `'DEFAULT'` como resultado **nas duas bases**;
 - o passe dict → string JSON entre `puxa_doc_decisao` e `busca_obf`: o tipo `(str)` convida ao `str(...)` (aceitar dict, ou
   a declaração pedir `json.dumps`);
 - "Wrong credentials", APIs, bugs dentro das ferramentas;
@@ -232,7 +265,7 @@ figuras. Usa as fronteiras de chamada (S4).
 ## 5. Fora do plano por enquanto
 
 - Etapa 6 (alarme de cobertura; o gatilho com 1 caso em mês pequeno);
-- itens 29, 35, 36;
+- itens 29 e 35 (o 36 foi fechado em 02/10);
 - intake da base 3;
 - OBFCivel jul 30 × 180 s;
 - falso negativo do AgenteProcuracoes;

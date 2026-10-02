@@ -83,7 +83,7 @@ entra aqui.
   ≥ 50% (`sobreposicao()` e `M1_LIMIAR`, `base_pipeline.py`; `drill_down.py protocolo` [9]). Base 1: managerAgent
   15/21, mediana 97%; RespostaBacen 1/7; ConversationAgent 0/3; CalculoCivel 0/2. A medida foi feita avulsa em 30/09 e
   virou função em 02/10. O limiar de 30/09 não foi registrado: 0,5 é o reconstruído, e reproduz as 4 linhas
-  publicadas (qualquer valor em (0,48; 0,52] reproduz). **Limite:** quando o LLM reescreve o texto ao reembrulhar (ConversationAgent, base 1), a sobreposição cai e a
+  publicadas (qualquer valor em (0,479; 0,523] reproduz; a margem é estreita — 1 caso de cada lado). **Limite:** quando o LLM reescreve o texto ao reembrulhar (ConversationAgent, base 1), a sobreposição cai e a
   medida não vê — a leitura confirmou os 3.
 - **Gatilho:** modo texto **mais** uma instrução do negócio no fim do prompt que pede o conteúdo sem lembrar o envelope:
   "responda em markdown", "devolva um JSON no formato…", e — no ConversationAgent — *"Se voce não precisar de nenhuma

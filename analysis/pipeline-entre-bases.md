@@ -470,7 +470,8 @@ responde a outra tarefa não diz nada sobre a falha. É a mesma lição do S4: o
 **Verificação (base 1).** [4] 53/75 → **54/75**: `nao_reconhecido` 7/9 → 8/9; plataforma continua 16/19 (o caso 2
 mudou de motivo, não de resultado); argumento 30/41 e `json_invalido` 0/6 iguais. O `drill_down.py silenciosas` e o
 notebook (reexecutado) dão o mesmo número; o `audit_recompute9.py` (implementação independente) também, com 0
-divergências. Nenhuma outra saída do notebook muda; a `ocorrencias.csv` e os CSVs da esteira ficam iguais.
+divergências. Nenhuma outra saída do notebook muda (diff das saídas); os CSVs da esteira não são tocados e a
+`ocorrencias.csv` não tem as colunas que mudaram (o `casos.csv` das silenciosas ganha a coluna `chamada`).
 
 **Esperado na base 2.** O [4] pode mudar em poucos casos (o publicado era 20/116, plataforma 16/22). A leitura
 "plataforma quase sempre termina sem a ferramenta ter funcionado × `json_invalido` nunca" só cai se a plataforma

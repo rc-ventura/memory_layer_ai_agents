@@ -512,7 +512,7 @@ def caminho_dos_criticos(EU):
 # M1 da família Protocolo do harness (10-racionais-protocolo-harness.md §4): a resposta final escrita fora do envelope
 # <code> e reembrulhada depois em final_answer. A medida (30/09) era avulsa; virou função em 02/10 (ressalva D da
 # auditoria de 02/10). O limiar não foi registrado em 30/09: 0,5 é o reconstruído — reproduz as 4 linhas publicadas
-# da base 1 (qualquer valor em (0,48; 0,52] reproduz). Falso negativo conhecido: o LLM que reescreve ao reembrulhar.
+# da base 1 (qualquer valor em (0,479; 0,523] reproduz; 1 caso de cada lado da margem). Falso negativo conhecido: o LLM que reescreve ao reembrulhar.
 M1_LIMIAR = 0.5
 
 

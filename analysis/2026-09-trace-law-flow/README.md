@@ -102,3 +102,6 @@ notebook: cada passe le o arquivo e regrava com seus registros adicionados/atual
 
 `data/` — o trace cru (`85cb11b5-....csv.xz`, **git-ignored**). `pipeline/drill_down.py` e os scripts de
 `audit/scripts/` resolvem o caminho relativo ao proprio arquivo, nao ao diretorio corrente.
+
+`audit/` — as auditorias independentes e os `audit_recompute*.py`. O indice do que ja foi auditado (objeto, estado,
+onde estao as respostas) e [`audit/README.md`](audit/README.md).
