@@ -473,12 +473,18 @@ notebook (reexecutado) dão o mesmo número; o `audit_recompute9.py` (implementa
 divergências. Nenhuma outra saída do notebook muda (diff das saídas); os CSVs da esteira não são tocados e a
 `ocorrencias.csv` não tem as colunas que mudaram (o `casos.csv` das silenciosas ganha a coluna `chamada`).
 
-**Esperado na base 2.** O [4] pode mudar em poucos casos (o publicado era 20/116, plataforma 16/22). A leitura
+**Esperado na base 2 (escrito antes de rodar).** O [4] pode mudar em poucos casos (o publicado era 20/116, plataforma 16/22). A leitura
 "plataforma quase sempre termina sem a ferramenta ter funcionado × `json_invalido` nunca" só cai se a plataforma
 mudar muito — improvável, porque a regra nova só **acrescenta** falhas no step final e **tira** finais de outra
 chamada.
 
-**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`) e `drill_down.py` →
+**Conferido na base 2 (máquina 2, 02/10, fotos do `silenciosas` e do `audit_recompute9`, 0 divergências).** [4]
+20/116 → **24/116**. As 4 a mais são falhas no próprio step do `final_answer`: plataforma 16 → 17/22 e **`json_invalido`
+0 → 3/86**. Nenhum final de outra chamada (24 de 1.000 papéis têm mais de uma chamada na base 2). A leitura muda em um
+ponto. O `json_invalido` **quase nunca** vira sucesso falso (3%), em vez de "nunca". O contraste com a plataforma (77%)
+continua. A regra antiga, reimplementada, dá exatamente o 20/116 publicado.
+
+**Replicar na máquina 2 (feito em 02/10):** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`) e `drill_down.py` →
 `falhas_silenciosas.ipynb` → `audit/scripts/audit_recompute9.py --base base2 --trace <xz> --em <erros_mecanismo.csv>
 --fonte <base_pipeline.py>`. Trazer a foto do [4] por grupo.
 
@@ -888,8 +894,8 @@ busca_obf`, commits `6123716`, `de5b601`); o [1b] bate grupo a grupo com o que f
 | … dos quais **JSON inválido** | **0/6** | **0/86** |
 | … dos quais não reconhecido | 7/9 | 2/2 |
 
-*(Os números do [4] acima são de antes do Ajuste 11, de 02/10: base 1 agora 54/75, com não reconhecido 8/9; base 2 a
-reconferir. Ver §3, Ajuste 11.)*
+*(Os números do [4] acima são de antes do Ajuste 11, de 02/10. Agora: base 1 54/75 (não reconhecido 8/9); base 2
+24/116 (plataforma 17/22, JSON inválido 3/86). Ver §3, Ajuste 11.)*
 | `busca_obf`: forma do 1º argumento (`--forma`) | 6 `str(dict colado de um retorno impresso)` | 80 `str(dict colado…)` + 6 string colada |
 
 **Conclusões:**
@@ -930,6 +936,7 @@ comum.** Ele:
 - **O peso.** Na base 2 o canal silencioso é ~12× o visível (86 contra os 7 do `repr_colado`): a unidade foi medida pela
   parte pequena.
 - **O custo é retrabalho, não resposta errada.** 0/6 e 0/86 viram sucesso falso — o agente refaz a chamada e acerta.
+  *(Corrigido pelo Ajuste 11, 02/10: base 2 3/86 — falha e `final_answer` no mesmo bloco. "Quase nunca", não "nunca".)*
   A falha de plataforma é o oposto (16/19, 16/22). O grupo argumento do agente **não** segue um padrão (30/41 contra 2/6):
   "erro do agente se recupera" não vale nas duas bases.
 - **Dono:** o agente (quem precisa mudar para o erro não acontecer: passar a variável com `json.dumps`). O rótulo do

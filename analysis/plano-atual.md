@@ -1,9 +1,9 @@
 # Plano atual — o que vale, o que está feito, o que vem agora
 
 **Atualizado:** 02/10/2026 (noite) · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
-`dc89992`). O PR #29 (balde invisível) foi auditado e mergeado. A auditoria foi **fechada na base 1** em 02/10: as
-ressalvas foram resolvidas, o balde invisível ganhou verificação independente (`audit_recompute9`, 0 divergências) e
-saiu o Ajuste 11 (Parte II de `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`). Índice do que já foi
+`dc89992`). O PR #29 (balde invisível) foi auditado e mergeado. A auditoria foi **fechada nas duas bases** em 02/10: as
+ressalvas foram resolvidas, o balde invisível ganhou verificação independente (`audit_recompute9`, 0 divergências na
+base 1 e na base 2) e saiu o Ajuste 11 (Parte II de `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`). Índice do que já foi
 auditado: [`2026-09-trace-law-flow/audit/README.md`](2026-09-trace-law-flow/audit/README.md).
 
 **Para que serve:** a **única fonte** do "o que fazer agora". O histórico de cada ajuste e de cada etapa continua no
@@ -81,7 +81,7 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | **4.0** — ressalvas da auditoria de 02/10: A (checagem E pelo mês da execução; roadmap 36), B (cascata com o `U_estado_perdido`), C (rótulo "chamadas" no `silenciosas`), **D (M1 virou função: `sobreposicao()`, `protocolo` [9])**, F (cabeçalho do livro-razão), H (worktree da auditoria removido) | `675523b` | auditoria de 02/10, Parte II |
 | **Ajuste 11** — o [4] conta a falha no próprio step final e respeita a fronteira de chamada; base 1 53/75 → 54/75 | `675523b` | livro-razão §3, `13` §4, `14` §5 |
 | `audit_recompute9.py` — verificação independente do balde invisível (0 divergências na base 1; roda na base 2) | `675523b` | `audit/README.md` |
-| Auditoria de 02/10 fechada na base 1 (Parte II: contexto → solução → porquê → evidência → verificação) + índice `audit/README.md` | (commit do fechamento) | `audit/` |
+| Auditoria de 02/10 fechada (Parte II: contexto → solução → porquê → evidência → verificação) + índice `audit/README.md` | (commit do fechamento) | `audit/` |
 
 ---
 
@@ -99,8 +99,10 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | "o [4] da base 1 = 93 sucessos falsos" | teto; só falhas reais: 53/75, ainda teto |
 | o [1b] da base 2 "calculado sobre as fotos" | conferido rodando |
 | dono do `json_invalido`: "a conferir" / "ler 2–3 casos" | o agente, o gesto do `repr_colado` (duas bases, pelo `--forma`) |
-| "o erro do agente se recupera, o de plataforma não" | só o `json_invalido` se recupera (0/6, 0/86); argumento do agente 30/41 × 2/6 |
-| [4] base 1 = 53/75; "o 1º final depois da falha" | **54/75** (Ajuste 11: final no próprio step ou depois, **na mesma chamada**); base 2 (20/116) a reconferir |
+| "o erro do agente se recupera, o de plataforma não" | o `json_invalido` quase sempre se recupera (0/6, **3/86**); argumento do agente 30/41 × 2/6 |
+| [4] = 53/75 e 20/116; "o 1º final depois da falha" | **54/75 e 24/116** (Ajuste 11: final no próprio step ou depois, **na mesma chamada**); plataforma 16/19 e **17/22**; conferido nas duas bases |
+| "`json_invalido` nunca vira sucesso falso (0/86)" | **3/86** na base 2 — falha e `final_answer` no mesmo bloco |
+| `U_repr_colado` na base 2 = 7 erros | 7 era só o RoteadorCivel (Ajuste 2.2); o `erros_mecanismo.csv` atual tem **18 em 18 execuções** — a conferir (4.2b-0) |
 | "a sobreposição do M1 foi medida avulsa" | `drill_down.py protocolo` [9] (`sobreposicao()`, limiar 0,5 reconstruído) |
 | "checagem E da auditoria nº 6 fora de fase" | corrigida (25/33 em out/2025); A–G com 0 divergências |
 | regra `'DEFAULT'` do motivo: "só base 2" | `b1 b2` — a mesma calculadora devolve `'DEFAULT'` na base 1 (2×, CalculoCivel) |
@@ -124,7 +126,7 @@ da auditoria.
 
 ### 4.1b Conferir os sucessos falsos de plataforma *(Rafael roda; aguarda aprovação)*
 
-- **Contexto:** o [4] é teto. Plataforma: 16/19 (base 1), 16/22 (base 2) terminam em `final_answer` sem a ferramenta ter
+- **Contexto:** o [4] é teto. Plataforma: 16/19 (base 1), 17/22 (base 2, Ajuste 11) terminam em `final_answer` sem a ferramenta ter
   funcionado — o risco à correção da resposta.
 - **Solução:** 2–3 casos do grupo plataforma por base (`casos.csv`) → `drill_down.py caso <exec_id> <papel>` → o
   `final_answer` usa um dado que deveria ter vindo da ferramenta? Sai só sim/não e a contagem.
@@ -132,7 +134,7 @@ da auditoria.
   chamada** da falha, e incluir 1 caso de falha no próprio step final (base 1: `trigger_worker_execution`).
 - **Tipo:** leitura; nenhum código.
 
-### 4.2a Rodar o balde invisível na base 2 *(Rafael roda; aguarda aprovação)*
+### 4.2a Rodar o balde invisível na base 2 *(em andamento — 02/10: `silenciosas`, `protocolo` e `audit_recompute9` rodados, 0 divergências; Ajuste 11 conferido; falta a foto das §13.1/§13.7 do notebook)*
 
 - **Contexto:** o notebook novo rodou na base 1; na base 2 só rodaram os comandos do `drill_down.py`. Faltam o funil por
   step (sobreposição = 0), os detectores da §13.7 e a tabela de ocorrências (entrada da consolidação).
@@ -158,7 +160,13 @@ da auditoria.
   Consolidar sem regra conta o mesmo gesto repetido de jeitos diferentes nos dois canais (auditoria de 02/10, Parte II
   II.3.3).
 - **Evidência:** base 1 — 120 falhas em 119 steps e 100 sequências; `json_invalido` 6 = 6 sequências, 0 execuções em
-  comum com o `U_repr_colado` visível. Ou seja, "6 → 12" vale com as duas regras. Base 2: a sonda F do 4.2a.
+  comum com o `U_repr_colado` visível. **Base 2 (02/10):** 134 falhas em 134 steps e 129 sequências; `json_invalido` 86
+  = 86 sequências em 86 execuções, 0 em comum com o visível. Nas duas bases, então, a regra não muda o `json_invalido`.
+- **Pendência achada na base 2:** o visível da `U_repr_colado` não é 7. O `erros_mecanismo.csv` atual da base 2 tem
+  **18 erros em 18 execuções**; o 7 era só o RoteadorCivel do Ajuste 2.2, e a triagem depois dele nunca foi vista.
+  Conferir na máquina 2 (só contagens):
+  `uv run python -c "import pandas as pd; M=pd.read_csv('resultados/erros_mecanismo.csv'); x=M[M.unidade=='U_repr_colado']; print(len(x), x.exec_id.nunique()); print(x.groupby(['role','mes']).size())"`.
+  Se forem 18, o tamanho consolidado é 18 + 86 = **104** (não 93).
 - **Solução (a decidir com os dados das duas bases):** (a) ocorrência silenciosa = sequência de steps consecutivos do
   mesmo papel com a mesma unidade, como no visível; ou (b) uma por falha, declarando a diferença. Recomendo **(a)**: a
   mesma régua nos dois canais é o que permite somar.
@@ -176,7 +184,7 @@ da auditoria.
   "converta com `json.dumps`, nunca `str()`". Tokens das silenciosas fora da coluna de tokens da unidade (o custo delas é
   retrabalho, medido no invisível).
 - **Esperado:** a decisão da `U_repr_colado` não muda (já é candidata nas duas bases); muda o tamanho — base 1: 6 → 12
-  (conferido: sem sequência e sem execução em comum), base 2: 7 → até 93 (depende do 4.2b-0) — e o texto. Na base 1: nenhuma outra unidade se mexe; o notebook da esteira fica idêntico.
+  (conferido: sem sequência e sem execução em comum), base 2: 18 (?) → 104 (depende da pendência do 4.2b-0) — e o texto. Na base 1: nenhuma outra unidade se mexe; o notebook da esteira fica idêntico.
 - **Evidência:** livro-razão Etapa 10c, "Achado (01/10)".
 - **Tipo:** **Ajuste** (muda contagem e texto publicados no `09`).
 

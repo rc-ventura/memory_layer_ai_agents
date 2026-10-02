@@ -63,15 +63,17 @@ ESPERADO = {
                            "nao_reconhecido": (8, 9)}, sucesso_total=(54, 75),
                   forma_colado=(6, 6)),
     # pares/steps_ferr: o cabeçalho do `drill_down.py silenciosas` na máquina 2 (foto de 02/10)
-    "base2": dict(excecao=20, silenciosas=134, steps_sil=None, execs=124, meses=7, papeis=None, ferramentas=18,
+    # steps_sil, papeis e o [4] novo: a 1ª rodada deste script na máquina 2 (02/10), agora publicados no doc 14
+    "base2": dict(excecao=20, silenciosas=134, steps_sil=134, execs=124, meses=7, papeis=10, ferramentas=18,
                   pares=8232, steps_ferr=2771,
                   grupos=dict(sem_resultado=8, fora_da_cobertura=10, argumento_do_agente=6, plataforma=22,
                               json_invalido=86, nao_reconhecido=2), reais=116,
                   depois={"(nenhum erro)": 122, "U_tipo_retorno": 3, "H_bloco_code": 3, "U_campo_inexistente": 3,
                           "outros": 3},
                   contrato={"U_tipo_retorno": (79, 5), "U_contrato_dict": (0, 0), "U_campo_inexistente": (38, 3)},
-                  # [4] publicado ANTES do Ajuste 11 (20/116): o número novo sai desta rodada
-                  sucesso=None, sucesso_total=None, sucesso_antes=(20, 116),
+                  # [4] depois do Ajuste 11 (02/10): 20 → 24 (plataforma 16 → 17, json_invalido 0 → 3)
+                  sucesso={"argumento_do_agente": (2, 6), "plataforma": (17, 22), "json_invalido": (3, 86),
+                           "nao_reconhecido": (2, 2)}, sucesso_total=(24, 116), sucesso_antes=(20, 116),
                   forma_colado=(86, 86)),
 }[args.base]
 DIVERG = []

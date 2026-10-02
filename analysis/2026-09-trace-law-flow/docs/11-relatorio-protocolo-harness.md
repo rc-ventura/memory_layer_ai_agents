@@ -251,6 +251,24 @@ comentário. **[conferido: AST]**
 | OBFCivel | 4 | mesmo modelo novo, mesmo mês — provavelmente M4/M5 | baixa |
 | CalculoTrabalhista | 1 | `gpt-4.1` em ago — fundo? | baixa |
 
+**M1 medido na base 2 (`protocolo` [9], máquina 2, 02/10).** Antecipou a resposta final / mediana / copiou da
+observação anterior:
+
+| Papel | Erros | Antecipou (≥ 50%) | Mediana | Copiou da observação |
+|---|---:|---:|---:|---:|
+| RoteadorCivel | 56 | 0/56 | 0% | 0/56 |
+| OBFCivel | 4 | 0/4 | 0% | 0/4 |
+| CalculoCivel | 4 | 0/4 | 0% | **3/4** |
+| RespostaBacen | 4 | **2/4** | 56% | 1/4 |
+| CalculoTrabalhista | 1 | 0/1 | 32% | 0/1 |
+
+**Leitura:** o surto de ago/2026 **não é M1**. O RoteadorCivel (0/56) escreve pouco (mediana de 138 caracteres) e nada
+do que escreve reaparece na resposta — bate com M4/M5 do §2.3, o modelo que esquece as marcas. O RespostaBacen (2/4)
+é o único com sinal de M1, e coincide com a pergunta de M2 acima (o `resposta_final` concorrendo com o
+`final_answer`). No CalculoCivel, 3/4 copiam a observação anterior: o texto fora do bloco repete o que a ferramenta tinha
+acabado de devolver. Isso pode ser parte da cadeia do erro crítico (§2.5), mas não foi lido. A medida indica; a
+leitura confirma.
+
 ---
 
 ## 3 · Comparação entre bases

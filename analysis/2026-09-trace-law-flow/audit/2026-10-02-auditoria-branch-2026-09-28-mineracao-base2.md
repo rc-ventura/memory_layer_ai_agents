@@ -418,17 +418,61 @@ uv run python ../audit/scripts/audit_recompute9.py --base base2 --trace ../data/
 
 O resto continua no `plano-atual.md` (4.1b, 4.2b, 4.2c, S3–S6, D2), agora com estas pré-condições.
 
-## II.7 · Estado final
+## II.7 · A base 2 rodada (02/10, tarde) — o que o roteiro II.6 trouxe
 
-- **Auditoria de 02/10: fechada na base 1.** As ressalvas A–D, F e H foram resolvidas; G não pede ação; E depende do
-  roteiro II.6.
-- **Ajuste 11** feito e verificado na base 1; falta replicar na base 2.
-- **Balde invisível com verificação independente** (`audit_recompute9`, 0 divergências na base 1), pronto para a base
-  2.
+O Rafael rodou o roteiro na máquina 2: `drill_down.py silenciosas`, `drill_down.py protocolo` e `audit_recompute9.py
+--base base2` (fotos de 02/10). Na primeira tentativa, o script falhou com "input format not supported by decoder". O
+trace da base 2 é `.csv` sem compressão e o script abria tudo como `.xz`. Ele passou a reconhecer o formato pelo
+conteúdo do arquivo (commit `2ba2c1f`, testado na base 1 nos dois formatos).
+
+**Resultado: 0 divergências na base 2.** Funil (20 · 134 · 124 execuções · 7 meses · 18 ferramentas · 87%), os 6
+grupos, [2], [3] e a forma (86/86: 80 `str(literal colado)` + 6 string colada) batem com o publicado. Silenciosas ∩
+balde visível = 0 — a sobreposição da base 2, que só o notebook mostraria, ficou conferida. Os pares (8.232) e os
+steps (2.771) batem com o cabeçalho do `silenciosas`. Pela regra antiga, a reimplementação dá **exatamente o 20/116
+publicado**, o que confirma a independência também na base 2.
+
+**O Ajuste 11 na base 2 — o que mudou de fato:**
+
+| Grupo | Antes | Depois | Por quê |
+|---|---:|---:|---|
+| `plataforma` | 16/22 | **17/22** | 1 falha no próprio step do `final_answer` |
+| `json_invalido` | 0/86 | **3/86** | 3 falhas no próprio step do `final_answer` |
+| `argumento_do_agente` | 2/6 | 2/6 | — |
+| `nao_reconhecido` | 2/2 | 2/2 | — |
+| **total** | 20/116 | **24/116** | 4 no próprio step final; 0 finais de outra chamada |
+
+**O que isso muda na leitura.** O II.3.1 previa "uma virada da leitura é improvável", e o contraste plataforma ×
+`json_invalido` continua (77% × 3%). Mas uma frase publicada caiu: "o `json_invalido` **nunca** vira sucesso falso
+(0/86)". Na base 2, em 3 casos o agente cola o print, recebe o erro como texto e entrega o `final_answer` no mesmo
+bloco. Agora é **"quase nunca"**. Foi exatamente o tipo de caso que a regra antiga não enxergava — a melhor
+evidência de que o ajuste era necessário. Corrigido no `14` (TL;DR, §1, §5), no livro-razão e no plano.
+
+**O que a sonda F trouxe para a consolidação (4.2b-0).** Os 86 `json_invalido` são 86 sequências em 86 execuções, sem
+execução em comum com o visível. A regra de ocorrência não muda o canal silencioso em nenhuma das duas bases. A sonda
+achou outra coisa: o `U_repr_colado` **visível** da base 2 tem **18 erros em 18 execuções** no `erros_mecanismo.csv`
+atual, não os 7 que os docs citam. O 7 vinha do Ajuste 2.2, que contou só o RoteadorCivel, e o próprio livro-razão
+registra que "a triagem da base 2 depois do 2.2 ainda não foi vista". Não muda o destino (a unidade já é candidata),
+mas muda o tamanho consolidado previsto (93 → 104, se forem 18). Está registrado como pendência do 4.2b-0, com o
+comando de conferência.
+
+**M1 na base 2 (`protocolo` [9]).** RoteadorCivel 0/56, OBFCivel 0/4, CalculoCivel 0/4 (mas 3/4 copiam a observação
+anterior), RespostaBacen **2/4**, CalculoTrabalhista 0/1. O surto de agosto **não é M1**, como a leitura do `11` §2.3 já
+indicava (M4/M5). Registrado no `11` §2.6.
+
+## II.8 · Estado final
+
+- **Auditoria de 02/10: fechada nas duas bases.** As ressalvas A–D, F e H foram resolvidas e G não pede ação. A E
+  (base 2) ficou conferida pelo II.7; falta só a foto das §13.1/§13.7 do notebook (detectores), que não entram nos
+  números auditados.
+- **Ajuste 11** feito e verificado nas duas bases (54/75 e 24/116).
+- **Balde invisível com verificação independente nas duas bases** (`audit_recompute9`, 0 divergências).
+- **Uma pendência nova, fora do escopo auditado:** o `U_repr_colado` visível da base 2 (18 × 7), no 4.2b-0.
 - **Nenhuma decisão de destino mudou.** As quatro decisões que dependem do balde invisível (II.2) foram confirmadas por
   um segundo programa.
 
 | Commit | O quê |
 |---|---|
 | `675523b` | ressalvas A–C, F; M1 [9] (D); Ajuste 11; anotação `'DEFAULT'`; `audit_recompute9.py` |
-| (este) | Parte II deste relatório; `audit/README.md` (índice de auditorias); `plano-atual.md`; índices |
+| `2f953ea` | Parte II deste relatório; `audit/README.md` (índice de auditorias); `plano-atual.md`; índices |
+| `2ba2c1f` | `audit_recompute9` lê `.csv` sem compressão (o trace da base 2) |
+| (este) | II.7 — base 2 rodada; `14`, `11`, livro-razão e plano com os números da base 2 |

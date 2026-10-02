@@ -18,12 +18,12 @@ Ajuste 11). Base 1 conferida também por uma implementação independente
 - **Elas passam sem rastro:** em 89–91% dos casos, o mesmo papel não tem nenhum erro com exceção nos 3 steps seguintes.
 - **As memórias de contrato de retorno não nascem delas:** só 0–9% de `U_tipo_retorno` / `U_campo_inexistente` vêm logo
   depois de uma falha silenciosa. Continuam memória candidata.
-- **O risco à resposta está na plataforma:** 16/19 e 16/22 das falhas de plataforma terminam em `final_answer` (na mesma
-  chamada — Ajuste 11; base 2 a reconferir) sem a
-  ferramenta ter funcionado (candidatos a sucesso falso, teto).
+- **O risco à resposta está na plataforma:** 16/19 e **17/22** das falhas de plataforma terminam em `final_answer` na
+  mesma chamada sem a ferramenta ter funcionado (candidatos a sucesso falso, teto; Ajuste 11, as duas bases conferidas).
 - **O `json_invalido` é o `repr_colado` no canal silencioso:** 6/6 e 86/86 são o agente colando o print do
-  `puxa_doc_decisao` no `busca_obf`. Na base 2, o canal silencioso é ~12× o visível (86 × 7). Nunca vira sucesso falso
-  (0/6, 0/86): o custo é retrabalho.
+  `puxa_doc_decisao` no `busca_obf`. Na base 2, o canal silencioso é muito maior que o visível (86 × 7–18; o visível está
+  a conferir, plano 4.2b-0). **Quase nunca** vira sucesso falso (0/6, **3/86** — os 3 no próprio step do
+  `final_answer`, que a regra antiga não via): o custo é sobretudo retrabalho.
 
 ## 1 · O funil e a escala
 
@@ -33,10 +33,12 @@ Ajuste 11). Base 1 conferida também por uma implementação independente
 | **falhas silenciosas** | **120** | **134** |
 | % silenciosas entre as falhas de ferramenta | 93% | 87% |
 | execuções · meses | 90 · 10 | 124 · 7 |
-| papéis · ferramentas | 13 · 22 | — · 18 |
-| sobreposição visível × invisível (por step) | 0 | — |
+| papéis · ferramentas | 13 · 22 | 10 · 18 |
+| sobreposição visível × invisível (por step) | 0 | 0 |
+| steps · sequências de steps consecutivos | 119 · 100 | 134 · 129 |
 
-Base 1: os 120 estão em 119 steps (um step com duas ferramentas falhando).
+Base 1: os 120 estão em 119 steps (um step com duas ferramentas falhando). Base 2: papéis, steps, sequências e
+sobreposição vêm do `audit_recompute9` rodado na máquina 2 (02/10; 0 divergências no resto).
 
 ## 2 · Por ferramenta (as principais)
 
@@ -91,21 +93,25 @@ rodando.
 
 ## 5 · Candidato a sucesso falso [4]
 
-| Grupo | Base 1 | Base 2 *(antes do Ajuste 11 — a reconferir)* |
+| Grupo | Base 1 | Base 2 |
 |---|---|---|
-| `plataforma` | **16/19 (84%)** | **16/22 (73%)** |
+| `plataforma` | **16/19 (84%)** | **17/22 (77%)** |
 | `argumento_do_agente` | 30/41 (73%) | 2/6 |
 | `nao_reconhecido` | 8/9 | 2/2 |
-| `json_invalido` | **0/6** | **0/86** |
-| **total** | **54/75** | **20/116** |
+| `json_invalido` | **0/6** | **3/86 (3%)** |
+| **total** | **54/75** | **24/116** |
 
 **Ajuste 11 (02/10).** Candidato = o papel entregou `final_answer` **no próprio step da falha ou depois, na mesma
 chamada**. Antes valia o 1º final estritamente depois, em qualquer chamada. Base 1: 53 → 54. Entrou 1 `nao_reconhecido`
 (falha no próprio step do `final_answer`). Plataforma continua 16/19, mas um caso mudou de motivo: a falha estava no
-step final, e a regra antiga o contava por um final de **outra** chamada. Base 2: a reconferir (plano 4.2a).
+step final, e a regra antiga o contava por um final de **outra** chamada. Base 2 (máquina 2, 02/10; `drill_down.py
+silenciosas` e `audit_recompute9`): 20 → **24**. As 4 a mais são falhas no próprio step do `final_answer`: 1 de
+plataforma (16 → 17/22) e **3 de `json_invalido`** (0 → 3/86). Nenhum final de outra chamada. Pela regra antiga, o
+`audit_recompute9` dá exatamente o 20/116 publicado.
 
 **Leitura:** o que vale nas duas bases é o contraste entre `plataforma` (quase sempre termina sem a ferramenta ter
-funcionado) e `json_invalido` (nunca: o agente refaz a chamada e acerta). O grupo argumento do agente não tem padrão
+funcionado: 84% e 77%) e `json_invalido` (quase nunca: 0% e 3% — em geral o agente refaz a chamada e acerta; nos 3
+casos da base 2, a falha e o `final_answer` estão no mesmo bloco). O grupo argumento do agente não tem padrão
 entre as bases (73% × 2/6) — "o erro do agente se recupera" **não** vale como regra. É teto: a conferência no caso dos
 16 de plataforma de cada base é o plano 4.1b.
 
@@ -118,7 +124,8 @@ entre as bases (73% × 2/6) — "o erro do agente se recupera" **não** vale com
 | `json.dumps(...)` ou variável devolvida por outra ferramenta | 0 | 0 |
 
 **Leitura:** o dono é o agente, nas duas bases: ele cola o print do `puxa_doc_decisao` (`{"anteriores": [{"resultado":
-…, "resumo": …}]}`) em vez de passar a variável. É o mesmo gesto do `U_repr_colado` (base 1: 6 erros; base 2: 7) — no
+…, "resumo": …}]}`) em vez de passar a variável. É o mesmo gesto do `U_repr_colado` (base 1: 6 erros; base 2: 7 no RoteadorCivel pelo Ajuste 2.2, mas o
+`erros_mecanismo.csv` atual da base 2 tem 18 em 18 execuções — a conferir no plano 4.2b-0) — no
 canal silencioso, e na base 2 ~12× maior que no visível. Destino: memória (a lição do `repr_colado` estendida) **e**
 aviso à plataforma (o tipo `(str)` de `textos_decisoes` convida ao `str(...)`). A unidade passa a contar os dois canais
 na consolidação (plano 4.2b).

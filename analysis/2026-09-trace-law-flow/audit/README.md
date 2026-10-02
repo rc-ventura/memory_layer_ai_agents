@@ -22,7 +22,7 @@ relatório como **Parte II**. Só então o estado vira **fechada**.
 |---|---|---|---|---|
 | 08/09 | [`2026-09-08-auditoria-independente.md`](2026-09-08-auditoria-independente.md) | cadeia de evidência do notebook da esteira (base 1) | fechada · parcialmente desatualizada desde 23/09 (mês do lote → mês da execução; banner no topo) | `../docs/03-procedimento-validacao.md` §1.12 |
 | 16/09 | [`2026-09-16-auditoria-independente.md`](2026-09-16-auditoria-independente.md) | auditoria #2: mecanismo, triagem, unidades (após 15/09) | fechada · parcialmente desatualizada desde 23/09 (banner no topo) | idem; roadmap |
-| 02/10 | [`2026-10-02-auditoria-branch-2026-09-28-mineracao-base2.md`](2026-10-02-auditoria-branch-2026-09-28-mineracao-base2.md) | PR #29 (branch `2026-09-28-mineracao-base2`, 43 commits): Ajustes 5–10, família Protocolo do harness, balde invisível | **fechada na base 1** (Parte II, 02/10) · base 2 pendente do plano 4.2a | Parte II do próprio relatório; Ajuste 11 no livro-razão |
+| 02/10 | [`2026-10-02-auditoria-branch-2026-09-28-mineracao-base2.md`](2026-10-02-auditoria-branch-2026-09-28-mineracao-base2.md) | PR #29 (branch `2026-09-28-mineracao-base2`, 43 commits): Ajustes 5–10, família Protocolo do harness, balde invisível | **fechada nas duas bases** (Parte II, 02/10; base 2 em II.7) | Parte II do próprio relatório; Ajuste 11 no livro-razão |
 
 ## Scripts de recomputação independente
 
@@ -36,7 +36,7 @@ relatório como **Parte II**. Só então o estado vira **fechada**.
 | `scripts/audit_recompute6.py` | **balde visível**: submecanismo erro a erro, cascatas, unidades, cobertura, papel × unidade, ressalva E, tokens/chamada, régua | **0 divergências (A–G)** em 02/10 — E corrigida para o mês da execução |
 | `scripts/audit_recompute7.py` | evidência 11.9 (leituras de `validar_quebra_sigilo`) | auditoria de 16/09 |
 | `scripts/audit_recompute8.py` | evidência 11.10 (leituras de `get_available_documents`) | auditoria de 16/09 |
-| `scripts/audit_recompute9.py` | **balde invisível**: funil, grupos do motivo (+ disparos por regra), [2], [3], [4] (Ajuste 11), forma do `busca_obf`, sondas da consolidação | **0 divergências** em 02/10 · roda na base 2 (`--base base2`) |
+| `scripts/audit_recompute9.py` | **balde invisível**: funil, grupos do motivo (+ disparos por regra), [2], [3], [4] (Ajuste 11), forma do `busca_obf`, sondas da consolidação | **0 divergências** nas duas bases em 02/10 (base 2 na máquina 2: `--base base2 --trace <.csv>`) |
 
 Para conferir tudo de novo na base 1 (de `analysis/2026-09-trace-law-flow/`):
 
