@@ -244,6 +244,15 @@ da auditoria.
   [1]–[3] devem repetir os das fotos de 01/10.
 - **Tipo:** confirmação; nenhum código. Fecha a ressalva E da auditoria de 02/10 e o Ajuste 11 na base 2.
 
+### 4.2d Base 2, rodada 2 — as seis perguntas abertas *(prompt pronto: [`maquina2/2026-10-02-prompt-base2-rodada2.md`](maquina2/2026-10-02-prompt-base2-rodada2.md); aguarda as fotos)*
+
+- **O quê:** reexecutar os dois notebooks no terminal, rodar o `investigacao_achados.py` (colar o print no canal
+  visível · nome usado sem ter sido definido · campo inexistente · erro crítico por chamada · desfecho dos 24 candidatos a
+  sucesso falso · versões do `busca_obf`) e ler só os casos que a regra não decide, mais uma amostra sorteada.
+- **Fecha:** a dúvida sobre os 18 visíveis estarem no `busca_obf`; o que é a maior candidata da base 2; a mineração do
+  "campo inexistente"; o papel do `'DEFAULT'` no erro crítico; quantos sucessos falsos existem de fato; o experimento
+  natural da declaração do `busca_obf`.
+
 ### 4.2b-0 A regra de ocorrência do balde invisível — **decidido (Rafael, 02/10): a mesma régua do balde visível**
 
 - **Contexto:** no visível, ocorrência = cascata × unidade; no invisível, a `ocorrencias.csv` tem uma linha por falha.
