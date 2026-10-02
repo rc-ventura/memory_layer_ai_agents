@@ -1,4 +1,4 @@
-# Plano atual — o que vale, o que está feito, o que vem agora
+# Plano atual — o roadmap geral das análises: o que vale, o que está feito, o que vem agora
 
 **Atualizado:** 02/10/2026 (noite) · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
 `dc89992`). O PR #29 (balde invisível) foi auditado e mergeado. A auditoria foi **fechada nas duas bases** em 02/10: as
@@ -6,9 +6,17 @@ ressalvas foram resolvidas, o balde invisível ganhou verificação independente
 base 1 e na base 2) e saiu o Ajuste 11 (Parte II de `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`). Índice do que já foi
 auditado: [`2026-09-trace-law-flow/audit/README.md`](2026-09-trace-law-flow/audit/README.md).
 
-**Para que serve:** a **única fonte** do "o que fazer agora". O histórico de cada ajuste e de cada etapa continua no
-livro-razão ([`pipeline-entre-bases.md`](pipeline-entre-bases.md)); os números, nos relatórios de cada análise. Quando
-algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-razão.
+**Para que serve:** a **única fonte** do "o que fazer agora", em **qualquer análise**. Tem a fila ativa (§4) e o
+backlog geral (§5): as melhorias e o que falta, uma linha por item, com ponteiro para o detalhe. Onde fica o resto:
+
+- o **backlog numerado de cada análise**, com o detalhe dos itens, mora no roadmap dela — hoje
+  [`2026-09-trace-law-flow/docs/04-roadmap.md`](2026-09-trace-law-flow/docs/04-roadmap.md). Os números de lá são
+  estáveis e citados no projeto todo; aqui eles aparecem como "(roadmap #N)";
+- o histórico de cada ajuste e de cada etapa fica no livro-razão ([`pipeline-entre-bases.md`](pipeline-entre-bases.md));
+- os números ficam nos relatórios de cada análise.
+
+**Regra de ligação:** quando um item do backlog vira trabalho ativo, ele sobe para a §4 com "(roadmap #N)", e o roadmap
+ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é riscado no roadmap.
 
 ---
 
@@ -96,6 +104,7 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | "catálogo M1–M5" | M1–M6 |
 | item 26: docs `10-/11-…-falhas-silenciosas.md` | `13`/`14`/`15` |
 | arquivo de plano fora do repo; §5 do livro-razão ("Próximas etapas", 25/09) | **este arquivo** |
+| a seção "Agora" do `04-roadmap.md` | migrada em 02/10: o aberto está no §5 daqui; o roadmap ficou só com o backlog numerado da análise |
 | "o [4] da base 1 = 93 sucessos falsos" | teto; só falhas reais: 53/75, ainda teto |
 | o [1b] da base 2 "calculado sobre as fotos" | conferido rodando |
 | dono do `json_invalido`: "a conferir" / "ler 2–3 casos" | o agente, o gesto do `repr_colado` (duas bases, pelo `--forma`) |
@@ -134,7 +143,7 @@ da auditoria.
   chamada** da falha, e incluir 1 caso de falha no próprio step final (base 1: `trigger_worker_execution`).
 - **Tipo:** leitura; nenhum código.
 
-### 4.1c [4b] — o sucesso falso conferido pelo `txt_vrvl_locl` *(proposta; aguarda aprovação; melhoria das falhas silenciosas)*
+### 4.1c [4b] — o sucesso falso conferido pelo `txt_vrvl_locl` (roadmap #24) *(proposta; aguarda aprovação; melhoria das falhas silenciosas)*
 
 - **Contexto:** o [4] só olha se **existe** um `final_answer` na mesma chamada sem chamada bem-sucedida da ferramenta no
   meio. Não olha o que a ferramenta devolveu nem o que a resposta usou: por isso é teto, e a confirmação depende da
@@ -192,7 +201,7 @@ da auditoria.
 - **Tipo:** decisão de método; entra no 4.2b.
 
 
-### 4.2b A consolidação — e o `json_invalido` colado entra na `U_repr_colado` *(Ajuste; depois do 4.2)*
+### 4.2b A consolidação — e o `json_invalido` colado entra na `U_repr_colado` (roadmap #26) *(Ajuste; depois do 4.2)*
 
 - **Contexto:** nas duas bases, as falhas silenciosas do `busca_obf` são o gesto do `repr_colado` — colar o print do
   `puxa_doc_decisao` em vez de passar a variável (6/6, 86/86). **Decidido (Rafael, 01/10): (a)** — uma unidade só, com os
@@ -222,7 +231,7 @@ da auditoria.
   - docs: o `09` passa a descrever a consolidação como etapa final; `01`/`02` com os links trocados.
 - **Tipo:** organização; não muda número. Na máquina 2, a ordem de rodar passa a ser esteira → invisível → consolidação.
 
-### 4.3 S3 — medir o M6 (narração capturada como código) nas duas bases *(aguarda aprovação)*
+### 4.3 S3 — medir o M6 (narração capturada como código) nas duas bases (roadmap #39) *(aguarda aprovação)*
 
 - **Contexto:** no erro crítico, `U_estado_perdido`, `U_nome_inventado`, `U_texto_solto` e `X_causa_nao_identificada`
   eram o harness executando narração (`10` §4 M6).
@@ -289,11 +298,56 @@ figuras. Usa as fronteiras de chamada (S4).
 
 ---
 
-## 5. Fora do plano por enquanto
+## 5. Backlog — melhorias e o que falta (fora da fila do §4)
 
-- Etapa 6 (alarme de cobertura; o gatilho com 1 caso em mês pequeno);
-- itens 29 e 35 (o 36 foi fechado em 02/10);
-- intake da base 3;
-- OBFCivel jul 30 × 180 s;
-- falso negativo do AgenteProcuracoes;
-- escopo de memória em `open-questions`.
+Uma linha por item; o detalhe está no ponteiro. Sobe para a §4 quando for a vez (regra de ligação, no topo).
+
+**Abertos que vieram do "Agora" do roadmap (02/10):**
+
+- **Relatório de estudo da taxonomia de erros** — aprofundar a genealogia família por família (a Sankey está pronta
+  desde 21/09) e o teste de cobertura na extração ~1M. → `schema-e-taxonomia-de-erros.md` §7 · `09` §1.1
+- **Refazer as auditorias independentes das pastas de evidência §11** — os `relatorio_independente.md` e os
+  meta-relatórios 11.1–11.10 auditaram a amostra de antes de 23/09; não citá-los como verificação da amostra atual. →
+  `03-procedimento-validacao.md` §1.12 · `audit/README.md`
+
+**Deste plano (já estavam aqui):**
+
+- Etapa 6 — o alarme de cobertura (o gatilho com 1 caso em mês pequeno; a concentração num padrão). (roadmap #34)
+- Resíduo da base 1, os parênteses (roadmap #29); achados laterais do caso `repr_colado` (roadmap #35).
+- Intake da base 3; OBFCivel jul 30 × 180 s; falso negativo do AgenteProcuracoes; escopo de memória em
+  `open-questions`.
+
+**Dados e bases:**
+
+- Dataset de erros da base completa (~1M) via query, com o tutor. (roadmap #1)
+- O que é `anomesdia` e como cada extração escolheu as linhas. (roadmap #27)
+- `cod_vers_aget` como dimensão (destrava a curva por maturidade da ferramenta, #14). (roadmap #25, #14)
+
+**Erro invisível — detectores (alimentam o notebook das falhas silenciosas):**
+
+- Groundedness como presença (tokens tipados do `final_answer` × observações) — o erro de maior impacto do TRAIL.
+  (roadmap #2)
+- Steps sem erro (91,4% nunca olhados), Instruction Non-compliance, Tool-Skip por papel, Reasoning-action mismatch
+  determinístico. (roadmap #3, #4, #5, #6)
+- Os 9 detectores do TRAIL e os 5 do ToolScan/ToolFailBench; anomalia de ambiente. (roadmap #12, #13, #16)
+- `txt_vrvl_locl` — o contrato real na população (o 4.1c é o primeiro uso). (roadmap #24)
+
+**Método e triagem:**
+
+- Eixo de severidade (`impact`) na triagem — decidir o desenho antes. (roadmap #22)
+- Terminologia "unidade / candidata"; split do `nome_nao_definido`; resíduo entre bases por mecanismo. (roadmap #21,
+  #23, #33)
+- Erro estrutural de argumento de ferramenta (AST × assinatura declarada). (roadmap #7)
+- Monitor de composição entre bases — para a operação contínua, não agora. (roadmap #38)
+
+**Memória (camada 2):**
+
+- Candidatos de memória de verdade (`description`/`impact`/`correction_guidance` por método); `memory_payload` no
+  `unidades_memoria.json`; gold-standard anotado por especialistas. (roadmap #18, #19, #11)
+
+**Custo, evidência e escrita:**
+
+- Custo por chamada de ferramenta; a subida mensal de tokens. (roadmap #8, #9)
+- Evidência por análise para §1–§10 do notebook; correção do "CalculoCivel é o pior por %"; de onde vem o schema da nº2;
+  PlanningStep. (roadmap #15, #28, #17, #10)
+- Promover MAST e ToolScan/ToolFailBench a leitura própria. (roadmap #20)
