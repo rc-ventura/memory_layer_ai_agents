@@ -71,6 +71,7 @@ algo daqui for feito, ele vai para a §2 com o commit, e o detalhe para o livro-
 | Registro das falhas silenciosas (Etapa 10c, item 26, limite no `09`) | `8ddf2c7` | livro-razão, `04`, `09` |
 | `silenciosas --forma` (forma do 1º argumento; abre o `str(...)`: colado × montado × variável) | `6123716`, `de5b601` | livro-razão Etapa 10c |
 | **4.1** — S2 fechado na base 2: [1b] conferido, [4] por grupo nas duas bases, `json_invalido` = `repr_colado` silencioso | registro de 01/10 | livro-razão Etapa 10c |
+| **4.2** — o balde invisível: `falhas_silenciosas.ipynb` (§13.x) + docs 13–15; §7 da esteira migrado inteiro; medidas no `base_pipeline.py` | registro de 01/10 (noite) | livro-razão Etapa 10c, `04` item 26 |
 
 ---
 
@@ -104,23 +105,14 @@ Cada item: **contexto · solução · evidência · tipo · status.** Nada come�
   `final_answer` usa um dado que deveria ter vindo da ferramenta? Sai só sim/não e a contagem.
 - **Tipo:** leitura; nenhum código.
 
-### 4.2 O balde invisível — o conjunto das falhas silenciosas *(proposta; aguarda aprovação)*
+### 4.2a Rodar o balde invisível na base 2 *(Rafael roda; aguarda aprovação)*
 
-- **Contexto:** a análise das falhas silenciosas (Etapa 10c) mora hoje no livro-razão. Pela decisão da §1, ela é o balde
-  invisível: notebook e docs próprios.
-- **Solução:**
-  - `pipeline/falhas_silenciosas.ipynb`: `falhas_silenciosas()` → grupo do motivo (`motivo_da_falha()`) → forma
-    (a regra "colado" sai do `drill_down.py` para o `base_pipeline.py`; o `drill_down` passa a chamá-la) → unidade do
-    catálogo; o que ainda não tem unidade (ex.: argumento do agente) fica como resíduo, como os `X_` do visível;
-  - **entrega a tabela de ocorrências** no formato comum (para a consolidação);
-  - `docs/13-racionais` (por que a fonte de erros não pode ser só a exceção; o funil e os dois baldes; o contrato da
-    plataforma; os 6 grupos; o gesto colado);
-  - `docs/14-relatorio` (base 1 e base 2);
-  - `docs/15-procedimento` (comandos, o que sai da máquina 2, como validar regras nas duas bases);
-  - o §7 atual do notebook da esteira (Result-Ignore/RAC/Tool-Skip) migra para cá, como o item 26 já previa —
-    **ponto de corte a decidir** (recomendação: o §7 inteiro; na esteira fica um parágrafo de limite com o link).
-- **Evidência:** item 26 (22/09); Etapa 10c (01/10).
-- **Tipo:** organização + documentação; não muda número publicado.
+- **Contexto:** o notebook novo rodou na base 1; na base 2 só rodaram os comandos do `drill_down.py`. Faltam o funil por
+  step (sobreposição = 0), os detectores da §13.7 e a tabela de ocorrências (entrada da consolidação).
+- **Comandos (máquina 2):** copiar para a `-second` `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`,
+  `falhas_silenciosas.ipynb` e o notebook da esteira → `uv run jupyter nbconvert --to notebook --execute --inplace
+  falhas_silenciosas.ipynb` → fotos das §13.1 e §13.7 (os números de [1]–[4] devem repetir os das fotos de 01/10).
+- **Tipo:** confirmação; nenhum código.
 
 ### 4.2b A consolidação — e o `json_invalido` colado entra na `U_repr_colado` *(Ajuste; depois do 4.2)*
 
@@ -136,6 +128,21 @@ Cada item: **contexto · solução · evidência · tipo · status.** Nada come�
   base 2: 7 → 93 — e o texto. Na base 1: nenhuma outra unidade se mexe; o notebook da esteira fica idêntico.
 - **Evidência:** livro-razão Etapa 10c, "Achado (01/10)".
 - **Tipo:** **Ajuste** (muda contagem e texto publicados no `09`).
+
+### 4.2c A triagem e os gráficos de unidade saem da esteira para a consolidação *(proposta do Rafael, 01/10; depois do 4.2b)*
+
+- **Contexto:** a esteira ainda faz a triagem das unidades (§9) — uma decisão sobre unidades, que depois do 4.2b depende
+  dos dois baldes.
+- **Solução (desenho a aprovar quando chegar a vez):**
+  - **vai para a consolidação:** a §9 inteira (triagem global e por papel, sensibilidade, `candidatos_memoria.csv`) e os
+    gráficos que terminam em unidade ou destino (8.5 tokens por mecanismo aprendível, 8.10 prioridade por critério, a
+    Sankey da genealogia do `09`);
+  - **fica na esteira:** o que descreve o balde visível — famílias, sintoma, custo, propagação, posição, Lorenz, sucesso
+    (8.0–8.4, 8.6–8.9, 8.11, 8.12);
+  - numeração nova na consolidação (§14.x); na esteira, a §9 vira ponteiro (número nunca reutilizado);
+  - mesmos nomes e caminhos dos arquivos em `resultados/` (o `drill_down.py` e a mineração os leem);
+  - docs: o `09` passa a descrever a consolidação como etapa final; `01`/`02` com os links trocados.
+- **Tipo:** organização; não muda número. Na máquina 2, a ordem de rodar passa a ser esteira → invisível → consolidação.
 
 ### 4.3 S3 — medir o M6 (narração capturada como código) nas duas bases *(aguarda aprovação)*
 

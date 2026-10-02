@@ -13,7 +13,8 @@ motivo (§8) — além dos conceitos de robustez (§2). A mineração do schema 
 §9) virou documento próprio: [`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md). **Não têm**
 tratamento passo-a-passo próprio, só cobertura conceitual no §1: a recuperação 0/1.550, a reincidência entre
 execuções, o teste ToolScan IAN/IAV e os detectores silenciosos (Result-Ignore / RAC / Tool-Skip) — para esses,
-o caminho é a célula correspondente do notebook mais o [`02-relatorio-achados.md`](02-relatorio-achados.md).
+o caminho é a célula correspondente do notebook mais o [`02-relatorio-achados.md`](02-relatorio-achados.md) (os
+detectores silenciosos têm, desde 01/10, conjunto próprio: [`13-racionais-falhas-silenciosas.md`](13-racionais-falhas-silenciosas.md)).
 Essa assimetria foi apontada por auditoria independente em 08/09/2026; o §3 (o mais importante dos que
 faltavam) foi escrito em resposta, e o §7 em resposta a uma pergunta em sessão posterior sobre a mesma tabela.
 

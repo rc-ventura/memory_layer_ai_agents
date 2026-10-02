@@ -341,7 +341,10 @@ que usa CodeAct + interpretador Python + `final_answer` + allowlist, **arquiteto
 o erro nº 1 não é sintaxe, é **Instruction Non-compliance (35,5%)**, que meu regex quase não vê. E das 304 falhas
 de impacto ALTO do TRAIL, ~79% estão em categorias invisíveis a exceção.
 
-Detectores determinísticos que rodei para abrir parte desse ponto cego (nenhum levanta exceção):
+Detectores determinísticos que rodei para abrir parte desse ponto cego (nenhum levanta exceção). Desde 01/10 eles
+vivem no notebook do balde invisível ([`../pipeline/falhas_silenciosas.ipynb`](../pipeline/falhas_silenciosas.ipynb)
+§13.7, mesmos números), junto com as falhas de ferramenta devolvidas como texto
+([`14-relatorio-falhas-silenciosas.md`](14-relatorio-falhas-silenciosas.md)):
 
 | Detector | Resultado |
 |---|---|

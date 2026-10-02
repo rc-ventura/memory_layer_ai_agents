@@ -244,7 +244,8 @@ call signature), and typed-entity extraction + support check (the caller passes 
 Nothing in it knows the legal workflow or the error taxonomy. Created 22/09/2026 ahead of splitting the
 silent-failure detectors into their own notebook (`2026-09-trace-law-flow/docs/04-roadmap.md` item 26);
 verified to reproduce the §7 detector numbers exactly (inventory 90, Result-Ignore 103/3,053, RAC 125,
-Tool-Skip 10/840). The boundary: what is a **hypothesis about one base** (`classify()`, `submecanismo()`,
+Tool-Skip 10/840); since 01/10 the silent-failure notebook (`2026-09-trace-law-flow/pipeline/falhas_silenciosas.ipynb`
+§13.7) builds `bykey` and the inventory from it, with the same numbers. The boundary: what is a **hypothesis about one base** (`classify()`, `submecanismo()`,
 `SUB2UNI`, `carregar_base()`) stays in that folder's `base_pipeline.py` and is copied per the intake
 checklist; what is **mechanics of the trace format** lives here. `drill_down.py` and `checklist.py` stay
 per-folder too — they read that folder's `TRACE` and write to its `resultados/`.

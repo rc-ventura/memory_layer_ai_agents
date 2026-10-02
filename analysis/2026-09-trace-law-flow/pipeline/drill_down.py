@@ -974,52 +974,7 @@ def _modo_prompt(sysp):
         return "texto com <code>"
     return "outro"
 
-UNIDADES_CONTRATO = ["U_tipo_retorno", "U_contrato_dict", "U_campo_inexistente"]
-
-
-def _variavel(a, codes):
-    """`a` começa com um nome de variável → de onde ela veio: a ferramenta cuja chamada a atribuiu, ou o agente."""
-    v = re.match(r"(\w+)\s*[,)]", a)
-    if not v:
-        return None
-    origem = next((t for c in codes for t in re.findall(rf"\b{v.group(1)}\s*=\s*(\w+)\s*\(", c)), None)
-    return f"variável devolvida por {origem}(...)" if origem else "variável montada pelo agente"
-
-
-def _colado(a, obs_ant):
-    """O literal em `a` é um retorno impresso colado? Mesmo critério do repr_colado no submecanismo(): ≥2 pares
-    "chave": "texto" e ≥2 dessas chaves já impressas como chave numa observação anterior do mesmo papel."""
-    from base_pipeline import PAR_CHAVE_TEXTO
-    chaves = set(PAR_CHAVE_TEXTO.findall(a))
-    vistas = sum(bool(re.search(r"[\"']" + re.escape(ch) + r"[\"']\s*:", obs_ant)) for ch in chaves)
-    return len(chaves) >= 2 and vistas >= 2
-
-
-def _forma_argumento(ferramenta, codes, obs_ant=""):
-    """Como o 1º argumento de `ferramenta` foi passado no último código de `codes` (os steps do papel até a falha) —
-    só o tipo, sem conteúdo. Para decidir o dono do json_invalido: str(dict) com aspas simples / dict ou string montados
-    à mão → agente; json.dumps ou a variável que outra ferramenta devolveu → a ferramenta. `obs_ant` (as observações dos
-    steps anteriores do papel) separa o literal colado de um retorno impresso — o gesto do repr_colado — do montado."""
-    m = re.search(rf"\b{ferramenta}\s*\((.{{0,600}})", codes[-1], re.S)
-    if not m:
-        return "sem chamada visível no código"
-    a = re.sub(r"^\s*\w+\s*=(?!=)\s*", "", m.group(1)).lstrip()   # tira o "nome_do_argumento="
-    if a.startswith("json.dumps"):
-        return "json.dumps(...)"
-    if a.startswith("str("):
-        dentro = a[4:].lstrip()
-        if dentro[:1] in "{[":
-            return ("str(dict/lista colado de um retorno impresso) — gesto do repr_colado" if _colado(dentro, obs_ant)
-                    else "str(dict/lista literal montado pelo agente)")
-        v = _variavel(dentro, codes)
-        return f"str({v})" if v else "str(...) — outro"
-    if a[:1] in "{[":
-        return ("dict/lista colado de um retorno impresso — gesto do repr_colado" if _colado(a, obs_ant)
-                else "dict/lista literal montado pelo agente")
-    if re.match(r"[fFrR]?[\"']", a):
-        return ("string literal colada de um retorno impresso — gesto do repr_colado" if _colado(a, obs_ant)
-                else "string literal montada pelo agente")
-    return _variavel(a, codes) or "outro"
+from base_pipeline import UNIDADES_CONTRATO  # a mesma lista do notebook falhas_silenciosas.ipynb
 
 
 def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
@@ -1029,8 +984,10 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
     (base_pipeline.py). Origem: 11-relatorio-protocolo-harness.md §2.5; roadmap item 26.
     `motivos=True` (--motivos): só a lista dos motivos por ferramenta, mascarados (mascarar_motivo), com a contagem —
     para escrever as regras de motivo olhando as duas bases (S2b)."""
-    from base_pipeline import carregar_trace, falhas_silenciosas, mascarar_motivo, GRUPOS_FALHA_REAL
-    F = falhas_silenciosas(carregar_trace())
+    from base_pipeline import (carregar_trace, falhas_silenciosas, mascarar_motivo, GRUPOS_FALHA_REAL, DONO_DO_GRUPO,
+                               formas_das_falhas, erro_depois_da_falha, contrato_precedido, sucesso_falso_candidato)
+    df = carregar_trace()
+    F = falhas_silenciosas(df)
     if ferramenta:
         F = F[F["ferramenta"] == ferramenta]
     if F.empty:
@@ -1040,14 +997,7 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
         # --forma <ferramenta>: como o 1º argumento foi passado em cada falha silenciosa dela, só contagem por tipo
         if not ferramenta:
             print("uso: python drill_down.py silenciosas --forma <ferramenta>"); return
-        df = load().set_index("cod_idef_exeo")
-        cont = Counter()
-        for _, s in sil.iterrows():
-            acts = [x for x in json.loads(df.loc[s["exec_id"], "txt_etap_memo"])[s["role"]]
-                    if isinstance(x, dict) and x.get("__class__") == "ActionStep"]
-            ate = acts[: int(s["idx"]) + 1]
-            cont[(s["grupo"], _forma_argumento(ferramenta, [str(x.get("code_action") or "") for x in ate],
-                                               "".join(str(x.get("observations") or "") for x in ate[:-1])))] += 1
+        cont = Counter(zip(sil["grupo"], formas_das_falhas(df, sil)))
         print(f"{'='*100}\n{ferramenta} — falhas silenciosas: {len(sil)} · como o 1º argumento foi passado "
               f"(só o tipo, sem conteúdo)\n{'='*100}")
         for (grp, f), n in cont.most_common():
@@ -1083,10 +1033,7 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
               f"{', '.join(sorted(s['mes'].unique())) or '—'}")
 
     # [1b] o motivo, por grupo (motivo_da_falha, S2b): quem é o dono da falha
-    DONO = {"sem_resultado": "ninguém — não é falha", "fora_da_cobertura": "negócio — pedido fora do que a ferramenta cobre",
-            "argumento_do_agente": "agente — candidato a memória que a taxonomia não vê",
-            "plataforma": "plataforma / ferramenta", "json_invalido": "a conferir: agente ou ferramenta",
-            "nao_reconhecido": "cobertura — sem regra de motivo"}
+    DONO = DONO_DO_GRUPO
     fal = F[F["falha"].notna()]
     print("\n[1b] por grupo do motivo:  silenciosas · com exceção · ferramentas principais · dono")
     for grp in DONO:
@@ -1102,23 +1049,13 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
         M = pd.read_csv(arq_mec, dtype={"exec_id": str})
         M["idx"] = M["idx"].astype(int)
         # [2] o primeiro erro do mesmo papel depois de cada falha silenciosa, até `janela` steps adiante
-        prox = []
-        for _, s in sil.iterrows():
-            e = M[(M["exec_id"] == s["exec_id"]) & (M["role"] == s["role"]) & (M["idx"] > s["idx"])
-                  & (M["idx"] <= s["idx"] + janela)].sort_values("idx")
-            prox.append(e["unidade"].iloc[0] if len(e) else "(nenhum erro)")
         print(f"\n[2] o que veio depois de cada falha silenciosa (1º erro do mesmo papel em até {janela} steps):")
-        for u, n in Counter(prox).most_common(10):
+        for u, n in Counter(erro_depois_da_falha(sil, M, janela)).most_common(10):
             print(f"  {u:<40} {n:>4}")
         # [3] quanto dos erros de contrato de retorno vem logo depois de uma falha silenciosa
         print(f"\n[3] erros de contrato de retorno precedidos por falha silenciosa no mesmo papel (até {janela} steps antes):")
-        chaves = set(zip(sil["exec_id"], sil["role"]))
-        for u in UNIDADES_CONTRATO:
-            E = M[M["unidade"] == u]
-            n_prec = sum(1 for _, e in E.iterrows() if (e["exec_id"], e["role"]) in chaves and
-                         ((sil["exec_id"] == e["exec_id"]) & (sil["role"] == e["role"]) & (sil["idx"] < e["idx"])
-                          & (sil["idx"] >= e["idx"] - janela)).any())
-            print(f"  {u:<24} {len(E):>4} erros · {n_prec:>4} precedidos ({(n_prec / len(E)) if len(E) else 0:.0%})")
+        for u, (n_err, n_prec) in contrato_precedido(sil, M, janela).items():
+            print(f"  {u:<24} {n_err:>4} erros · {n_prec:>4} precedidos ({(n_prec / n_err) if n_err else 0:.0%})")
     elif not os.path.exists(arq_mec):
         print(f"\n[2]/[3] precisam de {os.path.relpath(arq_mec)} — rode o notebook antes.")
 
@@ -1128,15 +1065,7 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
     # parametrizado", é a resposta certa, não sucesso falso.
     real = sil[sil["grupo"].isin(GRUPOS_FALHA_REAL)]
     if len(real):
-        ok = F[F["chamou"] & F["falha"].isna()]
-        cand = Counter()
-        for _, s in real.iterrows():
-            if pd.isna(s["idx_final_depois"]):
-                continue
-            depois_ok = ok[(ok["exec_id"] == s["exec_id"]) & (ok["role"] == s["role"]) & (ok["ferramenta"] == s["ferramenta"])
-                           & (ok["idx"] > s["idx"]) & (ok["idx"] <= s["idx_final_depois"])]
-            if depois_ok.empty:
-                cand[s["grupo"]] += 1
+        cand = Counter(real.loc[sucesso_falso_candidato(F, sil), "grupo"])
         print(f"\n[4] falhas reais ({len(real)} de {len(sil)}; fora sem_resultado e fora_da_cobertura): o papel entregou "
               f"final_answer depois, sem chamada sem falha da mesma ferramenta no meio: {sum(cand.values())} "
               f"({', '.join(f'{g} {n}' for g, n in cand.most_common())}) — candidato a sucesso falso, conferir no caso")

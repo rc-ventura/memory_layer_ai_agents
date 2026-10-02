@@ -281,8 +281,10 @@ Nas duas bases, ~90% das falhas de ferramenta não chegam a ela:
   silenciosas × 9 com exceção; base 2: 134 × 20);
 - entre elas há erros de argumento do agente (41 na base 1) que nenhum nó da genealogia mostra.
 
-Medida e grupos: `../../pipeline-entre-bases.md` Etapa 10c; o lugar definitivo é o notebook de erro invisível (roadmap
-item 26).
+Medida e grupos: `../../pipeline-entre-bases.md` Etapa 10c. Desde 01/10 é o **balde invisível**, com notebook próprio
+([`../pipeline/falhas_silenciosas.ipynb`](../pipeline/falhas_silenciosas.ipynb)) e docs
+[`13`](13-racionais-falhas-silenciosas.md)–[`15`](15-procedimento-falhas-silenciosas.md); a cadeia daqui é o balde
+visível, e as duas se juntam na consolidação das unidades (`../../plano-atual.md` 4.2b).
 
 Duas medidas convivem e não se confundem: **contagem de erros** (frequência —
 "o que mais ocorre") × **soma de tokens** (custo — "o que mais dói").

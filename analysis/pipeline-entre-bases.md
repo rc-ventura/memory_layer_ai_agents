@@ -904,7 +904,14 @@ do notebook da esteira. `falhas_silenciosas()` e `motivo_da_falha()` são a prim
 notebook da esteira (proposta de 01/10, revista). O nome do par de docs reservado lá (`10-/11-…-falhas-silenciosas.md`)
 colidia com os docs 10/11 da família Protocolo do harness. **Decidido (Rafael, 01/10):** o conjunto das falhas
 silenciosas fica `13-racionais`, `14-relatorio`, `15-procedimento-falhas-silenciosas.md` + notebook próprio
-(`plano-atual.md` §4.2).
+(`plano-atual.md` §4.2). **Feito (01/10):** `pipeline/falhas_silenciosas.ipynb` (§13.x) — o **balde invisível** do
+desenho de três notebooks (visível · invisível · consolidação, `plano-atual.md` §1). As medidas [1]–[4] e a forma
+subiram para o `base_pipeline.py` (`DONO_DO_GRUPO`, `forma_argumento`, `formas_das_falhas`, `erro_depois_da_falha`,
+`contrato_precedido`, `sucesso_falso_candidato`) e o `drill_down.py silenciosas` passou a chamá-las — saída idêntica,
+byte a byte, nos três modos (base 1). O §7 da esteira migrou inteiro para a §13.7 (mesmos números na base 1: inventário
+90, Result-Ignore 103/3.053, RAC 125, Tool-Skip 10/840); na esteira ficou um parágrafo de limite. A §13.8 grava
+`resultados/evidencia/silenciosas/ocorrencias.csv`, a entrada do balde para a consolidação. **Replicar na máquina 2:**
+`base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`, `falhas_silenciosas.ipynb` e o notebook da esteira.
 
 ### Etapa 6 — o alarme de cobertura
 

@@ -24,7 +24,8 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
            "caminho_dos_criticos", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
-           "GRUPOS_FALHA_REAL", "motivo_da_falha", "chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
+           "GRUPOS_FALHA_REAL", "motivo_da_falha", "DONO_DO_GRUPO", "UNIDADES_CONTRATO", "forma_argumento",
+           "formas_das_falhas", "erro_depois_da_falha", "contrato_precedido", "sucesso_falso_candidato","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -613,6 +614,119 @@ def mascarar_motivo(s, n=60):
     s = re.sub(r"'[^']*'|\"[^\"]*\"", "<v>", str(s))
     s = re.sub(r"=\s*[^\s,;)]+", "=<v>", s)
     return re.sub(r"\d", "9", s).strip()[:n]
+
+
+# O balde invisível (notebook falhas_silenciosas.ipynb; docs 13–15). As medidas abaixo são as mesmas do
+# `drill_down.py silenciosas` — o notebook e o comando chamam estas funções, para os números não divergirem.
+
+# Quem é o dono da falha, por grupo do motivo. Rótulo GENÉRICO: o json_invalido fica "a conferir" mesmo depois de
+# conferido numa base — em outra, o dono pode ser a ferramenta; quem decide em cada base é forma_argumento()
+# (decisão do Rafael, 01/10; ledger Etapa 10c).
+DONO_DO_GRUPO = {"sem_resultado": "ninguém — não é falha",
+                 "fora_da_cobertura": "negócio — pedido fora do que a ferramenta cobre",
+                 "argumento_do_agente": "agente — candidato a memória que a taxonomia não vê",
+                 "plataforma": "plataforma / ferramenta", "json_invalido": "a conferir: agente ou ferramenta",
+                 "nao_reconhecido": "cobertura — sem regra de motivo"}
+UNIDADES_CONTRATO = ["U_tipo_retorno", "U_contrato_dict", "U_campo_inexistente"]
+
+
+def _variavel(a, codes):
+    """`a` começa com um nome de variável → de onde ela veio: a ferramenta cuja chamada a atribuiu, ou o agente."""
+    v = re.match(r"(\w+)\s*[,)]", a)
+    if not v:
+        return None
+    origem = next((t for c in codes for t in re.findall(rf"\b{v.group(1)}\s*=\s*(\w+)\s*\(", c)), None)
+    return f"variável devolvida por {origem}(...)" if origem else "variável montada pelo agente"
+
+
+def _colado(a, obs_ant):
+    """O literal em `a` é um retorno impresso colado? Mesmo critério do repr_colado no submecanismo(): ≥2 pares
+    "chave": "texto" e ≥2 dessas chaves já impressas como chave numa observação anterior do mesmo papel."""
+    chaves = set(PAR_CHAVE_TEXTO.findall(a))
+    vistas = sum(bool(re.search(r"[\"']" + re.escape(ch) + r"[\"']\s*:", obs_ant)) for ch in chaves)
+    return len(chaves) >= 2 and vistas >= 2
+
+
+def forma_argumento(ferramenta, codes, obs_ant=""):
+    """Como o 1º argumento de `ferramenta` foi passado no último código de `codes` (os steps do papel até a falha) —
+    só o tipo, sem conteúdo. Para decidir o dono do json_invalido: str(dict) com aspas simples / dict ou string montados
+    à mão → agente; json.dumps ou a variável que outra ferramenta devolveu → a ferramenta. `obs_ant` (as observações dos
+    steps anteriores do papel) separa o literal colado de um retorno impresso — o gesto do repr_colado — do montado.
+    Base 1: 6/6 e base 2: 86/86 das falhas do busca_obf são o gesto colado (ledger Etapa 10c, "Achado (01/10)")."""
+    m = re.search(rf"\b{ferramenta}\s*\((.{{0,600}})", codes[-1], re.S)
+    if not m:
+        return "sem chamada visível no código"
+    a = re.sub(r"^\s*\w+\s*=(?!=)\s*", "", m.group(1)).lstrip()   # tira o "nome_do_argumento="
+    if a.startswith("json.dumps"):
+        return "json.dumps(...)"
+    if a.startswith("str("):
+        dentro = a[4:].lstrip()
+        if dentro[:1] in "{[":
+            return ("str(dict/lista colado de um retorno impresso) — gesto do repr_colado" if _colado(dentro, obs_ant)
+                    else "str(dict/lista literal montado pelo agente)")
+        v = _variavel(dentro, codes)
+        return f"str({v})" if v else "str(...) — outro"
+    if a[:1] in "{[":
+        return ("dict/lista colado de um retorno impresso — gesto do repr_colado" if _colado(a, obs_ant)
+                else "dict/lista literal montado pelo agente")
+    if re.match(r"[fFrR]?[\"']", a):
+        return ("string literal colada de um retorno impresso — gesto do repr_colado" if _colado(a, obs_ant)
+                else "string literal montada pelo agente")
+    return _variavel(a, codes) or "outro"
+
+
+def formas_das_falhas(df, sil):
+    """forma_argumento() de cada falha de `sil` (linhas de falhas_silenciosas()), na mesma ordem. Lê o código e as
+    observações do papel até o step da falha — só o tipo sai daqui."""
+    D = df.set_index("cod_idef_exeo")
+    out = []
+    for _, s in sil.iterrows():
+        acts = [x for x in json.loads(D.loc[s["exec_id"], "txt_etap_memo"])[s["role"]]
+                if isinstance(x, dict) and x.get("__class__") == "ActionStep"]
+        ate = acts[: int(s["idx"]) + 1]
+        out.append(forma_argumento(s["ferramenta"], [str(x.get("code_action") or "") for x in ate],
+                                   "".join(str(x.get("observations") or "") for x in ate[:-1])))
+    return pd.Series(out, index=sil.index, dtype=object)
+
+
+def erro_depois_da_falha(sil, EU, janela=3):
+    """[2] a unidade do 1º erro do mesmo papel em até `janela` steps depois de cada falha de `sil`, ou
+    "(nenhum erro)". `EU`: erros com exec_id, role, idx, unidade (montar_unidades() ou erros_mecanismo.csv)."""
+    out = []
+    for _, s in sil.iterrows():
+        e = EU[(EU["exec_id"] == s["exec_id"]) & (EU["role"] == s["role"]) & (EU["idx"] > s["idx"])
+               & (EU["idx"] <= s["idx"] + janela)].sort_values("idx")
+        out.append(e["unidade"].iloc[0] if len(e) else "(nenhum erro)")
+    return pd.Series(out, index=sil.index, dtype=object)
+
+
+def contrato_precedido(sil, EU, janela=3):
+    """[3] por unidade de contrato de retorno: (erros, quantos têm uma falha silenciosa no mesmo papel até `janela`
+    steps antes). Mede se essas memórias nascem de falha silenciosa (não nascem: 91–94%, duas bases)."""
+    chaves = set(zip(sil["exec_id"], sil["role"]))
+    res = {}
+    for u in UNIDADES_CONTRATO:
+        E = EU[EU["unidade"] == u]
+        n_prec = sum(1 for _, e in E.iterrows() if (e["exec_id"], e["role"]) in chaves and
+                     ((sil["exec_id"] == e["exec_id"]) & (sil["role"] == e["role"]) & (sil["idx"] < e["idx"])
+                      & (sil["idx"] >= e["idx"] - janela)).any())
+        res[u] = (len(E), n_prec)
+    return res
+
+
+def sucesso_falso_candidato(F, sil):
+    """[4] para cada falha REAL de `sil` (GRUPOS_FALHA_REAL): o papel entregou final_answer depois sem nenhuma chamada
+    sem falha da mesma ferramenta no meio? Série booleana só sobre as falhas reais. É teto: conferir no caso."""
+    real = sil[sil["grupo"].isin(GRUPOS_FALHA_REAL)]
+    ok = F[F["chamou"] & F["falha"].isna()]
+    out = []
+    for _, s in real.iterrows():
+        if pd.isna(s["idx_final_depois"]):
+            out.append(False); continue
+        depois_ok = ok[(ok["exec_id"] == s["exec_id"]) & (ok["role"] == s["role"]) & (ok["ferramenta"] == s["ferramenta"])
+                       & (ok["idx"] > s["idx"]) & (ok["idx"] <= s["idx_final_depois"])]
+        out.append(depois_ok.empty)
+    return pd.Series(out, index=real.index, dtype=bool)
 
 
 def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
