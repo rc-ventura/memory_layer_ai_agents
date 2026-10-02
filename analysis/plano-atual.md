@@ -284,6 +284,33 @@ da auditoria.
 Regras determinísticas M1–M6 + notebook `mineracao_protocolo_harness.ipynb`. A família se abre nos mecanismos nas
 figuras. Usa as fronteiras de chamada (S4).
 
+### 4.10 Ler o trace em parquet — antes do intake da base 3 / extração ~1M *(proposta; aguarda aprovação)*
+
+- **Contexto:** a base 3 vem em **parquet** (Rafael, 02/10). Hoje nada no sistema lê parquet: o pipeline, o
+  `drill_down.py` e o `checklist.py` usam `pd.read_csv(TRACE, dtype=str)`; os `audit_recompute1–8` só abrem `.csv.xz`;
+  o `audit_recompute9` reconhece `.csv`, `.xz` e `.gz`. O ambiente não tem `pyarrow`.
+- **Por que não converter para CSV (só como emergência):** a conversão não trunca, mas pode corromper ou apagar.
+  - Colunas aninhadas (struct/list) viram a representação do Python, não JSON. O `json.loads` do `txt_etap_memo` ou
+    do `txt_vrvl_locl` falharia, e a execução seria pulada **em silêncio**.
+  - Nulo e texto vazio viram a mesma coisa (perde-se, por exemplo, o `content` vazio do M5).
+  - Tipos e timestamps mudam de forma (`1.0`, fuso).
+  - Na escala de ~1M, o CSV é muitas vezes maior, e o pipeline carrega o trace inteiro na memória.
+- **Solução:**
+  1. `pyarrow` no `pyproject.toml` (as duas máquinas);
+  2. um **leitor único** `ler_trace(caminho, colunas=None)` no `base_pipeline.py`, que decide pelo formato pelo conteúdo do
+     arquivo (como o `audit_recompute9`). No parquet, lê só as colunas pedidas e, na escala ~1M, em lotes
+     (`iter_batches`);
+  3. normalização explícita para o contrato que o código espera: texto em tudo, colunas JSON aninhadas serializadas com
+     `json.dumps` (nunca `str()`), nulo continua nulo, data em `AAAA-MM-DD…`;
+  4. o `drill_down.py`, o `checklist.py` e os `audit_recompute*` passam a chamá-lo (nos de auditoria, só a abertura do
+     arquivo — a lógica independente não muda);
+  5. o `checklist.py` (intake) ganha a conferência do formato: tipo de cada coluna, quantos nulos, quantas linhas cujo
+     `txt_etap_memo` não parseia (se for > 0, parar).
+- **Verificação:** converter o trace da base 1 para parquet (com as colunas JSON como texto **e** como aninhadas) e
+  exigir saídas idênticas pelos dois caminhos — `audit_recompute6` e `audit_recompute9` com 0 divergências, CSVs de
+  `resultados/` iguais.
+- **Tipo:** ferramenta; não muda número. Pré-requisito do intake da base 3 (§5) e da extração ~1M (roadmap #1).
+
 ### 4.9 Aviso à plataforma *(quando a base 2 fechar)*
 
 - modo/modelo;
@@ -314,12 +341,12 @@ Uma linha por item; o detalhe está no ponteiro. Sobe para a §4 quando for a ve
 
 - Etapa 6 — o alarme de cobertura (o gatilho com 1 caso em mês pequeno; a concentração num padrão). (roadmap #34)
 - Resíduo da base 1, os parênteses (roadmap #29); achados laterais do caso `repr_colado` (roadmap #35).
-- Intake da base 3; OBFCivel jul 30 × 180 s; falso negativo do AgenteProcuracoes; escopo de memória em
+- Intake da base 3 (vem em parquet: depende do 4.10); OBFCivel jul 30 × 180 s; falso negativo do AgenteProcuracoes; escopo de memória em
   `open-questions`.
 
 **Dados e bases:**
 
-- Dataset de erros da base completa (~1M) via query, com o tutor. (roadmap #1)
+- Dataset de erros da base completa (~1M) via query, com o tutor; leitura em parquet e em lotes pelo 4.10. (roadmap #1)
 - O que é `anomesdia` e como cada extração escolheu as linhas. (roadmap #27)
 - `cod_vers_aget` como dimensão (destrava a curva por maturidade da ferramenta, #14). (roadmap #25, #14)
 
