@@ -59,7 +59,8 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 | Achado | Destino |
 |---|---|
-| M1 (resposta final fora do envelope), M2 (ferramenta que concorre com o `final_answer`) | sinal de harness |
+| M1 (resposta final fora do envelope), M2 (ferramenta que concorre com o `final_answer`) | sinal de harness; o M2 **já corrigido pela plataforma** (segue a declaração `json_resposta` nas duas bases e sumiu com `resposta_gerada`, jan/2026) |
+| "o risco à resposta está na plataforma" (o [4]) | **hipótese, não achado**: 0/6 sucessos falsos na leitura da base 2; a falha declarada é uma 3ª categoria (4.1c, S5) |
 | M5 (resposta vazia aceita), M6 (narração capturada como código) | achado de harness / plataforma |
 | Surto da base 1 (modo) e da base 2 (modelo `gpt-5.6-terra`) | não-memória, achado para a plataforma |
 | `U_tipo_retorno`, `U_campo_inexistente` | **continuam memória candidata** — não nascem de falha silenciosa (91–94%, duas bases) |
@@ -89,6 +90,9 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 | **4.0** — ressalvas da auditoria de 02/10: A (checagem E pelo mês da execução; roadmap 36), B (cascata com o `U_estado_perdido`), C (rótulo "chamadas" no `silenciosas`), **D (M1 virou função: `sobreposicao()`, `protocolo` [9])**, F (cabeçalho do livro-razão), H (worktree da auditoria removido) | `675523b` | auditoria de 02/10, Parte II |
 | **Ajuste 11** — o [4] conta a falha no próprio step final e respeita a fronteira de chamada; base 1 53/75 → 54/75 | `675523b` | livro-razão §3, `13` §4, `14` §5 |
 | `audit_recompute9.py` — verificação independente do balde invisível (0 divergências na base 1; roda na base 2) | `675523b` | `audit/README.md` |
+| **4.2a** — base 2 rodada pelo agente da máquina 2: triagem (479 erros, 8 candidatas, os 6 esperados ✅), `U_repr_colado` visível 18, funil e detectores da §13.7; notebooks não reexecutados inteiros lá | relatório da máquina 2, 02/10 | livro-razão Etapa 10c "Base 2 rodada", §6 |
+| **4.1b (base 2)** e **D2** — leitura assistida: 0/6 sucessos falsos; RespostaBacen M1 3, M2 1 (`json_resposta`) | idem | `14` §5, `11` §2.6, `10` §4 M2 |
+| `drill_down.py`: stdout em UTF-8 (o `caso` caía no Windows) | (commit do registro da base 2) | — |
 | Auditoria de 02/10 fechada (Parte II: contexto → solução → porquê → evidência → verificação) + índice `audit/README.md` | (commit do fechamento) | `audit/` |
 
 ---
@@ -111,7 +115,10 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 | "o erro do agente se recupera, o de plataforma não" | o `json_invalido` quase sempre se recupera (0/6, **3/86**); argumento do agente 30/41 × 2/6 |
 | [4] = 53/75 e 20/116; "o 1º final depois da falha" | **54/75 e 24/116** (Ajuste 11: final no próprio step ou depois, **na mesma chamada**); plataforma 16/19 e **17/22**; conferido nas duas bases |
 | "`json_invalido` nunca vira sucesso falso (0/86)" | **3/86** na base 2 — falha e `final_answer` no mesmo bloco |
-| `U_repr_colado` na base 2 = 7 erros | 7 era só o RoteadorCivel (Ajuste 2.2); o `erros_mecanismo.csv` atual tem **18 em 18 execuções** — a conferir (4.2b-0) |
+| `U_repr_colado` na base 2 = 7 erros | **18 em 18 execuções**, só RoteadorCivel (conferido na triagem, 02/10); o 7 era o recorte do Ajuste 2.2 |
+| "o risco à resposta está na plataforma" | hipótese: 0/3 na leitura da plataforma, 0/3 no `json_invalido` (falha declarada) |
+| "D2: se for M2 com `resposta_gerada`, vira memória por ferramenta" | não é: o único M2 da base 2 tem `json_resposta` (dez/2025); com `resposta_gerada` são M1 |
+| triagem da base 2 "não vista depois do 2.2" | vista: 8 candidatas (370/479, 77%); a maior é `U_nome_inventado` (118) |
 | "a sobreposição do M1 foi medida avulsa" | `drill_down.py protocolo` [9] (`sobreposicao()`, limiar 0,5 reconstruído) |
 | "checagem E da auditoria nº 6 fora de fase" | corrigida (25/33 em out/2025); A–G com 0 divergências |
 | regra `'DEFAULT'` do motivo: "só base 2" | `b1 b2` — a mesma calculadora devolve `'DEFAULT'` na base 1 (2×, CalculoCivel) |
@@ -123,9 +130,10 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-**Ordem sugerida:** **4.2a** (Rafael, máquina 2 — agora com o `audit_recompute9` e o Ajuste 11) → **4.2b-0** (regra
-de ocorrência do balde invisível) → 4.2b (Ajuste) → 4.2c → S4(a) → S5 → D2. O 4.1b vai em paralelo, na mesma ida à
-máquina 2.
+**Ordem sugerida (02/10, depois do relatório da máquina 2):** **4.2b-0** (regra de ocorrência; os dados das duas
+bases já estão aqui) → 4.2b (Ajuste) → 4.2c → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. O 4.10
+(parquet) entra antes do intake da base 3. A pendência do 4.2a (reexecutar os notebooks no terminal da máquina 2) vai
+na próxima ida lá.
 
 ### 4.0 Ressalvas da auditoria de 02/10 — **feito** (`675523b`; §2)
 
@@ -133,7 +141,12 @@ Fechadas A, B, C, D, F e H; G não pede ação; E é o 4.2a. A revisão da audit
 estão resolvidas: o **Ajuste 11** e a anotação `'DEFAULT'`. A terceira virou o 4.2b-0. Detalhe e evidência: Parte II
 da auditoria.
 
-### 4.1b Conferir os sucessos falsos de plataforma *(Rafael roda; aguarda aprovação)*
+### 4.1b Conferir os sucessos falsos de plataforma *(base 2 lida em 02/10: 0/6; falta a base 1)*
+
+- **Resultado da base 2 (assistido, 6 casos escolhidos):** plataforma 0/3 (1 não precisava do dado, 2 tiveram outra
+  ferramenta); `json_invalido` 0/3, com falha e final no mesmo step e a resposta **declarando a falha**. O [4] é teto
+  frouxo. Próximo: a base 1 (3 de plataforma, incluindo o `trigger_worker_execution` do step final) e uma amostra
+  **sorteada**, ou direto o 4.1c, que dispensa parte da leitura.
 
 - **Contexto:** o [4] é teto. Plataforma: 16/19 (base 1), 17/22 (base 2, Ajuste 11) terminam em `final_answer` sem a ferramenta ter
   funcionado — o risco à correção da resposta.
@@ -162,7 +175,7 @@ da auditoria.
   falha); a coluna está presente em ~90% das execuções; tem conteúdo de caso, então só saem contagens e sim/não.
 - **Tipo:** medição; não muda número publicado. Reduz o teto do [4] e a dependência de leitura por LLM.
 
-### 4.2a Rodar o balde invisível na base 2 — **prompt entregue ao agente da máquina 2** (passos 1–5 = 4.2a + 4.2b-0 + 4.1b + D2; removido do repo depois de copiado, recuperável em `git show cdd04a1:analysis/maquina2/2026-10-02-prompt-base2.md`) *(em andamento — 02/10: `silenciosas`, `protocolo` e `audit_recompute9` rodados, 0 divergências; Ajuste 11 conferido; falta a foto das §13.1/§13.7 do notebook)*
+### 4.2a Rodar o balde invisível na base 2 — **prompt entregue ao agente da máquina 2** (passos 1–5 = 4.2a + 4.2b-0 + 4.1b + D2; removido do repo depois de copiado, recuperável em `git show cdd04a1:analysis/maquina2/2026-10-02-prompt-base2.md`) *(**feito** em 02/10, com uma pendência: os dois notebooks não terminaram no editor da máquina 2 e os números saíram da recomputação pelas funções. Reexecutar no terminal — `uv run jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=-1 <notebook>` — para as saídas e figuras embutidas da base 2)*
 
 - **Contexto:** o notebook novo rodou na base 1; na base 2 só rodaram os comandos do `drill_down.py`. Faltam o funil por
   step (sobreposição = 0), os detectores da §13.7 e a tabela de ocorrências (entrada da consolidação).
@@ -182,7 +195,7 @@ da auditoria.
   [1]–[3] devem repetir os das fotos de 01/10.
 - **Tipo:** confirmação; nenhum código. Fecha a ressalva E da auditoria de 02/10 e o Ajuste 11 na base 2.
 
-### 4.2b-0 A regra de ocorrência do balde invisível *(antes do 4.2b; aguarda os dados do 4.2a)*
+### 4.2b-0 A regra de ocorrência do balde invisível *(antes do 4.2b; dados das duas bases prontos — decisão do Rafael)*
 
 - **Contexto:** no visível, ocorrência = cascata × unidade; no invisível, a `ocorrencias.csv` tem uma linha por falha.
   Consolidar sem regra conta o mesmo gesto repetido de jeitos diferentes nos dois canais (auditoria de 02/10, Parte II
@@ -190,11 +203,10 @@ da auditoria.
 - **Evidência:** base 1 — 120 falhas em 119 steps e 100 sequências; `json_invalido` 6 = 6 sequências, 0 execuções em
   comum com o `U_repr_colado` visível. **Base 2 (02/10):** 134 falhas em 134 steps e 129 sequências; `json_invalido` 86
   = 86 sequências em 86 execuções, 0 em comum com o visível. Nas duas bases, então, a regra não muda o `json_invalido`.
-- **Pendência achada na base 2:** o visível da `U_repr_colado` não é 7. O `erros_mecanismo.csv` atual da base 2 tem
-  **18 erros em 18 execuções**; o 7 era só o RoteadorCivel do Ajuste 2.2, e a triagem depois dele nunca foi vista.
-  Conferir na máquina 2 (só contagens):
-  `uv run python -c "import pandas as pd; M=pd.read_csv('resultados/erros_mecanismo.csv'); x=M[M.unidade=='U_repr_colado']; print(len(x), x.exec_id.nunique()); print(x.groupby(['role','mes']).size())"`.
-  Se forem 18, o tamanho consolidado é 18 + 86 = **104** (não 93).
+- **Pendência da base 2 — resolvida (02/10):** o visível da `U_repr_colado` é **18 erros em 18 execuções** (só
+  RoteadorCivel: jun 3, jul 10, ago 5), conferido na triagem. O tamanho consolidado é 18 + 86 = **104**, não 93. Com
+  as duas bases medidas, a regra de ocorrência (a) ou (b) não muda o canal silencioso. A decisão só pesa nos outros
+  grupos (134 steps em 129 sequências na base 2; 119 em 100 na base 1).
 - **Solução (a decidir com os dados das duas bases):** (a) ocorrência silenciosa = sequência de steps consecutivos do
   mesmo papel com a mesma unidade, como no visível; ou (b) uma por falha, declarando a diferença. Recomendo **(a)**: a
   mesma régua nos dois canais é o que permite somar.
@@ -212,7 +224,7 @@ da auditoria.
   "converta com `json.dumps`, nunca `str()`". Tokens das silenciosas fora da coluna de tokens da unidade (o custo delas é
   retrabalho, medido no invisível).
 - **Esperado:** a decisão da `U_repr_colado` não muda (já é candidata nas duas bases); muda o tamanho — base 1: 6 → 12
-  (conferido: sem sequência e sem execução em comum), base 2: 18 (?) → 104 (depende da pendência do 4.2b-0) — e o texto. Na base 1: nenhuma outra unidade se mexe; o notebook da esteira fica idêntico.
+  (conferido: sem sequência e sem execução em comum), base 2: 18 → 104 (conferido: sem sequência e sem execução em comum) — e o texto. Na base 1: nenhuma outra unidade se mexe; o notebook da esteira fica idêntico.
 - **Evidência:** livro-razão Etapa 10c, "Achado (01/10)".
 - **Tipo:** **Ajuste** (muda contagem e texto publicados no `09`).
 
@@ -272,9 +284,13 @@ da auditoria.
   invenção do agente).
 - **Tipo:** mudança de método → `10` §5, `03` Frente 3, livro-razão.
 
-### 4.7 D2 — RespostaBacen na base 2 *(aguarda aprovação)*
+### 4.7 D2 — RespostaBacen na base 2 — **feito** (02/10, leitura assistida na máquina 2)
 
-- **Pergunta:** os 4 erros são M2 de novo? Se sim, com a declaração `resposta_gerada` → memória candidata por
+- **Resultado:** M1 em 3 (JSON do negócio ×2, pergunta ao usuário; todos com `resposta_gerada` e o prompt pedindo
+  formato), M2 em 1 (dez/2025, com `json_resposta`). O M2 segue a declaração `json_resposta` nas duas bases e sumiu
+  com a troca para `resposta_gerada` (jan/2026). Destino: sinal de harness, já corrigido; **não** vira memória
+  (`10` §4 M2, `11` §2.6).
+- **Pergunta original:** os 4 erros são M2 de novo? Se sim, com a declaração `resposta_gerada` → memória candidata por
   ferramenta (`10` §5).
 - **Comandos:** `protocolo --casos RespostaBacen 4`; `grep` da declaração; `metadados_steps.py RespostaBacen`; leitura
   A–D.
@@ -310,6 +326,19 @@ figuras. Usa as fronteiras de chamada (S4).
   exigir saídas idênticas pelos dois caminhos — `audit_recompute6` e `audit_recompute9` com 0 divergências, CSVs de
   `resultados/` iguais.
 - **Tipo:** ferramenta; não muda número. Pré-requisito do intake da base 3 (§5) e da extração ~1M (roadmap #1).
+
+### 4.11 `U_nome_inventado` — a maior candidata da base 2 *(proposta; aguarda aprovação)*
+
+- **Contexto:** na triagem da base 2 (02/10), `U_nome_inventado` é a maior unidade: **118 erros, 112 execuções, 5
+  meses, 6 papéis** (na base 1, 5 erros). Ninguém leu nem minerou. É também a 1ª unidade do único erro crítico.
+- **Pergunta:** é mesmo nome inventado, ou é (a) uma definição que expirou entre steps (o padrão "def só vale para o
+  bloco seguinte" do roadmap #23), (b) a narração executada como código (M6, 4.3), ou (c) um efeito do modelo
+  `gpt-5.6-terra` em ago/2026?
+- **Solução:** primeiro, contagem determinística na máquina 2: por papel × mês × modelo; quantos são "seguidores" (logo
+  depois de outro erro); quantos têm o nome definido com `def` ou atribuição num step anterior do papel (o split do
+  roadmap #23); quantos vêm logo depois de um `H_bloco_code`. Depois, a leitura de 3–5 casos, só se as contagens não
+  decidirem. Se a unidade se dividir, é **Ajuste**, olhando as duas bases.
+- **Tipo:** medição; pode virar Ajuste (mudaria a maior candidata da base 2).
 
 ### 4.9 Aviso à plataforma *(quando a base 2 fechar)*
 

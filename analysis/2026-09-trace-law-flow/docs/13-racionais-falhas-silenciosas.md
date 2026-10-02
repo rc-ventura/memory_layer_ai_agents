@@ -152,7 +152,9 @@ Inventário: o que o system prompt **declara** (`def nome(...)`), não o que apa
 - **Grupos por palavra-chave.** Uma regra pode errar de grupo numa ferramenta nova; o `nao_reconhecido` e a conferência
   nas duas bases são a proteção.
 - **A forma lê só o código do step da falha**, por regex, e só o 1º argumento. É contagem de forma, não leitura de caso.
-- **[4] é teto.** Candidato a sucesso falso não é sucesso falso confirmado. A fronteira de chamada vem dos `TaskStep`
+- **[4] é teto — e frouxo.** Candidato a sucesso falso não é sucesso falso confirmado. Na leitura de 6 casos da base 2
+  (02/10), nenhum era: em 3, a resposta veio de outra fonte; nos 3 do `json_invalido`, ela **declara a falha**. A
+  "falha declarada" é uma terceira categoria que o [4] não separa (plano 4.1c e S5). A fronteira de chamada vem dos `TaskStep`
   do papel; o resto das ferramentas ainda mistura as chamadas (plano S4).
 - **A ocorrência do balde invisível é uma falha (uma linha por step × ferramenta), não uma cascata.** Para consolidar
   com o visível (ocorrência = cascata × unidade), a regra precisa ser escolhida na 4.2b. Base 1: 120 falhas em 119

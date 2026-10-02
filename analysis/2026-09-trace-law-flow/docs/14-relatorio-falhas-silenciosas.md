@@ -18,11 +18,12 @@ Ajuste 11). Base 1 conferida também por uma implementação independente
 - **Elas passam sem rastro:** em 89–91% dos casos, o mesmo papel não tem nenhum erro com exceção nos 3 steps seguintes.
 - **As memórias de contrato de retorno não nascem delas:** só 0–9% de `U_tipo_retorno` / `U_campo_inexistente` vêm logo
   depois de uma falha silenciosa. Continuam memória candidata.
-- **O risco à resposta está na plataforma:** 16/19 e **17/22** das falhas de plataforma terminam em `final_answer` na
-  mesma chamada sem a ferramenta ter funcionado (candidatos a sucesso falso, teto; Ajuste 11, as duas bases conferidas).
+- **O risco à resposta estaria na plataforma — hipótese, não achado:** 16/19 e **17/22** das falhas de plataforma
+  terminam em `final_answer` na mesma chamada sem a ferramenta ter funcionado. São candidatos a sucesso falso (teto).
+  Mas na leitura de 3 casos da base 2, **nenhum** usava o dado que faltou (§5).
 - **O `json_invalido` é o `repr_colado` no canal silencioso:** 6/6 e 86/86 são o agente colando o print do
-  `puxa_doc_decisao` no `busca_obf`. Na base 2, o canal silencioso é muito maior que o visível (86 × 7–18; o visível está
-  a conferir, plano 4.2b-0). **Quase nunca** vira sucesso falso (0/6, **3/86** — os 3 no próprio step do
+  `puxa_doc_decisao` no `busca_obf`. Na base 2, o canal silencioso é muito maior que o visível (86 × 18 — conferido em
+  02/10). **Quase nunca** vira sucesso falso (0/6, **3/86** — os 3 no próprio step do
   `final_answer`, que a regra antiga não via): o custo é sobretudo retrabalho.
 
 ## 1 · O funil e a escala
@@ -109,7 +110,20 @@ silenciosas` e `audit_recompute9`): 20 → **24**. As 4 a mais são falhas no pr
 plataforma (16 → 17/22) e **3 de `json_invalido`** (0 → 3/86). Nenhum final de outra chamada. Pela regra antiga, o
 `audit_recompute9` dá exatamente o 20/116 publicado.
 
-**Leitura:** o que vale nas duas bases é o contraste entre `plataforma` (quase sempre termina sem a ferramenta ter
+**Leitura dos casos — base 2 (plano 4.1b, máquina 2, 02/10; [assistido], 6 casos escolhidos, não sorteados).**
+
+| Casos | O `final_answer` usa o dado que faltou? | De onde veio a resposta |
+|---|---|---|
+| 3 de `plataforma` (as 3 calculadoras) | **não** (0/3) | 1 não precisava do dado; 2 vieram de outra ferramenta |
+| os 3 de `json_invalido` (falha e final no mesmo step) | **não** (0/3) | a resposta **declara a falha** — não omite, não inventa |
+
+**0/6 sucessos falsos confirmados.** O [4] é um teto frouxo: ele conta como candidato tanto a resposta que achou o dado
+por outro caminho quanto a **falha declarada** (a tarefa termina dizendo que não conseguiu). Essa terceira categoria
+fica entre o sucesso e o sucesso falso, e o [4] não a separa. Com isso, "o risco à resposta está na plataforma" fica
+como **hipótese não confirmada**, e não como achado, até uma medida melhor: o 4.1c (o retorno da ferramenta no
+`txt_vrvl_locl`) e o S5 (sucesso em três níveis). Na base 1, os casos ainda não foram lidos.
+
+**Leitura dos números:** o que vale nas duas bases é o contraste entre `plataforma` (quase sempre termina sem a ferramenta ter
 funcionado: 84% e 77%) e `json_invalido` (quase nunca: 0% e 3% — em geral o agente refaz a chamada e acerta; nos 3
 casos da base 2, a falha e o `final_answer` estão no mesmo bloco). O grupo argumento do agente não tem padrão
 entre as bases (73% × 2/6) — "o erro do agente se recupera" **não** vale como regra. É teto: a conferência no caso dos
@@ -124,8 +138,8 @@ entre as bases (73% × 2/6) — "o erro do agente se recupera" **não** vale com
 | `json.dumps(...)` ou variável devolvida por outra ferramenta | 0 | 0 |
 
 **Leitura:** o dono é o agente, nas duas bases: ele cola o print do `puxa_doc_decisao` (`{"anteriores": [{"resultado":
-…, "resumo": …}]}`) em vez de passar a variável. É o mesmo gesto do `U_repr_colado` (base 1: 6 erros; base 2: 7 no RoteadorCivel pelo Ajuste 2.2, mas o
-`erros_mecanismo.csv` atual da base 2 tem 18 em 18 execuções — a conferir no plano 4.2b-0) — no
+…, "resumo": …}]}`) em vez de passar a variável. É o mesmo gesto do `U_repr_colado` (base 1: 6 erros; base 2: **18** em 18 execuções, só
+RoteadorCivel — conferido na triagem de 02/10; o "7" antigo era o recorte do Ajuste 2.2) — no
 canal silencioso, e na base 2 ~12× maior que no visível. Destino: memória (a lição do `repr_colado` estendida) **e**
 aviso à plataforma (o tipo `(str)` de `textos_decisoes` convida ao `str(...)`). A unidade passa a contar os dois canais
 na consolidação (plano 4.2b).
@@ -134,26 +148,27 @@ Base 1, as outras formas (todas as 120 silenciosas): o gesto colado aparece tamb
 1 de plataforma e 1 não reconhecida; `json.dumps` aparece em 2 de plataforma — ali o argumento estava certo e a falha é
 da ferramenta, como o grupo diz.
 
-## 7 · Detectores de comportamento (base 1)
+## 7 · Detectores de comportamento
 
-Migrados do §7 do notebook da esteira (01/10), com os mesmos números:
+Migrados do §7 do notebook da esteira (01/10), com os mesmos números na base 1. Base 2: recalculados na máquina 2
+pela lógica da §13.7 (02/10; o notebook não foi reexecutado inteiro lá).
 
-| Detector | Base 1 | Estado |
-|---|---|---|
-| inventário declarado (união dos papéis) | 90 ferramentas | — |
-| **Result-Ignore** | **103 de 3.053 atribuições (3,4%)** | robusto; 96 dos 103 em chamadas caras ([`02`](02-relatorio-achados.md) §5) |
-| **RAC** | 125 repetições redundantes | sensível à definição (conservador) |
-| Reasoning-action mismatch | 45 steps | **retirado** — só registro |
-| Tool-Skip | 10 de 840 execuções (1,2%) | **provisório** (inventário por papel: roadmap item 5) |
-| ferramentas chamadas × declaradas | 80 × 90 | — |
+| Detector | Base 1 | Base 2 | Estado |
+|---|---|---|---|
+| inventário declarado (união dos papéis) | 90 ferramentas | 116 | — |
+| **Result-Ignore** | **103 de 3.053 atribuições (3,4%)** | **203 de 8.661 (2,3%)** | robusto; base 1: 96 dos 103 em chamadas caras ([`02`](02-relatorio-achados.md) §5) |
+| **RAC** | 125 repetições redundantes | 350 | sensível à definição (conservador) |
+| Reasoning-action mismatch | 45 steps | 23 | **retirado** — só registro |
+| Tool-Skip | 10 de 840 execuções (1,2%) | 3 de 1.000 (0,3%) | **provisório** (inventário por papel: roadmap item 5) |
+| ferramentas chamadas × declaradas | 80 × 90 | 103 × 116 | — |
 
-Base 2: a rodar (o notebook novo, na máquina 2).
+São contagens de detector, não falhas confirmadas. O Result-Ignore fica na mesma faixa nas duas bases (2–3%).
 
 ## 8 · O que falta
 
-- **Base 2:** rodar o notebook (`falhas_silenciosas.ipynb`) — funil por step, sobreposição, detectores da §13.7 — e
-  o `audit/scripts/audit_recompute9.py --base base2 …` (conferência independente; dá o [4] novo, do Ajuste 11).
-- **4.1b:** conferir no caso os 16 candidatos a sucesso falso de plataforma de cada base.
+- **Base 2:** feito em 02/10 — `audit_recompute9` (0 divergências), funil, sobreposição e detectores. Falta só
+  reexecutar o notebook inteiro lá, para as saídas e figuras embutidas (no terminal, não no editor).
+- **4.1b:** base 2 lida em 6 casos (0/6, §5); falta a base 1 e uma amostra sorteada. Medida determinística: plano 4.1c.
 - **4.2b:** a consolidação — o `json_invalido` colado entra na `U_repr_colado`.
 - **Aviso à plataforma (4.9):** a ferramenta devolve falha como texto; o passe dict → string JSON entre
   `puxa_doc_decisao` e `busca_obf`.

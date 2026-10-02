@@ -466,7 +466,9 @@ indicava (M4/M5). Registrado no `11` §2.6.
   números auditados.
 - **Ajuste 11** feito e verificado nas duas bases (54/75 e 24/116).
 - **Balde invisível com verificação independente nas duas bases** (`audit_recompute9`, 0 divergências).
-- **Uma pendência nova, fora do escopo auditado:** o `U_repr_colado` visível da base 2 (18 × 7), no 4.2b-0.
+- **Uma pendência nova, fora do escopo auditado:** o `U_repr_colado` visível da base 2 (18 × 7), no 4.2b-0 —
+  **resolvida no mesmo dia**: são 18 (triagem da base 2 pelo agente da máquina 2; livro-razão Etapa 10c, "Base 2
+  rodada").
 - **Nenhuma decisão de destino mudou.** As quatro decisões que dependem do balde invisível (II.2) foram confirmadas por
   um segundo programa.
 

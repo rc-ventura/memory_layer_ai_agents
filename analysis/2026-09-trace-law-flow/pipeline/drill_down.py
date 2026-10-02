@@ -146,6 +146,11 @@ import sys, os, json, re, random, ast
 from collections import Counter
 import pandas as pd
 
+# terminal do Windows (máquina 2): sem isso, um caractere fora do cp1252 no texto do caso ("\u2015"…) derruba o
+# `caso` com UnicodeEncodeError (relatório da máquina 2, 02/10/2026). Também vale para quem importa daqui.
+try: sys.stdout.reconfigure(encoding="utf-8")
+except Exception: pass
+
 from base_pipeline import TRACE, classify as _bp_classify
 
 def classify(m):

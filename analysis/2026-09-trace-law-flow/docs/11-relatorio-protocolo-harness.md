@@ -16,7 +16,7 @@ leituras do Rafael (nenhum texto de caso sai de lá).
 | Erros | 33 | 69 |
 | Padrão no tempo | incidente em out/2025 (24) + dez/2025 (7) + 2 isolados; **0 desde mar/2026** | **incidente em ago/2026 (61)** + 8 espalhados |
 | Camada que explica o surto | **modo** (out/2025) e **contrato de ferramenta** (dez/2025) | **modelo** (`gpt-5.6-terra`, só em ago) |
-| Mecanismos | M1 (20), M2 (6), M3 (2), 5 não lidos | M4/M5 no RoteadorCivel (7 casos lidos; a causa dos tokens gastos é hipótese); CalculoCivel: M1 + **M6** na cadeia do erro crítico; resto não lido |
+| Mecanismos | M1 (20), M2 (6), M3 (2), 5 não lidos | M4/M5 no RoteadorCivel (7 casos lidos; a causa dos tokens gastos é hipótese); CalculoCivel: M1 + **M6** na cadeia do erro crítico; RespostaBacen: **M1 3, M2 1** (o M2 com `json_resposta`, dez/2025; lido 02/10, assistido); OBFCivel e CalculoTrabalhista não lidos |
 | Investigação | **fechada** (28 com mecanismo lido; 5 do managerAgent declarados "não lidos") | RoteadorCivel explicado (7 casos + metadados + campos crus); CalculoCivel e o erro crítico explicados (§2.5); RespostaBacen a seguir |
 | Destino | não-memória / sinal de harness | não-memória, achado para a plataforma (modelo) |
 
@@ -246,7 +246,7 @@ comentário. **[conferido: AST]**
 | Papel | Erros | Pergunta | Prioridade |
 |---|---:|---|---|
 | ~~CalculoCivel~~ | 4 | feito — §2.5 | — |
-| **RespostaBacen** | 4 | M2 de novo? Pelo menos parte cai na declaração `resposta_gerada` (55 execuções × 1 com `json_resposta`). Se for M2, o mecanismo reapareceu em outra base e com outro contrato — pela regra do `10` §5, **vira memória candidata por ferramenta** | **2ª** |
+| ~~RespostaBacen~~ | 4 | **feito 02/10** (máquina 2, assistido): `o4-mini`, `b0f37eea`, modo texto. **M1 em 3**: JSON do negócio ×2 e pergunta ao usuário, os 3 com `resposta_gerada` e o prompt pedindo formato. **M2 em 1**: dez/2025, logo depois do `resposta_final`, com `json_resposta`. 3/4 recuperam no step seguinte, 4/4 entregam `final_answer` depois. O M2 **não** reapareceu com o contrato atual: segue sinal de harness, já corrigido, não vira memória (`10` §4 M2) | — |
 | RoteadorCivel | 56 | os 49 não lidos seguem o mesmo padrão de metadados (M4/M5)? | baixa |
 | OBFCivel | 4 | mesmo modelo novo, mesmo mês — provavelmente M4/M5 | baixa |
 | CalculoTrabalhista | 1 | `gpt-4.1` em ago — fundo? | baixa |
@@ -264,8 +264,8 @@ observação anterior:
 
 **Leitura:** o surto de ago/2026 **não é M1**. O RoteadorCivel (0/56) escreve pouco (mediana de 138 caracteres) e nada
 do que escreve reaparece na resposta — bate com M4/M5 do §2.3, o modelo que esquece as marcas. O RespostaBacen (2/4)
-é o único com sinal de M1, e coincide com a pergunta de M2 acima (o `resposta_final` concorrendo com o
-`final_answer`). No CalculoCivel, 3/4 copiam a observação anterior: o texto fora do bloco repete o que a ferramenta tinha
+é o único com sinal de M1. A leitura de 02/10 deu M1 em 3: o 3º é a pergunta ao usuário, de 496 caracteres, o falso
+negativo conhecido da medida. No CalculoCivel, 3/4 copiam a observação anterior: o texto fora do bloco repete o que a ferramenta tinha
 acabado de devolver. Isso pode ser parte da cadeia do erro crítico (§2.5), mas não foi lido. A medida indica; a
 leitura confirma.
 

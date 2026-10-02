@@ -104,9 +104,12 @@ entra aqui.
 - **Gatilho:** o contrato da ferramenta. Na base 1, só a declaração com `json_resposta` (dict aninhado; dez/2025) teve
   erros; a com `resposta_gerada` (texto simples; jan–jun/2026), 0 — mesmo formato e mesmo modelo nos dois períodos.
   Correlação (6 × 20 execuções), não prova. (O `drill_down.py ferramenta` numera as variantes pela quantidade de steps,
-  não pelo tempo — por isso os nomes aqui são os do argumento.)
-- **Destino:** sinal de harness; memória candidata **por ferramenta** só se reaparecer com o contrato atual.
-  **Status:** confirmado na base 1.
+  não pelo tempo — por isso os nomes aqui são os do argumento.) **Base 2 (leitura assistida, 02/10):** dos 4 erros do
+  RespostaBacen, o único M2 é de dez/2025, com `json_resposta`. Os 3 com `resposta_gerada` são M1. O mesmo corte nas
+  duas bases: o contrato `json_resposta` induzia o M2, e a troca para `resposta_gerada` (jan/2026) o eliminou.
+- **Destino:** sinal de harness, **já corrigido pela plataforma** (a declaração mudou em jan/2026); memória candidata
+  **por ferramenta** só se reaparecer com o contrato atual — não reapareceu em nenhuma das duas bases.
+  **Status:** confirmado na base 1; base 2 coerente (1 caso, assistido).
 
 ### M3 — Digitação do envelope
 
