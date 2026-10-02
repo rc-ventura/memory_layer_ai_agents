@@ -1077,6 +1077,8 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
 
     pasta = os.path.join(PASTA_EVIDENCIA, "silenciosas")
     os.makedirs(pasta, exist_ok=True)
+    # a coluna do [4], para escolher na máquina os casos do plano 4.1b (False nas falhas que não são reais)
+    sil = sil.assign(sucesso_falso_candidato=sucesso_falso_candidato(F, sil).reindex(sil.index, fill_value=False))
     sil.to_csv(os.path.join(pasta, "casos.csv"), index=False)
     print(f"\nCasos (com exec_id): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
 
