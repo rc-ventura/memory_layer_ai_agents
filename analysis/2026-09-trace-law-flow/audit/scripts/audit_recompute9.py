@@ -21,14 +21,24 @@ Confere, contra os números publicados (docs/14-relatorio-falhas-silenciosas.md)
 
 Uso (de dentro de audit/scripts/ ou de qualquer lugar):
     python audit_recompute9.py                       # base 1, caminhos do repo
-    python audit_recompute9.py --base base2 --trace <arquivo .csv.xz> --em <erros_mecanismo.csv> --fonte <base_pipeline.py>
+    python audit_recompute9.py --base base2 --trace <arquivo .csv ou .csv.xz> --em <erros_mecanismo.csv> --fonte <base_pipeline.py>
 Saída: só contagens, nomes de papel e de ferramenta — nenhum exec_id, nenhum texto de caso. Pode ser fotografada na
 máquina 2. Gravar em audit/scripts/audit_out9.txt (git-ignored).
 """
-import argparse, ast, csv, json, lzma, os, re, sys, unicodedata
+import argparse, ast, csv, gzip, json, lzma, os, re, sys, unicodedata
 from collections import Counter, defaultdict
 
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
+try: sys.stdout.reconfigure(encoding="utf-8")   # terminal do Windows (máquina 2): sem isso, "×"/"∩" derrubam o print
+except Exception: pass
+
+
+def abrir_trace(caminho):
+    """O trace da base 1 é .csv.xz; o da base 2 é .csv puro. Decide pelo conteúdo (bytes mágicos), não pela extensão."""
+    with open(caminho, "rb") as fh: cab = fh.read(6)
+    if cab.startswith(b"\xfd7zXZ"): return lzma.open(caminho, "rt", encoding="utf-8", newline="")
+    if cab.startswith(b"\x1f\x8b"): return gzip.open(caminho, "rt", encoding="utf-8", newline="")
+    return open(caminho, "r", encoding="utf-8", newline="")
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(os.path.dirname(AQUI))          # analysis/2026-09-trace-law-flow
 ap = argparse.ArgumentParser()
@@ -52,8 +62,9 @@ ESPERADO = {
                   sucesso={"argumento_do_agente": (30, 41), "plataforma": (16, 19), "json_invalido": (0, 6),
                            "nao_reconhecido": (8, 9)}, sucesso_total=(54, 75),
                   forma_colado=(6, 6)),
+    # pares/steps_ferr: o cabeçalho do `drill_down.py silenciosas` na máquina 2 (foto de 02/10)
     "base2": dict(excecao=20, silenciosas=134, steps_sil=None, execs=124, meses=7, papeis=None, ferramentas=18,
-                  pares=None, steps_ferr=None,
+                  pares=8232, steps_ferr=2771,
                   grupos=dict(sem_resultado=8, fora_da_cobertura=10, argumento_do_agente=6, plataforma=22,
                               json_invalido=86, nao_reconhecido=2), reais=116,
                   depois={"(nenhum erro)": 122, "U_tipo_retorno": 3, "H_bloco_code": 3, "U_campo_inexistente": 3,
@@ -107,7 +118,7 @@ pares = []          # um por (step, ferramenta) chamada ou que falhou
 passos = {}         # (eid, role) -> lista de dicts por ActionStep (i, chamada, final, err, code, obs)
 linhas_trace, eids_vistos, dup = 0, set(), 0
 papel_null = 0
-with lzma.open(args.trace, "rt", encoding="utf-8") as fh:
+with abrir_trace(args.trace) as fh:
     for r in csv.DictReader(fh):
         linhas_trace += 1
         eid = r["cod_idef_exeo"]
