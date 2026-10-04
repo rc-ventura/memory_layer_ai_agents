@@ -25,7 +25,8 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
            "caminho_dos_criticos", "sobreposicao", "M1_LIMIAR", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
            "GRUPOS_FALHA_REAL", "motivo_da_falha", "DONO_DO_GRUPO", "UNIDADES_CONTRATO", "forma_argumento",
-           "formas_das_falhas", "erro_depois_da_falha", "contrato_precedido", "sucesso_falso_candidato","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
+           "formas_das_falhas", "erro_depois_da_falha", "contrato_precedido", "sucesso_falso_candidato",
+           "REGRAS_INVISIVEL", "unidade_silenciosa", "ocorrencias_visiveis", "ocorrencias_silenciosas","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -353,7 +354,8 @@ UNI = {
                          "Usar só variáveis e funções definidas no próprio código; 'Observation' é rótulo do harness, não variável."),
     "U_repr_colado": ("Não colar retorno impresso de volta no código", ESTR,
                       "Referenciar a variável que guardou o retorno em vez de colar o print dele (truncado ou inteiro) "
-                      "dentro do código."),
+                      "dentro do código; se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca "
+                      "com str(...)."),
     "H_infra_llm": ("Falha do LLM upstream — política de retry", NAO,
                     "AgentGenerationError/422: retry com backoff e circuit breaker por subagente."),
     # tipo=NAO reflete só a base 1 (o incidente de out/2025 morre a partir de mar/2026 NESTA base).
@@ -757,18 +759,73 @@ def sucesso_falso_candidato(F, sil):
     return pd.Series(out, index=real.index, dtype=bool)
 
 
-def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+# A consolidação (Ajuste 12, 04/10; plano 4.2b). Os dois baldes entregam OCORRÊNCIAS no mesmo formato — exec_id, role,
+# idx, mes, unidade, ocorrencia, canal — e a triagem conta a recorrência sobre a união (nunca somando totais: a mesma
+# execução pode ter a unidade nos dois canais). Ocorrência, nos dois canais, é a mesma régua (decisão do Rafael, 02/10):
+# cascata (steps consecutivos do mesmo papel com falha/erro) × unidade.
+
+# A regra do balde invisível para o catálogo: (grupo do motivo, marca na forma do argumento, unidade). Sem nome de
+# ferramenta. O que não casa fica sem unidade — a fila de trabalho do balde invisível, como o resíduo do visível.
+# Evidência da única regra: o json_invalido do busca_obf é o gesto do repr_colado nas duas bases (6/6, 86/86) —
+# ledger Etapa 10c, "Achado (01/10)"; doc 13 §5.
+REGRAS_INVISIVEL = [
+    ("json_invalido", "gesto do repr_colado", "U_repr_colado"),
+]
+
+
+def unidade_silenciosa(grupo, forma):
+    """A unidade do catálogo de uma falha silenciosa (REGRAS_INVISIVEL), ou None."""
+    for g, marca, u in REGRAS_INVISIVEL:
+        if grupo == g and marca in str(forma or ""):
+            return u
+    return None
+
+
+def ocorrencias_visiveis(EU):
+    """As ocorrências do balde visível no formato comum: uma linha por erro, com a `ocorrencia` de montar_unidades()
+    (cascata × unidade)."""
+    return EU[["exec_id", "role", "idx", "mes", "unidade", "ocorrencia"]].assign(canal="visível")
+
+
+def ocorrencias_silenciosas(sil, formas):
+    """As ocorrências do balde invisível no formato comum. `sil`: as falhas silenciosas (linhas de falhas_silenciosas()
+    com falha == "silenciosa"); `formas`: formas_das_falhas(df, sil), na mesma ordem. Uma linha por step com falha (dois
+    motivos no mesmo step viram uma linha por unidade). A cascata é a do visível: steps consecutivos do mesmo papel com
+    falha silenciosa; `ocorrencia` = cascata × unidade. `unidade` None = sem regra (fica fora da triagem)."""
+    S = sil.assign(forma=list(formas))
+    S["unidade"] = [unidade_silenciosa(g, f) for g, f in zip(S["grupo"], S["forma"])]
+    passos = S.drop_duplicates(["exec_id", "role", "idx"]).sort_values(["exec_id", "role", "idx"])
+    seguidor = (passos["exec_id"].eq(passos["exec_id"].shift()) & passos["role"].eq(passos["role"].shift())
+                & passos["idx"].eq(passos["idx"].shift() + 1))
+    cascata = dict(zip(zip(passos["exec_id"], passos["role"], passos["idx"]), (~seguidor).cumsum()))
+    S = S.drop_duplicates(["exec_id", "role", "idx", "unidade"]).copy()
+    S["cascata"] = [cascata[k] for k in zip(S["exec_id"], S["role"], S["idx"])]
+    S["ocorrencia"] = "s" + S["cascata"].astype(str) + "|" + S["unidade"].fillna("—")
+    return (S[["exec_id", "role", "idx", "mes", "unidade", "ocorrencia", "ferramenta", "grupo", "forma"]]
+            .assign(canal="silencioso").sort_values(["exec_id", "role", "idx"]).reset_index(drop=True))
+
+
+def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES, silenciosas=None):
     # resíduo: recorrência contada por PADRÃO de erro, não pela unidade (que junta erros diferentes por construção)
     passa = residuo_por_padrao(EU, min_execs, min_meses).groupby("unidade")["passa na recorrência"].any()
     # execuções mortas (limite de passos) em que cada unidade aparece no caminho — o peso de gravidade (Ajuste 8)
     crit = caminho_dos_criticos(EU)
     mortas = Counter(u for c in crit["unidades no caminho"] for u in c.split(" + ") if u)
     fracao_desconhecida = (EU["unidade"] == "X_sintoma_nao_reconhecido").mean()
+    # `silenciosas` (Ajuste 12): ocorrências do balde invisível (ocorrencias_silenciosas()). Com elas, ocorrências,
+    # execuções, meses e papéis contam a UNIÃO dos dois canais; erros, tokens, cascata e "% após outro erro" continuam
+    # do visível (o custo das silenciosas é retrabalho, medido no notebook delas). Sem elas, a saída é a de sempre.
+    S = None if silenciosas is None else silenciosas[silenciosas["unidade"].notna()]
+    grupos = list(EU.groupby("unidade"))
+    if S is not None:
+        grupos += [(u, EU.iloc[0:0]) for u in sorted(set(S["unidade"]) - set(EU["unidade"]))]
     tri = []
-    for u, g in EU.groupby("unidade"):
+    for u, g in grupos:
         nome, tipo, conteudo = UNI[u]
         o = g.drop_duplicates("ocorrencia")
-        execs_u, meses_u = o["exec_id"].nunique(), o["mes"].nunique()
+        s_u = S[S["unidade"] == u].drop_duplicates("ocorrencia") if S is not None else EU.iloc[0:0]
+        execs_u = len(set(o["exec_id"]) | set(s_u["exec_id"]))
+        meses_u = len(set(o["mes"]) | set(s_u["mes"]))
         if tipo == NAO:
             decisao = "não-memória"
         elif tipo == CRIT:  # o agente não se recuperou: todo caso vai para investigação, sem limite mínimo
@@ -788,11 +845,14 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         tri.append({"unidade": u, "nome": nome, "tipo": tipo, "decisão": decisao,
                     "destino (mineração)": destino_mineracao(u) if tipo in (FACT, ESTR) else "",
                     "motivo (resíduo)": motivo if tipo == SEM else "",
-                    "ocorrências": len(o), "erros": len(g), "reincidências na cascata": len(g) - len(o),
+                    "ocorrências": len(o) + len(s_u),
+                    **({"ocorrências visíveis": len(o), "ocorrências silenciosas": len(s_u)} if S is not None else {}),
+                    "erros": len(g), "reincidências na cascata": len(g) - len(o),
                     "execuções mortas com esta unidade no caminho": mortas.get(u, 0),
-                    "execuções": execs_u, "meses": meses_u, "papéis": o["role"].nunique(),
+                    "execuções": execs_u, "meses": meses_u,
+                    "papéis": len(set(o["role"]) | set(s_u["role"])),
                     "tokens": int(g["tok_tot"].sum()),
-                    "% ocorr. após outro erro": round(o["seguidor"].mean() * 100),
+                    "% ocorr. após outro erro": round(o["seguidor"].mean() * 100) if len(o) else None,
                     "assinaturas de origem": " + ".join(g["assinatura"].value_counts().index),
                     "conteúdo proposto": conteudo})
     ordem = {"candidato": 0, SINAL_HARNESS: 1, INVESTIGAR_CRITICO: 2, "não-memória": 3, REVISAR_PRIORIDADE: 4,

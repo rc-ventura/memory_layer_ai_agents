@@ -12,8 +12,10 @@ dizer.** Todo documento que usa códigos aponta para cá no topo. Código novo e
 |---|---|
 | **balde visível** | os erros que levantaram exceção (`ActionStep.error` preenchido). É o que o notebook da esteira classifica (família → assinatura → mecanismo → unidade). |
 | **balde invisível** / **falha silenciosa** | a ferramenta falhou, mas devolveu o erro **como texto** (`"Error calling tool '<nome>': …"`), e o step ficou com `error: null`. Para o pipeline, o step "deu certo". Notebook `falhas_silenciosas.ipynb`, docs 13–15. |
-| **consolidação** | a etapa que junta as ocorrências dos dois baldes numa triagem só (plano-atual 4.2b). |
-| **ocorrência** | no balde visível, uma **cascata × unidade** (erros seguidos do mesmo papel contam uma vez); no invisível, por enquanto, **uma falha** — a regra comum está em decisão (plano-atual 4.2b-0). |
+| **consolidação** | a etapa que junta as ocorrências dos dois baldes numa triagem só: `consolidacao_unidades.ipynb` (§14.x), Ajuste 12. Conta execuções, meses e papéis sobre a união dos canais; erros e tokens continuam do visível. |
+| **canal** | de onde vem uma ocorrência de unidade: **visível** (erro com exceção) ou **silencioso** (falha devolvida como texto). A mesma unidade pode ter os dois — hoje, a `U_repr_colado`. |
+| **`REGRAS_INVISIVEL`** | as regras que levam uma falha silenciosa a uma unidade do catálogo, sem nome de ferramenta (`base_pipeline.py`). Hoje, uma: JSON inválido com argumento colado de um retorno impresso → `U_repr_colado`. O que não casa fica sem unidade. |
+| **ocorrência** | uma **cascata × unidade**, nos dois baldes (decisão de 02/10, aplicada no Ajuste 12): erros — ou falhas silenciosas — seguidos do mesmo papel contam uma vez por unidade. |
 | **cascata** | erros consecutivos do mesmo papel na mesma execução. O 1º é o que importa; os seguintes são "seguidores". |
 
 ## 2 · As unidades de memória (os nomes `U_…`, `H_…`, `X_…`, `C_…`)

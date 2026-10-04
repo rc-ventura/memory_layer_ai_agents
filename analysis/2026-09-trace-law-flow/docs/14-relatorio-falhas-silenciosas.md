@@ -143,8 +143,20 @@ entre as bases (73% × 2/6) — "o erro do agente se recupera" **não** vale com
 …, "resumo": …}]}`) em vez de passar a variável. É o mesmo gesto do `U_repr_colado` (base 1: 6 erros; base 2: **18** em 18 execuções, só
 RoteadorCivel — conferido na triagem de 02/10; o "7" antigo era o recorte do Ajuste 2.2) — no
 canal silencioso, e na base 2 ~12× maior que no visível. Destino: memória (a lição do `repr_colado` estendida) **e**
-aviso à plataforma (o tipo `(str)` de `textos_decisoes` convida ao `str(...)`). A unidade passa a contar os dois canais
-na consolidação (plano 4.2b).
+aviso à plataforma (o tipo `(str)` de `textos_decisoes` convida ao `str(...)`).
+
+**Na consolidação (Ajuste 12, 04/10)** a unidade conta os dois canais:
+
+| `U_repr_colado` | Base 1 | Base 2 |
+|---|---:|---:|
+| ocorrências visíveis | 6 | 18 |
+| ocorrências silenciosas (cascata × unidade) | 6 | 86 |
+| **consolidada** — ocorrências · execuções | **12 · 12** | **104 · 104** (esperado) |
+| meses · papéis | 4 · 2 | a rodar |
+| decisão | candidata (igual) | candidata (esperado) |
+
+Base 1 [conferido]: notebook de consolidação §14.3 (só esta unidade muda) e `audit_recompute9` bloco G (0
+divergências). Base 2: passo 2b do prompt da rodada 2.
 
 Base 1, as outras formas (todas as 120 silenciosas): o gesto colado aparece também em 4 falhas de argumento do agente,
 1 de plataforma e 1 não reconhecida; `json.dumps` aparece em 2 de plataforma — ali o argumento estava certo e a falha é
@@ -171,6 +183,7 @@ São contagens de detector, não falhas confirmadas. O Result-Ignore fica na mes
 - **Base 2:** feito em 02/10 — `audit_recompute9` (0 divergências), funil, sobreposição e detectores. Falta só
   reexecutar o notebook inteiro lá, para as saídas e figuras embutidas (no terminal, não no editor).
 - **4.1b:** base 2 lida em 6 casos (0/6, §5); falta a base 1 e uma amostra sorteada. Medida determinística: plano 4.1c.
-- **4.2b:** a consolidação — o `json_invalido` colado entra na `U_repr_colado`.
+- **Base 2, consolidação (Ajuste 12):** rodar `consolidacao_unidades.ipynb` e o bloco G do `audit_recompute9` (esperado
+  104 · 104).
 - **Aviso à plataforma (4.9):** a ferramenta devolve falha como texto; o passe dict → string JSON entre
   `puxa_doc_decisao` e `busca_obf`.

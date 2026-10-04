@@ -379,7 +379,7 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 8 | 2 | 0,34M |
 | 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 4 | 2 | 0,29M |
 | 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
-| 11 | **Não colar retorno impresso de volta no código** — referenciar a variável que guardou o retorno (truncado ou inteiro); candidata desde 25/09/2026 | experiencial · estratégia | 6 | 6 | 6 | 4 | 2 | 0,09M |
+| 11 | **Não colar retorno impresso de volta no código** — referenciar a variável que guardou o retorno (truncado ou inteiro) e, se a ferramenta pede JSON, converter com `json.dumps(...)`, nunca `str(...)` (lição estendida no Ajuste 12, 04/10, que soma o canal silencioso: 6 → 12 ocorrências); candidata desde 25/09/2026 | experiencial · estratégia | 6 | 6 | 6 | 4 | 2 | 0,09M |
 | — | **Sinal de harness — Campo inexistente no retorno estruturado** (a nº10: `quebra_sigilo` 7×; erro do agente, mas a mineração decidiu `destino = harness` — o prompt declara o mesmo nome de campo para o retorno e para o JSON final, 9/21 respostas com campo inválido, §6.2 do `07`) | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
 | — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)**; mecanismos e destinos em `11-relatorio-protocolo-harness.md` | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |

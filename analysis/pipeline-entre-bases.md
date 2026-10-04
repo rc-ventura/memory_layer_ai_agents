@@ -2,7 +2,7 @@
 
 > **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](glossario.md).
 
-**Data:** 2026-09-25 (atualizado 02/10) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 conferidos na base 2; 10 e 11 feitos neste repo, falta conferir na base 2; Etapas 10b/10c (protocolo do harness, falhas silenciosas) registradas; o "o que fazer agora" vive em [`plano-atual.md`](plano-atual.md).
+**Data:** 2026-09-25 (atualizado 04/10) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 conferidos na base 2; 10 e 11 feitos neste repo, falta conferir na base 2; 12 (a consolidação) feito e conferido na base 1, a rodar na base 2; Etapas 10b/10c (protocolo do harness, falhas silenciosas) registradas; o "o que fazer agora" vive em [`plano-atual.md`](plano-atual.md).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -493,6 +493,65 @@ continua. A regra antiga, reimplementada, dá exatamente o 20/116 publicado.
 **Junto, sem mudar número:** a regra `^'default'$` de `MOTIVO_REGRAS` era anotada só `b2`; ela dispara 2 vezes na
 base 1 (CalculoCivel, `calculo_correcoes_monetarias`, fev/2026 — a mesma calculadora do erro crítico da base 2). A
 anotação passa a `b1 b2`.
+
+### Ajuste 12 — a consolidação: os dois baldes numa triagem, e a `U_repr_colado` conta os dois canais
+
+**Gatilho.** O achado de 01/10 (Etapa 10c, "Achado (01/10)"): nas duas bases, o JSON inválido do `busca_obf` é o gesto
+do `repr_colado` — colar o print do retorno em vez de passar a variável — no canal silencioso (6/6, 86/86). A triagem
+só via o canal visível: a unidade aparecia com 6 (base 1) e 18 (base 2), quando o gesto tem 12 e 104. **Decisões do
+Rafael:** uma unidade só com os dois canais (01/10); três notebooks, visível · invisível · consolidação (01/10); a
+mesma régua de ocorrência nos dois canais (02/10, plano 4.2b-0).
+
+**Evidência (as duas bases, antes de mudar).**
+
+| | Base 1 | Base 2 |
+|---|---:|---:|
+| `U_repr_colado` visível — erros em execuções (triagem) | 6 em 6 | 18 em 18 |
+| JSON inválido silencioso com argumento colado (`--forma`, `audit_recompute9` E) | 6 | 86 |
+| … em sequências (régua da cascata) | 6 | 86 |
+| execuções em comum entre os dois canais | 0 | 0 |
+
+**Solução.**
+
+- `base_pipeline.py`: `REGRAS_INVISIVEL` — a regra do balde invisível para o catálogo, **sem nome de ferramenta**:
+  (`json_invalido`, argumento colado de um retorno impresso) → `U_repr_colado`; `unidade_silenciosa()`;
+  `ocorrencias_visiveis(EU)` e `ocorrencias_silenciosas(sil, formas)`, as duas tabelas no formato comum (`exec_id`,
+  `role`, `idx`, `mes`, `unidade`, `ocorrencia`, `canal`), com ocorrência = cascata × unidade nos dois canais;
+- `triagem(..., silenciosas=None)`: com as ocorrências silenciosas, ocorrências, execuções, meses e papéis contam a
+  **união** dos dois canais, e entram as colunas `ocorrências visíveis` / `ocorrências silenciosas`; erros, tokens,
+  cascata e "% após outro erro" continuam do visível (o custo da falha silenciosa é retrabalho, medido no notebook
+  dela). **Sem o parâmetro, a saída é a de sempre** — a esteira não muda;
+- a lição da `U_repr_colado` ganha: *"se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca com
+  str(...)"*;
+- `falhas_silenciosas.ipynb` §13.8 grava a tabela de ocorrências com unidade; notebook novo
+  `consolidacao_unidades.ipynb` (§14.x) — a triagem consolidada, o que muda contra a triagem só do visível, a unidade
+  pelos dois canais e a fila sem unidade do balde invisível;
+- `audit_recompute9.py`, bloco G: a `U_repr_colado` consolidada reimplementada da prosa do `13` (§2 e §5).
+
+**Por quê.** A unidade é o mecanismo com a sua lição; onde o erro aparece (exceção ou texto) não muda o mecanismo.
+Contar só o canal visível mediria o gesto pela parte pequena (na base 2, 18 de 104). A união por ocorrência — e não a
+soma de totais — evita contar duas vezes a execução que tem o gesto nos dois canais.
+
+**Verificação (base 1).**
+
+- `triagem(EU)` sem as silenciosas: idêntica à de antes, célula a célula, exceto o texto da lição da `U_repr_colado`;
+  `triagem_por_papel()` idêntica;
+- consolidada: **só a `U_repr_colado` muda** — ocorrências 6 → 12, execuções 6 → 12; meses 4, papéis 2 e a decisão
+  (candidata) iguais; nenhuma unidade nova; nenhuma decisão muda; sensibilidade (≥5 execuções, ≥3 meses): a mesma
+  limítrofe de antes;
+- steps nos dois canais: 0; silenciosas: 119 steps em 100 cascatas (o mesmo da sonda F do `audit_recompute9`);
+- `audit_recompute9.py`: 0 divergências, com o bloco G (12 · 12 · 4 · 2); `audit_recompute6.py`: 0 divergências;
+- notebook das falhas silenciosas reexecutado: só a saída da §13.8 muda; a esteira não precisa ser reexecutada (a lição
+  não aparece nas saídas embutidas; o `candidatos_memoria.csv` da esteira, git-ignored, pega o texto novo no próximo run).
+
+**Esperado na base 2 (escrito antes de rodar).** `U_repr_colado` 18 → **104** ocorrências e 104 execuções (0 em comum);
+continua candidata; nenhuma outra unidade muda (o balde invisível da base 2 só tem regra para o JSON inválido colado);
+bloco G do `audit_recompute9` com 0 divergências (meses e papéis "a conferir").
+
+**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `falhas_silenciosas.ipynb`,
+`consolidacao_unidades.ipynb` (novo) e `audit/scripts/audit_recompute9.py` → rodar no terminal, nessa ordem: esteira,
+falhas silenciosas, consolidação, `audit_recompute9 --base base2`. Entra no prompt da rodada 2
+(`maquina2/2026-10-02-prompt-base2-rodada2.md`, passo 2b). Trazer a §14.3 e o bloco G.
 
 ## 4. O que os ajustes ensinam sobre o método
 

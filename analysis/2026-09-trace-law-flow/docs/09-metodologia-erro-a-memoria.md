@@ -284,7 +284,22 @@ Nas duas bases, ~90% das falhas de ferramenta não chegam a ela:
 Medida e grupos: `../../pipeline-entre-bases.md` Etapa 10c. Desde 01/10 é o **balde invisível**, com notebook próprio
 ([`../pipeline/falhas_silenciosas.ipynb`](../pipeline/falhas_silenciosas.ipynb)) e docs
 [`13`](13-racionais-falhas-silenciosas.md)–[`15`](15-procedimento-falhas-silenciosas.md); a cadeia daqui é o balde
-visível, e as duas se juntam na consolidação das unidades (`../../plano-atual.md` 4.2b).
+visível, e as duas se juntam na consolidação das unidades.
+
+**A etapa final: a consolidação (Ajuste 12, 04/10).** A triagem que decide candidata / fora / sinal de harness passa a
+ver os dois baldes ([`../pipeline/consolidacao_unidades.ipynb`](../pipeline/consolidacao_unidades.ipynb), §14.x):
+
+- cada balde entrega **ocorrências** no mesmo formato (`exec_id`, `role`, `idx`, `mes`, `unidade`, `ocorrencia`,
+  `canal`); a ocorrência é **cascata × unidade** nos dois canais;
+- o balde invisível chega ao catálogo por `REGRAS_INVISIVEL` (`base_pipeline.py`), sem nome de ferramenta: hoje, uma
+  regra — JSON inválido com argumento colado de um retorno impresso → `U_repr_colado` (o mesmo gesto do canal
+  visível; `13` §5). O resto fica sem unidade, como o resíduo do visível;
+- `triagem(EU, silenciosas=…)` conta ocorrências, execuções, meses e papéis sobre a **união** dos canais (nunca somando
+  totais); erros e tokens continuam do visível. Sem as silenciosas, a saída é a da esteira.
+
+Efeito: base 1, só a `U_repr_colado` muda (6 → 12 ocorrências e execuções; decisão igual); base 2, esperado 18 → 104.
+Daqui para a frente, a genealogia (o Sankey) e a triagem desta página são o balde visível sozinho até o plano 4.2c
+levá-las para a consolidação.
 
 Duas medidas convivem e não se confundem: **contagem de erros** (frequência —
 "o que mais ocorre") × **soma de tokens** (custo — "o que mais dói").

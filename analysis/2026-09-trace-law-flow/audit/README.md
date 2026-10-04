@@ -38,7 +38,7 @@ relatório como **Parte II**. Só então o estado vira **fechada**.
 | `scripts/audit_recompute6.py` | **balde visível**: submecanismo erro a erro, cascatas, unidades, cobertura, papel × unidade, ressalva E, tokens/chamada, régua | **0 divergências (A–G)** em 02/10 — E corrigida para o mês da execução |
 | `scripts/audit_recompute7.py` | evidência 11.9 (leituras de `validar_quebra_sigilo`) | auditoria de 16/09 |
 | `scripts/audit_recompute8.py` | evidência 11.10 (leituras de `get_available_documents`) | auditoria de 16/09 |
-| `scripts/audit_recompute9.py` | **balde invisível**: funil, grupos do motivo (+ disparos por regra), [2], [3], [4] (Ajuste 11), forma do `busca_obf`, sondas da consolidação | **0 divergências** nas duas bases em 02/10 (base 2 na máquina 2: `--base base2 --trace <.csv>`) |
+| `scripts/audit_recompute9.py` | **balde invisível**: funil, grupos do motivo (+ disparos por regra), [2], [3], [4] (Ajuste 11), forma do `busca_obf`, sondas da consolidação, **G: a `U_repr_colado` consolidada** (Ajuste 12; base 1 12 · 12 · 4 · 2) | **0 divergências** nas duas bases em 02/10 (base 2 na máquina 2: `--base base2 --trace <.csv>`); com o bloco G (04/10): base 1 0 divergências, base 2 a rodar |
 
 Para conferir tudo de novo na base 1 (de `analysis/2026-09-trace-law-flow/`):
 

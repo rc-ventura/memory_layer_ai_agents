@@ -55,7 +55,10 @@ do código que a chamou (§5). Do mecanismo para baixo, o catálogo é um só �
 **A consolidação junta ocorrências, não totais.** Uma execução pode ter a mesma unidade nos dois baldes; somar
 "execuções do visível + execuções do invisível" contaria essa execução duas vezes. Por isso cada balde entrega uma
 tabela de ocorrências no mesmo formato (`exec_id`, papel, `idx`, mês, unidade, canal), e a triagem final conta sobre a
-união (`consolidacao_unidades.ipynb`, plano 4.2b).
+união ([`../pipeline/consolidacao_unidades.ipynb`](../pipeline/consolidacao_unidades.ipynb), §14.x; Ajuste 12, 04/10).
+A ocorrência é a mesma régua nos dois canais — cascata (steps consecutivos do mesmo papel) × unidade (decisão do Rafael,
+02/10) — e o balde invisível chega ao catálogo por `REGRAS_INVISIVEL`, sem nome de ferramenta; o que não casa fica sem
+unidade e fora da triagem, como o resíduo do visível.
 
 ## 3 · O motivo: seis grupos e o dono
 
@@ -125,8 +128,8 @@ da unidade `U_repr_colado` (Ajuste 2.2) — muda só **onde** ele aparece:
 O contrato declara `textos_decisoes (str)`: "… em JSON formatado como string". O texto pede JSON; o tipo `(str)` convida
 ao `str(...)`. Por isso o destino é duplo: **memória** (a lição do `repr_colado` estendida — use a variável, converta com
 `json.dumps`, nunca cole o print nem use `str()`) e **aviso à plataforma** (o passe dict → string JSON entre duas
-ferramentas da mesma esteira). A unidade passa a contar os dois canais na consolidação (decisão do Rafael, 01/10;
-plano 4.2b).
+ferramentas da mesma esteira). A unidade conta os dois canais na consolidação (decisão do Rafael, 01/10; Ajuste 12):
+base 1, 6 → 12 ocorrências; base 2, 18 → 104 (esperado).
 
 ## 6 · Os detectores de comportamento (migrados da esteira)
 
@@ -158,8 +161,8 @@ Inventário: o que o system prompt **declara** (`def nome(...)`), não o que apa
   (02/10), nenhum era: em 3, a resposta veio de outra fonte; nos 3 do `json_invalido`, ela **declara a falha**. A
   "falha declarada" é uma terceira categoria que o [4] não separa (plano 4.1c e S5). A fronteira de chamada vem dos `TaskStep`
   do papel; o resto das ferramentas ainda mistura as chamadas (plano S4).
-- **A ocorrência do balde invisível é uma falha (uma linha por step × ferramenta), não uma cascata.** Para consolidar
-  com o visível (ocorrência = cascata × unidade), a regra precisa ser escolhida na 4.2b. Base 1: 120 falhas em 119
-  steps, 100 sequências de steps consecutivos; no `json_invalido`, 6 = 6 (`audit_recompute9`, sonda F).
+- **A ocorrência do balde invisível é a cascata × unidade, como no visível** (resolvido no Ajuste 12; antes era uma
+  linha por falha). Base 1: 120 falhas em 119 steps e 100 cascatas; no `json_invalido`, 6 = 6. Só uma regra leva o
+  balde invisível ao catálogo; as outras 113 falhas da base 1 ficam sem unidade.
 - **Groundedness da resposta final** (o valor no `final_answer` tem suporte nas observações?) — o erro de maior impacto
   no TRAIL — ainda não é medido aqui ([`02-relatorio-achados.md`](02-relatorio-achados.md) §5).

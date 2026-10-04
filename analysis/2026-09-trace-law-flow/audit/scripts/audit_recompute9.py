@@ -17,7 +17,10 @@ Confere, contra os números publicados (docs/14-relatorio-falhas-silenciosas.md)
      e as sondas que motivaram o ajuste (pela regra antiga);
   E) a forma do 1º argumento do busca_obf nas falhas json_invalido (gesto colado do repr_colado);
   F) sondas para a consolidação (plano 4.2b) e de robustez: json_invalido em sequência, execuções em comum com o
-     U_repr_colado visível, falha sem a ferramenta chamada no step (eco), papel "null", linhas duplicadas.
+     U_repr_colado visível, falha sem a ferramenta chamada no step (eco), papel "null", linhas duplicadas;
+  G) a consolidação (Ajuste 12, 04/10): a U_repr_colado nos dois canais — visível pelas cascatas do
+     erros_mecanismo.csv, silencioso pela regra do doc 13 §5 (JSON inválido, qualquer ferramenta, argumento colado de um
+     retorno impresso), ocorrência = cascata × unidade nos dois; recorrência contada sobre a união.
 
 Uso (de dentro de audit/scripts/ ou de qualquer lugar):
     python audit_recompute9.py                       # base 1, caminhos do repo
@@ -61,7 +64,9 @@ ESPERADO = {
                   # [4] depois do Ajuste 11 (02/10): 53 → 54 (nao_reconhecido 7 → 8)
                   sucesso={"argumento_do_agente": (30, 41), "plataforma": (16, 19), "json_invalido": (0, 6),
                            "nao_reconhecido": (8, 9)}, sucesso_total=(54, 75),
-                  forma_colado=(6, 6)),
+                  forma_colado=(6, 6),
+                  # consolidação (Ajuste 12): visível 6 + silencioso 6, sem execução em comum
+                  consolidado=dict(ocorrencias=12, execucoes=12, meses=4, papeis=2)),
     # pares/steps_ferr: o cabeçalho do `drill_down.py silenciosas` na máquina 2 (foto de 02/10)
     # steps_sil, papeis e o [4] novo: a 1ª rodada deste script na máquina 2 (02/10), agora publicados no doc 14
     "base2": dict(excecao=20, silenciosas=134, steps_sil=134, execs=124, meses=7, papeis=10, ferramentas=18,
@@ -74,7 +79,10 @@ ESPERADO = {
                   # [4] depois do Ajuste 11 (02/10): 20 → 24 (plataforma 16 → 17, json_invalido 0 → 3)
                   sucesso={"argumento_do_agente": (2, 6), "plataforma": (17, 22), "json_invalido": (3, 86),
                            "nao_reconhecido": (2, 2)}, sucesso_total=(24, 116), sucesso_antes=(20, 116),
-                  forma_colado=(86, 86)),
+                  forma_colado=(86, 86),
+                  # consolidação (Ajuste 12): visível 18 (triagem da máquina 2, 02/10) + silencioso 86, 0 em comum;
+                  # meses e papéis ainda não publicados para a base 2
+                  consolidado=dict(ocorrencias=104, execucoes=104, meses=None, papeis=None)),
 }[args.base]
 DIVERG = []
 
@@ -314,5 +322,41 @@ print(f"   todas as silenciosas: {len(sil_seq)} steps em {casc} sequências · e
       f"(falhas nele: {sum(p['role'] == 'null' for p in sil)})")
 multi = sum(1 for seq in passos.values() if seq and max(s["chamada"] for s in seq) > 1)
 print(f"   papéis com mais de uma chamada (TaskStep) na mesma execução: {multi} de {len(passos)}")
+
+# ------------------------------------------------------------------ G. consolidação (Ajuste 12)
+print("G. consolidação — U_repr_colado nos dois canais (doc 13 §2 e §5; Ajuste 12):")
+
+
+def colado_no_step(p):
+    """JSON inválido com o 1º argumento colado de um retorno impresso: dict/lista literal (dentro de str() ou não) ou
+    string literal, com ≥2 chaves já impressas numa observação anterior do papel (o critério do repr_colado)."""
+    seq = passos[(p["eid"], p["role"])]
+    a = primeiro_argumento(seq[p["i"]]["code"], p["ferr"])
+    if a is None: return False
+    obs_ant = "".join(s["obs"] for s in seq[:p["i"]])
+    if a.startswith("str(") and a[4:].lstrip()[:1] in "{[": return colado(a, obs_ant)
+    if a[:1] in "{[" or re.match(r"[fFrR]?[\"']", a): return colado(a, obs_ant)
+    return False
+
+
+passos_sil = sorted({(p["eid"], p["role"], p["i"]) for p in sil})
+casc_de, n = {}, 0
+for k, x in enumerate(passos_sil):
+    if k == 0 or not (x[:2] == passos_sil[k - 1][:2] and x[2] == passos_sil[k - 1][2] + 1): n += 1
+    casc_de[x] = n
+s_rc = {(p["eid"], p["role"], p["i"]): p["mes"] for p in sil if p["grupo"] == "json_invalido" and colado_no_step(p)}
+oc_s = {casc_de[k] for k in s_rc}
+v_rc = [e for e in EM if e["unidade"] == "U_repr_colado"]
+oc_v = {e["cascata"] for e in v_rc}
+execs = {e["exec_id"] for e in v_rc} | {k[0] for k in s_rc}
+meses = {e["mes"] for e in v_rc} | set(s_rc.values())
+papeis = {e["role"] for e in v_rc} | {k[1] for k in s_rc}
+print(f"   visível: {len(v_rc)} erros em {len(oc_v)} ocorrências · silencioso: {len(s_rc)} steps em {len(oc_s)} "
+      f"ocorrências · execuções em comum: {len({e['exec_id'] for e in v_rc} & {k[0] for k in s_rc})}")
+esp = ESPERADO["consolidado"]
+confere("U_repr_colado consolidada — ocorrências", len(oc_v) + len(oc_s), esp["ocorrencias"])
+confere("U_repr_colado consolidada — execuções", len(execs), esp["execucoes"])
+confere("U_repr_colado consolidada — meses", len(meses), esp["meses"])
+confere("U_repr_colado consolidada — papéis", len(papeis), esp["papeis"])
 
 print(f"\nDIVERGÊNCIAS: {len(DIVERG)}" + (f" → {DIVERG}" if DIVERG else ""))

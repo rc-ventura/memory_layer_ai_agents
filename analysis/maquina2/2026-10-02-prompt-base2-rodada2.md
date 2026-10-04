@@ -1,4 +1,4 @@
-# Prompt para o agente da máquina 2 — base 2, rodada 2 (02/10/2026)
+# Prompt para o agente da máquina 2 — base 2, rodada 2 (02/10/2026; consolidação acrescentada em 04/10)
 
 > **Como usar:** copie este arquivo para a máquina 2 e entregue-o inteiro ao agente. O agente roda os passos, preenche o
 > **Relatório** do fim e o grava em `pipeline/resultados/relatorio_maquina2_2026-10-02_rodada2.md` (git-ignored). O
@@ -35,24 +35,25 @@ Dois tipos de passo:
 
 ## Passo 0 — As cópias são as da branch?
 
-Copie da branch `2026-10-02-consolidacao-unidades` (commit `a537bea` ou posterior), **sem abrir no editor antes de
+Copie da branch `2026-10-02-consolidacao-unidades` (o commit do Ajuste 12, de 04/10, ou posterior), **sem abrir no editor antes de
 conferir**:
 
 | Arquivo (destino na `-second`) | SHA-256, 16 primeiros caracteres (LF ou CRLF, os dois valem) |
 |---|---|
 | `pipeline/drill_down.py` | `5c39b55b5ea171dd` ou `d1305a7fdaf96911` |
 | `pipeline/investigacao_achados.py` (novo) | `951524946316ede9` ou `4c82171f630658ac` |
-| `pipeline/falhas_silenciosas.ipynb` | `b0e81b5e76447622` ou `07738ea2c6fe9a75` |
+| `pipeline/falhas_silenciosas.ipynb` | `97382af1666a6941` ou `c2409f364e81e1c4` |
+| `pipeline/consolidacao_unidades.ipynb` (novo) | `16f84eed251a7ca5` ou `f582164e19722663` |
 | `pipeline/analise_trace_esteira_juridica.ipynb` | `50df8a23b2e912b1` ou `6e076d1b7f8c2091` |
-| `audit/scripts/audit_recompute9.py` | `058ccc8045c6d4cb` ou `1a07ab0a9787c904` |
-| `pipeline/base_pipeline.py` — **antes** de editar | `9042c8fed4347764` ou `7a0b167e2f0a67e4` |
+| `audit/scripts/audit_recompute9.py` | `0d14ef1d8db93249` ou `d38919318b61759d` |
+| `pipeline/base_pipeline.py` — **antes** de editar | `50b115986397ba07` ou `ae1bee90b5e2aec6` |
 
 ```
-sha256sum drill_down.py investigacao_achados.py falhas_silenciosas.ipynb analise_trace_esteira_juridica.ipynb base_pipeline.py ../audit/scripts/audit_recompute9.py
+sha256sum drill_down.py investigacao_achados.py falhas_silenciosas.ipynb consolidacao_unidades.ipynb analise_trace_esteira_juridica.ipynb base_pipeline.py ../audit/scripts/audit_recompute9.py
 ```
 
-Depois, no `base_pipeline.py`, troque **só** duas coisas: o nome do arquivo do `TRACE` (linha 33) para
-`"a0b49c79-8e90-4fd7-8cd2-c7ab38eaa43e.csv"` e `BASE_ID = "base2"` (linha 36). Confira com
+Depois, no `base_pipeline.py`, troque **só** duas coisas: o nome do arquivo do `TRACE` (linha 34) para
+`"a0b49c79-8e90-4fd7-8cd2-c7ab38eaa43e.csv"` e `BASE_ID = "base2"` (linha 37). Confira com
 `diff <cópia da branch> base_pipeline.py`: só essas duas linhas podem aparecer.
 
 ## Passo 1 — A esteira (o notebook inteiro, no terminal)
@@ -75,6 +76,19 @@ uv run python ../audit/scripts/audit_recompute9.py --base base2 --trace ../data/
 candidatos a sucesso falso 24 de 116 · detectores: inventário 116, retorno ignorado 203 de 8.661, chamada repetida 350,
 ferramenta não chamada 3 de 1.000, chamadas × declaradas 103 × 116 · a conferência independente com **0
 divergências**.
+
+## Passo 2b — A consolidação (o notebook inteiro, no terminal; depois do passo 2)
+
+```
+uv run jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=-1 consolidacao_unidades.ipynb
+```
+
+O `audit_recompute9` do passo 2 já traz o **bloco G** (a mesma unidade, recalculada de forma independente).
+
+**Esperado (Ajuste 12):** §14.1 — steps nos dois canais **0**; "colar o print do retorno" (`U_repr_colado`): 18
+ocorrências visíveis, 86 silenciosas, **0 execuções em comum**. §14.3 — só ela muda: ocorrências e execuções **18 →
+104**; nenhuma decisão muda; nenhuma unidade nova. Bloco G: ocorrências 104 e execuções 104 OK; meses e papéis "a
+conferir" (copie os números). Se a §14.3 listar outra unidade ou outra coluna, copie a tabela inteira.
 
 ## Passo 3 — As seis perguntas abertas
 
@@ -145,6 +159,10 @@ erros · unidades · candidatas (erros) · críticos · nome não definido · co
 
 ## 2. Balde invisível [conferido]
 Terminou? sim/não · funil · candidatos a sucesso falso · detectores · conferência independente: n divergências
+
+## 2b. Consolidação [conferido]
+Terminou? sim/não · §14.1: steps nos dois canais · U_repr_colado visíveis/silenciosas/execuções em comum ·
+§14.3: a tabela do que muda (inteira) · bloco G do audit_recompute9: ocorrências, execuções, meses, papéis, divergências
 
 ## 3. As seis perguntas [conferido]
 <a saída inteira do investigacao_achados.py, seções A a F>

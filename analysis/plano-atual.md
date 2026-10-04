@@ -2,7 +2,7 @@
 
 > **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](glossario.md).
 
-**Atualizado:** 02/10/2026 (noite) · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
+**Atualizado:** 04/10/2026 · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
 `dc89992`). O PR #29 (balde invisível) foi auditado e mergeado. A auditoria foi **fechada nas duas bases** em 02/10: as
 ressalvas foram resolvidas, o balde invisível ganhou verificação independente (`audit_recompute9`, 0 divergências na
 base 1 e na base 2) e saiu o Ajuste 11 (Parte II de `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`). Índice do que já foi
@@ -144,6 +144,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 | `drill_down.py`: stdout em UTF-8 (o `caso` caía no Windows) | (commit do registro da base 2) | — |
 | Auditoria de 02/10 fechada (Parte II: contexto → solução → porquê → evidência → verificação) + índice `audit/README.md` | (commit do fechamento) | `audit/` |
 
+| **4.2b / Ajuste 12** — a consolidação: `consolidacao_unidades.ipynb` (§14.x), `REGRAS_INVISIVEL`, as ocorrências dos dois baldes no formato comum, `triagem(..., silenciosas=)`; `U_repr_colado` com os dois canais (base 1: 6 → 12; só ela muda; decisão igual); lição com `json.dumps`; `audit_recompute9` bloco G (0 divergências) | registro de 04/10 | livro-razão Ajuste 12, `09`, `13`, `14` |
 ---
 
 ## 3. O que ficou velho (stale) — e o que vale agora
@@ -179,8 +180,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-**Ordem sugerida (02/10, depois do relatório da máquina 2):** **4.2b-0** (regra de ocorrência; os dados das duas
-bases já estão aqui) → 4.2b (Ajuste) → 4.2c → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. O 4.10
+**Ordem sugerida (04/10):** ~~4.2b-0~~ e ~~4.2b~~ feitos (Ajuste 12) → 4.2c → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. O 4.10
 (parquet) entra antes do intake da base 3. A pendência do 4.2a (reexecutar os notebooks no terminal da máquina 2) vai
 na próxima ida lá.
 
@@ -272,7 +272,7 @@ da auditoria.
 - **Tipo:** decisão de método; entra no 4.2b.
 
 
-### 4.2b A consolidação — e o `json_invalido` colado entra na `U_repr_colado` (roadmap #26) *(Ajuste; depois do 4.2)*
+### 4.2b A consolidação — e o `json_invalido` colado entra na `U_repr_colado` (roadmap #26) — **feito** (Ajuste 12, 04/10; base 1 conferida, base 2 no passo 2b do prompt da rodada 2)
 
 - **Contexto:** nas duas bases, as falhas silenciosas do `busca_obf` são o gesto do `repr_colado` — colar o print do
   `puxa_doc_decisao` em vez de passar a variável (6/6, 86/86). **Decidido (Rafael, 01/10): (a)** — uma unidade só, com os

@@ -101,8 +101,11 @@ No notebook, §13.7. Os números da base 1 são a referência (inventário 90; R
 
 ## Passo 7 — Ocorrências e registro
 
-- A §13.8 grava `resultados/evidencia/silenciosas/ocorrencias.csv` — a entrada do balde invisível para a consolidação
-  (plano 4.2b). Não sai da máquina.
+- A §13.8 grava `resultados/evidencia/silenciosas/ocorrencias.csv` — a entrada do balde invisível para a consolidação,
+  com unidade (`REGRAS_INVISIVEL`) e ocorrência (cascata × unidade). Não sai da máquina.
+- Depois, `consolidacao_unidades.ipynb` (§14.x): a §14.1 tem de dar 0 steps nos dois canais; a §14.3 lista o que a
+  consolidação muda contra a triagem só do visível. Base 1: só a `U_repr_colado` (6 → 12). Conferência independente:
+  bloco G do `audit_recompute9`.
 - Registro: números no `14`; mudança de regra no livro-razão (gatilho → evidência → mudança → verificação → o que
   replicar); o item no `plano-atual.md`.
 
