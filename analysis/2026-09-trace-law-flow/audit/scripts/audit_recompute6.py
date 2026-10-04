@@ -270,14 +270,25 @@ for r in rows:
     a = agg[r["uni"]]
     a["oc"].add(r["ocorrencia"]); a["err"] += 1; a["ex"].add(r["eid"]); a["me"].add(r["mes"]); a["pa"].add(r["role"]); a["tok"] += r["tok"]
 cand_csv = {row["unidade"]: row for row in csv.DictReader(open(CAND_CSV, encoding="utf-8"))}
-print("C. unidade: minhas contagens vs. candidatos_memoria.csv (ocorr/erros/execs/meses/papéis/tokens)")
+print("C. unidade: minhas contagens (balde visível) vs. candidatos_memoria.csv da consolidação (ocorr. visíveis/erros/execs/meses/papéis/tokens)")
 tot_cand_err = 0; tot_cand_tok = 0; tot_tok_err = sum(r["tok"] for r in rows)
+# Desde o plano 4.2c (04/10) o candidatos_memoria.csv vem da CONSOLIDAÇÃO (os dois baldes). Este script audita o balde
+# VISÍVEL: compara as ocorrências visíveis (coluna própria), os erros e os tokens; execuções, meses e papéis só nas
+# unidades sem canal silencioso — nas outras eles contam a união, conferida pelo bloco G do audit_recompute9.
 for u in sorted(agg, key=lambda x: -agg[x]["tok"]):
     a = agg[u]; c = cand_csv.get(u, {})
+    n_sil = int(c.get("ocorrências silenciosas", 0) or 0)
+    oc_csv = int(c.get("ocorrências visíveis", c.get("ocorrências", -1)))
+    if n_sil:
+        mine = (len(a["oc"]), a["err"], a["tok"])
+        csvv = (oc_csv, int(c.get("erros",-1)), int(c.get("tokens",-1)))
+    else:
+        mine = (len(a["oc"]), a["err"], len(a["ex"]), len(a["me"]), len(a["pa"]), a["tok"])
+        csvv = (oc_csv, int(c.get("erros",-1)), int(c.get("execuções",-1)),
+                int(c.get("meses",-1)), int(c.get("papéis",-1)), int(c.get("tokens",-1)))
+    ok = ("OK" if mine == csvv else f"<< DIVERGE csv={csvv}") + \
+         (f" (visível; +{n_sil} silenciosas → execuções/meses/papéis da união no audit_recompute9 G)" if n_sil else "")
     mine = (len(a["oc"]), a["err"], len(a["ex"]), len(a["me"]), len(a["pa"]), a["tok"])
-    csvv = (int(c.get("ocorrências",-1)), int(c.get("erros",-1)), int(c.get("execuções",-1)),
-            int(c.get("meses",-1)), int(c.get("papéis",-1)), int(c.get("tokens",-1)))
-    ok = "OK" if mine == csvv else f"<< DIVERGE csv={csvv}"
     if c.get("decisão") == "candidato": tot_cand_err += a["err"]; tot_cand_tok += a["tok"]
     print(f"   {u:22s} {UNI_NOME.get(u,'')[:44]:46s} oc={mine[0]:3d} err={mine[1]:3d} ex={mine[2]:3d} me={mine[3]} pa={mine[4]} tok={mine[5]:>9,} {ok}")
 print(f"   cobertura candidatas: {tot_cand_err}/498 = {tot_cand_err/498:.1%} (esp. 440/88,4% desde o Ajuste 5) · tokens {tot_cand_tok/tot_tok_err:.1%} (esp. 91%)")

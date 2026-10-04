@@ -553,6 +553,37 @@ bloco G do `audit_recompute9` com 0 divergências (meses e papéis "a conferir")
 falhas silenciosas, consolidação, `audit_recompute9 --base base2`. Entra no prompt da rodada 2
 (`maquina2/2026-10-02-prompt-base2-rodada2.md`, passo 2b). Trazer a §14.3 e o bloco G.
 
+**Complemento (04/10, plano 4.2c): a triagem sai da esteira e passa a morar na consolidação.** Com o Ajuste 12, a
+decisão sobre as unidades depende dos dois baldes; deixá-la também na esteira daria duas triagens com números
+diferentes para a mesma unidade.
+
+- **Mudou para `consolidacao_unidades.ipynb`:** a triagem global (era a 9.2, a parte da decisão), o gráfico das
+  unidades por decisão (9.3 → §14.6), a candidatura por papel (9.4 → §14.7) e o global × papel (9.5 → §14.8). O
+  `candidatos_memoria.csv` é gravado só lá (§14.9), com o mesmo nome e lugar; o `triagem_consolidada.csv` provisório do
+  Ajuste 12 deixou de existir.
+- **Ficou na esteira:** os gráficos do balde visível (8.0–8.12 — o 8.5 é o custo dos erros visíveis por unidade e o
+  8.10 compara papéis, não unidades) e, na §9, o que o balde visível entrega: assinatura → unidades, resíduo por
+  padrão, erros críticos e as exportações (`erros_mecanismo.csv`, `criticos.csv`, …). As §9.3–9.5 viraram ponteiros.
+- **`triagem_por_papel(..., silenciosas=None)`:** o mesmo padrão da triagem global — ocorrências, execuções e meses do
+  papel contam a união; sem o parâmetro, a saída é a de sempre (conferido).
+- **A Sankey da genealogia** continua sendo a decomposição dos erros visíveis; as decisões dela são as mesmas da
+  triagem consolidada.
+- **`audit_recompute6.py`** (o balde visível) passou a comparar, no `candidatos_memoria.csv`, as ocorrências visíveis,
+  os erros e os tokens; execuções, meses e papéis só nas unidades sem canal silencioso (a união é o bloco G do
+  `audit_recompute9`).
+
+**Um número publicado muda.** Na régua estrita por papel (≥5 execuções e ≥3 meses), a célula `RoteadorCivel` ×
+`U_repr_colado` passa de "fora no papel" a candidata: com as 6 ocorrências silenciosas, ela tem 9 execuções em 3
+meses (antes, 3 em 2). A sensibilidade por papel vai de **8 de 18** células que caem na régua estrita para **7 de 18**.
+Na régua padrão (≥3, ≥2), nenhuma decisão por papel muda: 18 de 31 células candidatas, 13 herdadas, 0 reveladas, como
+antes. A triagem global fica igual: 10 candidatas, 440 de 498 erros (88%), 91% dos tokens.
+
+**Verificação (base 1):** fora da §9, as saídas da esteira reexecutada são idênticas às de antes (diff de todas as
+células); a consolidação roda sem erro, com as três figuras; `audit_recompute6` e `audit_recompute9` com 0 divergências.
+**Esperado na base 2:** a mesma estrutura; a sensibilidade por papel do `RoteadorCivel` pode mudar do mesmo jeito (a
+conferir). **Replicar na máquina 2:** `base_pipeline.py`, a esteira, `consolidacao_unidades.ipynb` (prompt da rodada 2,
+passos 1 e 2b; hashes atualizados).
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e

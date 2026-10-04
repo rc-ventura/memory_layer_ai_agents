@@ -145,6 +145,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 | Auditoria de 02/10 fechada (Parte II: contexto → solução → porquê → evidência → verificação) + índice `audit/README.md` | (commit do fechamento) | `audit/` |
 
 | **4.2b / Ajuste 12** — a consolidação: `consolidacao_unidades.ipynb` (§14.x), `REGRAS_INVISIVEL`, as ocorrências dos dois baldes no formato comum, `triagem(..., silenciosas=)`; `U_repr_colado` com os dois canais (base 1: 6 → 12; só ela muda; decisão igual); lição com `json.dumps`; `audit_recompute9` bloco G (0 divergências) | registro de 04/10 | livro-razão Ajuste 12, `09`, `13`, `14` |
+| **4.2c** — a triagem (global e por papel) e os gráficos dela saem da esteira para a consolidação (§14.6–14.9); `candidatos_memoria.csv` gravado só lá; `triagem_por_papel(..., silenciosas=)`; `audit_recompute6` lê a parte visível. Muda 1 número: sensibilidade por papel 8 → 7 de 18 | registro de 04/10 | livro-razão Ajuste 12 (complemento), `01` §7, `02` §6, `03` §1.15, `09` |
 ---
 
 ## 3. O que ficou velho (stale) — e o que vale agora
@@ -180,7 +181,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-**Ordem sugerida (04/10):** ~~4.2b-0~~ e ~~4.2b~~ feitos (Ajuste 12) → 4.2c → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. O 4.10
+**Ordem sugerida (04/10):** ~~4.2b-0~~, ~~4.2b~~ (Ajuste 12) e ~~4.2c~~ feitos → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. O 4.10
 (parquet) entra antes do intake da base 3. A pendência do 4.2a (reexecutar os notebooks no terminal da máquina 2) vai
 na próxima ida lá.
 
@@ -287,7 +288,7 @@ da auditoria.
 - **Evidência:** livro-razão Etapa 10c, "Achado (01/10)".
 - **Tipo:** **Ajuste** (muda contagem e texto publicados no `09`).
 
-### 4.2c A triagem e os gráficos de unidade saem da esteira para a consolidação *(proposta do Rafael, 01/10; depois do 4.2b)*
+### 4.2c A triagem e os gráficos de unidade saem da esteira para a consolidação — **feito** (04/10; livro-razão, complemento do Ajuste 12). *Correção do desenho: o 8.5 e o 8.10 ficaram na esteira — o 8.5 é o custo dos erros visíveis e o 8.10 compara papéis, não unidades.*
 
 - **Contexto:** a esteira ainda faz a triagem das unidades (§9) — uma decisão sobre unidades, que depois do 4.2b depende
   dos dois baldes.

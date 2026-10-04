@@ -1049,7 +1049,7 @@ cor no 8.8, no 9.3 e na genealogia, em qualquer base; cada figura diz no título
 | Figura | O que mostra | Como usa a cor |
 |---|---|---|
 | **8.8** | Pareto por papel: os 3 erros (submecanismos) mais frequentes do agente + plataforma + resíduo + outros | cada barra na cor do seu erro, com o nome escrito |
-| **9.3** | as unidades após a triagem, em seções por decisão | cada barra na cor da família dominante dos seus erros; o tipo da memória (factual/estratégia) vai no rótulo |
+| **9.3** (desde 04/10: consolidação §14.6) | as unidades após a triagem, em seções por decisão | cada barra na cor da família dominante dos seus erros; o tipo da memória (factual/estratégia) vai no rótulo |
 | **genealogia** | árvore família → assinatura → mecanismo → lição → destino, sem agregados | cada fita leva a cor da família dos seus erros, de ponta a ponta; nós mistos em fatias |
 
 **Por que família, e não uma cor por submecanismo ou por unidade.** São 18 submecanismos e 15 unidades — cores demais
@@ -1080,7 +1080,7 @@ Segundo caso (29/09/2026, Ajuste 10): o limite de passos saiu de `Protocolo do h
 família própria **`Erro crítico`**, em **preto** (`INK`) — o agente não se recuperou; não é plataforma, e o vermelho já
 é de `Suposição sobre dados`. Base 1 sem o erro: todos os CSVs idênticos.
 
-### 1.15 · Candidatura por papel — a triagem scoped, 9.4/9.5 (24/09/2026)
+### 1.15 · Candidatura por papel — a triagem scoped, 9.4/9.5 (24/09/2026; desde 04/10 em `consolidacao_unidades.ipynb` §14.7/§14.8)
 
 **O que é.** A mesma triagem da §7 dos racionais rodada **dentro de cada papel** (`triagem_por_papel()` em
 `base_pipeline.py`), para a memória escopada por (papel, unidade). Classificação intacta — a função só
@@ -1095,7 +1095,7 @@ reagrupa `EU`; a auditoria nº 6 e os CSVs existentes não são afetados.
 3. **Fato estrutural conferido por exaustão**: zero células "reveladas" (candidata no papel sem passar na
    global) — impossível com a mesma régua: execuções/meses de um papel estão contidos nos da base.
 
-**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 18** células candidatas mudam de lado — a
+**Sensibilidade (régua estrita, ≥5 execuções e ≥3 meses).** **8 das 18** células candidatas mudam de lado *(7 das 18 desde a consolidação, 04/10: a célula `RoteadorCivel · Não colar retorno impresso` ganha o canal silencioso e deixa de ser limítrofe)* — a
 "limítrofe por papel", análoga à do 9.3 e bem mais frequente (a global move 1 de 10 unidades): os volumes por
 papel são menores por construção. As 8 *(refeito em 25/09/2026 depois dos Ajustes 2.2 e 3, §1.16; antes eram 8 das
 18 — "RoteadorCivel · Texto longo…" saiu porque os 3 erros dele foram para "Não colar retorno impresso", as duas

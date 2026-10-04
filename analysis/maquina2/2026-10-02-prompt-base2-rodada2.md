@@ -1,4 +1,4 @@
-# Prompt para o agente da máquina 2 — base 2, rodada 2 (02/10/2026; consolidação acrescentada em 04/10)
+# Prompt para o agente da máquina 2 — base 2, rodada 2 (02/10/2026; consolidação e triagem na consolidação acrescentadas em 04/10)
 
 > **Como usar:** copie este arquivo para a máquina 2 e entregue-o inteiro ao agente. O agente roda os passos, preenche o
 > **Relatório** do fim e o grava em `pipeline/resultados/relatorio_maquina2_2026-10-02_rodada2.md` (git-ignored). O
@@ -35,7 +35,7 @@ Dois tipos de passo:
 
 ## Passo 0 — As cópias são as da branch?
 
-Copie da branch `2026-10-02-consolidacao-unidades` (o commit do Ajuste 12, de 04/10, ou posterior), **sem abrir no editor antes de
+Copie da branch `2026-10-02-consolidacao-unidades` (o commit do plano 4.2c, de 04/10, ou posterior), **sem abrir no editor antes de
 conferir**:
 
 | Arquivo (destino na `-second`) | SHA-256, 16 primeiros caracteres (LF ou CRLF, os dois valem) |
@@ -43,10 +43,10 @@ conferir**:
 | `pipeline/drill_down.py` | `5c39b55b5ea171dd` ou `d1305a7fdaf96911` |
 | `pipeline/investigacao_achados.py` (novo) | `951524946316ede9` ou `4c82171f630658ac` |
 | `pipeline/falhas_silenciosas.ipynb` | `97382af1666a6941` ou `c2409f364e81e1c4` |
-| `pipeline/consolidacao_unidades.ipynb` (novo) | `16f84eed251a7ca5` ou `f582164e19722663` |
-| `pipeline/analise_trace_esteira_juridica.ipynb` | `50df8a23b2e912b1` ou `6e076d1b7f8c2091` |
+| `pipeline/consolidacao_unidades.ipynb` (novo) | `2137e7d46b11d61a` ou `1a4278c6dbe195da` |
+| `pipeline/analise_trace_esteira_juridica.ipynb` | `b856476c81233820` ou `a5e82ea87589473c` |
 | `audit/scripts/audit_recompute9.py` | `0d14ef1d8db93249` ou `d38919318b61759d` |
-| `pipeline/base_pipeline.py` — **antes** de editar | `50b115986397ba07` ou `ae1bee90b5e2aec6` |
+| `pipeline/base_pipeline.py` — **antes** de editar | `21dba8f51c99a933` ou `b4189fa1fb3490d6` |
 
 ```
 sha256sum drill_down.py investigacao_achados.py falhas_silenciosas.ipynb consolidacao_unidades.ipynb analise_trace_esteira_juridica.ipynb base_pipeline.py ../audit/scripts/audit_recompute9.py
@@ -62,8 +62,9 @@ Depois, no `base_pipeline.py`, troque **só** duas coisas: o nome do arquivo do 
 uv run jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=-1 analise_trace_esteira_juridica.ipynb
 ```
 
-**Esperado (da rodada 1):** 479 erros · 16 unidades · 8 candidatas (370 erros) · 1 erro crítico · "nome usado sem ter
-sido definido" 118 erros · "colar o print do retorno" 18 erros. Se o notebook terminar, os números têm de repetir.
+**Esperado (da rodada 1):** 479 erros · 16 unidades · 1 erro crítico. Se o notebook terminar, os números têm de repetir.
+**Mudou em 04/10:** a esteira **não faz mais a triagem** — as candidatas e as contagens por unidade saem do passo 2b
+(consolidação), e o `candidatos_memoria.csv` é gravado lá.
 
 ## Passo 2 — O balde invisível (o notebook inteiro, no terminal)
 
@@ -85,7 +86,9 @@ uv run jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor
 
 O `audit_recompute9` do passo 2 já traz o **bloco G** (a mesma unidade, recalculada de forma independente).
 
-**Esperado (Ajuste 12):** §14.1 — steps nos dois canais **0**; "colar o print do retorno" (`U_repr_colado`): 18
+**Esperado (Ajuste 12 e plano 4.2c):** §14.2 — 16 unidades · **8 candidatas (370 erros)** · 1 erro crítico · "nome usado
+sem ter sido definido" 118 erros · "colar o print do retorno" 18 erros visíveis (os números da triagem da rodada 1, que
+agora sai daqui). §14.1 — steps nos dois canais **0**; "colar o print do retorno" (`U_repr_colado`): 18
 ocorrências visíveis, 86 silenciosas, **0 execuções em comum**. §14.3 — só ela muda: ocorrências e execuções **18 →
 104**; nenhuma decisão muda; nenhuma unidade nova. Bloco G: ocorrências 104 e execuções 104 OK; meses e papéis "a
 conferir" (copie os números). Se a §14.3 listar outra unidade ou outra coluna, copie a tabela inteira.
@@ -155,14 +158,16 @@ base_pipeline.py: o diff mostra só TRACE e BASE_ID? sim/não
 
 ## 1. Esteira [conferido]
 Terminou no terminal? sim/não (se não: a última linha do erro)
-erros · unidades · candidatas (erros) · críticos · nome não definido · colar o print — e se repetem a rodada 1
+erros · unidades · críticos — e se repetem a rodada 1 (as candidatas saem no 2b)
 
 ## 2. Balde invisível [conferido]
 Terminou? sim/não · funil · candidatos a sucesso falso · detectores · conferência independente: n divergências
 
 ## 2b. Consolidação [conferido]
 Terminou? sim/não · §14.1: steps nos dois canais · U_repr_colado visíveis/silenciosas/execuções em comum ·
-§14.3: a tabela do que muda (inteira) · bloco G do audit_recompute9: ocorrências, execuções, meses, papéis, divergências
+§14.2: unidades · candidatas (erros) · críticos · nome não definido · colar o print — e se repetem a rodada 1 ·
+§14.3: a tabela do que muda (inteira) · §14.8: a linha "sensibilidade (≥5 execuções, ≥3 meses): n de N" ·
+bloco G do audit_recompute9: ocorrências, execuções, meses, papéis, divergências
 
 ## 3. As seis perguntas [conferido]
 <a saída inteira do investigacao_achados.py, seções A a F>

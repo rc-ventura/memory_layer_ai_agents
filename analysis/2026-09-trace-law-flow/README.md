@@ -57,8 +57,10 @@ da analise — uma copia orfa em `resultados/` na raiz existiu ate 16/09/2026 e 
 `audit/2026-09-16-auditoria-independente.md` M1).
 
 **Dono e ciclo de vida dos arquivos do topo.** Os CSVs do topo (`erros_classificados`, `execucoes`,
-`erros_mecanismo`, `triagem_assinaturas`, `candidatos_memoria`, `reincidencia`, `payoff_assinaturas`) tem **um
-dono so**: o notebook da analise generica (ultima celula). Sao **snapshot, nao estado vivo** — descrevem o
+`erros_mecanismo`, `triagem_assinaturas`, `reincidencia`, `payoff_assinaturas`) tem **um dono so**: o notebook da
+analise generica (§9.2). O `candidatos_memoria.csv` (a triagem das unidades) e gravado desde 04/10 so pela
+consolidacao (`consolidacao_unidades.ipynb` §14.9), com os dois baldes — ordem de rodar: esteira → falhas
+silenciosas → consolidacao. Sao **snapshot, nao estado vivo** — descrevem o
 trace + a classificacao do `base_pipeline.py`, e so mudam se um dos dois mudar (o que invalidaria numeros
 publicados; por isso a triagem fica congelada como estava quando rodou). Passes de mineracao **nao escrevem
 neles nem dependem deles** — leem a base em memoria via `carregar_base()`. `drill_down.py` le dois

@@ -61,7 +61,7 @@ fluxo completa, não amostra. É uma **árvore de roteamento**: todas as
 assinaturas (o bucket, a mensagem) e todos os mecanismos aparecem com o nome,
 sem agregado, para seguir cada bucket até o mecanismo, a lição e o destino.
 **A cor é a família do erro, carregada de ponta a ponta** — a língua de cor
-comum das figuras (`paleta.COR_ERRO`, a mesma do 8.8 e do 9.3): cada fita leva a
+comum das figuras (`paleta.COR_ERRO`, a mesma do 8.8 da esteira e do 14.6 da consolidação): cada fita leva a
 cor da família dos erros que passam por ela; **roxo = resíduo** (nenhuma regra
 reconheceu a causa), **cinzas = plataforma** (harness/infra, não é erro do
 agente). Um nó que reúne categorias diferentes aparece em fatias. (Até 24/09/2026
@@ -271,7 +271,7 @@ A divisão de trabalho correta é a que o pipeline encarna:
 | erro → sintoma (classify) | §8.1 Pareto de assinaturas | contagens |
 | papel × lição (quem erra o quê) | §8.8 | % dos erros do papel (contagem) |
 | priorização por custo | §8.5 | tokens desperdiçados |
-| unidade → decisão | §9.3 | tokens + veredito da triagem |
+| unidade → decisão | consolidação §14.6 (era o §9.3 da esteira) | tokens + veredito da triagem |
 | **a cadeia inteira numa figura** | **§1.1 Sankey da genealogia** (contagem real por nó e por aresta) | contagens |
 
 **Limite da fonte de erros (01/10).** A cadeia parte de `ActionStep.error`, ou seja, só do erro que virou exceção.
@@ -298,8 +298,9 @@ ver os dois baldes ([`../pipeline/consolidacao_unidades.ipynb`](../pipeline/cons
   totais); erros e tokens continuam do visível. Sem as silenciosas, a saída é a da esteira.
 
 Efeito: base 1, só a `U_repr_colado` muda (6 → 12 ocorrências e execuções; decisão igual); base 2, esperado 18 → 104.
-Daqui para a frente, a genealogia (o Sankey) e a triagem desta página são o balde visível sozinho até o plano 4.2c
-levá-las para a consolidação.
+Desde o plano 4.2c (04/10), a triagem — global e por papel, e os gráficos dela — mora só na consolidação, que grava o
+`candidatos_memoria.csv`. A genealogia (o Sankey) continua sendo a decomposição dos **erros visíveis** (é o que ela
+conta); os destinos dela vêm da triagem do visível, que dá as mesmas decisões da consolidada.
 
 Duas medidas convivem e não se confundem: **contagem de erros** (frequência —
 "o que mais ocorre") × **soma de tokens** (custo — "o que mais dói").
