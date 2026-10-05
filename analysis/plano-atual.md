@@ -179,6 +179,73 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 ---
 
+## 3b. Para discutir na próxima branch — o que de fato queremos medir
+
+**Decisão do Rafael (05/10):** os quatro itens abaixo são importantes, mas cada um pode estar medindo outra coisa que não
+a que de fato queremos. Por isso nenhum deles é implementado antes de uma discussão própria, item por item, na branch
+seguinte. Cada um tem contexto, problema, o que se mediria e por quê — e a pergunta aberta.
+
+### 1. Sucesso falso em dois eixos (detalhe: 4.1c)
+
+- **Contexto:** quando a ferramenta falha calada, o agente pode entregar uma resposta final apoiada num dado que nunca
+  chegou — o sucesso falso, que parece sucesso no trace e não deixa rastro.
+- **Problema:** a medida de hoje só aponta candidatos (falha real + resposta final, sem a ferramenta ter funcionado no
+  meio); não olha o que a resposta usou. Na base 2, 20 lidos e 0 confirmados (24/24 declaram a falha); na base 1, os 54
+  candidatos de 75 nunca foram lidos. Ler caso a caso é caro e depende de LLM.
+- **O que se mediria:** pelo `txt_vrvl_locl` (o estado final das variáveis do agente por papel), dois eixos — *usou o
+  dado que faltou?* (a variável que recebeu o retorno ainda guarda o erro e aparece no código da resposta final) e
+  *declarou a falha?* (palavras de falha no texto entregue). Quatro desfechos: repassou o erro · sucesso falso · falha
+  declarada · contornou. Limites: é o estado do fim; ~90% das execuções têm a coluna; tem conteúdo de caso (só contagens).
+- **Por quê:** se o sucesso falso é raro, o risco das falhas silenciosas é custo (retrabalho), não resposta errada — e o
+  destino delas é otimização e aviso à plataforma, não alarme de correção.
+- **Pergunta aberta:** "usou a variável" e "palavras de falha" medem o que importa — a resposta estar errada para o
+  usuário — ou só a forma do código e do texto?
+
+### 2. Aviso à plataforma (detalhe: 4.9)
+
+- **Contexto:** parte dos achados não é erro do agente: é a plataforma (ferramentas, harness, prompts, escolha de
+  modelo) criando a situação em que ele erra. A memória não conserta isso.
+- **Problema:** os achados estão espalhados pelo livro-razão e pelos docs, cada um com seu grau de certeza; ninguém da
+  plataforma leria lá.
+- **O que se produziria:** um texto curto, um item por achado, com evidência, as duas bases e o conserto sugerido (a
+  falha devolvida como texto e o `'DEFAULT'`; o passe dict → JSON do `busca_obf`; o prompt que pede um campo com outro
+  nome; a resposta vazia aceita; a narração executada; as trocas de modelo sem revalidar).
+- **Por quê:** é a terceira saída do método — o sinal de harness — e um entregável concreto; parte desses consertos
+  elimina erros na raiz.
+- **Pergunta aberta:** para quem, em que formato e com que grau de certeza mínimo um achado entra no aviso?
+
+### 3. Sucesso em três níveis (detalhe: 4.5)
+
+- **Contexto:** o "sucesso" de uma execução mistura três coisas: o Python rodou sem exceção; a ferramenta devolveu
+  resultado; a tarefa foi concluída.
+- **Problema:** um número publicado pode estar errado por isso — no erro crítico da base 2, a resposta guardada era da
+  3ª chamada e a execução morreu na 4ª, e o relatório do protocolo diz "69 de 69 com resposta".
+- **O que se mediria:** por execução e papel, os três níveis em separado (sem exceção · ferramenta funcionou · a última
+  chamada terminou com resposta final) e quanto o "69/69" muda.
+- **Por quê:** a taxa de sucesso é a régua que vai dizer se a memória ajudou; se ela conta como sucesso o que não foi,
+  toda comparação antes × depois fica errada.
+- **Pergunta aberta:** "concluiu a tarefa" é "terminou com resposta final", ou precisa de algo sobre a qualidade da
+  resposta (o que o trace sozinho não dá)?
+
+### 4. Ferramentas que respeitam as chamadas do papel (detalhe: 4.4) e narração executada como código (detalhe: 4.3)
+
+- **Contexto:** um papel pode ser chamado várias vezes na mesma execução (base 1: 491 de 2.252 papéis); a posição dos
+  steps junta as chamadas.
+- **Problema:** os comandos que investigam o erro crítico e o protocolo misturam as chamadas — e isso já causou uma
+  leitura errada ("4 ciclos, 25 erros", quando a cadeia fatal foram 11 erros da 4ª chamada). A medida do sucesso falso
+  já foi corrigida (Ajuste 11); as ferramentas de investigação, não.
+- **O que se mediria:** (a) os comandos marcam onde cada chamada começa e calculam o caminho da chamada que morreu
+  (ferramenta); (b) a tabela dos críticos usa a chamada terminal (Ajuste). Depois, nas duas bases, quantos erros de
+  "estado perdido", "texto solto" e "nome usado sem definição" são o harness executando a narração. **Base 2 (relatório
+  de 04/10, assistido):** a narração executada existe — 12/12 no CalculoCivel, na execução crítica —, mas numa execução
+  só, e no RoteadorCivel 0/5 (contraprova a "vem logo depois de erro de protocolo, logo é narração").
+- **Por quê:** todo erro crítico exige investigar a chamada que morreu antes de dar destino (decisão de 02/10); e, se a
+  narração executada for frequente, parte das memórias candidatas vira sinal de harness.
+- **Pergunta aberta:** com uma execução só na base 2, vale construir a medida agora, ou esperar a base 3 mostrar
+  recorrência?
+
+---
+
 ## 4. Próximo, em ordem
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
@@ -208,7 +275,7 @@ da auditoria.
   chamada** da falha, e incluir 1 caso de falha no próprio step final (base 1: `trigger_worker_execution`).
 - **Tipo:** leitura; nenhum código.
 
-### 4.1c [4b] — o sucesso falso conferido pelo `txt_vrvl_locl` (roadmap #24) *(proposta; aguarda aprovação; melhoria das falhas silenciosas)*
+### 4.1c [4b] — o sucesso falso conferido pelo `txt_vrvl_locl` (roadmap #24) *(**em discussão** — §3b item 1)*
 
 - **Atualização (05/10, rodada 2):** a primeira versão da regra já rodou na base 2, como seção E do
   `investigacao_achados.py`: 24/24 candidatos declaram a falha, 1 "sucesso falso provável" que a leitura derrubou. A
@@ -312,7 +379,7 @@ da auditoria.
   - docs: o `09` passa a descrever a consolidação como etapa final; `01`/`02` com os links trocados.
 - **Tipo:** organização; não muda número. Na máquina 2, a ordem de rodar passa a ser esteira → invisível → consolidação.
 
-### 4.3 S3 — medir o M6 (narração capturada como código) nas duas bases (roadmap #39) *(aguarda aprovação)*
+### 4.3 S3 — medir o M6 (narração capturada como código) nas duas bases (roadmap #39) *(**em discussão** — §3b item 4)*
 
 - **Contexto:** no erro crítico, `U_estado_perdido`, `U_nome_inventado`, `U_texto_solto` e `X_causa_nao_identificada`
   eram o harness executando narração (`10` §4 M6).
@@ -325,7 +392,7 @@ da auditoria.
   out/2025 na base 1.
 - **Tipo:** medição. Se for frequente → Ajuste próprio (parte dessas memórias vira sinal de harness).
 
-### 4.4 S4 — ferramentas que respeitam as chamadas do papel *(aguarda aprovação)*
+### 4.4 S4 — ferramentas que respeitam as chamadas do papel *(**em discussão** — §3b item 4)*
 
 - **Contexto:** o `idx` conta as chamadas juntas; o `critico` e a seção 2 do `protocolo --casos` misturaram as
   chamadas e induziram a leitura errada.
@@ -336,7 +403,7 @@ da auditoria.
   - (b) `caminho_dos_criticos()` passa a usar a chamada terminal — muda o `criticos.csv` → **Ajuste**, aprovado à parte.
 - **Tipo:** (a) ferramenta; (b) ajuste de regra.
 
-### 4.5 S5 — sucesso em três níveis *(aguarda aprovação)*
+### 4.5 S5 — sucesso em três níveis *(**em discussão** — §3b item 3)*
 
 - **Contexto:** o `txt_rspa_fina` guardou a resposta da 3ª chamada numa execução que morreu na 4ª; o `protocolo` [5]
   diz "69/69 com resposta".
@@ -424,7 +491,7 @@ figuras. Usa as fronteiras de chamada (S4).
   ContestacaoCivel já usava esse modelo antes de agosto sem esse erro (o `drill_down.py protocolo` [8] dá papel ×
   modelo × mês) — se for incidente, separar o mês na triagem é **Ajuste**, olhando as duas bases.
 
-### 4.9 Aviso à plataforma *(a base 2 fechou em 05/10 — pronto para montar)*
+### 4.9 Aviso à plataforma *(a base 2 fechou em 05/10; **em discussão** — §3b item 2)*
 
 - modo/modelo;
 - M5 (resposta vazia aceita);
