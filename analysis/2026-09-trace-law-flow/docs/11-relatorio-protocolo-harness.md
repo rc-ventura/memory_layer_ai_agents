@@ -64,10 +64,13 @@ Total: M1 20 · M2 6 · M3 2 · não lidos 5 = 33.
 `pipeline/resultados/dossie_protocolo_RespostaBacen-dez_base1_2026-10-05.md`, no ambiente):
 - **Leitura:** dois leitores, às cegas um do outro, concordaram em 5 de 5 casos (kappa 1,00). Os 7 ficaram M2 5 ·
   M1 1 · indeterminado 1.
-- **O indeterminado** é um dos 2 "sucesso falso" desta tabela. O sinal de M4 (tokens muito acima do texto) impediu a
-  classificação, mas ele não separa nada no `o4-mini`, que gasta assim em todo step (plano 4.13).
-- **Regra contada sobre os 7, sem leitura** ("o step anterior chamou o `resposta_final` e o texto não reaparece na
-  resposta final"): pega os 5 M2 lidos, nenhum a mais, e nenhum fora do RespostaBacen.
+- **O indeterminado** é um dos 2 "sucesso falso" desta tabela. O sinal de resto impediu a classificação, e a medida
+  mostrou que ele tem razão. Os leitores acharam que o `o4-mini` gasta assim em todo step, mas os 2 "sucesso falso"
+  entregam 0,08 caractere por token contra 0,66–0,72 nos steps bons do papel: 0,11–0,12 do normal (livro-razão
+  Ajuste 15; `10` §4 M4). O texto desses 2 é um resto.
+- **Regra contada sobre os 7, sem leitura** ("o step anterior chamou uma ferramenta cujo nome a apresenta como
+  resposta final, e o texto não reaparece na resposta final"): pega os 5 M2 lidos, nenhum a mais, e nenhum fora do
+  RespostaBacen. Virou regra do pipeline (`drill_down.py protocolo` [10]; Ajuste 16).
 - **A declaração do `resposta_final`:** com objeto aninhado na entrada (dez/2025, 47 steps, 6 execuções), os 7 erros;
   com texto simples (jan–jun/2026, 88 steps, 20 execuções), 0. É correlação, como acima.
 

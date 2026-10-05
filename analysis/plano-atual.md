@@ -117,6 +117,39 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 - **Detectores de comportamento** (retorno ignorado, chamada repetida, ferramenta não chamada): o Rafael retoma depois
   das leituras de artigos pendentes.
 
+**Decidido em 05/10 (Rafael) — o kit de mineração e a primeira investigação ao vivo:**
+
+*Sobre o kit (4.12):*
+
+- **Minerar não é comparar com relatório.** Uma skill de mineração lê as tabelas que o pipeline produziu para a base e
+  descreve o que elas mostram; não compara com relatório publicado nem com outra base. A verificação é interna: uma
+  **auditoria independente rodando em paralelo** (outro agente, outra implementação, direto do trace), confrontada com
+  as tabelas por script, mais as conferências que valem em qualquer base.
+- **Nenhuma afirmação sem evidência.** Todo relatório ou dossiê de mineração traz, junto de cada afirmação, o comando
+  que reproduz o número, a tabela derivada com o filtro e, nos achados que viram decisão ou parada, os casos crus
+  (`exec_id`, o cru, o recorte). O relatório é a análise final: quem o lê não pode precisar ir buscar evidência.
+- **Sigilo por script, não por máscara.** O relatório completo, com identificadores, fica no ambiente do trace; a
+  versão que sai troca os identificadores por `caso-N` por script (`versao_para_sair.py`) e passa no varredor.
+- **Camada de investigação com LLM, depois do determinístico:** o LLM lê uma amostra escolhida por regra, um segundo
+  leitor relê às cegas, e a hipótese só vira número como regra contada por script. A decisão é do pesquisador.
+- **As skills são genéricas** (sem base, pasta, unidade nem número) e rodam em qualquer agente que leia `SKILL.md`.
+
+*Sobre a investigação dos 7 erros de dez/2025 no RespostaBacen (base 1):*
+
+- **A conclusão de 30/09 fica confirmada** por um método reproduzível (nota em `11` §1.3): a ferramenta de resposta
+  final concorre com a resposta do agente; sinal de harness, já corrigido pela plataforma em jan/2026; não é memória.
+- **Os três ajustes de método que ela mostrou estão aprovados** (4.13), para aplicar um de cada vez, com verificação
+  na base 1 e registro no livro-razão:
+  1. o sinal "muitos tokens para pouco texto" passa a considerar o modelo (modelos de raciocínio gastam assim em todo
+     step);
+  2. o catálogo ganha o desempate: erro logo depois da ferramenta de resposta final **e** reembrulhado no step
+     seguinte conta como resposta final fora do lugar;
+  3. a regra encontrada vira a primeira regra automática da família: o step anterior chamou uma ferramenta que se
+     apresenta como resposta final (reconhecida pela declaração, não pelo nome), e o texto não reaparece na resposta
+     final.
+- **Os agentes do kit são disparados da raiz do repositório** (de uma subpasta, ficam parados pedindo permissão para
+  o `AGENTS.md`).
+
 ---
 
 ## 2. Feito
@@ -596,7 +629,7 @@ figuras. Usa as fronteiras de chamada (S4).
   3. candidata (esqueleto + um roteiro por tipo de unidade; o roteiro "nome inventado" sai do 4.11).
 - **Tipo:** ferramenta; não muda número.
 
-### 4.13 Ajustes do método do protocolo, vindos da investigação de 05/10 *(proposta; aguarda aprovação)*
+### 4.13 Ajustes do método do protocolo, vindos da investigação de 05/10 — **aprovados (Rafael, 05/10); aplicar um por vez**
 
 - **Contexto:** a primeira investigação ao vivo do kit (os 7 erros de dez/2025 no RespostaBacen, base 1) reproduziu a
   leitura de 30/09 (`11` §1.3) e mostrou dois pontos fracos do método. Os dois leitores os apontaram sem combinar. Ela
@@ -605,11 +638,18 @@ figuras. Usa as fronteiras de chamada (S4).
   1. **Sinal de M4 por modelo.** Hoje "tokens de saída muito acima do texto" vale como sinal de que o texto é um resto.
      No `o4-mini` (modelo de raciocínio), a mesma razão aparece nos steps sem erro. Proposta: comparar com a linha de
      base do modelo na própria execução, ou descontar os tokens de raciocínio (o `metadados_steps.py` já os mostra).
-     Efeito esperado na base 1: o indeterminado do RespostaBacen volta a M2 ("sucesso falso"), como na leitura de 30/09.
-  2. **Desempate M1 × M2 no catálogo (`10` §4).** Proposta: o erro logo depois da ferramenta de resposta final e
+     ~~Efeito esperado na base 1: o indeterminado do RespostaBacen volta a M2.~~ **Em suspenso (05/10): a medida
+     contradiz a premissa.** Não dá para descontar o raciocínio (o trace da base 1 não traz esse detalhe; `10` §4 M4).
+     Comparado com a linha de base do próprio agente na mesma execução, os 2 steps de erro do RespostaBacen com o sinal
+     entregam 0,08 caractere por token contra 0,66–0,72 nos steps sem erro: **0,11–0,12 do normal do modelo**. Os
+     outros 5 ficam 3 a 5 vezes acima do normal, e todos os erros dos outros papéis ficam entre 0,77 e 1,5. A regra
+     relativa conserta o limiar fixo (que marcaria todo step do `o4-mini`), mas **mantém o sinal nesses 2 casos**. O
+     indeterminado continua indeterminado. Os 2 casos têm o padrão do M4, que o catálogo dá como só da base 2.
+     **Feito (05/10, opção (a) do Rafael; livro-razão Ajuste 15):** a regra relativa entrou, e o achado está no `10` §4 M4.
+  2. **Desempate M1 × M2 no catálogo (`10` §4)** — **feito (05/10, livro-razão Ajuste 14).** Proposta: o erro logo depois da ferramenta de resposta final e
      reembrulhado no step seguinte conta como M1, porque o M2 exige `final_answer` ausente ou muito tardio. Isso
      registra a convenção que os dois leitores usaram.
-  3. **A regra do M2 nas regras determinísticas da família (4.8).** A regra é "o step anterior chamou uma ferramenta
+  3. **A regra do M2 nas regras determinísticas da família (4.8)** — **feito (05/10, livro-razão Ajuste 16; 5 de 33, todos no RespostaBacen, = a leitura).** A regra é "o step anterior chamou uma ferramenta
      que se apresenta como resposta final, e o texto não reaparece na resposta final". Para valer em qualquer base, a
      ferramenta é reconhecida pela declaração (nome ou descrição que fala em resposta final), não pelo nome
      `resposta_final`. Ela não muda o total da família, só rotula erros com um mecanismo.

@@ -46,6 +46,9 @@ def main():
         "m1_copiou_por_papel": dict(sorted(Counter(r["role"] for r in C if float(r["sobreposicao_obs_anterior"]) >= LIMIAR_M1).items())),
         "erros_em_chamada_maior_que_1": sum(int(r["chamada"]) > 1 for r in C),
         "erros_em_papel_com_varias_chamadas": sum(int(r["chamadas_do_papel"]) > 1 for r in C),
+        "sinal_resto_por_papel": dict(sorted(Counter(r["role"] for r in C if r.get("sinal_resto") == "True").items())),
+        "depois_da_ferramenta_final_por_papel": dict(sorted(Counter(r["role"] for r in C if r.get("anterior_ferramenta_final") == "True").items())),
+        "regra_ferramenta_final_por_papel": dict(sorted(Counter(r["role"] for r in C if r.get("regra_ferramenta_final") == "True").items())),
     }
 
     diverge = 0

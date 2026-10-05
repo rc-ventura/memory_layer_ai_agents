@@ -31,7 +31,7 @@ __all__ = ["TRACE", "ler_trace", "carregar_trace", "explodir_memoria", "classify
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
-           "caminho_dos_criticos", "sobreposicao", "M1_LIMIAR", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
+           "caminho_dos_criticos", "sobreposicao", "M1_LIMIAR", "RESTO_LIMIAR", "FERRAMENTA_FINAL", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
            "GRUPOS_FALHA_REAL", "motivo_da_falha", "DONO_DO_GRUPO", "UNIDADES_CONTRATO", "forma_argumento",
            "formas_das_falhas", "erro_depois_da_falha", "contrato_precedido", "sucesso_falso_candidato",
            "REGRAS_INVISIVEL", "unidade_silenciosa", "ocorrencias_visiveis", "ocorrencias_silenciosas","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
@@ -529,6 +529,16 @@ def caminho_dos_criticos(EU):
 # auditoria de 02/10). O limiar não foi registrado em 30/09: 0,5 é o reconstruído — reproduz as 4 linhas publicadas
 # da base 1 (qualquer valor em (0,479; 0,523] reproduz; 1 caso de cada lado da margem). Falso negativo conhecido: o LLM que reescreve ao reembrulhar.
 M1_LIMIAR = 0.5
+# Sinal de resto (M4, 10 §4; Ajuste 15, 05/10): o texto entregue por token de saída, comparado com o NORMAL DO PRÓPRIO
+# PAPEL NA MESMA EXECUÇÃO (a mediana dos steps sem erro), e não com um valor fixo. Modelo de raciocínio gasta tokens que
+# não viram texto em todo step (o4-mini, base 1: 0,66–0,97 caractere por token nos steps bons); o limiar fixo marcava
+# todos. Abaixo de 1/4 do normal, o texto é tratado como resto. Base 1: os erros ficam em 0,11–0,12 (2 do RespostaBacen)
+# ou ≥ 0,77; base 2 (fatos de 10 §4 M4): 0,03–0,18.
+RESTO_LIMIAR = 0.25
+# Ferramenta que se apresenta como resposta final (M2, 10 §4; Ajuste 16, 05/10): reconhecida pelo NOME declarado no
+# system prompt (`def <nome>(`), fora o próprio final_answer. Pela descrição não serve: na base 1 pegava 5 ferramentas
+# que só citam a resposta final (WorkflowManager, validadores, get_final_answer_schema...).
+FERRAMENTA_FINAL = re.compile(r"resposta_?final|final_?response", re.I)
 
 
 def sobreposicao(texto, outro, n=5):

@@ -602,6 +602,89 @@ outro: o conserto é no contrato do prompt, não na memória do agente.
 candidatas 370 → 332; as células dele saem da triagem por papel. **Replicar na máquina 2:** `base_pipeline.py` (restaurar
 `TRACE` e `BASE_ID`) → consolidação, na próxima ida.
 
+### Ajuste 14 — desempate no catálogo do protocolo: reembrulho imediato é resposta final fora do envelope
+
+**Gatilho.** A primeira investigação ao vivo do kit de mineração (05/10; os 7 erros de dez/2025 no RespostaBacen, base
+1; plano 4.13). Um caso se encaixa em dois mecanismos: veio logo depois da ferramenta de resposta final (o M2) e o step
+seguinte reembrulhou o mesmo conteúdo no `final_answer` (o M1). O catálogo (`10` §4) não dizia qual vale.
+
+**Evidência.** Os dois leitores, às cegas um do outro, classificaram esse caso como M1 pela mesma razão: o M2 pede o
+`final_answer` ausente ou muito tardio. Concordância 5/5 (kappa 1,00). Dossiê
+`pipeline/resultados/dossie_protocolo_RespostaBacen-dez_base1_2026-10-05.md` (no ambiente), §5–6.
+
+**Solução.** O desempate entra no `10` §4, no M2: erro depois da ferramenta de resposta final **e** reembrulhado no
+step seguinte (sobreposição ≥ 50%) é M1. O roteiro de investigação do kit aponta o desempate. **Decisão do Rafael
+(05/10).**
+
+**Verificação (base 1).** Só documento: nenhum número muda. A tabela de `11` §1.3 já classifica esse caso como M1 ("o
+JSON do negócio em ```` ``` ````"). **Replicar na máquina 2:** nada a rodar; a próxima leitura usa a regra.
+
+### Ajuste 15 — o sinal de resto compara com o normal do próprio papel, não com um valor fixo
+
+**Gatilho.** A investigação de 05/10 (RespostaBacen, base 1; plano 4.13): um caso ficou indeterminado porque o step
+tinha o sinal de M4 ("tokens de saída ≫ texto/3"). Os dois leitores disseram que, no `o4-mini`, essa razão é a de
+todos os steps, inclusive os bons.
+
+**Evidência (medida antes de mudar, base 1).**
+- **Caracteres entregues por token de saída**, nos papéis com erro, contra a mediana dos steps sem erro do mesmo papel
+  na mesma execução.
+- **RespostaBacen (`o4-mini`):** normal de 0,66–0,97. O limiar fixo (≈ 3) marcava todo step, e nisso os leitores
+  tinham razão.
+- **Mas os 2 erros com o sinal entregam 0,08**, ou 0,11–0,12 do normal do próprio papel. Os outros 5 erros ficam 3 a
+  5 vezes acima do normal, e todos os erros dos outros papéis ficam entre 0,77 e 1,5 do normal. A conclusão dos
+  leitores ("é o normal do modelo") **não se sustenta** para esses 2.
+
+**Solução.**
+- **Regra:** o sinal passa a ser "texto por token < 1/4 do normal do papel na execução".
+- **Onde ela mora:** `RESTO_LIMIAR` no `base_pipeline.py`. O `drill_down.py protocolo` grava `chars_por_token`,
+  `chars_por_token_normal` e `sinal_resto` no `casos.csv` e imprime uma linha no [4]. O `audit_recompute10` recalcula
+  à parte.
+- **Docs:** `10` §4 M4 e `12` Passo 5.
+- **Decisão do Rafael (05/10), opção (a):** aplicar e registrar o achado.
+
+**Verificação (base 1).**
+- **Saída:** a do `drill_down.py protocolo` só ganha a linha do sinal ("2 · RespostaBacen 2").
+- **Tabelas:** as colunas antigas do `casos.csv` ficam idênticas.
+- **Auditoria:** `audit_recompute10` com 0 divergências e a mesma contagem; encontro do kit, tudo igual.
+- **Achado:** na base 1, 2 erros do RespostaBacen têm o sinal do M4, que o catálogo dava como só da base 2 (`10` §4
+  M4). O destino não muda: nem M4 nem M2 são memória.
+- **Base 2:** os fatos publicados (0,03–0,18 do normal) ficam abaixo do limiar.
+- **Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py` e
+  `audit_recompute10.py`; rodar `drill_down.py protocolo` e conferir que os erros do surto de ago/2026 têm o sinal.
+
+### Ajuste 16 — a primeira regra automática da família do protocolo: a ferramenta que se apresenta como resposta final
+
+**Gatilho.** A investigação de 05/10 (RespostaBacen, base 1; plano 4.13) achou e contou uma regra para o M2. O destino
+do M2 (`10` §4) diz "memória candidata por ferramenta só se reaparecer", e faltava um detector de reaparecimento que
+não dependesse de leitura.
+
+**Evidência.**
+- **Na investigação:** a regra, com o nome `resposta_final`, pegou os 5 M2 lidos, nenhum a mais e nenhum fora do
+  RespostaBacen. Dois leitores às cegas, kappa 1,00.
+- **Para valer em qualquer base, a ferramenta tem de ser reconhecida pela declaração.**
+  - Pelo **nome declarado** (`def <nome>(` com "resposta final" ou "final response"), a base 1 tem 3 ferramentas:
+    `resposta_final` (RespostaBacen), `resposta_final_oficios` (RespostaOficios) e
+    `compilar_resposta_final_contestacao` (ContestacaoCivel).
+  - Pela **descrição**, a regra pegaria mais 5 que só citam a resposta final (`WorkflowManager`, validadores,
+    `get_final_answer_schema`). Descartado.
+
+**Solução.**
+- **Regra:** `FERRAMENTA_FINAL` no `base_pipeline.py`. O `drill_down.py protocolo` grava `anterior_ferramenta_final` e
+  `regra_ferramenta_final` (= anterior **e** sobreposição com a resposta final < 50%, o desempate do Ajuste 14) e
+  imprime o [10]. O `audit_recompute10` reimplementa à parte.
+- **Docs:** `10` §4 M2 e `12` Passo 6.
+- **Total da família:** não muda; a regra só rotula erros. É a primeira regra determinística do 4.8.
+- **Decisão do Rafael (05/10).**
+
+**Verificação (base 1).**
+- **Saída:** a do `drill_down.py protocolo` só ganha o [10] ("RespostaBacen 7 · 6 depois da ferramenta · 5 pela
+  regra · 5 de 33").
+- **Tabelas:** as colunas antigas do `casos.csv` ficam idênticas.
+- **Concordância com a leitura de 05/10:** M2 5 → 5 pela regra; M1 1 e indeterminado 1 → 0.
+- **Auditoria:** `audit_recompute10` com 0 divergências e a mesma contagem; encontro do kit, tudo igual.
+- **Replicar na máquina 2:** como no Ajuste 15; conferir o [10] da base 2. Pela leitura de 02/10 (`10` §4 M2), o único
+  M2 da base 2 é de dez/2025.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e

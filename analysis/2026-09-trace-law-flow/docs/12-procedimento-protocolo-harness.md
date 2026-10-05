@@ -97,8 +97,8 @@ quantas vezes o papel foi chamado; e se a tarefa menciona "não foi possível" o
 
 | Sinal | Leitura |
 |---|---|
-| texto/3 ≈ tokens de saída | o que o modelo gerou chegou — ler o texto (M1, M2, M3) |
-| tokens de saída ≫ texto/3 | **M4** — o texto é um resto; não ler intenção nele |
+| texto por token perto do normal do papel na execução | o que o modelo gerou chegou — ler o texto (M1, M2, M3) |
+| texto por token < 1/4 do normal do papel (`sinal_resto` no `casos.csv`) | **M4** — o texto é um resto; não ler intenção nele. Compare com o normal do papel, não com texto/3: modelo de raciocínio gasta tokens sem texto em todo step (Ajuste 15) |
 | texto 0, erro "não", tokens > 0 | **M5** — step vazio silencioso; o erro seguinte é consequência |
 | linha `cru:` — `content` da API = texto − 7 e os outros campos ∅ | a API entregou só aquilo (o `</code>` é do harness); nada foi para outro campo |
 | linha `cru:` — algum outro campo grande (`tool_calls`, campo novo em `raw+`) | a resposta foi para um campo que o smolagents não lê |
@@ -109,7 +109,9 @@ quantas vezes o papel foi chamado; e se a tarefa menciona "não foi possível" o
 
 ## Passo 6 — Classificar no catálogo
 
-Para cada caso, o mecanismo (M1–M6 do `10` §4) ou "novo". Um mecanismo novo precisa de: como reconhecer, gatilho,
+Para cada caso, o mecanismo (M1–M6 do `10` §4) ou "novo". Dois já vêm medidos no `casos.csv`: o M1 (`sobreposicao_final`
+≥ 0,5; [9]) e o M2 pela regra (`regra_ferramenta_final`; [10], Ajuste 16). O sinal de resto (`sinal_resto`; Ajuste 15)
+diz quando não ler intenção no texto. Um mecanismo novo precisa de: como reconhecer, gatilho,
 casos que o sustentam — entra no `10` como hipótese. Resultado por papel: tabela papel × mecanismo, como o `11` §1.3.
 
 ## Passo 7 — Destino e registro

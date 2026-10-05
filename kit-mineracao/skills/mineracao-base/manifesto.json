@@ -2,14 +2,14 @@
   "arquivos": {
     "../leitor_trace.py": "8e55542de12fc208",
     "../base_utils.py": "a6868dad84e0e13b",
-    "pipeline/base_pipeline.py": "7262e2f8b968c770",
+    "pipeline/base_pipeline.py": "9cb9e159dc07e166",
     "pipeline/checklist.py": "21ceb97dc5f0b958",
-    "pipeline/drill_down.py": "4975831f7f33f9bc",
+    "pipeline/drill_down.py": "de58f361736148b4",
     "pipeline/metadados_steps.py": "cabef757a81311aa",
     "pipeline/analise_trace_esteira_juridica.ipynb": "52cc45ea691f8012",
     "pipeline/falhas_silenciosas.ipynb": "3ed45ff435e4d022",
     "pipeline/consolidacao_unidades.ipynb": "c5cc2467dc2fd6db",
     "audit/scripts/audit_recompute9.py": "eb89a359824a6767",
-    "audit/scripts/audit_recompute10.py": "d1bc8819be35206e"
+    "audit/scripts/audit_recompute10.py": "1bc9ad82da13221f"
   }
 }

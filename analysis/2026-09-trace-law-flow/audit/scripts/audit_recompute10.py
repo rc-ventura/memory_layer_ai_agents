@@ -11,7 +11,7 @@ fora (analysis/leitor_trace.py), e o próximo erro da cascata vem do erros_mecan
 Base sem números embutidos: tudo "a conferir"; com --json, grava as medidas para o encontro com as tabelas da
 mineração (kit de mineração, skill mineracao-protocolo).
 """
-import argparse, csv, hashlib, json, os, re, sys
+import argparse, csv, hashlib, json, os, re, statistics, sys
 from collections import Counter, defaultdict
 
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
@@ -101,6 +101,10 @@ def sobreposicao(texto, outro, n=5):
 
 
 LIMIAR_M1 = 0.5
+LIMIAR_RESTO = 0.25
+# 10 §4 M2 (Ajuste 16): ferramenta que se apresenta como resposta final = nome declarado (def <nome>() com "resposta
+# final" ou "final response", com ou sem sublinhado; o próprio final_answer não conta)
+NOME_DE_RESPOSTA_FINAL = re.compile(r"resposta_?final|final_?response", re.I)   # 10 §4 M4 (Ajuste 15): texto por token abaixo de 1/4 do normal do papel na mesma execução
 
 # ------------------------------------------------------------------ leitura do cru
 unidade_do_erro = {}
@@ -132,6 +136,12 @@ with abrir_trace(args.trace) as linhas:
                 if isinstance(s, dict) and s.get("__class__") == "TaskStep": ch += 1
                 elif isinstance(s, dict) and s.get("__class__") == "ActionStep": chamada.append(ch)
             passos[(mes, papel)] += len(acts)
+            por_token = []
+            for a in acts:
+                tok = (a.get("token_usage") or {}).get("output_tokens") or 0
+                por_token.append(len(str(a.get("model_output") or "")) / tok if tok else None)
+            normais = [x for a, x in zip(acts, por_token) if x is not None and not a.get("error")]
+            normal = statistics.median(normais) if normais else None
             for i, s in enumerate(acts):
                 sp = prompt_de_sistema(s)
                 v = versao_do_formato(sp)
@@ -148,13 +158,19 @@ with abrir_trace(args.trace) as linhas:
                     if u is None: break
                     cascata.append(u)
                 final = next((a for a in acts[i + 1:] if a.get("is_final_answer")), None)
+                ferramentas_finais = [n for n in re.findall(r"def\s+(\w+)\s*\(", sp)
+                                      if n != "final_answer" and NOME_DE_RESPOSTA_FINAL.search(n)]
+                codigo_anterior = str(acts[i - 1].get("code_action") or "") if i > 0 else ""
+                depois_da_final = any(re.search(r"\b" + re.escape(n) + r"\s*\(", codigo_anterior) for n in ferramentas_finais)
+                antecipou = (sobreposicao(texto, str(final.get("action_output") or "")) if final else 0.0) >= LIMIAR_M1
                 erros.append(dict(
                     mes=mes, papel=papel, eid=eid, forma=forma(texto),
                     papel_entregou_depois=any(a.get("is_final_answer") and not a.get("error") for a in acts[i + 1:]),
                     execucao_com_resposta=tem_final, proximo=cascata[0] if cascata else "(step sem erro)",
-                    antecipou=(sobreposicao(texto, str(final.get("action_output") or "")) if final else 0.0) >= LIMIAR_M1,
+                    antecipou=antecipou, depois_da_final=depois_da_final,
                     copiou=(sobreposicao(texto, str(acts[i - 1].get("observations") or "")) if i > 0 else 0.0) >= LIMIAR_M1,
-                    chamada=chamada[i], chamadas_do_papel=ch))
+                    chamada=chamada[i], chamadas_do_papel=ch,
+                    resto=por_token[i] is not None and bool(normal) and por_token[i] < LIMIAR_RESTO * normal))
 
 # ------------------------------------------------------------------ as medidas
 print(f"[{args.base}] execuções lidas: {len(vistos)} · steps: {sum(passos.values())} · erros 'resposta sem bloco de código': {len(erros)}")
@@ -184,6 +200,10 @@ print("D. M1 e fronteira de chamada ([9]):")
 print(f"   antecipou a resposta final: {sum(e['antecipou'] for e in erros)}/{len(erros)} · copiou da observação anterior: "
       f"{sum(e['copiou'] for e in erros)}/{len(erros)} · erros numa chamada > 1: {sum(e['chamada'] > 1 for e in erros)} · "
       f"erros em papel com mais de uma chamada: {sum(e['chamadas_do_papel'] > 1 for e in erros)}")
+print(f"   M2 pela regra (depois da ferramenta de resposta final, sem reembrulho): "
+      f"{dict(sorted(Counter(e['papel'] for e in erros if e['depois_da_final'] and not e['antecipou']).items()))}")
+print(f"   sinal de resto (texto por token < 1/4 do normal do papel na execução): "
+      f"{dict(sorted(Counter(e['papel'] for e in erros if e['resto']).items()))}")
 
 if args.json:
     with open(args.json, "w", encoding="utf-8") as fh:
@@ -202,6 +222,9 @@ if args.json:
             "m1_copiou_por_papel": dict(sorted(Counter(e["papel"] for e in erros if e["copiou"]).items())),
             "erros_em_chamada_maior_que_1": sum(e["chamada"] > 1 for e in erros),
             "erros_em_papel_com_varias_chamadas": sum(e["chamadas_do_papel"] > 1 for e in erros),
+            "sinal_resto_por_papel": dict(sorted(Counter(e["papel"] for e in erros if e["resto"]).items())),
+            "depois_da_ferramenta_final_por_papel": dict(sorted(Counter(e["papel"] for e in erros if e["depois_da_final"]).items())),
+            "regra_ferramenta_final_por_papel": dict(sorted(Counter(e["papel"] for e in erros if e["depois_da_final"] and not e["antecipou"]).items())),
         }, fh, ensure_ascii=False, indent=2)
 
 print(f"\nDIVERGÊNCIAS: {len(DIVERG)}" + (f" → {DIVERG}" if DIVERG else ""))

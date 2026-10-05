@@ -44,19 +44,24 @@ sozinhos.
   - `antes` (B): `primeiro_step`, `observacao_normal`, `last_output_none`, `erro_de_ferramenta`, `json_de_resposta_final`;
   - `seguinte` (C): `recuperou`, `final_answer`, `outra_ferramenta`, `nada`, `reembrulhou`.
 - **Categoria** (`mecanismo`): um dos mecanismos do catálogo (`M1` … `M6`), `novo:<nome curto>` ou `indeterminado`.
-  Leitura que dependa só do texto de um step com sinal de M4 (tokens de saída muito acima do texto) não vale como
-  mecanismo: o texto é um resto.
+  Quando dois mecanismos se aplicam, vale o desempate escrito no catálogo (ex.: erro depois da ferramenta de resposta
+  final **e** reembrulhado no step seguinte é resposta final fora do lugar, não a ferramenta concorrendo).
+  Leitura que dependa só do texto de um step com `sinal_resto` não vale como mecanismo: o texto é um resto.
 - **Hipótese nula:** os mecanismos do catálogo explicam todos os casos do papel.
-- **Regras a propor e contar** (`testar_regra.py`, com `--lidos … --rotulo mecanismo --alvo <M>`):
+- **Já vêm prontas no `casos.csv`**, sem precisar propor: o M1 (`sobreposicao_final ≥ 0.5`) e o M2 pela regra
+  (`regra_ferramenta_final`: o step anterior chamou uma ferramenta cujo nome a apresenta como resposta final, e sem
+  reembrulho). Confira a leitura contra elas com `--condicao "regra_ferramenta_final == 'True'"`.
+- **Regras a propor e contar** para os outros mecanismos (`testar_regra.py`, com `--lidos … --rotulo mecanismo --alvo <M>`):
   - o M1 já é medido: `--condicao "sobreposicao_final >= 0.5"`;
   - M4 e M5 são regras numéricas sobre `chars` e `tok_out`, por exemplo `--condicao "chars < 20 and tok_out > 0"`
     para o M5;
   - formas do texto: `--regex` com `--campo-passo model_output`;
   - o que veio antes do erro: `--regex` com `--campo-passo code --deslocamento -1` (ex.: "o step anterior chamou a
     ferramenta que se apresenta como resposta final");
-  - **modelo de raciocínio:** o sinal "tokens de saída muito acima do texto" não marca o erro quando o modelo gasta
-    assim em todo step (confira nos steps sem erro da mesma execução, no `metadados_steps.py`). Nesse caso, registre o
-    sinal como linha de base do modelo, e não como motivo de indeterminado.
+  - **o sinal de resto vem pronto** na coluna `sinal_resto` do `casos.csv`. Ele compara o texto por token do step com
+    o normal do próprio papel na mesma execução, e não com um valor fixo, por isso vale também para modelos de
+    raciocínio. Com o sinal, não leia intenção no texto: o caso é `indeterminado`, ou o mecanismo vem de um sinal
+    estrutural (por exemplo, a ferramenta chamada no step anterior), nunca do texto.
 - **Destino** (nas opções do dossiê, pela regra do racional): configuração → não-memória (plataforma); desenho do
   prompt ou da ferramenta → sinal de harness; sobra aprendível que se repete → memória candidata, com escopo.
   Mecanismo novo: como reconhecer, gatilho e os casos que o sustentam (os `#` da tabela de evidência), para o
