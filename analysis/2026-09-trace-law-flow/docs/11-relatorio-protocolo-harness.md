@@ -1,5 +1,7 @@
 # Relatório da família "Protocolo do harness" — continuação de `02-relatorio-achados.md`
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Data:** 30/09/2026 · **Lógica e catálogo de mecanismos (M1–M6):**
 [`10-racionais-protocolo-harness.md`](10-racionais-protocolo-harness.md) · **Como replicar:**
 [`12-procedimento-protocolo-harness.md`](12-procedimento-protocolo-harness.md) · **História e correções:**
@@ -16,8 +18,8 @@ leituras do Rafael (nenhum texto de caso sai de lá).
 | Erros | 33 | 69 |
 | Padrão no tempo | incidente em out/2025 (24) + dez/2025 (7) + 2 isolados; **0 desde mar/2026** | **incidente em ago/2026 (61)** + 8 espalhados |
 | Camada que explica o surto | **modo** (out/2025) e **contrato de ferramenta** (dez/2025) | **modelo** (`gpt-5.6-terra`, só em ago) |
-| Mecanismos | M1 (20), M2 (6), M3 (2), 5 não lidos | M4/M5 no RoteadorCivel (7 casos lidos; a causa dos tokens gastos é hipótese); CalculoCivel: M1 + **M6** na cadeia do erro crítico; resto não lido |
-| Investigação | **fechada** (28 com mecanismo lido; 5 do managerAgent declarados "não lidos") | RoteadorCivel explicado (7 casos + metadados + campos crus); CalculoCivel e o erro crítico explicados (§2.5); RespostaBacen a seguir |
+| Mecanismos | resposta final fora do bloco (20), ferramenta concorrente do `final_answer` (6), marca do bloco digitada errada (2), 5 não lidos | RoteadorCivel: resposta esvaziada pelo modelo + step vazio aceito (7 casos lidos; a causa dos tokens gastos é hipótese). CalculoCivel: resposta fora do bloco + narração executada como código na cadeia do erro crítico. RespostaBacen: resposta fora do bloco 3, ferramenta concorrente 1 (com o contrato antigo `json_resposta`, dez/2025; leitura assistida de 02/10). OBFCivel e CalculoTrabalhista não lidos |
+| Investigação | **fechada** (28 com mecanismo lido; 5 do managerAgent declarados "não lidos") | RoteadorCivel explicado (7 casos + metadados + campos crus); CalculoCivel e o erro crítico explicados (§2.5); RespostaBacen lido (§2.6, 02/10) |
 | Destino | não-memória / sinal de harness | não-memória, achado para a plataforma (modelo) |
 
 ---
@@ -27,7 +29,8 @@ leituras do Rafael (nenhum texto de caso sai de lá).
 ### 1.1 Quando e onde
 
 33 erros: **out/2025 24, nov 1, dez 7, fev 1**; zero desde mar/2026. Forma: 31 texto sem marcador de código, 2 em
-```` ``` ````. Recuperação: 33/33. Logo depois, 7 erros `U_texto_solto` (cascata).
+```` ``` ````. Recuperação: 33/33. Logo depois (`protocolo` [6]): 25 seguidos de step sem erro, 7 `U_texto_solto` e 1
+`U_estado_perdido` (cascata; o `U_estado_perdido` faltava aqui até a ressalva B da auditoria de 02/10).
 
 ### 1.2 A camada — modo e contrato
 
@@ -245,10 +248,28 @@ comentário. **[conferido: AST]**
 | Papel | Erros | Pergunta | Prioridade |
 |---|---:|---|---|
 | ~~CalculoCivel~~ | 4 | feito — §2.5 | — |
-| **RespostaBacen** | 4 | M2 de novo? Pelo menos parte cai na declaração `resposta_gerada` (55 execuções × 1 com `json_resposta`). Se for M2, o mecanismo reapareceu em outra base e com outro contrato — pela regra do `10` §5, **vira memória candidata por ferramenta** | **2ª** |
+| ~~RespostaBacen~~ | 4 | **feito 02/10** (máquina 2, assistido): `o4-mini`, `b0f37eea`, modo texto. **M1 em 3**: JSON do negócio ×2 e pergunta ao usuário, os 3 com `resposta_gerada` e o prompt pedindo formato. **M2 em 1**: dez/2025, logo depois do `resposta_final`, com `json_resposta`. 3/4 recuperam no step seguinte, 4/4 entregam `final_answer` depois. O M2 **não** reapareceu com o contrato atual: segue sinal de harness, já corrigido, não vira memória (`10` §4 M2) | — |
 | RoteadorCivel | 56 | os 49 não lidos seguem o mesmo padrão de metadados (M4/M5)? | baixa |
 | OBFCivel | 4 | mesmo modelo novo, mesmo mês — provavelmente M4/M5 | baixa |
 | CalculoTrabalhista | 1 | `gpt-4.1` em ago — fundo? | baixa |
+
+**M1 medido na base 2 (`protocolo` [9], máquina 2, 02/10).** Antecipou a resposta final / mediana / copiou da
+observação anterior:
+
+| Papel | Erros | Antecipou (≥ 50%) | Mediana | Copiou da observação |
+|---|---:|---:|---:|---:|
+| RoteadorCivel | 56 | 0/56 | 0% | 0/56 |
+| OBFCivel | 4 | 0/4 | 0% | 0/4 |
+| CalculoCivel | 4 | 0/4 | 0% | **3/4** |
+| RespostaBacen | 4 | **2/4** | 56% | 1/4 |
+| CalculoTrabalhista | 1 | 0/1 | 32% | 0/1 |
+
+**Leitura:** o surto de ago/2026 **não é M1**. O RoteadorCivel (0/56) escreve pouco (mediana de 138 caracteres) e nada
+do que escreve reaparece na resposta — bate com M4/M5 do §2.3, o modelo que esquece as marcas. O RespostaBacen (2/4)
+é o único com sinal de M1. A leitura de 02/10 deu M1 em 3: o 3º é a pergunta ao usuário, de 496 caracteres, o falso
+negativo conhecido da medida. No CalculoCivel, 3/4 copiam a observação anterior: o texto fora do bloco repete o que a ferramenta tinha
+acabado de devolver. Isso pode ser parte da cadeia do erro crítico (§2.5), mas não foi lido. A medida indica; a
+leitura confirma.
 
 ---
 

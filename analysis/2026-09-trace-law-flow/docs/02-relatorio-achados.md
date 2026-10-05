@@ -379,7 +379,7 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 8 | 2 | 0,34M |
 | 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 4 | 2 | 0,29M |
 | 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
-| 11 | **Não colar retorno impresso de volta no código** — referenciar a variável que guardou o retorno (truncado ou inteiro); candidata desde 25/09/2026 | experiencial · estratégia | 6 | 6 | 6 | 4 | 2 | 0,09M |
+| 11 | **Não colar retorno impresso de volta no código** — referenciar a variável que guardou o retorno (truncado ou inteiro) e, se a ferramenta pede JSON, converter com `json.dumps(...)`, nunca `str(...)` (lição estendida no Ajuste 12, 04/10, que soma o canal silencioso: 6 → 12 ocorrências); candidata desde 25/09/2026 | experiencial · estratégia | 6 | 6 | 6 | 4 | 2 | 0,09M |
 | — | **Sinal de harness — Campo inexistente no retorno estruturado** (a nº10: `quebra_sigilo` 7×; erro do agente, mas a mineração decidiu `destino = harness` — o prompt declara o mesmo nome de campo para o retorno e para o JSON final, 9/21 respostas com campo inválido, §6.2 do `07`) | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
 | — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)**; mecanismos e destinos em `11-relatorio-protocolo-harness.md` | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |
@@ -411,7 +411,7 @@ papel sustentam isso com mais força do que a versão anterior: a nº 6 (argumen
 nº 10 (`quebra_sigilo`) e a nº 3 somam 16 dos 24; e a nº 2 só existe no `ConversationAgent`. Uma unidade escopada
 ao papel resolveria quase tudo o que aquele papel erra, mesmo sendo pequena no agregado.
 
-**Medido (24/09/2026, refeito em 25/09 com a nº 11) — a triagem no recorte por papel (notebook 9.4/9.5).** Rodando
+**Medido (24/09/2026, refeito em 25/09 com a nº 11) — a triagem no recorte por papel (notebook 9.4/9.5; desde 04/10, `consolidacao_unidades.ipynb` §14.7/§14.8, com os dois canais).** Rodando
 a mesma régua (≥3 execuções e ≥2 meses, mesma deduplicação de cascata) **dentro de cada papel**: 18 células
 (papel × unidade) são candidatas,
 de 31 com erro — `ConversationAgent` 9 unidades, `managerAgent` 3, `RoteadorCivel` 2,
@@ -419,7 +419,7 @@ de 31 com erro — `ConversationAgent` 9 unidades, `managerAgent` 3, `RoteadorCi
 escopo: das 31 células em que uma candidata global aparece num papel, **13 são herdadas** — a unidade se repete na
 base, mas não naquele papel, e uma memória escrita para ele não se sustentaria pela régua. Nenhuma célula
 "revelada" (candidata no papel sem passar na global) é sequer possível com a mesma régua: o papel está contido
-na base. Sensibilidade com a régua estrita (≥5 execuções, ≥3 meses): **8 das 18** células caem — o veredito por
+na base. Sensibilidade com a régua estrita (≥5 execuções, ≥3 meses): **8 das 18** células caem *(desde a consolidação, 04/10: **7 das 18** — `RoteadorCivel · Não colar retorno impresso` soma as 6 ocorrências silenciosas, chega a 9 execuções em 3 meses e passa também na régua estrita)* — o veredito por
 papel é frágil nos papéis pequenos e deve ser lido junto com o volume, não pela célula isolada (lista das
 limítrofes em [`03-procedimento-validacao.md`](03-procedimento-validacao.md) §1.15; racional em
 [`01-racionais.md`](01-racionais.md) §7 Passo 10).

@@ -19,7 +19,7 @@ unidade — virou conjunto proprio em 18/09/2026: docs 05–06 e o notebook `min
 | 1 | [`01-racionais.md`](docs/01-racionais.md) | A logica por tras da analise generica, em linguagem acessivel. Por que a taxonomia veio do trace e nao dos papers; o que e um teste de robustez; o que significa um achado ser corrigido vs. retirado. | Ler primeiro — da o contexto pra entender o resto |
 | 2 | [`02-relatorio-achados.md`](docs/02-relatorio-achados.md) | O relatorio de achados em si: TL;DR, taxonomia por causa-raiz, custo vs. falha, o resultado central (agente le o erro e reincide), ponto cego, candidatos a memoria, o que a literatura refutou, limitacoes, proximos passos. | O documento principal — os numeros |
 | 3 | [`03-procedimento-validacao.md`](docs/03-procedimento-validacao.md) | Roteiro de validacao das DUAS analises: como auditar os pipelines, em que ordem ler os papers, e como triangular qualquer numero agregado contra um caso concreto no trace cru (`drill_down.py`). Checklist pre-reuniao. | Antes de apresentar ou reusar o pipeline |
-| 4 | [`04-roadmap.md`](docs/04-roadmap.md) | O que ainda falta: item estrutural (branch/commit), itens fora de escopo/adiados, e a lista analitica em aberto priorizada. | Para saber o proximo passo |
+| 4 | [`04-roadmap.md`](docs/04-roadmap.md) | O backlog numerado desta analise (numeros estaveis, citados no projeto todo), o monitoramento e o que foi fechado. O "o que fazer agora", desta e de qualquer analise, fica em [`../plano-atual.md`](../plano-atual.md). | Para saber o proximo passo |
 | 5 | [`05-schema.md`](docs/05-schema.md) | O schema do trace cru: as 11 colunas, o campo de status, a estrutura de `txt_etap_memo`, o que ficou em aberto. | Quando precisar ler o trace na mao |
 | 6 | [`06-racionais-mineracao-unidades-n2-n10.md`](docs/06-racionais-mineracao-unidades-n2-n10.md) | A logica da segunda analise (mineracao nº2/nº10): os 8 passos pre-registrados, as analises fundas das duas unidades. Continua a numeracao do 01 (e a "§9 dos racionais"). | Depois do 01 — mesma funcao, outra analise |
 | 7 | [`07-relatorio-mineracao-unidades-n2-n10.md`](docs/07-relatorio-mineracao-unidades-n2-n10.md) | O relatorio da mineracao: o schema real derivado do trace (§6.1), as analises fundas de `validar_quebra_sigilo` (§6.2) e `get_available_documents` (§6.3). Continua a numeracao do 02. | Os numeros da segunda analise |
@@ -37,6 +37,7 @@ unidade — virou conjunto proprio em 18/09/2026: docs 05–06 e o notebook `min
 |---|---|
 | [`base_pipeline.py`](pipeline/base_pipeline.py) | A espinha compartilhada — carga do trace, explosao em `steps`/`RAW`/`execs`, classificacao (`classify`/`submecanismo`/`UNI`/`EU`), triagem e `S`/`DEGENERADO`. Qualquer analise nova parte daqui |
 | [`analise_trace_esteira_juridica.ipynb`](pipeline/analise_trace_esteira_juridica.ipynb) | Notebook executavel — a analise generica (§§1–10) sobre a base compartilhada, com outputs embutidos |
+| [`consolidacao_unidades.ipynb`](pipeline/consolidacao_unidades.ipynb) | Notebook executavel da consolidacao (§14.x): junta as ocorrencias dos dois baldes (visivel e invisivel) no formato comum e faz a triagem final das unidades, com a recorrencia contada sobre a uniao; mostra o que muda contra a triagem so do visivel (base 1: so a `U_repr_colado`, 6 → 12). Ajuste 12 |
 | [`falhas_silenciosas.ipynb`](pipeline/falhas_silenciosas.ipynb) | Notebook executavel do balde invisivel (§13.x): falhas de ferramenta devolvidas como texto (`error: null`), grupos do motivo, sucesso falso candidato, forma do argumento, detectores de comportamento (o antigo §7 da esteira) e a tabela de ocorrencias para a consolidacao. Mesmas funcoes do `drill_down.py silenciosas` |
 | [`mineracao_unidades_n2_n10.ipynb`](pipeline/mineracao_unidades_n2_n10.ipynb) | Notebook executavel da mineracao (§11.x, numeracao preservada). Standalone: o setup §0 chama `carregar_base()` e reconstroi `RAW`, `EU`, `UNI`, `S` a partir do trace |
 | [`drill_down.py`](pipeline/drill_down.py) | Script para triangular um numero agregado contra um caso concreto no trace cru. `ferramenta <nome>` mostra como o system prompt declara uma ferramenta no trace inteiro; `evidencia [<analise>]` completa as pastas de evidencia que o notebook grava (trace cru + visao derivada de cada caso) — ver `03-procedimento-validacao.md`, "Evidencia por analise" |
@@ -56,8 +57,10 @@ da analise — uma copia orfa em `resultados/` na raiz existiu ate 16/09/2026 e 
 `audit/2026-09-16-auditoria-independente.md` M1).
 
 **Dono e ciclo de vida dos arquivos do topo.** Os CSVs do topo (`erros_classificados`, `execucoes`,
-`erros_mecanismo`, `triagem_assinaturas`, `candidatos_memoria`, `reincidencia`, `payoff_assinaturas`) tem **um
-dono so**: o notebook da analise generica (ultima celula). Sao **snapshot, nao estado vivo** — descrevem o
+`erros_mecanismo`, `triagem_assinaturas`, `reincidencia`, `payoff_assinaturas`) tem **um dono so**: o notebook da
+analise generica (§9.2). O `candidatos_memoria.csv` (a triagem das unidades) e gravado desde 04/10 so pela
+consolidacao (`consolidacao_unidades.ipynb` §14.9), com os dois baldes — ordem de rodar: esteira → falhas
+silenciosas → consolidacao. Sao **snapshot, nao estado vivo** — descrevem o
 trace + a classificacao do `base_pipeline.py`, e so mudam se um dos dois mudar (o que invalidaria numeros
 publicados; por isso a triagem fica congelada como estava quando rodou). Passes de mineracao **nao escrevem
 neles nem dependem deles** — leem a base em memoria via `carregar_base()`. `drill_down.py` le dois
@@ -102,3 +105,6 @@ notebook: cada passe le o arquivo e regrava com seus registros adicionados/atual
 
 `data/` — o trace cru (`85cb11b5-....csv.xz`, **git-ignored**). `pipeline/drill_down.py` e os scripts de
 `audit/scripts/` resolvem o caminho relativo ao proprio arquivo, nao ao diretorio corrente.
+
+`audit/` — as auditorias independentes e os `audit_recompute*.py`. O indice do que ja foi auditado (objeto, estado,
+onde estao as respostas) e [`audit/README.md`](audit/README.md).

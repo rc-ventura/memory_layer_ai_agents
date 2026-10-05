@@ -1,5 +1,7 @@
 # Procedimento — investigar a família "Protocolo do harness" numa base
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** o roteiro para repetir, numa base nova (ou na base 2, onde está em andamento), a
 investigação que fechou a base 1. Mesmo papel do [`03-procedimento-validacao.md`](03-procedimento-validacao.md), só para
 esta família. O **porquê** de cada passo e o **catálogo de mecanismos** (M1–M6) estão em
@@ -46,6 +48,11 @@ cascata.
    - `python drill_down.py protocolo --prompt <versão>` — grava `prompt_<papel>_<versão>.txt`; ler **o fim**, antes de
      "Now Begin!": pede formato (markdown, JSON)? diz "pode responder diretamente"? define a resposta final como a saída de
      uma ferramenta? (M1)
+
+4. **M1 medido** — `protocolo` [9]: por papel, quantos erros têm o texto (trechos de 5 palavras) reaparecendo na
+   resposta final entregue depois (≥ 50%: **antecipou** a resposta → M1) e quantos o copiaram da observação anterior.
+   Falso negativo conhecido: o LLM que reescreve ao reembrulhar (ConversationAgent, base 1) — por isso o [9] indica, a
+   leitura confirma. As duas sobreposições por caso estão no `casos.csv`.
 
 Anotar a camada que explica o surto **antes** de ler casos.
 

@@ -706,7 +706,9 @@ de tamanho de amostra por família — os três testados, dois confirmados robus
 Números completos em [`02-relatorio-achados.md`](02-relatorio-achados.md) §6. Código no notebook: a célula "Do
 sintoma ao mecanismo" (logo após `classify()`, na §2 — submecanismo, cascata, ocorrência; usada também em §2.2,
 §3, §5, §6, §8.4, §8.5 e §8.8), e na §9 as células 9.2 (triagem, tabelas, CSV), 9.3 (gráfico global) e 9.4–9.5
-(a triagem no recorte por papel — Passo 10). **Refeito do zero em
+(a triagem no recorte por papel — Passo 10). **Desde 04/10 (plano 4.2c)** a triagem — 9.2 (a parte da decisão), 9.3, 9.4
+e 9.5 — mora em `consolidacao_unidades.ipynb` (§14.2, §14.6, §14.7, §14.8), com os dois baldes; a §9 da esteira ficou
+com o que o balde visível entrega (assinatura → unidades, resíduo, críticos, `erros_mecanismo.csv`). **Refeito do zero em
 15/09/2026**, reexecutando o notebook inteiro duas vezes: as saídas da §9 saíram idênticas nas duas execuções e
 os outros quatro CSVs (`erros_classificados`, `execucoes`, `payoff_assinaturas`, `reincidencia`) saíram
 byte-idênticos à versão anterior — só a tabela de candidatos mudou. A versão anterior (7 candidatos, tipos por
@@ -897,7 +899,7 @@ O que mudou em relação à tabela anterior de 7 linhas:
   parte, a reação do agente ao incidente. Ela passa na triagem pelas 4 ocorrências próprias de mar–jun/2026, mas
   o volume grande é resíduo.
 
-**Passo 8 — o gráfico (9.3).** Uma barra por unidade, agrupadas pela decisão (candidatas / não-memória / revisar
+**Passo 8 — o gráfico (9.3; desde 04/10, consolidação §14.6).** Uma barra por unidade, agrupadas pela decisão (candidatas / não-memória / revisar
 / fora da triagem) e ordenadas por tokens dentro de cada grupo. **Desde 24/09/2026 a cor é a família dominante
 dos erros da unidade** — a língua comum `COR_ERRO`, a mesma do 8.8 e da genealogia (`03-procedimento-validacao.md`
 §1.14) — e o **tipo da memória vai escrito no rótulo**, junto com a marca "limítrofe" quando é o caso (até
@@ -923,7 +925,7 @@ entrega errado) ficam de fora por construção (ver §5 do relatório); (b) a re
 imediatamente anterior, então uma variável definida num step que falhou dois steps antes aparece como "nome
 nunca definido", não como "estado perdido após erro".
 
-**Passo 10 — a candidatura por papel (9.4 e 9.5), 24/09/2026.**
+**Passo 10 — a candidatura por papel (9.4 e 9.5), 24/09/2026; desde 04/10, consolidação §14.7 e §14.8, com os dois canais.**
 
 **A pergunta.** A memória do projeto vai ser **escopada por papel** — recuperada pela chave (papel, unidade), não
 pela unidade global. Mas a triagem acima decide pela unidade **na base inteira**: conta as execuções e os meses da

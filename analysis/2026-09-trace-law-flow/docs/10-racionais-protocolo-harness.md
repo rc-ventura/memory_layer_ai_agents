@@ -1,5 +1,7 @@
 # Racionais da família "Protocolo do harness" — continuação de `01-racionais.md`
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** o mesmo papel do [`01-racionais.md`](01-racionais.md), mas só para uma família de
 erro: "Protocolo do harness" — o erro *"Your code snippet is invalid, because the regex pattern `<code>(.*?)</code>`
 was not found in it"* (assinatura "Resposta sem bloco de código", unidade `H_bloco_code`). Explica **por que** a
@@ -78,9 +80,12 @@ entra aqui.
 
 - **O que é:** o LLM chega ao fim da tarefa e escreve **o conteúdo** da resposta — relatório em markdown, o JSON pedido
   pelo negócio, uma pergunta ao usuário, ou até `final_answer("""…""")` — **sem o envelope** `<code>…</code>`.
-- **Como reconhecer:** o step seguinte é um `final_answer` com o mesmo conteúdo (reembrulhado). Medida usada em 30/09:
-  fração dos trechos de 5 palavras do texto do erro que reaparece no `final_answer` seguinte (managerAgent: 15/21, mediana
-  97%). **Limite:** quando o LLM reescreve o texto ao reembrulhar (ConversationAgent, base 1), a sobreposição cai e a
+- **Como reconhecer:** o step seguinte é um `final_answer` com o mesmo conteúdo (reembrulhado). Medida: fração dos
+  trechos de 5 palavras do texto do erro que reaparece na resposta do 1º `final_answer` seguinte do papel; antecipou se
+  ≥ 50% (`sobreposicao()` e `M1_LIMIAR`, `base_pipeline.py`; `drill_down.py protocolo` [9]). Base 1: managerAgent
+  15/21, mediana 97%; RespostaBacen 1/7; ConversationAgent 0/3; CalculoCivel 0/2. A medida foi feita avulsa em 30/09 e
+  virou função em 02/10. O limiar de 30/09 não foi registrado: 0,5 é o reconstruído, e reproduz as 4 linhas
+  publicadas (qualquer valor em (0,479; 0,523] reproduz; a margem é estreita — 1 caso de cada lado). **Limite:** quando o LLM reescreve o texto ao reembrulhar (ConversationAgent, base 1), a sobreposição cai e a
   medida não vê — a leitura confirmou os 3.
 - **Gatilho:** modo texto **mais** uma instrução do negócio no fim do prompt que pede o conteúdo sem lembrar o envelope:
   "responda em markdown", "devolva um JSON no formato…", e — no ConversationAgent — *"Se voce não precisar de nenhuma
@@ -101,9 +106,12 @@ entra aqui.
 - **Gatilho:** o contrato da ferramenta. Na base 1, só a declaração com `json_resposta` (dict aninhado; dez/2025) teve
   erros; a com `resposta_gerada` (texto simples; jan–jun/2026), 0 — mesmo formato e mesmo modelo nos dois períodos.
   Correlação (6 × 20 execuções), não prova. (O `drill_down.py ferramenta` numera as variantes pela quantidade de steps,
-  não pelo tempo — por isso os nomes aqui são os do argumento.)
-- **Destino:** sinal de harness; memória candidata **por ferramenta** só se reaparecer com o contrato atual.
-  **Status:** confirmado na base 1.
+  não pelo tempo — por isso os nomes aqui são os do argumento.) **Base 2 (leitura assistida, 02/10):** dos 4 erros do
+  RespostaBacen, o único M2 é de dez/2025, com `json_resposta`. Os 3 com `resposta_gerada` são M1. O mesmo corte nas
+  duas bases: o contrato `json_resposta` induzia o M2, e a troca para `resposta_gerada` (jan/2026) o eliminou.
+- **Destino:** sinal de harness, **já corrigido pela plataforma** (a declaração mudou em jan/2026); memória candidata
+  **por ferramenta** só se reaparecer com o contrato atual — não reapareceu em nenhuma das duas bases.
+  **Status:** confirmado na base 1; base 2 coerente (1 caso, assistido).
 
 ### M3 — Digitação do envelope
 
@@ -204,8 +212,8 @@ envelope.
 
 - **A forma** no `protocolo` [4] (vazio / ```` ``` ```` / dict-JSON / frase) é grossa: não separa M1 de M3 nem M4. O
   mecanismo vem da leitura e dos metadados.
-- **A medida de sobreposição** do M1 foi feita avulsa em 30/09, não está no `drill_down.py`, e tem falso negativo
-  quando o LLM reescreve.
+- **A medida de sobreposição** do M1 (`protocolo` [9], desde 02/10) tem falso negativo quando o LLM reescreve, e o
+  limiar 0,5 foi reconstruído (o de 30/09 não ficou registrado): indica, não classifica.
 - **M4 e M5:** o fato está medido (a API entrega pouco ou nada; o harness aceita o vazio); a causa dos tokens gastos
   (raciocínio oculto) não dá para comprovar com o que o trace grava.
 - **Cobertura por leitura é amostral**: 5 dos 21 erros do managerAgent (os que não anteciparam a resposta final) não

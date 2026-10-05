@@ -23,9 +23,10 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
-           "caminho_dos_criticos", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
+           "caminho_dos_criticos", "sobreposicao", "M1_LIMIAR", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
            "GRUPOS_FALHA_REAL", "motivo_da_falha", "DONO_DO_GRUPO", "UNIDADES_CONTRATO", "forma_argumento",
-           "formas_das_falhas", "erro_depois_da_falha", "contrato_precedido", "sucesso_falso_candidato","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
+           "formas_das_falhas", "erro_depois_da_falha", "contrato_precedido", "sucesso_falso_candidato",
+           "REGRAS_INVISIVEL", "unidade_silenciosa", "ocorrencias_visiveis", "ocorrencias_silenciosas","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
@@ -353,7 +354,8 @@ UNI = {
                          "Usar só variáveis e funções definidas no próprio código; 'Observation' é rótulo do harness, não variável."),
     "U_repr_colado": ("Não colar retorno impresso de volta no código", ESTR,
                       "Referenciar a variável que guardou o retorno em vez de colar o print dele (truncado ou inteiro) "
-                      "dentro do código."),
+                      "dentro do código; se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca "
+                      "com str(...)."),
     "H_infra_llm": ("Falha do LLM upstream — política de retry", NAO,
                     "AgentGenerationError/422: retry com backoff e circuit breaker por subagente."),
     # tipo=NAO reflete só a base 1 (o incidente de out/2025 morre a partir de mar/2026 NESTA base).
@@ -459,10 +461,13 @@ ALARME_COBERTURA = 0.05
 # "sinal de harness" do mecanismo, distinta da não-memória operacional (onde a plataforma falhou).
 # Fonte: 07-relatorio-mineracao-unidades-n2-n10.md §6.1–6.2; pipeline-entre-bases.md, Ajuste 5.
 # As bases são independentes: cada uma é triada e minerada por conta própria, e a decisão só vale na base em que a
-# mineração foi feita (a nº10 da base 2 não herda o "harness" da base 1 — pipeline-entre-bases.md, Ajuste 7).
+# mineração foi feita (a nº10 da base 2 não herda o "harness" da base 1 — pipeline-entre-bases.md, Ajuste 7). Quando a
+# mesma decisão é tomada noutra base, com evidência dela, a base entra em `bases` (Ajuste 13, 05/10: o "campo
+# inexistente" da base 2 — 38/38 com a chave pedida no system prompt, 31 delas `quebra_sigilo` contra o retorno
+# `vazamento_sigilo` do `validar_quebra_sigilo`; `investigacao_achados.py` seção C, rodada 2 da máquina 2).
 DESTINO_MINERACAO = {
-    "U_contrato_dict": {"destino": "memória", "base": "base1"},
-    "U_campo_inexistente": {"destino": "harness", "base": "base1"},
+    "U_contrato_dict": {"destino": "memória", "bases": ("base1",)},
+    "U_campo_inexistente": {"destino": "harness", "bases": ("base1", "base2")},
 }
 SINAL_HARNESS = "sinal de harness"
 
@@ -471,7 +476,7 @@ def destino_mineracao(u, base_id=None):
     """O destino que a mineração decidiu para a unidade NESTA base (memória / harness), ou "em aberto" se ela não foi
     minerada aqui."""
     d = DESTINO_MINERACAO.get(u)
-    return d["destino"] if d and d["base"] == (base_id or BASE_ID) else "em aberto"
+    return d["destino"] if d and (base_id or BASE_ID) in d["bases"] else "em aberto"
 
 
 def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
@@ -509,6 +514,24 @@ def caminho_dos_criticos(EU):
                                          "primeira unidade", "unidades no caminho"])
 
 
+# M1 da família Protocolo do harness (10-racionais-protocolo-harness.md §4): a resposta final escrita fora do envelope
+# <code> e reembrulhada depois em final_answer. A medida (30/09) era avulsa; virou função em 02/10 (ressalva D da
+# auditoria de 02/10). O limiar não foi registrado em 30/09: 0,5 é o reconstruído — reproduz as 4 linhas publicadas
+# da base 1 (qualquer valor em (0,479; 0,523] reproduz; 1 caso de cada lado da margem). Falso negativo conhecido: o LLM que reescreve ao reembrulhar.
+M1_LIMIAR = 0.5
+
+
+def sobreposicao(texto, outro, n=5):
+    """Fração dos trechos de `n` palavras de `texto` que reaparecem em `outro` (0 se `texto` tem menos de `n`
+    palavras). Palavra = sequência alfanumérica, em minúsculo. Usada no `drill_down.py protocolo` [9]: o que o modelo escreveu no lugar do
+    bloco × a resposta final entregue depois (antecipou?) e × a observação anterior (copiou da ferramenta?)."""
+    def trechos(t):
+        w = re.findall(r"\w+", str(t or "").lower())
+        return {tuple(w[i:i + n]) for i in range(len(w) - n + 1)}
+    a = trechos(texto)
+    return len(a & trechos(outro)) / len(a) if a else 0.0
+
+
 FALHA_FERRAMENTA = re.compile(r"Error calling tool '(\w+)'")
 
 
@@ -520,7 +543,11 @@ def falhas_silenciosas(df):
         ferramenta falhou, o wrapper devolveu o erro como STRING e o Python seguiu. Para o pipeline, o step foi "ok";
       - None: chamada sem falha visível.
     `idx` é o mesmo de explodir_memoria (posição entre os ActionSteps do papel), para cruzar com erros_mecanismo.csv.
-    `idx_final_depois`: o primeiro step do papel com is_final_answer depois deste (ou None).
+    `chamada`: quantos TaskStep vêm antes do step na lista do papel (o papel pode ser chamado várias vezes na mesma
+    execução; o `idx` conta as chamadas juntas — plano S4).
+    `idx_final_depois`: o primeiro step do papel com is_final_answer a partir deste (o próprio step, se ele for o final)
+    e na mesma chamada, ou None. Ajuste 11 (02/10): antes era o 1º final estritamente depois, em qualquer chamada — a
+    falha no próprio step do final_answer ficava fora do [4], e um final de outra chamada entrava.
     Origem: 11-relatorio-protocolo-harness.md §2.5 (a calculadora do CalculoCivel, base 2) e o item 26 do roadmap.
     Limite: só a forma "Error calling tool"; validações e resultados vazios ou errados não entram."""
     linhas = []
@@ -529,7 +556,11 @@ def falhas_silenciosas(df):
         except Exception: continue
         for role, steps in memo.items():
             if not isinstance(steps, list): continue
-            acts = [s for s in steps if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
+            acts, chamada_de, n_task = [], [], 0
+            for s in steps:
+                if not isinstance(s, dict): continue
+                if s.get("__class__") == "TaskStep": n_task += 1
+                elif s.get("__class__") == "ActionStep": acts.append(s); chamada_de.append(n_task)
             finais = [i for i, s in enumerate(acts) if s.get("is_final_answer")]
             for i, st in enumerate(acts):
                 mim = st.get("model_input_messages")
@@ -545,19 +576,20 @@ def falhas_silenciosas(df):
                 obs = str(st.get("observations") or "") + " " + str(st.get("action_output") or "")
                 texto = obs + " " + str(err.get("message") or "")
                 falhou = set(FALHA_FERRAMENTA.findall(texto))
-                prox_final = next((f for f in finais if f > i), None)
+                prox_final = next((f for f in finais if f >= i and chamada_de[f] == chamada_de[i]), None)
                 for t in sorted(chamadas | falhou):
                     # o motivo: o texto da ferramenta depois de "Error calling tool '<nome>':" (1ª linha). Pode conter
                     # valores do caso (filtros) — mascarar_motivo() antes de mostrar.
                     m = re.search(rf"Error calling tool '{t}':?\s*([^\n]*)", texto) if t in falhou else None
-                    linhas.append({"exec_id": r["cod_idef_exeo"], "role": role, "idx": i, "mes": r["mes"],
+                    linhas.append({"exec_id": r["cod_idef_exeo"], "role": role, "idx": i, "chamada": chamada_de[i],
+                                   "mes": r["mes"],
                                    "ferramenta": t, "chamou": t in chamadas,
                                    "falha": ("excecao" if err else "silenciosa") if t in falhou else None,
                                    "motivo": m.group(1)[:300] if m else "",
                                    "grupo": motivo_da_falha(m.group(1)) if m else None,
                                    "idx_final_depois": prox_final})
-    return pd.DataFrame(linhas, columns=["exec_id", "role", "idx", "mes", "ferramenta", "chamou", "falha", "motivo",
-                                         "grupo", "idx_final_depois"])
+    return pd.DataFrame(linhas, columns=["exec_id", "role", "idx", "chamada", "mes", "ferramenta", "chamou", "falha",
+                                         "motivo", "grupo", "idx_final_depois"])
 
 
 # Grupos do motivo de uma falha de ferramenta (S2b, 01/10). Regras por palavra-chave, na ordem; a 1ª que casar
@@ -593,7 +625,7 @@ MOTIVO_REGRAS = [
     ("plataforma", r"ongoing worker", "b1"),
     ("plataforma", r"object has no attribute|too many values to unpack", "b1 b2"),
     ("plataforma", r"structured_content must be", "b1 b2"),
-    ("plataforma", r"^'default'$", "b2"),
+    ("plataforma", r"^'default'$", "b1 b2"),   # b1 desde 02/10: 2 na base 1 (CalculoCivel, a mesma calculadora; audit_recompute9)
 ]
 GRUPOS_FALHA_REAL = ("argumento_do_agente", "plataforma", "json_invalido", "nao_reconhecido")
 
@@ -715,8 +747,9 @@ def contrato_precedido(sil, EU, janela=3):
 
 
 def sucesso_falso_candidato(F, sil):
-    """[4] para cada falha REAL de `sil` (GRUPOS_FALHA_REAL): o papel entregou final_answer depois sem nenhuma chamada
-    sem falha da mesma ferramenta no meio? Série booleana só sobre as falhas reais. É teto: conferir no caso."""
+    """[4] para cada falha REAL de `sil` (GRUPOS_FALHA_REAL): o papel entregou final_answer — no próprio step da falha
+    ou depois, na mesma chamada (`idx_final_depois`, Ajuste 11) — sem nenhuma chamada sem falha da mesma ferramenta no
+    meio? Série booleana só sobre as falhas reais. É teto: conferir no caso."""
     real = sil[sil["grupo"].isin(GRUPOS_FALHA_REAL)]
     ok = F[F["chamou"] & F["falha"].isna()]
     out = []
@@ -729,18 +762,73 @@ def sucesso_falso_candidato(F, sil):
     return pd.Series(out, index=real.index, dtype=bool)
 
 
-def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+# A consolidação (Ajuste 12, 04/10; plano 4.2b). Os dois baldes entregam OCORRÊNCIAS no mesmo formato — exec_id, role,
+# idx, mes, unidade, ocorrencia, canal — e a triagem conta a recorrência sobre a união (nunca somando totais: a mesma
+# execução pode ter a unidade nos dois canais). Ocorrência, nos dois canais, é a mesma régua (decisão do Rafael, 02/10):
+# cascata (steps consecutivos do mesmo papel com falha/erro) × unidade.
+
+# A regra do balde invisível para o catálogo: (grupo do motivo, marca na forma do argumento, unidade). Sem nome de
+# ferramenta. O que não casa fica sem unidade — a fila de trabalho do balde invisível, como o resíduo do visível.
+# Evidência da única regra: o json_invalido do busca_obf é o gesto do repr_colado nas duas bases (6/6, 86/86) —
+# ledger Etapa 10c, "Achado (01/10)"; doc 13 §5.
+REGRAS_INVISIVEL = [
+    ("json_invalido", "gesto do repr_colado", "U_repr_colado"),
+]
+
+
+def unidade_silenciosa(grupo, forma):
+    """A unidade do catálogo de uma falha silenciosa (REGRAS_INVISIVEL), ou None."""
+    for g, marca, u in REGRAS_INVISIVEL:
+        if grupo == g and marca in str(forma or ""):
+            return u
+    return None
+
+
+def ocorrencias_visiveis(EU):
+    """As ocorrências do balde visível no formato comum: uma linha por erro, com a `ocorrencia` de montar_unidades()
+    (cascata × unidade)."""
+    return EU[["exec_id", "role", "idx", "mes", "unidade", "ocorrencia"]].assign(canal="visível")
+
+
+def ocorrencias_silenciosas(sil, formas):
+    """As ocorrências do balde invisível no formato comum. `sil`: as falhas silenciosas (linhas de falhas_silenciosas()
+    com falha == "silenciosa"); `formas`: formas_das_falhas(df, sil), na mesma ordem. Uma linha por step com falha (dois
+    motivos no mesmo step viram uma linha por unidade). A cascata é a do visível: steps consecutivos do mesmo papel com
+    falha silenciosa; `ocorrencia` = cascata × unidade. `unidade` None = sem regra (fica fora da triagem)."""
+    S = sil.assign(forma=list(formas))
+    S["unidade"] = [unidade_silenciosa(g, f) for g, f in zip(S["grupo"], S["forma"])]
+    passos = S.drop_duplicates(["exec_id", "role", "idx"]).sort_values(["exec_id", "role", "idx"])
+    seguidor = (passos["exec_id"].eq(passos["exec_id"].shift()) & passos["role"].eq(passos["role"].shift())
+                & passos["idx"].eq(passos["idx"].shift() + 1))
+    cascata = dict(zip(zip(passos["exec_id"], passos["role"], passos["idx"]), (~seguidor).cumsum()))
+    S = S.drop_duplicates(["exec_id", "role", "idx", "unidade"]).copy()
+    S["cascata"] = [cascata[k] for k in zip(S["exec_id"], S["role"], S["idx"])]
+    S["ocorrencia"] = "s" + S["cascata"].astype(str) + "|" + S["unidade"].fillna("—")
+    return (S[["exec_id", "role", "idx", "mes", "unidade", "ocorrencia", "ferramenta", "grupo", "forma"]]
+            .assign(canal="silencioso").sort_values(["exec_id", "role", "idx"]).reset_index(drop=True))
+
+
+def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES, silenciosas=None):
     # resíduo: recorrência contada por PADRÃO de erro, não pela unidade (que junta erros diferentes por construção)
     passa = residuo_por_padrao(EU, min_execs, min_meses).groupby("unidade")["passa na recorrência"].any()
     # execuções mortas (limite de passos) em que cada unidade aparece no caminho — o peso de gravidade (Ajuste 8)
     crit = caminho_dos_criticos(EU)
     mortas = Counter(u for c in crit["unidades no caminho"] for u in c.split(" + ") if u)
     fracao_desconhecida = (EU["unidade"] == "X_sintoma_nao_reconhecido").mean()
+    # `silenciosas` (Ajuste 12): ocorrências do balde invisível (ocorrencias_silenciosas()). Com elas, ocorrências,
+    # execuções, meses e papéis contam a UNIÃO dos dois canais; erros, tokens, cascata e "% após outro erro" continuam
+    # do visível (o custo das silenciosas é retrabalho, medido no notebook delas). Sem elas, a saída é a de sempre.
+    S = None if silenciosas is None else silenciosas[silenciosas["unidade"].notna()]
+    grupos = list(EU.groupby("unidade"))
+    if S is not None:
+        grupos += [(u, EU.iloc[0:0]) for u in sorted(set(S["unidade"]) - set(EU["unidade"]))]
     tri = []
-    for u, g in EU.groupby("unidade"):
+    for u, g in grupos:
         nome, tipo, conteudo = UNI[u]
         o = g.drop_duplicates("ocorrencia")
-        execs_u, meses_u = o["exec_id"].nunique(), o["mes"].nunique()
+        s_u = S[S["unidade"] == u].drop_duplicates("ocorrencia") if S is not None else EU.iloc[0:0]
+        execs_u = len(set(o["exec_id"]) | set(s_u["exec_id"]))
+        meses_u = len(set(o["mes"]) | set(s_u["mes"]))
         if tipo == NAO:
             decisao = "não-memória"
         elif tipo == CRIT:  # o agente não se recuperou: todo caso vai para investigação, sem limite mínimo
@@ -760,11 +848,14 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
         tri.append({"unidade": u, "nome": nome, "tipo": tipo, "decisão": decisao,
                     "destino (mineração)": destino_mineracao(u) if tipo in (FACT, ESTR) else "",
                     "motivo (resíduo)": motivo if tipo == SEM else "",
-                    "ocorrências": len(o), "erros": len(g), "reincidências na cascata": len(g) - len(o),
+                    "ocorrências": len(o) + len(s_u),
+                    **({"ocorrências visíveis": len(o), "ocorrências silenciosas": len(s_u)} if S is not None else {}),
+                    "erros": len(g), "reincidências na cascata": len(g) - len(o),
                     "execuções mortas com esta unidade no caminho": mortas.get(u, 0),
-                    "execuções": execs_u, "meses": meses_u, "papéis": o["role"].nunique(),
+                    "execuções": execs_u, "meses": meses_u,
+                    "papéis": len(set(o["role"]) | set(s_u["role"])),
                     "tokens": int(g["tok_tot"].sum()),
-                    "% ocorr. após outro erro": round(o["seguidor"].mean() * 100),
+                    "% ocorr. após outro erro": round(o["seguidor"].mean() * 100) if len(o) else None,
                     "assinaturas de origem": " + ".join(g["assinatura"].value_counts().index),
                     "conteúdo proposto": conteudo})
     ordem = {"candidato": 0, SINAL_HARNESS: 1, INVESTIGAR_CRITICO: 2, "não-memória": 3, REVISAR_PRIORIDADE: 4,
@@ -773,23 +864,35 @@ def triagem(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
     return t.assign(_o=t["decisão"].map(ordem)).sort_values(["_o", "tokens"], ascending=[True, False]).drop(columns="_o")
 
 
-def triagem_por_papel(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):
+def triagem_por_papel(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES, silenciosas=None):
     """A mesma régua do triagem(), aplicada dentro de cada papel — a candidatura scoped da §9.4. Só unidades
     elegíveis a memória (tipo factual/estratégia): plataforma (não-memória) e resíduo (X_) ficam fora por
     decisão de desenho. Uma linha por (role, unidade) com erros no papel; a decisão é "candidato" quando a
     unidade se repete naquele papel (>= min_execs execuções e >= min_meses meses, sobre ocorrências
     deduplicadas da cascata, como a global). Unidade ausente no papel simplesmente não gera linha. Unidade cujo
-    destino da mineração é harness também fica fora: o conserto é no ambiente, não há memória por papel a escrever."""
+    destino da mineração é harness também fica fora: o conserto é no ambiente, não há memória por papel a escrever.
+    `silenciosas` (4.2c): as ocorrências do balde invisível, como na triagem() — ocorrências, execuções e meses do papel
+    contam a união dos dois canais; erros e tokens continuam do visível. Sem elas, a saída é a de sempre."""
+    S = None if silenciosas is None else silenciosas[silenciosas["unidade"].notna()]
+    grupos = list(EU.groupby(["role", "unidade"]))
+    if S is not None:
+        ja = {k for k, _ in grupos}
+        grupos += [(k, EU.iloc[0:0]) for k in sorted(set(zip(S["role"], S["unidade"])) - ja)]
     tri = []
-    for (role, u), g in EU.groupby(["role", "unidade"]):
+    for (role, u), g in grupos:
         nome, tipo, _ = UNI[u]
         if tipo not in (FACT, ESTR) or destino_mineracao(u) == "harness":
             continue
         o = g.drop_duplicates("ocorrencia")
-        execs, meses = o["exec_id"].nunique(), o["mes"].nunique()
+        s_u = (S[(S["role"] == role) & (S["unidade"] == u)].drop_duplicates("ocorrencia") if S is not None
+               else EU.iloc[0:0])
+        execs = len(set(o["exec_id"]) | set(s_u["exec_id"]))
+        meses = len(set(o["mes"]) | set(s_u["mes"]))
         tri.append({"role": role, "unidade": u, "nome": nome, "tipo": tipo,
                     "decisão": "candidato" if (execs >= min_execs and meses >= min_meses) else "fora no papel",
-                    "ocorrências": len(o), "erros": len(g), "execuções": execs, "meses": meses,
+                    "ocorrências": len(o) + len(s_u),
+                    **({"ocorrências visíveis": len(o), "ocorrências silenciosas": len(s_u)} if S is not None else {}),
+                    "erros": len(g), "execuções": execs, "meses": meses,
                     "tokens": int(g["tok_tot"].sum())})
     t = pd.DataFrame(tri)
     return t.sort_values(["role", "decisão", "tokens"], ascending=[True, True, False]).reset_index(drop=True)

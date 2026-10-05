@@ -1,5 +1,7 @@
 # Racionais das falhas silenciosas — o balde invisível
 
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
+
 **Para que serve este documento:** o mesmo papel do [`01-racionais.md`](01-racionais.md), só para o erro que **não**
 vira exceção. Explica **por que** a fonte de erros não pode ser só a exceção, **como** o funil separa os dois baldes e
 **o que** cada medida do balde invisível quer dizer. Os números por base estão em
@@ -53,7 +55,10 @@ do código que a chamou (§5). Do mecanismo para baixo, o catálogo é um só �
 **A consolidação junta ocorrências, não totais.** Uma execução pode ter a mesma unidade nos dois baldes; somar
 "execuções do visível + execuções do invisível" contaria essa execução duas vezes. Por isso cada balde entrega uma
 tabela de ocorrências no mesmo formato (`exec_id`, papel, `idx`, mês, unidade, canal), e a triagem final conta sobre a
-união (`consolidacao_unidades.ipynb`, plano 4.2b).
+união ([`../pipeline/consolidacao_unidades.ipynb`](../pipeline/consolidacao_unidades.ipynb), §14.x; Ajuste 12, 04/10).
+A ocorrência é a mesma régua nos dois canais — cascata (steps consecutivos do mesmo papel) × unidade (decisão do Rafael,
+02/10) — e o balde invisível chega ao catálogo por `REGRAS_INVISIVEL`, sem nome de ferramenta; o que não casa fica sem
+unidade e fora da triagem, como o resíduo do visível.
 
 ## 3 · O motivo: seis grupos e o dono
 
@@ -86,9 +91,12 @@ da ferramenta (decisão do Rafael, 01/10).
 - **[3] contrato de retorno precedido** — quanto de `U_tipo_retorno`, `U_contrato_dict` e `U_campo_inexistente` vem logo
   depois de uma falha silenciosa. Pergunta se essas memórias são, na verdade, efeito da plataforma (a ferramenta
   devolveu texto onde o contrato prometia `dict`). Se fossem, a lição estaria no lugar errado.
-- **[4] candidato a sucesso falso** — numa falha **real**, o papel entregou `final_answer` depois sem nenhuma chamada
-  sem falha da mesma ferramenta no meio. É **teto**: a resposta pode não depender daquele dado. Só a leitura do caso
-  confirma.
+- **[4] candidato a sucesso falso** — numa falha **real**, o papel entregou `final_answer` — no próprio step da falha
+  ou depois, **na mesma chamada do papel** — sem nenhuma chamada sem falha da mesma ferramenta no meio. É **teto**: a
+  resposta pode não depender daquele dado. Só a leitura do caso confirma. *Ajuste 11 (02/10):* a regra antiga olhava
+  só o 1º final **estritamente depois** e em **qualquer chamada**. Com isso, deixava fora a falha mais direta (a
+  ferramenta falha e o mesmo bloco entrega o `final_answer`) e aceitava um final que respondia a outra tarefa. Isso
+  violava o próprio "teto" (livro-razão, Ajuste 11).
 
 Três níveis que [4] separa e as métricas de sucesso confundem: o step não teve exceção ≠ a ferramenta funcionou ≠ a
 tarefa foi concluída (plano S5).
@@ -120,8 +128,8 @@ da unidade `U_repr_colado` (Ajuste 2.2) — muda só **onde** ele aparece:
 O contrato declara `textos_decisoes (str)`: "… em JSON formatado como string". O texto pede JSON; o tipo `(str)` convida
 ao `str(...)`. Por isso o destino é duplo: **memória** (a lição do `repr_colado` estendida — use a variável, converta com
 `json.dumps`, nunca cole o print nem use `str()`) e **aviso à plataforma** (o passe dict → string JSON entre duas
-ferramentas da mesma esteira). A unidade passa a contar os dois canais na consolidação (decisão do Rafael, 01/10;
-plano 4.2b).
+ferramentas da mesma esteira). A unidade conta os dois canais na consolidação (decisão do Rafael, 01/10; Ajuste 12):
+base 1, 6 → 12 ocorrências; base 2, 18 → 104 (esperado).
 
 ## 6 · Os detectores de comportamento (migrados da esteira)
 
@@ -149,6 +157,12 @@ Inventário: o que o system prompt **declara** (`def nome(...)`), não o que apa
 - **Grupos por palavra-chave.** Uma regra pode errar de grupo numa ferramenta nova; o `nao_reconhecido` e a conferência
   nas duas bases são a proteção.
 - **A forma lê só o código do step da falha**, por regex, e só o 1º argumento. É contagem de forma, não leitura de caso.
-- **[4] é teto.** Candidato a sucesso falso não é sucesso falso confirmado.
+- **[4] é teto — e frouxo.** Candidato a sucesso falso não é sucesso falso confirmado. Na leitura de 6 casos da base 2
+  (02/10), nenhum era: em 3, a resposta veio de outra fonte; nos 3 do `json_invalido`, ela **declara a falha**. A
+  "falha declarada" é uma terceira categoria que o [4] não separa (plano 4.1c e S5). A fronteira de chamada vem dos `TaskStep`
+  do papel; o resto das ferramentas ainda mistura as chamadas (plano S4).
+- **A ocorrência do balde invisível é a cascata × unidade, como no visível** (resolvido no Ajuste 12; antes era uma
+  linha por falha). Base 1: 120 falhas em 119 steps e 100 cascatas; no `json_invalido`, 6 = 6. Só uma regra leva o
+  balde invisível ao catálogo; as outras 113 falhas da base 1 ficam sem unidade.
 - **Groundedness da resposta final** (o valor no `final_answer` tem suporte nas observações?) — o erro de maior impacto
   no TRAIL — ainda não é medido aqui ([`02-relatorio-achados.md`](02-relatorio-achados.md) §5).

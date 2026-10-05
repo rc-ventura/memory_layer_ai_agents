@@ -61,7 +61,7 @@ fluxo completa, não amostra. É uma **árvore de roteamento**: todas as
 assinaturas (o bucket, a mensagem) e todos os mecanismos aparecem com o nome,
 sem agregado, para seguir cada bucket até o mecanismo, a lição e o destino.
 **A cor é a família do erro, carregada de ponta a ponta** — a língua de cor
-comum das figuras (`paleta.COR_ERRO`, a mesma do 8.8 e do 9.3): cada fita leva a
+comum das figuras (`paleta.COR_ERRO`, a mesma do 8.8 da esteira e do 14.6 da consolidação): cada fita leva a
 cor da família dos erros que passam por ela; **roxo = resíduo** (nenhuma regra
 reconheceu a causa), **cinzas = plataforma** (harness/infra, não é erro do
 agente). Um nó que reúne categorias diferentes aparece em fatias. (Até 24/09/2026
@@ -271,7 +271,7 @@ A divisão de trabalho correta é a que o pipeline encarna:
 | erro → sintoma (classify) | §8.1 Pareto de assinaturas | contagens |
 | papel × lição (quem erra o quê) | §8.8 | % dos erros do papel (contagem) |
 | priorização por custo | §8.5 | tokens desperdiçados |
-| unidade → decisão | §9.3 | tokens + veredito da triagem |
+| unidade → decisão | consolidação §14.6 (era o §9.3 da esteira) | tokens + veredito da triagem |
 | **a cadeia inteira numa figura** | **§1.1 Sankey da genealogia** (contagem real por nó e por aresta) | contagens |
 
 **Limite da fonte de erros (01/10).** A cadeia parte de `ActionStep.error`, ou seja, só do erro que virou exceção.
@@ -284,7 +284,23 @@ Nas duas bases, ~90% das falhas de ferramenta não chegam a ela:
 Medida e grupos: `../../pipeline-entre-bases.md` Etapa 10c. Desde 01/10 é o **balde invisível**, com notebook próprio
 ([`../pipeline/falhas_silenciosas.ipynb`](../pipeline/falhas_silenciosas.ipynb)) e docs
 [`13`](13-racionais-falhas-silenciosas.md)–[`15`](15-procedimento-falhas-silenciosas.md); a cadeia daqui é o balde
-visível, e as duas se juntam na consolidação das unidades (`../../plano-atual.md` 4.2b).
+visível, e as duas se juntam na consolidação das unidades.
+
+**A etapa final: a consolidação (Ajuste 12, 04/10).** A triagem que decide candidata / fora / sinal de harness passa a
+ver os dois baldes ([`../pipeline/consolidacao_unidades.ipynb`](../pipeline/consolidacao_unidades.ipynb), §14.x):
+
+- cada balde entrega **ocorrências** no mesmo formato (`exec_id`, `role`, `idx`, `mes`, `unidade`, `ocorrencia`,
+  `canal`); a ocorrência é **cascata × unidade** nos dois canais;
+- o balde invisível chega ao catálogo por `REGRAS_INVISIVEL` (`base_pipeline.py`), sem nome de ferramenta: hoje, uma
+  regra — JSON inválido com argumento colado de um retorno impresso → `U_repr_colado` (o mesmo gesto do canal
+  visível; `13` §5). O resto fica sem unidade, como o resíduo do visível;
+- `triagem(EU, silenciosas=…)` conta ocorrências, execuções, meses e papéis sobre a **união** dos canais (nunca somando
+  totais); erros e tokens continuam do visível. Sem as silenciosas, a saída é a da esteira.
+
+Efeito: base 1, só a `U_repr_colado` muda (6 → 12 ocorrências e execuções; decisão igual); base 2, esperado 18 → 104.
+Desde o plano 4.2c (04/10), a triagem — global e por papel, e os gráficos dela — mora só na consolidação, que grava o
+`candidatos_memoria.csv`. A genealogia (o Sankey) continua sendo a decomposição dos **erros visíveis** (é o que ela
+conta); os destinos dela vêm da triagem do visível, que dá as mesmas decisões da consolidada.
 
 Duas medidas convivem e não se confundem: **contagem de erros** (frequência —
 "o que mais ocorre") × **soma de tokens** (custo — "o que mais dói").

@@ -1,6 +1,8 @@
 # Pipeline entre bases — o livro-razão dos ajustes do método
 
-**Data:** 2026-09-25 (atualizado 29/09) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 conferidos na base 2; 10 feito neste repo, falta conferir; depois, a Etapa 6 do plano (§5).
+> **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](glossario.md).
+
+**Data:** 2026-09-25 (atualizado 04/10) · **Estado:** ajustes 1 a 5 e 8 conferidos nas duas bases; 6 revertido; 7 e 9 conferidos na base 2; 10 e 11 feitos neste repo, falta conferir na base 2; 12 (a consolidação) feito e conferido na base 1, a rodar na base 2; Etapas 10b/10c (protocolo do harness, falhas silenciosas) registradas; o "o que fazer agora" vive em [`plano-atual.md`](plano-atual.md).
 
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
@@ -443,6 +445,163 @@ cor (preto); a família de protocolo perde 1 erro. Nenhuma decisão de triagem m
 
 **Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`.
 
+### Ajuste 11 — o [4] (candidato a sucesso falso) respeita o step final e a fronteira de chamada
+
+**Gatilho.** A revisão da auditoria de 02/10 (`2026-09-trace-law-flow/audit/2026-10-02-auditoria-…md`, Parte II).
+Conferindo o balde invisível com uma implementação independente (`audit_recompute9.py`), a definição do [4] se
+mostrou mais estreita que a prosa do `13` §4. O `idx_final_depois` era o 1º `final_answer` **estritamente depois**
+da falha, em **qualquer chamada** do papel.
+
+**Evidência (base 1, rodando).**
+
+| # | O quê | Contagem |
+|---|---|---:|
+| 1 | falhas reais no **próprio step** do `final_answer` (a ferramenta falha e o mesmo bloco entrega a resposta: o caso mais direto de sucesso falso) | 2 |
+| 2 | … das quais a regra antiga contava | 1 (por acaso: achou um final de **outra** chamada) |
+| 3 | falhas reais cujo "final seguinte" era de outra chamada (um `TaskStep` no meio) | 2 |
+| 4 | papéis chamados mais de uma vez na mesma execução (o `idx` junta as chamadas — plano S4) | 491 de 2.252 |
+
+**Solução.** `falhas_silenciosas()` ganha a coluna `chamada` (os `TaskStep` antes do step, na lista do papel), e o
+`idx_final_depois` passa a ser o 1º `final_answer` **com `f >= i` e na mesma chamada**. O
+`sucesso_falso_candidato()` não muda: na falha do próprio step final não há chamada sem falha no meio, então ela
+vira candidato.
+
+**Por quê.** O [4] é declarado **teto**, e um teto que deixa fora o caso mais direto não é teto. E um final que
+responde a outra tarefa não diz nada sobre a falha. É a mesma lição do S4: o `idx` mistura as chamadas.
+
+**Verificação (base 1).** [4] 53/75 → **54/75**: `nao_reconhecido` 7/9 → 8/9; plataforma continua 16/19 (o caso 2
+mudou de motivo, não de resultado); argumento 30/41 e `json_invalido` 0/6 iguais. O `drill_down.py silenciosas` e o
+notebook (reexecutado) dão o mesmo número; o `audit_recompute9.py` (implementação independente) também, com 0
+divergências. Nenhuma outra saída do notebook muda (diff das saídas); os CSVs da esteira não são tocados e a
+`ocorrencias.csv` não tem as colunas que mudaram (o `casos.csv` das silenciosas ganha a coluna `chamada`).
+
+**Esperado na base 2 (escrito antes de rodar).** O [4] pode mudar em poucos casos (o publicado era 20/116, plataforma 16/22). A leitura
+"plataforma quase sempre termina sem a ferramenta ter funcionado × `json_invalido` nunca" só cai se a plataforma
+mudar muito — improvável, porque a regra nova só **acrescenta** falhas no step final e **tira** finais de outra
+chamada.
+
+**Conferido na base 2 (máquina 2, 02/10, fotos do `silenciosas` e do `audit_recompute9`, 0 divergências).** [4]
+20/116 → **24/116**. As 4 a mais são falhas no próprio step do `final_answer`: plataforma 16 → 17/22 e **`json_invalido`
+0 → 3/86**. Nenhum final de outra chamada (24 de 1.000 papéis têm mais de uma chamada na base 2). A leitura muda em um
+ponto. O `json_invalido` **quase nunca** vira sucesso falso (3%), em vez de "nunca". O contraste com a plataforma (77%)
+continua. A regra antiga, reimplementada, dá exatamente o 20/116 publicado.
+
+**Replicar na máquina 2 (feito em 02/10):** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`) e `drill_down.py` →
+`falhas_silenciosas.ipynb` → `audit/scripts/audit_recompute9.py --base base2 --trace <xz> --em <erros_mecanismo.csv>
+--fonte <base_pipeline.py>`. Trazer a foto do [4] por grupo.
+
+**Junto, sem mudar número:** a regra `^'default'$` de `MOTIVO_REGRAS` era anotada só `b2`; ela dispara 2 vezes na
+base 1 (CalculoCivel, `calculo_correcoes_monetarias`, fev/2026 — a mesma calculadora do erro crítico da base 2). A
+anotação passa a `b1 b2`.
+
+### Ajuste 12 — a consolidação: os dois baldes numa triagem, e a `U_repr_colado` conta os dois canais
+
+**Gatilho.** O achado de 01/10 (Etapa 10c, "Achado (01/10)"): nas duas bases, o JSON inválido do `busca_obf` é o gesto
+do `repr_colado` — colar o print do retorno em vez de passar a variável — no canal silencioso (6/6, 86/86). A triagem
+só via o canal visível: a unidade aparecia com 6 (base 1) e 18 (base 2), quando o gesto tem 12 e 104. **Decisões do
+Rafael:** uma unidade só com os dois canais (01/10); três notebooks, visível · invisível · consolidação (01/10); a
+mesma régua de ocorrência nos dois canais (02/10, plano 4.2b-0).
+
+**Evidência (as duas bases, antes de mudar).**
+
+| | Base 1 | Base 2 |
+|---|---:|---:|
+| `U_repr_colado` visível — erros em execuções (triagem) | 6 em 6 | 18 em 18 |
+| JSON inválido silencioso com argumento colado (`--forma`, `audit_recompute9` E) | 6 | 86 |
+| … em sequências (régua da cascata) | 6 | 86 |
+| execuções em comum entre os dois canais | 0 | 0 |
+
+**Solução.**
+
+- `base_pipeline.py`: `REGRAS_INVISIVEL` — a regra do balde invisível para o catálogo, **sem nome de ferramenta**:
+  (`json_invalido`, argumento colado de um retorno impresso) → `U_repr_colado`; `unidade_silenciosa()`;
+  `ocorrencias_visiveis(EU)` e `ocorrencias_silenciosas(sil, formas)`, as duas tabelas no formato comum (`exec_id`,
+  `role`, `idx`, `mes`, `unidade`, `ocorrencia`, `canal`), com ocorrência = cascata × unidade nos dois canais;
+- `triagem(..., silenciosas=None)`: com as ocorrências silenciosas, ocorrências, execuções, meses e papéis contam a
+  **união** dos dois canais, e entram as colunas `ocorrências visíveis` / `ocorrências silenciosas`; erros, tokens,
+  cascata e "% após outro erro" continuam do visível (o custo da falha silenciosa é retrabalho, medido no notebook
+  dela). **Sem o parâmetro, a saída é a de sempre** — a esteira não muda;
+- a lição da `U_repr_colado` ganha: *"se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca com
+  str(...)"*;
+- `falhas_silenciosas.ipynb` §13.8 grava a tabela de ocorrências com unidade; notebook novo
+  `consolidacao_unidades.ipynb` (§14.x) — a triagem consolidada, o que muda contra a triagem só do visível, a unidade
+  pelos dois canais e a fila sem unidade do balde invisível;
+- `audit_recompute9.py`, bloco G: a `U_repr_colado` consolidada reimplementada da prosa do `13` (§2 e §5).
+
+**Por quê.** A unidade é o mecanismo com a sua lição; onde o erro aparece (exceção ou texto) não muda o mecanismo.
+Contar só o canal visível mediria o gesto pela parte pequena (na base 2, 18 de 104). A união por ocorrência — e não a
+soma de totais — evita contar duas vezes a execução que tem o gesto nos dois canais.
+
+**Verificação (base 1).**
+
+- `triagem(EU)` sem as silenciosas: idêntica à de antes, célula a célula, exceto o texto da lição da `U_repr_colado`;
+  `triagem_por_papel()` idêntica;
+- consolidada: **só a `U_repr_colado` muda** — ocorrências 6 → 12, execuções 6 → 12; meses 4, papéis 2 e a decisão
+  (candidata) iguais; nenhuma unidade nova; nenhuma decisão muda; sensibilidade (≥5 execuções, ≥3 meses): a mesma
+  limítrofe de antes;
+- steps nos dois canais: 0; silenciosas: 119 steps em 100 cascatas (o mesmo da sonda F do `audit_recompute9`);
+- `audit_recompute9.py`: 0 divergências, com o bloco G (12 · 12 · 4 · 2); `audit_recompute6.py`: 0 divergências;
+- notebook das falhas silenciosas reexecutado: só a saída da §13.8 muda; a esteira não precisa ser reexecutada (a lição
+  não aparece nas saídas embutidas; o `candidatos_memoria.csv` da esteira, git-ignored, pega o texto novo no próximo run).
+
+**Esperado na base 2 (escrito antes de rodar).** `U_repr_colado` 18 → **104** ocorrências e 104 execuções (0 em comum);
+continua candidata; nenhuma outra unidade muda (o balde invisível da base 2 só tem regra para o JSON inválido colado);
+bloco G do `audit_recompute9` com 0 divergências (meses e papéis "a conferir").
+
+**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `falhas_silenciosas.ipynb`,
+`consolidacao_unidades.ipynb` (novo) e `audit/scripts/audit_recompute9.py` → rodar no terminal, nessa ordem: esteira,
+falhas silenciosas, consolidação, `audit_recompute9 --base base2`. Entra no prompt da rodada 2
+(`maquina2/2026-10-02-prompt-base2-rodada2.md`, passo 2b). Trazer a §14.3 e o bloco G.
+
+**Complemento (04/10, plano 4.2c): a triagem sai da esteira e passa a morar na consolidação.** Com o Ajuste 12, a
+decisão sobre as unidades depende dos dois baldes; deixá-la também na esteira daria duas triagens com números
+diferentes para a mesma unidade.
+
+- **Mudou para `consolidacao_unidades.ipynb`:** a triagem global (era a 9.2, a parte da decisão), o gráfico das
+  unidades por decisão (9.3 → §14.6), a candidatura por papel (9.4 → §14.7) e o global × papel (9.5 → §14.8). O
+  `candidatos_memoria.csv` é gravado só lá (§14.9), com o mesmo nome e lugar; o `triagem_consolidada.csv` provisório do
+  Ajuste 12 deixou de existir.
+- **Ficou na esteira:** os gráficos do balde visível (8.0–8.12 — o 8.5 é o custo dos erros visíveis por unidade e o
+  8.10 compara papéis, não unidades) e, na §9, o que o balde visível entrega: assinatura → unidades, resíduo por
+  padrão, erros críticos e as exportações (`erros_mecanismo.csv`, `criticos.csv`, …). As §9.3–9.5 viraram ponteiros.
+- **`triagem_por_papel(..., silenciosas=None)`:** o mesmo padrão da triagem global — ocorrências, execuções e meses do
+  papel contam a união; sem o parâmetro, a saída é a de sempre (conferido).
+- **A Sankey da genealogia** continua sendo a decomposição dos erros visíveis; as decisões dela são as mesmas da
+  triagem consolidada.
+- **`audit_recompute6.py`** (o balde visível) passou a comparar, no `candidatos_memoria.csv`, as ocorrências visíveis,
+  os erros e os tokens; execuções, meses e papéis só nas unidades sem canal silencioso (a união é o bloco G do
+  `audit_recompute9`).
+
+**Um número publicado muda.** Na régua estrita por papel (≥5 execuções e ≥3 meses), a célula `RoteadorCivel` ×
+`U_repr_colado` passa de "fora no papel" a candidata: com as 6 ocorrências silenciosas, ela tem 9 execuções em 3
+meses (antes, 3 em 2). A sensibilidade por papel vai de **8 de 18** células que caem na régua estrita para **7 de 18**.
+Na régua padrão (≥3, ≥2), nenhuma decisão por papel muda: 18 de 31 células candidatas, 13 herdadas, 0 reveladas, como
+antes. A triagem global fica igual: 10 candidatas, 440 de 498 erros (88%), 91% dos tokens.
+
+**Verificação (base 1):** fora da §9, as saídas da esteira reexecutada são idênticas às de antes (diff de todas as
+células); a consolidação roda sem erro, com as três figuras; `audit_recompute6` e `audit_recompute9` com 0 divergências.
+**Esperado na base 2:** a mesma estrutura; a sensibilidade por papel do `RoteadorCivel` pode mudar do mesmo jeito (a
+conferir). **Replicar na máquina 2:** `base_pipeline.py`, a esteira, `consolidacao_unidades.ipynb` (prompt da rodada 2,
+passos 1 e 2b; hashes atualizados).
+
+### Ajuste 13 — o "campo inexistente" da base 2 também é sinal de harness
+
+**Gatilho.** A rodada 2 da base 2 (Etapa 10d): o "campo inexistente no retorno" da base 2 tem a mesma essência da
+base 1, onde a mineração decidiu "harness" (Ajuste 5) — e, pelo Ajuste 7, a decisão de uma base não vale para a outra.
+
+**Evidência (base 2, `investigacao_achados.py` seção C, determinística).** 38 erros em 36 execuções (RespostaBacen,
+RespostaOficios); **38 de 38 com a chave pedida no system prompt**; 31 são `quebra_sigilo` pedido ao retorno do
+`validar_quebra_sigilo`, que tem `justificativa` e `vazamento_sigilo`. O prompt declara um nome e a ferramenta devolve
+outro: o conserto é no contrato do prompt, não na memória do agente.
+
+**Solução.** `DESTINO_MINERACAO` aceita mais de uma base (`bases`), e o `U_campo_inexistente` passa a valer
+`("base1", "base2")`. **Decisão do Rafael (05/10).**
+
+**Verificação (base 1).** Triagem global e por papel idênticas (a base 1 já tinha a decisão). **Esperado na base 2:** o
+`U_campo_inexistente` sai das candidatas e vai para "sinal de harness" — candidatas 8 → 7, erros cobertos pelas
+candidatas 370 → 332; as células dele saem da triagem por papel. **Replicar na máquina 2:** `base_pipeline.py` (restaurar
+`TRACE` e `BASE_ID`) → consolidação, na próxima ida.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e
@@ -600,8 +759,8 @@ a decisão "não-memória" — tomada na base 1 — ainda não tem evidência pr
 **o que o LLM escreveu no lugar do bloco** — só a forma: vazio; abriu `<code>` e não fechou (cortado?); bloco em ```
 em vez de `<code>`; texto sem nenhum marcador de código —, recuperação e cascata. Os casos, com `exec_id`, vão para
 `resultados/evidencia/protocolo/casos.csv` (git-ignored). **Conferido na base 1:** 33 erros; out/2025 24, nov 1, dez 7,
-fev 1, zero desde mar; forma: 31 texto sem marcador, 2 em ```; 33/33 recuperados; logo depois, 7 `U_texto_solto` —
-tudo como no relatório.
+fev 1, zero desde mar; forma: 31 texto sem marcador, 2 em ```; 33/33 recuperados; logo depois, 25 steps sem erro, 7 `U_texto_solto` e 1
+`U_estado_perdido` — tudo como no relatório (o `U_estado_perdido` foi acrescentado em 02/10, ressalva B da auditoria).
 
 **Decisão conforme o resultado.** Concentrado num período → incidente de plataforma, "não-memória" continua (registrar
 as datas). Espalhado e com uma forma dominante → ver se há lição (ex.: "sempre responder com bloco de código, inclusive a
@@ -844,6 +1003,9 @@ busca_obf`, commits `6123716`, `de5b601`); o [1b] bate grupo a grupo com o que f
 | … dos quais **argumento do agente** | 30/41 | 2/6 |
 | … dos quais **JSON inválido** | **0/6** | **0/86** |
 | … dos quais não reconhecido | 7/9 | 2/2 |
+
+*(Os números do [4] acima são de antes do Ajuste 11, de 02/10. Agora: base 1 54/75 (não reconhecido 8/9); base 2
+24/116 (plataforma 17/22, JSON inválido 3/86). Ver §3, Ajuste 11.)*
 | `busca_obf`: forma do 1º argumento (`--forma`) | 6 `str(dict colado de um retorno impresso)` | 80 `str(dict colado…)` + 6 string colada |
 
 **Conclusões:**
@@ -881,9 +1043,10 @@ comum.** Ele:
   `str(dict colado)`, 6 string colada). **Nenhum** `json.dumps` nem variável — o JSON quebrado não vem da ferramenta.
 - **O contrato.** `textos_decisoes (str)`: "… em JSON formatado como string" (declaração lida na máquina 2). O texto pede
   JSON; o tipo `(str)` convida ao `str(...)`. O dict vem de outra ferramenta da mesma esteira.
-- **O peso.** Na base 2 o canal silencioso é ~12× o visível (86 contra os 7 do `repr_colado`): a unidade foi medida pela
+- **O peso.** Na base 2 o canal silencioso é ~12× o visível (86 contra os 7 do `repr_colado`; *corrigido em 02/10: o visível são 18, ~5×*): a unidade foi medida pela
   parte pequena.
 - **O custo é retrabalho, não resposta errada.** 0/6 e 0/86 viram sucesso falso — o agente refaz a chamada e acerta.
+  *(Corrigido pelo Ajuste 11, 02/10: base 2 3/86 — falha e `final_answer` no mesmo bloco. "Quase nunca", não "nunca".)*
   A falha de plataforma é o oposto (16/19, 16/22). O grupo argumento do agente **não** segue um padrão (30/41 contra 2/6):
   "erro do agente se recupera" não vale nas duas bases.
 - **Dono:** o agente (quem precisa mudar para o erro não acontecer: passar a variável com `json.dumps`). O rótulo do
@@ -912,6 +1075,78 @@ byte a byte, nos três modos (base 1). O §7 da esteira migrou inteiro para a §
 90, Result-Ignore 103/3.053, RAC 125, Tool-Skip 10/840); na esteira ficou um parágrafo de limite. A §13.8 grava
 `resultados/evidencia/silenciosas/ocorrencias.csv`, a entrada do balde para a consolidação. **Replicar na máquina 2:**
 `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`, `falhas_silenciosas.ipynb` e o notebook da esteira.
+
+**Base 2 rodada (02/10, tarde) — relatório do agente da máquina 2 (prompt do plano 4.2a; 10 fotos).** O que é
+**[conferido]** veio de contagem determinística; o que é **[assistido]** é leitura do LLM da máquina 2, ou seja,
+hipótese.
+
+*Como rodou.* O `nbconvert` dos dois notebooks não terminou no editor ("Cell did not finish executing"). Os passos 1–3
+foram recalculados pelas funções do pipeline e pela lógica dos detectores da §13.7, e conferem com os agregados
+gravados. O `drill_down.py caso` caiu num dos casos com `UnicodeEncodeError` (terminal cp1252); o agente leu esse caso
+direto do trace. Corrigido no `drill_down.py` (stdout em UTF-8). Os SHA-256 das cópias da máquina 2 não batem com o
+repo (cópias com edição local). O que sustenta os números é o `audit_recompute9`, uma implementação independente, com
+0 divergências lá.
+
+| Passo | Resultado | Tipo |
+|---|---|---|
+| 1 · triagem | 479 erros · 16 unidades · **8 candidatas** (370 erros, 77%) · 1 crítico; os 6 esperados dos Ajustes 2.2–10 conferem (`U_repr_colado` candidata, `U_resultado_bruto` fora com 3/2/1, `U_codigo_lento` ausente, `H_timeout_ferramenta` não-memória, `U_campo_inexistente` candidata e não sinal, 1 crítico) | [conferido] |
+| 2 · `U_repr_colado` visível | **18 erros em 18 execuções**, só RoteadorCivel (jun 3, jul 10, ago 5) — o "7" era só o recorte do Ajuste 2.2 | [conferido] |
+| 3 · funil | 3.907 ActionSteps · 479 com exceção · 20 falhas de ferramenta com exceção · 134 silenciosas em 134 steps (87,01%) · sobreposição 0 · [4] 24/116 | [conferido] |
+| 3 · detectores §13.7 | inventário 116 · Result-Ignore 203/8.661 (2,34%) · RAC 350 · mismatch 23 (só registro) · Tool-Skip 3/1.000 (0,3%) · chamadas × declaradas 103 × 116 | [conferido]; contagem de detector, não falha confirmada |
+| 4 · sucesso falso (4.1b), 6 casos | plataforma 3 (as 3 calculadoras): o `final_answer` **não** usa o dado que faltou (1 não precisa dele, 2 vieram de outra ferramenta). `json_invalido` 3: falha e `final_answer` no mesmo step, e a resposta **declara a falha** (não omite, não inventa) → **0/6 sucessos falsos** | [assistido]; amostra não aleatória, 3 de 17 na plataforma |
+| 5 · RespostaBacen (D2), 4 erros | `o4-mini`, `b0f37eea`, modo texto: **M1 em 3** (JSON do negócio ×2, pergunta ao usuário), todos com a declaração `resposta_gerada` e o prompt pedindo formato; **M2 em 1** (dez/2025, depois do `resposta_final`, com a declaração **`json_resposta`**); 3/4 recuperam no step seguinte e 4/4 entregam `final_answer` depois | M1/M2 [assistido]; tokens, caracteres, `finish` e recuperação [conferido] |
+
+*Leitura.*
+
+- **O [4] é um teto frouxo.** Na amostra, nenhum dos 6 candidatos é sucesso falso. A plataforma tinha outra fonte
+  para o dado, e o `json_invalido` termina numa **falha declarada**: uma terceira categoria, que o [4] não separa
+  hoje. "O risco à resposta está na plataforma" passa a ser **hipótese não confirmada** (0/3), não achado. O caminho
+  para medir de verdade é o 4.1c (o retorno no `txt_vrvl_locl`) e o S5 (sucesso em três níveis).
+- **O M2 segue a declaração `json_resposta` nas duas bases.** Base 1: os 6 M2 em dez/2025, todos no período
+  `json_resposta`. Base 2: o único M2, também em dez/2025 e com `json_resposta`. Com `resposta_gerada` (desde
+  jan/2026): base 1, 0 erros em 88 steps; base 2, 0 M2 nos 3 casos. É um experimento natural nas duas bases. O
+  contrato induzia o M2, e a troca do contrato o eliminou. Destino: **sinal de harness, já corrigido pela
+  plataforma**; não é memória.
+- **O M1 do RespostaBacen na base 2 tem o gatilho da base 1.** Nos 3 casos, o prompt pede formato e o modelo entrega o
+  conteúdo pedido sem o envelope. O `protocolo` [9] viu 2 dos 3 (o terceiro é a pergunta ao usuário, 496 caracteres:
+  o falso negativo conhecido da medida).
+- **Novo: `U_nome_inventado` é a maior candidata da base 2** (118 erros, 112 execuções; na base 1, 5). Ainda não foi
+  lida nem minerada. É também a 1ª unidade do único erro crítico. Conferir se é nome inventado, definição que expirou
+  entre steps (roadmap #23) ou narração executada como código (M6, plano 4.3).
+
+### Etapa 10d — base 2, rodada 2 (05/10): as seis perguntas, e a base 2 finalizada
+
+**O que rodou.** Na máquina 2, o `audit_recompute9` (0 divergências, com o bloco G da consolidação) e o
+`investigacao_achados.py`, no terminal **[conferido]**; os notebooks tiveram saídas salvas consultadas, não reexecução
+nesta rodada. Os arquivos foram levados por cópia do conteúdo (o Rafael confirma que são os da branch); a cópia mudou os
+hashes, então a conferência por hash não fecha. Decisão do Rafael: **a base 2 fica finalizada**, e a próxima ida à
+máquina 2 reexecuta os notebooks no terminal com cópia íntegra.
+
+**Os achados, por pergunta.**
+
+- **Colar o print, canal visível:** os 18 erros estão na linha rejeitada que chama o `busca_obf` — o mesmo gesto dos 86
+  silenciosos, na mesma ferramenta. A consolidação: 104 ocorrências, 104 execuções, **4 meses, 1 papel** (o silencioso
+  tem mai/2026; o visível começa em jun) **[conferido]**.
+- **Nome usado sem ter sido definido (118, a maior candidata):** 101 erros são **um papel (ContestacaoCivel), um mês
+  (ago/2026), um modelo (`gpt-5.2-2025-12-11`)**; 104 no 1º step da chamada; em 107 o nome só é definido depois; 1 vem
+  de uma chamada anterior do papel; 1 vem logo depois de uma resposta sem bloco de código **[conferido]**. Leitura:
+  parece **incidente** concentrado (como o do protocolo na base 2), não lição recorrente; os 17 restantes, espalhados,
+  sustentam a candidatura. Hipótese, não decisão (plano 4.11).
+- **Campo inexistente (38):** 31 são o RespostaBacen pedindo `quebra_sigilo` quando o `validar_quebra_sigilo` devolve
+  `justificativa`/`vazamento_sigilo`; **38 de 38 com a chave pedida no system prompt** **[conferido]**. É a essência da
+  base 1 (o prompt induz o nome errado) → **Ajuste 13**.
+- **Erro crítico:** o `'DEFAULT'` da calculadora aparece nas chamadas 1, 2 e 4; as chamadas 1 e 2 se recuperaram e
+  terminaram com resposta; na 4ª o pensamento menciona a falha, a ferramenta não é chamada de novo e a chamada morre
+  **[conferido]**. O `'DEFAULT'` é falha recorrente da plataforma, mas não mata sozinho: o que mata é a cascata depois.
+- **Desfecho dos 24 candidatos a sucesso falso (regra pelo estado final das variáveis):** a resposta **declara a falha
+  em 24 de 24**; 1 ficou "sucesso falso provável" — lido, não era (não precisava do dado). Com os 20 lidos em 04/10:
+  **nenhum sucesso falso confirmado na base 2** **[assistido nas leituras]**. A regra concordou com a leitura de 04/10
+  em só 3 de 18, porque "não dependia do dado" e "declarou a falha" valem ao mesmo tempo e o roteiro os pôs como opções
+  exclusivas: o desfecho precisa de **dois eixos** (usou o dado? declarou a falha?) — plano 4.1c.
+- **Versões da declaração do `busca_obf`:** uma só versão nos 4 meses; a taxa de JSON inválido cai de 21% para 9% com a
+  mesma declaração. Não há experimento natural.
+
+**Ficou registrado também:** na consolidação da base 2, a sensibilidade por papel é 8 de 14 células (saída salva).
 
 ### Etapa 6 — o alarme de cobertura
 
@@ -945,19 +1180,23 @@ falha em "Could not index" com causa de raiz de **contrato dict** — `docs_summ
 vazia; conferir se o `submecanismo()` manda esses casos a `U_contrato_dict`; (b) a resposta final diz "Nenhum documento
 encontrado" com a ferramenta tendo devolvido documentos — falha **silenciosa**, para o roadmap item 26.
 
-**Auditoria nº 6, checagem E.** Usa o mês do lote (`202512`) e espera 26/33 erros de "Explicação solta" em dez/2025;
-com o relógio da execução são 25/33 em out/2025 (`01` §7 Passo 7). Atualizar a expectativa; as checagens A, B, C e G não
-são afetadas.
+**Auditoria nº 6, checagem E.** Usava o mês do lote (`202512`) e esperava 26/33 erros de "Explicação solta" em
+dez/2025; com o relógio da execução são 25/33 em out/2025 (`01` §7 Passo 7). **Corrigida em 02/10** (ressalva A da
+auditoria de 02/10; roadmap 36): a expectativa é a do mês da execução e a checagem roda sem divergência.
 
-## 6. Estado das duas bases (25/09/2026)
+## 6. Estado das duas bases (02/10/2026)
 
 | | Base 1 | Base 2 |
 |---|---|---|
-| Erros | 498 (313 execuções) | ~479 (soma da tabela de assinaturas) |
-| Unidades | 15: **10 candidatas** (440 erros, 88%), 1 sinal de harness (10), 2 não-memória (40), 2 revisar (8) | não vista depois do 2.2 |
-| Resíduo | 8 erros (1,6%): 7 causa + 1 sintoma; 1 padrão recorrente (parênteses) | 32 erros: 25 sintoma + 7 causa; 8 padrões, 1 passa (`?`) |
-| Alarme de cobertura | não dispara (1 erro, 0,2%) | **dispara**: 25 erros, 5,2% (sem o Timeout, 1,9%) |
-| `U_repr_colado` | candidata (6 erros, 4 meses) | 7 erros no `RoteadorCivel` (jun 1, jul 4, ago 2) |
+| Erros | 498 (313 execuções) | **479** |
+| Unidades | 15: **10 candidatas** (440 erros, 88%), 1 sinal de harness (10), 2 não-memória (40), 2 revisar (8) | 16: **8 candidatas** (370 erros, 77%), 1 crítico, 3 não-memória (90), 2 revisar (9), 2 fora (9) |
+| Maior candidata | `U_texto_literal` (182 erros) | **`U_nome_inventado` (118 erros, 112 execuções, 5 meses, 6 papéis)** — na base 1, 5 erros |
+| `U_campo_inexistente` | sinal de harness (decisão da mineração, só base 1) | candidata (38 erros, 2 papéis) |
+| `U_repr_colado` | candidata (6 erros, 4 meses) | candidata (**18** erros, 18 execuções, 3 meses, só RoteadorCivel); o "7" antigo contava só o Ajuste 2.2 |
+| Críticos | 0 | 1 (CalculoCivel, fev/2026, 49 steps, 25 erros antes, 1ª unidade `U_nome_inventado`) |
+| Resíduo | 8 erros (1,6%): 7 causa + 1 sintoma; 1 padrão recorrente (parênteses) | 9 erros: 7 causa + 2 sintoma (antes dos Ajustes 3–9: 32) |
+| Alarme de cobertura | não dispara (1 erro, 0,2%) | 25/09: dispara (5,2%); depois dos Ajustes 3, 4, 8 e 9 o sintoma não reconhecido caiu para 2 erros — reconferir na Etapa 6 |
+| Balde invisível | 9 com exceção · 120 silenciosas (93%) · [4] 54/75 | 20 · 134 (87%) · [4] 24/116 |
 
-*Base 2: números lidos das fotos do notebook e das saídas do `drill_down.py`; o total de erros é a soma da tabela de
-assinaturas do §9.2.*
+*Base 2: triagem recalculada na máquina 2 pelas funções do pipeline (relatório da máquina 2, 02/10), coincide com o
+agregado gravado; o notebook não foi reexecutado inteiro lá (ver Etapa 10c, "Base 2 rodada").*
