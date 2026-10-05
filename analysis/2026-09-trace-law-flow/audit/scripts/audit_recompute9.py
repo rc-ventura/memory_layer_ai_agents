@@ -81,8 +81,8 @@ ESPERADO = {
                            "nao_reconhecido": (2, 2)}, sucesso_total=(24, 116), sucesso_antes=(20, 116),
                   forma_colado=(86, 86),
                   # consolidação (Ajuste 12): visível 18 (triagem da máquina 2, 02/10) + silencioso 86, 0 em comum;
-                  # meses e papéis ainda não publicados para a base 2
-                  consolidado=dict(ocorrencias=104, execucoes=104, meses=None, papeis=None)),
+                  # meses 4 (o silencioso tem mai/2026, o visível começa em jun) e papéis 1 — rodada 2 (05/10)
+                  consolidado=dict(ocorrencias=104, execucoes=104, meses=4, papeis=1)),
 }[args.base]
 DIVERG = []
 

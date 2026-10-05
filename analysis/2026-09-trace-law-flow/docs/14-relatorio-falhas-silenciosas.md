@@ -125,6 +125,14 @@ fica entre o sucesso e o sucesso falso, e o [4] não a separa. Com isso, "o risc
 como **hipótese não confirmada**, e não como achado, até uma medida melhor: o 4.1c (o retorno da ferramenta no
 `txt_vrvl_locl`) e o S5 (sucesso em três níveis). Na base 1, os casos ainda não foram lidos.
 
+**Base 2 fechada (05/10): nenhum sucesso falso confirmado.** A leitura ampliada de 04/10 cobriu os 20 candidatos de
+plataforma e de JSON inválido: em 0 a resposta usou o dado que faltou (15 não, 2 indeterminados; nos 15, 10 não
+precisavam do dado e 4 o pegaram de outra ferramenta). A regra determinística pelo estado final das variáveis
+(`investigacao_achados.py` E, rodada 2) achou a resposta **declarando a falha em 24 de 24** candidatos; o único marcado
+"sucesso falso provável" foi lido e não era. Na base 2, então, o candidato a sucesso falso é quase sempre **falha
+declarada** — e o desfecho precisa de dois eixos (usou o dado? declarou a falha?), não de categorias exclusivas (plano
+4.1c). Livro-razão, Etapa 10d.
+
 **Leitura dos números:** o que vale nas duas bases é o contraste entre `plataforma` (quase sempre termina sem a ferramenta ter
 funcionado: 84% e 77%) e `json_invalido` (quase nunca: 0% e 3% — em geral o agente refaz a chamada e acerta; nos 3
 casos da base 2, a falha e o `final_answer` estão no mesmo bloco). O grupo argumento do agente não tem padrão
@@ -151,9 +159,9 @@ aviso à plataforma (o tipo `(str)` de `textos_decisoes` convida ao `str(...)`).
 |---|---:|---:|
 | ocorrências visíveis | 6 | 18 |
 | ocorrências silenciosas (cascata × unidade) | 6 | 86 |
-| **consolidada** — ocorrências · execuções | **12 · 12** | **104 · 104** (esperado) |
-| meses · papéis | 4 · 2 | a rodar |
-| decisão | candidata (igual) | candidata (esperado) |
+| **consolidada** — ocorrências · execuções | **12 · 12** | **104 · 104** [conferido, 05/10] |
+| meses · papéis | 4 · 2 | 4 · 1 |
+| decisão | candidata (igual) | candidata (igual) |
 
 Base 1 [conferido]: notebook de consolidação §14.3 (só esta unidade muda) e `audit_recompute9` bloco G (0
 divergências). Base 2: passo 2b do prompt da rodada 2.
@@ -180,10 +188,9 @@ São contagens de detector, não falhas confirmadas. O Result-Ignore fica na mes
 
 ## 8 · O que falta
 
-- **Base 2:** feito em 02/10 — `audit_recompute9` (0 divergências), funil, sobreposição e detectores. Falta só
-  reexecutar o notebook inteiro lá, para as saídas e figuras embutidas (no terminal, não no editor).
-- **4.1b:** base 2 lida em 6 casos (0/6, §5); falta a base 1 e uma amostra sorteada. Medida determinística: plano 4.1c.
-- **Base 2, consolidação (Ajuste 12):** rodar `consolidacao_unidades.ipynb` e o bloco G do `audit_recompute9` (esperado
-  104 · 104).
+- **Base 2: finalizada (05/10, decisão do Rafael).** `audit_recompute9` com 0 divergências, inclusive a consolidação
+  (104 · 104 · 4 · 1); sucesso falso: nenhum confirmado. Fica para a próxima ida à máquina 2 reexecutar os notebooks no
+  terminal, com cópia íntegra dos arquivos.
+- **4.1b:** base 2 fechada (§5); falta a base 1, que roda aqui com a mesma regra. Medida em dois eixos: plano 4.1c.
 - **Aviso à plataforma (4.9):** a ferramenta devolve falha como texto; o passe dict → string JSON entre
   `puxa_doc_decisao` e `busca_obf`.

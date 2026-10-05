@@ -461,10 +461,13 @@ ALARME_COBERTURA = 0.05
 # "sinal de harness" do mecanismo, distinta da não-memória operacional (onde a plataforma falhou).
 # Fonte: 07-relatorio-mineracao-unidades-n2-n10.md §6.1–6.2; pipeline-entre-bases.md, Ajuste 5.
 # As bases são independentes: cada uma é triada e minerada por conta própria, e a decisão só vale na base em que a
-# mineração foi feita (a nº10 da base 2 não herda o "harness" da base 1 — pipeline-entre-bases.md, Ajuste 7).
+# mineração foi feita (a nº10 da base 2 não herda o "harness" da base 1 — pipeline-entre-bases.md, Ajuste 7). Quando a
+# mesma decisão é tomada noutra base, com evidência dela, a base entra em `bases` (Ajuste 13, 05/10: o "campo
+# inexistente" da base 2 — 38/38 com a chave pedida no system prompt, 31 delas `quebra_sigilo` contra o retorno
+# `vazamento_sigilo` do `validar_quebra_sigilo`; `investigacao_achados.py` seção C, rodada 2 da máquina 2).
 DESTINO_MINERACAO = {
-    "U_contrato_dict": {"destino": "memória", "base": "base1"},
-    "U_campo_inexistente": {"destino": "harness", "base": "base1"},
+    "U_contrato_dict": {"destino": "memória", "bases": ("base1",)},
+    "U_campo_inexistente": {"destino": "harness", "bases": ("base1", "base2")},
 }
 SINAL_HARNESS = "sinal de harness"
 
@@ -473,7 +476,7 @@ def destino_mineracao(u, base_id=None):
     """O destino que a mineração decidiu para a unidade NESTA base (memória / harness), ou "em aberto" se ela não foi
     minerada aqui."""
     d = DESTINO_MINERACAO.get(u)
-    return d["destino"] if d and d["base"] == (base_id or BASE_ID) else "em aberto"
+    return d["destino"] if d and (base_id or BASE_ID) in d["bases"] else "em aberto"
 
 
 def residuo_por_padrao(EU, min_execs=MIN_EXECS, min_meses=MIN_MESES):

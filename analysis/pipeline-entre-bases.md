@@ -584,6 +584,24 @@ células); a consolidação roda sem erro, com as três figuras; `audit_recomput
 conferir). **Replicar na máquina 2:** `base_pipeline.py`, a esteira, `consolidacao_unidades.ipynb` (prompt da rodada 2,
 passos 1 e 2b; hashes atualizados).
 
+### Ajuste 13 — o "campo inexistente" da base 2 também é sinal de harness
+
+**Gatilho.** A rodada 2 da base 2 (Etapa 10d): o "campo inexistente no retorno" da base 2 tem a mesma essência da
+base 1, onde a mineração decidiu "harness" (Ajuste 5) — e, pelo Ajuste 7, a decisão de uma base não vale para a outra.
+
+**Evidência (base 2, `investigacao_achados.py` seção C, determinística).** 38 erros em 36 execuções (RespostaBacen,
+RespostaOficios); **38 de 38 com a chave pedida no system prompt**; 31 são `quebra_sigilo` pedido ao retorno do
+`validar_quebra_sigilo`, que tem `justificativa` e `vazamento_sigilo`. O prompt declara um nome e a ferramenta devolve
+outro: o conserto é no contrato do prompt, não na memória do agente.
+
+**Solução.** `DESTINO_MINERACAO` aceita mais de uma base (`bases`), e o `U_campo_inexistente` passa a valer
+`("base1", "base2")`. **Decisão do Rafael (05/10).**
+
+**Verificação (base 1).** Triagem global e por papel idênticas (a base 1 já tinha a decisão). **Esperado na base 2:** o
+`U_campo_inexistente` sai das candidatas e vai para "sinal de harness" — candidatas 8 → 7, erros cobertos pelas
+candidatas 370 → 332; as células dele saem da triagem por papel. **Replicar na máquina 2:** `base_pipeline.py` (restaurar
+`TRACE` e `BASE_ID`) → consolidação, na próxima ida.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e
@@ -1095,6 +1113,40 @@ repo (cópias com edição local). O que sustenta os números é o `audit_recomp
 - **Novo: `U_nome_inventado` é a maior candidata da base 2** (118 erros, 112 execuções; na base 1, 5). Ainda não foi
   lida nem minerada. É também a 1ª unidade do único erro crítico. Conferir se é nome inventado, definição que expirou
   entre steps (roadmap #23) ou narração executada como código (M6, plano 4.3).
+
+### Etapa 10d — base 2, rodada 2 (05/10): as seis perguntas, e a base 2 finalizada
+
+**O que rodou.** Na máquina 2, o `audit_recompute9` (0 divergências, com o bloco G da consolidação) e o
+`investigacao_achados.py`, no terminal **[conferido]**; os notebooks tiveram saídas salvas consultadas, não reexecução
+nesta rodada. Os arquivos foram levados por cópia do conteúdo (o Rafael confirma que são os da branch); a cópia mudou os
+hashes, então a conferência por hash não fecha. Decisão do Rafael: **a base 2 fica finalizada**, e a próxima ida à
+máquina 2 reexecuta os notebooks no terminal com cópia íntegra.
+
+**Os achados, por pergunta.**
+
+- **Colar o print, canal visível:** os 18 erros estão na linha rejeitada que chama o `busca_obf` — o mesmo gesto dos 86
+  silenciosos, na mesma ferramenta. A consolidação: 104 ocorrências, 104 execuções, **4 meses, 1 papel** (o silencioso
+  tem mai/2026; o visível começa em jun) **[conferido]**.
+- **Nome usado sem ter sido definido (118, a maior candidata):** 101 erros são **um papel (ContestacaoCivel), um mês
+  (ago/2026), um modelo (`gpt-5.2-2025-12-11`)**; 104 no 1º step da chamada; em 107 o nome só é definido depois; 1 vem
+  de uma chamada anterior do papel; 1 vem logo depois de uma resposta sem bloco de código **[conferido]**. Leitura:
+  parece **incidente** concentrado (como o do protocolo na base 2), não lição recorrente; os 17 restantes, espalhados,
+  sustentam a candidatura. Hipótese, não decisão (plano 4.11).
+- **Campo inexistente (38):** 31 são o RespostaBacen pedindo `quebra_sigilo` quando o `validar_quebra_sigilo` devolve
+  `justificativa`/`vazamento_sigilo`; **38 de 38 com a chave pedida no system prompt** **[conferido]**. É a essência da
+  base 1 (o prompt induz o nome errado) → **Ajuste 13**.
+- **Erro crítico:** o `'DEFAULT'` da calculadora aparece nas chamadas 1, 2 e 4; as chamadas 1 e 2 se recuperaram e
+  terminaram com resposta; na 4ª o pensamento menciona a falha, a ferramenta não é chamada de novo e a chamada morre
+  **[conferido]**. O `'DEFAULT'` é falha recorrente da plataforma, mas não mata sozinho: o que mata é a cascata depois.
+- **Desfecho dos 24 candidatos a sucesso falso (regra pelo estado final das variáveis):** a resposta **declara a falha
+  em 24 de 24**; 1 ficou "sucesso falso provável" — lido, não era (não precisava do dado). Com os 20 lidos em 04/10:
+  **nenhum sucesso falso confirmado na base 2** **[assistido nas leituras]**. A regra concordou com a leitura de 04/10
+  em só 3 de 18, porque "não dependia do dado" e "declarou a falha" valem ao mesmo tempo e o roteiro os pôs como opções
+  exclusivas: o desfecho precisa de **dois eixos** (usou o dado? declarou a falha?) — plano 4.1c.
+- **Versões da declaração do `busca_obf`:** uma só versão nos 4 meses; a taxa de JSON inválido cai de 21% para 9% com a
+  mesma declaração. Não há experimento natural.
+
+**Ficou registrado também:** na consolidação da base 2, a sensibilidade por papel é 8 de 14 células (saída salva).
 
 ### Etapa 6 — o alarme de cobertura
 

@@ -2,7 +2,7 @@
 
 > **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](glossario.md).
 
-**Atualizado:** 04/10/2026 · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
+**Atualizado:** 05/10/2026 · **Base 2 finalizada** (rodada 2, livro-razão Etapa 10d) · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
 `dc89992`). O PR #29 (balde invisível) foi auditado e mergeado. A auditoria foi **fechada nas duas bases** em 02/10: as
 ressalvas foram resolvidas, o balde invisível ganhou verificação independente (`audit_recompute9`, 0 divergências na
 base 1 e na base 2) e saiu o Ajuste 11 (Parte II de `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`). Índice do que já foi
@@ -146,6 +146,8 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 | **4.2b / Ajuste 12** — a consolidação: `consolidacao_unidades.ipynb` (§14.x), `REGRAS_INVISIVEL`, as ocorrências dos dois baldes no formato comum, `triagem(..., silenciosas=)`; `U_repr_colado` com os dois canais (base 1: 6 → 12; só ela muda; decisão igual); lição com `json.dumps`; `audit_recompute9` bloco G (0 divergências) | registro de 04/10 | livro-razão Ajuste 12, `09`, `13`, `14` |
 | **4.2c** — a triagem (global e por papel) e os gráficos dela saem da esteira para a consolidação (§14.6–14.9); `candidatos_memoria.csv` gravado só lá; `triagem_por_papel(..., silenciosas=)`; `audit_recompute6` lê a parte visível. Muda 1 número: sensibilidade por papel 8 → 7 de 18 | registro de 04/10 | livro-razão Ajuste 12 (complemento), `01` §7, `02` §6, `03` §1.15, `09` |
+| **Base 2 finalizada** (rodada 2, 05/10): as seis perguntas respondidas; consolidação 104 · 104 · 4 · 1 conferida; nenhum sucesso falso confirmado (24/24 declaram a falha); "nome usado sem ter sido definido" concentrado num papel, mês e modelo; o `'DEFAULT'` não mata sozinho; sem experimento natural no `busca_obf` | registro de 05/10 | livro-razão Etapa 10d, `14` §5 |
+| **Ajuste 13** — o "campo inexistente" da base 2 também é sinal de harness (38/38 com a chave pedida no prompt); `DESTINO_MINERACAO` aceita várias bases. Base 1 idêntica | registro de 05/10 | livro-razão Ajuste 13 |
 ---
 
 ## 3. O que ficou velho (stale) — e o que vale agora
@@ -181,7 +183,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-**Ordem sugerida (04/10):** ~~4.2b-0~~, ~~4.2b~~ (Ajuste 12) e ~~4.2c~~ feitos → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. O 4.10
+**Ordem sugerida (05/10):** ~~4.2b-0~~, ~~4.2b~~, ~~4.2c~~, ~~4.2a~~, ~~4.2d~~ feitos; base 2 finalizada → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. O 4.10
 (parquet) entra antes do intake da base 3. A pendência do 4.2a (reexecutar os notebooks no terminal da máquina 2) vai
 na próxima ida lá.
 
@@ -191,7 +193,7 @@ Fechadas A, B, C, D, F e H; G não pede ação; E é o 4.2a. A revisão da audit
 estão resolvidas: o **Ajuste 11** e a anotação `'DEFAULT'`. A terceira virou o 4.2b-0. Detalhe e evidência: Parte II
 da auditoria.
 
-### 4.1b Conferir os sucessos falsos de plataforma *(base 2 lida em 02/10: 0/6; falta a base 1)*
+### 4.1b Conferir os sucessos falsos de plataforma — **base 2 fechada (05/10): nenhum confirmado** (20 lidos; a regra viu 24/24 declarando a falha). *Falta a base 1, que roda aqui.*
 
 - **Resultado da base 2 (assistido, 6 casos escolhidos):** plataforma 0/3 (1 não precisava do dado, 2 tiveram outra
   ferramenta); `json_invalido` 0/3, com falha e final no mesmo step e a resposta **declarando a falha**. O [4] é teto
@@ -207,6 +209,13 @@ da auditoria.
 - **Tipo:** leitura; nenhum código.
 
 ### 4.1c [4b] — o sucesso falso conferido pelo `txt_vrvl_locl` (roadmap #24) *(proposta; aguarda aprovação; melhoria das falhas silenciosas)*
+
+- **Atualização (05/10, rodada 2):** a primeira versão da regra já rodou na base 2, como seção E do
+  `investigacao_achados.py`: 24/24 candidatos declaram a falha, 1 "sucesso falso provável" que a leitura derrubou. A
+  comparação com a leitura de 04/10 (3 de 18) mostrou o defeito do desenho: as categorias eram exclusivas, e "não
+  dependia do dado" e "declarou a falha" valem juntas. **O desfecho passa a ter dois eixos** — *usou o dado que faltou?*
+  (estado final + uso no `final_answer`) e *declarou a falha?* (palavras de falha no texto entregue) —, e a função sobe
+  para o `base_pipeline.py`, testada na base 1 (onde os casos ainda não foram lidos).
 
 - **Contexto:** o [4] só olha se **existe** um `final_answer` na mesma chamada sem chamada bem-sucedida da ferramenta no
   meio. Não olha o que a ferramenta devolveu nem o que a resposta usou: por isso é teto, e a confirmação depende da
@@ -225,7 +234,7 @@ da auditoria.
   falha); a coluna está presente em ~90% das execuções; tem conteúdo de caso, então só saem contagens e sim/não.
 - **Tipo:** medição; não muda número publicado. Reduz o teto do [4] e a dependência de leitura por LLM.
 
-### 4.2a Rodar o balde invisível na base 2 — **prompt entregue ao agente da máquina 2** (passos 1–5 = 4.2a + 4.2b-0 + 4.1b + D2; removido do repo depois de copiado, recuperável em `git show cdd04a1:analysis/maquina2/2026-10-02-prompt-base2.md`) *(**feito** em 02/10, com uma pendência: os dois notebooks não terminaram no editor da máquina 2 e os números saíram da recomputação pelas funções. Reexecutar no terminal — `uv run jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=-1 <notebook>` — para as saídas e figuras embutidas da base 2)*
+### 4.2a Rodar o balde invisível na base 2 — **feito; base 2 finalizada em 05/10** (reexecutar os notebooks no terminal, com cópia íntegra, na próxima ida) — **prompt entregue ao agente da máquina 2** (passos 1–5 = 4.2a + 4.2b-0 + 4.1b + D2; removido do repo depois de copiado, recuperável em `git show cdd04a1:analysis/maquina2/2026-10-02-prompt-base2.md`) *(**feito** em 02/10, com uma pendência: os dois notebooks não terminaram no editor da máquina 2 e os números saíram da recomputação pelas funções. Reexecutar no terminal — `uv run jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=-1 <notebook>` — para as saídas e figuras embutidas da base 2)*
 
 - **Contexto:** o notebook novo rodou na base 1; na base 2 só rodaram os comandos do `drill_down.py`. Faltam o funil por
   step (sobreposição = 0), os detectores da §13.7 e a tabela de ocorrências (entrada da consolidação).
@@ -245,7 +254,7 @@ da auditoria.
   [1]–[3] devem repetir os das fotos de 01/10.
 - **Tipo:** confirmação; nenhum código. Fecha a ressalva E da auditoria de 02/10 e o Ajuste 11 na base 2.
 
-### 4.2d Base 2, rodada 2 — as seis perguntas abertas *(prompt pronto: [`maquina2/2026-10-02-prompt-base2-rodada2.md`](maquina2/2026-10-02-prompt-base2-rodada2.md); aguarda as fotos)*
+### 4.2d Base 2, rodada 2 — as seis perguntas abertas — **feito (05/10; livro-razão Etapa 10d)** *(prompt: [`maquina2/2026-10-02-prompt-base2-rodada2.md`](maquina2/2026-10-02-prompt-base2-rodada2.md))*
 
 - **O quê:** reexecutar os dois notebooks no terminal, rodar o `investigacao_achados.py` (colar o print no canal
   visível · nome usado sem ter sido definido · campo inexistente · erro crítico por chamada · desfecho dos 24 candidatos a
@@ -340,9 +349,11 @@ da auditoria.
 - **Decisão:** erro crítico → investigação obrigatória da **chamada terminal**: achar o step que iniciou a cascata
   dela e decidir o destino pela causa (memória, prompt ou ferramenta). Depende das ferramentas que separam as
   chamadas (4.4).
-- **Perguntas abertas do único caso (CalculoCivel, base 2):** o `'DEFAULT'` aparece também nas chamadas 1–3, e elas se
-  recuperaram? O pensamento menciona a falha logo depois? A calculadora é chamada de novo? O texto que o modelo
-  escreve fora do bloco repete a observação (3 de 4)?
+- **Respondido na rodada 2 (05/10, Etapa 10d):** o `'DEFAULT'` aparece nas chamadas 1, 2 e 4; as chamadas 1 e 2 se
+  recuperaram e terminaram com resposta; na 4ª o pensamento menciona a falha, a calculadora não é chamada de novo e a
+  chamada morre (21 steps, 11 erros + o limite, 2,09 M tokens — mais que as outras três somadas). O `'DEFAULT'` é falha
+  recorrente da plataforma (vai para o aviso, 4.9), mas não mata sozinho. Em 2 erros da chamada terminal o texto
+  repete trechos longos da observação anterior (2.881 e 2.986 caracteres) — hipótese, sem causalidade provada.
 - **Proposta anterior (descartada em 02/10):**
   - sinal de harness → gatilho direto, mesmo com um caso;
   - memória → candidata provisória (não ativa até reaparecer).
@@ -405,8 +416,15 @@ figuras. Usa as fronteiras de chamada (S4).
   roadmap #23); quantos vêm logo depois de um `H_bloco_code`. Depois, a leitura de 3–5 casos, só se as contagens não
   decidirem. Se a unidade se dividir, é **Ajuste**, olhando as duas bases.
 - **Tipo:** medição; pode virar Ajuste (mudaria a maior candidata da base 2).
+- **Resultado da contagem (rodada 2, 05/10, [conferido]):** 101 dos 118 erros são **um papel (ContestacaoCivel), um mês
+  (ago/2026), um modelo (`gpt-5.2-2025-12-11`)**; 104 no 1º step da chamada; em 107 o nome só é definido depois; só 1
+  vem de chamada anterior (não é a definição que expira) e só 1 vem logo depois de resposta sem bloco de código (não é
+  narração). **Hipótese:** o grosso é incidente concentrado (modelo/configuração em agosto, como o do protocolo); a
+  memória candidata de verdade são os 17 espalhados. **Próximo:** conferir na próxima ida à máquina 2 se o
+  ContestacaoCivel já usava esse modelo antes de agosto sem esse erro (o `drill_down.py protocolo` [8] dá papel ×
+  modelo × mês) — se for incidente, separar o mês na triagem é **Ajuste**, olhando as duas bases.
 
-### 4.9 Aviso à plataforma *(quando a base 2 fechar)*
+### 4.9 Aviso à plataforma *(a base 2 fechou em 05/10 — pronto para montar)*
 
 - modo/modelo;
 - M5 (resposta vazia aceita);
@@ -415,6 +433,10 @@ figuras. Usa as fronteiras de chamada (S4).
   `calculo_correcoes_monetarias` devolve `'DEFAULT'` como resultado **nas duas bases**;
 - o passe dict → string JSON entre `puxa_doc_decisao` e `busca_obf`: o tipo `(str)` convida ao `str(...)` (aceitar dict, ou
   a declaração pedir `json.dumps`);
+- o contrato do prompt que induz o nome errado do campo (`quebra_sigilo` × `vazamento_sigilo` no RespostaBacen) — **nas
+  duas bases** (Ajuste 13);
+- a troca de modelo sem revalidar o comportamento: o surto de "nome usado sem ter sido definido" no ContestacaoCivel em
+  ago/2026 (`gpt-5.2`), a confirmar (4.11), ao lado do `gpt-5.6-terra` no RoteadorCivel;
 - "Wrong credentials", APIs, bugs dentro das ferramentas;
 - relatório pronto seguido só de `print`.
 
