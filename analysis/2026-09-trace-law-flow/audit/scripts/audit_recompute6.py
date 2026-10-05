@@ -31,8 +31,10 @@ csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
 # Caminhos canônicos corrigidos 16/09/2026 (auditoria M2): relativos a este script, não a um
 # home de usuário fixo.
 BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
-                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+from leitor_trace import abrir_trace, formato_do_trace, trace_da_linha_de_comando   # só a abertura do arquivo (CSV ou parquet, plano §4.10)
+TRACE = trace_da_linha_de_comando(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
+                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"))   # --trace <arquivo> para outra base
 EM_CSV = f"{BASE}/pipeline/resultados/erros_mecanismo.csv"
 CAND_CSV = f"{BASE}/pipeline/resultados/candidatos_memoria.csv"
 
@@ -147,8 +149,7 @@ per_exec_calls = Counter(); per_exec_tok = Counter()
 exec_month = {}
 traj = defaultdict(list)
 
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue
@@ -345,8 +346,7 @@ print(f"   ocorrências por mês: {dict(sorted(mesq.items()))} (esp. mar–jun/2
 
 # ---------------------------------------------- §3.3 tokens/chamada (regra oficial)
 import statistics as stt
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue
@@ -384,8 +384,7 @@ print(f"   ferramentas declaradas (união): {len(INV)} (esp. 90)")
 checked=reached=repeated=same_mec_r=0
 same_sig_r=0
 traj2 = defaultdict(list)
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue

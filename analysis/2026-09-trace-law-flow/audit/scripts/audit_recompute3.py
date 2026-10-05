@@ -9,8 +9,10 @@ from statistics import median
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
 import os
 # Caminho canônico corrigido 16/09/2026 (auditoria M2): ../../data/ a partir deste script.
-TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
-                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+from leitor_trace import abrir_trace, formato_do_trace, trace_da_linha_de_comando   # só a abertura do arquivo (CSV ou parquet, plano §4.10)
+TRACE = trace_da_linha_de_comando(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
+                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"))   # --trace <arquivo> para outra base
 
 def classify_sig(m):
     if 'Could not index' in m: return 'Retorno é dict'
@@ -39,10 +41,14 @@ def classify_sig(m):
     return 'NÃO CLASSIFICADO'
 
 # checagem do header vs nº de campos (pandas diz 12 colunas; csv.DictReader achou 11 nomes)
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    first = f.readline()
-    second = f.readline(10_000_000)
-print(f"A1. campos no header: {len(next(csv.reader([first])))} · campos na 1ª linha de dados: {len(next(csv.reader([second])))}")
+if formato_do_trace(TRACE) == "parquet":   # sem linha física no parquet: o esquema e a 1ª linha lida
+    with abrir_trace(TRACE) as rdr:
+        print(f"A1. campos no header: {len(rdr.fieldnames)} · campos na 1ª linha de dados: {len(next(rdr))}")
+else:
+    with (lzma.open if formato_do_trace(TRACE) == "xz" else open)(TRACE, 'rt', encoding='utf-8') as f:
+        first = f.readline()
+        second = f.readline(10_000_000)
+    print(f"A1. campos no header: {len(next(csv.reader([first])))} · campos na 1ª linha de dados: {len(next(csv.reader([second])))}")
 
 ok_ratios, err_by_sig = [], defaultdict(lambda: {"dur": [], "ratio": [], "tok": 0, "exec": set(), "mes": set(), "roles": Counter()})
 role_tok = Counter(); role_tok_err = Counter(); role_calls = Counter(); role_tok_all = Counter()
@@ -50,8 +56,7 @@ errors_role_sig = defaultdict(Counter)
 exec_calls = defaultdict(lambda: [0, 0])   # eid -> [calls, tok]
 INV = set()
 
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue
@@ -111,8 +116,7 @@ for role in sorted(role_tok_all, key=lambda x: -role_tok_err.get(x, 0))[:6]:
 # tokens/chamada por papel — precisa AST; reusa s abordagem documentada (sysprompt[0] por step)
 INV = set()
 per_role = defaultdict(lambda: [0, 0])
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue

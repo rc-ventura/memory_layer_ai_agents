@@ -35,8 +35,8 @@ Each analysis lives in its own dated folder (`YYYY-MM-slug/`) containing:
   updated;
 - `audit/` (optional) — independent audit reports and recomputation scripts.
 
-Raw trace files (`*.csv.xz` at repo root or elsewhere) must never be committed in the clear
-either — they contain unanonymized legal-case data.
+Raw trace files (`*.csv`, `*.csv.xz`, `*.csv.gz`, `*.parquet` — at repo root or elsewhere; all git-ignored) must never be
+committed in the clear either — they contain unanonymized legal-case data.
 
 ## Methodological big picture
 
@@ -161,9 +161,14 @@ kept outside the agent.
 
 When a new extraction lands, the folder setup is mechanical: dated `YYYY-MM-slug/` folder, copy
 `pipeline/base_pipeline.py` + `drill_down.py` + `checklist.py` + `.gitignore`, drop the dump in
-`data/`, point `TRACE` at the new file. Then run `python checklist.py` from `pipeline/` — it bundles
-the two non-mechanical checks below plus context (period, agent versions, roles in the JSON). Optional:
-`python checklist.py <outra-base.csv>` adds an execution-overlap check (`cod_idef_exeo`) against another
+`data/`, point `TRACE` at the new file. The dump can be a CSV (plain, `.xz` or `.gz`) or **a single parquet file**:
+every reader goes through [`leitor_trace.py`](leitor_trace.py) (shared here in `analysis/`, not copied), which tells
+the format by content and hands the code the same all-text contract as `pd.read_csv(dtype=str)` — typed columns become
+text, nested JSON columns are serialized with `json.dumps`, never `str()` (plano-atual §4.10). Then run
+`python checklist.py` from `pipeline/` — it bundles the two non-mechanical checks below plus context (period, agent
+versions, roles in the JSON); on a parquet, its §0 prints each column's type, nulls and nested columns, and it stops
+(exit 1) if any memory fails to parse. Optional:
+`python checklist.py <outra-base.csv|.parquet>` adds an execution-overlap check (`cod_idef_exeo`) against another
 extraction — mandatory before calling two bases independent replicas or pooling them. What it verifies:
 
 1. **Column drift** — `base_pipeline.py` reads six columns by name: `txt_etap_memo`, `cod_idef_exeo`,

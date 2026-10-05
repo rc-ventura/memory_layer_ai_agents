@@ -13,12 +13,20 @@ de parte do estado. A lógica é a mesma das células de §§1–3 do notebook d
 genérica — mudança aqui muda os dois notebooks.
 """
 
-import json, re, ast, builtins, unicodedata, os
+import json, re, ast, builtins, unicodedata, os, sys
 import pandas as pd, numpy as np
 from collections import Counter, defaultdict
 from types import SimpleNamespace
 
-__all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+from leitor_trace import ler_trace   # analysis/leitor_trace.py — CSV (.csv/.xz/.gz) ou um único parquet (plano §4.10)
+
+# Texto do pandas guardado em Python, não em arrow. Com o pyarrow instalado (para o parquet), o pandas 3 passaria a guardar
+# todo `dtype=str` em arrow, e as regex de `.str.contains/extract/replace` rodariam no RE2 do arrow, não no `re`: `\s`
+# deixa de casar o espaço não separável, lookahead não compila. O código foi escrito e auditado com o `re` do Python.
+pd.set_option("mode.string_storage", "python")
+
+__all__ = ["TRACE", "ler_trace", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
            "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
@@ -30,6 +38,7 @@ __all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classific
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
+# o arquivo pode ser CSV (puro, .xz ou .gz) ou um único parquet: ler_trace() decide pelo conteúdo, não pela extensão
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
 # qual base é esta: "base1" aqui, "base2" na pasta -second, "base3" na -third. Junto com o TRACE, é o que se ajusta ao
@@ -38,12 +47,13 @@ BASE_ID = "base1"
 
 
 def carregar_trace():
-    df = pd.read_csv(TRACE, dtype=str)
+    df = ler_trace(TRACE)
     # `mes` = mês em que a execução RODOU (dat_hor_inio_exeo). `anomesdia` não serve para isso: é a data de corte
     # do lote (1 valor por mês, sempre posterior ao início — mediana 46 dias, até 230), e só bate com o mês real
     # em 36% das execuções com memória. Evidência: `drill_down.py relogios`; método: 03-procedimento-validacao.md.
     df["mes_exec"] = pd.to_datetime(df["dat_hor_inio_exeo"]).dt.to_period("M").astype(str)
-    df["mes_particao"] = pd.to_datetime(df["anomesdia"], format="%Y%m%d").dt.to_period("M").astype(str)
+    # anomesdia é AAAAMMDD no CSV; num parquet com a coluna tipada como data, o leitor entrega AAAA-MM-DD
+    df["mes_particao"] = pd.to_datetime(df["anomesdia"].str.replace("-", "", regex=False), format="%Y%m%d").dt.to_period("M").astype(str)
     df["mes"] = df["mes_exec"]
     return df
 

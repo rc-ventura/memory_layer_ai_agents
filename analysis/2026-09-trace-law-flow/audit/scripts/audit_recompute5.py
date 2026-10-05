@@ -18,8 +18,10 @@ from collections import Counter, defaultdict
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
 import os
 # Caminho canônico corrigido 16/09/2026 (auditoria M2): ../../data/ a partir deste script.
-TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
-                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+from leitor_trace import abrir_trace, formato_do_trace, trace_da_linha_de_comando   # só a abertura do arquivo (CSV ou parquet, plano §4.10)
+TRACE = trace_da_linha_de_comando(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
+                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"))   # --trace <arquivo> para outra base
 
 def classify_sig(m):
     # Reimplementação independente (mesma lógica de prioridades, reescrita).
@@ -68,8 +70,7 @@ pos_tools = Counter()
 nonparse = {"n": 0, "err": 0, "tok": 0}
 max_tok_exec = ("", 0)
 
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         n_rows += 1
         memo_raw = r.get("txt_etap_memo")

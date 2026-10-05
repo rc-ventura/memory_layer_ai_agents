@@ -11,12 +11,15 @@ relatório como **Parte II**. Só então o estado vira **fechada**.
 
 - **Reexecutar não é verificar.** Rodar as funções do pipeline de novo prova reprodutibilidade. Verificação é uma
   segunda implementação a partir da prosa dos racionais, comparada número a número — o padrão dos
-  `audit_recompute*.py` (`csv` + `json` + `ast`, sem pandas, sem importar o `base_pipeline`).
+  `audit_recompute*.py` (`csv` + `json` + `ast`, sem pandas, sem importar o `base_pipeline`). Só a abertura do
+  arquivo vem de fora: `analysis/leitor_trace.py` (`abrir_trace`), que entrega as linhas no formato do
+  `csv.DictReader` a partir de CSV (puro, `.xz`, `.gz`) ou de um único parquet (plano-atual §4.10).
 - **Uma checagem que diverge sempre é consertada**, nunca convivida: ensina a ignorar a próxima divergência.
 - **Saídas** (`scripts/audit_out*.txt`) são git-ignored: podem ter trechos do trace. Os relatórios são manuscritos e
   versionados.
-- **Base 2:** auditada por fotos da máquina de compliance. Só contagens saem de lá — os scripts recentes aceitam
-  `--base base2 --trace …` para rodar lá.
+- **Base 2:** auditada por fotos da máquina de compliance. Só contagens saem de lá — o `audit_recompute9` aceita
+  `--base base2 --trace …` para rodar lá. Todos os scripts aceitam `--trace <arquivo>` (CSV ou parquet); os números
+  esperados embutidos nos scripts 1–8 são os da base 1.
 
 ## Relatórios
 

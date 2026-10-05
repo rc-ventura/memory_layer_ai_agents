@@ -24,7 +24,7 @@ Confere, contra os números publicados (docs/14-relatorio-falhas-silenciosas.md)
 
 Uso (de dentro de audit/scripts/ ou de qualquer lugar):
     python audit_recompute9.py                       # base 1, caminhos do repo
-    python audit_recompute9.py --base base2 --trace <arquivo .csv ou .csv.xz> --em <erros_mecanismo.csv> --fonte <base_pipeline.py>
+    python audit_recompute9.py --base base2 --trace <arquivo .csv, .csv.xz ou .parquet> --em <erros_mecanismo.csv> --fonte <base_pipeline.py>
 Saída: só contagens, nomes de papel e de ferramenta — nenhum exec_id, nenhum texto de caso. Pode ser fotografada na
 máquina 2. Gravar em audit/scripts/audit_out9.txt (git-ignored).
 """
@@ -36,12 +36,10 @@ try: sys.stdout.reconfigure(encoding="utf-8")   # terminal do Windows (máquina 
 except Exception: pass
 
 
-def abrir_trace(caminho):
-    """O trace da base 1 é .csv.xz; o da base 2 é .csv puro. Decide pelo conteúdo (bytes mágicos), não pela extensão."""
-    with open(caminho, "rb") as fh: cab = fh.read(6)
-    if cab.startswith(b"\xfd7zXZ"): return lzma.open(caminho, "rt", encoding="utf-8", newline="")
-    if cab.startswith(b"\x1f\x8b"): return gzip.open(caminho, "rt", encoding="utf-8", newline="")
-    return open(caminho, "r", encoding="utf-8", newline="")
+# O trace da base 1 é .csv.xz; o da base 2 é .csv puro; o da base 3, parquet. O leitor decide pelo conteúdo (bytes
+# mágicos), não pela extensão — só a abertura do arquivo vem de fora (plano §4.10).
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+from leitor_trace import abrir_trace
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(os.path.dirname(AQUI))          # analysis/2026-09-trace-law-flow
 ap = argparse.ArgumentParser()
@@ -129,7 +127,7 @@ passos = {}         # (eid, role) -> lista de dicts por ActionStep (i, chamada, 
 linhas_trace, eids_vistos, dup = 0, set(), 0
 papel_null = 0
 with abrir_trace(args.trace) as fh:
-    for r in csv.DictReader(fh):
+    for r in fh:
         linhas_trace += 1
         eid = r["cod_idef_exeo"]
         if not r.get("txt_etap_memo"): continue

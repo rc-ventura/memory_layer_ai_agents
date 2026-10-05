@@ -148,6 +148,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 | **4.2c** — a triagem (global e por papel) e os gráficos dela saem da esteira para a consolidação (§14.6–14.9); `candidatos_memoria.csv` gravado só lá; `triagem_por_papel(..., silenciosas=)`; `audit_recompute6` lê a parte visível. Muda 1 número: sensibilidade por papel 8 → 7 de 18 | registro de 04/10 | livro-razão Ajuste 12 (complemento), `01` §7, `02` §6, `03` §1.15, `09` |
 | **Base 2 finalizada** (rodada 2, 05/10): as seis perguntas respondidas; consolidação 104 · 104 · 4 · 1 conferida; nenhum sucesso falso confirmado (24/24 declaram a falha); "nome usado sem ter sido definido" concentrado num papel, mês e modelo; o `'DEFAULT'` não mata sozinho; sem experimento natural no `busca_obf` | registro de 05/10 | livro-razão Etapa 10d, `14` §5 |
 | **Ajuste 13** — o "campo inexistente" da base 2 também é sinal de harness (38/38 com a chave pedida no prompt); `DESTINO_MINERACAO` aceita várias bases. Base 1 idêntica | registro de 05/10 | livro-razão Ajuste 13 |
+| **4.10** — o trace em parquet: leitor único `analysis/leitor_trace.py` (CSV ou um único parquet) no pipeline, `checklist.py` (§0 formato), `drill_down.py` e nos 9 `audit_recompute*` (`--trace`); `pyarrow` no projeto; pandas fixado no texto em Python. Não muda número: base 1 idêntica em CSV, parquet texto e parquet tipado | registro de 05/10 | §4.10, `analysis/README.md` (intake), `audit/README.md` |
 ---
 
 ## 3. O que ficou velho (stale) — e o que vale agora
@@ -250,8 +251,8 @@ seguinte. Cada um tem contexto, problema, o que se mediria e por quê — e a pe
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-**Ordem sugerida (05/10):** ~~4.2b-0~~, ~~4.2b~~, ~~4.2c~~, ~~4.2a~~, ~~4.2d~~ feitos; base 2 finalizada → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. O 4.10
-(parquet) entra antes do intake da base 3. A pendência do 4.2a (reexecutar os notebooks no terminal da máquina 2) vai
+**Ordem sugerida (05/10):** ~~4.2b-0~~, ~~4.2b~~, ~~4.2c~~, ~~4.2a~~, ~~4.2d~~ feitos; base 2 finalizada → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. ~~4.10~~
+(parquet) feito em 05/10. A pendência do 4.2a (reexecutar os notebooks no terminal da máquina 2) vai
 na próxima ida lá.
 
 ### 4.0 Ressalvas da auditoria de 02/10 — **feito** (`675523b`; §2)
@@ -444,7 +445,7 @@ da auditoria.
 Regras determinísticas M1–M6 + notebook `mineracao_protocolo_harness.ipynb`. A família se abre nos mecanismos nas
 figuras. Usa as fronteiras de chamada (S4).
 
-### 4.10 Ler o trace em parquet — antes do intake da base 3 / extração ~1M *(proposta; aguarda aprovação)*
+### 4.10 Ler o trace em parquet — antes do intake da base 3 / extração ~1M — **feito** (05/10; não muda número)
 
 - **Contexto:** a base 3 vem em **parquet** (Rafael, 02/10). Hoje nada no sistema lê parquet: o pipeline, o
   `drill_down.py` e o `checklist.py` usam `pd.read_csv(TRACE, dtype=str)`; os `audit_recompute1–8` só abrem `.csv.xz`;
@@ -470,6 +471,34 @@ figuras. Usa as fronteiras de chamada (S4).
   exigir saídas idênticas pelos dois caminhos — `audit_recompute6` e `audit_recompute9` com 0 divergências, CSVs de
   `resultados/` iguais.
 - **Tipo:** ferramenta; não muda número. Pré-requisito do intake da base 3 (§5) e da extração ~1M (roadmap #1).
+- **Feito (05/10):**
+  - **Onde ficou o leitor:** em `analysis/leitor_trace.py`, não no `base_pipeline.py`. Os `audit_recompute*`
+    não podem importar o pipeline, e assim os dois lados leem pelo mesmo arquivo; o `base_pipeline.py` reexporta o
+    `ler_trace`. Há duas interfaces: `ler_trace` (DataFrame, contrato do `read_csv(dtype=str)`) e `abrir_trace`
+    (linhas, contrato do `csv.DictReader`, em lotes). Todos os `audit_recompute*` aceitam `--trace`.
+  - **Normalização:** texto vazio no nível da coluna vira nulo, como o `read_csv` faz. Data e hora tipadas saem com o
+    mesmo texto do CSV, sem os zeros finais da fração.
+  - **Achado no caminho:** com o `pyarrow` instalado, o pandas 3 passa a guardar o texto em arrow, e as regex de
+    `.str` rodam no RE2 (`\s` não casa o espaço não separável). O `base_pipeline.py` fixa
+    `mode.string_storage = "python"`. Na base 1, os dois modos dão o mesmo resultado; a fixação protege as bases
+    2 e 3.
+  - **Gitignore:** o `.gitignore` não cobria `*.parquet` nem `*.csv.gz`. Agora cobre (PII).
+  - **Aninhada na prática:** o JSON da memória da base 1 não vira coluna aninhada (o arrow recusa: tipos mistos no
+    mesmo campo). Na prática, a base 3 deve trazê-lo como texto. O caminho aninhado foi testado com dados sintéticos.
+- **Verificação (05/10, base 1 convertida em parquet de dois jeitos: tudo texto; tipado, com timestamp, int, coluna
+  dicionário e 11 grupos de linhas):**
+  - 9/9 `audit_recompute*` com saída byte a byte igual à de antes da mudança, nos três arquivos (CSV, parquet texto,
+    parquet tipado); o 6 e o 9 com 0 divergências.
+  - Os 5 notebooks, o `checklist.py`, 15 comandos do `drill_down.py`, `metadados_steps.py`,
+    `investigacao_achados.py` (removido da `main` depois, no PR #32) e `genealogia_sankey.py` rodaram sem erro nos três.
+  - Os 275 arquivos de `resultados/` são iguais nos três; a única diferença é o `_origem.arquivo` dos `crus/`, que
+    agora traz o nome do arquivo lido. As saídas das células também são iguais.
+  - O checklist sai com código 1 quando uma memória do parquet não parseia (teste com uma linha corrompida).
+- **Replicar na máquina 2:**
+  1. `uv sync`, que traz o `pyarrow`;
+  2. copiar `analysis/leitor_trace.py`;
+  3. no `base_pipeline.py`, `checklist.py` e `drill_down.py` da pasta `-second`, as mesmas trocas de leitura;
+  4. o `.gitignore`.
 
 ### 4.11 `U_nome_inventado` — a maior candidata da base 2 *(proposta; aguarda aprovação)*
 
@@ -525,7 +554,7 @@ Uma linha por item; o detalhe está no ponteiro. Sobe para a §4 quando for a ve
 
 - Etapa 6 — o alarme de cobertura (o gatilho com 1 caso em mês pequeno; a concentração num padrão). (roadmap #34)
 - Resíduo da base 1, os parênteses (roadmap #29); achados laterais do caso `repr_colado` (roadmap #35).
-- Intake da base 3 (vem em parquet: depende do 4.10); OBFCivel jul 30 × 180 s; falso negativo do AgenteProcuracoes; escopo de memória em
+- Intake da base 3 (vem em parquet: o 4.10 está feito); OBFCivel jul 30 × 180 s; falso negativo do AgenteProcuracoes; escopo de memória em
   `open-questions`.
 
 **Dados e bases:**

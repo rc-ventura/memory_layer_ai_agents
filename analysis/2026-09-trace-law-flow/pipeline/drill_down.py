@@ -136,7 +136,7 @@ Uso:
            caso.json`. Mesma ressalva de PII: o arquivo gerado não deve ser
            commitado nem sair do ambiente local.
 
-Requer o trace cru (85cb11b5-....csv.xz) em `../data/` (a pasta canônica é
+Requer o trace cru (o `TRACE` do base_pipeline.py: CSV ou um único parquet) em `../data/` (a pasta canônica é
 `analysis/2026-09-trace-law-flow/data/`; resolvido pelo caminho do próprio
 script, não pelo diretório corrente — corrigido 16/09/2026, auditoria M2).
 Nunca commitar a saída deste script — ela reproduz nomes de clientes e
@@ -151,7 +151,7 @@ import pandas as pd
 try: sys.stdout.reconfigure(encoding="utf-8")
 except Exception: pass
 
-from base_pipeline import TRACE, classify as _bp_classify
+from base_pipeline import TRACE, ler_trace, classify as _bp_classify
 
 def classify(m):
     # Assinatura do par (família, assinatura) que base_pipeline.classify retorna —
@@ -238,7 +238,7 @@ def texto_msg(m):
     return str(c or "")
 
 def load():
-    return pd.read_csv(TRACE, dtype=str)
+    return ler_trace(TRACE)
 
 def amostra(n=10):
     """Sem filtro: qualquer (exec_id, role) com pelo menos um ActionStep, pra olhar
@@ -359,7 +359,7 @@ def resolver(obj, caminho):
 def gravar_cru(pasta, r, linha):
     """A linha inteira do trace, sem alteração: só `txt_etap_memo` é desserializado (json.loads), para dar pra ler e
     apontar caminhos dentro dele."""
-    out = {"_origem": {"arquivo": "data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz", "linha_de_dados": int(linha),
+    out = {"_origem": {"arquivo": "data/" + os.path.basename(TRACE), "linha_de_dados": int(linha),
                        "nota": "cópia literal da linha do trace; só txt_etap_memo foi desserializado (json.loads), "
                                "sem nenhuma outra alteração"}}
     for col, v in r.items():
