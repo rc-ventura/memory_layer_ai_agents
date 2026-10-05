@@ -1218,6 +1218,12 @@ def protocolo(prompt=None):
         for role, lst in json.loads(r["txt_etap_memo"]).items():
             if not isinstance(lst, list): continue
             acts = [s for s in lst if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
+            # a chamada de cada ActionStep: quantos TaskStep vêm antes dele na lista do papel (a regra da coluna `chamada`
+            # de falhas_silenciosas()). O `idx` conta as chamadas juntas; a coluna separa (plano 4.4, S4; doc 12)
+            chamada_de, ch = [], 0
+            for st in lst:
+                if isinstance(st, dict) and st.get("__class__") == "TaskStep": ch += 1
+                elif isinstance(st, dict) and st.get("__class__") == "ActionStep": chamada_de.append(ch)
             passos[(mes, role)] += len(acts)
             for i, s in enumerate(acts):
                 sp = system_prompt(s)
@@ -1253,10 +1259,22 @@ def protocolo(prompt=None):
                               "proximo": cascata[0] if cascata else "(step sem erro)",
                               "cascata_depois": len(cascata),
                               "repetiu_logo_depois": bool(cascata) and cascata[0] == "H_bloco_code",
-                              "sobreposicao_final": round(antecipou, 3), "sobreposicao_obs_anterior": round(copia, 3)})
+                              "sobreposicao_final": round(antecipou, 3), "sobreposicao_obs_anterior": round(copia, 3),
+                              "chamada": chamada_de[i], "chamadas_do_papel": ch})
     C = pd.DataFrame(casos)
     pasta = os.path.join(PASTA_EVIDENCIA, "protocolo")
     os.makedirs(pasta, exist_ok=True)
+    # as tabelas de [1]/[2] (denominadores), [7] e [8], que antes só eram impressas — para a evidência e para o encontro
+    # com a auditoria independente (kit de mineração). Todas as linhas, não só os papéis com erro.
+    meses_txt = lambda c: ";".join(f"{m}:{n}" for m, n in sorted(c.items()))
+    pd.DataFrame([{"mes": m, "role": r, "steps": n} for (m, r), n in sorted(passos.items())]).to_csv(
+        os.path.join(pasta, "passos.csv"), index=False)
+    pd.DataFrame([{"role": r, "versao": vid, "modo": v["modo"], "steps": v["steps"], "erros": v["erros"],
+                   "meses": meses_txt(v["meses"])} for (r, vid), v in sorted(variantes.items())]).to_csv(
+        os.path.join(pasta, "versoes.csv"), index=False)
+    pd.DataFrame([{"role": r, "eixo": ex, "valor": val, "steps": v["steps"], "erros": v["erros"],
+                   "meses": meses_txt(v["meses"])} for (r, ex, val), v in sorted(por_modelo.items())]).to_csv(
+        os.path.join(pasta, "modelos.csv"), index=False)
     if prompt:   # grava o texto de uma versão do system prompt, para ler na máquina (não sai dela)
         achou = [(r, v) for (r, vid), v in variantes.items() if vid == prompt]
         if not achou:

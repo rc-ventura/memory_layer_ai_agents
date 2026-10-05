@@ -65,12 +65,16 @@ skills/mineracao-base/            passo 0 comum: pasta, base, versão do código
   scripts/varrer_pii.py           bloqueia a versão que sai se tiver processo, CPF, CNPJ, e-mail ou identificador de execução
   manifesto.json                  os hashes do código para o qual esta versão do kit foi escrita
 skills/mineracao-silenciosas/     a mineração das falhas silenciosas (lê as tabelas, passo a passo do procedimento da análise)
-  scripts/comparar_auditoria.py   o encontro: tabelas da mineração × medidas da auditoria independente
+  scripts/comparar_auditoria.py   o encontro: tabelas da mineração × medidas da auditoria independente (audit_recompute9)
+skills/mineracao-protocolo/       a mineração do protocolo do harness (resposta sem bloco de código)
+  scripts/comparar_auditoria.py   o encontro: casos/passos/versões/modelos × a auditoria independente (audit_recompute10)
+  scripts/cobertura.py            o cenário de cobertura: papéis por erros, com a cobertura acumulada
 skills/mineracao-investigacao/    a investigação depois do determinístico
   roteiros/silenciosas.md         as perguntas abertas (S1 dono, S2 sucesso falso, S3 não reconhecido)
+  roteiros/protocolo.md           P1 a camada do surto (o fim do prompt), P2 o mecanismo de cada caso (catálogo M1–M6)
   scripts/testar_regra.py · concordancia.py
 agentes/                          auditor-independente · investigador · segundo-leitor
-prompts/                          rodada-silenciosas · investigar
+prompts/                          rodada-silenciosas · rodada-protocolo · investigar
 instalar.py                       instala num repositório, para claude ou copilot
 VERSAO
 ```
@@ -93,7 +97,8 @@ python kit-mineracao/instalar.py . --para copilot    # Copilot: .claude/skills, 
 ## Usar
 
 - `/rodada-silenciosas <pasta da análise>`: preparação → auditor em paralelo → mineração das tabelas → encontro → relatório com as paradas.
-- `/investigar silenciosas S2 [<pasta>]`: uma parada até o dossiê de decisão.
+- `/rodada-protocolo <pasta da análise>`: o mesmo fluxo para o protocolo do harness (auditoria `audit_recompute10`).
+- `/investigar silenciosas S2 [<pasta>]` ou `/investigar protocolo P2 [<pasta>]`: uma parada até o dossiê de decisão.
 
 No Copilot, os mesmos nomes ficam como prompt files. Sem prompt, peça em linguagem natural ("rode as falhas silenciosas
 na análise X"), que as skills disparam pela descrição.
@@ -109,7 +114,6 @@ na análise X"), que as skills disparam pela descrição.
 
 | Mineração | O que falta antes da skill |
 |---|---|
-| protocolo do harness | nada: racional, procedimento e comandos existem. Falta o roteiro de investigação (classificar no catálogo de mecanismos) |
 | resíduo | tirar o "procedimento do resíduo" do doc de validação para um doc próprio, no formato do procedimento das silenciosas |
 | erro crítico | escrever o procedimento e resolver as fronteiras de chamada (os comandos ainda misturam as chamadas) |
 | candidata | esqueleto comum + um roteiro por tipo de unidade (contrato de retorno de ferramenta; nome usado sem definição) |
@@ -119,7 +123,7 @@ na análise X"), que as skills disparam pela descrição.
 - **A leitura do `investigador` ainda não rodou ao vivo.** A ponte foi validada com uma resposta conhecida: o
   `testar_regra.py` reproduz caso a caso uma classificação determinística que já existia. A primeira leitura real é a
   primeira rodada de uso.
-- **A auditoria em paralelo existe hoje só para as falhas silenciosas** (o `audit_recompute9 --json`). Cada mineração
+- **A auditoria em paralelo existe hoje para as falhas silenciosas e o protocolo** (`audit_recompute9` e `10`, com `--json`). Cada mineração
   nova do backlog precisa de uma auditoria com `--json` e de um script de encontro. Sem isso, ela fica só com as
   conferências internas.
 - **O formato do Copilot** (`.agent.md`, `.prompt.md` com `mode: agent`) segue a documentação de 2026. Se a versão

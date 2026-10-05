@@ -1,15 +1,20 @@
 """Transforma a hipótese do investigador em número: aplica uma regra determinística (regex) à população inteira e,
 se houver leitura, compara com ela. A regra é proposta pelo LLM; a contagem é deste script.
 
-    python testar_regra.py <pasta-da-analise> --populacao <casos.csv> --regex '<rx>'
-                           (--campo-passo code|observations|model_output|error|action_output | --campo-csv <coluna>)
-                           [--onde coluna=valor ...] [--coluna-idx idx] [--ignorar-caixa]
+    python testar_regra.py <pasta-da-analise> --populacao <casos.csv>
+                           (--regex '<rx>' (--campo-passo code|observations|model_output|error|action_output | --campo-csv <coluna>)
+                            | --condicao '<expressão sobre as colunas da população>')
+                           [--onde coluna=valor ...] [--coluna-idx idx] [--deslocamento N] [--ignorar-caixa]
                            [--lidos <leitura.csv> --rotulo <coluna> --alvo <valor>] [--saida <resultado.csv>]
 
 --campo-passo  lê o campo do ActionStep (exec_id, role, idx) direto no trace da análise (o TRACE do base_pipeline),
                pelo leitor único: idx = posição entre os ActionSteps do papel, como no pipeline. `error` é a mensagem.
 --campo-csv    usa uma coluna de texto da própria população.
---onde         filtra a população antes (pode repetir), como no amostrar.py.
+--condicao     regra numérica ou lógica sobre as colunas da própria população, em Python, sem trace (ex.:
+               "tok_out > 3 * chars / 3 and chars < 20"). Coluna numérica vira número; o resto, texto.
+--onde         filtra a população antes (pode repetir), como no amostrar.py (=, !=, >=, <=).
+--deslocamento  com --campo-passo, lê o step idx+N em vez do próprio (ex.: -1 = o step anterior ao erro, para regras
+               do tipo "o step anterior chamou a ferramenta X"). Caso sem esse step conta como "sem texto".
 --coluna-idx   qual coluna da população é o idx do step (ex.: idx_final para a resposta final).
 --lidos        a leitura do investigador (exec_id, role, a mesma coluna de idx, e a coluna --rotulo): compara a regra
                com a leitura, tratando `--rotulo == --alvo` como o que a regra deveria pegar.
@@ -18,6 +23,9 @@ Imprime só contagens (nenhum texto, nenhum identificador). Semântica de regex:
 """
 
 import argparse, csv, json, os, re, sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "mineracao-base", "scripts"))
+from amostrar import aplicar_onde   # o mesmo filtro da amostra e da evidência (as skills são instaladas lado a lado)
 
 CAMPOS = {"code": "code_action", "observations": "observations", "model_output": "model_output",
           "error": "error", "action_output": "action_output"}
@@ -59,26 +67,42 @@ def campos_do_trace(pasta, chaves, campo):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("pasta"); ap.add_argument("--populacao", required=True); ap.add_argument("--regex", required=True)
-    g = ap.add_mutually_exclusive_group(required=True)
+    ap.add_argument("pasta"); ap.add_argument("--populacao", required=True)
+    regra = ap.add_mutually_exclusive_group(required=True)
+    regra.add_argument("--regex"); regra.add_argument("--condicao")
+    g = ap.add_mutually_exclusive_group()
     g.add_argument("--campo-passo", choices=list(CAMPOS)); g.add_argument("--campo-csv")
-    ap.add_argument("--onde", action="append", default=[]); ap.add_argument("--coluna-idx", default="idx"); ap.add_argument("--ignorar-caixa", action="store_true")
+    ap.add_argument("--onde", action="append", default=[]); ap.add_argument("--coluna-idx", default="idx")
+    ap.add_argument("--deslocamento", type=int, default=0); ap.add_argument("--ignorar-caixa", action="store_true")
     ap.add_argument("--lidos"); ap.add_argument("--rotulo"); ap.add_argument("--alvo"); ap.add_argument("--saida")
     a = ap.parse_args()
-    rx = re.compile(a.regex, re.I if a.ignorar_caixa else 0)
+    if a.regex and not (a.campo_passo or a.campo_csv):
+        sys.exit("--regex pede --campo-passo ou --campo-csv")
+    rx = re.compile(a.regex, re.I if a.ignorar_caixa else 0) if a.regex else None
 
     with open(a.populacao, encoding="utf-8", newline="") as fh:
         pop = list(csv.DictReader(fh))
-    for cond in a.onde:
-        col, val = cond.split("=", 1)
-        pop = [r for r in pop if r.get(col) == val]
+    pop = aplicar_onde(pop, a.onde)
     chave = lambda r: (r["exec_id"], r["role"], int(float(r[a.coluna_idx]))) if r.get(a.coluna_idx) not in (None, "") else None
     chaves = {chave(r) for r in pop if chave(r)}
-    if a.campo_passo:
-        textos = campos_do_trace(os.path.abspath(a.pasta), chaves, a.campo_passo)
+    if a.condicao:
+        def valor(x):
+            try: return float(x)
+            except (TypeError, ValueError): return x
+        casou = {}
+        for r in pop:
+            if chave(r):
+                casou[chave(r)] = casou.get(chave(r), False) or bool(
+                    eval(a.condicao, {"__builtins__": {}}, {k: valor(v) for k, v in r.items()}))
+        textos = casou
+    elif a.campo_passo:
+        alvo = {k: (k[0], k[1], k[2] + a.deslocamento) for k in chaves}
+        lidos = campos_do_trace(os.path.abspath(a.pasta), set(alvo.values()), a.campo_passo)
+        textos = {k: lidos[v] for k, v in alvo.items() if v in lidos}
     else:
         textos = {chave(r): r.get(a.campo_csv) or "" for r in pop if chave(r)}
-    casou = {k: bool(rx.search(textos[k])) for k in chaves if k in textos}
+    if not a.condicao:
+        casou = {k: bool(rx.search(textos[k])) for k in chaves if k in textos}
     sem_texto = len(chaves) - len(casou)
 
     n = sum(casou.values())

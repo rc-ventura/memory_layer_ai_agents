@@ -7,16 +7,34 @@ Regras (a de `procedimento` é a das pastas de evidência):
   procedimento      todos, se forem até --n; senão o 1º de cada mês (ordem mes, exec_id, idx)
   primeiro-por-mes  o 1º de cada mês, sempre
   semente           --n casos sorteados com random.Random(--semente) — para o segundo leitor e para amostras grandes
-`--por` aplica a regra dentro de cada grupo (ex.: --por ferramenta). `--onde` filtra antes (pode repetir).
+`--por` aplica a regra dentro de cada grupo (ex.: --por ferramenta). `--onde` filtra antes (pode repetir), com
+`coluna=valor`, `coluna!=valor` ou, numéricos, `coluna>=n`, `<=`, `>`, `<`.
 
 Grava a amostra (as colunas da entrada + `regra_amostra`) e imprime só contagens — nenhum identificador.
 Só biblioteca padrão.
 """
 
-import argparse, csv, random, sys
+import argparse, csv, random, re, sys
 from collections import defaultdict
 
 ORDEM = ("mes", "exec_id", "idx")
+FILTRO = re.compile(r"^(\w+)\s*(>=|<=|!=|=|<|>)\s*(.*)$")
+
+
+def aplicar_onde(linhas, condicoes):
+    """Filtra por `coluna=valor`, `coluna!=valor` e, numéricos, `coluna>=n`, `coluna<=n`, `coluna>n`, `coluna<n`."""
+    for cond in condicoes:
+        m = FILTRO.match(cond)
+        if not m:
+            sys.exit(f"filtro inválido: {cond!r} (use coluna=valor, !=, >=, <=, > ou <)")
+        col, op, val = m.groups()
+        if op in (">=", "<=", ">", "<"):
+            num = lambda x: float(x) if x not in ("", None) else None
+            cmp = {">=": lambda a, b: a >= b, "<=": lambda a, b: a <= b, ">": lambda a, b: a > b, "<": lambda a, b: a < b}[op]
+            linhas = [r for r in linhas if num(r.get(col)) is not None and cmp(num(r[col]), float(val))]
+        else:
+            linhas = [r for r in linhas if (r.get(col) == val) == (op == "=")]
+    return linhas
 
 
 def chave_ordem(r):
@@ -48,9 +66,7 @@ def main():
 
     with open(a.entrada, encoding="utf-8", newline="") as fh:
         linhas = list(csv.DictReader(fh))
-    for cond in a.onde:
-        col, val = cond.split("=", 1)
-        linhas = [r for r in linhas if r.get(col) == val]
+    linhas = aplicar_onde(linhas, a.onde)
     grupos = defaultdict(list)
     por = [c for c in a.por.split(",") if c]
     for r in linhas:

@@ -31,7 +31,9 @@ uv run python <skill mineracao-base>/scripts/montar_evidencia.py <pasta-da-anali
 ```
 
 O script faz quatro coisas:
-- **escolhe os casos por regra fixa:** todos, se forem até 10; senão, o 1º de cada mês;
+- **escolhe os casos por regra fixa:** todos, se forem até 10; senão, o 1º de cada mês. Quando o filtro já fixa um
+  mês (ou a população cai toda num mês), essa regra devolve um caso só: use `--regra semente --n 10`, a amostra
+  sorteada com semente fixa, que é reproduzível. O script avisa quando isso acontece;
 - **grava o cru e a visão de cada caso**, pelo `drill_down.py evidencia`, que confere cada trecho contra o cru;
 - **escreve `origem.json`** com a tabela, os filtros, a regra, os tamanhos e os comandos;
 - **escreve `bloco.md`**, o bloco pronto para o relatório.

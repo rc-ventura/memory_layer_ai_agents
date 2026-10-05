@@ -220,3 +220,76 @@ opinião do modelo.
 | `segundo-leitor` + `concordancia.py` | que a categoria está bem definida (se dois leitores discordam, ela não está) |
 | `testar_regra.py` | que a hipótese do LLM vira número determinístico antes de chegar a você |
 | `varrer_pii.py` | que nada com CPF, número de processo ou identificador de execução sai do ambiente |
+
+---
+
+## 6 · Segunda mineração na mesma base: o protocolo do harness (kit 0.4.0)
+
+```
+/rodada-protocolo analysis/<pasta-da-base-nova>
+```
+
+O mesmo fluxo, com outra auditoria e outras tabelas:
+
+| Etapa | O que rodou | O que saiu |
+|---|---|---|
+| Preparação | `conferir_versao.py`, `checklist.py` | versão IGUAL ao manifesto; o balde visível já existia |
+| Auditor em paralelo (agente) | `audit_recompute10.py --base base3 --trace data/base3.parquet --json …` | JSON gravado, `DIVERGÊNCIAS: 0` |
+| Tabelas | `drill_down.py protocolo` | `casos.csv` (33 erros), `passos.csv`, `versoes.csv`, `modelos.csv` |
+| Cobertura | `cobertura.py` | managerAgent 64% · +RespostaBacen 85% · +ConversationAgent 94% |
+| Evidência | `montar_evidencia.py` × 4 | mês do pico (10 casos sorteados, 80/80), papel do topo (10, 80/80), M1 (2, 16/16), fronteira (2, 16/16) |
+| Encontro | `comparar_auditoria.py` do protocolo | **tudo igual**: 18 medidas, inclusive 21 versões e 53 combinações de papel × modelo; 5 conferências internas OK |
+| Sigilo | `versao_para_sair.py`, `varrer_pii.py` | 16 identificadores → `caso-N`; limpo |
+
+**Os achados** (no relatório, cada um com o bloco de evidência):
+- **É um incidente, não fundo:** 24 dos 33 erros em out/2025 (58,97 por 1k steps); zero de mar a ago/2026.
+- **O modo explica:** os 33 erros estão nas versões de formato em texto com `<code>`; as versões em JSON
+  estruturado dos mesmos papéis têm 0.
+- **O modelo não separa:** o mesmo modelo respondeu com e sem erro no mesmo papel, e 10 dos 33 erros não têm o modelo
+  registrado.
+- **M1 medido:** em 16 dos 33 erros, o texto escrito no lugar do bloco reaparece na resposta final.
+- **Fronteira de chamada:** 2 erros fora da 1ª chamada do papel; 13 em papéis chamados mais de uma vez.
+
+**Paradas:**
+- cobertura: até onde ler;
+- fronteira de chamada;
+- P1: o fim do prompt, porque dez/2025 no RespostaBacen não tem troca de modo nem de modelo;
+- P2: o mecanismo de cada caso.
+
+**Lição da rodada (por que todo número precisa de tabela):** a primeira versão do relatório dizia que o managerAgent
+"errou com o gpt-4.1". A saída de terminal estava cortada. A conferência na `modelos.csv` mostrou 12 erros com esse
+modelo e 9 sem modelo registrado, e o texto foi corrigido antes de sair. Sem a tabela derivada, o erro teria ido para
+o relatório.
+
+**Investigação P2, até onde vai sem ler casos:**
+- **Amostra:** `montar_evidencia.py --nome inv_protocolo_managerAgent_base3 --onde role=managerAgent --regra semente --n 10`
+  → 10 casos com o cru.
+- **Regras contadas por condição, sem trace:**
+  - `--condicao "sobreposicao_final >= 0.5"` → o M1 casa em 15 dos 21;
+  - `--condicao "chars < 20 and tok_out > 0"` → o M5 casa em 0.
+- **A leitura dos 10 casos** (as perguntas A/B/C e o mecanismo) é a etapa seguinte, no ambiente do trace.
+
+---
+
+## 7 · A primeira investigação ao vivo (base 1, kit 0.4.1)
+
+`/investigar protocolo P2`, sobre os 7 erros de dez/2025 no RespostaBacen. O agente não trocou de prompt nem de modelo,
+então a pergunta estava aberta.
+
+| Etapa | O que rodou | O que saiu |
+|---|---|---|
+| Hipóteses, antes de ler | escritas no dossiê | acaso · a declaração da ferramenta de resposta final · o modelo gastando a saída |
+| Amostra e cru | `montar_evidencia.py --onde role=RespostaBacen` | 7 casos (todos), 56/56 trechos conferidos |
+| Leitor 1 (agente `investigador`) | `protocolo --casos`, `metadados_steps.py`, `ferramenta resposta_final` | 5 "a ferramenta concorre com a resposta" · 1 "resposta fora do lugar" · 1 indeterminado |
+| Leitor 2 (agente `segundo-leitor`, às cegas) | 5 casos sorteados, `drill_down.py caso` | mesma classificação nos 5 |
+| Concordância | `concordancia.py` | 5 de 5, kappa 1,00 |
+| Regra contada | `testar_regra.py --campo-passo code --deslocamento -1 --onde "sobreposicao_final<0.5"` | pega os 5 certos, 0 a mais, 0 fora do agente |
+| Teste da hipótese | `drill_down.py ferramenta resposta_final` | declaração com objeto aninhado (dez/2025): os 7 erros · com texto simples (jan–jun/2026): 0 |
+
+**A decisão entregue:**
+- **Destino:** sinal de harness, já corrigido pela plataforma em jan/2026. Não é memória.
+- **Confiança:** alta no mecanismo, média na causa (correlação de 3 em 6 execuções contra 0 em 20).
+- **Comparação:** reproduziu a leitura humana de 30/09. A única diferença, um caso indeterminado, vem de uma falha do
+  método que **os dois leitores apontaram sem combinar**: o sinal de tokens não serve para modelos de raciocínio. Ela
+  virou o item 4.13 do plano, junto com o desempate entre mecanismos e a regra encontrada.
+

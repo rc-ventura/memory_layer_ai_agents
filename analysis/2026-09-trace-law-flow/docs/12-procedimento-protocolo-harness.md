@@ -35,6 +35,10 @@ cascata.
   (passo 2).
 - **Espalhado** → fundo do modo texto; ir direto aos casos (passo 4).
 - Conferir: soma dos papéis = total; recuperação e cascata anotadas.
+- Além do `casos.csv`, o comando grava em `resultados/evidencia/protocolo/` as tabelas que antes só eram impressas:
+  `passos.csv` (steps por mês e papel), `versoes.csv` ([7]) e `modelos.csv` ([8]). A auditoria independente
+  `audit/scripts/audit_recompute10.py` recalcula as mesmas medidas direto do trace (kit de mineração: skill
+  `mineracao-protocolo`).
 
 ## Passo 2 — A camada: modo, modelo, contrato
 
@@ -122,7 +126,9 @@ casos que o sustentam — entra no `10` como hipótese. Resultado por papel: tab
 - A soma por papel e por mês bate com o total de [1].
 - Todo mecanismo atribuído aponta os casos (arquivo `erro_<papel>_<versão>_<k>`) que o sustentam.
 - Leitura que depender só do texto de um step com M4 não vale como mecanismo.
-- **O `idx` conta todas as chamadas do papel juntas.** Antes de ler uma sequência de erros como "loop", confira onde o
+- **O `idx` conta todas as chamadas do papel juntas.** O `casos.csv` traz `chamada` (em qual chamada do papel está o
+  erro) e `chamadas_do_papel` (quantas houve na execução): erro com `chamada > 1`, ou num papel com várias chamadas, pede
+  esta conferência. Antes de ler uma sequência de erros como "loop", confira onde o
   `step_number` volta a 1 (`metadados_steps.py`: "papel chamado Nx"). A seção 2 do `protocolo --casos` pode mostrar o fim
   da chamada anterior. Essa foi a origem da leitura errada no CalculoCivel (`11` §2.5).
 - **Rótulos de memória logo depois de um erro de protocolo** (`U_texto_solto`, `U_estado_perdido`, `U_nome_inventado`)

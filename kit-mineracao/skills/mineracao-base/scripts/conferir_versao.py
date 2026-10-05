@@ -24,10 +24,12 @@ ARQUIVOS = [
     "pipeline/base_pipeline.py",
     "pipeline/checklist.py",
     "pipeline/drill_down.py",
+    "pipeline/metadados_steps.py",
     "pipeline/analise_trace_esteira_juridica.ipynb",
     "pipeline/falhas_silenciosas.ipynb",
     "pipeline/consolidacao_unidades.ipynb",
     "audit/scripts/audit_recompute9.py",
+    "audit/scripts/audit_recompute10.py",
 ]
 CAMADA_DA_BASE = {"TRACE", "BASE_ID"}
 

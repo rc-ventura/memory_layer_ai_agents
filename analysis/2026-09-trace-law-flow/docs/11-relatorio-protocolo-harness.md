@@ -60,6 +60,17 @@ leituras do Rafael (nenhum texto de caso sai de lá).
 
 Total: M1 20 · M2 6 · M3 2 · não lidos 5 = 33.
 
+**RespostaBacen, reconfirmado em 05/10 por um método reproduzível** (kit de mineração, investigação; dossiê
+`pipeline/resultados/dossie_protocolo_RespostaBacen-dez_base1_2026-10-05.md`, no ambiente):
+- **Leitura:** dois leitores, às cegas um do outro, concordaram em 5 de 5 casos (kappa 1,00). Os 7 ficaram M2 5 ·
+  M1 1 · indeterminado 1.
+- **O indeterminado** é um dos 2 "sucesso falso" desta tabela. O sinal de M4 (tokens muito acima do texto) impediu a
+  classificação, mas ele não separa nada no `o4-mini`, que gasta assim em todo step (plano 4.13).
+- **Regra contada sobre os 7, sem leitura** ("o step anterior chamou o `resposta_final` e o texto não reaparece na
+  resposta final"): pega os 5 M2 lidos, nenhum a mais, e nenhum fora do RespostaBacen.
+- **A declaração do `resposta_final`:** com objeto aninhado na entrada (dez/2025, 47 steps, 6 execuções), os 7 erros;
+  com texto simples (jan–jun/2026, 88 steps, 20 execuções), 0. É correlação, como acima.
+
 **Três observações da leitura:**
 
 - **ConversationAgent — a instrução que contradiz o envelope.** O fim do prompt diz *"Se voce não precisar de nenhuma

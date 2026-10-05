@@ -580,12 +580,44 @@ figuras. Usa as fronteiras de chamada (S4).
   - Correção no `drill_down.py evidencia`: o papel chamado literalmente `null` era lido como nulo e quebrava a
     gravação. Não muda número.
   - No exemplo, foram 6 pastas de evidência, com todos os trechos conferidos contra o cru.
+- **Etapa 2 — protocolo do harness (05/10; kit 0.4.0):**
+  - **Skill `mineracao-protocolo`:** passos do `12`, com evidência por achado, a cobertura por papel (`cobertura.py`)
+    e a fronteira de chamada.
+  - **Roteiro `protocolo`:** P1 é a camada do surto (o fim do prompt); P2 é o mecanismo de cada caso, no catálogo
+    M1–M6.
+  - **Auditoria `audit_recompute10.py`:** 0 divergências contra o `11` §1; JSON igual em CSV e parquet.
+  - **Mudanças no `drill_down.py protocolo`:** passa a gravar `passos.csv`, `versoes.csv` e `modelos.csv`, e as
+    colunas `chamada`/`chamadas_do_papel`. A saída impressa ficou igual.
+  - **Relação com outros itens:** as colunas cobrem a conferência da fronteira do `12`; o resto do S4 (4.4) e as
+    regras determinísticas M1–M6 (4.8) seguem à parte.
 - **Próximas etapas, uma por vez:**
-  1. protocolo do harness;
-  2. resíduo (antes, o procedimento sai do `03` Frente 3 para um doc próprio);
-  3. erro crítico (antes, o procedimento e o S4);
-  4. candidata (esqueleto + um roteiro por tipo de unidade; o roteiro "nome inventado" sai do 4.11).
+  1. resíduo (antes, o procedimento sai do `03` Frente 3 para um doc próprio);
+  2. erro crítico (antes, o procedimento e o S4);
+  3. candidata (esqueleto + um roteiro por tipo de unidade; o roteiro "nome inventado" sai do 4.11).
 - **Tipo:** ferramenta; não muda número.
+
+### 4.13 Ajustes do método do protocolo, vindos da investigação de 05/10 *(proposta; aguarda aprovação)*
+
+- **Contexto:** a primeira investigação ao vivo do kit (os 7 erros de dez/2025 no RespostaBacen, base 1) reproduziu a
+  leitura de 30/09 (`11` §1.3) e mostrou dois pontos fracos do método. Os dois leitores os apontaram sem combinar. Ela
+  também achou uma regra determinística para o M2.
+- **Solução (um ajuste de cada vez, cada um com aprovação):**
+  1. **Sinal de M4 por modelo.** Hoje "tokens de saída muito acima do texto" vale como sinal de que o texto é um resto.
+     No `o4-mini` (modelo de raciocínio), a mesma razão aparece nos steps sem erro. Proposta: comparar com a linha de
+     base do modelo na própria execução, ou descontar os tokens de raciocínio (o `metadados_steps.py` já os mostra).
+     Efeito esperado na base 1: o indeterminado do RespostaBacen volta a M2 ("sucesso falso"), como na leitura de 30/09.
+  2. **Desempate M1 × M2 no catálogo (`10` §4).** Proposta: o erro logo depois da ferramenta de resposta final e
+     reembrulhado no step seguinte conta como M1, porque o M2 exige `final_answer` ausente ou muito tardio. Isso
+     registra a convenção que os dois leitores usaram.
+  3. **A regra do M2 nas regras determinísticas da família (4.8).** A regra é "o step anterior chamou uma ferramenta
+     que se apresenta como resposta final, e o texto não reaparece na resposta final". Para valer em qualquer base, a
+     ferramenta é reconhecida pela declaração (nome ou descrição que fala em resposta final), não pelo nome
+     `resposta_final`. Ela não muda o total da família, só rotula erros com um mecanismo.
+- **Evidência:** dossiê de 05/10 (§6 e §7); regra contada com
+  `testar_regra.py … --onde role=RespostaBacen --onde "sobreposicao_final<0.5" --campo-passo code --deslocamento -1 --regex 'resposta_final\s*\('`
+  → pega certo 5 · a mais 0 · deixa de pegar 0.
+- **Tipo:** ajuste de método (1, 2) e regra nova (3), sem mudar número publicado. Cada um passa pelo livro-razão
+  antes de entrar.
 
 ### 4.9 Aviso à plataforma *(a base 2 fechou em 05/10; **em discussão** — §3b item 2)*
 

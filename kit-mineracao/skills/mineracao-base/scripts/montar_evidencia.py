@@ -2,7 +2,7 @@
 evidência pronto para entrar no relatório. Nenhuma afirmação de relatório fica sem isto.
 
     python montar_evidencia.py <pasta-da-analise> --nome <mineracao>_<achado>_<BASE_ID>
-        --de <tabela, relativa a pipeline/resultados/> [--onde coluna=valor ...] [--por coluna,...]
+        --de <tabela, relativa a pipeline/resultados/> [--onde coluna=valor|!=|>=|<= ...] [--por coluna,...]
         [--regra procedimento|primeiro-por-mes|semente] [--n 10] [--semente 20261005]
         --afirmacao "<o que o achado diz, em uma frase>" --reproduzir "<comando>" [--reproduzir "<outro>"]
 
@@ -21,7 +21,7 @@ import argparse, csv, datetime, json, os, subprocess, sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from amostrar import amostrar
+from amostrar import amostrar, aplicar_onde
 
 
 def main():
@@ -40,9 +40,7 @@ def main():
 
     with open(origem, encoding="utf-8", newline="") as fh:
         linhas = list(csv.DictReader(fh))
-    for cond in a.onde:
-        col, val = cond.split("=", 1)
-        linhas = [r for r in linhas if r.get(col) == val]
+    linhas = aplicar_onde(linhas, a.onde)
     if not linhas:
         sys.exit("nenhuma linha depois dos filtros — sem evidência para montar")
     grupos = defaultdict(list)
@@ -89,6 +87,9 @@ def main():
         fh.write("\n".join(bloco) + "\n")
 
     print(f"evidência `{a.nome}`: população {len(linhas)} · casos {len(casos)} · {conferencia}")
+    if a.regra != "semente" and len(linhas) > a.n and len(casos) < min(3, len(linhas)):
+        print(f"  aviso: a regra '{a.regra}' deixou só {len(casos)} de {len(linhas)} casos (a população está num mês só?) — "
+              f"para evidência, use --regra semente --n {a.n}")
     print(f"bloco para o relatório: pipeline/{rel}/bloco.md")
     sys.exit(1 if r.returncode != 0 else 0)
 

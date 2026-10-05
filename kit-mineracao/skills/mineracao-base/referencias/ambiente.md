@@ -8,6 +8,10 @@
 
 ## Onde rodar
 
+- **Os agentes (subagentes) são disparados da raiz do repositório**, a pasta que tem o `CLAUDE.md`. Disparado de uma
+  subpasta, o Claude Code vê o `AGENTS.md` importado pelo `CLAUDE.md` como "fora da pasta de trabalho", pergunta se
+  pode carregá-lo, e o agente fica parado até alguém responder no painel dele.
+
 - Os comandos do pipeline rodam **de dentro de `pipeline/`** da pasta da análise: `drill_down.py`, `checklist.py` e
   os notebooks usam caminhos relativos a essa pasta.
 - As auditorias rodam da pasta da análise: `python audit/scripts/audit_recompute9.py …`.
