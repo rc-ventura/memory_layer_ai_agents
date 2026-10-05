@@ -110,12 +110,12 @@ Copie a saída inteira para o relatório. Ela só tem contagens e nomes. Para ca
 | E · desfecho dos 24 candidatos a sucesso falso | não dependia · falha declarada · a resposta repassa o texto do erro · sucesso falso provável · ler (os candidatos já excluem os que se recuperaram) | quantos são sucesso falso de verdade |
 | F · versões da declaração do `busca_obf` | a taxa de JSON inválido muda com a versão? | experimento natural sobre a declaração |
 
-## Passo 4 — A regra da seção E bate com a leitura da rodada 1? *[assistido]*
+## Passo 4 — A regra da seção E bate com a leitura de 04/10? *[assistido]*
 
-A seção E grava `resultados/evidencia/silenciosas/desfechos.csv` (tem `exec_id`: **não sai da máquina**). Na rodada 1,
-você leu 6 candidatos: 3 de plataforma (as calculadoras `calculo_correcoes_monetarias`, `calculo_enquadramento`,
-`calculo_horas_extras`) e os 3 de JSON inválido do `busca_obf`. Para cada um, compare o `desfecho` do CSV com a sua
-leitura:
+A seção E grava `resultados/evidencia/silenciosas/desfechos.csv` (tem `exec_id`: **não sai da máquina**). Na revisão
+de 04/10 do relatório da rodada 1 (`relatorio_maquina2_2026-10-02.md`, seção 4), você leu os **20 candidatos**: os 17 de
+plataforma (casos 1–17) e os 3 de JSON inválido do `busca_obf` (casos 18–20). Para cada um, compare o `desfecho` do CSV
+com aquela leitura (os casos 13 e 14 ficaram indeterminados — registre o que o script diz para eles):
 
 | Sua leitura (rodada 1) | Desfecho do script que concorda |
 |---|---|
@@ -123,7 +123,8 @@ leitura:
 | a resposta declara a falha | "falha declarada" ou "a resposta repassa o texto do erro" |
 | a resposta usa o dado que faltou | "sucesso falso provável" |
 
-Traga só: **concorda em n de 6**, e, para os que discordam, o grupo e as duas categorias.
+Traga só: **concorda em n de 18** (os 20 menos os 2 indeterminados), o que o script diz para os casos 13 e 14, e, para os
+que discordam, o grupo e as duas categorias.
 
 ## Passo 5 — Ler o que a regra não decide *[assistido]*
 
@@ -172,8 +173,8 @@ bloco G do audit_recompute9: ocorrências, execuções, meses, papéis, divergê
 ## 3. As seis perguntas [conferido]
 <a saída inteira do investigacao_achados.py, seções A a F>
 
-## 4. A regra do desfecho × a leitura da rodada 1 [assistido]
-concorda em n de 6 · discordâncias (grupo, leitura, script)
+## 4. A regra do desfecho × a leitura de 04/10 [assistido]
+concorda em n de 18 · casos 13 e 14 segundo o script · discordâncias (grupo, leitura, script)
 
 ## 5. Leitura dos casos que a regra não decide + amostra sorteada [assistido]
 | caso | grupo | ferramenta | usa o dado que faltou? | declara/omite/inventa | de onde veio | o script estava certo? |
