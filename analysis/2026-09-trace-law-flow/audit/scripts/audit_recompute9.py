@@ -25,6 +25,7 @@ Confere, contra os números publicados (docs/14-relatorio-falhas-silenciosas.md)
 Uso (de dentro de audit/scripts/ ou de qualquer lugar):
     python audit_recompute9.py                       # base 1, caminhos do repo
     python audit_recompute9.py --base base2 --trace <arquivo .csv, .csv.xz ou .parquet> --em <erros_mecanismo.csv> --fonte <base_pipeline.py>
+    python audit_recompute9.py --base <base nova> --trace <…> --json <medidas.json>   # sem números publicados: grava as medidas
 Saída: só contagens, nomes de papel e de ferramenta — nenhum exec_id, nenhum texto de caso. Pode ser fotografada na
 máquina 2. Gravar em audit/scripts/audit_out9.txt (git-ignored).
 """
@@ -43,7 +44,8 @@ from leitor_trace import abrir_trace
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(os.path.dirname(AQUI))          # analysis/2026-09-trace-law-flow
 ap = argparse.ArgumentParser()
-ap.add_argument("--base", default="base1", choices=["base1", "base2"])
+ap.add_argument("--base", default="base1")   # base sem números publicados: tudo "a conferir" (use --json)
+ap.add_argument("--json", help="grava as medidas calculadas neste arquivo — a comparação com as tabelas da mineração")
 ap.add_argument("--trace", default=os.path.join(RAIZ, "data", "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"))
 ap.add_argument("--em", default=os.path.join(RAIZ, "pipeline", "resultados", "erros_mecanismo.csv"))
 ap.add_argument("--fonte", default=os.path.join(RAIZ, "pipeline", "base_pipeline.py"))
@@ -81,7 +83,12 @@ ESPERADO = {
                   # consolidação (Ajuste 12): visível 18 (triagem da máquina 2, 02/10) + silencioso 86, 0 em comum;
                   # meses 4 (o silencioso tem mai/2026, o visível começa em jun) e papéis 1 — rodada 2 (05/10)
                   consolidado=dict(ocorrencias=104, execucoes=104, meses=4, papeis=1)),
-}[args.base]
+}.get(args.base)
+if ESPERADO is None:   # base sem números publicados: recalcula tudo e imprime "a conferir" (a comparação vem do --json)
+    ESPERADO = dict(excecao=None, silenciosas=None, steps_sil=None, execs=None, meses=None, papeis=None, ferramentas=None,
+                    pares=None, steps_ferr=None, grupos={}, reais=None, depois={"outros": None}, contrato={},
+                    sucesso={}, sucesso_total=None, forma_colado=None,
+                    consolidado=dict(ocorrencias=None, execucoes=None, meses=None, papeis=None))
 DIVERG = []
 
 
@@ -189,7 +196,7 @@ confere("silenciosas no balde visível (erros_mecanismo.csv)",
 # ------------------------------------------------------------------ B. grupos
 print("B. grupos do motivo (doc 13 §3):")
 g = Counter(p["grupo"] for p in sil)
-for grp, n_esp in ESPERADO["grupos"].items():
+for grp, n_esp in (ESPERADO["grupos"] or {k: None for k in sorted(g)}).items():
     confere(f"{grp:<20}", g.get(grp, 0), n_esp)
 confere("falhas reais", sum(g[x] for x in REAIS), ESPERADO["reais"])
 confere("soma dos grupos = silenciosas", sum(g.values()), len(sil))
@@ -211,9 +218,9 @@ depois = Counter()
 for p in sil:
     prox = next((u for j, u in erros_do_papel.get((p["eid"], p["role"]), []) if p["i"] < j <= p["i"] + 3), None)
     depois[prox or "(nenhum erro)"] += 1
-listados = [k for k in ESPERADO["depois"] if k != "outros"]
+listados = [k for k in ESPERADO["depois"] if k != "outros"] or sorted(depois)
 for k in listados:
-    confere(f"[2] {k:<22}", depois.get(k, 0), ESPERADO["depois"][k])
+    confere(f"[2] {k:<22}", depois.get(k, 0), ESPERADO["depois"].get(k))
 confere("[2] outros", sum(n for k, n in depois.items() if k not in listados), ESPERADO["depois"]["outros"])
 sil_por_papel = defaultdict(list)
 for p in sil: sil_por_papel[(p["eid"], p["role"])].append(p["i"])
@@ -221,7 +228,7 @@ for u in CONTRATO:
     E = [e for e in EM if e["unidade"] == u]
     prec = sum(1 for e in E if any(int(e["idx"]) - 3 <= i < int(e["idx"])
                                    for i in sil_por_papel.get((e["exec_id"], e["role"]), [])))
-    confere(f"[3] {u:<22} (erros, precedidos)", (len(E), prec), ESPERADO["contrato"][u])
+    confere(f"[3] {u:<22} (erros, precedidos)", (len(E), prec), ESPERADO["contrato"].get(u))
 
 # ------------------------------------------------------------------ D. [4] sucesso falso candidato
 print("D. [4] candidato a sucesso falso (doc 13 §4 + Ajuste 11):")
@@ -249,7 +256,7 @@ reais = [p for p in sil if p["grupo"] in REAIS]
 cand = Counter(p["grupo"] for p in reais if candidato(p, final_novo(p)))
 tot = Counter(p["grupo"] for p in reais)
 if ESPERADO["sucesso"] is not None:
-    for grp, esp in ESPERADO["sucesso"].items():
+    for grp, esp in (ESPERADO["sucesso"] or {k: None for k in sorted(tot)}).items():
         confere(f"[4] {grp:<20}", (cand.get(grp, 0), tot.get(grp, 0)), esp)
     confere("[4] total", (sum(cand.values()), len(reais)), ESPERADO["sucesso_total"])
 else:
@@ -356,5 +363,19 @@ confere("U_repr_colado consolidada — ocorrências", len(oc_v) + len(oc_s), esp
 confere("U_repr_colado consolidada — execuções", len(execs), esp["execucoes"])
 confere("U_repr_colado consolidada — meses", len(meses), esp["meses"])
 confere("U_repr_colado consolidada — papéis", len(papeis), esp["papeis"])
+
+if args.json:   # as medidas, para comparar com as tabelas da mineração (kit de mineração: comparar_auditoria.py)
+    with open(args.json, "w", encoding="utf-8") as fh:
+        json.dump({"base": args.base,
+                   "falhas_com_excecao": len(exc), "silenciosas": len(sil),
+                   "steps_silenciosos": len({(p["eid"], p["role"], p["i"]) for p in sil}),
+                   "execucoes": len({p["eid"] for p in sil}), "meses": len({p["mes"] for p in sil}),
+                   "papeis": len({p["role"] for p in sil}), "ferramentas": len({p["ferr"] for p in sil}),
+                   "silenciosas_no_visivel": sum((p["eid"], p["role"], p["i"]) in chave_visivel for p in sil),
+                   "grupos": dict(sorted(g.items())), "falhas_reais": sum(g[x] for x in REAIS),
+                   "sucesso_falso": {"por_grupo": {k: [cand.get(k, 0), tot[k]] for k in sorted(tot)},
+                                     "total": [sum(cand.values()), len(reais)]},
+                   "steps_silenciosos_por_unidade": {"U_repr_colado": len(s_rc)}},
+                  fh, ensure_ascii=False, indent=2)
 
 print(f"\nDIVERGÊNCIAS: {len(DIVERG)}" + (f" → {DIVERG}" if DIVERG else ""))

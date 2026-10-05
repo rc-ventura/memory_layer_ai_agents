@@ -501,7 +501,9 @@ def evidencia(analise=None):
     pastas = sorted(d for d in os.listdir(PASTA_EVIDENCIA) if por_step(d)) if analise is None else [analise]
     if not pastas or not os.path.exists(os.path.join(PASTA_EVIDENCIA, pastas[0], "casos.csv")):
         print(f"nenhum casos.csv em {PASTA_EVIDENCIA}/{analise or '*'} — rode a §11 do notebook mineracao_unidades_n2_n10.ipynb antes."); return
-    casos = {d: pd.read_csv(os.path.join(PASTA_EVIDENCIA, d, "casos.csv"), dtype={"exec_id": str, "role": str}) for d in pastas}
+    # keep_default_na=False: há um papel chamado literalmente "null" no trace, e o padrão do pandas o leria como nulo
+    casos = {d: pd.read_csv(os.path.join(PASTA_EVIDENCIA, d, "casos.csv"), dtype={"exec_id": str, "role": str},
+                            keep_default_na=False, na_values=[""]) for d in pastas}
     ids = set().union(*(set(c["exec_id"]) for c in casos.values()))
     df = load()
     linhas = {r["cod_idef_exeo"]: (i, r) for i, r in df[df["cod_idef_exeo"].isin(ids)].iterrows()}

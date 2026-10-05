@@ -149,6 +149,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 | **Base 2 finalizada** (rodada 2, 05/10): as seis perguntas respondidas; consolidação 104 · 104 · 4 · 1 conferida; nenhum sucesso falso confirmado (24/24 declaram a falha); "nome usado sem ter sido definido" concentrado num papel, mês e modelo; o `'DEFAULT'` não mata sozinho; sem experimento natural no `busca_obf` | registro de 05/10 | livro-razão Etapa 10d, `14` §5 |
 | **Ajuste 13** — o "campo inexistente" da base 2 também é sinal de harness (38/38 com a chave pedida no prompt); `DESTINO_MINERACAO` aceita várias bases. Base 1 idêntica | registro de 05/10 | livro-razão Ajuste 13 |
 | **4.10** — o trace em parquet: leitor único `analysis/leitor_trace.py` (CSV ou um único parquet) no pipeline, `checklist.py` (§0 formato), `drill_down.py` e nos 9 `audit_recompute*` (`--trace`); `pyarrow` no projeto; pandas fixado no texto em Python. Não muda número: base 1 idêntica em CSV, parquet texto e parquet tipado | registro de 05/10 | §4.10, `analysis/README.md` (intake), `audit/README.md` |
+| **4.12, etapa 1** — o kit de mineração (`kit-mineracao/`): 3 skills, 3 agentes, 2 prompts e 5 scripts; silenciosas ponta a ponta na base 1 (tudo OK, 0 divergências, CSV = parquet); ponte LLM → regra validada com resposta conhecida (54/54) | registro de 05/10 | §4.12, `kit-mineracao/README.md` |
 ---
 
 ## 3. O que ficou velho (stale) — e o que vale agora
@@ -519,6 +520,72 @@ figuras. Usa as fronteiras de chamada (S4).
   memória candidata de verdade são os 17 espalhados. **Próximo:** conferir na próxima ida à máquina 2 se o
   ContestacaoCivel já usava esse modelo antes de agosto sem esse erro (o `drill_down.py protocolo` [8] dá papel ×
   modelo × mês) — se for incidente, separar o mês na triagem é **Ajuste**, olhando as duas bases.
+
+### 4.12 Kit de mineração — skills, agentes, prompts e scripts para rodar cada mineração igual em qualquer ambiente — **etapa 1 feita** (05/10; não muda número)
+
+- **Contexto:**
+  - O método de cada mineração está escrito, mas desigual: só o protocolo (`12`) e as silenciosas (`15`) têm
+    procedimento no formato pré-condições → passos → conferências.
+  - Cada rodada numa base era guiada por um prompt escrito à mão (o protótipo: `git show 9ed5bc9`, o prompt da
+    rodada 2).
+  - O que o determinístico não fecha (as paradas) era lido sem protocolo.
+- **Solução** ([`kit-mineracao/`](../kit-mineracao/README.md)): um pacote no formato aberto de skill, que roda no
+  Claude Code e no Copilot, em três camadas:
+  - **determinístico:** a skill da mineração roda o procedimento da análise e confere com o publicado;
+  - **investigação:** o LLM lê uma amostra escolhida por regra fixa, um segundo leitor relê às cegas, e a hipótese
+    vira regra contada por script;
+  - **decisão:** fica com o pesquisador, a partir de um dossiê.
+
+  O kit não tem nome de base, pasta, unidade nem número. A base fica na análise, e o objeto da rodada é argumento da
+  chamada.
+- **Etapa 1 (05/10):**
+  - as skills `mineracao-base` (Passo 0: pasta, base, conferência de versão por manifesto, intake, sigilo,
+    relatório), `mineracao-silenciosas` e `mineracao-investigacao` (roteiro das silenciosas: S1 dono, S2 sucesso
+    falso, S3 não reconhecido);
+  - os agentes `auditor-independente`, `investigador` e `segundo-leitor`;
+  - os prompts `rodada-silenciosas` e `investigar`;
+  - os scripts `conferir_versao`, `varrer_pii`, `amostrar`, `testar_regra` e `concordancia`, e o `instalar.py`.
+- **Verificação (05/10):**
+  - o `conferir_versao` dá igual com `TRACE`/`BASE_ID` trocados, com CRLF e com notebooks executados, e acusa uma
+    linha a mais;
+  - o `varrer_pii` bloqueia identificador de execução, CPF e número de processo, e passa um relatório limpo;
+  - a instalação funciona para claude e para copilot, e a reinstalação não apaga o que não é do kit;
+  - a rodada das silenciosas na base 1, seguindo a skill, deu todos os números OK contra o `14` e o `audit_recompute9`
+    com 0 divergências, igual em CSV e parquet. As paradas abertas foram S3 (9 não reconhecidas) e S2 (54
+    candidatos);
+  - a ponte foi validada com resposta conhecida: o `testar_regra` reproduz caso a caso a classificação "declara a
+    falha" da rodada 2 (54/54, 100%);
+  - o `grep` não acha referência específica no kit;
+  - **ainda não feito:** a leitura do `investigador` ao vivo. Ela é a primeira rodada de uso, e quem decide quando é o
+    Rafael.
+- **Revisão do desenho (05/10, Rafael; kit 0.2.0):**
+  - **A mineração não compara com relatório nem com outra base.** Ela lê as tabelas que o pipeline produziu para a
+    base e descreve o que elas mostram. Os números são o resultado.
+  - **A verificação é interna:** o `auditor-independente` roda em paralelo uma segunda implementação. Para isso, o
+    `audit_recompute9` passou a aceitar qualquer `--base` e a gravar as medidas com `--json`; a base 1 saiu idêntica,
+    com 0 divergências. O `comparar_auditoria.py` confronta as medidas com as tabelas, e somam-se as conferências
+    internas.
+  - **Exemplo real** ([`kit-mineracao/EXEMPLO.md`](../kit-mineracao/EXEMPLO.md)): uma base nova simulada, do zero, em
+    parquet, com `BASE_ID = "base3"` e o dado da base 1. O auditor rodou em paralelo como agente; o encontro deu 19
+    medidas iguais e 4 conferências internas OK. As paradas abertas foram S3 (9) e S2 (54).
+  - **Revisão das peças:** o roteiro S2 passou a usar a coluna `idx_final_depois`, a que existe numa base nova, e o
+    `testar_regra.py` ganhou `--onde`.
+- **Evidência em todo relatório (05/10, Rafael; kit 0.3.0):**
+  - Cada afirmação leva o comando que reproduz o número e a tabela com o filtro. Cada achado que vira decisão ou
+    parada leva os casos crus.
+  - O `montar_evidencia.py` escolhe os casos por regra, grava o cru e a visão (pelo `drill_down.py evidencia`) e
+    escreve o bloco do relatório, com os `exec_id` e o recorte.
+  - O relatório completo fica no ambiente. A versão que sai troca os identificadores por `caso-N`, por script
+    (`versao_para_sair.py`).
+  - Correção no `drill_down.py evidencia`: o papel chamado literalmente `null` era lido como nulo e quebrava a
+    gravação. Não muda número.
+  - No exemplo, foram 6 pastas de evidência, com todos os trechos conferidos contra o cru.
+- **Próximas etapas, uma por vez:**
+  1. protocolo do harness;
+  2. resíduo (antes, o procedimento sai do `03` Frente 3 para um doc próprio);
+  3. erro crítico (antes, o procedimento e o S4);
+  4. candidata (esqueleto + um roteiro por tipo de unidade; o roteiro "nome inventado" sai do 4.11).
+- **Tipo:** ferramenta; não muda número.
 
 ### 4.9 Aviso à plataforma *(a base 2 fechou em 05/10; **em discussão** — §3b item 2)*
 

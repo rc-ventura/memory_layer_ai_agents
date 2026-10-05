@@ -19,7 +19,9 @@ relatório como **Parte II**. Só então o estado vira **fechada**.
   versionados.
 - **Base 2:** auditada por fotos da máquina de compliance. Só contagens saem de lá — o `audit_recompute9` aceita
   `--base base2 --trace …` para rodar lá. Todos os scripts aceitam `--trace <arquivo>` (CSV ou parquet); os números
-  esperados embutidos nos scripts 1–8 são os da base 1.
+  esperados embutidos nos scripts 1–8 são os da base 1. O `audit_recompute9` aceita qualquer `--base`: numa base sem números embutidos,
+  imprime tudo como "a conferir" e, com `--json <arquivo>`, grava as medidas. É assim que o kit de mineração o usa,
+  em paralelo à mineração, para confrontar com as tabelas (`kit-mineracao/`, skill `mineracao-silenciosas`).
 
 ## Relatórios
 

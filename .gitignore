@@ -14,3 +14,12 @@ Thumbs.db
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Kit de mineração: cópias instaladas pelo kit-mineracao/instalar.py (a fonte é kit-mineracao/)
+.claude/skills/mineracao-*/
+.claude/skills/.kit-mineracao-*
+.claude/agents/auditor-independente.md
+.claude/agents/investigador.md
+.claude/agents/segundo-leitor.md
+.claude/commands/rodada-silenciosas.md
+.claude/commands/investigar.md
