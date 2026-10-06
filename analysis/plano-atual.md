@@ -156,16 +156,41 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
     investigação.
   - **Por quê:** a base 3 é o log inteiro, e as bases 1 e 2 são recortes de 1.000 registros. Frequência sozinha diz
     que vale a pena, não que a regra está certa.
-- **O marcador de cada lição (05/10):** frequência (Pareto · presença · os dois · não) × confiança (confirmada ·
-  falhou · não avaliada) → situação (pronta para notebook · prioridade de investigação · importante e mal entendida ·
-  certa, mas rara · baixa prioridade). Sai do painel `valor_da_licao.py` e fica na tabela do funil do `16`.
-  - **Base 1, hoje:** 5 lições em "prioridade de investigação", e a `U_nome_inventado` em "certa, mas rara".
+- **O marcador de cada lição (05/10; revisto em 06/10, abaixo):** frequência (Pareto · presença · os dois · não) ×
+  confiança → situação e, nas situações com gate, a decisão do Rafael. Sai do painel `valor_da_licao.py` e fica na tabela do funil do `16`.
+  - **Base 1, hoje (06/10):** 6 lições em "prioridade de investigação" (a `U_texto_literal` com "poucos casos" na leitura dupla), e a `U_nome_inventado` em "certa, mas rara: monitorar", em monitoramento.
 - **O LLM continua depois do notebook:** ele lê a amostra de cada partição nova (a reconfirmação), investiga a sobra
   que a regra não pega e investiga quando a regra cai.
 - **O `caso-N` só existe na versão que sai** da máquina do trace. A versão completa guarda os `exec_id`, e o
   `_mapa.csv` volta de um para o outro.
 - **Os agentes do kit são disparados da raiz do repositório** (de uma subpasta, ficam parados pedindo permissão para
   o `AGENTS.md`).
+
+**Decidido em 06/10 (Rafael) — a leitura da investigação e o gate, depois do teste na `U_texto_literal` (base 1):**
+
+- **O que o teste mostrou:** uma regra contada acha o mesmo padrão (o relatório final escrito dentro de uma string) em
+  132 de 182 erros, mas os dois leitores concordaram em 4 de 8 casos na lição. A lista de lições, escrita antes de ver
+  os casos, misturava "o que é o texto" e "o que quebrou a string", e cada leitor respondeu uma. A discordância era da
+  lista, não da lição.
+- **A leitura passa a ter duas etapas:** primeiro aberta (os dois leitores escrevem a lição e a causa em frase livre),
+  depois o **gate da lista** (o Rafael aprova as categorias montadas a partir das frases) e então a leitura fechada às
+  cegas, em outros casos, medida por script. Os casos que montam a lista não medem a concordância (divisão por regra
+  fixa, sem sorteio).
+- **O segundo leitor lê pelo menos 20 casos** (ou todos, se a população é menor). Com menos, a confiança fica "poucos
+  casos", e não "passou" ou "falhou".
+- **"Os leitores discordam" não é "não há lição".** O painel separa: o padrão existe (regra contada) × a redação da
+  lição (os leitores) × várias causas (metade ou mais dos casos em "não há uma lição única").
+- **O gate do pesquisador:** nas situações "pronta para notebook", "lição existe, redação em aberto", "várias causas"
+  e "certa, mas rara: monitorar", a skill para e traz a lição principal com a cobertura, os leitores lado a lado, o
+  resto e as opções. A decisão fica registrada (`registrar_decisao.py`).
+- **Dividir a unidade é resultado normal:** a unidade nasce do sintoma, e um sintoma pode ter várias causas. A lição
+  pode ser geral com variações por papel (a lição na `description`, os papéis no `scope`).
+- **Onde está:** `docs/16` ("A leitura em duas etapas e o gate do pesquisador"), roteiro `candidata` do kit (0.6.0).
+- **Monitorar é determinístico:** um registro versionado (`monitoramento.json` da análise: linha de base, regras das
+  sub-lições, gatilhos) e o `monitorar.py`, no passo 0 de toda mineração, que para a rodada com alerta. A
+  `U_nome_inventado` fica em monitoramento (decisão do Rafael, 06/10), junto com o `U_campo_inexistente` e a
+  ferramenta concorrente do `final_answer` (`docs/16` § O monitoramento).
+- **A lição do texto longo ainda não vale notebook:** falta a leitura em duas etapas (06/10).
 
 ---
 

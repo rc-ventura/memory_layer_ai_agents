@@ -25,10 +25,13 @@ preparação ──┬──► mineração (lê as tabelas da base) ──┐
   de caso.
 - **Investigação:** a `mineracao-investigacao` pega uma parada.
   - Quem escolhe os casos é uma regra fixa (`amostrar.py`), e o `investigador` lê.
-  - O `segundo-leitor` relê às cegas (`concordancia.py`).
+  - O `segundo-leitor` relê às cegas (`concordancia.py`, com a tabela dos dois leitores lado a lado). Na candidata, a
+    leitura é em duas etapas: primeiro em frase livre, depois nas categorias da lista que o pesquisador aprovou.
   - A hipótese vira regra contada na população inteira (`testar_regra.py`).
   - **O LLM propõe, o script conta.** Nenhum número sai da leitura do modelo.
-- **Decisão:** é do pesquisador. Uma regra que mudaria número publicado é um *Ajuste*, e o kit para ali.
+- **Decisão:** é do pesquisador. Uma regra que mudaria número publicado é um *Ajuste*, e o kit para ali. Na candidata,
+  o painel marca as situações que param no **gate do pesquisador**, e a decisão fica registrada
+  (`registrar_decisao.py`).
 
 ## Evidência em todo relatório
 
@@ -63,13 +66,15 @@ skills/mineracao-base/            passo 0 comum: pasta, base, versão do código
   scripts/amostrar.py             a regra fixa de escolha de casos (usada pela evidência e pela investigação)
   scripts/versao_para_sair.py     a versão do relatório que sai: identificadores → caso-N (o mapa fica no ambiente)
   scripts/varrer_pii.py           bloqueia a versão que sai se tiver processo, CPF, CNPJ, e-mail ou identificador de execução
+  scripts/monitorar.py            o monitoramento (passo 0.5): confere as lições e sinais monitorados da análise e para com alerta
   manifesto.json                  os hashes do código para o qual esta versão do kit foi escrita
 skills/mineracao-silenciosas/     a mineração das falhas silenciosas (lê as tabelas, passo a passo do procedimento da análise)
   scripts/comparar_auditoria.py   o encontro: tabelas da mineração × medidas da auditoria independente (audit_recompute9)
 skills/mineracao-candidata/       a mineração de uma candidata a memória: parte genérica → funil → parte específica → arquivo final
   scripts/validar_memoria.py      confere o arquivo final contra o esquema da memória da análise (e converte o registro de um notebook)
   scripts/comparar_auditoria.py   o encontro: a parte genérica × a auditoria independente (audit_recompute6)
-  scripts/valor_da_licao.py       o painel das lições: frequência (Pareto · presença no tempo), confiança (lida do confianca.json) e situação
+  scripts/valor_da_licao.py       o painel das lições: frequência (Pareto · presença no tempo), confiança (lida do confianca.json), situação e decisão
+  scripts/registrar_decisao.py    registra a decisão do pesquisador num gate (a lista da leitura aberta; a situação do painel)
   referencias/fluxo.md            os diagramas da rodada e do ciclo de vida da parte específica
 skills/mineracao-protocolo/       a mineração do protocolo do harness (resposta sem bloco de código)
   scripts/comparar_auditoria.py   o encontro: casos/passos/versões/modelos × a auditoria independente (audit_recompute10)

@@ -50,18 +50,24 @@ contagem, marcada `[assistido]`, e vale como hipótese.
    (`crus/`) e a visão (`derivados/`). Use a regra `procedimento` (o padrão). Só use `--regra semente --n <k>`
    quando a população for grande demais para ler o primeiro de cada mês.
 4. **Ler (o `investigador`).** Para cada caso da amostra, rode `uv run python drill_down.py caso <exec_id> <role>` e
-   classifique nas categorias fechadas do roteiro. Grave `resultados/leitura_<decisao>_<BASE_ID>.csv` com
+   classifique nas categorias fechadas do roteiro. **Quando o roteiro pede leitura em duas etapas** (o `candidata`),
+   siga-o: primeiro a leitura aberta, em frase livre, pelos dois leitores; depois as frases lado a lado
+   (`concordancia.py --lado-a-lado`), a lista proposta e **a parada para o pesquisador aprovar a lista**; só então a
+   leitura fechada. Grave `resultados/leitura_<decisao>_<BASE_ID>.csv` com
    `exec_id, role, idx` (ou a coluna de idx do roteiro), uma coluna por eixo ou categoria e `onde_no_cru` (o campo do
    step lido). Não copie texto de caso para a leitura nem para a conversa.
 5. **Segundo leitor.** Faça a amostra da amostra
    (`<skill mineracao-base>/scripts/amostrar.py resultados/evidencia/inv_<decisao>_<BASE_ID>/casos.csv --regra semente --n <k> --saida resultados/amostra2_<decisao>_<BASE_ID>.csv`,
-   com k ≈ um terço, no mínimo 5). O `segundo-leitor` classifica sem ver a leitura 1 e grava
+   com k ≈ um terço, no mínimo 5; quando o roteiro fixa outro número, vale o do roteiro — no `candidata`, os dois
+   leitores leem todos os casos da leitura fechada, pelo menos 20). O `segundo-leitor` classifica sem ver a leitura 1 e grava
    `resultados/leitura2_<decisao>_<BASE_ID>.csv`. Depois:
    ```
    uv run python <esta skill>/scripts/concordancia.py resultados/leitura_….csv resultados/leitura2_….csv --rotulo <coluna>
    ```
-   Se a concordância for baixa (kappa < 0,6), a categoria está mal definida: registre isso como achado e não proponha
-   regra.
+   Com `--lado-a-lado <tabela.md> --mostrar <colunas>`, o script grava cada caso com o que cada leitor disse, as
+   discordâncias primeiro: essa tabela vai para o dossiê. Se a concordância for baixa (kappa < 0,6), a **categoria**
+   está mal definida — não quer dizer que o padrão não existe: registre isso como achado, leve a tabela lado a lado ao
+   pesquisador e não proponha regra nova em cima da categoria.
 6. **Propor a regra e contar.** Escreva a regra que separaria a categoria-alvo (regex num campo do step) e conte:
    ```
    uv run python <esta skill>/scripts/testar_regra.py <pasta-da-analise> --populacao <população.csv> --campo-passo <campo> --regex '<rx>' --lidos resultados/leitura_….csv --rotulo <coluna> --alvo <valor>

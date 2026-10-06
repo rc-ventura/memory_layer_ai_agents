@@ -68,6 +68,18 @@ uv run python checklist.py
 Copie para o relatório o formato do §0, as linhas, as memórias que parseiam e as quebradas, e os tipos fora da dupla
 conhecida no §4. Se ele sair com 1 (memória do parquet que não parseia), **pare**.
 
+**0.5 · Monitoramento** (de qualquer lugar):
+
+```
+uv run python <esta skill>/scripts/monitorar.py <pasta-da-analise>
+```
+
+Confere, nesta base, cada lição ou sinal que o pesquisador decidiu monitorar (`monitoramento.json` da análise). É a
+única comparação com outra base que o kit faz, e é de propósito: a linha de base e os gatilhos foram registrados pelo
+pesquisador quando ele decidiu monitorar. Se sair com 1, **pare** e leve os alertas ao pesquisador antes de minerar:
+a lição volta ao gate dele. Se sair com 2, falta uma tabela; o script diz o comando que a gera. Copie a saída para o
+relatório.
+
 ## Depois do passo 0
 
 Siga a skill da mineração pedida. Ao terminar:

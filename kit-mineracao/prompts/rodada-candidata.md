@@ -15,9 +15,11 @@ corrente).
    - escreva o relatório da parte genérica, com evidência por achado.
 3. **Funil:** pela tabela do procedimento.
    - Com notebook específico, rode-o e converta o registro.
-   - Com investigação, use a `mineracao-investigacao` com o roteiro `candidata`, com dois leitores às cegas e regras
-     contadas.
-4. **Arquivo final:** `memoria_<u>_<BASE_ID>.json`, aprovado pelo `validar_memoria.py`. A versão que sai passa pelo
+   - Com investigação, use a `mineracao-investigacao` com o roteiro `candidata`: leitura aberta pelos dois leitores,
+     **pare para eu aprovar a lista**, depois a leitura fechada às cegas e as regras contadas.
+4. **Painel e gate:** rode o `valor_da_licao.py` com a lição. Se a situação tem gate, **pare** e me traga a lição
+   principal com a cobertura, os leitores lado a lado, o resto e as opções.
+5. **Arquivo final:** `memoria_<u>_<BASE_ID>.json`, aprovado pelo `validar_memoria.py`. A versão que sai passa pelo
    `varrer_pii.py`.
 
 Na resposta, traga:

@@ -8,8 +8,9 @@ Proponha um notebook específico para a lição `{{argumentos}}`, seguindo o pro
 
 1. **Confira a regra de criação antes de qualquer coisa.**
    - **Frequência:** a lição está no Pareto (80% das ocorrências das candidatas) ou aparece na maior parte dos meses
-     (`valor_da_licao.py`). **E confiança:** dois leitores às cegas com kappa ≥ 0,6, e as regras do `regras.json`
-     contadas com concordância ≥ 90% e "pega a mais" ≤ 10%. Ou:
+     (`valor_da_licao.py`). **E confiança:** dois leitores às cegas, com pelo menos 20 casos, kappa ≥ 0,6, e as regras
+     do `regras.json` contadas com concordância ≥ 90% e "pega a mais" ≤ 10% (no painel, "pronta para notebook"), **e a
+     decisão do gate registrada como "propor o notebook"** no `decisoes.json`. Ou:
    - há uma decisão minha registrada no `plano-atual.md`.
 
    Se nenhuma vale, **pare** e diga qual critério falta, com os números.

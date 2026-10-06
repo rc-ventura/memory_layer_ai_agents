@@ -1,0 +1,68 @@
+{
+  "o_que_e": "As lições e os sinais que o pesquisador decidiu monitorar. O monitorar.py (skill mineracao-base) confere cada um no passo 0 de toda mineração e para a rodada com alerta quando um gatilho dispara. Só decisões, contagens e regras: nenhum dado de caso. Procedimento: docs/16 § O monitoramento.",
+  "itens": [
+    {
+      "id": "U_nome_inventado",
+      "unidade": "U_nome_inventado",
+      "o_que": "nome usado sem ter sido definido",
+      "tipo": "memória rara",
+      "decidido_em": "2026-10-06",
+      "decisao": "monitorar (reconferir a cada partição nova)",
+      "onde_decidido": "resultados/mineracao/U_nome_inventado/decisoes.json; docs/16, tabela do funil",
+      "populacao": "erros_mecanismo.csv",
+      "gerar": "o notebook da esteira (analise_trace_esteira_juridica.ipynb)",
+      "filtro": ["unidade=U_nome_inventado"],
+      "coluna_mes": "mes",
+      "linha_de_base": {"base": "base1", "erros": 5, "execucoes": 5, "meses": 4,
+                        "sub": {"nome visto só no texto": 3, "função de chamada anterior": 2}},
+      "sub": [
+        {"nome": "nome visto só no texto", "regex": "The variable `[^`]+` is not defined", "campo_passo": "error"},
+        {"nome": "função de chamada anterior", "regex": "Forbidden function evaluation", "campo_passo": "error"}
+      ],
+      "gatilhos": [
+        {"tipo": "regua", "execucoes": 3, "meses": 2},
+        {"tipo": "frequencia"},
+        {"tipo": "cresce", "fator": 3},
+        {"tipo": "sub_muda", "delta": 0.3},
+        {"tipo": "sem_regra", "fracao": 0.2}
+      ],
+      "outras_bases": {"base2": "118 erros (plano-atual 4.11); a contar na máquina de compliance"}
+    },
+    {
+      "id": "U_campo_inexistente",
+      "unidade": "U_campo_inexistente",
+      "o_que": "campo inexistente no retorno estruturado (o prompt pede uma chave que a ferramenta não devolve)",
+      "tipo": "sinal de harness",
+      "decidido_em": "2026-10-05",
+      "decisao": "sinal de harness: o conserto é no contrato do prompt; acompanhar até sumir",
+      "onde_decidido": "pipeline-entre-bases.md, Ajustes 5 e 13",
+      "populacao": "erros_mecanismo.csv",
+      "gerar": "o notebook da esteira (analise_trace_esteira_juridica.ipynb)",
+      "filtro": ["unidade=U_campo_inexistente"],
+      "coluna_mes": "mes",
+      "linha_de_base": {"base": "base1", "erros": 10, "execucoes": 10, "meses": 6},
+      "gatilhos": [
+        {"tipo": "some"},
+        {"tipo": "cresce", "fator": 3}
+      ],
+      "outras_bases": {"base2": "38 erros · 36 execuções (Ajuste 13)"}
+    },
+    {
+      "id": "ferramenta_concorre_com_final_answer",
+      "o_que": "a ferramenta de resposta final concorre com o final_answer (o step anterior ao erro chamou a ferramenta que se declara resposta final)",
+      "tipo": "sinal de harness",
+      "decidido_em": "2026-10-02",
+      "decisao": "monitorar, não dar como corrigido: aparece só com a declaração antiga (dez/2025) e some com a nova (jan/2026)",
+      "onde_decidido": "plano-atual.md, Destinos já decididos; Ajuste 16",
+      "populacao": "evidencia/protocolo/casos.csv",
+      "gerar": "uv run python drill_down.py protocolo (de dentro de pipeline/)",
+      "filtro": ["anterior_ferramenta_final=True"],
+      "coluna_mes": "mes",
+      "linha_de_base": {"base": "base1", "erros": 6, "execucoes": 3, "meses": 1},
+      "gatilhos": [
+        {"tipo": "aparece_desde", "mes": "2026-01"}
+      ],
+      "outras_bases": {"base2": "dez/2025, com a declaração antiga (plano-atual, Destinos já decididos)"}
+    }
+  ]
+}
