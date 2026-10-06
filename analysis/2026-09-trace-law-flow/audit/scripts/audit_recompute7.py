@@ -30,7 +30,9 @@ from collections import defaultdict
 csv.field_size_limit(sys.maxsize)
 
 REPO = os.path.dirname(os.path.abspath(__file__))
-TRACE = os.path.join(REPO, "..", "..", "data", "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+from leitor_trace import abrir_trace, formato_do_trace, trace_da_linha_de_comando   # só a abertura do arquivo (CSV ou parquet, plano §4.10)
+TRACE = trace_da_linha_de_comando(os.path.join(REPO, "..", "..", "data", "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"))
 EVID = os.path.join(REPO, "..", "..", "pipeline", "resultados", "evidencia",
                     "11.9_leituras_quebra_sigilo")
 FN = "validar_quebra_sigilo"
@@ -52,10 +54,9 @@ def system_prompt(st):
 
 def load_steps():
     """(exec_id, role) -> {idx: step-dict}; tambem memo cru por exec_id."""
-    import lzma
     passos, memos, mes_de = defaultdict(dict), {}, {}
-    with lzma.open(TRACE, "rt", encoding="utf-8") as f:
-        for row in csv.DictReader(f):
+    with abrir_trace(TRACE) as linhas:
+        for row in linhas:
             memo_txt = row.get("txt_etap_memo")
             if not memo_txt:
                 continue

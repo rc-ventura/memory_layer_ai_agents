@@ -166,3 +166,16 @@ Inventário: o que o system prompt **declara** (`def nome(...)`), não o que apa
   balde invisível ao catálogo; as outras 113 falhas da base 1 ficam sem unidade.
 - **Groundedness da resposta final** (o valor no `final_answer` tem suporte nas observações?) — o erro de maior impacto
   no TRAIL — ainda não é medido aqui ([`02-relatorio-achados.md`](02-relatorio-achados.md) §5).
+
+## 8 · Dois entendimentos da revisão de 02/10 (vindos do `plano-atual.md`, 06/10)
+
+- **Dois caminhos de falha.** Quando a ferramenta falha por dentro, o embrulho dela devolve a falha como texto e o step
+  **não** quebra: é a falha silenciosa (este balde). Quando o código Python do agente erra — por exemplo, ao tratar
+  esse texto como dicionário —, há exceção e o step quebra: é o erro visível.
+- **Por que a suspeita sobre as memórias de contrato caiu sem a prova perfeita.** A medida conta toda falha silenciosa
+  até 3 steps antes no mesmo papel, inclusive as que nada têm a ver com o erro; então ela conta a mais: é um **teto**.
+  O teto deu 5 de 79 e 3 de 38 nas candidatas de contrato da base 2 ([`14`](14-relatorio-falhas-silenciosas.md) §4), e o número
+  real é menor ou igual. Por isso `U_tipo_retorno` e `U_campo_inexistente` continuam candidatas: não nascem de falha
+  silenciosa. A prova perfeita seria o fluxo de dado — a variável que recebeu o texto de erro ser a mesma que o erro
+  acessa como dicionário.
+

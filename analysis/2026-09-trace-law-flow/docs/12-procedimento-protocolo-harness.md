@@ -35,6 +35,10 @@ cascata.
   (passo 2).
 - **Espalhado** → fundo do modo texto; ir direto aos casos (passo 4).
 - Conferir: soma dos papéis = total; recuperação e cascata anotadas.
+- Além do `casos.csv`, o comando grava em `resultados/evidencia/protocolo/` as tabelas que antes só eram impressas:
+  `passos.csv` (steps por mês e papel), `versoes.csv` ([7]) e `modelos.csv` ([8]). A auditoria independente
+  `audit/scripts/audit_recompute10.py` recalcula as mesmas medidas direto do trace (kit de mineração: skill
+  `mineracao-protocolo`).
 
 ## Passo 2 — A camada: modo, modelo, contrato
 
@@ -93,8 +97,8 @@ quantas vezes o papel foi chamado; e se a tarefa menciona "não foi possível" o
 
 | Sinal | Leitura |
 |---|---|
-| texto/3 ≈ tokens de saída | o que o modelo gerou chegou — ler o texto (M1, M2, M3) |
-| tokens de saída ≫ texto/3 | **M4** — o texto é um resto; não ler intenção nele |
+| texto por token perto do normal do papel na execução | o que o modelo gerou chegou — ler o texto (M1, M2, M3) |
+| texto por token < 1/4 do normal do papel (`sinal_resto` no `casos.csv`) | **M4** — o texto é um resto; não ler intenção nele. Compare com o normal do papel, não com texto/3: modelo de raciocínio gasta tokens sem texto em todo step (Ajuste 15) |
 | texto 0, erro "não", tokens > 0 | **M5** — step vazio silencioso; o erro seguinte é consequência |
 | linha `cru:` — `content` da API = texto − 7 e os outros campos ∅ | a API entregou só aquilo (o `</code>` é do harness); nada foi para outro campo |
 | linha `cru:` — algum outro campo grande (`tool_calls`, campo novo em `raw+`) | a resposta foi para um campo que o smolagents não lê |
@@ -105,7 +109,9 @@ quantas vezes o papel foi chamado; e se a tarefa menciona "não foi possível" o
 
 ## Passo 6 — Classificar no catálogo
 
-Para cada caso, o mecanismo (M1–M6 do `10` §4) ou "novo". Um mecanismo novo precisa de: como reconhecer, gatilho,
+Para cada caso, o mecanismo (M1–M6 do `10` §4) ou "novo". Dois já vêm medidos no `casos.csv`: o M1 (`sobreposicao_final`
+≥ 0,5; [9]) e o M2 pela regra (`regra_ferramenta_final`; [10], Ajuste 16). O sinal de resto (`sinal_resto`; Ajuste 15)
+diz quando não ler intenção no texto. Um mecanismo novo precisa de: como reconhecer, gatilho,
 casos que o sustentam — entra no `10` como hipótese. Resultado por papel: tabela papel × mecanismo, como o `11` §1.3.
 
 ## Passo 7 — Destino e registro
@@ -122,7 +128,9 @@ casos que o sustentam — entra no `10` como hipótese. Resultado por papel: tab
 - A soma por papel e por mês bate com o total de [1].
 - Todo mecanismo atribuído aponta os casos (arquivo `erro_<papel>_<versão>_<k>`) que o sustentam.
 - Leitura que depender só do texto de um step com M4 não vale como mecanismo.
-- **O `idx` conta todas as chamadas do papel juntas.** Antes de ler uma sequência de erros como "loop", confira onde o
+- **O `idx` conta todas as chamadas do papel juntas.** O `casos.csv` traz `chamada` (em qual chamada do papel está o
+  erro) e `chamadas_do_papel` (quantas houve na execução): erro com `chamada > 1`, ou num papel com várias chamadas, pede
+  esta conferência. Antes de ler uma sequência de erros como "loop", confira onde o
   `step_number` volta a 1 (`metadados_steps.py`: "papel chamado Nx"). A seção 2 do `protocolo --casos` pode mostrar o fim
   da chamada anterior. Essa foi a origem da leitura errada no CalculoCivel (`11` §2.5).
 - **Rótulos de memória logo depois de um erro de protocolo** (`U_texto_solto`, `U_estado_perdido`, `U_nome_inventado`)

@@ -1,0 +1,79 @@
+{
+  "titulo": "Esquema do arquivo final de uma mineração de candidata a memória",
+  "versao": "0.1",
+  "situacao": "provisória — a estrutura final da memória ainda não está fechada. Os campos vêm do 06-racionais-mineracao-unidades-n2-n10.md §9 Passo 8, que os tira do TRAIL, do AgentDebug e da produção própria do projeto (comparação em 01-racionais.md §8). Para mudar a estrutura, mude só este arquivo, suba a versao e registre no livro-razão (pipeline-entre-bases.md): a skill mineracao-candidata e o validar_memoria.py leem daqui.",
+  "arquivo": {
+    "caminho": "pipeline/resultados/mineracao/<unidade>/memoria_<unidade>_<BASE_ID>.json",
+    "cabecalho": {
+      "esquema": "a versao deste arquivo, carimbada",
+      "unidade": "o código da unidade (ex.: U_...)",
+      "base": "o BASE_ID da análise",
+      "gerado_em": "AAAA-MM-DD",
+      "parte_especifica": "notebook:<nome> | investigacao:<roteiro>",
+      "memoria": "o registro, com os campos abaixo",
+      "origem": "para cada campo do registro: {tipo: checado | hipotese | pendente, comando: <o que reproduz, obrigatório se checado>, nota}"
+    }
+  },
+  "campos": {
+    "category": {
+      "tipo": "texto",
+      "obrigatorio": true,
+      "fonte": "próprio do projeto — a unidade (01-racionais.md §7)",
+      "o_que_e": "o nome da lição: a unidade e o tipo (factual · ambiente | experiencial · estratégia)"
+    },
+    "scope": {
+      "tipo": "objeto",
+      "obrigatorio": true,
+      "fonte": "próprio do projeto — a chave de recuperação é (papel, unidade), não global (02-relatorio-achados.md §6)",
+      "o_que_e": "onde a memória vale: {role, tool} (null quando não se restringe)"
+    },
+    "location": {
+      "tipo": "objeto",
+      "obrigatorio": true,
+      "fonte": "TRAIL (Apêndice A.11 — anotação por span)",
+      "o_que_e": "{total_erros, casos: [{exec_id, role, idx, mes}]} — a lista, capada em ~10, por regra fixa"
+    },
+    "evidence": {
+      "tipo": "lista",
+      "obrigatorio": true,
+      "fonte": "TRAIL",
+      "o_que_e": "2–3 casos representativos, só com estrutura (chaves, formas), nunca conteúdo de string"
+    },
+    "description": {
+      "tipo": "texto",
+      "obrigatorio": true,
+      "fonte": "AgentDebug (Stage 1 — descrição do caso)",
+      "o_que_e": "o diagnóstico: o que acontece, em uma ou duas frases"
+    },
+    "correction_guidance": {
+      "tipo": "texto",
+      "obrigatorio": true,
+      "fonte": "AgentDebug (Stage 2 — diretiva corretiva; degrau 3 · correção do 01 §8)",
+      "o_que_e": "o que o agente deve fazer diferente — o conteúdo da memória"
+    },
+    "occurrences": {
+      "tipo": "objeto",
+      "obrigatorio": true,
+      "fonte": "próprio do projeto",
+      "o_que_e": "{erros, ocorrencias, execucoes, meses: [AAAA-MM]}"
+    },
+    "status": {
+      "tipo": "texto",
+      "obrigatorio": true,
+      "fonte": "próprio do projeto — a disciplina derivado-e-checado × hipótese (Commit Gate)",
+      "o_que_e": "derived-and-checked | parcial | hipotese"
+    },
+    "validation": {
+      "tipo": "objeto",
+      "obrigatorio": true,
+      "fonte": "próprio do projeto; validation.destino desde 17/09 (06 §9)",
+      "o_que_e": "as conferências de cada passo e o destino proposto: {destino: memória | harness | em aberto, ...}"
+    },
+    "impact": {
+      "tipo": "nulo-ou-texto",
+      "obrigatorio": false,
+      "fonte": "TRAIL — atribuído por anotador/juiz, não por fórmula",
+      "o_que_e": "null nesta fase, por decisão (06 §9 Passo 8): pendente do gold-standard + juiz calibrado (roadmap #11)"
+    }
+  }
+}

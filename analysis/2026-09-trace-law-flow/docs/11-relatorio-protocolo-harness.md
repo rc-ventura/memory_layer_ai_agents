@@ -60,6 +60,20 @@ leituras do Rafael (nenhum texto de caso sai de lá).
 
 Total: M1 20 · M2 6 · M3 2 · não lidos 5 = 33.
 
+**RespostaBacen, reconfirmado em 05/10 por um método reproduzível** (kit de mineração, investigação; dossiê
+`pipeline/resultados/dossie_protocolo_RespostaBacen-dez_base1_2026-10-05.md`, no ambiente):
+- **Leitura:** dois leitores, às cegas um do outro, concordaram em 5 de 5 casos (kappa 1,00). Os 7 ficaram M2 5 ·
+  M1 1 · indeterminado 1.
+- **O indeterminado** é um dos 2 "sucesso falso" desta tabela. O sinal de resto impediu a classificação, e a medida
+  mostrou que ele tem razão. Os leitores acharam que o `o4-mini` gasta assim em todo step, mas os 2 "sucesso falso"
+  entregam 0,08 caractere por token contra 0,66–0,72 nos steps bons do papel: 0,11–0,12 do normal (livro-razão
+  Ajuste 15; `10` §4 M4). O texto desses 2 é um resto.
+- **Regra contada sobre os 7, sem leitura** ("o step anterior chamou uma ferramenta cujo nome a apresenta como
+  resposta final, e o texto não reaparece na resposta final"): pega os 5 M2 lidos, nenhum a mais, e nenhum fora do
+  RespostaBacen. Virou regra do pipeline (`drill_down.py protocolo` [10]; Ajuste 16).
+- **A declaração do `resposta_final`:** com objeto aninhado na entrada (dez/2025, 47 steps, 6 execuções), os 7 erros;
+  com texto simples (jan–jun/2026, 88 steps, 20 execuções), 0. É correlação, como acima.
+
 **Três observações da leitura:**
 
 - **ConversationAgent — a instrução que contradiz o envelope.** O fim do prompt diz *"Se voce não precisar de nenhuma
@@ -242,6 +256,11 @@ comentário. **[conferido: AST]**
 - se o `request`/`accepted` do fim de cada chamada é o pedido ao humano ou o registro da resposta final;
 - o que a 4ª tarefa dizia;
 - o `DEFAULT` da calculadora.
+
+**Rodada 2 (05/10; livro-razão Etapa 10d):** em 2 erros da chamada terminal, o texto repete trechos longos da
+observação anterior (2.881 e 2.986 caracteres) — hipótese, sem causalidade provada; pertence à investigação do erro
+crítico (plano 4.6), não à da maior candidata da base 2. A chamada terminal tem 21 steps, 11 erros mais o limite e
+2,09 M tokens, mais que as outras três somadas.
 
 ### 2.6 O que falta na base 2
 

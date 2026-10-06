@@ -136,7 +136,7 @@ Uso:
            caso.json`. Mesma ressalva de PII: o arquivo gerado não deve ser
            commitado nem sair do ambiente local.
 
-Requer o trace cru (85cb11b5-....csv.xz) em `../data/` (a pasta canônica é
+Requer o trace cru (o `TRACE` do base_pipeline.py: CSV ou um único parquet) em `../data/` (a pasta canônica é
 `analysis/2026-09-trace-law-flow/data/`; resolvido pelo caminho do próprio
 script, não pelo diretório corrente — corrigido 16/09/2026, auditoria M2).
 Nunca commitar a saída deste script — ela reproduz nomes de clientes e
@@ -151,7 +151,7 @@ import pandas as pd
 try: sys.stdout.reconfigure(encoding="utf-8")
 except Exception: pass
 
-from base_pipeline import TRACE, classify as _bp_classify
+from base_pipeline import TRACE, ler_trace, classify as _bp_classify
 
 def classify(m):
     # Assinatura do par (família, assinatura) que base_pipeline.classify retorna —
@@ -238,7 +238,7 @@ def texto_msg(m):
     return str(c or "")
 
 def load():
-    return pd.read_csv(TRACE, dtype=str)
+    return ler_trace(TRACE)
 
 def amostra(n=10):
     """Sem filtro: qualquer (exec_id, role) com pelo menos um ActionStep, pra olhar
@@ -359,7 +359,7 @@ def resolver(obj, caminho):
 def gravar_cru(pasta, r, linha):
     """A linha inteira do trace, sem alteração: só `txt_etap_memo` é desserializado (json.loads), para dar pra ler e
     apontar caminhos dentro dele."""
-    out = {"_origem": {"arquivo": "data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz", "linha_de_dados": int(linha),
+    out = {"_origem": {"arquivo": "data/" + os.path.basename(TRACE), "linha_de_dados": int(linha),
                        "nota": "cópia literal da linha do trace; só txt_etap_memo foi desserializado (json.loads), "
                                "sem nenhuma outra alteração"}}
     for col, v in r.items():
@@ -501,7 +501,9 @@ def evidencia(analise=None):
     pastas = sorted(d for d in os.listdir(PASTA_EVIDENCIA) if por_step(d)) if analise is None else [analise]
     if not pastas or not os.path.exists(os.path.join(PASTA_EVIDENCIA, pastas[0], "casos.csv")):
         print(f"nenhum casos.csv em {PASTA_EVIDENCIA}/{analise or '*'} — rode a §11 do notebook mineracao_unidades_n2_n10.ipynb antes."); return
-    casos = {d: pd.read_csv(os.path.join(PASTA_EVIDENCIA, d, "casos.csv"), dtype={"exec_id": str, "role": str}) for d in pastas}
+    # keep_default_na=False: há um papel chamado literalmente "null" no trace, e o padrão do pandas o leria como nulo
+    casos = {d: pd.read_csv(os.path.join(PASTA_EVIDENCIA, d, "casos.csv"), dtype={"exec_id": str, "role": str},
+                            keep_default_na=False, na_values=[""]) for d in pastas}
     ids = set().union(*(set(c["exec_id"]) for c in casos.values()))
     df = load()
     linhas = {r["cod_idef_exeo"]: (i, r) for i, r in df[df["cod_idef_exeo"].isin(ids)].iterrows()}
@@ -1199,7 +1201,8 @@ def protocolo(prompt=None):
     vem depois na cascata? Só contagens — nenhum texto de caso, nenhum exec_id na tela. Os casos, com exec_id, vão para
     resultados/evidencia/protocolo/casos.csv (git-ignored), para escolher o que ler com `evidencia`. Lê
     resultados/erros_mecanismo.csv e execucoes.csv — rode o notebook antes. Ajuste 10b (pipeline-entre-bases.md)."""
-    from base_pipeline import sobreposicao, M1_LIMIAR
+    from base_pipeline import sobreposicao, M1_LIMIAR, RESTO_LIMIAR, FERRAMENTA_FINAL
+    import statistics
     res = os.path.dirname(PASTA_EVIDENCIA)
     M = pd.read_csv(os.path.join(res, "erros_mecanismo.csv"), dtype={"exec_id": str})
     X = pd.read_csv(os.path.join(res, "execucoes.csv"), dtype={"exec_id": str}).set_index("exec_id")
@@ -1216,7 +1219,18 @@ def protocolo(prompt=None):
         for role, lst in json.loads(r["txt_etap_memo"]).items():
             if not isinstance(lst, list): continue
             acts = [s for s in lst if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
+            # a chamada de cada ActionStep: quantos TaskStep vêm antes dele na lista do papel (a regra da coluna `chamada`
+            # de falhas_silenciosas()). O `idx` conta as chamadas juntas; a coluna separa (plano 4.4, S4; doc 12)
+            chamada_de, ch = [], 0
+            for st in lst:
+                if isinstance(st, dict) and st.get("__class__") == "TaskStep": ch += 1
+                elif isinstance(st, dict) and st.get("__class__") == "ActionStep": chamada_de.append(ch)
             passos[(mes, role)] += len(acts)
+            # sinal de resto (Ajuste 15): caracteres entregues por token de saída × o normal do papel nesta execução
+            cpt = [len(str(a.get("model_output") or "")) / (a.get("token_usage") or {}).get("output_tokens")
+                   if (a.get("token_usage") or {}).get("output_tokens") else None for a in acts]
+            bons = [x for a, x in zip(acts, cpt) if x is not None and not a.get("error")]
+            normal = statistics.median(bons) if bons else None
             for i, s in enumerate(acts):
                 sp = system_prompt(s)
                 v = variantes.setdefault((role, _variante_prompt(sp)), {"meses": Counter(), "steps": 0, "erros": 0,
@@ -1238,6 +1252,10 @@ def protocolo(prompt=None):
                     cascata.append(u)
                 # [9] M1: o texto escrito no lugar do bloco reaparece na resposta final entregue depois (o 1º
                 # final_answer do papel) ou veio da observação anterior? (sobreposicao(), base_pipeline.py)
+                # Ajuste 16: o step anterior chamou uma ferramenta declarada cujo NOME a apresenta como resposta final?
+                finais = {n for n in re.findall(r"def\s+(\w+)\s*\(", sp) if n != "final_answer" and FERRAMENTA_FINAL.search(n)}
+                cod_ant = str(acts[i - 1].get("code_action") or "") if i > 0 else ""
+                anterior_final = any(re.search(rf"\b{re.escape(n)}\s*\(", cod_ant) for n in finais)
                 fin = next((a for a in acts[i + 1:] if a.get("is_final_answer")), None)
                 antecipou = sobreposicao(mo, str(fin.get("action_output") or "")) if fin else 0.0
                 copia = sobreposicao(mo, str(acts[i - 1].get("observations") or "")) if i > 0 else 0.0
@@ -1251,10 +1269,27 @@ def protocolo(prompt=None):
                               "proximo": cascata[0] if cascata else "(step sem erro)",
                               "cascata_depois": len(cascata),
                               "repetiu_logo_depois": bool(cascata) and cascata[0] == "H_bloco_code",
-                              "sobreposicao_final": round(antecipou, 3), "sobreposicao_obs_anterior": round(copia, 3)})
+                              "sobreposicao_final": round(antecipou, 3), "sobreposicao_obs_anterior": round(copia, 3),
+                              "chamada": chamada_de[i], "chamadas_do_papel": ch,
+                              "chars_por_token": round(cpt[i], 3) if cpt[i] is not None else None,
+                              "chars_por_token_normal": round(normal, 3) if normal is not None else None,
+                              "sinal_resto": bool(cpt[i] is not None and normal and cpt[i] < RESTO_LIMIAR * normal),
+                              "anterior_ferramenta_final": anterior_final,
+                              "regra_ferramenta_final": anterior_final and antecipou < M1_LIMIAR})
     C = pd.DataFrame(casos)
     pasta = os.path.join(PASTA_EVIDENCIA, "protocolo")
     os.makedirs(pasta, exist_ok=True)
+    # as tabelas de [1]/[2] (denominadores), [7] e [8], que antes só eram impressas — para a evidência e para o encontro
+    # com a auditoria independente (kit de mineração). Todas as linhas, não só os papéis com erro.
+    meses_txt = lambda c: ";".join(f"{m}:{n}" for m, n in sorted(c.items()))
+    pd.DataFrame([{"mes": m, "role": r, "steps": n} for (m, r), n in sorted(passos.items())]).to_csv(
+        os.path.join(pasta, "passos.csv"), index=False)
+    pd.DataFrame([{"role": r, "versao": vid, "modo": v["modo"], "steps": v["steps"], "erros": v["erros"],
+                   "meses": meses_txt(v["meses"])} for (r, vid), v in sorted(variantes.items())]).to_csv(
+        os.path.join(pasta, "versoes.csv"), index=False)
+    pd.DataFrame([{"role": r, "eixo": ex, "valor": val, "steps": v["steps"], "erros": v["erros"],
+                   "meses": meses_txt(v["meses"])} for (r, ex, val), v in sorted(por_modelo.items())]).to_csv(
+        os.path.join(pasta, "modelos.csv"), index=False)
     if prompt:   # grava o texto de uma versão do system prompt, para ler na máquina (não sai dela)
         achou = [(r, v) for (r, vid), v in variantes.items() if vid == prompt]
         if not achou:
@@ -1293,6 +1328,9 @@ def protocolo(prompt=None):
     print(f"  começa como markdown (#, |, -, **): {int(C['comeca_markdown'].sum())} · cita final_answer: "
           f"{int(C['cita_final_answer'].sum())} · tamanho mediano {C['chars'].median():,.0f} caracteres · tokens de saída: "
           f"mediana {C['tok_out'].median():,.0f}, máx {C['tok_out'].max():,}")
+    sr = C[C["sinal_resto"]]
+    print(f"  sinal de resto (texto por token < {RESTO_LIMIAR:.0%} do normal do papel na execução — não ler intenção no "
+          f"texto): {len(sr)}" + (" · " + ", ".join(f"{k} {n}" for k, n in sr["role"].value_counts().items()) if len(sr) else ""))
     print("\n[5] recuperação:")
     print(f"  o papel ainda entregou final_answer depois: {int(C['papel_entregou_depois'].sum())}/{len(C)} · "
           f"execução terminou com resposta: {int(C['execucao_com_resposta'].sum())}/{len(C)}")
@@ -1322,6 +1360,14 @@ def protocolo(prompt=None):
         print(f"  {role:24s} {len(c):4d} · {int((c['sobreposicao_final'] >= M1_LIMIAR).sum()):3d}/{len(c)} · "
               f"{c['sobreposicao_final'].median():4.0%} · {int((c['sobreposicao_obs_anterior'] >= M1_LIMIAR).sum()):3d}/{len(c)}")
     print("  falso negativo conhecido: o LLM reescreve ao reembrulhar (10-racionais-protocolo-harness.md §4 M1)")
+    print("\n[10] M2 pela regra — o step anterior chamou uma ferramenta cujo nome a apresenta como resposta final, e o texto "
+          "não reaparece na resposta final (Ajuste 16):")
+    print("  papel · erros · depois da ferramenta de resposta final · pela regra (sem reembrulho)")
+    for role in C["role"].value_counts().index:
+        c = C[C["role"] == role]
+        if c["anterior_ferramenta_final"].any():
+            print(f"  {role:24s} {len(c):4d} · {int(c['anterior_ferramenta_final'].sum()):3d} · {int(c['regra_ferramenta_final'].sum()):3d}")
+    print(f"  total pela regra: {int(C['regra_ferramenta_final'].sum())} de {len(C)}")
     print(f"\nCasos (com exec_id, para `evidencia`): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
     print(f"{'='*100}")
 

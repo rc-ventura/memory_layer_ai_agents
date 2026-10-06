@@ -103,6 +103,18 @@ entra aqui.
   mensagem de sucesso em texto — ou declara sucesso sem ela ter rodado ("sucesso falso").
 - **Como reconhecer:** o erro vem logo depois de uma chamada dessa ferramenta; `final_answer` nunca é chamado na
   execução, ou só muito depois; às vezes a ferramenta é chamada várias vezes em laço.
+- **Regra automática (Ajuste 16, 05/10):** o step anterior ao erro chamou uma ferramenta cujo **nome declarado** a
+  apresenta como resposta final (`FERRAMENTA_FINAL`: "resposta final" ou "final response", fora o `final_answer`), e
+  o texto do erro não reaparece na resposta final (sobreposição < 50%, o que separa o M1). Colunas
+  `anterior_ferramenta_final` e `regra_ferramenta_final` do `drill_down.py protocolo` ([10]). Base 1: 5 de 33, todos
+  no RespostaBacen. Ela concorda com os 5 M2 da leitura de 05/10 (dois leitores) e deixa de fora o M1 e o
+  indeterminado. É o detector de reaparecimento do destino abaixo. Pela descrição da ferramenta, a regra pegaria 5
+  ferramentas que só citam a resposta final.
+- **Desempate com o M1 (Ajuste 14, 05/10):** quando o erro vem logo depois dessa ferramenta **e** o step seguinte
+  reembrulha o mesmo conteúdo no `final_answer` (sobreposição ≥ 50%, a medida do M1), o erro é **M1**. O M2 exige a
+  resposta final ausente ou muito tardia; o reembrulho imediato mostra que o LLM só escreveu a resposta fora do
+  envelope. Origem: a investigação de 05/10 no RespostaBacen (base 1), em que os dois leitores, às cegas, usaram esta
+  convenção no mesmo caso.
 - **Gatilho:** o contrato da ferramenta. Na base 1, só a declaração com `json_resposta` (dict aninhado; dez/2025) teve
   erros; a com `resposta_gerada` (texto simples; jan–jun/2026), 0 — mesmo formato e mesmo modelo nos dois períodos.
   Correlação (6 × 20 execuções), não prova. (O `drill_down.py ferramenta` numera as variantes pela quantidade de steps,
@@ -128,9 +140,12 @@ entra aqui.
   frase, meio JSON, um nome de variável). Sem `<code>` no fragmento, o parse falha. **Não há perda no caminho:** o que o
   smolagents leu é o `content` da API mais o `</code>` que ele devolve (7 caracteres), e todos os outros campos da
   resposta (`tool_calls`, `function_call`, `audio`, `images`) vêm vazios (`metadados_steps.py`, linha `cru:`, 7 casos).
-- **Como reconhecer:** `tok_saída` muito maior que `len_texto`/3. Nos steps que funcionam, a razão é de 2,6 a 3,3
-  caracteres por token; nos steps do erro, 26 caracteres para 260 tokens, 106 para 300, 144 para 308
-  (`metadados_steps.py`).
+- **Como reconhecer:** o texto entregue por token de saída fica **abaixo de 1/4 do normal do próprio papel na mesma
+  execução** (a mediana dos steps sem erro; `RESTO_LIMIAR`, coluna `sinal_resto` do `drill_down.py protocolo`;
+  Ajuste 15, 05/10). Base 2: nos steps que funcionam, 2,6 a 3,3 caracteres por token; nos do erro, 26 caracteres para
+  260 tokens, 106 para 300, 144 para 308 (`metadados_steps.py`). **Por que o normal do papel e não um valor fixo:**
+  modelo de raciocínio gasta tokens que não viram texto em todo step. Na base 1, o `o4-mini` do RespostaBacen entrega
+  0,66–0,97 caractere por token nos steps bons, e o limiar fixo (≈ 3) marcava todos eles.
 - **Gatilho:** o modelo `gpt-5.6-terra` (todos os casos lidos). `finish_reason = stop` e sem filtro de conteúdo: não é
   limite de tokens nem filtro — o modelo parou por conta própria. **Descartado:** conteúdo em outro campo da resposta.
   **Mais provável, não comprovado:** os tokens foram gastos em raciocínio interno, que não vira texto — o `usage`
@@ -141,7 +156,11 @@ entra aqui.
   ("antecipou", "inventou a falha"). Essa leitura foi feita e retirada (30/09; `11` §2).
 - **Destino:** plataforma — comportamento do modelo neste modo (trocar o modelo, usar o modo JSON, ou testar o formato
   antes de produção). **Status:** o fato (a API entrega pouco ou nada) está medido em 7 casos; a causa (raciocínio
-  oculto) é hipótese.
+  oculto) é hipótese. **Base 1 (medido em 05/10, Ajuste 15):** 2 erros do RespostaBacen (`o4-mini`, dez/2025) têm o
+  sinal, com 0,08 caractere por token contra 0,66–0,72 do normal do papel (0,11–0,12 do normal). A leitura de 30/09
+  os pôs em M2 ("sucesso falso"); a investigação de 05/10 deixou um deles indeterminado por causa do sinal. Fica o
+  fato medido. Se esses 2 são M4 ou M2 lido num resto não está decidido, e o destino não muda: nenhum dos dois é
+  memória.
 
 ### M5 — Step vazio silencioso *(base 2)*
 

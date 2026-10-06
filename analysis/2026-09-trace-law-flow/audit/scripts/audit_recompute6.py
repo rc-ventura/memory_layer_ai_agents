@@ -31,8 +31,10 @@ csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
 # Caminhos canônicos corrigidos 16/09/2026 (auditoria M2): relativos a este script, não a um
 # home de usuário fixo.
 BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
-                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+from leitor_trace import abrir_trace, formato_do_trace, trace_da_linha_de_comando   # só a abertura do arquivo (CSV ou parquet, plano §4.10)
+TRACE = trace_da_linha_de_comando(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
+                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"))   # --trace <arquivo> para outra base
 EM_CSV = f"{BASE}/pipeline/resultados/erros_mecanismo.csv"
 CAND_CSV = f"{BASE}/pipeline/resultados/candidatos_memoria.csv"
 
@@ -147,8 +149,7 @@ per_exec_calls = Counter(); per_exec_tok = Counter()
 exec_month = {}
 traj = defaultdict(list)
 
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue
@@ -296,7 +297,15 @@ print(f"   cobertura candidatas: {tot_cand_err}/498 = {tot_cand_err/498:.1%} (es
 DESTINO_SPEC = {"U_contrato_dict": "memória", "U_campo_inexistente": "harness"}
 sinal_csv = sorted(u for u, c in cand_csv.items() if c.get("decisão") == "sinal de harness")
 sinal_esp = sorted(u for u, d in DESTINO_SPEC.items() if d == "harness")
-print(f"   sinal de harness no CSV: {sinal_csv} · esperado {sinal_esp} · {'OK' if sinal_csv == sinal_esp else '<< DIVERGE'}")
+# a decisão da mineração vale só na base em que foi tomada (Ajuste 7): a do DESTINO_SPEC é da base 1. O BASE_ID é lido
+# do base_pipeline.py pela AST (sem importá-lo); noutra base, a linha sai "a conferir" em vez de acusar divergência.
+_arv = ast.parse(open(f"{BASE}/pipeline/base_pipeline.py", encoding="utf-8").read())
+BASE_ID = next((ast.literal_eval(n.value) for n in _arv.body if isinstance(n, ast.Assign)
+                and any(getattr(t, "id", "") == "BASE_ID" for t in n.targets)), None)
+if BASE_ID == "base1":
+    print(f"   sinal de harness no CSV: {sinal_csv} · esperado {sinal_esp} · {'OK' if sinal_csv == sinal_esp else '<< DIVERGE'}")
+else:
+    print(f"   sinal de harness no CSV: {sinal_csv} · a conferir (a decisão embutida é da base 1; esta é {BASE_ID})")
 
 # ------------------------------------------------------ tabela papel × mecanismo
 print("D. papel × unidade (% dos erros DO papel, papéis com ≥5 erros):")
@@ -345,8 +354,7 @@ print(f"   ocorrências por mês: {dict(sorted(mesq.items()))} (esp. mar–jun/2
 
 # ---------------------------------------------- §3.3 tokens/chamada (regra oficial)
 import statistics as stt
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue
@@ -384,8 +392,7 @@ print(f"   ferramentas declaradas (união): {len(INV)} (esp. 90)")
 checked=reached=repeated=same_mec_r=0
 same_sig_r=0
 traj2 = defaultdict(list)
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue
@@ -427,3 +434,17 @@ for (eid,role),seq0 in traj2.items():
                     if prev and prev[1]: u1 = "U_estado_perdido"
                 if u0 == u1: same_mec_r += 1
 print(f"G. régua mecanismo: checked={checked} · reached={reached} ({reached/checked:.1%}) · repetiram={repeated} ({repeated/reached:.1%}) · mesma msg={same_sig_r} ({same_sig_r/reached:.1%}) (esp. 51/11,9%) · mesmo mecanismo={same_mec_r} ({same_mec_r/reached:.1%}) (esp. 58/13,5%)")
+
+# ------------------------------------------------ --json: as medidas por unidade, para o kit de mineração
+# `--json <arquivo> [--unidade <u>]`: grava, por unidade do balde visível, as contagens recalculadas aqui (o `agg` do
+# bloco C) — a skill mineracao-candidata confronta com o perfil da parte genérica (comparar_auditoria.py). Sem --json,
+# nada muda na saída.
+if "--json" in sys.argv[1:-1]:
+    _arq = sys.argv[sys.argv.index("--json") + 1]
+    _so = sys.argv[sys.argv.index("--unidade") + 1] if "--unidade" in sys.argv[1:-1] else None
+    _med = {u: {"erros": a["err"], "ocorrencias_visiveis": len(a["oc"]), "execucoes_visiveis": len(a["ex"]),
+                "meses_visiveis": len(a["me"]), "papeis_visiveis": len(a["pa"]),
+                "erros_por_papel": dict(sorted(Counter(r["role"] for r in rows if r["uni"] == u).items()))}
+            for u, a in agg.items() if _so is None or u == _so}
+    with open(_arq, "w", encoding="utf-8") as _fh:
+        json.dump({"unidades": _med}, _fh, ensure_ascii=False, indent=2)

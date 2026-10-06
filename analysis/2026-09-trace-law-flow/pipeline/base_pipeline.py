@@ -13,23 +13,32 @@ de parte do estado. A lógica é a mesma das células de §§1–3 do notebook d
 genérica — mudança aqui muda os dois notebooks.
 """
 
-import json, re, ast, builtins, unicodedata, os
+import json, re, ast, builtins, unicodedata, os, sys
 import pandas as pd, numpy as np
 from collections import Counter, defaultdict
 from types import SimpleNamespace
 
-__all__ = ["TRACE", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+from leitor_trace import ler_trace   # analysis/leitor_trace.py — CSV (.csv/.xz/.gz) ou um único parquet (plano §4.10)
+
+# Texto do pandas guardado em Python, não em arrow. Com o pyarrow instalado (para o parquet), o pandas 3 passaria a guardar
+# todo `dtype=str` em arrow, e as regex de `.str.contains/extract/replace` rodariam no RE2 do arrow, não no `re`: `\s`
+# deixa de casar o espaço não separável, lookahead não compila. O código foi escrito e auditado com o `re` do Python.
+pd.set_option("mode.string_storage", "python")
+
+__all__ = ["TRACE", "ler_trace", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
            "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
-           "caminho_dos_criticos", "sobreposicao", "M1_LIMIAR", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
+           "caminho_dos_criticos", "sobreposicao", "M1_LIMIAR", "RESTO_LIMIAR", "FERRAMENTA_FINAL", "FALHA_FERRAMENTA", "falhas_silenciosas", "mascarar_motivo", "MOTIVO_REGRAS",
            "GRUPOS_FALHA_REAL", "motivo_da_falha", "DONO_DO_GRUPO", "UNIDADES_CONTRATO", "forma_argumento",
            "formas_das_falhas", "erro_depois_da_falha", "contrato_precedido", "sucesso_falso_candidato",
            "REGRAS_INVISIVEL", "unidade_silenciosa", "ocorrencias_visiveis", "ocorrencias_silenciosas","chama_ferramenta_declarada", "final_answer_sem_laco", "tem_laco", "SEM_NOME",
            "categoria_do_erro", "triagem_por_papel",
            "DEGENERADO", "medir_sucesso", "carregar_base"]
 
+# o arquivo pode ser CSV (puro, .xz ou .gz) ou um único parquet: ler_trace() decide pelo conteúdo, não pela extensão
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
 # qual base é esta: "base1" aqui, "base2" na pasta -second, "base3" na -third. Junto com o TRACE, é o que se ajusta ao
@@ -38,12 +47,13 @@ BASE_ID = "base1"
 
 
 def carregar_trace():
-    df = pd.read_csv(TRACE, dtype=str)
+    df = ler_trace(TRACE)
     # `mes` = mês em que a execução RODOU (dat_hor_inio_exeo). `anomesdia` não serve para isso: é a data de corte
     # do lote (1 valor por mês, sempre posterior ao início — mediana 46 dias, até 230), e só bate com o mês real
     # em 36% das execuções com memória. Evidência: `drill_down.py relogios`; método: 03-procedimento-validacao.md.
     df["mes_exec"] = pd.to_datetime(df["dat_hor_inio_exeo"]).dt.to_period("M").astype(str)
-    df["mes_particao"] = pd.to_datetime(df["anomesdia"], format="%Y%m%d").dt.to_period("M").astype(str)
+    # anomesdia é AAAAMMDD no CSV; num parquet com a coluna tipada como data, o leitor entrega AAAA-MM-DD
+    df["mes_particao"] = pd.to_datetime(df["anomesdia"].str.replace("-", "", regex=False), format="%Y%m%d").dt.to_period("M").astype(str)
     df["mes"] = df["mes_exec"]
     return df
 
@@ -519,6 +529,16 @@ def caminho_dos_criticos(EU):
 # auditoria de 02/10). O limiar não foi registrado em 30/09: 0,5 é o reconstruído — reproduz as 4 linhas publicadas
 # da base 1 (qualquer valor em (0,479; 0,523] reproduz; 1 caso de cada lado da margem). Falso negativo conhecido: o LLM que reescreve ao reembrulhar.
 M1_LIMIAR = 0.5
+# Sinal de resto (M4, 10 §4; Ajuste 15, 05/10): o texto entregue por token de saída, comparado com o NORMAL DO PRÓPRIO
+# PAPEL NA MESMA EXECUÇÃO (a mediana dos steps sem erro), e não com um valor fixo. Modelo de raciocínio gasta tokens que
+# não viram texto em todo step (o4-mini, base 1: 0,66–0,97 caractere por token nos steps bons); o limiar fixo marcava
+# todos. Abaixo de 1/4 do normal, o texto é tratado como resto. Base 1: os erros ficam em 0,11–0,12 (2 do RespostaBacen)
+# ou ≥ 0,77; base 2 (fatos de 10 §4 M4): 0,03–0,18.
+RESTO_LIMIAR = 0.25
+# Ferramenta que se apresenta como resposta final (M2, 10 §4; Ajuste 16, 05/10): reconhecida pelo NOME declarado no
+# system prompt (`def <nome>(`), fora o próprio final_answer. Pela descrição não serve: na base 1 pegava 5 ferramentas
+# que só citam a resposta final (WorkflowManager, validadores, get_final_answer_schema...).
+FERRAMENTA_FINAL = re.compile(r"resposta_?final|final_?response", re.I)
 
 
 def sobreposicao(texto, outro, n=5):

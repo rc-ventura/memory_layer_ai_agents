@@ -13,12 +13,18 @@ import os
 # obsoleta de 08/09 que a auditoria de 16/09 achou (M1) e que foi removida. Os CSVs derivados
 # vivem em pipeline/resultados/, a única pasta que o notebook de fato escreve.
 BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
-                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
+from leitor_trace import abrir_trace, formato_do_trace, trace_da_linha_de_comando   # só a abertura do arquivo (CSV ou parquet, plano §4.10)
+TRACE = trace_da_linha_de_comando(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data",
+                      "85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz"))   # --trace <arquivo> para outra base
 
 # 1) colunas via pandas (notebook diz 12)
 import pandas as pd
-hdr = pd.read_csv(TRACE, dtype=str, nrows=2)
+if formato_do_trace(TRACE) == "parquet":   # no parquet, o esquema do arquivo
+    from leitor_trace import colunas_do_trace
+    hdr = pd.DataFrame(columns=colunas_do_trace(TRACE))
+else:
+    hdr = pd.read_csv(TRACE, dtype=str, nrows=2)
 print(f"1. pandas vê {hdr.shape[1]} colunas: {list(hdr.columns)}")
 
 # 2) réplica EXATA da célula 19 (tokens só contam se o código parsear, no agregado por papel;
@@ -28,8 +34,7 @@ per_role = defaultdict(lambda: [0, 0])
 per_role_excl = defaultdict(lambda: [0, 0])   # regra pré-15/09/2026: descarta o step que não parseia
 per_exec = defaultdict(lambda: [0, 0])
 pos_tools = Counter()
-with lzma.open(TRACE, 'rt', encoding='utf-8') as f:
-    rdr = csv.DictReader(f)
+with abrir_trace(TRACE) as rdr:
     for r in rdr:
         memo_raw = r.get("txt_etap_memo")
         if not memo_raw: continue
