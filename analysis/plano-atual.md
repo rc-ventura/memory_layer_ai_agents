@@ -2,7 +2,7 @@
 
 > **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](glossario.md).
 
-**Atualizado:** 06/10/2026 · **Branch:** `2026-10-05-base3-parquet-skills` (PR #33) · **Próxima branch:** o §4.14.
+**Atualizado:** 06/10/2026 · **Branch:** `2026-10-06-validacao-kit-base2` (o §4.14; a anterior, PR #33, mergeada).
 Índice do que já foi auditado: [`2026-09-trace-law-flow/audit/README.md`](2026-09-trace-law-flow/audit/README.md).
 
 **Para que serve:** a **única fonte** do "o que fazer agora", em **qualquer análise**: as decisões em vigor (§1, uma
@@ -133,9 +133,11 @@ Cada item: **contexto curto · o que fazer · tipo · status.** Nada começa sem
 **Ordem (06/10):** 4.14 (a próxima branch, que inclui o 4.11) → 4.1b na base 1 → os itens em discussão (§3), na ordem
 4.1c → 4.5 → 4.4 → 4.3 → 4.6 → 4.8 → 4.9.
 
-### 4.14 Próxima branch — **a fazer, nesta ordem**
+### 4.14 Branch `2026-10-06-validacao-kit-base2` — **a fazer, nesta ordem**
 
-1. **Validar o kit na base 2** (máquina de compliance; o Rafael roda e traz contagens):
+1. **Validar o kit na base 2** (máquina de compliance; o Rafael roda e traz contagens) — **prompt pronto:**
+   [`maquina2/2026-10-06-prompt-base2-kit.md`](maquina2/2026-10-06-prompt-base2-kit.md) (06/10; sai do repositório
+   depois de copiado, como os anteriores):
    - **antes:** replicar na pasta `-second` o que o livro-razão pede: o parquet (`uv sync`, que traz o `pyarrow`;
      `analysis/leitor_trace.py`; as trocas de leitura no `base_pipeline.py`, `checklist.py` e `drill_down.py`; o
      `.gitignore`) e os Ajustes 13–16, com `TRACE` e `BASE_ID` restaurados; reexecutar os notebooks no terminal (a
