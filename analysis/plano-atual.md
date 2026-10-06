@@ -2,7 +2,7 @@
 
 > **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](glossario.md).
 
-**Atualizado:** 05/10/2026 · **Base 2 finalizada** (rodada 2, livro-razão Etapa 10d) · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
+**Atualizado:** 06/10/2026 (próxima branch: 4.14) · **Base 2 finalizada** (rodada 2, livro-razão Etapa 10d) · **Branch:** `2026-10-02-consolidacao-unidades` (a partir da `main` com o PR #29,
 `dc89992`). O PR #29 (balde invisível) foi auditado e mergeado. A auditoria foi **fechada nas duas bases** em 02/10: as
 ressalvas foram resolvidas, o balde invisível ganhou verificação independente (`audit_recompute9`, 0 divergências na
 base 1 e na base 2) e saiu o Ajuste 11 (Parte II de `2026-09-trace-law-flow/audit/2026-10-02-auditoria-branch-…md`). Índice do que já foi
@@ -225,6 +225,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 | **Ajuste 13** — o "campo inexistente" da base 2 também é sinal de harness (38/38 com a chave pedida no prompt); `DESTINO_MINERACAO` aceita várias bases. Base 1 idêntica | registro de 05/10 | livro-razão Ajuste 13 |
 | **4.10** — o trace em parquet: leitor único `analysis/leitor_trace.py` (CSV ou um único parquet) no pipeline, `checklist.py` (§0 formato), `drill_down.py` e nos 9 `audit_recompute*` (`--trace`); `pyarrow` no projeto; pandas fixado no texto em Python. Não muda número: base 1 idêntica em CSV, parquet texto e parquet tipado | registro de 05/10 | §4.10, `analysis/README.md` (intake), `audit/README.md` |
 | **4.12, etapa 1** — o kit de mineração (`kit-mineracao/`): 3 skills, 3 agentes, 2 prompts e 5 scripts; silenciosas ponta a ponta na base 1 (tudo OK, 0 divergências, CSV = parquet); ponte LLM → regra validada com resposta conhecida (54/54) | registro de 05/10 | §4.12, `kit-mineracao/README.md` |
+| **4.12, etapas 2–3 e 0.6.0** — protocolo, investigação e candidatas no kit (5 skills, 4 agentes); Ajustes 14–16; a mineração de candidatas (`docs/16`: parte genérica → funil → parte específica → arquivo final no esquema 0.1; regra de criação de notebook; painel); a leitura em duas etapas, o gate do pesquisador e o monitoramento determinístico (`monitoramento.json`, `monitorar.py`). Validado na base 1; não muda número | `f590038` · `694636b` · `91e9c0a` · `a0fe56c` · `1c36dc2` | §4.12, §4.14, `docs/16`, `kit-mineracao/README.md` |
 ---
 
 ## 3. O que ficou velho (stale) — e o que vale agora
@@ -327,7 +328,8 @@ seguinte. Cada um tem contexto, problema, o que se mediria e por quê — e a pe
 
 Cada item: **contexto · solução · evidência · tipo · status.** Nada começa sem aprovação.
 
-**Ordem sugerida (05/10):** ~~4.2b-0~~, ~~4.2b~~, ~~4.2c~~, ~~4.2a~~, ~~4.2d~~ feitos; base 2 finalizada → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. ~~4.10~~
+**Ordem sugerida (06/10): a próxima branch é o 4.14** (validar o kit na base 2 → a `U_texto_literal` no método novo →
+resíduo → erro crítico → apresentação para stakeholders). Antes (05/10): ~~4.2b-0~~, ~~4.2b~~, ~~4.2c~~, ~~4.2a~~, ~~4.2d~~ feitos; base 2 finalizada → **4.11** (`U_nome_inventado` na base 2) → 4.1c → S5 → S4 → S3. ~~4.10~~
 (parquet) feito em 05/10. A pendência do 4.2a (reexecutar os notebooks no terminal da máquina 2) vai
 na próxima ida lá.
 
@@ -696,10 +698,45 @@ figuras. Usa as fronteiras de chamada (S4).
     - **Destino:** (a) memória; (b) em aberto. Se o ambiente guarda variáveis e não funções, é sinal de harness.
     - **Arquivo final aprovado no esquema 0.1;** dossiê e `regras.json` em `resultados/mineracao/U_nome_inventado/`.
     - **Recomendação:** rodar na base 2 com as mesmas regras antes de propor a divisão da unidade.
-- **Próximas etapas, uma por vez:**
-  1. resíduo (antes, o procedimento sai do `03` Frente 3 para um doc próprio);
-  2. erro crítico (antes, o procedimento e o S4);
+- **Feito em 06/10 (0.6.0, `1c36dc2`):** a leitura em duas etapas, o gate do pesquisador e o monitoramento
+  determinístico (bloco "Decidido em 06/10", §1; `docs/16`).
+- **Próximas etapas:** na próxima branch, **4.14**.
 - **Tipo:** ferramenta; não muda número.
+
+### 4.14 Próxima branch (depois do merge da `2026-10-05-base3-parquet-skills`, 06/10) — **a fazer, nesta ordem**
+
+A branch `2026-10-05-base3-parquet-skills` fecha com o parquet, o kit 0.6.0 (5 skills, 4 agentes, 5 prompts), os
+Ajustes 14–16 e o monitoramento, validados na base 1. Rodar o kit na base 2 **não** foi condição para fechar: é a
+validação do kit, e entra aqui.
+
+1. **Validar o kit na base 2** (máquina de compliance, com o main atualizado; o Rafael roda e traz contagens):
+   - **antes:** replicar o que o livro-razão pede para a máquina 2 (parquet, Ajustes 13–16: `base_pipeline.py` com
+     `TRACE` e `BASE_ID` restaurados, a esteira, a consolidação) e instalar o kit (`python kit-mineracao/instalar.py .
+     --para copilot`);
+   - **o monitoramento primeiro** (`monitorar.py`). Esperado: a `U_nome_inventado` com alerta (118 erros: régua,
+     cresce; frequência provável), com as duas sub-lições contadas pelas regras; o `U_campo_inexistente` com alerta de
+     crescimento (38 ≥ 3 × 10); a ferramenta concorrente do `final_answer` sem alerta (só dez/2025);
+   - **as skills:** silenciosas, protocolo e candidata (a `U_nome_inventado`, o 4.11, já no método novo de leitura).
+     Comparar com o publicado (`14`, `11`, as 8 candidatas, os 118 erros) **aqui, fora do kit** — as skills não
+     comparam com relatório.
+2. **A `U_texto_literal` na base 1, no método novo:** leitura aberta pelos dois leitores, o gate da lista (com a lição
+   geral proposta — "não redigite numa string um texto que já está numa variável" — e os dois eixos "o que é o texto"
+   × "o que quebrou a string" como candidatas), leitura fechada em ≥ 20 outros casos. Conferir à parte as duas pontas
+   soltas: o papel que responde em JSON (sinal de harness?) e o dicionário mal formado (falso positivo da
+   classificação?). Dossiê em `resultados/mineracao/U_texto_literal/`.
+3. **Skill de resíduo** (`mineracao-residuo`): antes, o procedimento sai do `03` Frente 3 para um doc próprio, no
+   formato do `12`/`15`/`16`; depois a skill, a auditoria independente e o encontro, como nas outras.
+4. **Skill de erro crítico** (`mineracao-critico`): antes, o procedimento e o S4 (4.4, 4.6 — a chamada que morreu
+   antes do destino).
+5. **Skill de apresentação para stakeholders** (nova; formato a decidir: HTML ou slides). Pega o resultado final até
+   o momento e o entrega como uma apresentação: os resultados, os racionais e as decisões de negócio e de produto,
+   como se tivessem sido apresentados. A decidir antes de construir:
+   - o formato (página HTML versionada × deck de slides × os dois) e quem é o público;
+   - de onde ela lê: só de documentos já versionados (`plano-atual`, relatórios, `docs/16`, o painel, o
+     `monitoramento.json`), nunca do trace — a versão que sai, com o sigilo de sempre (`varrer_pii.py`);
+   - a regra da evidência adaptada: cada número com o documento e o commit de onde vem;
+   - o que mostra: a genealogia erro → memória, as candidatas e a situação de cada uma, os sinais de harness para a
+     plataforma, o que está em monitoramento e as decisões pendentes.
 
 ### 4.13 Ajustes do método do protocolo, vindos da investigação de 05/10 — **aprovados (Rafael, 05/10); aplicar um por vez**
 
