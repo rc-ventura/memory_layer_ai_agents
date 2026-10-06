@@ -174,8 +174,10 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 ## O monitoramento (decidido com o Rafael em 06/10/2026)
 
 "Monitorar" não é uma nota para alguém lembrar: é um registro versionado e um script que para a rodada.
-- **O registro:** [`../monitoramento.json`](../monitoramento.json), na pasta da análise (versionado; só decisões,
-  contagens e regras, nenhum dado de caso). Cada item tem: o que é, o tipo (memória rara · sinal de harness), quando e
+- **O registro:** [`../../monitoramento.json`](../../monitoramento.json), em `analysis/`, **um só para as pastas de
+  todas as bases** (cada base tem a sua pasta de análise, e o monitoramento compara bases; versionado; só decisões,
+  contagens e regras, nenhum dado de caso). Uma decisão de monitorar tomada na máquina de compliance volta para este
+  arquivo, depois do `varrer_pii.py`. Cada item tem: o que é, o tipo (memória rara · sinal de harness), quando e
   onde foi decidido, a população (uma tabela derivada e o filtro), a **linha de base** (a base onde se decidiu, com as
   contagens), as **regras contadas** que separam as sub-lições, e os **gatilhos**.
 - **O script:** `monitorar.py` (skill `mineracao-base`), no passo 0 de toda mineração. Na própria base da linha de base,

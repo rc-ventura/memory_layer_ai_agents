@@ -186,8 +186,8 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
 - **Dividir a unidade é resultado normal:** a unidade nasce do sintoma, e um sintoma pode ter várias causas. A lição
   pode ser geral com variações por papel (a lição na `description`, os papéis no `scope`).
 - **Onde está:** `docs/16` ("A leitura em duas etapas e o gate do pesquisador"), roteiro `candidata` do kit (0.6.0).
-- **Monitorar é determinístico:** um registro versionado (`monitoramento.json` da análise: linha de base, regras das
-  sub-lições, gatilhos) e o `monitorar.py`, no passo 0 de toda mineração, que para a rodada com alerta. A
+- **Monitorar é determinístico:** um registro versionado (`analysis/monitoramento.json`, um só para as pastas de todas
+  as bases: linha de base, regras das sub-lições, gatilhos) e o `monitorar.py`, no passo 0 de toda mineração, que para a rodada com alerta. A
   `U_nome_inventado` fica em monitoramento (decisão do Rafael, 06/10), junto com o `U_campo_inexistente` e a
   ferramenta concorrente do `final_answer` (`docs/16` § O monitoramento).
 - **A lição do texto longo ainda não vale notebook:** falta a leitura em duas etapas (06/10).

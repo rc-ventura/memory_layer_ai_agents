@@ -1,5 +1,5 @@
 {
-  "o_que_e": "As lições e os sinais que o pesquisador decidiu monitorar. O monitorar.py (skill mineracao-base) confere cada um no passo 0 de toda mineração e para a rodada com alerta quando um gatilho dispara. Só decisões, contagens e regras: nenhum dado de caso. Procedimento: docs/16 § O monitoramento.",
+  "o_que_e": "As lições e os sinais que o pesquisador decidiu monitorar, em todas as bases (um registro só para as pastas de análise de todas as bases; a linha de base de cada item diz em qual base a decisão foi tomada). O monitorar.py (skill mineracao-base) confere cada um no passo 0 de toda mineração e para a rodada com alerta quando um gatilho dispara. Só decisões, contagens e regras: nenhum dado de caso. Procedimento: 2026-09-trace-law-flow/docs/16 § O monitoramento.",
   "itens": [
     {
       "id": "U_nome_inventado",

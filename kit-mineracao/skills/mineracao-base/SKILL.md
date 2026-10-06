@@ -74,10 +74,11 @@ conhecida no §4. Se ele sair com 1 (memória do parquet que não parseia), **pa
 uv run python <esta skill>/scripts/monitorar.py <pasta-da-analise>
 ```
 
-Confere, nesta base, cada lição ou sinal que o pesquisador decidiu monitorar (`monitoramento.json` da análise). É a
+Confere, nesta base, cada lição ou sinal que o pesquisador decidiu monitorar (o `monitoramento.json` da pasta da
+análise ou, normalmente, o da pasta acima, compartilhado pelas pastas de todas as bases). É a
 única comparação com outra base que o kit faz, e é de propósito: a linha de base e os gatilhos foram registrados pelo
 pesquisador quando ele decidiu monitorar. Se sair com 1, **pare** e leve os alertas ao pesquisador antes de minerar:
-a lição volta ao gate dele. Se sair com 2, falta uma tabela; o script diz o comando que a gera. Copie a saída para o
+a lição volta ao gate dele. Se sair com 2, falta uma tabela (o script diz o comando que a gera) ou falta o próprio registro. Copie a saída para o
 relatório.
 
 ## Depois do passo 0

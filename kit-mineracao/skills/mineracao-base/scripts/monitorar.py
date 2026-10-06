@@ -3,8 +3,10 @@ dispara alerta pelos gatilhos registrados. Roda no passo 0 de toda mineração, 
 
     python monitorar.py <pasta-da-analise> [--desde AAAA-MM] [--ate AAAA-MM] [--item <id>]
 
-Lê `<pasta-da-analise>/monitoramento.json` (versionado: só decisões, contagens e regras, nenhum dado de caso). Para
-cada item:
+Lê o `monitoramento.json` (versionado: só decisões, contagens e regras, nenhum dado de caso) da pasta da análise ou,
+se ela não tiver um, da pasta acima, a que reúne as análises de todas as bases (`analysis/`): o monitoramento compara
+bases, e cada base tem a sua pasta de análise. Sem arquivo em nenhuma das duas, sai com 2 (não diz "nada monitorado"
+por engano). Para cada item:
   - a população é uma tabela derivada desta base (`populacao`, relativa a pipeline/resultados/), filtrada (`filtro`,
     como o --onde do amostrar.py). Se a tabela não existe, diz o comando que a gera (`gerar`) e sai com 2;
   - conta erros (linhas), execuções e meses;
@@ -158,9 +160,12 @@ def main():
     ap.add_argument("pasta"); ap.add_argument("--desde"); ap.add_argument("--ate"); ap.add_argument("--item")
     x = ap.parse_args()
     pasta = os.path.abspath(x.pasta)
-    arq = os.path.join(pasta, "monitoramento.json")
-    if not os.path.exists(arq):
-        print("sem monitoramento.json: nada monitorado nesta análise"); return
+    candidatos = [os.path.join(pasta, "monitoramento.json"), os.path.join(os.path.dirname(pasta), "monitoramento.json")]
+    arq = next((a for a in candidatos if os.path.exists(a)), None)
+    if not arq:
+        print("FALTA o monitoramento.json (nem na pasta da análise nem na pasta acima): o monitoramento não rodou")
+        sys.exit(2)
+    print(f"registro: {arq}")
     itens = json.load(open(arq, encoding="utf-8"))["itens"]
     if x.item:
         itens = [i for i in itens if i["id"] == x.item]
