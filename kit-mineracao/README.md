@@ -66,15 +66,20 @@ skills/mineracao-base/            passo 0 comum: pasta, base, versão do código
   manifesto.json                  os hashes do código para o qual esta versão do kit foi escrita
 skills/mineracao-silenciosas/     a mineração das falhas silenciosas (lê as tabelas, passo a passo do procedimento da análise)
   scripts/comparar_auditoria.py   o encontro: tabelas da mineração × medidas da auditoria independente (audit_recompute9)
+skills/mineracao-candidata/       a mineração de uma candidata a memória: parte genérica → funil → parte específica → arquivo final
+  scripts/validar_memoria.py      confere o arquivo final contra o esquema da memória da análise (e converte o registro de um notebook)
+  scripts/comparar_auditoria.py   o encontro: a parte genérica × a auditoria independente (audit_recompute6)
+  referencias/fluxo.md            os diagramas da rodada e do ciclo de vida da parte específica
 skills/mineracao-protocolo/       a mineração do protocolo do harness (resposta sem bloco de código)
   scripts/comparar_auditoria.py   o encontro: casos/passos/versões/modelos × a auditoria independente (audit_recompute10)
   scripts/cobertura.py            o cenário de cobertura: papéis por erros, com a cobertura acumulada
 skills/mineracao-investigacao/    a investigação depois do determinístico
   roteiros/silenciosas.md         as perguntas abertas (S1 dono, S2 sucesso falso, S3 não reconhecido)
   roteiros/protocolo.md           P1 a camada do surto (o fim do prompt), P2 o mecanismo de cada caso (catálogo M1–M6)
+  roteiros/candidata.md           a parte específica de uma candidata: a lição, a causa, o conserto, o destino → o arquivo final
   scripts/testar_regra.py · concordancia.py
-agentes/                          auditor-independente · investigador · segundo-leitor
-prompts/                          rodada-silenciosas · rodada-protocolo · investigar
+agentes/                          auditor-independente · investigador · segundo-leitor · validador-de-notebook
+prompts/                          rodada-silenciosas · rodada-protocolo · rodada-candidata · investigar · propor-notebook
 instalar.py                       instala num repositório, para claude ou copilot
 VERSAO
 ```
@@ -98,6 +103,10 @@ python kit-mineracao/instalar.py . --para copilot    # Copilot: .claude/skills, 
 
 - `/rodada-silenciosas <pasta da análise>`: preparação → auditor em paralelo → mineração das tabelas → encontro → relatório com as paradas.
 - `/rodada-protocolo <pasta da análise>`: o mesmo fluxo para o protocolo do harness (auditoria `audit_recompute10`).
+- `/rodada-candidata <U_...> [<pasta>]`: minera uma candidata a memória e entrega o arquivo final no esquema da memória
+  (`analysis/esquema-memoria.json`). O desenho está em `skills/mineracao-candidata/referencias/fluxo.md`.
+- `/propor-notebook <U_...>`: só quando a lição cumpre a regra de criação do procedimento; escreve em `propostas/` e
+  pede o laudo do validador.
 - `/investigar silenciosas S2 [<pasta>]` ou `/investigar protocolo P2 [<pasta>]`: uma parada até o dossiê de decisão.
 
 No Copilot, os mesmos nomes ficam como prompt files. Sem prompt, peça em linguagem natural ("rode as falhas silenciosas
@@ -116,7 +125,6 @@ na análise X"), que as skills disparam pela descrição.
 |---|---|
 | resíduo | tirar o "procedimento do resíduo" do doc de validação para um doc próprio, no formato do procedimento das silenciosas |
 | erro crítico | escrever o procedimento e resolver as fronteiras de chamada (os comandos ainda misturam as chamadas) |
-| candidata | esqueleto comum + um roteiro por tipo de unidade (contrato de retorno de ferramenta; nome usado sem definição) |
 
 ## Limites desta versão
 

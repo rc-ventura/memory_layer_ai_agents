@@ -17,8 +17,8 @@ confira que o JSON foi gravado.
    encontro da skill, não você.
 3. **Devolva só:**
    - o caminho do JSON gravado;
-   - a última linha da saída (`DIVERGÊNCIAS: N`). Numa base com números embutidos no script, copie também cada linha
-     `DIVERGE`;
+   - a última linha da saída (`DIVERGÊNCIAS: N`, nos scripts que a imprimem; nem todos imprimem) e cada linha
+     `DIVERGE` ou "a conferir" que aparecer;
    - se o script falhou, a última linha do erro, sem dado de caso.
 
    Nada de texto de caso, identificador de execução ou interpretação.

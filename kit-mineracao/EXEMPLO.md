@@ -293,3 +293,33 @@ então a pergunta estava aberta.
   método que **os dois leitores apontaram sem combinar**: o sinal de tokens não serve para modelos de raciocínio. Ela
   virou o item 4.13 do plano, junto com o desempate entre mecanismos e a regra encontrada.
 
+---
+
+## 8 · Minerar uma candidata a memória (kit 0.5.0)
+
+`/rodada-candidata <U_...>`: a parte genérica para todas as lições → o funil → a parte específica → o arquivo final no
+esquema da memória (`analysis/esquema-memoria.json`). Os diagramas estão em
+`skills/mineracao-candidata/referencias/fluxo.md`.
+
+**A parte genérica, nas 11 candidatas da base 1:**
+- os 77 números de recorrência são iguais aos da triagem;
+- o encontro com o `audit_recompute6 --json` dá tudo igual nas 11.
+
+**O funil:**
+- **A nº2 e a nº10** vão para o notebook específico de hoje, que gera arquivos idênticos aos de antes, e saem
+  convertidas para o esquema (aprovadas).
+- **Na base simulada**, a rodada de ponta a ponta teve o auditor como agente, a evidência com 80/80 trechos
+  conferidos, o arquivo final aprovado e a versão que sai limpa.
+
+**A primeira parte específica por LLM: `U_nome_inventado`, base 1 (5 erros).**
+
+| Etapa | O que saiu |
+|---|---|
+| Parte genérica | espalhada em 4 meses, 3 modelos e 2 versões de prompt; o step seguinte sem erro nos 5 |
+| Hipóteses, antes de ler | 4 formulações da lição e 5 causas, mais a nula |
+| Dois leitores às cegas | lição 5/5 e causa 5/5, kappa 1,00 |
+| Regras contadas | "variável não definida" → nunca definido, 3/0/0; "chamada > 1" → definida em chamada anterior, 2/0/0 |
+| Achado | **a unidade junta duas lições:** (a) usar como variável um nome visto só no texto impresso, sem guardar o retorno (3); (b) usar uma função definida numa chamada anterior, que o sandbox recusa enquanto as variáveis continuam (2) |
+| Arquivo final | `memoria_U_nome_inventado_base1.json`, aprovado; checados: category, scope, location, evidence, description, occurrences, status, validation; hipótese: `correction_guidance`; pendente: `impact` |
+| Recomendação | rodar a skill na base 2 (118 erros) com as mesmas regras e, se a divisão se confirmar, propor dividir a unidade |
+

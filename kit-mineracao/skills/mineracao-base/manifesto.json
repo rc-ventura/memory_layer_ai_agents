@@ -7,8 +7,11 @@
     "pipeline/drill_down.py": "de58f361736148b4",
     "pipeline/metadados_steps.py": "cabef757a81311aa",
     "pipeline/analise_trace_esteira_juridica.ipynb": "52cc45ea691f8012",
+    "pipeline/mineracao_generica.ipynb": "14929d6a2b997351",
+    "pipeline/mineracao_unidades_n2_n10.ipynb": "e1b3384a06b62c28",
     "pipeline/falhas_silenciosas.ipynb": "3ed45ff435e4d022",
     "pipeline/consolidacao_unidades.ipynb": "c5cc2467dc2fd6db",
+    "audit/scripts/audit_recompute6.py": "5507207e5ea8353b",
     "audit/scripts/audit_recompute9.py": "eb89a359824a6767",
     "audit/scripts/audit_recompute10.py": "1bc9ad82da13221f"
   }

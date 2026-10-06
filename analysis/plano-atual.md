@@ -536,6 +536,10 @@ figuras. Usa as fronteiras de chamada (S4).
 
 ### 4.11 `U_nome_inventado` — a maior candidata da base 2 *(proposta; aguarda aprovação)*
 
+- **Como rodar, desde 05/10:** `/rodada-candidata U_nome_inventado` na máquina 2 (skill `mineracao-candidata`; ela está
+  em `investigação:candidata` no funil do `16`). O ensaio na base 1, com 5 erros, foi feito em 05/10 (dossiê em
+  `resultados/mineracao/U_nome_inventado/`). As hipóteses (a) a (c) abaixo são as hipóteses de causa do roteiro.
+
 - **Contexto:** na triagem da base 2 (02/10), `U_nome_inventado` é a maior unidade: **118 erros, 112 execuções, 5
   meses, 6 papéis** (na base 1, 5 erros). Ninguém leu nem minerou. É também a 1ª unidade do único erro crítico.
 - **Pergunta:** é mesmo nome inventado, ou é (a) uma definição que expirou entre steps (o padrão "def só vale para o
@@ -623,10 +627,36 @@ figuras. Usa as fronteiras de chamada (S4).
     colunas `chamada`/`chamadas_do_papel`. A saída impressa ficou igual.
   - **Relação com outros itens:** as colunas cobrem a conferência da fronteira do `12`; o resto do S4 (4.4) e as
     regras determinísticas M1–M6 (4.8) seguem à parte.
+- **Etapa 3 — minerar candidatas a memória (05/10; kit 0.5.0).** Desenho decidido com o Rafael, depois de discutir
+  as alternativas: a parte genérica, igual para todas as lições, e depois um funil para a parte específica de cada uma.
+  Ficaram de fora um notebook por lição, um genérico com tudo dentro e qualquer agrupamento: a família classifica o
+  sintoma e não a lição, e o tipo junta causas diferentes.
+  - **`mineracao_generica.ipynb`** (G1–G6): nas 11 candidatas da base 1, os 77 números de recorrência são iguais aos do
+    `candidatos_memoria.csv`. A limitação está declarada: a ferramenta do G2 é a chamada no step do erro, e não a
+    origem do valor (a nº2 tem a origem em `get_available_documents` 91/96, e outra ferramenta é a mais chamada no
+    step).
+  - **`audit_recompute6 --json --unidade`:** o encontro dá tudo igual nas 11; a saída sem `--json` ficou igual; o JSON
+    é o mesmo em CSV e em parquet.
+  - **O funil, no `16`:** a nº2 e a nº10 vão para o notebook específico de hoje, que não mudou (arquivos idênticos) e
+    é convertido para o esquema. As outras 9 vão para a investigação. Uma lição fora da tabela para a rodada.
+  - **O esquema da memória num lugar só:** `analysis/esquema-memoria.json` (0.1, provisório; os campos do `06` §9
+    Passo 8, do TRAIL e do AgentDebug). O `validar_memoria.py` aprova a nº2 e a nº10 convertidas e reprova campo
+    obrigatório faltando; um campo novo no esquema vira pendência.
+  - **O ciclo de vida da parte específica** e **a regra de criação de notebook:** duas bases com as regras sem mudança,
+    ou decisão do Rafael. O agente propõe em `propostas/<u>/`, o agente `validador-de-notebook` dá o laudo, e a
+    aprovação é do Rafael. Tudo no `16`, com os diagramas Mermaid; a skill traz os mesmos diagramas
+    (`referencias/fluxo.md`).
+  - **A primeira parte específica por LLM: a `U_nome_inventado` na base 1, com 5 erros.**
+    - **Concordância:** dois leitores às cegas, 5/5 na lição e 5/5 na causa.
+    - **A unidade junta duas lições,** separáveis por regra contada:
+      - (a) usar como variável um nome visto só no texto impresso: 3 casos, "variável não definida";
+      - (b) usar uma função definida numa chamada anterior, que o sandbox recusa: 2 casos, "chamada > 1".
+    - **Destino:** (a) memória; (b) em aberto. Se o ambiente guarda variáveis e não funções, é sinal de harness.
+    - **Arquivo final aprovado no esquema 0.1;** dossiê e `regras.json` em `resultados/mineracao/U_nome_inventado/`.
+    - **Recomendação:** rodar na base 2 com as mesmas regras antes de propor a divisão da unidade.
 - **Próximas etapas, uma por vez:**
   1. resíduo (antes, o procedimento sai do `03` Frente 3 para um doc próprio);
   2. erro crítico (antes, o procedimento e o S4);
-  3. candidata (esqueleto + um roteiro por tipo de unidade; o roteiro "nome inventado" sai do 4.11).
 - **Tipo:** ferramenta; não muda número.
 
 ### 4.13 Ajustes do método do protocolo, vindos da investigação de 05/10 — **aprovados (Rafael, 05/10); aplicar um por vez**

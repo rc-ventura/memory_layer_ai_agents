@@ -23,3 +23,5 @@ __pycache__/
 .claude/agents/segundo-leitor.md
 .claude/commands/rodada-*.md
 .claude/commands/investigar.md
+.claude/commands/propor-notebook.md
+.claude/agents/validador-de-notebook.md

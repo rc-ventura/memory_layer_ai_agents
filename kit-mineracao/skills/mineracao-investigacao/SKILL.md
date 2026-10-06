@@ -16,7 +16,9 @@ contagem, marcada `[assistido]`, e vale como hipótese.
 ## Peças
 
 - **Roteiros** (`roteiros/<mineracao>.md`): as perguntas abertas de cada mineração, quando abrir cada uma, a
-  população, o campo do step e as categorias fechadas. Hoje: [`silenciosas`](roteiros/silenciosas.md) e [`protocolo`](roteiros/protocolo.md).
+  população, o campo do step e as categorias fechadas. Hoje: [`silenciosas`](roteiros/silenciosas.md), [`protocolo`](roteiros/protocolo.md) e
+  [`candidata`](roteiros/candidata.md) (a parte específica de uma candidata a memória, que entrega o arquivo final no
+  esquema da memória).
 - **Scripts** (determinísticos):
   - `montar_evidencia.py` e `amostrar.py` (na `mineracao-base`): quem escolhe os casos é uma regra fixa, e cada caso
     lido fica com o cru gravado;
