@@ -1,6 +1,7 @@
 ---
 name: mineracao-protocolo
 description: "Minera a família 'Protocolo do harness' (o erro 'resposta sem bloco de código': o harness não acha o <code> na resposta do LLM) de uma base do trace de agentes, do zero, a partir das tabelas que o drill_down.py protocolo grava: quando e onde (incidente ou fundo), a camada (modo do prompt, modelo, M1 medido), o cenário de cobertura e a fronteira de chamada. Não compara com relatório publicado: a verificação é uma auditoria independente rodando em paralelo, confrontada com as tabelas por script. Cada achado leva a evidência (comando, tabela, casos crus). Entrega os achados e as paradas; a leitura de casos e a classificação no catálogo de mecanismos vão para a skill mineracao-investigacao. Use quando pedirem 'minere o protocolo do harness', 'resposta sem bloco de código na base <X>', 'rode o protocolo'. Começa pela skill mineracao-base."
+argument-hint: "<pasta da análise, ex.: analysis/<pasta-datada>>"
 ---
 
 # Mineração do protocolo do harness
@@ -92,5 +93,8 @@ cada modelo. Ele também roda as conferências internas: soma por papel = soma p
   evidência.
 - **Sigilo:** o relatório completo fica no ambiente. Para sair: `versao_para_sair.py` e depois `varrer_pii.py` no
   `_saida.md`.
-- **Para o pesquisador:** os achados principais, o resultado do encontro, as paradas (P0, fronteira, P1, P2) e o
-  caminho do relatório completo.
+- **Para o pesquisador:** os achados principais desta base em contagens (incidente ou fundo, a camada, o M1); o
+  resultado do encontro e das conferências internas; as paradas (P0, fronteira, P1, P2), com a pasta de evidência de
+  cada uma; o caminho do relatório completo.
+- **Não leia casos nesta mineração.** O pesquisador escolhe o que vai para a investigação (`/investigar`, skill
+  `mineracao-investigacao`).

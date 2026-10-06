@@ -1,6 +1,7 @@
 ---
 name: mineracao-candidata
 description: "Minera uma candidata a memória (uma lição/unidade que passou na triagem) de uma base do trace de agentes: a parte genérica para todas as lições (recorrência, sub-unidades, antes, depois, estabilidade, população), a auditoria independente em paralelo, o encontro por script e, pelo funil do procedimento da análise, a parte específica da lição — um notebook determinístico ou a investigação por subagentes. Entrega o arquivo final da memória no esquema da análise (validado), o relatório e o dossiê. Use quando pedirem 'minere a candidata <U_...>', 'minerar a lição <...>', 'rode a mineração da unidade <...>'. Começa pela skill mineracao-base; a investigação usa a mineracao-investigacao com o roteiro candidata."
+argument-hint: "<unidade, ex.: U_...> [pasta da análise]"
 ---
 
 # Mineração de uma candidata a memória

@@ -1,6 +1,7 @@
 ---
 name: mineracao-silenciosas
 description: "Minera as falhas silenciosas (o balde invisível: a ferramenta falhou e o step não levantou exceção) de uma base do trace de agentes, do zero, a partir das tabelas que o notebook e o drill_down produzem para essa base: funil, ferramentas, grupos do motivo e seus donos, o que vem depois, candidatos a sucesso falso, detectores e ocorrências. Não compara com relatório publicado: a verificação é uma auditoria independente rodando em paralelo, cujas medidas são confrontadas com as tabelas por script. Entrega os achados da base e as paradas (o que precisa de leitura de caso). Use quando pedirem 'minere as falhas silenciosas', 'rode as silenciosas na base <X>', 'mineração do balde invisível'. Começa pela skill mineracao-base; as paradas seguem para a skill mineracao-investigacao."
+argument-hint: "<pasta da análise, ex.: analysis/<pasta-datada>>"
 ---
 
 # Mineração das falhas silenciosas
@@ -101,5 +102,8 @@ uv run python <esta skill>/scripts/comparar_auditoria.py <pasta-da-analise> pipe
   paradas, cada uma com a pasta de evidência montada.
 - **Sigilo:** o relatório completo fica no ambiente. Para sair, use `versao_para_sair.py` e depois `varrer_pii.py` no
   `_saida.md`.
-- **Para o pesquisador:** os achados principais em poucas linhas, o resultado do encontro e as paradas, com a pergunta
-  do roteiro que cada uma abre. Para investigar uma delas, use a skill `mineracao-investigacao`.
+- **Para o pesquisador:** os achados principais em poucas linhas, em contagens; o resultado do encontro e das
+  conferências internas; as paradas, com a pergunta do roteiro que cada uma abre e a pasta de evidência de cada uma; o
+  caminho do relatório completo.
+- **Não investigue as paradas nesta mineração.** O pesquisador escolhe qual vai para a investigação (`/investigar`,
+  skill `mineracao-investigacao`).

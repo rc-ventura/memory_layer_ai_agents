@@ -580,7 +580,7 @@ figuras. Usa as fronteiras de chamada (S4).
 
 ### 4.11 `U_nome_inventado` — a maior candidata da base 2 *(proposta; aguarda aprovação)*
 
-- **Como rodar, desde 05/10:** `/rodada-candidata U_nome_inventado` na máquina 2 (skill `mineracao-candidata`; ela está
+- **Como rodar, desde 05/10:** `/mineracao-candidata U_nome_inventado` na máquina 2 (skill `mineracao-candidata`; ela está
   em `investigação:candidata` no funil do `16`). O ensaio na base 1, com 5 erros, foi feito em 05/10 (dossiê em
   `resultados/mineracao/U_nome_inventado/`). As hipóteses (a) a (c) abaixo são as hipóteses de causa do roteiro.
 
@@ -699,7 +699,7 @@ figuras. Usa as fronteiras de chamada (S4).
     - **Arquivo final aprovado no esquema 0.1;** dossiê e `regras.json` em `resultados/mineracao/U_nome_inventado/`.
     - **Recomendação:** rodar na base 2 com as mesmas regras antes de propor a divisão da unidade.
 - **Onde o kit mora, desde 06/10 (decisão do Rafael):** no próprio `.claude/`, versionado; a pasta `kit-mineracao/`
-  saiu. As rodadas com barra viraram skills de chamada manual; o Copilot lê `.claude/skills/` e `.claude/agents/`
+  saiu. Os atalhos `rodada-*` saíram (cada mineração tem um nome só, a skill `mineracao-*`, chamável com `/`); `investigar` e `propor-notebook` viraram skills de chamada manual; o Copilot lê `.claude/skills/` e `.claude/agents/`
   direto, sem cópia (documentação do VS Code de 2026). Descrição do kit:
   `.claude/skills/mineracao-base/referencias/kit.md`.
 - **Feito em 06/10 (0.6.0, `1c36dc2`):** a leitura em duas etapas, o gate do pesquisador e o monitoramento
@@ -716,7 +716,7 @@ validação do kit, e entra aqui.
 1. **Validar o kit na base 2** (máquina de compliance, com o main atualizado; o Rafael roda e traz contagens):
    - **antes:** replicar o que o livro-razão pede para a máquina 2 (parquet, Ajustes 13–16: `base_pipeline.py` com
      `TRACE` e `BASE_ID` restaurados, a esteira, a consolidação) e conferir que o Copilot acha o kit no
-     `.claude/` (`/rodada-candidata` aparece no `/`); apagar as cópias antigas das skills em `.github/`;
+     `.claude/` (`/mineracao-candidata` aparece no `/`); apagar as cópias antigas das skills em `.github/`;
    - **o monitoramento primeiro** (`monitorar.py`). Esperado: a `U_nome_inventado` com alerta (118 erros: régua,
      cresce; frequência provável), com as duas sub-lições contadas pelas regras; o `U_campo_inexistente` com alerta de
      crescimento (38 ≥ 3 × 10); a ferramenta concorrente do `final_answer` sem alerta (só dez/2025);

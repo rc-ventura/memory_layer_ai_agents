@@ -19,7 +19,7 @@ nomes de ferramenta e motivos mascarados.
 # nada a instalar: o kit está no .claude/ do repositório (o Claude Code e o Copilot leem dali)
 
 # a rodada
-/rodada-silenciosas analysis/<pasta-da-base-nova>
+/mineracao-silenciosas analysis/<pasta-da-base-nova>
 
 # depois, para cada parada que você quiser abrir
 /investigar silenciosas S3 analysis/<pasta-da-base-nova>
@@ -225,7 +225,7 @@ opinião do modelo.
 ## 6 · Segunda mineração na mesma base: o protocolo do harness (kit 0.4.0)
 
 ```
-/rodada-protocolo analysis/<pasta-da-base-nova>
+/mineracao-protocolo analysis/<pasta-da-base-nova>
 ```
 
 O mesmo fluxo, com outra auditoria e outras tabelas:
@@ -296,7 +296,7 @@ então a pergunta estava aberta.
 
 ## 8 · Minerar uma candidata a memória (kit 0.5.0)
 
-`/rodada-candidata <U_...>`: a parte genérica para todas as lições → o funil → a parte específica → o arquivo final no
+`/mineracao-candidata <U_...>`: a parte genérica para todas as lições → o funil → a parte específica → o arquivo final no
 esquema da memória (`analysis/esquema-memoria.json`). Os diagramas estão em
 `skills/mineracao-candidata/referencias/fluxo.md`.
 

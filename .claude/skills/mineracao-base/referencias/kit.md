@@ -3,8 +3,8 @@
 > **Primeira vez?** Leia o [`exemplo.md`](exemplo.md): uma rodada real, do zero, numa base nova simulada, passo a passo.
 >
 > **Onde o kit mora:** no próprio `.claude/` do repositório, versionado — as skills em `.claude/skills/mineracao-*/`,
-> os agentes em `.claude/agents/`, e as cinco rodadas que você chama com barra (`/rodada-candidata`…) também como
-> skills, em `.claude/skills/<nome>/`, só de chamada manual. Este documento e a `VERSAO` ficam na skill
+> os agentes em `.claude/agents/`, e os dois passos que você chama com barra depois de uma mineração
+> (`/investigar`, `/propor-notebook`) também como skills, só de chamada manual. Este documento e a `VERSAO` ficam na skill
 > `mineracao-base`. O Claude Code e o Copilot leem os dois lugares direto: não há cópia nem instalação.
 
 Um pacote de skills, agentes e scripts para rodar as minerações do trace de agentes com o mesmo procedimento
@@ -59,7 +59,7 @@ Detalhe em `skills/mineracao-base/referencias/evidencia.md`.
 | **Objeto da rodada** | no argumento da chamada | a pasta da análise, a pergunta do roteiro (`silenciosas S2`) |
 
 O kit não tem nome de base, pasta datada, unidade, ferramenta nem número de nenhuma base. Para conferir:
-`grep -rnE "base ?[123]\b|U_[a-z]|2026-" .claude/skills/{mineracao-*,rodada-*,investigar,propor-notebook} .claude/agents` não deve achar
+`grep -rnE "base ?[123]\b|U_[a-z]|2026-" .claude/skills/{mineracao-*,investigar,propor-notebook} .claude/agents` não deve achar
 nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita números de propósito.
 
 ## Conteúdo
@@ -91,8 +91,8 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   roteiros/candidata.md           a parte específica de uma candidata: a lição, a causa, o conserto, o destino → o arquivo final
   scripts/testar_regra.py · concordancia.py
 .claude/agents/                   auditor-independente · investigador · segundo-leitor · validador-de-notebook
-.claude/skills/rodada-silenciosas · rodada-protocolo · rodada-candidata · investigar · propor-notebook
-                                  as rodadas com barra: skills só de chamada manual (`disable-model-invocation: true`)
+.claude/skills/investigar · propor-notebook
+                                  os passos de depois: skills só de chamada manual (`disable-model-invocation: true`)
 ```
 
 ## Instalar
@@ -101,20 +101,22 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
 - **o Copilot no VS Code lê `.claude/skills/` e `.claude/agents/` direto** (documentação de 2026: skills em
   `.github/skills/`, `.claude/skills/` ou `.agents/skills/`; agentes em `.github/agents/` ou `.claude/agents/`, no
   formato do Claude). Não copie para `.github/`: a cópia vira uma segunda versão que fica velha;
-- **as rodadas com barra são skills**, e não comandos (`.claude/commands/`, que o Copilot não lê) nem prompt files
+- **os passos com barra são skills**, e não comandos (`.claude/commands/`, que o Copilot não lê) nem prompt files
   (`.github/prompts/`, que o Claude não lê e que o Copilot está descontinuando). As duas ferramentas as listam no `/`;
   com `disable-model-invocation: true`, só rodam quando chamadas. O argumento: no Claude, o `$ARGUMENTS` é
   substituído; no Copilot, o texto depois do `/nome` vai junto como contexto — por isso o texto diz "indicada no
   pedido".
 - Se o VS Code de uma máquina for antigo e não achar as skills do `.claude/`, o problema é a versão, não o kit.
-- Para usar em outro repositório, copie `.claude/skills/{mineracao-*,rodada-*,investigar,propor-notebook}` e os
+- Para usar em outro repositório, copie `.claude/skills/{mineracao-*,investigar,propor-notebook}` e os
   quatro agentes.
 
 ## Usar
 
-- `/rodada-silenciosas <pasta da análise>`: preparação → auditor em paralelo → mineração das tabelas → encontro → relatório com as paradas.
-- `/rodada-protocolo <pasta da análise>`: o mesmo fluxo para o protocolo do harness (auditoria `audit_recompute10`).
-- `/rodada-candidata <U_...> [<pasta>]`: minera uma candidata a memória e entrega o arquivo final no esquema da memória
+Cada mineração tem **um nome só**: a skill `mineracao-<assunto>` é o método completo, e você a chama com barra ou
+pedindo em texto ("minere o protocolo da base X"). Uma execução dela numa base é uma *rodada*.
+- `/mineracao-silenciosas <pasta da análise>`: preparação → auditor em paralelo → mineração das tabelas → encontro → relatório com as paradas.
+- `/mineracao-protocolo <pasta da análise>`: o mesmo fluxo para o protocolo do harness (auditoria `audit_recompute10`).
+- `/mineracao-candidata <U_...> [<pasta>]`: minera uma candidata a memória e entrega o arquivo final no esquema da memória
   (`analysis/esquema-memoria.json`). O desenho está em `.claude/skills/mineracao-candidata/referencias/fluxo.md`.
 - `/propor-notebook <U_...>`: só quando a lição cumpre a regra de criação do procedimento; escreve em `propostas/` e
   pede o laudo do validador.
