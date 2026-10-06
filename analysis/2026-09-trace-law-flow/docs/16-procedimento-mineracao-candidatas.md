@@ -5,8 +5,10 @@
 **Para que serve este documento:** o roteiro para minerar **qualquer** lição (unidade) que passou na triagem. Minerar
 é transformar a lição numa memória proposta: o fato ou o hábito, o escopo, a evidência e o destino (memória × sinal de
 harness), num arquivo final com estrutura fixa. O **porquê** dos passos está no
-[`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md) §9, escrito para a nº2/nº10 e
-aqui aplicado na forma genérica. É o mesmo papel do `12` e do `15`.
+[`06-racionais-mineracao-unidades-n2-n10.md`](06-racionais-mineracao-unidades-n2-n10.md): a §9, escrita para a nº2/nº10
+(lições de fato sobre a ferramenta) e aqui aplicada na forma genérica, e a §10, para as lições de hábito do agente (a
+investigação por leitura de caso: dois leitores, regra contada, leitura em duas etapas, gate, frequência e confiança,
+monitoramento). É o mesmo papel do `12` e do `15`.
 
 **Regra de ouro:** o LLM propõe, o script conta. Nenhum número da mineração sai da leitura de um modelo, e o destino é
 decisão do pesquisador. Desenho decidido com o Rafael em 05/10/2026 (`plano-atual.md`, "O que vale").
@@ -233,7 +235,7 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 
 ### A leitura em duas etapas e o gate do pesquisador (decidido com o Rafael em 06/10/2026)
 
-**Por quê.** Na primeira investigação com população grande (a `U_texto_literal`, base 1, 06/10), as lições foram
+O racional está no `06` §10, peças 3, 4 e 7. **Por quê, em resumo.** Na primeira investigação com população grande (a `U_texto_literal`, base 1, 06/10), as lições foram
 escritas antes de ver os casos, e cada leitor marcou a mais próxima numa lista fechada, como numa prova de múltipla
 escolha. A lista misturava duas perguntas, **o que é o texto** (o relatório final, um documento colado) e **o que
 quebrou a string** (a quebra de linha, as aspas), e cada leitor respondeu uma: concordaram em 4 de 8 casos (kappa

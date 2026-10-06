@@ -728,10 +728,22 @@ validação do kit, e entra aqui.
    × "o que quebrou a string" como candidatas), leitura fechada em ≥ 20 outros casos. Conferir à parte as duas pontas
    soltas: o papel que responde em JSON (sinal de harness?) e o dicionário mal formado (falso positivo da
    classificação?). Dossiê em `resultados/mineracao/U_texto_literal/`.
-3. **Skill de resíduo** (`mineracao-residuo`): antes, o procedimento sai do `03` Frente 3 para um doc próprio, no
-   formato do `12`/`15`/`16`; depois a skill, a auditoria independente e o encontro, como nas outras.
-4. **Skill de erro crítico** (`mineracao-critico`): antes, o procedimento e o S4 (4.4, 4.6 — a chamada que morreu
-   antes do destino).
+3. **Skill de resíduo** (`mineracao-residuo`): antes, o **racional** e o **procedimento** saem do `01` (os dois baldes
+   de resíduo, o padrão da exceção) e do `03` (Frente 3, "O procedimento do resíduo"; §1.16) para docs próprios, no
+   formato do `10`/`12` e do `13`/`15`; depois a skill, a auditoria independente e o encontro, como nas outras.
+4. **Skill de erro crítico** (`mineracao-critico`): antes, o **racional de método** (como achar o step que iniciou a
+   cascata da chamada que morreu e decidir o destino pela causa; hoje só existe a decisão, no `01` e no 4.6) e o
+   procedimento. Depende do S4 (4.4: separar as chamadas de cada papel), ainda em discussão.
+
+**Onde cada mineração está, em documentos (06/10):**
+
+| Mineração | Racional (por quê) | Procedimento (como) | Relatório (números) | Skill |
+|---|---|---|---|---|
+| Falhas silenciosas | `13` | `15` | `14` | sim |
+| Protocolo do harness | `10` | `12` | `11` | sim |
+| Candidatas | `06` §9 (fato sobre a ferramenta) e §10 (hábito do agente, 06/10), com o `09` por baixo | `16` | `07` (nº2/nº10); as outras nos dossiês, git-ignored | sim |
+| Resíduo | parcial, no `01` | parcial, no `03` (Frente 3, §1.16) | — | não |
+| Erro crítico | só a decisão (`01`, 4.6) | — | — | não |
 5. **Skill de apresentação para stakeholders** (nova; formato a decidir: HTML ou slides). Pega o resultado final até
    o momento e o entrega como uma apresentação: os resultados, os racionais e as decisões de negócio e de produto,
    como se tivessem sido apresentados. A decidir antes de construir:

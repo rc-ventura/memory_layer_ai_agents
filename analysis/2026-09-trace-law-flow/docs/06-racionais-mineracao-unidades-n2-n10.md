@@ -5,6 +5,9 @@ análise foi conduzida assim, em prosa acessível — mas só para a segunda an�
 schema real das unidades de memória nº2 e nº10. Foi separada do documento principal em 18/09/2026 porque virou
 uma análise própria (pré-registrada, com evidência por caso e produto final em `unidades_memoria.json`), não só
 mais uma seção.
+A §10 (06/10/2026) estende o racional às lições de **hábito do agente**, em que a mensagem de erro não traz o fato e
+a investigação precisa de leitura de caso; o passo a passo das duas está no
+[`16-procedimento-mineracao-candidatas.md`](16-procedimento-mineracao-candidatas.md).
 
 **Pré-requisitos, todos no documento principal:** a tabela de candidatos de onde esta análise parte
 ([`01-racionais.md`](01-racionais.md) §7), o que é um teste de robustez e a regra corrigir × retirar (lá, §2), o
@@ -823,6 +826,114 @@ continua `memória` (o prompt segue incompleto, não contraditório — nada aqu
 ganham um fato a mais, ainda não incorporado ao texto: existe, além dos 91 erros que quebram, um número pequeno mas
 real de leituras que não quebram e ainda assim perdem os documentos — argumento a favor de também levar o envelope
 `result` não documentado ao time da plataforma (mesma recomendação já feita para a nº10), não só escrever a memória.
+
+---
+
+## 10 · Minerar uma lição de hábito — quando a mensagem de erro não traz o fato (06/10/2026)
+
+> **Em linguagem simples, antes do racional técnico.** A §9 minerou duas lições do tipo "fato sobre a ferramenta":
+> a ferramenta devolve X, e o agente pediu Y. Nesse tipo, o fato está escrito na própria mensagem de erro, e um
+> regex o extrai sem ninguém ler o caso. Mas a maior parte das candidatas é de outro tipo, "hábito do agente": o agente
+> precisa **fazer** diferente. A mensagem diz só o sintoma ("string não fechada", "variável não definida"), e não o
+> hábito ("monte o texto fora do código", "guarde o retorno numa variável"). Para achar o hábito, alguém precisa ler o
+> código que o agente escreveu e o que ele fez em seguida. Esta seção explica como essa leitura entra no método sem que
+> um modelo de linguagem passe a decidir números, e o porquê de cada peça.
+
+**Por que uma seção nova.** Os oito passos da §9 foram escritos e pré-registrados para a nº2 e a nº10, as duas do
+tipo *factual · ambiente*. Na base 1, a triagem tem 10 candidatas:
+
+| Tipo | Lições | Ocorrências | O fato está na mensagem de erro? |
+|---|---|---|---|
+| *factual · ambiente* (fato sobre a ferramenta) | 4 (contrato de retorno, sandbox, argumento nomeado, `next` em gerador) | 140 (36%) | sim, em geral: a mensagem traz o valor ou o nome |
+| *experiencial · estratégia* (hábito do agente) | 6 (texto longo dentro de string, tipo de retorno, texto solto, `repr` colado, nome usado sem ter sido definido, estado perdido) | 245 (64%) | **não**: traz o sintoma |
+
+A maior candidata da base, o texto longo dentro de string (`U_texto_literal`, 169 ocorrências), é de hábito. Sem esta
+seção, o método cobriria só um terço das ocorrências.
+
+### O que dos oito passos continua, e o que muda
+
+- **Continuam, na forma genérica** (`16`, parte genérica): o Passo 1 (a lição esconde partes diferentes? agora por papel,
+  ferramenta, mecanismo e assinatura), o Passo 3 (o agente se corrige? o step seguinte), o Passo 4 (é estável no tempo?),
+  a régua do Passo 5 e a conferência no cru do Passo 6.
+- **Muda o Passo 2 (o que extrair).** No hábito, não há `{valor}` para o regex separar. A fonte do hábito é o código do
+  step do erro e o step seguinte, e lê-los é leitura de caso. Por isso entra um leitor (um modelo de linguagem), com as
+  regras abaixo.
+- **O Passo 7 continua valendo.** O hábito é o degrau 3 (a correção, no imperativo), como o fato era. A causa cognitiva
+  (por que o agente escreveu aquilo) continua fora de alcance. O teste que decide se a memória basta é o mesmo, o replay
+  contrafactual: se a reincidência cai depois da correção injetada, era buraco de hábito; se persiste, é harness. Por
+  isso a `correction_guidance` de uma lição de hábito fica `hipotese` até as POCs.
+- **O Passo 8 (o formato final)** passou a morar num lugar só, ajustável: `analysis/esquema-memoria.json`.
+
+### A regra que não muda: o modelo propõe, o script conta
+
+A classificação continua determinística: a unidade, a assinatura e o mecanismo vêm das regras do pipeline, e nenhum
+modelo muda isso. O leitor só faz duas coisas: classifica casos de uma amostra escolhida por regra fixa, e propõe uma
+regra (um regex num campo do step). Quem conta a regra na população inteira e a compara com a leitura é um script
+(`testar_regra.py`). A leitura vale como hipótese (`[assistido]`); só a regra contada vira número (`[conferido]`). É o
+mesmo princípio da §9, Passo 2 ("só por presença de texto, nunca por interpretação"), estendido: a interpretação existe,
+mas não produz número.
+
+### As peças da investigação, e o porquê de cada uma
+
+**1 · Dois leitores, às cegas um do outro, e a concordância por script.** A leitura de um leitor é uma hipótese. Se
+um segundo leitor, sem ver a primeira leitura, classifica os mesmos casos nas mesmas categorias, a concordância (kappa
+de Cohen, calculado por script) mede se a categoria está bem definida. O limiar é 0,6, o convencional para
+concordância substancial. Na lição do nome usado sem ter sido definido (5 casos): 5 de 5, kappa 1,00. Na do texto longo
+(8 casos em comum): 4 de 8 na lição, kappa 0,37.
+
+**2 · A regra contada separa "onde" de "o que ensinar".** No texto longo, uma regra (o `final_answer` abrindo uma
+string com quebra de linha, ou uma variável em aspas triplas entregue depois) pega o padrão em 132 de 182 erros, com 14
+certos, 0 a mais e 0 a menos contra a leitura. A regra diz **onde** o erro acontece (o relatório final escrito dentro
+do código). Ela não diz **o que ensinar**: essa é a pergunta dos leitores.
+
+**3 · "Os leitores discordam" não quer dizer "não há lição".** Esse foi o achado do texto longo. A regra sustentava o
+padrão, e os leitores discordavam. A primeira leitura do painel ("confiança falhou") dava a entender que não havia
+lição, quando havia. Por isso a confiança passou a separar três coisas: o padrão existe (regra contada) · a redação da
+lição está clara (leitores) · são várias causas (metade ou mais dos casos em "não há uma lição única").
+
+**4 · A leitura em duas etapas.** No texto longo, as lições candidatas foram escritas antes de ver os casos, e os
+leitores marcaram a mais próxima, como numa prova de múltipla escolha. A lista misturava duas perguntas, **o que é o
+texto** (o relatório final, um documento colado) e **o que quebrou a string** (a quebra de linha, as aspas), e cada
+leitor respondeu uma. A discordância era da lista. Só frase livre também não serve: o script não sabe dizer se duas
+frases dizem a mesma coisa, e um modelo julgando isso entraria no caminho da contagem. A saída é o caminho clássico da
+análise qualitativa: primeiro leitura aberta (frase livre); depois as frases viram a lista, que o pesquisador aprova;
+só então a leitura fechada, **em outros casos** (senão a lista estaria feita sob medida para os casos que a mediram), e o
+script mede. A leitura fechada tem pelo menos 20 casos: com 8, um caso a mais ou a menos muda muito o kappa, e nada se
+conclui, nem contra nem a favor.
+
+**5 · Dividir a unidade é um resultado normal.** A unidade nasce do sintoma, e um sintoma pode ter várias causas. As
+duas primeiras investigações acharam mais de uma causa dentro da unidade. O nome usado sem ter sido definido junta
+"nome visto só no texto impresso" (3) e "função definida numa chamada anterior, que o ambiente recusa" (2). O texto
+longo junta o relatório final dentro da string, o documento colado e, talvez, a resposta em JSON do próprio papel. A
+investigação pode terminar em: uma lição; uma **lição geral com variações por papel** (no texto longo, a regra do
+relatório final pega 84% no ConversationAgent, 70% no managerAgent e 0% no CadastroCivel, onde o mesmo gesto aparece
+como documento colado); ou várias lições, e aí dividir a unidade é um ajuste de taxonomia, decidido pelo pesquisador.
+
+**6 · Notebook específico só com frequência e confiança, sem sorteio.** Um notebook automatiza a regra em escala.
+Frequência sozinha não basta: uma lição com metade dos erros e uma regra errada é o pior caso, porque o notebook
+automatizaria o erro. A frequência é o Pareto das ocorrências ou a presença na maior parte dos meses. A confiança vem
+das peças 1 e 2 e do laudo de um validador. Sem sorteio, porque a base vai crescer por partições (a base 3 é o log
+inteiro, e as bases 1 e 2 são recortes de 1.000 registros). O teste em dado novo é a reconfirmação a cada partição, com
+as regras aplicadas sem mudança. O limite declarado: sem separar casos, a concordância das regras sai otimista,
+porque elas são escritas e conferidas nos mesmos casos lidos.
+
+**7 · O gate do pesquisador.** Diante de "frequente, mas os leitores discordam", o script não distingue entre uma
+lista mal feita, uma lição geral que cobre as duas leituras e várias causas. Quem distingue é o pesquisador, olhando
+os dois leitores lado a lado. Por isso o painel para nas situações que pedem decisão (pronta para notebook; a lição
+existe, mas a redação está em aberto; várias causas; certa, mas rara) e registra a decisão com as palavras dele.
+
+**8 · Monitorar é determinístico.** Uma lição certa, mas rara, não vira memória nem é descartada: fica em
+monitoramento. Uma anotação dependeria de alguém lembrar, numa base nova, que aquela lição estava sendo acompanhada.
+Por isso o monitoramento é um registro versionado (`analysis/monitoramento.json`, um só para as pastas de todas as bases),
+com a linha de base, as regras que separam as sub-lições e os gatilhos, e um script que roda no começo de toda
+mineração e para a rodada com alerta. Na base 2, a lição do nome usado sem ter sido definido tem 118 erros, e é ali que
+o alerta deve disparar.
+
+### Onde ver o resto
+
+O passo a passo está no [`16-procedimento-mineracao-candidatas.md`](16-procedimento-mineracao-candidatas.md); as
+decisões, com data, no `plano-atual.md` ("Decidido em 05/10" e "Decidido em 06/10"); os dossiês das duas investigações,
+com a evidência caso a caso, em `../pipeline/resultados/mineracao/<lição>/` (git-ignored, com identificadores).
 
 ---
 
