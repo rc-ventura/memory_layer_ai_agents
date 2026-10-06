@@ -105,5 +105,5 @@ uv run python <esta skill>/scripts/validar_memoria.py <analysis>/esquema-memoria
 Nunca por conta própria. Só quando a regra de criação do procedimento valer: **frequência** (Pareto das ocorrências ou
 presença na maior parte dos meses: `scripts/valor_da_licao.py <pasta> <u>`, que sai com 0 se tem) **e confiança**
 (dois leitores às cegas, com pelo menos 20 casos, kappa ≥ 0,6; regras contadas com ≥ 90% e ≤ 10%; laudo do
-validador) — no painel, a situação "pronta para notebook", que também passa pelo gate; ou uma decisão do pesquisador. A cada partição nova, reaplique as regras do `regras.json` sem mudança e anote em `confirmacoes`. Aí use o prompt `propor-notebook`.
+validador) — no painel, a situação "pronta para notebook", que também passa pelo gate; ou uma decisão do pesquisador. A cada partição nova, reaplique as regras do `regras.json` sem mudança e anote em `confirmacoes`. Aí use a skill `/propor-notebook`.
 Ele escreve só em `propostas/<u>/`, e o agente `validador-de-notebook` dá o laudo. A aprovação é do pesquisador.

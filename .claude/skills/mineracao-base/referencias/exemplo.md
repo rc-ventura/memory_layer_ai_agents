@@ -16,8 +16,7 @@ nomes de ferramenta e motivos mascarados.
 ## 1 · O que você digita
 
 ```
-# no Claude Code, nada a instalar (o kit está no .claude/ do repositório); no Copilot, uma vez por atualização:
-python .claude/skills/mineracao-base/scripts/gerar_copilot.py .
+# nada a instalar: o kit está no .claude/ do repositório (o Claude Code e o Copilot leem dali)
 
 # a rodada
 /rodada-silenciosas analysis/<pasta-da-base-nova>
@@ -26,7 +25,7 @@ python .claude/skills/mineracao-base/scripts/gerar_copilot.py .
 /investigar silenciosas S3 analysis/<pasta-da-base-nova>
 ```
 
-Sem os prompts, funciona igual em linguagem natural: "minere as falhas silenciosas da análise X". As skills disparam
+Sem a barra, funciona igual em linguagem natural: "minere as falhas silenciosas da análise X". As skills disparam
 pela descrição.
 
 ---

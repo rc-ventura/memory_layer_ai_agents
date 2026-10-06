@@ -699,7 +699,8 @@ figuras. Usa as fronteiras de chamada (S4).
     - **Arquivo final aprovado no esquema 0.1;** dossiê e `regras.json` em `resultados/mineracao/U_nome_inventado/`.
     - **Recomendação:** rodar na base 2 com as mesmas regras antes de propor a divisão da unidade.
 - **Onde o kit mora, desde 06/10 (decisão do Rafael):** no próprio `.claude/`, versionado; a pasta `kit-mineracao/`
-  saiu. O Copilot usa cópias geradas pelo `gerar_copilot.py` (git-ignored). Descrição do kit:
+  saiu. As rodadas com barra viraram skills de chamada manual; o Copilot lê `.claude/skills/` e `.claude/agents/`
+  direto, sem cópia (documentação do VS Code de 2026). Descrição do kit:
   `.claude/skills/mineracao-base/referencias/kit.md`.
 - **Feito em 06/10 (0.6.0, `1c36dc2`):** a leitura em duas etapas, o gate do pesquisador e o monitoramento
   determinístico (bloco "Decidido em 06/10", §1; `docs/16`).
@@ -714,8 +715,8 @@ validação do kit, e entra aqui.
 
 1. **Validar o kit na base 2** (máquina de compliance, com o main atualizado; o Rafael roda e traz contagens):
    - **antes:** replicar o que o livro-razão pede para a máquina 2 (parquet, Ajustes 13–16: `base_pipeline.py` com
-     `TRACE` e `BASE_ID` restaurados, a esteira, a consolidação) e gerar as cópias do kit para o Copilot
-     (`python .claude/skills/mineracao-base/scripts/gerar_copilot.py .`; o kit em si chega com o `.claude/`);
+     `TRACE` e `BASE_ID` restaurados, a esteira, a consolidação) e conferir que o Copilot acha o kit no
+     `.claude/` (`/rodada-candidata` aparece no `/`); apagar as cópias antigas das skills em `.github/`;
    - **o monitoramento primeiro** (`monitorar.py`). Esperado: a `U_nome_inventado` com alerta (118 erros: régua,
      cresce; frequência provável), com as duas sub-lições contadas pelas regras; o `U_campo_inexistente` com alerta de
      crescimento (38 ≥ 3 × 10); a ferramenta concorrente do `final_answer` sem alerta (só dez/2025);

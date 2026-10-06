@@ -15,12 +15,6 @@ Thumbs.db
 __pycache__/
 *.pyc
 
-# Kit de mineração: a fonte é o próprio .claude/ (versionado); estas são as cópias do Copilot, geradas por
-# .claude/skills/mineracao-base/scripts/gerar_copilot.py
-.github/agents/auditor-independente.agent.md
-.github/agents/investigador.agent.md
-.github/agents/segundo-leitor.agent.md
-.github/agents/validador-de-notebook.agent.md
-.github/prompts/rodada-*.prompt.md
-.github/prompts/investigar.prompt.md
-.github/prompts/propor-notebook.prompt.md
+# Claude Code: configuração pessoal (permissões, preferências) não vai para o git
+.claude/settings.local.json
+.DS_Store

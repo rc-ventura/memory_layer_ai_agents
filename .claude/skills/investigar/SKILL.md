@@ -1,9 +1,11 @@
 ---
+name: investigar
 description: "Investigação de uma parada de uma rodada de mineração do trace, até o dossiê de decisão (kit de mineração)"
 argument-hint: "<mineração> <pergunta do roteiro, ex.: silenciosas S2> [pasta da análise]"
+disable-model-invocation: true
 ---
 
-Investigue a parada `$ARGUMENTS` com a skill `mineracao-investigacao`.
+Investigue a parada indicada no pedido (`$ARGUMENTS`) com a skill `mineracao-investigacao`.
 
 - Comece pelo relatório mais recente desta mineração em `pipeline/resultados/`, na pasta de análise indicada (ou na
   corrente).

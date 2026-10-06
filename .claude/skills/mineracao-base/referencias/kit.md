@@ -3,10 +3,11 @@
 > **Primeira vez?** Leia o [`exemplo.md`](exemplo.md): uma rodada real, do zero, numa base nova simulada, passo a passo.
 >
 > **Onde o kit mora:** no próprio `.claude/` do repositório, versionado — as skills em `.claude/skills/mineracao-*/`,
-> os agentes em `.claude/agents/`, os prompts em `.claude/commands/`. Este documento e a `VERSAO` ficam na skill
-> `mineracao-base`. O Copilot usa cópias geradas (abaixo).
+> os agentes em `.claude/agents/`, e as cinco rodadas que você chama com barra (`/rodada-candidata`…) também como
+> skills, em `.claude/skills/<nome>/`, só de chamada manual. Este documento e a `VERSAO` ficam na skill
+> `mineracao-base`. O Claude Code e o Copilot leem os dois lugares direto: não há cópia nem instalação.
 
-Um pacote de skills, agentes, prompts e scripts para rodar as minerações do trace de agentes com o mesmo procedimento
+Um pacote de skills, agentes e scripts para rodar as minerações do trace de agentes com o mesmo procedimento
 em qualquer ambiente e em qualquer base. Ele funciona com qualquer agente que leia o formato aberto de skill
 (`SKILL.md`), como o Claude Code e o GitHub Copilot.
 
@@ -58,7 +59,7 @@ Detalhe em `skills/mineracao-base/referencias/evidencia.md`.
 | **Objeto da rodada** | no argumento da chamada | a pasta da análise, a pergunta do roteiro (`silenciosas S2`) |
 
 O kit não tem nome de base, pasta datada, unidade, ferramenta nem número de nenhuma base. Para conferir:
-`grep -rnE "base ?[123]\b|U_[a-z]|2026-" .claude/skills/mineracao-* .claude/agents .claude/commands` não deve achar
+`grep -rnE "base ?[123]\b|U_[a-z]|2026-" .claude/skills/{mineracao-*,rodada-*,investigar,propor-notebook} .claude/agents` não deve achar
 nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita números de propósito.
 
 ## Conteúdo
@@ -66,7 +67,6 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
 ```
 .claude/skills/mineracao-base/    passo 0 comum: pasta, base, versão do código, intake, sigilo, relatório
   VERSAO · referencias/kit.md (este documento) · referencias/exemplo.md
-  scripts/gerar_copilot.py        gera as cópias do Copilot (.github/agents, .github/prompts) a partir de .claude/
   scripts/conferir_versao.py      o código da análise é o do manifesto? (CRLF, TRACE/BASE_ID e saídas de notebook não contam)
   scripts/montar_evidencia.py     a evidência de um achado: casos por regra fixa, crus, visões, origem e o bloco do relatório
   scripts/amostrar.py             a regra fixa de escolha de casos (usada pela evidência e pela investigação)
@@ -91,20 +91,24 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   roteiros/candidata.md           a parte específica de uma candidata: a lição, a causa, o conserto, o destino → o arquivo final
   scripts/testar_regra.py · concordancia.py
 .claude/agents/                   auditor-independente · investigador · segundo-leitor · validador-de-notebook
-.claude/commands/                 rodada-silenciosas · rodada-protocolo · rodada-candidata · investigar · propor-notebook
+.claude/skills/rodada-silenciosas · rodada-protocolo · rodada-candidata · investigar · propor-notebook
+                                  as rodadas com barra: skills só de chamada manual (`disable-model-invocation: true`)
 ```
 
 ## Instalar
 
-- **Claude Code:** nada a instalar. O kit já está no `.claude/` do repositório; basta clonar ou atualizar.
-- **Copilot:** gere as cópias, da raiz do repositório, depois de clonar e a cada atualização do kit:
-  ```
-  python .claude/skills/mineracao-base/scripts/gerar_copilot.py .
-  ```
-  Ele grava `.github/agents/*.agent.md` e `.github/prompts/*.prompt.md` (git-ignored). As skills o Copilot lê de
-  `.claude/skills/`.
-- **Edite sempre a fonte** em `.claude/`; as cópias do Copilot são sobrescritas a cada geração.
-- Para usar em outro repositório, copie `.claude/skills/mineracao-*`, os quatro agentes e os cinco comandos.
+**Nada a instalar, nas duas ferramentas.** O kit chega com o `.claude/` do repositório (clonar ou atualizar basta):
+- **o Copilot no VS Code lê `.claude/skills/` e `.claude/agents/` direto** (documentação de 2026: skills em
+  `.github/skills/`, `.claude/skills/` ou `.agents/skills/`; agentes em `.github/agents/` ou `.claude/agents/`, no
+  formato do Claude). Não copie para `.github/`: a cópia vira uma segunda versão que fica velha;
+- **as rodadas com barra são skills**, e não comandos (`.claude/commands/`, que o Copilot não lê) nem prompt files
+  (`.github/prompts/`, que o Claude não lê e que o Copilot está descontinuando). As duas ferramentas as listam no `/`;
+  com `disable-model-invocation: true`, só rodam quando chamadas. O argumento: no Claude, o `$ARGUMENTS` é
+  substituído; no Copilot, o texto depois do `/nome` vai junto como contexto — por isso o texto diz "indicada no
+  pedido".
+- Se o VS Code de uma máquina for antigo e não achar as skills do `.claude/`, o problema é a versão, não o kit.
+- Para usar em outro repositório, copie `.claude/skills/{mineracao-*,rodada-*,investigar,propor-notebook}` e os
+  quatro agentes.
 
 ## Usar
 
@@ -116,7 +120,7 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   pede o laudo do validador.
 - `/investigar silenciosas S2 [<pasta>]` ou `/investigar protocolo P2 [<pasta>]`: uma parada até o dossiê de decisão.
 
-No Copilot, os mesmos nomes ficam como prompt files. Sem prompt, peça em linguagem natural ("rode as falhas silenciosas
+No Copilot, os mesmos nomes aparecem no `/`, porque são skills. Sem prompt, peça em linguagem natural ("rode as falhas silenciosas
 na análise X"), que as skills disparam pela descrição.
 
 ## Versão e manifesto
@@ -141,5 +145,5 @@ na análise X"), que as skills disparam pela descrição.
 - **A auditoria em paralelo existe hoje para as falhas silenciosas e o protocolo** (`audit_recompute9` e `10`, com `--json`). Cada mineração
   nova do backlog precisa de uma auditoria com `--json` e de um script de encontro. Sem isso, ela fica só com as
   conferências internas.
-- **O formato do Copilot** (`.agent.md`, `.prompt.md` com `mode: agent`) segue a documentação de 2026. Se a versão
-  instalada esperar outro cabeçalho, o ajuste é só no `gerar_copilot.py`.
+- **A leitura do `.claude/` pelo Copilot** segue a documentação do VS Code de 2026 (agent skills, custom agents).
+  Numa versão antiga, que não leia o `.claude/`, atualize o VS Code.

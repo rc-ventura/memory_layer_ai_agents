@@ -1,9 +1,11 @@
 ---
+name: propor-notebook
 description: "Propõe um notebook específico para uma lição que cumpriu a regra de criação do procedimento de mineração de candidatas (kit de mineração)"
 argument-hint: "<unidade, ex.: U_...> [pasta da análise]"
+disable-model-invocation: true
 ---
 
-Proponha um notebook específico para a lição `$ARGUMENTS`, seguindo o procedimento da análise
+Proponha um notebook específico para a lição indicada no pedido (`$ARGUMENTS`), seguindo o procedimento da análise
 (`docs/*procedimento-mineracao-candidatas*.md`, § "O ciclo de vida da parte específica").
 
 1. **Confira a regra de criação antes de qualquer coisa.**

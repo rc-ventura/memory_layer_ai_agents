@@ -1,9 +1,11 @@
 ---
+name: rodada-protocolo
 description: "Minera o protocolo do harness (resposta sem bloco de código) de uma base do trace, do zero, com a auditoria independente em paralelo (kit de mineração)"
 argument-hint: "<pasta da análise, ex.: analysis/<pasta-datada>>"
+disable-model-invocation: true
 ---
 
-Minere o protocolo do harness da base na pasta de análise `$ARGUMENTS` (se vier vazia, use a pasta corrente).
+Minere o protocolo do harness da base na pasta de análise indicada no pedido (`$ARGUMENTS`) (se vier vazia, use a pasta corrente).
 
 1. Skill `mineracao-base`: o Passo 0 inteiro. Se ele parar, pare e me diga por quê.
 2. Skill `mineracao-protocolo`:

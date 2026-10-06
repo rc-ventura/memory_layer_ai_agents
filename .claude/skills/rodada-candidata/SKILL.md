@@ -1,9 +1,11 @@
 ---
+name: rodada-candidata
 description: "Minera uma candidata a memória (uma lição da triagem) de uma base do trace: parte genérica, auditor em paralelo, funil para a parte específica e o arquivo final no esquema da memória (kit de mineração)"
 argument-hint: "<unidade, ex.: U_...> [pasta da análise]"
+disable-model-invocation: true
 ---
 
-Minere a candidata `$ARGUMENTS` com a skill `mineracao-candidata` (a pasta da análise vem no argumento, ou é a
+Minere a candidata indicada no pedido (`$ARGUMENTS`) com a skill `mineracao-candidata` (a pasta da análise vem no argumento, ou é a
 corrente).
 
 1. **Preparação** (`mineracao-base`) e conferência de que a lição está no `candidatos_memoria.csv`. Se não estiver,

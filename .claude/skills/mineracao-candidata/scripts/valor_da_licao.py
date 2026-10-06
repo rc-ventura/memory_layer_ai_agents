@@ -30,7 +30,7 @@ PARETO, KAPPA, CONCORDANCIA, A_MAIS, MIN_LEITURA, NULA = 0.80, 0.6, 0.90, 0.10, 
 
 # as situações que param e pedem a decisão do pesquisador, com as opções que o relatório leva
 GATE = {
-    "pronta para notebook": ["propor o notebook (prompt propor-notebook)", "esperar a próxima partição"],
+    "pronta para notebook": ["propor o notebook (/propor-notebook)", "esperar a próxima partição"],
     "lição existe, redação em aberto": ["aprovar a lição de um dos leitores", "escrever uma lição geral que cubra as duas",
                                         "investigar mais a fundo (várias causas; dividir a lição)"],
     "várias causas: investigar a fundo": ["dividir a lição por causa", "investigar mais a fundo"],
