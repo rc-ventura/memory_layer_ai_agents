@@ -164,7 +164,11 @@ When a new extraction lands, the folder setup is mechanical: dated `YYYY-MM-slug
 `data/`, point `TRACE` at the new file. The dump can be a CSV (plain, `.xz` or `.gz`) or **a single parquet file**:
 every reader goes through [`leitor_trace.py`](leitor_trace.py) (shared here in `analysis/`, not copied), which tells
 the format by content and hands the code the same all-text contract as `pd.read_csv(dtype=str)` — typed columns become
-text, nested JSON columns are serialized with `json.dumps`, never `str()` (plano-atual §4.10). Then run
+text, nested JSON columns are serialized with `json.dumps`, never `str()` (plano-atual §4.10). With `pyarrow` installed,
+pandas 3 stores text as arrow and the `.str` regexes run on RE2 (where `\s` does not match a non-breaking space), so
+`base_pipeline.py` pins `pd.set_option("mode.string_storage", "python")`; base 1 gives the same result either way, and
+the pin protects the other bases. The nested-JSON path was tested with synthetic data: on base 1, arrow refuses to nest
+the memory JSON (mixed types), so a real base should bring it as text. Then run
 `python checklist.py` from `pipeline/` — it bundles the two non-mechanical checks below plus context (period, agent
 versions, roles in the JSON); on a parquet, its §0 prints each column's type, nulls and nested columns, and it stops
 (exit 1) if any memory fails to parse. Optional:

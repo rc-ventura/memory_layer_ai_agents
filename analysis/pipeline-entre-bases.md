@@ -1283,3 +1283,33 @@ auditoria de 02/10; roadmap 36): a expectativa é a do mês da execução e a ch
 
 *Base 2: triagem recalculada na máquina 2 pelas funções do pipeline (relatório da máquina 2, 02/10), coincide com o
 agregado gravado; o notebook não foi reexecutado inteiro lá (ver Etapa 10c, "Base 2 rodada").*
+
+## 7. O que ficou velho — a errata (até 06/10/2026)
+
+Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dito; à direita, o que vale. Estava no
+`plano-atual.md` §3 até 06/10, e veio para cá porque é histórico, não plano.
+
+| Foi dito/registrado | Vale agora |
+|---|---|
+| "a medida das falhas silenciosas vira uma célula do notebook da esteira" | **notebook separado** (§1) |
+| "4 ciclos do mesmo loop desde o idx 20; morte por 25 erros" (CalculoCivel) | 4 chamadas do papel; a morte é da 4ª, com 11 erros (`11` §2.5) |
+| "versão 1 / versão 2 do `resposta_final`" | o nome do argumento: `resposta_gerada` / `json_resposta` (o número era ordem de steps) |
+| "o `o4-mini` erra mais" | sem base: é o único modelo do papel |
+| "catálogo M1–M5" | M1–M6 |
+| item 26: docs `10-/11-…-falhas-silenciosas.md` | `13`/`14`/`15` |
+| arquivo de plano fora do repo; §5 do livro-razão ("Próximas etapas", 25/09) | **este arquivo** |
+| a seção "Agora" do `04-roadmap.md` | migrada em 02/10: o aberto está no §5 daqui; o roadmap ficou só com o backlog numerado da análise |
+| "o [4] da base 1 = 93 sucessos falsos" | teto; só falhas reais: 53/75, ainda teto |
+| o [1b] da base 2 "calculado sobre as fotos" | conferido rodando |
+| dono do `json_invalido`: "a conferir" / "ler 2–3 casos" | o agente, o gesto do `repr_colado` (duas bases, pelo `--forma`) |
+| "o erro do agente se recupera, o de plataforma não" | o `json_invalido` quase sempre se recupera (0/6, **3/86**); argumento do agente 30/41 × 2/6 |
+| [4] = 53/75 e 20/116; "o 1º final depois da falha" | **54/75 e 24/116** (Ajuste 11: final no próprio step ou depois, **na mesma chamada**); plataforma 16/19 e **17/22**; conferido nas duas bases |
+| "`json_invalido` nunca vira sucesso falso (0/86)" | **3/86** na base 2 — falha e `final_answer` no mesmo bloco |
+| `U_repr_colado` na base 2 = 7 erros | **18 em 18 execuções**, só RoteadorCivel (conferido na triagem, 02/10); o 7 era o recorte do Ajuste 2.2 |
+| "o risco à resposta está na plataforma" | hipótese: 0/3 na leitura da plataforma, 0/3 no `json_invalido` (falha declarada) |
+| "D2: se for M2 com `resposta_gerada`, vira memória por ferramenta" | não é: o único M2 da base 2 tem `json_resposta` (dez/2025); com `resposta_gerada` são M1 |
+| triagem da base 2 "não vista depois do 2.2" | vista: 8 candidatas (370/479, 77%); a maior é `U_nome_inventado` (118) |
+| "a sobreposição do M1 foi medida avulsa" | `drill_down.py protocolo` [9] (`sobreposicao()`, limiar 0,5 reconstruído) |
+| "checagem E da auditoria nº 6 fora de fase" | corrigida (25/33 em out/2025); A–G com 0 divergências |
+| regra `'DEFAULT'` do motivo: "só base 2" | `b1 b2` — a mesma calculadora devolve `'DEFAULT'` na base 1 (2×, CalculoCivel) |
+| balde invisível "conferido" pela auditoria | era **reexecutado**; conferido de forma independente só desde o `audit_recompute9` |

@@ -257,6 +257,11 @@ comentário. **[conferido: AST]**
 - o que a 4ª tarefa dizia;
 - o `DEFAULT` da calculadora.
 
+**Rodada 2 (05/10; livro-razão Etapa 10d):** em 2 erros da chamada terminal, o texto repete trechos longos da
+observação anterior (2.881 e 2.986 caracteres) — hipótese, sem causalidade provada; pertence à investigação do erro
+crítico (plano 4.6), não à da maior candidata da base 2. A chamada terminal tem 21 steps, 11 erros mais o limite e
+2,09 M tokens, mais que as outras três somadas.
+
 ### 2.6 O que falta na base 2
 
 | Papel | Erros | Pergunta | Prioridade |
