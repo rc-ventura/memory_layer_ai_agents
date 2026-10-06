@@ -7,9 +7,10 @@ Proponha um notebook específico para a lição `{{argumentos}}`, seguindo o pro
 (`docs/*procedimento-mineracao-candidatas*.md`, § "O ciclo de vida da parte específica").
 
 1. **Confira a regra de criação antes de qualquer coisa.**
-   - (a) As regras do `resultados/mineracao/<u>/regras.json` foram aplicadas **sem mudança** numa segunda base, com
-     concordância ≥ 90%, "pega a mais" ≤ 10% e kappa ≥ 0,6 nas duas. Ou:
-   - (b) Há uma decisão minha registrada no `plano-atual.md`.
+   - **Frequência:** a lição está no Pareto (80% das ocorrências das candidatas) ou aparece na maior parte dos meses
+     (`valor_da_licao.py`). **E confiança:** dois leitores às cegas com kappa ≥ 0,6, e as regras do `regras.json`
+     contadas com concordância ≥ 90% e "pega a mais" ≤ 10%. Ou:
+   - há uma decisão minha registrada no `plano-atual.md`.
 
    Se nenhuma vale, **pare** e diga qual critério falta, com os números.
 2. **Escreva só em `propostas/<u>/`:**

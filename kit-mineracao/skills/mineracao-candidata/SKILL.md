@@ -81,6 +81,8 @@ uv run python <esta skill>/scripts/validar_memoria.py <analysis>/esquema-memoria
 - **Reprovado:** não entregue. Corrija o que falta e rode de novo.
 - **Pendências:** campos novos do esquema ainda não preenchidos vão para as paradas.
 - **Para fora:** `versao_para_sair.py` e `varrer_pii.py`, no relatório, no dossiê e no arquivo final.
+- **O painel:** rode `uv run python <esta skill>/scripts/valor_da_licao.py <pasta-da-analise>` e atualize as
+  colunas Frequência, Confiança e Situação da lição na tabela do funil.
 - **Na resposta ao pesquisador:**
   - a lição, em uma frase;
   - o escopo;
@@ -91,6 +93,8 @@ uv run python <esta skill>/scripts/validar_memoria.py <analysis>/esquema-memoria
 
 ## Quando propor um notebook específico
 
-Nunca por conta própria. Só quando a regra de criação do procedimento valer: as regras confirmadas, **sem mudança**,
-numa segunda base, com os limiares do procedimento; ou uma decisão do pesquisador. Aí use o prompt `propor-notebook`.
+Nunca por conta própria. Só quando a regra de criação do procedimento valer: **frequência** (Pareto das ocorrências ou
+presença na maior parte dos meses: `scripts/valor_da_licao.py <pasta> <u>`, que sai com 0 se tem) **e confiança**
+(dois leitores às cegas com kappa ≥ 0,6; regras contadas com ≥ 90% e ≤ 10%; laudo do validador); ou uma decisão do
+pesquisador. A cada partição nova, reaplique as regras do `regras.json` sem mudança e anote em `confirmacoes`. Aí use o prompt `propor-notebook`.
 Ele escreve só em `propostas/<u>/`, e o agente `validador-de-notebook` dá o laudo. A aprovação é do pesquisador.

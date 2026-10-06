@@ -6,6 +6,7 @@ se houver leitura, compara com ela. A regra é proposta pelo LLM; a contagem é 
                             | --condicao '<expressão sobre as colunas da população>')
                            [--onde coluna=valor ...] [--coluna-idx idx] [--deslocamento N] [--ignorar-caixa]
                            [--lidos <leitura.csv> --rotulo <coluna> --alvo <valor>] [--saida <resultado.csv>]
+                           [--registrar <confianca.json> --local <amostra | partição <id>>]
 
 --campo-passo  lê o campo do ActionStep (exec_id, role, idx) direto no trace da análise (o TRACE do base_pipeline),
                pelo leitor único: idx = posição entre os ActionSteps do papel, como no pipeline. `error` é a mensagem.
@@ -23,6 +24,16 @@ Imprime só contagens (nenhum texto, nenhum identificador). Semântica de regex:
 """
 
 import argparse, csv, json, os, re, sys
+
+
+def registrar(arq, chave, item):
+    """Acrescenta `item` à lista `chave` do confianca.json da lição (cria se não existir). É de onde o painel
+    (valor_da_licao.py) lê a confiança — por script, sem ninguém transcrever número."""
+    import datetime, json, os
+    d = json.load(open(arq, encoding="utf-8")) if os.path.exists(arq) else {}
+    d.setdefault(chave, []).append({**item, "data": datetime.date.today().isoformat()})
+    with open(arq, "w", encoding="utf-8") as fh:
+        json.dump(d, fh, ensure_ascii=False, indent=2)
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "mineracao-base", "scripts"))
 from amostrar import aplicar_onde   # o mesmo filtro da amostra e da evidência (as skills são instaladas lado a lado)
@@ -75,6 +86,7 @@ def main():
     ap.add_argument("--onde", action="append", default=[]); ap.add_argument("--coluna-idx", default="idx")
     ap.add_argument("--deslocamento", type=int, default=0); ap.add_argument("--ignorar-caixa", action="store_true")
     ap.add_argument("--lidos"); ap.add_argument("--rotulo"); ap.add_argument("--alvo"); ap.add_argument("--saida")
+    ap.add_argument("--registrar"); ap.add_argument("--local", default="amostra")
     a = ap.parse_args()
     if a.regex and not (a.campo_passo or a.campo_csv):
         sys.exit("--regex pede --campo-passo ou --campo-csv")
@@ -121,6 +133,14 @@ def main():
         print(f"contra a leitura ({len(lidos)} lidos; alvo `{a.rotulo} = {a.alvo}`): "
               f"pega certo {vp} · pega a mais {fp} · deixa de pegar {fn} · deixa certo {vn} · "
               f"concordância {(vp + vn) / max(len(lidos), 1):.0%}")
+        if a.registrar:   # "pega a mais" = a fração do que a regra marca que a leitura diz não ser o alvo
+            registrar(a.registrar, "regras", {
+                "rotulo": a.rotulo, "alvo": a.alvo, "local": a.local, "lidos": len(lidos),
+                "regra": a.regex and {"regex": a.regex, "campo_passo": a.campo_passo or a.campo_csv,
+                                      "deslocamento": a.deslocamento} or {"condicao": a.condicao},
+                "filtros": a.onde,
+                "concordancia": round((vp + vn) / max(len(lidos), 1), 3),
+                "pega_a_mais": round(fp / max(vp + fp, 1), 3), "deixa_de_pegar": fn})
     if a.saida:
         with open(a.saida, "w", encoding="utf-8", newline="") as fh:
             w = csv.writer(fh); w.writerow(["exec_id", "role", a.coluna_idx, "casou"])

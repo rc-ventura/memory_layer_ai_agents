@@ -1,6 +1,7 @@
 """Concordância entre dois leitores (o investigador e o segundo leitor) — o número sai daqui, não do LLM.
 
     python concordancia.py <leitura1.csv> <leitura2.csv> --rotulo <coluna> [--coluna-idx idx]
+                           [--registrar <confianca.json> --local <amostra | partição <id>>]
 
 Casa as duas leituras por (exec_id, role, idx) e imprime: casos em comum, concordância simples e kappa de Cohen, e a
 tabela das discordâncias por par de categorias (só contagens). Só biblioteca padrão.
@@ -8,6 +9,16 @@ tabela das discordâncias por par de categorias (só contagens). Só biblioteca 
 
 import argparse, csv
 from collections import Counter
+
+
+def registrar(arq, chave, item):
+    """Acrescenta `item` à lista `chave` do confianca.json da lição (cria se não existir). É de onde o painel
+    (valor_da_licao.py) lê a confiança — por script, sem ninguém transcrever número."""
+    import datetime, json, os
+    d = json.load(open(arq, encoding="utf-8")) if os.path.exists(arq) else {}
+    d.setdefault(chave, []).append({**item, "data": datetime.date.today().isoformat()})
+    with open(arq, "w", encoding="utf-8") as fh:
+        json.dump(d, fh, ensure_ascii=False, indent=2)
 
 
 def ler(arq, col_idx, rotulo):
@@ -19,6 +30,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("a"); ap.add_argument("b"); ap.add_argument("--rotulo", required=True)
     ap.add_argument("--coluna-idx", default="idx")
+    ap.add_argument("--registrar"); ap.add_argument("--local", default="amostra")
     x = ap.parse_args()
     A, B = ler(x.a, x.coluna_idx, x.rotulo), ler(x.b, x.coluna_idx, x.rotulo)
     comuns = sorted(set(A) & set(B))
@@ -30,6 +42,9 @@ def main():
     pe = sum(ca[c] * cb[c] for c in set(ca) | set(cb)) / len(comuns) ** 2
     kappa = (po - pe) / (1 - pe) if pe < 1 else 1.0
     print(f"casos em comum: {len(comuns)} · concordam: {iguais} ({po:.0%}) · kappa: {kappa:.2f}")
+    if x.registrar:
+        registrar(x.registrar, "leitores", {"rotulo": x.rotulo, "local": x.local, "casos": len(comuns),
+                                            "concordancia": round(po, 3), "kappa": round(kappa, 3)})
     for (ra, rb), n in Counter((A[k], B[k]) for k in comuns if A[k] != B[k]).most_common():
         print(f"  discordância  {ra}  ×  {rb}: {n}")
 

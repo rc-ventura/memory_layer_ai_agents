@@ -69,6 +69,7 @@ skills/mineracao-silenciosas/     a mineração das falhas silenciosas (lê as t
 skills/mineracao-candidata/       a mineração de uma candidata a memória: parte genérica → funil → parte específica → arquivo final
   scripts/validar_memoria.py      confere o arquivo final contra o esquema da memória da análise (e converte o registro de um notebook)
   scripts/comparar_auditoria.py   o encontro: a parte genérica × a auditoria independente (audit_recompute6)
+  scripts/valor_da_licao.py       o painel das lições: frequência (Pareto · presença no tempo), confiança (lida do confianca.json) e situação
   referencias/fluxo.md            os diagramas da rodada e do ciclo de vida da parte específica
 skills/mineracao-protocolo/       a mineração do protocolo do harness (resposta sem bloco de código)
   scripts/comparar_auditoria.py   o encontro: casos/passos/versões/modelos × a auditoria independente (audit_recompute10)

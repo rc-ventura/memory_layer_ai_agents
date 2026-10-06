@@ -47,14 +47,18 @@ o destino.
   anterior e o seguinte) e grava `leitura_candidata_<u>_<BASE_ID>.csv` com `licao`, `causa`, `conserto`,
   `destino_lido` e `onde_no_cru`.
 - **Segunda leitura:** o `segundo-leitor` relê uma subamostra às cegas. A concordância (`concordancia.py`) é medida
-  por coluna.
+  por coluna, **sempre com `--registrar resultados/mineracao/<u>/confianca.json`**. O mesmo vale para cada regra
+  contada no `testar_regra.py`: é desse arquivo que o painel lê a confiança.
+- **Reconfirmação numa partição nova:** a mesma leitura e as mesmas regras, sem mudança, numa amostra da partição, com
+  `--local "partição <id>"` no `--registrar`.
 - **Regras:** para cada hipótese de L1/L2 que a leitura sustenta, uma regra contada (`testar_regra.py`, `--regex` num
   campo do step ou `--condicao` nas colunas do `casos.csv`). A regra que funciona (concordância ≥ 90%, "pega a mais"
   ≤ 10%) vai para `regras.json`:
   ```
   [{"hipotese": "...", "regra": {"regex"|"condicao": "...", "campo_passo": "...", "deslocamento": 0, "onde": ["..."]},
     "populacao": "mineracao/<u>/casos.csv", "contagem": "<a linha do testar_regra.py>", "base": "<BASE_ID>",
-    "data": "AAAA-MM-DD"}]
+    "data": "AAAA-MM-DD",
+    "confirmacoes": [{"particao": "<id da partição nova>", "contagem": "<a linha>", "data": "AAAA-MM-DD"}]}]
   ```
 
 ## O arquivo final (o rascunho da memória)

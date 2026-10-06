@@ -43,7 +43,7 @@ flowchart TD
 flowchart LR
     S1["1 · Investigação por LLM<br/>toda lição nova começa aqui<br/>regras que funcionaram → regras.json"]:::llm
     S2["2 · Regras contadas<br/>testar_regra.py reconta a cada rodada"]:::det
-    T{"Gatilho<br/>(a) as regras valem sem mudança na base B<br/>(b) decisão do Rafael"}:::dec
+    T{"Gatilho<br/>frequência (Pareto ou presença no tempo)<br/>+ confiança (2 leitores, regras contadas)<br/>ou decisão do Rafael"}:::dec
     P["Proposta em propostas/&lt;u&gt;/<br/>racional.md (antes) · notebook rascunho"]:::llm
     V["Validador, outro agente<br/>2ª implementação a partir do racional<br/>confere notebook × racional × ordem"]:::det
     A{"Aprovação do Rafael"}:::dec
@@ -62,6 +62,8 @@ flowchart LR
 
 - **Toda lição nova começa na investigação.** As regras que funcionam vão para o `regras.json` e são recontadas a cada
   rodada.
-- **Um notebook específico só nasce pela regra de criação do procedimento:** as regras confirmadas sem mudança numa
-  segunda base, ou uma decisão do pesquisador. Ele nasce como proposta em `propostas/<u>/`, com o racional escrito
+- **Um notebook específico só nasce pela regra de criação do procedimento:** frequência (a lição está no Pareto das
+  ocorrências ou aparece na maior parte dos meses) mais confiança (dois leitores às cegas, regras contadas, laudo do
+  validador); ou uma decisão do pesquisador. A cada partição nova da base, as regras são reaplicadas sem mudança.
+  Se caírem, a lição volta à investigação. Ele nasce como proposta em `propostas/<u>/`, com o racional escrito
   antes, e passa pelo laudo do validador e pela aprovação do pesquisador.

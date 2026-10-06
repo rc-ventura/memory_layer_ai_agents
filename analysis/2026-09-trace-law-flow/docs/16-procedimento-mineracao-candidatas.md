@@ -54,7 +54,7 @@ pesquisador.
 flowchart LR
     S1["1 · Investigação por LLM<br/>toda lição nova começa aqui<br/>regras que funcionaram → regras.json"]:::llm
     S2["2 · Regras contadas<br/>testar_regra.py reconta a cada rodada"]:::det
-    T{"Gatilho<br/>(a) as regras valem sem mudança na base B<br/>(b) decisão do Rafael"}:::dec
+    T{"Gatilho<br/>frequência (Pareto ou presença no tempo)<br/>+ confiança (2 leitores, regras contadas)<br/>ou decisão do Rafael"}:::dec
     P["Proposta em propostas/&lt;u&gt;/<br/>racional.md (antes) · notebook rascunho"]:::llm
     V["Validador, outro agente<br/>2ª implementação a partir do racional<br/>confere notebook × racional × ordem"]:::det
     A{"Aprovação do Rafael"}:::dec
@@ -114,22 +114,37 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 
 <!-- funil: a skill mineracao-candidata lê esta tabela. Uma linha por lição; parte específica = notebook:<arquivo em pipeline/> | investigação:<roteiro do kit> -->
 
-| Lição | Parte específica | Estágio | Desde |
-|---|---|---|---|
-| `U_contrato_dict` | `notebook:mineracao_unidades_n2_n10` | 3 · notebook | 16/09/2026 (pré-registro `06` §9) |
-| `U_campo_inexistente` | `notebook:mineracao_unidades_n2_n10` | 3 · notebook | 16/09/2026 (pré-registro `06` §9) |
-| `U_tipo_retorno` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
-| `U_texto_literal` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
-| `U_texto_solto` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
-| `U_sandbox` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
-| `U_arg_nomeado` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
-| `U_next_gerador` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
-| `U_nome_inventado` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
-| `U_estado_perdido` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
-| `U_repr_colado` | `investigação:candidata` | 1 · investigação | 05/10/2026 |
+| Lição | Parte específica | Estágio | Desde | Frequência (base 1, 05/10) | Confiança | Situação |
+|---|---|---|---|---|---|---|
+| `U_contrato_dict` | `notebook:mineracao_unidades_n2_n10` | 3 · notebook | 16/09/2026 (pré-registro `06` §9) | Pareto + presença | confirmada (notebook) | notebook |
+| `U_campo_inexistente` | `notebook:mineracao_unidades_n2_n10` | 3 · notebook | 16/09/2026 (pré-registro `06` §9) | — (sinal de harness) | confirmada (notebook) | notebook |
+| `U_texto_literal` | `investigação:candidata` | 1 · investigação | 05/10/2026 | Pareto + presença | não avaliada | prioridade de investigação |
+| `U_tipo_retorno` | `investigação:candidata` | 1 · investigação | 05/10/2026 | Pareto + presença | não avaliada | prioridade de investigação |
+| `U_arg_nomeado` | `investigação:candidata` | 1 · investigação | 05/10/2026 | Pareto + presença | não avaliada | prioridade de investigação |
+| `U_sandbox` | `investigação:candidata` | 1 · investigação | 05/10/2026 | presença | não avaliada | prioridade de investigação |
+| `U_next_gerador` | `investigação:candidata` | 1 · investigação | 05/10/2026 | presença | não avaliada | prioridade de investigação |
+| `U_nome_inventado` | `investigação:candidata` | 1 · investigação | 05/10/2026 | não | confirmada (5 casos) | certa, mas rara |
+| `U_texto_solto` | `investigação:candidata` | 1 · investigação | 05/10/2026 | não | não avaliada | baixa prioridade |
+| `U_repr_colado` | `investigação:candidata` | 1 · investigação | 05/10/2026 | não | não avaliada | baixa prioridade |
+| `U_estado_perdido` | `investigação:candidata` | 1 · investigação | 05/10/2026 | não | não avaliada | baixa prioridade |
 
 <!-- /funil -->
 
+- **As três últimas colunas são o marcador de cada lição.** Elas saem do painel
+  (`uv run python <skill mineracao-candidata>/scripts/valor_da_licao.py <pasta-da-analise>`), e a skill as atualiza ao
+  fim de cada rodada. Leitura das situações:
+
+  | Frequência | Confiança | Situação | O que fazer |
+  |---|---|---|---|
+  | sim | confirmada | **pronta para notebook** | propor o notebook (`propor-notebook`) |
+  | sim | não avaliada | **prioridade de investigação** | é onde investigar rende mais |
+  | sim | falhou | **importante e mal entendida** | rever as categorias ou dividir a lição; não automatizar |
+  | não | confirmada | **certa, mas rara** | fica na investigação; o painel reavalia a cada base ou partição |
+  | não | não avaliada ou falhou | **baixa prioridade** | só registro |
+
+  A confiança tem três estados porque "não testada" é diferente de "testada e falhou". Ela é lida do
+  `resultados/mineracao/<u>/confianca.json`, que o `concordancia.py` e o `testar_regra.py` gravam com
+  `--registrar` (ninguém transcreve número).
 - **Lição fora da tabela:** a skill para e pede ao pesquisador que a registre aqui.
 - **Mudar uma lição de linha** (por exemplo, do estágio 1 para o 3) só pelo ciclo de vida abaixo, com uma entrada no
   livro-razão.
@@ -161,13 +176,52 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 
 ### A regra de criação de um notebook específico
 
-O agente **só pode propor** um notebook quando valer (a) ou (b). Nunca cria e adota sozinho.
-- **(a) Confirmação em duas bases.** As regras do `regras.json`, escritas com a base A, são aplicadas **sem
-  mudança** na base B. Nas duas: concordância com a leitura ≥ 90%, "pega a mais" ≤ 10% e kappa entre os leitores
-  ≥ 0,6. Uma regra ajustada depois de ver a base B volta ao estágio 1.
-- **(b) Decisão do Rafael**, registrada no `plano-atual.md`.
+O agente **só pode propor** um notebook quando valerem a **frequência** e a **confiança**, ou quando o Rafael
+decidir. Nunca cria e adota sozinho. A **aprovação final é sempre do Rafael**. Regra revista com o Rafael em 05/10/2026,
+sem sorteio: a base 3 é o log inteiro (as bases 1 e 2 são recortes de 1.000 registros), e a base vai receber partições
+novas.
 
-Volume alto sozinho não basta: ele aumenta a amostra, mas não confirma a regra.
+**1 · Frequência: a lição vale um notebook?** (pelo menos um)
+- **Pareto:** a lição está entre as que, juntas, cobrem 80% das **ocorrências** das candidatas da base. São
+  ocorrências, e não erros brutos, porque cascatas inflam os erros.
+- **Presença no tempo:** a lição aparece na maior parte dos meses da base. Não basta a régua da triagem (≥ 3
+  execuções e ≥ 2 meses), que toda candidata já passou.
+- **Calcular:** `uv run python <skill mineracao-candidata>/scripts/valor_da_licao.py <pasta-da-analise> [<unidade>]`.
+  Na base 1 (05/10), 6 das 10 candidatas têm: as 4 do Pareto (84% das ocorrências) mais 2 pela presença no tempo. A
+  `U_nome_inventado` (5 ocorrências, 4 de 11 meses) não tem.
+
+**2 · Confiança: a regra que vai virar notebook está certa?** (todos)
+- **Dois leitores às cegas** na amostra da investigação, com kappa ≥ 0,6 nas categorias que a regra usa
+  (`concordancia.py`).
+- **As regras contadas** contra a leitura (`testar_regra.py`): concordância ≥ 90% e "pega a mais" ≤ 10%, registradas
+  no `regras.json`.
+- **O laudo "aprovado" do validador**, uma segunda implementação a partir só do racional (abaixo).
+- **Limite declarado:** sem sorteio, as regras são escritas e conferidas nos mesmos casos lidos, e a concordância
+  tende a sair otimista. Por isso a reconfirmação abaixo.
+
+**3 · Reconfirmação a cada partição nova.** Quando a base receber dados novos:
+- os dois leitores (LLM) leem uma amostra da partição nova (até 50 casos, por regra fixa), às cegas;
+- as regras do `regras.json` são aplicadas **sem mudança** e comparadas com essa leitura;
+- o resultado vai para o `confianca.json` com `--registrar … --local "partição <id>"`.
+
+A partição é dado que ninguém usou para escrever as regras. Ela não bloqueia a criação do notebook, mas vale também para os notebooks já aprovados: se a regra cair
+abaixo dos limiares numa partição nova, a lição volta ao estágio 1 (uma entrada no livro-razão). É também o teste de que
+a lição continua valendo no tempo.
+
+**Ou a decisão do Rafael**, registrada no `plano-atual.md`.
+
+**Depois do notebook, o LLM continua, com outro papel.** O notebook automatiza a parte repetitiva (reconhecer, contar,
+classificar os casos pela regra). A investigação por LLM passa a fazer três outras coisas:
+- **ler a amostra de cada partição nova**, para a reconfirmação acima;
+- **investigar a sobra que a regra não pega** (os casos "parciais" ou "não lidos" do notebook);
+- **investigar quando a regra cai** numa partição nova: algo mudou (modelo, prompt, a própria lição), e a lição volta ao
+  estágio 1 até se entender o quê.
+
+Foi o que aconteceu com a nº2/nº10: o notebook existia, e as análises fundas das ferramentas (§11.9 e §11.10) vieram
+depois.
+
+**Frequência sozinha não basta:** ela diz que a lição vale um notebook, não que a regra está certa. Uma lição com metade
+dos erros e uma regra errada é o pior caso, porque o notebook automatizaria o erro em escala.
 
 **Por que o agente não cria e adota sozinho:**
 - seria mudança de método sem aprovação;
@@ -183,8 +237,9 @@ Nada vai direto para `docs/` nem para `pipeline/`:
 ```
 analysis/<pasta-da-analise>/propostas/<unidade>/
   racional.md                  o racional curto: a lição, as regras do regras.json em prosa, de onde cada uma veio
-                               (base, rodada, contagens), o que o notebook mede e o que não mede.
-                               Status "proposta". A data e o hash são registrados ANTES de o notebook rodar na base B
+                               (base, contagens, concordância dos leitores), o critério de frequência que valeu,
+                               o que o notebook mede e o que não mede.
+                               Status "proposta". A data e o hash são registrados ANTES de o notebook rodar
   mineracao_<unidade>.ipynb    o rascunho: só as regras do racional; determinístico, sem LLM; funções numa célula
                                própria; saída só de contagens e tabelas; grava o arquivo final no esquema da memória
                                e a pasta de evidência. Salvo sem saídas
@@ -202,7 +257,8 @@ Contexto isolado: ele não participou da investigação nem escreveu o notebook.
 2. **roda o notebook e a conferência na base** e compara medida por medida;
 3. **confere o notebook contra o racional:** só as regras do racional, nenhuma chamada a LLM, nenhum limiar que não
    esteja no racional, nenhum texto de caso na saída, e o arquivo final aprovado pelo `validar_memoria.py`;
-4. **confere a ordem:** a data e o hash do `racional.md` são anteriores à primeira rodada do notebook na base B;
+4. **confere a ordem:** a data e o hash do `racional.md` (e do `regras.json`) são anteriores à primeira rodada do
+   notebook;
 5. **escreve o `validacao.md`**: aprovado ou reprovado, item por item, com os comandos. **Ele não corrige nada.**
 
 **A aprovação final é do Rafael**, depois de um laudo "aprovado". Ao aprovar, no mesmo commit:

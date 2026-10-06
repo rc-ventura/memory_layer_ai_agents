@@ -147,6 +147,23 @@ ganha "→ plano-atual 4.x". Quando termina, vai para a §2 com o commit, e é r
   3. a regra encontrada vira a primeira regra automática da família: o step anterior chamou uma ferramenta que se
      apresenta como resposta final (reconhecida pela declaração, não pelo nome), e o texto não reaparece na resposta
      final.
+- **A regra de criação de notebook específico (revista em 05/10, sem sorteio):** frequência **e** confiança, ou a
+  decisão do Rafael. A aprovação final é sempre dele.
+  - **Frequência:** a lição está no Pareto das ocorrências das candidatas, ou aparece na maior parte dos meses
+    (`valor_da_licao.py`).
+  - **Confiança:** dois leitores às cegas (kappa ≥ 0,6), regras contadas (≥ 90% · ≤ 10%) e laudo do validador.
+  - **Reconfirmação:** a cada partição nova da base, as regras são reaplicadas sem mudança. Se caírem, a lição volta à
+    investigação.
+  - **Por quê:** a base 3 é o log inteiro, e as bases 1 e 2 são recortes de 1.000 registros. Frequência sozinha diz
+    que vale a pena, não que a regra está certa.
+- **O marcador de cada lição (05/10):** frequência (Pareto · presença · os dois · não) × confiança (confirmada ·
+  falhou · não avaliada) → situação (pronta para notebook · prioridade de investigação · importante e mal entendida ·
+  certa, mas rara · baixa prioridade). Sai do painel `valor_da_licao.py` e fica na tabela do funil do `16`.
+  - **Base 1, hoje:** 5 lições em "prioridade de investigação", e a `U_nome_inventado` em "certa, mas rara".
+- **O LLM continua depois do notebook:** ele lê a amostra de cada partição nova (a reconfirmação), investiga a sobra
+  que a regra não pega e investiga quando a regra cai.
+- **O `caso-N` só existe na versão que sai** da máquina do trace. A versão completa guarda os `exec_id`, e o
+  `_mapa.csv` volta de um para o outro.
 - **Os agentes do kit são disparados da raiz do repositório** (de uma subpasta, ficam parados pedindo permissão para
   o `AGENTS.md`).
 
