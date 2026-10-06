@@ -15,13 +15,12 @@ Thumbs.db
 __pycache__/
 *.pyc
 
-# Kit de mineração: cópias instaladas pelo kit-mineracao/instalar.py (a fonte é kit-mineracao/)
-.claude/skills/mineracao-*/
-.claude/skills/.kit-mineracao-*
-.claude/agents/auditor-independente.md
-.claude/agents/investigador.md
-.claude/agents/segundo-leitor.md
-.claude/commands/rodada-*.md
-.claude/commands/investigar.md
-.claude/commands/propor-notebook.md
-.claude/agents/validador-de-notebook.md
+# Kit de mineração: a fonte é o próprio .claude/ (versionado); estas são as cópias do Copilot, geradas por
+# .claude/skills/mineracao-base/scripts/gerar_copilot.py
+.github/agents/auditor-independente.agent.md
+.github/agents/investigador.agent.md
+.github/agents/segundo-leitor.agent.md
+.github/agents/validador-de-notebook.agent.md
+.github/prompts/rodada-*.prompt.md
+.github/prompts/investigar.prompt.md
+.github/prompts/propor-notebook.prompt.md

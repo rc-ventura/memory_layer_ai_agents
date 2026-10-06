@@ -97,6 +97,6 @@ Siga a skill da mineração pedida. Ao terminar:
 
 ## A versão do kit
 
-O arquivo `VERSAO` do kit é instalado ao lado das skills (`.kit-mineracao-versao`, na pasta em que elas ficam).
-Copie a versão para o relatório. Quando o pipeline muda de propósito (um Ajuste aprovado), o manifesto é regenerado
+O arquivo `VERSAO` desta skill é a versão do kit (as skills, os agentes e os comandos de mineração em `.claude/`; a
+descrição do kit inteiro está em [`referencias/kit.md`](referencias/kit.md)). Copie a versão para o relatório. Quando o pipeline muda de propósito (um Ajuste aprovado), o manifesto é regenerado
 na fonte do kit com `conferir_versao.py <pasta> --gerar`, e a versão sobe.

@@ -16,8 +16,8 @@ nomes de ferramenta e motivos mascarados.
 ## 1 · O que você digita
 
 ```
-# uma vez por repositório (ou depois de atualizar o kit)
-python kit-mineracao/instalar.py . --para claude        # ou --para copilot
+# no Claude Code, nada a instalar (o kit está no .claude/ do repositório); no Copilot, uma vez por atualização:
+python .claude/skills/mineracao-base/scripts/gerar_copilot.py .
 
 # a rodada
 /rodada-silenciosas analysis/<pasta-da-base-nova>

@@ -3,7 +3,7 @@ description: "Minera as falhas silenciosas de uma base do trace, do zero, com a 
 argument-hint: "<pasta da análise, ex.: analysis/<pasta-datada>>"
 ---
 
-Minere as falhas silenciosas da base na pasta de análise `{{argumentos}}` (se vier vazia, use a pasta corrente).
+Minere as falhas silenciosas da base na pasta de análise `$ARGUMENTS` (se vier vazia, use a pasta corrente).
 
 1. Skill `mineracao-base`: o Passo 0 inteiro. Se ele parar, pare e me diga por quê.
 2. Skill `mineracao-silenciosas`:

@@ -3,7 +3,7 @@ description: "Investigação de uma parada de uma rodada de mineração do trace
 argument-hint: "<mineração> <pergunta do roteiro, ex.: silenciosas S2> [pasta da análise]"
 ---
 
-Investigue a parada `{{argumentos}}` com a skill `mineracao-investigacao`.
+Investigue a parada `$ARGUMENTS` com a skill `mineracao-investigacao`.
 
 - Comece pelo relatório mais recente desta mineração em `pipeline/resultados/`, na pasta de análise indicada (ou na
   corrente).

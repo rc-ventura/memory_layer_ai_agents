@@ -610,7 +610,7 @@ figuras. Usa as fronteiras de chamada (S4).
   - Cada rodada numa base era guiada por um prompt escrito à mão (o protótipo: `git show 9ed5bc9`, o prompt da
     rodada 2).
   - O que o determinístico não fecha (as paradas) era lido sem protocolo.
-- **Solução** ([`kit-mineracao/`](../kit-mineracao/README.md)): um pacote no formato aberto de skill, que roda no
+- **Solução** ([o kit](../.claude/skills/mineracao-base/referencias/kit.md), em `.claude/`; até 06/10, na pasta `kit-mineracao/`): um pacote no formato aberto de skill, que roda no
   Claude Code e no Copilot, em três camadas:
   - **determinístico:** a skill da mineração roda o procedimento da análise e confere com o publicado;
   - **investigação:** o LLM lê uma amostra escolhida por regra fixa, um segundo leitor relê às cegas, e a hipótese
@@ -646,7 +646,7 @@ figuras. Usa as fronteiras de chamada (S4).
     `audit_recompute9` passou a aceitar qualquer `--base` e a gravar as medidas com `--json`; a base 1 saiu idêntica,
     com 0 divergências. O `comparar_auditoria.py` confronta as medidas com as tabelas, e somam-se as conferências
     internas.
-  - **Exemplo real** ([`kit-mineracao/EXEMPLO.md`](../kit-mineracao/EXEMPLO.md)): uma base nova simulada, do zero, em
+  - **Exemplo real** ([`exemplo.md`](../.claude/skills/mineracao-base/referencias/exemplo.md)): uma base nova simulada, do zero, em
     parquet, com `BASE_ID = "base3"` e o dado da base 1. O auditor rodou em paralelo como agente; o encontro deu 19
     medidas iguais e 4 conferências internas OK. As paradas abertas foram S3 (9) e S2 (54).
   - **Revisão das peças:** o roteiro S2 passou a usar a coluna `idx_final_depois`, a que existe numa base nova, e o
@@ -698,6 +698,9 @@ figuras. Usa as fronteiras de chamada (S4).
     - **Destino:** (a) memória; (b) em aberto. Se o ambiente guarda variáveis e não funções, é sinal de harness.
     - **Arquivo final aprovado no esquema 0.1;** dossiê e `regras.json` em `resultados/mineracao/U_nome_inventado/`.
     - **Recomendação:** rodar na base 2 com as mesmas regras antes de propor a divisão da unidade.
+- **Onde o kit mora, desde 06/10 (decisão do Rafael):** no próprio `.claude/`, versionado; a pasta `kit-mineracao/`
+  saiu. O Copilot usa cópias geradas pelo `gerar_copilot.py` (git-ignored). Descrição do kit:
+  `.claude/skills/mineracao-base/referencias/kit.md`.
 - **Feito em 06/10 (0.6.0, `1c36dc2`):** a leitura em duas etapas, o gate do pesquisador e o monitoramento
   determinístico (bloco "Decidido em 06/10", §1; `docs/16`).
 - **Próximas etapas:** na próxima branch, **4.14**.
@@ -711,8 +714,8 @@ validação do kit, e entra aqui.
 
 1. **Validar o kit na base 2** (máquina de compliance, com o main atualizado; o Rafael roda e traz contagens):
    - **antes:** replicar o que o livro-razão pede para a máquina 2 (parquet, Ajustes 13–16: `base_pipeline.py` com
-     `TRACE` e `BASE_ID` restaurados, a esteira, a consolidação) e instalar o kit (`python kit-mineracao/instalar.py .
-     --para copilot`);
+     `TRACE` e `BASE_ID` restaurados, a esteira, a consolidação) e gerar as cópias do kit para o Copilot
+     (`python .claude/skills/mineracao-base/scripts/gerar_copilot.py .`; o kit em si chega com o `.claude/`);
    - **o monitoramento primeiro** (`monitorar.py`). Esperado: a `U_nome_inventado` com alerta (118 erros: régua,
      cresce; frequência provável), com as duas sub-lições contadas pelas regras; o `U_campo_inexistente` com alerta de
      crescimento (38 ≥ 3 × 10); a ferramenta concorrente do `final_answer` sem alerta (só dez/2025);

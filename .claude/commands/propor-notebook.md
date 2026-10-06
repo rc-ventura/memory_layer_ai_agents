@@ -3,7 +3,7 @@ description: "Propõe um notebook específico para uma lição que cumpriu a reg
 argument-hint: "<unidade, ex.: U_...> [pasta da análise]"
 ---
 
-Proponha um notebook específico para a lição `{{argumentos}}`, seguindo o procedimento da análise
+Proponha um notebook específico para a lição `$ARGUMENTS`, seguindo o procedimento da análise
 (`docs/*procedimento-mineracao-candidatas*.md`, § "O ciclo de vida da parte específica").
 
 1. **Confira a regra de criação antes de qualquer coisa.**

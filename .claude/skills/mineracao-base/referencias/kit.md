@@ -1,6 +1,10 @@
 # Kit de mineração do trace
 
-> **Primeira vez?** Leia o [`EXEMPLO.md`](EXEMPLO.md): uma rodada real, do zero, numa base nova simulada, passo a passo.
+> **Primeira vez?** Leia o [`exemplo.md`](exemplo.md): uma rodada real, do zero, numa base nova simulada, passo a passo.
+>
+> **Onde o kit mora:** no próprio `.claude/` do repositório, versionado — as skills em `.claude/skills/mineracao-*/`,
+> os agentes em `.claude/agents/`, os prompts em `.claude/commands/`. Este documento e a `VERSAO` ficam na skill
+> `mineracao-base`. O Copilot usa cópias geradas (abaixo).
 
 Um pacote de skills, agentes, prompts e scripts para rodar as minerações do trace de agentes com o mesmo procedimento
 em qualquer ambiente e em qualquer base. Ele funciona com qualquer agente que leia o formato aberto de skill
@@ -54,13 +58,15 @@ Detalhe em `skills/mineracao-base/referencias/evidencia.md`.
 | **Objeto da rodada** | no argumento da chamada | a pasta da análise, a pergunta do roteiro (`silenciosas S2`) |
 
 O kit não tem nome de base, pasta datada, unidade, ferramenta nem número de nenhuma base. Para conferir:
-`grep -rnE "base ?[123]\b|U_[a-z]|2026-" kit-mineracao` não deve achar nada fora do `manifesto.json` e do
-`EXEMPLO.md`, que é uma rodada real e cita números de propósito.
+`grep -rnE "base ?[123]\b|U_[a-z]|2026-" .claude/skills/mineracao-* .claude/agents .claude/commands` não deve achar
+nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita números de propósito.
 
 ## Conteúdo
 
 ```
-skills/mineracao-base/            passo 0 comum: pasta, base, versão do código, intake, sigilo, relatório
+.claude/skills/mineracao-base/    passo 0 comum: pasta, base, versão do código, intake, sigilo, relatório
+  VERSAO · referencias/kit.md (este documento) · referencias/exemplo.md
+  scripts/gerar_copilot.py        gera as cópias do Copilot (.github/agents, .github/prompts) a partir de .claude/
   scripts/conferir_versao.py      o código da análise é o do manifesto? (CRLF, TRACE/BASE_ID e saídas de notebook não contam)
   scripts/montar_evidencia.py     a evidência de um achado: casos por regra fixa, crus, visões, origem e o bloco do relatório
   scripts/amostrar.py             a regra fixa de escolha de casos (usada pela evidência e pela investigação)
@@ -68,49 +74,44 @@ skills/mineracao-base/            passo 0 comum: pasta, base, versão do código
   scripts/varrer_pii.py           bloqueia a versão que sai se tiver processo, CPF, CNPJ, e-mail ou identificador de execução
   scripts/monitorar.py            o monitoramento (passo 0.5): confere as lições e sinais monitorados da análise e para com alerta
   manifesto.json                  os hashes do código para o qual esta versão do kit foi escrita
-skills/mineracao-silenciosas/     a mineração das falhas silenciosas (lê as tabelas, passo a passo do procedimento da análise)
+.claude/skills/mineracao-silenciosas/  a mineração das falhas silenciosas (lê as tabelas, passo a passo do procedimento da análise)
   scripts/comparar_auditoria.py   o encontro: tabelas da mineração × medidas da auditoria independente (audit_recompute9)
-skills/mineracao-candidata/       a mineração de uma candidata a memória: parte genérica → funil → parte específica → arquivo final
+.claude/skills/mineracao-candidata/  a mineração de uma candidata a memória: parte genérica → funil → parte específica → arquivo final
   scripts/validar_memoria.py      confere o arquivo final contra o esquema da memória da análise (e converte o registro de um notebook)
   scripts/comparar_auditoria.py   o encontro: a parte genérica × a auditoria independente (audit_recompute6)
   scripts/valor_da_licao.py       o painel das lições: frequência (Pareto · presença no tempo), confiança (lida do confianca.json), situação e decisão
   scripts/registrar_decisao.py    registra a decisão do pesquisador num gate (a lista da leitura aberta; a situação do painel)
   referencias/fluxo.md            os diagramas da rodada e do ciclo de vida da parte específica
-skills/mineracao-protocolo/       a mineração do protocolo do harness (resposta sem bloco de código)
+.claude/skills/mineracao-protocolo/  a mineração do protocolo do harness (resposta sem bloco de código)
   scripts/comparar_auditoria.py   o encontro: casos/passos/versões/modelos × a auditoria independente (audit_recompute10)
   scripts/cobertura.py            o cenário de cobertura: papéis por erros, com a cobertura acumulada
-skills/mineracao-investigacao/    a investigação depois do determinístico
+.claude/skills/mineracao-investigacao/  a investigação depois do determinístico
   roteiros/silenciosas.md         as perguntas abertas (S1 dono, S2 sucesso falso, S3 não reconhecido)
   roteiros/protocolo.md           P1 a camada do surto (o fim do prompt), P2 o mecanismo de cada caso (catálogo M1–M6)
   roteiros/candidata.md           a parte específica de uma candidata: a lição, a causa, o conserto, o destino → o arquivo final
   scripts/testar_regra.py · concordancia.py
-agentes/                          auditor-independente · investigador · segundo-leitor · validador-de-notebook
-prompts/                          rodada-silenciosas · rodada-protocolo · rodada-candidata · investigar · propor-notebook
-instalar.py                       instala num repositório, para claude ou copilot
-VERSAO
+.claude/agents/                   auditor-independente · investigador · segundo-leitor · validador-de-notebook
+.claude/commands/                 rodada-silenciosas · rodada-protocolo · rodada-candidata · investigar · propor-notebook
 ```
 
 ## Instalar
 
-Da raiz do repositório:
-
-```
-python kit-mineracao/instalar.py . --para claude     # Claude Code: .claude/skills, .claude/agents, .claude/commands
-python kit-mineracao/instalar.py . --para copilot    # Copilot: .claude/skills, .github/agents/*.agent.md, .github/prompts/*.prompt.md
-```
-
-- As skills vão para `.claude/skills/`, de onde os dois agentes leem. Se o agente não as achar, use
-  `--skills-em .github/skills`.
-- Reinstalar apaga só o que a instalação anterior pôs. Neste repositório, as cópias instaladas são git-ignored: a fonte
-  é esta pasta.
-- Para usar em outro repositório, copie a pasta `kit-mineracao/` e rode o `instalar.py` lá.
+- **Claude Code:** nada a instalar. O kit já está no `.claude/` do repositório; basta clonar ou atualizar.
+- **Copilot:** gere as cópias, da raiz do repositório, depois de clonar e a cada atualização do kit:
+  ```
+  python .claude/skills/mineracao-base/scripts/gerar_copilot.py .
+  ```
+  Ele grava `.github/agents/*.agent.md` e `.github/prompts/*.prompt.md` (git-ignored). As skills o Copilot lê de
+  `.claude/skills/`.
+- **Edite sempre a fonte** em `.claude/`; as cópias do Copilot são sobrescritas a cada geração.
+- Para usar em outro repositório, copie `.claude/skills/mineracao-*`, os quatro agentes e os cinco comandos.
 
 ## Usar
 
 - `/rodada-silenciosas <pasta da análise>`: preparação → auditor em paralelo → mineração das tabelas → encontro → relatório com as paradas.
 - `/rodada-protocolo <pasta da análise>`: o mesmo fluxo para o protocolo do harness (auditoria `audit_recompute10`).
 - `/rodada-candidata <U_...> [<pasta>]`: minera uma candidata a memória e entrega o arquivo final no esquema da memória
-  (`analysis/esquema-memoria.json`). O desenho está em `skills/mineracao-candidata/referencias/fluxo.md`.
+  (`analysis/esquema-memoria.json`). O desenho está em `.claude/skills/mineracao-candidata/referencias/fluxo.md`.
 - `/propor-notebook <U_...>`: só quando a lição cumpre a regra de criação do procedimento; escreve em `propostas/` e
   pede o laudo do validador.
 - `/investigar silenciosas S2 [<pasta>]` ou `/investigar protocolo P2 [<pasta>]`: uma parada até o dossiê de decisão.
@@ -123,7 +124,7 @@ na análise X"), que as skills disparam pela descrição.
 - A preparação para se o código da análise não for o do manifesto. Os comandos, as tabelas e a auditoria que as
   skills usam são os deste código, e duas bases só se comparam se forem mineradas pelo mesmo código.
 - Quando o pipeline muda de propósito (um Ajuste aprovado), regenere o manifesto e suba a `VERSAO`:
-  `python kit-mineracao/skills/mineracao-base/scripts/conferir_versao.py analysis/<pasta> --gerar`.
+  `python .claude/skills/mineracao-base/scripts/conferir_versao.py analysis/<pasta> --gerar`.
 
 ## Backlog: as próximas skills, uma por etapa
 
@@ -141,4 +142,4 @@ na análise X"), que as skills disparam pela descrição.
   nova do backlog precisa de uma auditoria com `--json` e de um script de encontro. Sem isso, ela fica só com as
   conferências internas.
 - **O formato do Copilot** (`.agent.md`, `.prompt.md` com `mode: agent`) segue a documentação de 2026. Se a versão
-  instalada esperar outro cabeçalho, o ajuste é só no `instalar.py`.
+  instalada esperar outro cabeçalho, o ajuste é só no `gerar_copilot.py`.

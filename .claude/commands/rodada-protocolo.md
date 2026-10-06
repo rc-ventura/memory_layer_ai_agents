@@ -3,7 +3,7 @@ description: "Minera o protocolo do harness (resposta sem bloco de código) de u
 argument-hint: "<pasta da análise, ex.: analysis/<pasta-datada>>"
 ---
 
-Minere o protocolo do harness da base na pasta de análise `{{argumentos}}` (se vier vazia, use a pasta corrente).
+Minere o protocolo do harness da base na pasta de análise `$ARGUMENTS` (se vier vazia, use a pasta corrente).
 
 1. Skill `mineracao-base`: o Passo 0 inteiro. Se ele parar, pare e me diga por quê.
 2. Skill `mineracao-protocolo`:

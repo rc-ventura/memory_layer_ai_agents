@@ -3,7 +3,7 @@ description: "Minera uma candidata a memória (uma lição da triagem) de uma ba
 argument-hint: "<unidade, ex.: U_...> [pasta da análise]"
 ---
 
-Minere a candidata `{{argumentos}}` com a skill `mineracao-candidata` (a pasta da análise vem no argumento, ou é a
+Minere a candidata `$ARGUMENTS` com a skill `mineracao-candidata` (a pasta da análise vem no argumento, ou é a
 corrente).
 
 1. **Preparação** (`mineracao-base`) e conferência de que a lição está no `candidatos_memoria.csv`. Se não estiver,
