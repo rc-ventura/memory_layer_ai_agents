@@ -231,6 +231,25 @@ class TestProveniencia(unittest.TestCase):
                                     rodada_id=a.manifesto["rodada_id"])
 
 
+class TestPainel(unittest.TestCase):
+    def test_painel_so_contagens_e_recusa_csv_alterado(self):
+        sys.path.insert(0, str(mo.HERE))
+        from execucao import painel
+        with tempfile.TemporaryDirectory() as d:
+            here = Path(d) / "pipeline"
+            with patch.object(mo, "HERE", here), patch.object(mo, "versoes_codigo", return_value={"fixture": "hash"}):
+                a = mo.analisar(state(*recorrentes()))
+                dest = mo.gravar(a)
+            saida = painel.gerar(dest)
+            md = (saida / "painel.md").read_text(encoding="utf-8")
+            self.assertIn("U_tipo_retorno", md)
+            self.assertNotIn("exec-sintetica", md)
+            self.assertTrue((saida / "cobertura.png").is_file())
+            (dest / "triagem_visivel_observada.csv").write_text("adulterado", encoding="utf-8")
+            with self.assertRaises(SystemExit):
+                painel.gerar(dest)
+
+
 class TestConsolidacaoPython(unittest.TestCase):
     """O que os notebooks consolidacao_unidades/mineracao_generica mostravam, agora tabelas da rodada."""
 

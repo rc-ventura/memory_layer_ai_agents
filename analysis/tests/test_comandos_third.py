@@ -43,6 +43,12 @@ class TestEntradaUnica(unittest.TestCase):
             self.assertEqual(executar.main(["conferir"]), 0)
         real.assert_called_once_with()
 
+    def test_painel_roteia_com_opcoes(self):
+        from execucao import painel
+        with patch.object(painel, "main", return_value=0) as run:
+            self.assertEqual(executar.main(["painel", "--rodada", "x"]), 0)
+        run.assert_called_once_with(["--rodada", "x"])
+
     def test_scripts_relocalizados_resolvem_pipeline(self):
         self.assertEqual(executar_observada.PIPELINE, PIPELINE)
         self.assertEqual(validar_observada.PIPELINE, PIPELINE)
