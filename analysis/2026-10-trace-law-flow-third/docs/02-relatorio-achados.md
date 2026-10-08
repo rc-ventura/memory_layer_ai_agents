@@ -100,9 +100,14 @@ unidade) e `<rodada>/genealogia_observada.png` (a genealogia completa, com os pe
 - **Três candidatas concentram 71% dos erros das candidatas** (11.897 de 16.741) e **delas vem 80% dos tokens das
   candidatas** (291 de 362 mi). São as três de contrato com o ambiente: o retorno que pode vir como texto, o que existe
   no sandbox e a forma de chamar as ferramentas.
-- **Espalhamento por papel varia muito.** O retorno-string aparece em 17 papéis; o retorno colado de volta no código,
-  com 1.587 erros, em só 3. Uma lição para três papéis e uma lição para todos são entregas diferentes — a mineração
-  de cada candidata separa isso (`triagem_por_papel.csv`).
+- **Quase toda candidata se concentra em poucos papéis, mesmo quando aparece em muitos.** Pelo mapa papel × unidade
+  (`papel_unidade.png`; células lidas da figura da rodada, que somam os totais da triagem):
+  o retorno-string está em 17 papéis, mas 5 deles têm 4.167 dos 4.317 erros (97%); o argumento nomeado está em 11,
+  mas 1 papel tem 2.613 dos 3.927 erros (67%); o inventário do sandbox está em 16, mas 1 papel tem 2.674 dos 3.653
+  (73%); o campo inexistente está em 9, mas 1 papel tem 1.398 dos 1.566 (89%); o retorno colado de volta no código
+  está em 3, e 1 papel tem 1.583 dos 1.587 (99,7%). "Aparece em N papéis" não quer dizer que a lição vale para N papéis:
+  a decisão entre lição geral e lição de um papel sai de `triagem_por_papel.csv`, na mineração de cada candidata.
+  Contagem de erros não é taxa: um papel que roda mais erra mais em número absoluto.
 - **Reincidência dentro da execução:** a explicação solta no bloco de código tem 180 erros em 68 execuções (2,6 por
   execução); nas demais candidatas a razão fica entre 1,0 e 1,7 erro por execução.
 - **O retorno-dict quase some (2 erros) por causa do corte**, não porque deixou de acontecer (§4).
