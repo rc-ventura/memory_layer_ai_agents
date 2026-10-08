@@ -22,6 +22,9 @@ CONTRATO = "mineracao_erros_observados_v1"
 CANDIDATO = "candidato observado"
 SEM_RECORRENCIA = "recorrência não demonstrada"
 CHAVE_EXEC = ["exec_id", "agente"]
+# Snapshot conferido da base 3 (docs 01 e 04). Fica no código, e não num resultado de rodada antiga, para a
+# validação não depender de arquivos privados que podem ser apagados. Outra exportação = nova coorte, novo hash.
+FONTE_REFERENCIA_SHA256 = "7604f77df9fe6127bd7fb9db18337b558b1f2587b0a99621c087b0cf3c2873f1"
 CAPACIDADES = {
     "triagem_visivel": True, "perfil_candidata": True,
     "taxas_globais": False, "orcamento_global": False,
@@ -336,7 +339,8 @@ def inventariar(pipeline=HERE, second=None):
         outputs = sum(bool(c.get("outputs")) for c in nb["cells"] if c["cell_type"] == "code")
         rows.append({"arquivo": path.relative_to(pipeline.parent).as_posix(), "sha256": sha256(path),
                      "celulas_com_outputs": outputs, "estado": "outputs_não_certificam_fonte_atual"})
-    return pd.DataFrame(rows)
+    # Colunas fixas: sem legados na pasta (limpeza de 07/10), o inventário vem vazio, mas com o mesmo esquema.
+    return pd.DataFrame(rows, columns=["arquivo", "sha256", "registros", "igual_second", "estado", "celulas_com_outputs"])
 
 
 def conferir_fonte(path, referencia=None):

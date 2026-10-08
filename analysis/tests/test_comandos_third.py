@@ -58,6 +58,11 @@ class TestEntradaUnica(unittest.TestCase):
     def test_historico_nao_acionado_por_entrada_atual(self):
         self.assertFalse((PIPELINE / "validar_base3.py").exists())
         self.assertTrue((PIPELINE / "validacao/historico/validar_base3.py").is_file())
+        # A entrada atual não lê resultados de rodadas antigas (apagáveis): referência fica no código.
+        for name in ["validar_observada.py", "conferir_rodada_observada.py"]:
+            source = (PIPELINE / "validacao" / name).read_text(encoding="utf-8")
+            self.assertNotIn("resultados/etapa7", source)
+            self.assertNotIn("validacao_fechamento", source)
 
 
 if __name__ == "__main__":

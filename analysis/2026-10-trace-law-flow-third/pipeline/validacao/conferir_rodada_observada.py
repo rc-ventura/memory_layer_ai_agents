@@ -20,7 +20,6 @@ import pyarrow.parquet as pq
 import base_pipeline as bp
 import mineracao_observada as mo
 
-HISTORICO = mo.HERE / "resultados/validacao_fechamento_2026-10-07/validacao.json"
 OUT = mo.HERE / "resultados/conferencia_observada_2026-10-07"
 
 
@@ -44,8 +43,7 @@ def main():
             raise AssertionError("Conferência falhou: " + name)
 
     save()
-    historical = json.loads(HISTORICO.read_text(encoding="utf-8"))
-    source = mo.conferir_fonte(bp.TRACE, historical["fonte_sha256"])
+    source = mo.conferir_fonte(bp.TRACE, mo.FONTE_REFERENCIA_SHA256)
     report["fonte"] = source
     # Projeção Arrow direta: não usa leitor/adaptador nem conteúdos de casos em output.
     raw = pq.read_table(bp.TRACE, columns=["cod_idef_exeo", "cod_idef_aget", "papel", "step_pos",

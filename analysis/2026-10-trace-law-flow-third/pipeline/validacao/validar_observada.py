@@ -52,11 +52,13 @@ def main():
     validation["suite_passou"] = suite.returncode == 0
     count = re.search(r"Ran (\d+) tests", suite.stderr)
     validation["testes"] = int(count.group(1)) if count else None
-    baseline = json.loads((mo.HERE / "resultados/etapa7_2026-10-07/baseline.json").read_text(encoding="utf-8"))
-    old_code = baseline["notebook"]
-    # O baseline guarda o notebook; as células raw anteriores são o registro
-    # versionado da regra. Comparar também catálogo com second, sem minerar dados.
+    # Regras/catálogos comparados com a second por AST, sem minerar dados. O baseline da Etapa 7 (notebook)
+    # não é mais lido: os notebooks saíram do pipeline em 08/10.
+    # Sem a pasta da second (repositório fora da máquina 2), a referência é a base 1; o JSON diz qual foi.
     old_pipeline = ROOT / "analysis/2026-09-trace-law-flow-second/pipeline/base_pipeline.py"
+    if not old_pipeline.is_file():
+        old_pipeline = ROOT / "analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py"
+    validation["referencia_ast"] = old_pipeline.parent.parent.name
     current = objetos_ast(mo.HERE / "base_pipeline.py")
     reference = objetos_ast(old_pipeline)
     equal = {name: current.get(name) == reference.get(name) for name in reference}
@@ -65,19 +67,19 @@ def main():
     for name in ["montar_unidades", "medir_sucesso"]:
         equal.pop(name, None)
     validation["regras_e_catalogos_ast_second"] = equal
-    validation["baseline_notebook_celulas"] = len(old_code["cells"])
     validation["codigo"] = mo.versoes_codigo()
     inventory = mo.inventariar()
     inventory.to_csv(OUT / "inventario.csv", index=False)
     validation["inventario_estados"] = inventory.estado.value_counts().to_dict()
-    source = {"sha256": mo.sha256(bp.TRACE), "tamanho_bytes": Path(bp.TRACE).stat().st_size}
-    historical = json.loads((mo.HERE / "resultados/validacao_fechamento_2026-10-07/validacao.json").read_text(encoding="utf-8"))
-    source["igual_validacao_historica"] = source["sha256"] == historical.get("fonte_sha256")
-    try:
-        source.update(mo.conferir_fonte(bp.TRACE))
-        source["parquet_abre"] = True
-    except bp.AnaliseNaoIntegrada:
-        source["parquet_abre"] = False
+    source = {"existe": Path(bp.TRACE).is_file(), "parquet_abre": False}
+    if source["existe"]:
+        source.update(sha256=mo.sha256(bp.TRACE), tamanho_bytes=Path(bp.TRACE).stat().st_size)
+        source["igual_referencia"] = source["sha256"] == mo.FONTE_REFERENCIA_SHA256
+        try:
+            source.update(mo.conferir_fonte(bp.TRACE))
+            source["parquet_abre"] = True
+        except bp.AnaliseNaoIntegrada:
+            pass
     validation["fonte_intake"] = source
     validation["execucao_real"] = "bloqueada_restaurar_ou_validar_fonte" if not source["parquet_abre"] else "não realizada nesta validação"
     validation["estado"] = "implementacao_validada_sinteticamente" if suite.returncode == 0 and all(equal.values()) else "falhou"
