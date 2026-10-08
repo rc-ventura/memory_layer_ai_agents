@@ -97,10 +97,10 @@ as verificações em [validacao](../pipeline/validacao/validar_observada.py):
    Isso gera G1–G6 e amostra estrutural, não redige a lição.
    `validar` roda a suíte/AST; `conferir` roda conferência real e prepara todos os
    perfis. São ações distintas, não pré-condições para redigir memória automaticamente.
-4. Alternativa pelo editor: [consolidação](../pipeline/consolidacao_unidades.ipynb)
-   e [mineração genérica](../pipeline/mineracao_generica.ipynb), com `UNIDADE`
-   definida no ambiente. Não executar o restante do notebook principal como se
-   a análise completa tivesse sido integrada.
+4. **Sem notebooks (08/10):** o que a consolidação e a mineração genérica mostravam
+   virou tabela da própria rodada — `consolidacao_limitrofes`, `consolidacao_componentes_limites`,
+   `consolidacao_unidade_papel_mes`, `consolidacao_pendencias`, `consolidacao_global_papel` e,
+   no perfil, `proximo_final`. Os dois notebooks saíram do pipeline; a orquestração é só o `executar.py`.
 
 Saídas vão a **uma subpasta privada da rodada**, nunca à raiz canônica. Manifesto
 carimba fonte, contrato, código dos consumidores e hashes de cada artefato;
@@ -187,8 +187,8 @@ legadas que pressupõem trace completo. Bases 1/2 e diário foram preservados.
 [Testes sintéticos](../../tests/test_mineracao_observada_base3.py) cobrem
 proveniência/alteração de custos, NULLs, suspeitas fora, componentes antes do
 subconjunto, recorrência/sensibilidade/destinos por base, localização sem idx,
-publicação identificada e todas as células dos dois consumidores em Python
-controlado. A magic gráfica é omitida, sem editar outputs por script.
+publicação identificada e as tabelas de consolidação/perfil que substituíram os dois
+notebooks (08/10).
 
 Reprodução: `uv run python -m unittest discover -s analysis/tests -p 'test_*.py' -v`.
 Contagens/log e limitações da rodada ficam no [relatório](03-relatorio-retomada-sem-censo.md).

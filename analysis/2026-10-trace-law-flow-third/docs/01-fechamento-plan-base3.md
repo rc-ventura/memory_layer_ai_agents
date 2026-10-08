@@ -31,7 +31,7 @@ O objetivo é reutilizar o método existente, não fabricar informação para ob
 |---|---|---|
 | 1 — diagnóstico do Parquet/SQL | Concluída | Chaves, canais, cortes, custos e restrições da extração identificados |
 | 2 — especificação e pool técnico | Concluída | Mapeamento das análises e pedido privado de quatro traces; não equivale a recebimento |
-| 3 — propostas A/B | Concluída como proposta | [Consultas complementares](propostas_consultas_complementares.md); revisão estática, sem Athena |
+| 3 — propostas A/B | Concluída como proposta | Consultas complementares (documento removido em 08/10; o que ficou está no [contrato sem censo](02-mineracao-sem-censo.md) §5); revisão estática, sem Athena |
 | 4 — núcleo estrutural | Concluído e validado tecnicamente | [Adaptador](../../adaptador_trace.py), identidade, slots e vínculos com cobertura |
 | 5 — integração da carga | Concluída e validada tecnicamente | [Pipeline](../pipeline/base_pipeline.py), modo `apenas_carga` e bloqueios explícitos |
 | 6 — sintomas e custos | Concluída e validada tecnicamente | Mensagens elegíveis, custos preservados e suspeitas fora da taxonomia |

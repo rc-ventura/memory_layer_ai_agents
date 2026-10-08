@@ -1,7 +1,5 @@
 """Fixtures sintéticas: recorrência sem censo, proveniência e publicação fechada."""
 from pathlib import Path
-from contextlib import redirect_stdout
-import io
 import json
 import sys
 import tempfile
@@ -233,32 +231,24 @@ class TestProveniencia(unittest.TestCase):
                                     rodada_id=a.manifesto["rodada_id"])
 
 
-class TestConsumidoresNotebook(unittest.TestCase):
-    def executar_python_sintetico(self, nome):
-        """Executa sources sem magic; não edita outputs nem afirma execução Jupyter."""
+class TestConsolidacaoPython(unittest.TestCase):
+    """O que os notebooks consolidacao_unidades/mineracao_generica mostravam, agora tabelas da rodada."""
+
+    def test_consolidacao_conserva_triagem_e_cobertura(self):
+        a = mo.analisar(state(*recorrentes(), janela(cod_idef_exeo="exec-pendente", error_message="x" * 20000)))
+        c = a.tabelas
+        self.assertEqual(c["consolidacao_limitrofes"].unidade.tolist(), ["U_tipo_retorno"])
+        self.assertFalse(c["consolidacao_limitrofes"].candidata_5_3.iloc[0])
+        self.assertEqual(c["consolidacao_unidade_papel_mes"].erros.sum(), 3)
+        self.assertEqual(c["consolidacao_pendencias"].erros.sum(), 1)
+        self.assertEqual(c["consolidacao_componentes_limites"].componentes.sum(), len(a.mecanismos.episodios.episodios))
+        self.assertTrue(c["consolidacao_global_papel"].candidata_global.all())
+
+    def test_perfil_traz_final_do_vizinho_sem_notebook(self):
         a = mo.analisar(state(*recorrentes()))
-        notebook = json.loads((mo.HERE / nome).read_text(encoding="utf-8"))
-        namespace = {"display": lambda *args: None}
-        code_cells = 0
-        with patch.object(mo.bp, "carregar_mineracao_observada", return_value=a), \
-                patch.object(mo.bp, "carregar_base", side_effect=AssertionError("raw não integrado")), \
-                patch.object(mo, "gravar", return_value=Path("rodada-sintetica")) as publish, \
-                patch.dict("os.environ", {"UNIDADE": "U_tipo_retorno"}), redirect_stdout(io.StringIO()):
-            for c in notebook["cells"]:
-                if c["cell_type"] != "code":
-                    continue
-                source = "".join(c["source"]) if isinstance(c["source"], list) else c["source"]
-                source = "\n".join(line for line in source.splitlines() if not line.startswith("%"))
-                exec(compile(source, nome, "exec"), namespace)
-                code_cells += 1
-            publish.assert_called_once()
-        return code_cells
-
-    def test_consolidacao_completa_em_python_sintetico(self):
-        self.assertEqual(self.executar_python_sintetico("consolidacao_unidades.ipynb"), 10)
-
-    def test_generica_completa_em_python_sintetico(self):
-        self.assertEqual(self.executar_python_sintetico("mineracao_generica.ipynb"), 7)
+        p = mo.perfil_unidade(a, "U_tipo_retorno")
+        self.assertEqual(p["proximo_final"].erros.sum(), 3)
+        self.assertNotIn("consolidacao_unidades.ipynb", " ".join(mo.versoes_codigo()))
 
 
 if __name__ == "__main__":

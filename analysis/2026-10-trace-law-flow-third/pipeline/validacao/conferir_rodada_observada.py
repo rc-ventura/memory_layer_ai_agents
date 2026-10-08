@@ -1,9 +1,8 @@
 """Conferência da rodada real restaurada: Arrow direto + consistência interna.
 
 Não é auditoria independente semântica. Não interpreta casos, não usa CSVs
-legados, não executa Jupyter/Athena nem aprova memórias. Exige hash de referência.
+legados, não executa notebooks/Jupyter/Athena nem aprova memórias. Exige hash de referência.
 """
-from contextlib import redirect_stdout
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -30,7 +29,7 @@ def main():
     checks = {}
     report = {"estado": "em_execucao", "verificacoes": checks,
               "gerado_em": datetime.now(timezone.utc).isoformat(),
-              "execucao_jupyter_confirmada": False, "auditoria_semantica_independente": False,
+              "auditoria_semantica_independente": False,
               "memorias_aprovadas": 0}
 
     def save():
@@ -116,40 +115,15 @@ def main():
                          "codigo_integral_sql_na_amostra": int(sample.code_estado.eq("sem_corte_sql").sum()),
                          "codigo_limitado_ou_ausente_na_amostra": int((~sample.code_estado.eq("sem_corte_sql")).sum())})
     pd.DataFrame(profiles).to_csv(OUT / "perfis_agregados.csv", index=False)
-    # Smoke real das sources, backend Agg. Não edita .ipynb e não é kernel Jupyter.
-    log = OUT / "smoke_python_real.txt"
-    code_counts = {}
-    with log.open("w", encoding="utf-8") as stream, redirect_stdout(stream):
-        for name, extra in [("consolidacao_unidades.ipynb", {}),
-                            ("mineracao_generica.ipynb", {"UNIDADE": "U_tipo_retorno"})]:
-            import os
-            previous = {k: os.environ.get(k) for k in extra}
-            os.environ.update(extra)
-            namespace = {"display": lambda *args: print("Quadro agregado; sem casos exibidos")}
-            cells = json.loads((mo.HERE / name).read_text(encoding="utf-8"))["cells"]
-            count = 0
-            try:
-                for i, cell in enumerate(cells):
-                    if cell["cell_type"] != "code":
-                        continue
-                    text = "".join(cell["source"]) if isinstance(cell["source"], list) else cell["source"]
-                    text = "\n".join(line for line in text.splitlines() if not line.startswith("%"))
-                    # Reusar o objeto já validado, mantendo as funções reais do consumidor.
-                    from unittest.mock import patch
-                    with patch.object(bp, "carregar_mineracao_observada", return_value=A), \
-                            patch.object(mo, "gravar", return_value=dest):
-                        exec(compile(text, name, "exec"), namespace)
-                    count += 1
-                    print("CELULA_CONCLUIDA", name, i + 1)
-                code_counts[name] = count
-            finally:
-                for k, v in previous.items():
-                    if v is None:
-                        os.environ.pop(k, None)
-                    else:
-                        os.environ[k] = v
-    report["smoke_python_real_celulas"] = code_counts
-    check("smoke_consumidores_reais", code_counts == {"consolidacao_unidades.ipynb": 10, "mineracao_generica.ipynb": 7})
+    # Consolidação em Python (antes nas células do consolidacao_unidades.ipynb): conserva o que a triagem conta.
+    C = A.tabelas
+    check("consolidacao_limitrofes", set(C["consolidacao_limitrofes"].unidade) == set(candidates))
+    check("consolidacao_componentes", int(C["consolidacao_componentes_limites"].componentes.sum())
+          == len(A.mecanismos.episodios.episodios))
+    check("consolidacao_unidade_papel_mes", int(C["consolidacao_unidade_papel_mes"].erros.sum()) == int(observed.sum()))
+    check("consolidacao_pendencias", int(C["consolidacao_pendencias"].erros.sum()) == int((~observed).sum()))
+    check("consolidacao_global_papel", len(C["consolidacao_global_papel"]) == len(A.tabelas["triagem_por_papel"]))
+    report["consolidacao_python"] = {k: len(v) for k, v in C.items() if k.startswith("consolidacao_")}
     final_manifest = json.loads((dest / "manifesto.json").read_text(encoding="utf-8"))
     check("hashes_todos_artefatos", all(mo.sha256(dest / name) == value for name, value in final_manifest["artefatos"].items()))
     check("fonte_inalterada_ao_final", mo.sha256(bp.TRACE) == source["sha256"])

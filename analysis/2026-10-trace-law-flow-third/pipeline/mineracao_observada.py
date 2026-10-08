@@ -61,7 +61,6 @@ def versoes_codigo():
              HERE / "execucao" / "__init__.py", HERE / "execucao" / "executar_observada.py",
              HERE / "validacao" / "__init__.py",
              HERE / "validacao" / "validar_observada.py", HERE / "validacao" / "conferir_rodada_observada.py",
-             HERE / "consolidacao_unidades.ipynb", HERE / "mineracao_generica.ipynb",
              HERE.parent.parent / "adaptador_trace.py",
              HERE.parent.parent / "episodios_trace.py", HERE.parent.parent / "leitor_trace.py",
              HERE.parent.parent / "esquema-memoria.json"]
@@ -177,6 +176,7 @@ def analisar(carga=None):
     tables["triagem_sensibilidade"] = triagem_observada(carga, mecanismos, 5, 3)
     tables["triagem_por_papel"] = triagem_observada(carga, mecanismos, por_papel=True)
     tables["triagem_por_papel_sensibilidade"] = triagem_observada(carga, mecanismos, 5, 3, True)
+    tables.update(consolidacao(tables, mecanismos))
     E = mecanismos.EU
     candidates = tables["triagem_visivel_observada"].decisao.eq(CANDIDATO)
     summary = {**sintomas.resumo, **mecanismos.resumo,
@@ -197,6 +197,35 @@ def analisar(carga=None):
                 "resumo": summary, "aprovacao_memorias": False}
     return SimpleNamespace(carga=carga, sintomas=sintomas, mecanismos=mecanismos, EU=E,
                            tabelas=tables, resumo=summary, capacidades=capabilities, manifesto=manifest)
+
+
+def consolidacao(tabelas, mecanismos):
+    """Quadros da consolidação (antes no consolidacao_unidades.ipynb), derivados das tabelas já calculadas.
+
+    Não decide nada de novo: só cruza a triagem com a sensibilidade, abre os limites das componentes, a
+    unidade por papel × mês e a fila de complementação. Contagens, não taxas; silenciosas não medidas.
+    """
+    T, TS = tabelas["triagem_visivel_observada"], tabelas["triagem_sensibilidade"]
+    TP, TPS = tabelas["triagem_por_papel"], tabelas["triagem_por_papel_sensibilidade"]
+    firmes = set(TS.loc[TS.decisao.eq(CANDIDATO), "unidade"])
+    lim = T.loc[T.decisao.eq(CANDIDATO), ["unidade", "execucoes", "meses"]].copy()
+    lim["candidata_5_3"] = lim.unidade.isin(firmes)
+    eps = mecanismos.episodios.episodios
+    comp = eps.groupby(["definicao", "inicio", "fim"], dropna=False).size().reset_index(name="componentes")
+    obs = mecanismos.EU[mecanismos.EU.situacao_mecanismo.eq("observavel")]
+    upm = obs.groupby(["unidade", "role", "mes"]).agg(
+        erros=("step_ref", "size"), ocorrencias_condicionais=("ocorrencia_observada", "nunique")).reset_index()
+    cob = tabelas["cobertura_mecanismos"]
+    pend = cob[cob.situacao_mecanismo.eq("pendente")].reset_index(drop=True)
+    gp = TP[["role", "unidade", "decisao"]].copy()
+    gp["candidata_global"] = gp.unidade.isin(set(T.loc[T.decisao.eq(CANDIDATO), "unidade"]))
+    estrito = TPS.set_index(["role", "unidade"]).decisao
+    gp["candidata_papel_5_3"] = [estrito.get((r, u)) == CANDIDATO for r, u in zip(gp.role, gp.unidade)]
+    return {"consolidacao_limitrofes": lim.reset_index(drop=True),
+            "consolidacao_componentes_limites": comp,
+            "consolidacao_unidade_papel_mes": upm,
+            "consolidacao_pendencias": pend,
+            "consolidacao_global_papel": gp.reset_index(drop=True)}
 
 
 def genealogia(analise):
@@ -272,6 +301,8 @@ def perfil_unidade(analise, unidade):
         for value, part in cases.groupby(dim, dropna=False, sort=True):
             stability.append({"dimensao": dim, "valor": value, "erros": len(part),
                               "execucoes": len(part[CHAVE_EXEC].drop_duplicates())})
+    tables["proximo_final"] = (cases.proximo_final_observado.value_counts(dropna=False)
+                               .rename_axis("proximo_final_observado").reset_index(name="erros"))
     tables["sub_unidades"] = pd.DataFrame(subs)
     tables["estabilidade"] = pd.DataFrame(stability)
     # Amostra determinística estratificada por papel: não é amostra probabilística.
