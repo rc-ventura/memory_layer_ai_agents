@@ -39,6 +39,7 @@ COR_ERRO = {
     # reservadas
     "Resíduo": RESIDUO,
     "Sintoma não reconhecido": RESIDUO,                # família de quem nem o sintoma é reconhecido: é resíduo
+    "Evidência insuficiente": "#b58a32",               # cobertura pendente; não é plataforma nem resíduo
     "Outros": BASE,                                    # cinza-claro: o resto, agrupado
 }
 
