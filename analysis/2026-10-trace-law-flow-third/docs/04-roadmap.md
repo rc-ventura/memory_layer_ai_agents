@@ -15,7 +15,7 @@ Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_0d23103afd4
    seguinte faz. Depois, amostra e leitura (skill `mineracao-investigacao`). Só então decidir a unidade — as
    hipóteses levam a destinos diferentes (estado esperado de uma chamada anterior, variável que o harness deveria
    injetar, nome citado pelo prompt, nome inventado).
-2. **Pedido da próxima versão da query (v2) e de uma query agregada**, a partir das 8 limitações medidas
+2. **Pedido de dados complementares** — descrito em [`05-pedido-queries.md`](05-pedido-queries.md): A denominadores, B complemento dos pendentes (os 24%), C ajustes na extração. Origem:, a partir das 8 limitações medidas
    ([procedimento §4](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas)): mensagem sem corte (ou o
    fim dela), contagens de todos os passos (denominador), falhas silenciosas, partição com o agente, a chamada, o
    filtro de tamanho com `COALESCE`, o modelo e o prompt.
