@@ -224,7 +224,12 @@ def consolidacao(tabelas, mecanismos):
     gp["candidata_global"] = gp.unidade.isin(set(T.loc[T.decisao.eq(CANDIDATO), "unidade"]))
     estrito = TPS.set_index(["role", "unidade"]).decisao
     gp["candidata_papel_5_3"] = [estrito.get((r, u)) == CANDIDATO for r, u in zip(gp.role, gp.unidade)]
+    pend_pm = (mecanismos.EU[~mecanismos.EU.situacao_mecanismo.eq("observavel")]
+               .groupby(["motivo_evidencia", "role", "mes"], dropna=False)
+               .agg(erros=("step_ref", "size"), tokens_n_conhecidos=("tok_tot", lambda s: s.sum(min_count=1)))
+               .reset_index())
     return {"consolidacao_limitrofes": lim.reset_index(drop=True),
+            "consolidacao_pendencias_papel_mes": pend_pm,
             "consolidacao_componentes_limites": comp,
             "consolidacao_unidade_papel_mes": upm,
             "consolidacao_pendencias": pend,

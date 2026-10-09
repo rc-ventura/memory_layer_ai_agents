@@ -174,6 +174,44 @@ def gerar(pasta):
           "Execuções se sobrepõem entre unidades: não somar a coluna.", ""]
     for nome, titulo in figuras[1:]:
         md += [f"## {titulo}", "", f"![{titulo}]({nome})", ""]
+
+    # Gráficos de leitura: cada um responde a uma pergunta; os que dependem de tabela ausente são pulados com o motivo.
+    import execucao.figuras_painel as fp
+    tpp = ler(pasta, m, "triagem_por_papel.csv")
+    graficos = [("destinos.png", lambda d: fp.destinos(tri, cob, d)),
+                ("frequencia_custo.png", lambda d: fp.frequencia_custo(tri, d)),
+                ("concentracao_papel.png", lambda d: fp.concentracao_papel(tri, tpp, d)),
+                ("papeis_candidatas.png", lambda d: fp.papeis_candidatas(tri, tpp, d))]
+    pulados = []
+    if "consolidacao_unidade_papel_mes.csv" in m["artefatos"]:
+        upm = ler(pasta, m, "consolidacao_unidade_papel_mes.csv")
+        graficos.append(("linha_do_tempo.png", lambda d: fp.linha_do_tempo(tri, upm, d)))
+    else:
+        pulados.append("Erros por unidade e mês: a rodada não tem `consolidacao_unidade_papel_mes.csv`.")
+    perfis = {}
+    for u in cand.unidade:
+        nomes = [f"perfis/{u}/depois.csv", f"perfis/{u}/proximo_final.csv"]
+        if all(n in m["artefatos"] for n in nomes):
+            perfis[u] = {"depois": ler(pasta, m, nomes[0]), "proximo_final": ler(pasta, m, nomes[1])}
+    if perfis:
+        graficos.append(("depois_do_erro.png", lambda d: fp.depois_do_erro(perfis, d)))
+    else:
+        pulados.append("O que vem depois do erro: a rodada não tem perfis (`executar.py analisar --perfil <unidade>` "
+                       "ou `executar.py conferir`).")
+    if "consolidacao_pendencias_papel_mes.csv" in m["artefatos"]:
+        ppm = ler(pasta, m, "consolidacao_pendencias_papel_mes.csv")
+        if len(ppm):
+            graficos.append(("pendentes.png", lambda d: fp.pendentes(ppm, d)))
+    else:
+        pulados.append("Onde estão os pendentes: a rodada não tem `consolidacao_pendencias_papel_mes.csv` "
+                       "(gerado a partir de 09/10; rode `executar.py analisar` de novo).")
+    md += ["# Leituras", ""]
+    for nome, desenhar in graficos:
+        titulo, pergunta, ler_como, limite = desenhar(saida / nome)
+        md += [f"## {titulo}", "", f"**Pergunta:** {pergunta}", "", f"![{titulo}]({nome})", "",
+               f"**Como ler:** {ler_como}", "", f"**Limitação:** {limite}", ""]
+    if pulados:
+        md += ["## Gráficos não gerados nesta rodada", ""] + [f"- {x}" for x in pulados] + [""]
     (saida / "painel.md").write_text("\n".join(md), encoding="utf-8")
     return saida
 

@@ -245,6 +245,10 @@ class TestPainel(unittest.TestCase):
             self.assertIn("U_tipo_retorno", md)
             self.assertNotIn("exec-sintetica", md)
             self.assertTrue((saida / "cobertura.png").is_file())
+            for nome in ["destinos.png", "frequencia_custo.png", "concentracao_papel.png", "papeis_candidatas.png",
+                         "linha_do_tempo.png"]:
+                self.assertTrue((saida / nome).is_file(), nome)
+            self.assertIn("**Limitação:**", md)
             (dest / "triagem_visivel_observada.csv").write_text("adulterado", encoding="utf-8")
             with self.assertRaises(SystemExit):
                 painel.gerar(dest)
