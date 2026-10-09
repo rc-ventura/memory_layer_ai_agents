@@ -13,6 +13,7 @@ procedimentos são **por método** (valem para as duas bases). O que é próprio
 
 | O que | Onde está | Observação |
 |---|---|---|
+| **Relatório reunido** | [`docs/02-relatorio-base2.md`](docs/02-relatorio-base2.md) | Copiado dos itens abaixo, com a origem em cada linha |
 | **Relatório — protocolo do harness** | [`11`](../2026-09-trace-law-flow/docs/11-relatorio-protocolo-harness.md) §2 (a base 2, em andamento até 02/10) e §3 (comparação entre bases) | Base 1 e base 2 no mesmo documento |
 | **Relatório — falhas silenciosas** | [`14`](../2026-09-trace-law-flow/docs/14-relatorio-falhas-silenciosas.md) (por ferramenta, motivos, candidatos a sucesso falso) | Mistura as duas bases |
 | **Relatório — o que a base 2 trouxe à taxonomia** | livro-razão [`pipeline-entre-bases.md`](../pipeline-entre-bases.md): Etapas 3 (causa não identificada), 4 (timeout), 5 (a chave `?`), 5b (AgenteProcuracoes), 10b (`H_bloco_code`), 10c (falhas silenciosas), 10d (rodada 2 e finalização), 6 (alarme de cobertura), 7 (comparação entre bases); Ajustes 3, 4, 13 | O histórico de cada ajuste e a verificação |
@@ -29,5 +30,5 @@ o cruzamento de padrões, o alarme de cobertura), `b1 #36` e `b1 #39` (os erros 
 
 **Numeração:** os números do roadmap desta pasta são desta pasta; de fora, cite como `b2 #N`.
 
-**Próximo passo possível, não feito:** reunir num `relatorio-base2.md` as seções acima, **copiando** (sem mover) e
-com link para a origem. Fica aberto até o Rafael decidir.
+**O relatório da base 2, reunido:** [`docs/02-relatorio-base2.md`](docs/02-relatorio-base2.md) (09/10/2026) — os resultados
+dos documentos acima num lugar só, **copiados** (nada foi movido) e com a origem em cada linha; nenhum número é novo.

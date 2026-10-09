@@ -101,7 +101,7 @@ em três níveis, 4.5) → `transversal #2`; 4 (4.4 e 4.3) → `transversal #3` 
 **§5, o backlog:** as linhas que já eram "(roadmap #N)" continuam no roadmap da base 1 com o mesmo número. Os que não
 tinham número: relatório de estudo da taxonomia → `b1 #40`; refazer as auditorias §11 → `b1 #41`; o alarme de cobertura →
 `b1 #34`; o resíduo dos parênteses e os achados laterais → `b1 #29` e `#35`; intake da base 3 → `b3 #21` (feito);
-detectores de comportamento → `transversal #11`; OBFCivel, AgenteProcuracoes e o escopo de memória → `transversal #12`; o
+detectores de comportamento → `transversal #11`; OBFCivel jul 30 × 180 s e o falso negativo do AgenteProcuracoes → `b2 #12` e `b2 #11`; o escopo de memória → `transversal #12`; o
 racional do resíduo e do erro crítico → `transversal #8` e `#9`.
 
 **§2, o feito:**

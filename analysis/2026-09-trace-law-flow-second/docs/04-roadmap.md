@@ -30,6 +30,14 @@ a partir destes itens.
 - [ ] **#4 · As minerações de silenciosas e de protocolo, no método novo de leitura.** Comparar com o publicado (`14`,
   `11`, as 8 candidatas) **aqui, fora do kit**.
 
+- [ ] **#11 · Falso negativo do AgenteProcuracoes** (Etapa 5b, achado 5; 1 execução). A busca com nome + CPF achou
+  procurações, e a resposta final foi "não localizei procurações concluídas", dada "pelos trechos visíveis na
+  observação". Em aberto: se o que achou não eram concluídas, a resposta está certa; se eram, o erro custou uma resposta
+  errada. → livro-razão Etapa 5b
+- [ ] **#12 · A lição candidata "uma ferramenta pesada por step"** (Etapa 5b, achado 1: OBFCivel jul, limite de 30 s, três
+  ferramentas pesadas no mesmo bloco; RespostaOficios mar, 30 s). Sem regra: 2 casos, 1 confirmado, e contar ferramentas
+  não diz quais são pesadas. Espera a medida e a base 3. → livro-razão Etapa 5b
+
 ## Monitoramento
 
 Os gatilhos da base 2 estão na seção Monitoramento do [roadmap da base 1](../../2026-09-trace-law-flow/docs/04-roadmap.md)
@@ -37,9 +45,6 @@ e em [`registros/monitoramento.json`](../../registros/monitoramento.json); não 
 gatilho do timeout de ferramenta (acionado na base 2) pede um ticket à plataforma.
 
 ## Fora de escopo / adiado
-
-- Reunir o relatório da base 2 num documento só, copiando as seções dos docs `11`, `14` e do livro-razão (ver o
-  [README](../README.md)).
 
 ## Fechado
 
@@ -53,4 +58,6 @@ Cada linha: o que foi feito → o commit ou o documento (a prova).
   sucesso falso confirmado nos 24 candidatos — a resposta final declara a falha; RespostaBacen M1 3, M2 1 → relatório
   de 02/10 e a segunda rodada de 05/10; `14` §5, `11` §2.6, `10` §4.
 - [x] **#9 · A base 2, rodada 2: a base 2 finalizada** (antigo 4.2d) → registro de 05/10; livro-razão Etapa 10d, `14` §5.
+- [x] **#13 · O relatório da base 2 reunido num documento só**, copiando as seções dos docs `11`, `14` e do livro-razão,
+  com a origem em cada linha (nada foi movido) → [`02-relatorio-base2.md`](02-relatorio-base2.md) (09/10).
 - [x] **#10 · O campo inexistente da base 2 também é sinal de harness** (Ajuste 13) → registro de 05/10; livro-razão.

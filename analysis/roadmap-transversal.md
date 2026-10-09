@@ -70,9 +70,9 @@ o que vai à plataforma. O que é de uma base fica no roadmap dela:
   monitoramento, as decisões pendentes).
 - [ ] **#11 · Detectores de comportamento** (retorno ignorado, chamada repetida, ferramenta não chamada) — o Rafael
   retoma depois das leituras de artigos pendentes. → `13` §6
-- [ ] **#12 · Três itens sem base confirmada** (vieram do §5 do plano antigo): OBFCivel jul 30 × 180 s; falso negativo do
-  AgenteProcuracoes; escopo de memória em `discussion/open-questions.md`. **Antes de mexer:** conferir de que base é
-  cada um e movê-lo para o roadmap dela.
+- [ ] **#12 · O escopo de memória em `discussion/open-questions.md`** (veio do §5 do plano antigo, junto com dois itens
+  que eram da base 2 e foram para lá em 09/10: OBFCivel jul 30 × 180 s → `b2 #12`; falso negativo do AgenteProcuracoes →
+  `b2 #11`). **Antes de mexer:** conferir de que base é.
 
 ## Fora de escopo / adiado
 
