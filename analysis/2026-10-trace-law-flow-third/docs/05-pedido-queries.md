@@ -18,38 +18,60 @@ junção.
 
 ---
 
-## A · Denominadores: uma linha por execução, agente e papel
+## A · Denominadores: o total de passos e de tokens de cada papel
 
-**O que falta hoje.** O parquet só tem os passos com erro. Não dá para calcular nenhuma taxa (erros por passo, por
-execução, por papel, por mês, por versão) nem saber quanto do orçamento de tokens os erros consomem. Hoje não dá para
-separar "este papel erra mais" de "este papel roda mais" — e a base 3 mostrou que quase toda candidata se concentra
-em um ou dois papéis ([relatório §3](02-relatorio-achados.md#3--triagem-o-destino-de-cada-unidade)).
+**O que pedir (a frase para o tutor):**
 
-**O que pedir.** Uma tabela com **uma linha por execução + agente + papel**, com todos os passos (com e sem erro):
+> Quero uma tabela com **uma linha por execução, agente e papel**, trazendo o **total de ActionSteps e o total de tokens (entrada, saída e total)** de todas as execuções, a **data e hora de início**, a **versão do agente** e **quantos erros estruturados e quantas suspeitas cada linha tem**. Use o mesmo recorte e as mesmas definições da consulta atual. O parquet só guarda os passos com erro, então preciso desses totais para calcular a taxa de erro por papel, mês e versão; a soma dos erros e das suspeitas tem que dar 30.141 e 1.280, para eu confirmar que a tabela se junta ao parquet. Só números e marcas de sim/não, sem texto, em parquet no mesmo ambiente do parquet atual.
+
+**O que falta hoje.** O parquet só tem os passos com erro. Sabemos que um papel tem 5.028 erros, mas não se ele erra
+muito ou se roda muito, e não dá para calcular nenhuma taxa por papel, mês ou versão ([relatório §7](02-relatorio-achados.md#7--leituras-do-painel)).
+Só temos a taxa global do guia: 30.141 erros em 283.925 ActionSteps, cerca de 10,6%.
+
+**Como a tabela é usada.** O tutor entrega o **total**; o parquet já tem a parte **com erro**; a parte **sem erro sai
+por diferença** (total menos erros estruturados, nos passos e nos tokens). As suspeitas (1.280) não têm erro formal e
+não saem do total.
 
 | Coluna | Para quê |
 |---|---|
-| execução, agente, papel, mês de início, versão do agente, status da execução | chave da junção e recortes |
-| número de ActionSteps, TaskSteps e PlanningSteps | denominador por passo; funil da execução |
-| tokens de entrada, de saída e total, somados sobre todos os ActionSteps | orçamento; custo do erro como % do orçamento |
-| duração somada dos ActionSteps | tempo como % do total |
-| número de chamadas de ferramenta (tamanho de `tool_calls` somado) | tokens por chamada de ferramenta |
-| se algum ActionStep do papel é resposta final; se o último ActionStep tem erro | trajetórias que terminam em erro |
-| **número de erros estruturados e de suspeitas no papel** | **conferência**: somado por chave, tem que bater com as linhas do parquet atual |
-| total de execuções na tabela no período, inclusive sem memória (uma contagem só) | primeira barra do funil |
+| execução, agente, papel (`cod_idef_exeo`, `cod_idef_aget`, `papel`) | a chave da junção com o parquet: agrupo o parquet pelas três e junto |
+| data e hora de início (`dat_hor_inio_exeo`), versão do agente (`cod_vers_aget`) | taxa por mês, por dia e por versão |
+| total de ActionSteps | o denominador de toda taxa |
+| tokens de entrada, de saída e total, somados sobre os ActionSteps do papel | custo dos erros no gasto total; a entrada e a saída separadas testam a hipótese de que o custo do erro é o contexto acumulado (a única célula do notebook da base 1 que usa entrada e saída é a razão entrada ÷ saída por passo; as outras 12 usam só o total) |
+| quantos erros estruturados e quantas suspeitas a linha tem | **conferência**: somados por chave, têm que bater com o parquet (30.141 e 1.280) |
 
-Opcional, se for possível calcular na própria consulta sem exportar texto: uma marca de **resposta final vazia ou
-degenerada** (sim/não), para o sucesso por conteúdo.
+**Regras:** o **mesmo recorte** da query atual (mesmo período, mesma escolha de snapshot por execução e agente, mesmo
+filtro de tamanho, mesmo tratamento do JSON) e as **mesmas definições** de erro estruturado e de suspeita. Entram as
+execuções **sem erro** e os papéis **sem nenhum ActionStep** (na base 1, 31% das linhas): a subtração só funciona se o
+total cobrir todas. **Só números e marcas de sim/não, nenhum texto.**
 
-**O que destrava** (gráficos do notebook da base 1): custo de uma execução com erro × sem erro; taxa de erro por
-papel, por mês e por versão; concentração de custo (curva de Lorenz); desperdício como % do orçamento de cada papel;
-tokens por chamada de ferramenta; evolução mensal do custo por execução; o funil completo da execução. Com a marca
-opcional, o sucesso por conteúdo.
+**O tamanho.** A tabela só tem números: da ordem de 70 a 200 mil linhas (1 a 3 papéis por execução, como na base 1),
+bem menor que o parquet atual, que carrega texto longo.
 
-**Não destrava:** falhas silenciosas e reincidência ao longo da execução inteira (exigem o conteúdo de todos os passos).
+**Exemplo do formato (fictício; só a tabela nova):**
 
-**Conferência no recebimento:** a soma dos erros estruturados da tabela = 30.141; a soma das suspeitas = 1.280; toda
-execução + agente + papel do parquet atual existe na tabela.
+| exec | agente | papel | início | versão | ActionSteps | tokens entrada | tokens saída | tokens total | erros | suspeitas |
+|---|---:|---|---|---:|---:|---:|---:|---:|---:|---:|
+| E1 | 200 | RoteadorCivel | 2026-05-12 14:03 | 5 | 4 | 13.268 | 723 | 13.991 | 0 | 0 |
+| E2 | 1 | managerAgent | 2026-05-12 14:10 | 5 | 4 | 40.360 | 6.293 | 46.653 | 2 | 0 |
+| E2 | 1 | WorkflowManager | 2026-05-12 14:10 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
+| E3 | 168 | RespostaBacen | 2026-05-13 09:41 | 5 | 6 | 80.000 | 4.000 | 84.000 | 1 | 1 |
+
+**O que destrava** (gráficos do notebook da base 1): taxa de erro por papel, mês e versão; custo de uma execução com
+erro × sem erro; concentração de custo (curva de Lorenz); desperdício como % do orçamento de cada papel; evolução
+mensal do custo por execução; o funil das execuções; e a resposta para "agosto teve mais execuções ou mais erro por
+execução?".
+
+**Não destrava:** falhas silenciosas e reincidência ao longo da execução inteira (exigem o conteúdo de todos os
+passos); o sucesso por conteúdo (exige a resposta final).
+
+**Conferência no recebimento:** a soma de `erros` = 30.141 e a de `suspeitas` = 1.280; toda chave (execução, agente,
+papel) do parquet existe na tabela, com o mesmo número de erros e de suspeitas por chave.
+
+**Entre as bases:** o agente é um identificador numérico (`cod_idef_aget`); o papel é o nome gravado dentro da memória
+da execução. Na base 1, cada execução tem 1 agente, e o agente orquestrador carrega 3 papéis juntos (`managerAgent`,
+`ConversationAgent`, `WorkflowManager`); a versão está vazia em 514 de 1.000 linhas e vale `0` nas demais. Por isso a
+unidade é a linha de execução, agente e papel.
 
 ---
 
