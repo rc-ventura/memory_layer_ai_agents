@@ -1,25 +1,926 @@
 <!--
-TRANSCRIÇÃO PARCIAL das fotos do guia `relatorio_mineracao_20260929.md` (máquina 2, `…/third/docs/`), feita em 09/10/2026.
-É o guia que acompanha a base minerada de erros e a query `ICTI_crossmemory_query_mineracao_erros`.
-Não é a documentação atual da base 3 (essa está em `../`).
-
-O QUE ESTÁ AQUI: só as linhas 909 a 1755 do guia (seções 19 a 36), as únicas fotos que carregaram na leitura
-(IMG_5337 a IMG_5364 da pasta `relatorio_query_mineracao`). Texto fiel ao das fotos.
-O QUE NÃO ESTÁ: as linhas 1 a ~908 (seções 1 a 18: objetivo, fonte, estrutura dos steps, definição de erro, janela,
-deduplicação, schema das colunas etc.) — as fotos IMG_5307 a IMG_5336 não carregaram. A query SQL também não foi
-transcrita (pasta `query_mineracao`, 31 fotos, e `query-371-373`, 1 foto: nenhuma carregou).
-Marcas: `[linhas N–M não visíveis na foto]` onde o corte da foto impediu a leitura.
+Transcrição das fotos do guia `relatorio_mineracao_20260929.md` (máquina 2, `…/third/docs/`), feita em 09/10/2026.
+É o guia que acompanha a base minerada de erros e a query `ICTI_crossmemory_query_mineracao_erros`
+(ver `query_mineracao_erros.sql` nesta pasta). Não é a documentação atual da base 3 (essa está em `../`).
+Texto fiel ao das fotos. Marcas: `[linhas N–M não visíveis na foto]` onde o corte da foto impediu a leitura.
+Fotos usadas: IMG_5307 a IMG_5364 da pasta `relatorio_query_mineracao`. Pontos cortados na foto: fim da linha 389 (seção 7), linhas 955–956 (seção 19), 1241–1244 (seção 26) e 1313–1316 (seção 27).
 -->
 
-# Guia da Base Minerada de Erros dos Agentes — transcrição parcial (seções 19 a 36)
+# Guia da Base Minerada de Erros dos Agentes
 
-[linhas 1–908 não transcritas: fotos não carregaram]
+## 1. Objetivo
+
+Esta base foi construída para apoiar o estudo de erros cometidos pelos agentes durante suas execuções, no contexto do projeto **Cross Memory**.
+
+A tabela original de traces possui uma granularidade de **uma linha por execução de agente** e armazena, no campo `txt_etap_memo`, toda a memória de execução do agente. Esse campo pode ser extremamente grande, contendo tarefas, planejamento, entradas do modelo, código gerado, retornos de ferramentas, erros, observações e demais informações de cada step.
+
+Por esse motivo, trabalhar diretamente com os traces completos é pouco prático para análises em larga escala.
+
+O objetivo da mineração foi transformar essa base bruta em uma base menor, focada especificamente nos momentos em que ocorreram erros, mantendo contexto suficiente para responder perguntas como:
+
+* qual erro ocorreu;
+* o que o agente estava tentando fazer;
+* qual código produziu o erro;
+* o que ocorreu imediatamente antes;
+* como o agente reagiu depois;
+* se aparentemente conseguiu se recuperar;
+* quanto o erro e as tentativas seguintes custaram em tokens e tempo;
+* quais tipos de erros são recorrentes e potencialmente ensináveis por memória.
+
+A ideia é que esta base seja a principal entrada para o estudo:
+
+```text
+erro
+ ↓
+sintoma
+ ↓
+mecanismo
+ ↓
+padrão recorrente
+ ↓
+unidade de memória
+```
+
+---
+
+# 2. Fonte original
+
+A fonte é:
+
+```text
+db_corp_juridico_joogle_sor_01.tbnm9100_exeo_aget
+```
+
+O schema relevante da tabela original é:
+
+| Campo                     | Tipo   | Descrição                                          |
+| ------------------------- | ------ | -------------------------------------------------- |
+| `cod_idef_aget`           | int    | Identificador do tipo/agente                       |
+| `cod_idef_exeo`           | string | Identificador da execução                          |
+| `cod_idef_stat_exeo_aget` | int    | Status da execução                                 |
+| `cod_idef_cvsa_asnc`      | string | Identificador da conversa/fluxo associado          |
+| `dat_hor_encm_exeo`       | string | Data/hora de encerramento                          |
+| `txt_vrvl_locl`           | string | Estado final das variáveis locais do interpretador |
+| `txt_rspa_fina`           | string | Resposta final persistida                          |
+| `dat_hor_inio_exeo`       | string | Data/hora de início                                |
+| `cod_vers_aget`           | int    | Versão do agente                                   |
+| `txt_etap_memo`           | string | Trace/memória completa da execução                 |
+| `anomesdia`               | int    | Partição da tabela                                 |
+
+O campo fundamental para este estudo é:
+
+```text
+txt_etap_memo
+```
+
+Ele é armazenado como `VARCHAR`, mas seu conteúdo corresponde, quando válido, a um JSON com estrutura semelhante a:
+
+```json
+{
+  "managerAgent": [
+    {...},
+    {...}
+  ],
+  "ConversationAgent": [
+    {...},
+    {...}
+  ]
+}
+```
+
+Ou seja:
+
+```text
+execução
+  ↓
+papel/agente
+  ↓
+lista de steps
+```
+
+---
+
+# 3. Estrutura dos steps
+
+Dentro de cada papel podem existir diferentes classes de step.
+
+As principais observadas são:
+
+### `TaskStep`
+
+Representa a tarefa recebida pelo agente.
+
+Exemplo conceitual:
+
+```json
+{
+  "task": "...",
+  "__class__": "TaskStep"
+}
+```
+
+---
+
+### `PlanningStep`
+
+Representa etapas explícitas de planejamento geradas por alguns agentes.
+
+---
+
+### `ActionStep`
+
+É a unidade principal deste estudo.
+
+É onde ficam informações como:
+
+```text
+step_number
+model_output
+code_action
+observations
+tool_calls
+error
+token_usage
+timing
+is_final_answer
+```
+
+É também onde aparecem os erros estruturados reportados pelo framework.
+
+A base minerada considera apenas os **`ActionStep`** para construção da vizinhança de erro.
+
+---
+
+# 4. O que consideramos um erro
+
+Foram criadas duas categorias diferentes.
+
+## 4.1. `STRUCTURED_ERROR`
+
+É o erro explicitamente registrado pelo framework no campo:
+
+```text
+error
+```
+
+Normalmente:
+
+```json
+"error": {
+    "type": "AgentExecutionError",
+    "message": "..."
+}
+```
+
+Quando não houve erro estruturado:
+
+```json
+"error": null
+```
+
+Esse é o conjunto que deve ser utilizado como **fonte oficial para estatísticas da taxonomia de erros**.
+
+Exemplos de `error_type` encontrados na população incluem:
+
+```text
+AgentExecutionError
+AgentParsingError
+AgentMaxStepsError
+```
+
+---
+
+## 4.2. `OBSERVATION_SUSPECT`
+
+Durante a análise foi identificado um segundo comportamento.
+
+Existem casos nos quais:
+
+```text
+error = null
+```
+
+mas o campo:
+
+```text
+observations
+```
+
+contém sinais claros de falha, por exemplo:
+
+```text
+Input validation error
+Code execution failed
+InterpreterError
+ValidationError
+Traceback...
+```
+
+Esses casos foram marcados como:
+
+```text
+OBSERVATION_SUSPECT
+```
+
+Eles **não devem ser misturados automaticamente com os erros estruturados nas estatísticas oficiais**.
+
+A ideia é tratá-los como uma trilha paralela de investigação:
+
+```text
+STRUCTURED_ERROR
+      ↓
+erro confirmado pelo harness
+      ↓
+taxonomia oficial
+
+
+OBSERVATION_SUSPECT
+      ↓
+possível falha não registrada formalmente
+      ↓
+investigação / descoberta
+```
+
+Essa distinção é importante.
+
+---
+
+# 5. Por que extraímos contexto ao redor do erro
+
+Analisar apenas:
+
+```text
+error.message
+```
+
+mostra principalmente **o sintoma técnico**.
+
+Por exemplo:
+
+```text
+Could not index ...
+```
+
+Porém, para entender o mecanismo do erro e se ele é útil para Cross Memory, é importante observar a trajetória.
+
+Por isso, para cada erro foram recuperados:
+
+```text
+n - 1
+n
+n + 1
+n + 2
+```
+
+onde:
+
+```text
+n     = ActionStep com erro
+n-1   = ActionStep imediatamente anterior
+n+1   = próxima ação do agente
+n+2   = segunda ação posterior
+```
+
+Importante: a vizinhança considera apenas **ActionSteps**.
+
+`TaskStep` e `PlanningStep` não entram no `LAG/LEAD`.
+
+---
+
+# 6. Interpretação da janela
+
+## `n - 1`
+
+Ajuda a entender o estado imediatamente anterior ao erro.
+
+Pode mostrar:
+
+* preparação de variáveis;
+* retorno de uma ferramenta;
+* estratégia anterior;
+* premissas utilizadas pelo agente.
+
+---
+
+## `n`
+
+É o próprio step problemático.
+
+Normalmente contém a maior parte da evidência para classificação inicial:
+
+```text
+error_type
+error_message
+code_action
+model_output
+observations
+tool_name
+```
+
+---
+
+## `n + 1`
+
+É particularmente importante.
+
+Frequentemente contém:
+
+* autodiagnóstico do agente;
+* primeira tentativa de correção;
+* mudança de parâmetros;
+* inspeção da saída de uma ferramenta;
+* repetição do mesmo erro.
+
+---
+
+## `n + 2`
+
+Foi incluído porque alguns agentes não se recuperam imediatamente.
+
+Uma trajetória real pode ser:
+
+```text
+step 3 → erro estruturado
+step 4 → tentativa de correção, ainda problemática
+step 5 → correção efetiva
+```
+
+Analisar apenas `n+1` perderia esse comportamento.
+
+---
+
+# 7. Deduplicação
+
+A tabela fonte possui características de snapshot.
+
+A mesma execução pode aparecer em mais de uma partição.
+
+Na análise realizada, foram observados aproximadamente:
+
+```text
+148.966 registros
+71.882 execuções únicas
+```
+
+com:
+
+```text
+~2,07 snapshots por execução em média
+```
+
+e casos chegando a múltiplos snapshots da mesma execução.
+
+Por isso, antes de abrir os traces, foi realizada deduplicação por:
+
+```text
+cod_idef_exeo
++
+cod_idef_aget
+```
+
+mantendo a melhor representação disponível da execução.
+
+A ordenação considera principalmente:
+
+1. snapshot mais recente;
+2. preferência por execução encerrada;
+3. maior tamanho de `txt_etap_memo` em caso de empate.
+
+Foi realizado um teste específico para verificar se o snapshot mais recente escolhido possuía trace menor do que alguma versão anterior.
+
+Resultado:
+
+```text
+0 execuções
+```
+
+Ou seja, no conjunto analisado não foi encontrado indício de que a deduplicação estivesse selecionando traces truncados em relação a snapshots an[teriores]. [o fim da linha 389 está cortado na foto]
+
+---
+
+# 8. JSONs inválidos
+
+Uma pequena quantidade de registros possui `txt_etap_memo` que não pode ser interpretado como JSON estrito.
+
+Foram observados casos de escapes inválidos como:
+
+```text
+\@
+\*
+\:
+```
+
+A incidência, entretanto, foi extremamente baixa.
+
+Em aproximadamente:
+
+```text
+238.892 traces
+```
+
+foram encontrados apenas:
+
+```text
+4 JSONs inválidos
+```
+
+Por isso não foi criada rotina de reparo automático.
+
+Esses registros são simplesmente descartados durante o parse utilizando `TRY(...)`.
+
+Essa decisão evita introduzir transformações potencialmente incorretas para resolver um problema residual.
+
+---
+
+# 9. Volume da base minerada
+
+Após:
+
+```text
+deduplicação
++
+parse do trace
++
+seleção de ActionSteps
++
+identificação dos erros
+```
+
+foram observados:
+
+```text
+283.925 ActionSteps
+```
+
+na população deduplicada.
+
+Desses:
+
+```text
+30.141 = erros estruturados
+1.280  = observation suspects
+```
+
+Total da base minerada:
+
+```text
+31.421 linhas
+```
+
+Portanto:
+
+```text
+STRUCTURED_ERROR ≈ 95,9%
+OBSERVATION_SUSPECT ≈ 4,1%
+```
+
+A taxa de erro estruturado por ActionStep na população deduplicada ficou próxima de:
+
+```text
+30.141 / 283.925
+≈ 10,6%
+```
+
+---
+
+# 10. Execuções com erro
+
+Os aproximadamente:
+
+```text
+31.421 error steps
+```
+
+estão distribuídos em:
+
+```text
+20.986 execuções únicas
+```
+
+Portanto:
+
+```text
+~1,50 error steps por execução problemática
+```
+
+A distribuição possui uma cauda significativa.
+
+Existem execuções com:
+
+```text
+26 erros
+21 erros
+20 erros
+18 erros
+16 erros
+...
+```
+
+Isso é importante porque múltiplos registros de erro podem representar **uma única cascata de falha**, e não fenômenos independentes.
+
+---
+
+# 11. Campos da base minerada
+
+## 11.1. Identificação da execução
+
+### `cod_idef_exeo`
+
+Identificador da execução original.
+
+É a principal chave para fazer drill-down posteriormente na tabela fonte.
+
+---
+
+### `cod_idef_aget`
+
+Identificador do agente na tabela original.
+
+---
+
+### `papel`
+
+Nome do agente/papel dentro de `txt_etap_memo`.
+
+Exemplos:
+
+```text
+managerAgent
+ConversationAgent
+RoteadorCivel
+RespostaBacen
+CalculoCivel
+...
+```
+
+Importante: os valores foram mantidos **como persistidos no trace**.
+
+Não foram corrigidos nomes aparentemente inconsistentes ou históricos.
+
+---
+
+### `cod_idef_stat_exeo_aget`
+
+Status original da execução.
+
+Não deve ser utilizado sozinho como indicador de sucesso ou erro.
+
+---
+
+### `cod_idef_cvsa_asnc`
+
+Identificador da conversa ou fluxo associado.
+
+---
+
+### `cod_vers_aget`
+
+Versão do agente.
+
+Campo especialmente útil para verificar se determinados erros:
+
+* aparecem somente em versões antigas;
+* surgiram após alguma mudança;
+* desapareceram depois de correções.
+
+---
+
+### `dat_hor_inio_exeo`
+
+Data/hora de início da execução.
+
+---
+
+### `dat_hor_encm_exeo`
+
+Data/hora de encerramento da execução.
+
+---
+
+### `mes_execucao`
+
+Derivado de `dat_hor_inio_exeo`.
+
+Facilita análises temporais.
+
+---
+
+### `anomesdia`
+
+Partição da tabela fonte.
+
+**Não assumir que corresponde à data real da execução.**
+
+Para análise temporal do comportamento do agente, preferir:
+
+```text
+dat_hor_inio_exeo
+```
+
+---
+
+# 12. Indicadores da execução
+
+### `has_final_locals`
+
+Indica se a execução possuía:
+
+```text
+txt_vrvl_locl
+```
+
+preenchido.
+
+Valores:
+
+```text
+1 = presente
+0 = ausente
+```
+
+---
+
+### `has_persisted_response`
+
+Indica se:
+
+```text
+txt_rspa_fina
+```
+
+estava preenchido.
+
+---
+
+### `execution_has_final_step`
+
+Indica se, dentro dos ActionSteps daquele papel, foi encontrado algum:
+
+```text
+is_final_answer = true
+```
+
+É diferente de `has_persisted_response`.
+
+Esses dois sinais podem divergir e não devem ser tratados como equivalentes.
+
+---
+
+# 13. Classificação do registro
+
+### `error_source`
+
+Pode assumir:
+
+```text
+STRUCTURED_ERROR
+OBSERVATION_SUSPECT
+```
+
+---
+
+### `structured_error`
+
+Indicador binário.
+
+```text
+1 = error.type estava preenchido
+0 = não
+```
+
+---
+
+### `observation_suspect`
+
+Indicador binário para casos sem erro estruturado, mas com forte assinatura de erro em `observations`.
+
+---
+
+# 14. Campos do step com erro — `n`
+
+### `step_number`
+
+Número do ActionStep informado pelo próprio trace.
+
+---
+
+### `step_pos`
+
+Posição original dentro da lista de memória.
+
+Este é o campo utilizado para preservar a ordenação da trajetória.
+
+---
+
+### `error_type`
+
+Tipo de erro reportado pelo framework.
+
+Exemplos:
+
+```text
+AgentExecutionError
+AgentParsingError
+AgentMaxStepsError
+```
+
+Para `OBSERVATION_SUSPECT`, normalmente será nulo.
+
+---
+
+### `error_message`
+
+Mensagem estruturada do erro.
+
+É uma das principais entradas para a classificação de:
+
+```text
+assinatura
+família
+mecanismo
+```
+
+---
+
+### `tool_name`
+
+Nome da primeira ferramenta registrada no step, quando disponível.
+
+Pode ajudar a identificar concentração de erros por ferramenta.
+
+---
+
+### `tool_calls`
+
+Representação dos `tool_calls` do step.
+
+Foi mantida para permitir investigação mais detalhada sem retornar ao trace bruto em todos os casos.
+
+---
+
+### `error_model_output`
+
+Saída do modelo no step que falhou.
+
+Normalmente contém o pensamento/explicação e o código proposto pelo agente.
+
+É importante para investigar **por que o agente tomou determinada decisão**.
+
+---
+
+### `error_code_action`
+
+Código efetivamente executado naquele ActionStep.
+
+É um dos campos mais importantes para identificar o mecanismo do erro.
+
+---
+
+### `error_observations`
+
+Observação produzida pela execução.
+
+Pode conter:
+
+* retorno de ferramenta;
+* log de execução;
+* mensagem de validação;
+* conteúdo retornado;
+* detalhes adicionais do erro.
+
+---
+
+### `error_action_output`
+
+Saída registrada especificamente em `action_output`, quando existente.
+
+---
+
+# 15. Tokens e duração do step com erro
+
+### `input_tokens`
+
+Tokens de entrada no step.
+
+---
+
+### `output_tokens`
+
+Tokens de saída.
+
+---
+
+### `total_tokens`
+
+Total de tokens do step.
+
+---
+
+### `duration_seconds`
+
+Duração do ActionStep.
+
+Esses campos permitem medir não apenas frequência, mas também **custo dos erros**.
+
+---
+
+# 16. Contexto anterior — `n - 1`
+
+Campos:
+
+```text
+prev_step_number
+prev_model_output
+prev_code_action
+prev_observations
+prev_error_type
+prev_error_like
+```
+
+Eles representam o ActionStep imediatamente anterior ao erro.
+
+### `prev_error_like`
+
+Permite identificar se o erro atual já faz parte de uma sequência problemática.
+
+Por exemplo:
+
+```text
+prev_error_like = 1
+```
+
+é um forte indício de que o registro pertence a uma cascata.
+
+---
+
+# 17. Primeira ação posterior — `n + 1`
+
+Campos:
+
+```text
+next_step_number
+next_model_output
+next_code_action
+next_observations
+next_error_type
+next_error_message
+next_error_like
+next_is_final_answer
+next_tool_name
+next_input_tokens
+next_output_tokens
+next_total_tokens
+next_duration_seconds
+```
+
+Este bloco é especialmente importante para estudar **autorrecuperação**.
+
+### `next_model_output`
+
+Pode conter explicitamente frases semelhantes a:
+
+```text
+"O erro ocorreu porque..."
+"Vou corrigir..."
+"A ferramenta retornou..."
+"Vou tentar novamente..."
+```
+
+Portanto, ele é uma fonte importante para inferir o diagnóstico feito pelo próprio agente.
+
+---
+
+# 18. Segunda ação posterior — `n + 2`
+
+Campos equivalentes:
+
+```text
+next2_step_number
+next2_model_output
+next2_code_action
+next2_observations
+next2_error_type
+next2_error_message
+next2_error_like
+next2_is_final_answer
+next2_tool_name
+next2_input_tokens
+next2_output_tokens
+next2_total_tokens
+next2_duration_seconds
+```
+
+Serve para capturar recuperações que exigiram mais de uma tentativa.
+
+---
 
 # 19. Métricas agregadas de custo da janela
 
 ### `tokens_error_plus_next_action`
 
-[linhas 914–918 não visíveis na foto]
+```text
+tokens(n) + tokens(n+1)
+```
 
 ---
 

@@ -9,4 +9,4 @@ críticos, resíduos). Os links relativos destes arquivos foram mantidos como es
 |---|---|
 | `01-fechamento-plan-base3.md` … `04-relatorio-rodada-observada-real.md` | análises de 07/10/2026 |
 | `query_mineracao_erros.sql` | a query v1 (`ICTI_crossmemory_query_mineracao_erros`), transcrita das fotos de 09/10; lacunas marcadas no texto |
-| `relatorio_mineracao_20260929.md` | o guia da base minerada, transcrição **parcial** (seções 19 a 36; as seções 1 a 18 ainda não) |
+| `relatorio_mineracao_20260929.md` | o guia da base minerada, completo (seções 1 a 36); três pontos cortados na foto estão marcados no texto |
