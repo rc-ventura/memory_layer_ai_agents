@@ -3,13 +3,19 @@ type: overview
 title: Visão Geral do Repositório
 description: O que este repositório é (o laboratório de pesquisa do projeto de bolsa de Rafael Coelho Ventura), a quem serve, e como suas seis pastas de conteúdo se relacionam em altitudes diferentes sobre o mesmo material.
 tags: [overview, research-repository, fellowship-project, repository-structure]
-verified:
-  - by: openwiki/0.5.1
-    at: 2026-09-18T11:27:06.172Z
 sources:
+  - id: openwiki-source-bdcfe063182a99198f34a102
+    resource: repo://.claude/skills/mineracao-base/referencias/kit.md
+  - id: openwiki-source-968204141b3124543370ca68
+    resource: repo://analysis/README.md
+  - id: openwiki-source-4859aa37b78a50a40f57623f
+    resource: repo://pocs/blueprint-m1-pocs-minimos.md
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "claude-code", at: "2026-09-18T11:27:06.172Z" }
+generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-09T17:09:54.387Z
 ---
 
 Este é o repositório de pesquisa **pessoal** de Rafael Coelho Ventura para o projeto de bolsa [PROGRAMA-FOMENTO] ([INSTITUIÇÃO-FOMENTO], Nº [ANONIMIZADO]):
@@ -28,10 +34,13 @@ literature-review/      As duas revisões bibliográficas de nível relatório (
 papers/                 Uma nota atômica por paper/framework citado + uma fila de leitura priorizada
 discussion/             Síntese cross-cutting: achados, comparações de framework, decisões de escopo, questões abertas
 research-diary/         Log episódico diário (um arquivo por semana, em pastas por mês) + digest mensal
-analysis/               Análises empíricas de traces brutos de agentes (notebooks executados + relatórios de achados; dados derivados git-ignored)
+analysis/               Análises empíricas de traces brutos de agentes — três bases com formatos de extração diferentes, notebooks + relatórios, módulos compartilhados na raiz (dados derivados git-ignored)
 ```
 
-Cada pasta tem seu próprio `README.md` com mais detalhe.
+Cada pasta tem seu próprio `README.md` com mais detalhe. Duas áreas complementares não contam como "pastas de conteúdo" mas fazem parte do trabalho hoje:
+
+- **`pocs/`** — o blueprint das POCs mínimas de agentes do M1 (Sub 1.6/1.7): POC-A (laço implícito/nativo) × POC-B (memória programática/transparente), perguntas Q1–Q7 e experimentos EX-1..EX-7 — ver [Blueprint das POCs do M1](referencia/blueprint-pocs-m1.md);
+- **`.claude/`** — o kit de mineração versionado: skills `mineracao-*`, quatro agentes e os scripts que fazem uma rodada de mineração do trace rodar igual em qualquer ambiente e base — ver [Kit de Mineração de Traces](fluxos/kit-de-mineracao.md).
 
 ## Como as peças se relacionam — quatro altitudes sobre o mesmo material
 
@@ -42,7 +51,7 @@ discussion/           →  síntese entre fontes/revisões/diário (o que é dec
 research-diary/       →  log episódico cru + digest mensal (o que de fato aconteceu, dia a dia)
 ```
 
-O diário é onde achados novos pousam primeiro; os mais fortes são destilados em `discussion/`; fontes citadas ao longo do caminho ganham uma nota atômica em `papers/`; e os dois relatórios de `literature-review/` são a forma polida e submissível de Sub 1.1 e Sub 1.2 — refinados continuamente, não escritos uma vez só. `analysis/` soma uma quinta dimensão, empírica: em vez de sintetizar literatura, ela constrói uma ponte entre o comportamento real de agentes em produção e as mesmas perguntas de arquitetura de memória que as outras quatro pastas discutem em nível conceitual.
+O diário é onde achados novos pousam primeiro; os mais fortes são destilados em `discussion/`; fontes citadas ao longo do caminho ganham uma nota atômica em `papers/`; e os dois relatórios de `literature-review/` são a forma polida e submissível de Sub 1.1 e Sub 1.2 — refinados continuamente, não escritos uma vez só. `analysis/` soma uma quinta dimensão, empírica: em vez de sintetizar literatura, ela constrói uma ponte entre o comportamento real de agentes em produção e as mesmas perguntas de arquitetura de memória que as outras quatro pastas discutem em nível conceitual. Hoje `analysis/` cobre **três bases** de trace (a pasta de referência `2026-09-trace-law-flow/`, a amostra independente `2026-09-trace-law-flow-second/` — documentação aqui, dados na máquina de compliance — e a extração Parquet `2026-10-trace-law-flow-third/`), com mecânica de trace compartilhada na raiz (`leitor_trace.py`, `adaptador_trace.py`, `episodios_trace.py`, `base_utils.py`), uma suíte `tests/` pequena, registros versionados em `registros/` e os docs de governança (`plano-atual.md`, `decisoes.md`, `glossario.md`, `pipeline-entre-bases.md`, `roadmap-transversal.md`) — ver [Análises Multi-Base](fluxos/analises-multi-base.md) e [Governança das Análises](referencia/governanca-das-analises.md).
 
 ## A quem serve, e por quê essa estrutura
 

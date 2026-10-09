@@ -14,14 +14,20 @@ sources:
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/genealogia_sankey.py
   - id: openwiki-source-b5d2e6c4b6578b784bc74767
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/paleta.py
+  - id: openwiki-source-390363992e7f2499e94a84a2
+    resource: repo://analysis/pipeline-entre-bases.md
+  - id: openwiki-source-8d465556f06784418e84e1c5
+    resource: repo://analysis/registros/monitoramento.json
+  - id: openwiki-source-eb3a346108886797f62f7271
+    resource: repo://analysis/registros/README.md
   - id: openwiki-source-2d51aa76f8fc441a01852754
     resource: repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md
   - id: openwiki-source-e2588285d2ac910e627dab99
     resource: repo://discussion/teoria/agentdebug-vs-trail-error-taxonomy.md
-generated: { by: "claude-code", at: "2026-09-24T16:54:16.453Z" }
+generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-24T16:54:16.453Z
+    at: 2026-10-09T17:09:54.387Z
 ---
 
 Sistemas de agentes sem memória persistente redescobrem as mesmas falhas em cada execução. Transformar erros registrados em memória útil exige uma taxonomia — mas taxonomia boa não é rótulo bonito, é **roteamento**: cada erro bruto precisa chegar, por regras determinísticas e reabíveis no dado cru, até a menor lição reutilível que o evitaria (ou até fora da memória). A contribuição central é a **genealogia de erros** — dois eixos paralelos de classificação (o que o sistema reclamou × o que o agente fez de errado) que se **dividem** (um sintoma pode ter várias causas) e se **fundem** (causas diferentes podem pedir a mesma cura) até convergir numa decisão de escrita.
@@ -63,6 +69,8 @@ Todo classificador por regras tem uma sobra, e aqui ela é dividida em dois bald
 
 Cada erro cai em **no máximo um** balde — não há sobreposição — e "causa não identificada" descreve a **regra**, não o erro (não significa que aconteceu uma vez). O tamanho de cada balde é parte do relato de cobertura de qualquer instanciação: onde o resíduo cresce, as regras não alcançam.
 
+Na base 3 (extração Parquet em janela de erro, sem denominador) existe ainda um terceiro estado, distinto do resíduo: **pendente** — a regra existe, mas o dado que ela precisa não chegou na janela extraída (detalhe em [Análises Multi-Base](analises-multi-base.md)). Pendente não é falha da taxonomia; resíduo é.
+
 ### Exemplo real — a assinatura "Could not index" se divide, dois mecanismos se fundem
 
 No trace da esteira jurídica, 136 erros compartilham a mesma mensagem de sintoma ("Could not index"), mas `submecanismo()` — que lê a mensagem **mais** a linha de código rejeitada — os separa em três causas distintas: `dict_indexado_por_posicao` (89 erros, `doc[0]` num retorno que é dict), `tipo_real_do_retorno` (37, indexou uma string como se fosse dict) e `campo_inexistente_no_retorno` (10, `KeyError` numa chave que não existe). As duas primeiras convergem na mesma unidade de memória (`U_contrato_dict`, 96 erros ao somar um terceiro mecanismo de sintoma diferente) porque a mesma lição — "ferramentas de documento retornam `{'result': [[...]]}`, acesse `r['result'][0]`" — previne ambas; a terceira mecanismo vira uma unidade separada (`U_campo_inexistente`), porque nenhuma frase única cobriria as duas causas sem virar disjunção. Esse par (divide pelo sintoma, funde pelo mecanismo) é o padrão que se repete em toda a taxonomia, não uma exceção.
@@ -89,19 +97,21 @@ Uma unidade só vira candidata a memória depois de passar, em ordem, por três 
 
 Os desfechos possíveis da triagem são, portanto, quatro: **candidata**, **não-memória**, **fora** (sem recorrência) e **revisar**. Os baldes de resíduo passam pelo mesmo teste de recorrência das candidatas, mas contado **por padrão de erro** (classe da exceção + mensagem com os dados do caso mascarados), não pelo balde — que junta erros diferentes por construção. Um padrão recorrente põe o balde em **revisar — prioridade**; sem nenhum, **revisar — baixa prioridade**. Nenhum dos dois é memória: o trabalho é na taxonomia (escrever a regra que falta), e uma vez escrita o erro vira unidade normal e refaz a triagem como qualquer outra.
 
+A decisão de destino da mineração (`destino_mineracao()`: memória / sinal de harness / harness / em aberto) é **por base** — desde o Ajuste 7 o `DESTINO_MINERACAO` do `base_pipeline.py` guarda, junto a cada decisão, em quais bases ela foi tomada, e o `BASE_ID` da pasta decide se ela se aplica: uma decisão nunca vaza para uma base onde não foi conferida. O histórico completo de ajustes entre bases vive no ledger [`analysis/pipeline-entre-bases.md`](../../analysis/pipeline-entre-bases.md).
+
 Por cima do teste por padrão existe um **alarme de cobertura**: se o balde "Sintoma não reconhecido" passar de uma fração de todos os erros da base (5% na instanciação, `ALARME_COBERTURA`), ele sobe para **revisar — prioridade** mesmo sem padrão recorrente — a leitura passa a ser "a taxonomia não cobre a base", não "um erro solto".
 
 Os limiares de recorrência (quantas execuções, quanto tempo) são **escolhas calibradas por instanciação, não constantes do método** — na instanciação da esteira jurídica, o corte adotado foi ≥3 execuções e ≥2 meses. Testar a sensibilidade do limiar (mover a régua e refazer a conta) é parte obrigatória da triagem, não um passo opcional.
 
 ### Triagem escopada por papel — análise à parte, não troca da decisão global
 
-A candidatura continua sendo decidida pela unidade **global**. Mas quando a memória vai ser recuperada pela chave (papel, unidade), a mesma régua roda **dentro de cada papel** (`triagem_por_papel()` na instanciação — §9.4/§9.5) — o mesmo corte, **sem recalibração**, porque régua diferente destruiria a comparabilidade com a global. O cruzamento dos dois vereditos dá quatro estados por célula (papel × unidade): **firme** (candidata nos dois), **herdada** (candidata global que não se repete naquele papel — a triagem global a empresta), **revelada** (candidata no papel sem passar na global — **impossível por construção** com a mesma régua: as execuções e meses do papel estão contidos nos da base) e **fora**. Na base 1: 18 de 33 células candidatas, 14 herdadas, zero reveladas; 8 das 18 caem na régua estrita (≥5 execuções, ≥3 meses) — o veredito scoped é frágil nos papéis pequenos e se lê junto com o volume, nunca pela célula isolada.
+A candidatura continua sendo decidida pela unidade **global**. Mas quando a memória vai ser recuperada pela chave (papel, unidade), a mesma régua roda **dentro de cada papel** (`triagem_por_papel()` na instanciação — §9.4/§9.5, desde 04/10 rodada na consolidação `consolidacao_unidades.ipynb` §14.7/§14.8) — o mesmo corte, **sem recalibração**, porque régua diferente destruiria a comparabilidade com a global. Só unidades elegíveis a memória (tipo factual/estratégia) entram: plataforma e resíduo ficam fora por desenho, e unidade cujo destino de mineração é harness também — o conserto é no ambiente. O cruzamento dos dois vereditos dá quatro estados por célula (papel × unidade): **firme** (candidata nos dois), **herdada** (candidata global que não se repete naquele papel — a triagem global a empresta), **revelada** (candidata no papel sem passar na global — **impossível por construção** com a mesma régua: as execuções e meses do papel estão contidos nos da base) e **fora**. Na base 1: 18 de 31 células candidatas (firme), 13 herdadas, zero reveladas; 8 das 18 caem na régua estrita (≥5 execuções, ≥3 meses; 7 desde a consolidação — uma célula ganhou o canal silencioso e deixou de ser limítrofe) — o veredito scoped é frágil nos papéis pequenos e se lê junto com o volume, nunca pela célula isolada.
 
 ## A figura-canônica — a genealogia como árvore de roteamento
 
-A cadeia inteira cabe numa figura só (o Sankey da instanciação, gerado por `pipeline/genealogia_sankey.py`): cinco colunas — família → assinatura → mecanismo → unidade → destino — com **contagem real por nó e por aresta** (a soma se conserva em todos os estágios; as arestas cruas ficam em `resultados/genealogia_arestas.csv`). Todas as assinaturas e mecanismos aparecem pelo nome — é uma árvore de roteamento auditável, não um agregado. A última coluna nomeia o destino 1:1 com a unidade: `MEM`/`HARNESS`/`REVISAR`/`FORA` + o título real da lição.
+A cadeia inteira cabe numa figura só (o Sankey da instanciação, gerado por `pipeline/genealogia_sankey.py`): cinco colunas — família → assinatura → mecanismo → unidade → destino — com **contagem real por nó e por aresta** (a soma se conserva em todos os estágios; as arestas cruas ficam em `resultados/genealogia_arestas.csv`). Todas as assinaturas e mecanismos aparecem pelo nome — é uma árvore de roteamento auditável, não um agregado. A última coluna nomeia o destino 1:1 com a unidade: `MEM`/`SINAL-HARNESS`/`HARNESS`/`REVISAR`/`FORA` + o título real da lição (`SINAL-HARNESS` é o erro do agente cujo conserto a mineração pôs no ambiente — o caso da unidade nº10, Ajuste 5).
 
-Todas as figuras que pintam erros dividem **uma língua de cor única** (`pipeline/paleta.py`, `COR_ERRO`, aplicada por `categoria_do_erro`): a cor é a **família** do erro (dominante, quando um nó mistura famílias); **roxo = resíduo**, **cinzas = plataforma**, cinza-claro = "outros". Um nome sem cor fixa cai em cinza **com aviso impresso** — família nova aparece como pendência, não herda a cor de outra em silêncio. O mesmo erro tem a mesma cor em qualquer figura e qualquer base.
+Todas as figuras que pintam erros dividem **uma língua de cor única** (`pipeline/paleta.py`, `COR_ERRO`, aplicada por `categoria_do_erro`): a cor é a **família** do erro (dominante, quando um nó mistura famílias); **roxo = resíduo**, **cinzas = plataforma**, **preto = erro crítico** (o agente não se recuperou — família própria desde o Ajuste 10), cinza-claro = "outros". Um nome sem cor fixa cai em cinza **com aviso impresso** — família nova aparece como pendência, não herda a cor de outra em silêncio. O mesmo erro tem a mesma cor em qualquer figura e qualquer base.
 
 ## Validação — a mesma escada, aplicada à classificação
 
@@ -115,7 +125,7 @@ Um incidente concreto ilustra por que essa disciplina importa: uma versão anter
 
 ## Limites declarados
 
-1. **Só entra erro que levanta exceção.** Erros silenciosos (código que roda e entrega resultado errado sem lançar exceção) ficam fora da genealogia — exigem detectores próprios, não este método.
+1. **O canal visível é erro que levanta exceção — mas ele já não é a única entrada.** As falhas silenciosas (ferramenta falhou e o step não levantou exceção) têm detectores próprios no notebook `falhas_silenciosas.ipynb`, e desde a consolidação (Ajuste 12, `consolidacao_unidades.ipynb`) os dois canais entram **na mesma triagem**: a ocorrência é cascata × unidade nos dois canais, e execuções/meses da recorrência contam a **união** — sem contar duas vezes a execução que tem o gesto nos dois. O que permanece fora da genealogia é o silêncio sem detector: erro que nenhum detector nem a exceção veem.
 2. **O eixo sintoma não é descrição neutra.** Os nomes de família/assinatura já carregam alguma interpretação causal — leia como descrição *assistida*, não como rótulo neutro de superfície.
 3. **Não lê intenção.** Classifica pelo que o trace mostra (mensagem + sinal local), não pelo raciocínio do agente — responde "que conteúdo evitaria o erro", não "em qual módulo ele nasceu" (lentes complementares, não rivais — ver a comparação AgentDebug/TRAIL acima).
 4. **Sem eixo de severidade.** Frequência e custo (tokens) existem; uma medida de gravidade da consequência do erro, em geral, não — um erro recuperável frequente pode pesar, na priorização por contagem, tanto quanto uma falha rara e grave.
@@ -126,4 +136,5 @@ Um incidente concreto ilustra por que essa disciplina importa: uma versão anter
 
 - As unidades de memória candidatas que este método produz alimentam diretamente os componentes Memory Store e Update Engine da [Hipótese de Arquitetura "Knowledge as Infra"](../arquitetura/hipotese-knowledge-as-infra.md).
 - O método pressupõe o layout de pasta, a disciplina de PII e a escada de validação descritos em [Metodologia de Análise de Traces](metodologia-de-analise-de-traces.md) — esta página cobre só a classificação em si.
+- As lições e sinais que o projeto decidiu **monitorar** (linha de base, regras de contagem, gatilhos de reabertura — ex.: a família "Protocolo do harness" tem limiar de reabertura caso a taxa por 1k steps supere o teto do IC95% medido na base 1) vivem versionados em [`analysis/registros/monitoramento.json`](../../analysis/registros/monitoramento.json), conferidos pelo `monitorar.py` do kit de mineração em toda base nova — ver [Governança das Análises](../referencia/governanca-das-analises.md).
 - A disciplina de verificação bibliográfica (📝/🔎/✅) que evitou o incidente do AgentDebug é a mesma documentada em [Revisão de Literatura e Disciplina de Citação](revisao-de-literatura-e-disciplina-de-citacao.md).

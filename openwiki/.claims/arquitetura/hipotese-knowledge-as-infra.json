@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:815cdeed34be9761bdd06af9ef5993af90cb921931af87852d9a84334c6d911f",
+  "pageVersion": "sha256:4020d38d7bd5efaec0fda67ed7c349c62dcf6df0540fe65ba68c26bdfe1d2617",
   "claims": [
     {
       "id": "claim_d7a352be9a5d484687582992badccd7d",
@@ -101,10 +101,28 @@
           "version": "repo-lines-v1:sha256:485a379c442ae24fbf0cc1509afb1bde7411e0c898e089216751c2255d3fd94c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZmM0ZDVjNmE2Yjg0YTQzNzEwYzg1MjJlOGJkMmVlNGFjZDMxNWY3M2RlMWVmZWFkOTc1NDA3MjBiNjY0ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNzJmNjRjZTlmZTI1Njg5NjExZjUxMDJkMDhmZDM3YmI5ZmY3MGFmNDM3ZDJiMGRjYzg3YTYyNGJiMDkyM2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NTcwNzFkZThkMWNlMDI5NDJlOTExMmMwMWM3YzNlYTZjMWNjNmI4ZGY1ZWY3Nzg1MTNiMzQ3MDFiZjNlODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyY2M5NGNkYTcwYTMxZTQ0MzYwNTBkZTcwNjc1ZjIwYmUzNzhlZmQ4ZDRjOWRjMzczNTc0NTAzMDQyYTMyM2QifQ"
         }
       ]
+    },
+    {
+      "id": "claim_c640090a05444d4c8d0f3714b3ca8eaa",
+      "statement": "The test plan for the architecture hypothesis is now specified in pocs/blueprint-m1-pocs-minimos.md: it formalizes questions Q1–Q7 (each tied to a claim of this design), the two POCs (POC-A Hermes native closed-loop learning vs. POC-B smolagents with programmatic memory control), a synthetic task suite reproducing real mined error families, build stages E0–E7, and experiments EX-1–EX-7 with explicit criteria.",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L15-L30",
+          "version": "repo-lines-v1:sha256:3d91cf4a458e33d9e580e87084987a55d6274cca8c26c449c3d81ba5f852c717:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiZGVjZjkyMmExZmZiNmZiNmEzZmQ2YTM5NDE4NTA1YmJhNmI4MTg3MjNlZjAzM2JmYmJjM2VjNTFiNjJhMDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmNTAzNTQzNmI5N2IwN2I0Mjc3YTE1YzNiOTFkYjNhZWU4NzA1NjY4YjhjZmIxZGYwYjg2YWU3MzU1NzliNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxMjY0YWU1ZjBhODQzZTAxOWU3NmFiMzY3ZTlmNTBmNWZhOTAyYWRiZTc4MWRhZTY4Y2I5ZDE2Nzg3NDVkYjQifQ"
+        },
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L63-L78",
+          "version": "repo-lines-v1:sha256:98e79e1f2b33c8b50c5c6d7576a394f6d5c83592417748cfc07567af32b56f2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkNWQwOGU5ZThhMzdjZDZiMWZhNThmYzk1OGFkMDUwMjM3YTRiYTczNmQ2M2RhNjU3NDNiOWU0M2JkNGMyNzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNmFmNzU0NjdhMmM1MDVjODE1NTVhNGQ1YzIyNWY2Yjk3YmIzZWViNjFjODdiZWMzZTBlZmI2MWQ2NGI3MjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NjBiZGZiZmNhZTEwNGY1ZDZmYjQ2NjM3ZGM0N2EwMjdiZDkzMDZlZGVlZmVmNTNlM2QzMmI5M2E0NGQ2ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0YTczYzc5NDczYjg4NzdlNTE2ODk3YTQ2NGFhNzRlODJkMzQwMzk1ZTcwY2I3MTFiMzc4OGMzNzZmOGNiNDAifQ"
+        },
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L80-L125",
+          "version": "repo-lines-v1:sha256:509b21203dac8ac8e63804a107739abba24b7d9b7fb3dcbfec6c9bf09f7618f2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3OTJjYTk3YzQyNWRiMzJkNmU3NmEzZGE2ZTQ4YmZhZDJlZTM1YzI0ZGQ3YjQzYTYxYmM2MWQyZGZkYmQwOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyNDg4M2YxOGVjMzQxODkwYzVhYWNiZDEyY2E1OTM1ZGRmZmM3MDI4ODQwOTkxNTk3Y2E1Nzg5OTg3ZmRmMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc5ZTQxNzA2ZWU1YjA5MjAwYzUwZTFiODQxMjQwYzk3ZGJkMDMwYmU4MGNjNzVhYzQ3MzllMWYwNTZmMTI3NTYifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.1",
-    "at": "2026-09-21T19:21:20.640Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-09T17:09:54.387Z"
   }
 }

@@ -5,12 +5,16 @@ description: Log de decisões de escopo/terminologia do mecanismo de memória (f
 tags: [scope-decisions, terminology, open-questions, architecture-hypothesis, reinforcement-learning, non-parametric-memory]
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-24T16:54:16.453Z
+    at: 2026-10-09T17:09:54.387Z
 sources:
   - id: openwiki-source-569719c5da69b38f321cdb6a
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py
   - id: openwiki-source-631277a618f3e5073c6d0450
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py
+  - id: openwiki-source-e252a5d791f4958574b4088a
+    resource: repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md
+  - id: openwiki-source-94c25a5250b636767039ae69
+    resource: repo://analysis/2026-10-trace-law-flow-third/pipeline/mineracao_observada.py
   - id: openwiki-source-968204141b3124543370ca68
     resource: repo://analysis/README.md
   - id: openwiki-source-7f7d00c2d53f56cf831f9d45
@@ -23,7 +27,7 @@ sources:
     resource: repo://discussion/scope-and-terminology-decisions.md
   - id: openwiki-source-d841fc5e9e282ddb91a8cfaf
     resource: repo://research-diary/Set/diario_campo_2026-09-21.md
-generated: { by: "claude-code", at: "2026-09-23T23:38:13.077Z" }
+generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
 ---
 
 Este par de documentos — [`discussion/scope-and-terminology-decisions.md`](../../discussion/scope-and-terminology-decisions.md) e [`discussion/open-questions.md`](../../discussion/open-questions.md) — funciona como o registro de governança do projeto: um é o log de **decisões já tomadas** (append-only, atualizado no lugar quando uma decisão é revisitada), o outro é a **lista viva de itens ainda não resolvidos**. Quando uma questão aberta se resolve, a resolução migra para o log de decisões e o item é apagado da lista de abertas — as duas fontes nunca duplicam o mesmo fato por muito tempo.
@@ -67,12 +71,11 @@ Ver [`discussion/open-questions.md`](../../discussion/open-questions.md) (o item
 | Confiabilidade do sinal thumbs up/down | Tutor confirmou de forma independente uma assimetria (👍 quase sem sinal, 👎 forte) em 28/08; cruzamento com a literatura de RLHF ainda pendente. |
 | Granularidade do trigger de escrita episódica (componente A): por estágio de pipeline ou por caso inteiro? | Lean de trabalho: por estágio (26/08), ainda sem aval do tutor. |
 | Gaps do write path do componente A (schema, substrato físico, tipo de vector store, chunking, o que é um "episodic trace") | Parcialmente resolvido: trace = trajetória completa, não resumo de business-record (27/08). Os outros quatro seguem abertos. |
-<!-- openwiki: broken internal link [../../discussion/promotion-policy-log-to-ltm.md] file "../../discussion/promotion-policy-log-to-ltm.md" does not exist. Fix the href or restore the target, then delete this comment. -->
-| Política de promoção log episódico → LTM (gate estilo SAGE) | Lean forte de que o gate é estruturalmente necessário, não opcional; consolidada em nota própria ([`promotion-policy-log-to-ltm.md`](../../discussion/promotion-policy-log-to-ltm.md)) com nove componentes de política ainda abertos. |
+| Política de promoção log episódico → LTM (gate estilo SAGE) | Lean forte de que o gate é estruturalmente necessário, não opcional; consolidada em nota própria ([`promotion-policy-log-to-ltm.md`](../../discussion/hipoteses/promotion-policy-log-to-ltm.md)) com nove componentes de política ainda abertos. |
 | Quem é dono do gate de admissão — mecanismo determinístico separado ou o próprio Update Engine ("curador")? | Lean atualizado em 01/09: filtro determinístico de anomalia, unificado, roda antes do Update Engine; predicado exato ainda não decidido. |
 | Hard-delete automático por threshold vs. gated/revisado por humano | Não decidido; alternativa gated dá um remit concreto ao componente G hipotético. |
 | Quais parâmetros do v1 (estático) viram adaptativos no v2, mantendo as regras fixas | Mapa por componente registrado (27/08) — princípio: "adaptativo calibra parâmetro, nunca muda regra". Não é requisito do v1, mas os parâmetros devem ser externalizados como config. |
-| Segunda extração de trace: isolar em pasta nova ou mesclar com a primeira? | Decidido (16/09): isolar primeiro, com o núcleo analítico copiado byte-idêntico entre as pastas — desde 18/09 esse núcleo vive em `pipeline/base_pipeline.py`, o que torna a exigência trivialmente verificável. **A segunda extração já aconteceu**: uma base independente de 1.000 execuções ("base 2"), que trouxe um `error.type` novo (`AgentMaxStepsError`, n=1), reabriu o bucket de protocolo do harness (22/09) e expôs que `anomesdia` data o lote de extração, não a execução — a data real passou a vir de `dat_hor_inio_exeo`. A tabela de status também chegou (`analysis/status_execucao_agente.csv`; o dicionário 1/2/3/34/67 está em `schema-e-taxonomia-de-erros.md`). O intake de uma base nova agora é operacionalizado por `pipeline/checklist.py` (censo de `error.type`, drift de colunas, checagem de sobreposição de `cod_idef_exeo` entre bases). |
+| Segunda extração de trace: isolar em pasta nova ou mesclar com a primeira? | Decidido (16/09): isolar primeiro, com o núcleo analítico copiado byte-idêntico entre as pastas — desde 18/09 esse núcleo vive em `pipeline/base_pipeline.py`, o que torna a exigência trivialmente verificável (a mecânica genérica do formato de trace mora hoje na raiz de `analysis/` — `leitor_trace.py`, `base_utils.py`, `adaptador_trace.py`, `episodios_trace.py` — e é importada, não copiada). **Duas extrações novas já aconteceram**: a "base 2" (1.000 execuções independentes, rodada na máquina de compliance — trouxe um `error.type` novo, `AgentMaxStepsError` n=1, reabriu o bucket de protocolo do harness em 22/09 e expôs que `anomesdia` data o lote de extração, não a execução — a data real passou a vir de `dat_hor_inio_exeo`) e a "base 3" (`analysis/2026-10-trace-law-flow-third/` — parquet do Athena com uma linha por passo com erro e uma janela de contexto, analisada pelo "modo observado" de `mineracao_observada.py`, sem denominador para taxas). A tabela de status também chegou (`analysis/status_execucao_agente.csv`; o dicionário 1/2/3/34/67 está em `schema-e-taxonomia-de-erros.md`). O intake de uma base nova é operacionalizado por `pipeline/checklist.py` (censo de `error.type`, drift de colunas, sobreposição de `cod_idef_exeo` entre bases — e, desde o parquet, formato e saúde das colunas tipadas/aninhadas). Detalhe das três bases: [Análises Multi-Base](../fluxos/analises-multi-base.md). |
 | Dataset gold-standard anotado por especialistas para calibrar um LLM-as-judge | Proposto em 15/09; gated na leitura própria do Rafael de Casper et al. (ainda 🔎, não lida) antes de fechar o protocolo de anotação. |
 | Filtro de anomalia deveria distinguir causa comportamental (do agente) de causa ambiental/infra antes de rotear ao Update Engine? | Levantado em 10/09 a partir da Eval Engineering Skill da LangChain; não decidido. |
 
@@ -81,3 +84,4 @@ Ver [`discussion/open-questions.md`](../../discussion/open-questions.md) (o item
 - A [Hipótese de Arquitetura "Knowledge as Infra"](hipotese-knowledge-as-infra.md) é o alvo de boa parte das questões em aberto listadas acima (componentes A–G).
 - O [Plano de Trabalho](../referencia/plano-de-trabalho.md) define as sub-atividades (Sub 1.4, 1.5, 1.6, 1.7, 3.6 etc.) que essas decisões e questões referenciam constantemente como dependência ou bloqueio.
 - Itens abertos nascem tipicamente de uma entrada do [diário de campo](../fluxos/diario-de-campo.md) ou de um [registro de reunião](../fluxos/registros-de-reuniao-e-notas-de-discussao.md) — ambos os documentos-fonte deste log citam essas entradas como proveniência de cada decisão.
+- Decisões **de método das análises de trace** (regras de trabalho, destinos decididos por achado, ajustes por data) não moram aqui — têm índice próprio em `analysis/decisoes.md`, coberto em [Governança das Análises](../referencia/governanca-das-analises.md).

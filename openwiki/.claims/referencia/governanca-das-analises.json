@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:66a2284d8de80f0b38d7965523b0eeb7eca8c8d475bbe5b1552cdfde9148e8bb",
+  "claims": [
+    {
+      "id": "claim_f91f9a8d0ff047f9947cbe64375b1701",
+      "statement": "Since 09/10/2026 analysis/plano-atual.md is no longer a to-do list — it is the schema every analysis roadmap follows plus the map of where each roadmap lives and the de-para of the old plan; roadmaps live per analysis folder (docs/04-roadmap.md for bases 1/2/3) and in roadmap-transversal.md for cross-base items, cited from outside as b1 #N, b2 #N, b3 #N, transversal #N.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/plano-atual.md#L16-L31",
+          "version": "repo-lines-v1:sha256:642ed8ebd43bb5b824764ffa846c6faa5400b1cb593a66305dee1632467f59fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhZDk2MjUzMGE3YzUwZWE1YzFkNTQ4NmRlY2ZlNzE0NDUxMTZhYjU4NDQxZTYyMjY5Y2E0MjhkZmUyMmVkY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1NWEzZDI5YmZkMTY2ZmFjMGU0NTllZjc0MjUyN2ZjZTE0OGUyYjQ5NzkwMTQzY2JhNTIwODk1OTMxYmU1MzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEifQ"
+        },
+        {
+          "resource": "repo://analysis/plano-atual.md#L7-L14",
+          "version": "repo-lines-v1:sha256:1e5410142b55105fdff3da5152a294227ee452a7f6f295dae7961dda1b078f5a:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGM0ZDk3YzAxZTk0ZDE4NWE2NTc1MGUzY2NlMjJiNzE3ZTlhYzNmY2JmOWQxMzc5YjJmNWE2MGY2MjhmOTA1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjUyZDcxMTEwM2Q1MGE0Mzc4MzBjNmZiY2QwNGZiNGJhYjQ5YTBmODJmNmQyNmQxYzc5MWM2ZTg0ODhkZDA5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTBkNDM0NGQ5YmI5OGM4OWQ0YjU1YmMwZmE2YmY3NjU0ZWE5NDg4MjJhOTFlMzZhNTIxYzFhNTkzYjAyYmRjNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjVlMWM3ODNjMGJiMGI2ZTgxYTg5Y2NiNzRjNzdkNTNmMWRlMDlhYzJlNzNhYmJkMGRhZjE3YzA5M2U5ZTE2NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0e0e774776ab4721aee7c93f1925c3ec",
+      "statement": "The roadmap schema is strict: checkbox items only, marking [x] requires written proof on the same line (commit, ledger adjustment or document), closed items move to a 'Fechado' section keeping the same number and original text, numbers are stable and never renumbered, each item fits one sentence with a context link, and one item lives in exactly one roadmap — cross-base items go to the transversal roadmap.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/plano-atual.md#L35-L74",
+          "version": "repo-lines-v1:sha256:6d373922f9996cd110d3ad851928bdeedcbb2406d2fbe60a978bddfb81c00ca1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyZDdlM2NkM2I4ZDg2MWU4ZTlkOTRhYWIwMTgxZDY2YzFjMGExMzZiZTc0ODk3NzRhMjQxYTRiYjY0ZDE4ODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhhNDI2YjM3OWM0Mzg0Y2IwNzQ5MWU1NjlmZDdmN2FkZGY0ZDE2MDFjZTY0YmJkYTlmYTA4ZjMwYmFjMGEwMzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0OTgyOGIzMGRiYjkwYTY5YWUxZDUzNDA1ZmI4NTlkYWNlZjg2YTQyYzkwYmJhZjBkNmNhNWJmMGM0MDE1YmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6a93ce69d9c44e2390565174aa9cc291",
+      "statement": "analysis/decisoes.md is a one-page index of in-force decisions (working rules, method organization, per-finding destinations, method decisions by date) each with a link to its rationale; a revoked decision is never deleted — it gets a 'revogada em <data> por <link>' annotation.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/decisoes.md#L1-L16",
+          "version": "repo-lines-v1:sha256:2e9d8d7feb369f887b746092171695832909e158b8ad9d65645f56c236e0fd44:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxYTZlMWQzODgwMDgyYTk2YWYzY2E1MjE0ZDAyN2RkOTEzMDE3Yjg0MWQxN2Y5MWI5ZTQ4MTU5OWMxYTEzOWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1MmQ3MTExMDNkNTBhNDM3ODMwYzZmYmNkMDRmYjRiYWI0OWEwZjgyZjZkMjZkMWM3OTFjNmU4NDg4ZGQwOTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4M2U5ZjEyYzQ5NWZjOGNhNzJmMDdmMjc0ZDEwOWNjNzk4OTRiMzBhMDI0NTJlMTIyZTgzZDMyOWZiODg4ZDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ec189b8d1ec44f58b3b12136ae775264",
+      "statement": "Recorded working rules include: one solution at a time (context, solution, evidence-backed argument, approval, verify on base 1, then instruct machine 2); new rules only looking at both bases; LLM reading is [assistido] (hypothesis, never fact) while deterministic verification is [conferido]; and only counts, role/tool/model names, hashes, yes/no, sizes, tokens and masked reasons may leave the compliance machine — never case text or exec_id.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/decisoes.md#L18-L25",
+          "version": "repo-lines-v1:sha256:eb3dc6a65e18fe80b8bf74529d3d33574a2c918140e77d7d6158ad1c960b1df6:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjU4NzIwNWI5Yzk2NjZjNDA0ZTZlMjQ2MDNkZDJlMzc3Y2ZjM2FmZDk0NmJkYzdkN2QxOWZhNjhkZmExZjgzZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBmZjllZjc2NjI0ODg1MGFlZTI4ZmQ1YjZlMDM1NmE5NzUxY2RkM2U5MjhhZGZjYWRhMDNjMDFlNWMxNzg0NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDA3MTAwNmE1NWFiY2Q0MDFjNjVlOTJlNjJjYzJiMDhiMmZmYzhjOTUzNDI4ZDBiYzZhN2E2MDhiYzEyZjQyZCJ9"
+        },
+        {
+          "resource": "repo://analysis/glossario.md#L108-L116",
+          "version": "repo-lines-v1:sha256:340dbba6bfbe1bdb7d3ff6e12ce515561369ece60d248f3cdf21a7d07508b0a6:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGY0MjhhNDg0OWYyYWVkZTU1MTg3ZTBkMTIxYTg5ZWM2MDQyYjlkN2U0NTA3MzNlYTFjZGE3Zjc3MGQ5ZGYyYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTgyMTE4NTgyNzkwNTY3MTIxNDYyYjEzYzVlN2MzZjhkNThmMDFhM2Y1MGM3NTgwZmQyN2FjYjJiYzg5YWY1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGQwM2FjNWRhNDg1MzhiNzMyNDY0YmJiODNkY2U2OTZhZTc4MWZhOWQ2YjI3Y2VjMmMxNDgwMmQ2M2JlZTcxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_464ab46f7ac8422493e68dd9136b22e6",
+      "statement": "analysis/glossario.md is the single source for all analysis codes — unit prefixes encode who fixes (U_ agent/memory candidate, H_ harness/platform, X_ residual, C_ critical), plus M1–M6 protocol mechanisms, the [1]–[4] invisible-bucket measures where [4] is always a 'teto' (upper bound — only reading confirms), S1–S6 plan items and certainty grades; every document using codes links it at the top and a new code enters the glossary in the same commit it appears.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/glossario.md#L1-L7",
+          "version": "repo-lines-v1:sha256:1f5f2ab4fe26afde7a2f28118ba67fb27dff7a383cba83a337f7f1290ce0275b:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRlNzY5ZTBmMjU4NTBmY2Y1NWUwMWU3MmE1MWVlY2E5MTAzMjQxYmQ5MzhjNDgzMWUzNDRkZjY5NDVlNzAyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjUyZDcxMTEwM2Q1MGE0Mzc4MzBjNmZiY2QwNGZiNGJhYjQ5YTBmODJmNmQyNmQxYzc5MWM2ZTg0ODhkZDA5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWMzY2UyMzVlZTI4MmU1MThlMDA5M2FhYjRhNThmMDc0MTliYTA5NzFmY2ZkNTUzMzBhNWQ0ZWEwM2ZkYWIyNyJ9"
+        },
+        {
+          "resource": "repo://analysis/glossario.md#L24-L26",
+          "version": "repo-lines-v1:sha256:79977bcd939930aa340968a9ee01d46df516c9b49cf4850e6a00b64b29b94a75:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjZmY2Q0NmNiMTIwMWIwNmFkZjY4YzcxZTlmZTgyNTRjYTA3N2VmOGFiYzU0ODFmYWFmY2ZkNzk0YTYxNDBhMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ5YzdiNTUwYWUyMzRhYTMwYjU2YWY2NjJkZmI4N2YxZGUyNmU4MmIxN2JhOGQ1ZDFkMTMxNzEwOTYxZGM5NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmU3MjM2NDA4NGZiMDBiMjRkODgzMmExNjI5ZWIzMGE1ZTFlNTM0YjEzZWJjYzhkZjRiY2VjNWU5NjUwZGIyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWRkYmRkN2M1MTIxNWIxYzc4NWVjY2VmYmY2MWEzYTU5MzliNmNkM2MxY2M4NGU2ZTA2ZTkwZjEwYzU0OWE1MCJ9"
+        },
+        {
+          "resource": "repo://analysis/glossario.md#L72-L77",
+          "version": "repo-lines-v1:sha256:75264357321f9abd4b8efa555a684eefa511868b507ac491363cf016fd530022:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmMxYTA5MjUyNTA4OGFmODRiOGE4MTg3NzQ2ZTE2NmUzNmU0MWYzODEyNTY2M2ZmYjZhNDY4NzZiMzNkN2M0YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTFkMGM1YTc4ZDU2ZjkzNGFhNmYwZDFhNTk1OWY0MGY2Mjc0NWFlZTgwMWY4NDUzNGRkYzExNzEyZWY1NmJhYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmQ0MjE4Mjk1ZjhiMmE3YWQ5ZTlmOGNjNzhjZjVkNWM2MzU0NWI3ZTNhOWJmYmRlOGY1MmIyNTRhNThmMWQ2ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDZkN2VhODg5ODhhZDI3YTBlMzQ2ZThhMzFiNzU3Yzc3ZDJjMzNjZjA4NmM2ODA3MDY3YWZkYzg3ZmFkM2Q4YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_73f1d98b9f4a4a15b7bb0599e8e65c32",
+      "statement": "analysis/registros/ holds the versioned JSON registries read by scripts across all bases: monitoramento.json (baseline, counting rules, reopen triggers — checked by the kit's monitorar.py at step 0 of every mining round) and esquema-memoria.json (the provisional final-memory file structure, changed only in this file with a version bump and ledger entry — read by validar_memoria.py and included in the base-3 round's code hash).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/registros/README.md#L1-L12",
+          "version": "repo-lines-v1:sha256:ef7a92ca0ad699a705737d58a9ee747fc9ec6b5309052e00f606edef5bdfe544:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNmFiYTcyNTExOGZlYTg2MTU4MWVhNjU0ZTYwNjM0OWZjYjJhMWZhZWQ1MWZhM2E1ZWQyMDVjMzJhZDk5OGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzNzAxNWNiZmViMmVhNjM3Y2U0MzVhYWFmZDk0NDU4ZDYyZGY4NWZkODQ2YmMyODYzMDUzZWJiYTdkMzZlMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://analysis/registros/esquema-memoria.json#L1-L3",
+          "version": "repo-lines-v1:sha256:d9d15dcc6b2ffe5ccd331b8102b5a43cb3459fcf35c1c9e72366453ef3e32cd2:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTZmYjA4ZmRhMWFjYjk1N2I2MTE2YmQzNzgxMWExZmU0MWEwMTYxMWMwNjMxZWRiZjc4NmQ2ODg5YTI3YTU1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMwY2ExZmQwMWJiZmQzNTRkZWIzNGRjMDJmYzI2YzYxNzBmMGNkZjlmZTA2ODA4N2EyZTJiYzM5MDQ0MGFmNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWNkZTk3NzE0YThiZTBlYzc2MWNlNWQ2MjJhZTFmMDY2ZWJlZTkwY2E4MDc5ZDc1OTJiNDJlZDFhNjMxN2Q1MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f43ec29209ab46e8a6e1676b33e45c6e",
+      "statement": "analysis/roadmap-transversal.md is the schema instance for what crosses bases — method, kit, skills, cross-base measures, platform-bound findings — and carries a reference table mapping each mining (silent failures, harness protocol, candidates, residue, critical error) to its rationale/procedure/report docs and whether a kit skill exists for it.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/roadmap-transversal.md#L102-L112",
+          "version": "repo-lines-v1:sha256:5cbe8c1749e5b02cd2a1a937fa0bb87a448b44ae6d700e672d7c7f66c6341c2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMGIzODk4NDY4ODVhNTEwYmVjNzVkMjhhYjc2YWQyMjk4ZDM3NWNiZjNjOTc2YWM0MDJkMTI3ODllMTI1ODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExMmQxNjMwZTNhNWE1Mzk0OTAwNDA3OThiYWE2ZDM4ODRhNWY0NTJkOTNjYTRlMTQ3MDkzOGNmN2M0YzRjZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMyNTk1ZGIzNTJmYTBhZmVmZDM2ODAwMTM3YzNlOGVjNTJmOWIxZDM3Y2EyYmM5OWI2ZDc5MTc3MjNhODBmYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://analysis/roadmap-transversal.md#L7-L15",
+          "version": "repo-lines-v1:sha256:9d1504d86007865ce2315830a424ff6e8a226140447a088795fabcd2e13866a7:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmY2MDU5ODAzOThhNmJjNWVmY2NkYTlhNWYxMmNlNzcwZGNlYzk4NWNjZWEzZmNhMDI1MWVlM2UzMzdlM2U2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQ4NmEzYWVlZjUzMTA5NjEyNTYyYzJmNDIyMzc2ZTZkMjIzOGY4Y2I0ZTFhMDc3M2I2MGE2NzhmYWJiNjA4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTRmNmI3ODQyYzkzMTkyMjUxYmIyMDg1ZTQ0MTNiNTc0NDM0YWVkZThhNGI0Yjg1Mzg1ZGRmMTE3OTllZmZjNCJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-09T17:09:54.387Z"
+  }
+}
