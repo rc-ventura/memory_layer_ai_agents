@@ -59,7 +59,7 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
     commit.
 12. **Piloto de mineração de ponta a ponta: inventário do sandbox** (`U_sandbox`: 3.653 erros, 16 papéis). A lição
     sai da própria mensagem de erro, então fecha só com o parquet. **Antes:** decidir o localizador do arquivo final
-    da memória — o [esquema](../../esquema-memoria.json) pede `idx`, que a base 3 não tem; a proposta é aceitar
+    da memória — o [esquema](../../registros/esquema-memoria.json) pede `idx`, que a base 3 não tem; a proposta é aceitar
     `step_ref` com a origem e a fonte.
 7. **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
    procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),

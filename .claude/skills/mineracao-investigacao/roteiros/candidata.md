@@ -5,7 +5,7 @@ tem `investigação:candidata`. **Entrada:** o relatório da parte genérica e a
 `pipeline/resultados/mineracao/<u>/` (`perfil`, `sub_unidades`, `antes`, `depois`, `estabilidade`, `casos`).
 **Saídas:**
 - o dossiê, no esqueleto do kit;
-- `memoria_<u>_<BASE_ID>.json`, no esquema da análise (`analysis/esquema-memoria.json`);
+- `memoria_<u>_<BASE_ID>.json`, no esquema da análise (`analysis/registros/esquema-memoria.json`);
 - `regras.json`, com as regras que funcionaram.
 
 O porquê das perguntas está no `06` §9: o Passo 2 é o que extrair, o Passo 3 é o conserto, o Passo 7 é a causa raiz e

@@ -167,7 +167,7 @@ interrompe aquela unidade, não toda a mineração visível. Custo alto não é 
 nem confiança. Nenhum texto histórico `UNI` é copiado automaticamente como
 orientação checada.
 
-O [esquema 0.1](../../esquema-memoria.json) continua inalterado nesta entrega.
+O [esquema 0.1](../../registros/esquema-memoria.json) continua inalterado nesta entrega.
 Seu `location.idx` é ordinal de ActionStep, desconhecido em janelas. Os perfis
 preservam localizador real, mas **não são arquivos finais de memória**. Antes
 de finalizar uma candidata, escolher: metadados só dos erros para recuperar

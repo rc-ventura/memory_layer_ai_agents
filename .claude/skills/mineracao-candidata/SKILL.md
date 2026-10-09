@@ -15,7 +15,7 @@ diagramas da rodada e do ciclo de vida, está em [`referencias/fluxo.md`](refere
 **Saída:**
 - o relatório da parte genérica;
 - o dossiê;
-- `pipeline/resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json`, no esquema da análise (`analysis/esquema-memoria.json`),
+- `pipeline/resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json`, no esquema da análise (`analysis/registros/esquema-memoria.json`),
   aprovado pelo `scripts/validar_memoria.py`.
 
 ## 1 · Preparação: a skill `mineracao-base`
@@ -67,7 +67,7 @@ específica:
 - **`notebook:<nome>`:** rode `uv run jupyter nbconvert --to notebook --execute --inplace <nome>.ipynb` e leve o
   registro que ele grava para o esquema. Para o notebook que grava `resultados/unidades_memoria.json`:
   ```
-  uv run python <esta skill>/scripts/validar_memoria.py <analysis>/esquema-memoria.json --converter resultados/unidades_memoria.json --unidade <u> --base <BASE_ID> --parte-especifica notebook:<nome> --comando "<o comando do notebook>" --saida resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json
+  uv run python <esta skill>/scripts/validar_memoria.py <analysis>/registros/esquema-memoria.json --converter resultados/unidades_memoria.json --unidade <u> --base <BASE_ID> --parte-especifica notebook:<nome> --comando "<o comando do notebook>" --saida resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json
   ```
   Se o registro tiver várias lições, acrescente `--indice <posição da lição>`.
 - **`investigação:candidata`:** abra a skill `mineracao-investigacao` com o roteiro `candidata`. A leitura é em duas
@@ -79,7 +79,7 @@ específica:
 ## 6 · O arquivo final e a entrega
 
 ```
-uv run python <esta skill>/scripts/validar_memoria.py <analysis>/esquema-memoria.json pipeline/resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json
+uv run python <esta skill>/scripts/validar_memoria.py <analysis>/registros/esquema-memoria.json pipeline/resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json
 ```
 
 - **Reprovado:** não entregue. Corrija o que falta e rode de novo.

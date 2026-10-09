@@ -48,7 +48,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para o §2 com o commit, sai do
 
 | Achado | Destino | Porquê / onde |
 |---|---|---|
-| Resposta final fora do envelope (M1), ferramenta que concorre com o `final_answer` (M2) | sinal de harness; a concorrente: **monitorar, não dar como corrigida** (02/10) | `10` §4, `11` §1.3; `analysis/monitoramento.json` |
+| Resposta final fora do envelope (M1), ferramenta que concorre com o `final_answer` (M2) | sinal de harness; a concorrente: **monitorar, não dar como corrigida** (02/10) | `10` §4, `11` §1.3; `analysis/registros/monitoramento.json` |
 | "O risco à resposta está na plataforma" ([4]) | hipótese, não achado | `14` §5; 4.1c |
 | Resposta vazia aceita (M5), narração executada como código (M6) | achado de harness / plataforma | `10` §4; 4.9 |
 | Surtos da base 1 (modo) e da base 2 (modelo) | não-memória; achado para a plataforma | `10`, `11` |
@@ -70,7 +70,7 @@ ganha "→ plano-atual 4.x". Quando termina, vai para o §2 com o commit, sai do
 - **06/10, a leitura e o gate:** leitura em duas etapas (aberta → gate da lista → fechada em outros casos, ≥ 20) ·
   "os leitores discordam" não é "não há lição" · o gate do pesquisador · dividir a unidade é resultado normal →
   `06` §10, `16`.
-- **06/10, monitorar:** determinístico (`analysis/monitoramento.json`, um só para as pastas de todas as bases;
+- **06/10, monitorar:** determinístico (`analysis/registros/monitoramento.json`, um só para as pastas de todas as bases;
   `monitorar.py` no passo 0 de toda mineração). Em monitoramento: `U_nome_inventado`, `U_campo_inexistente`, a
   ferramenta concorrente do `final_answer` → `16` § O monitoramento.
 - **06/10, o kit:** mora no próprio `.claude/`, versionado; cada mineração tem um nome só (`/mineracao-<assunto>`);

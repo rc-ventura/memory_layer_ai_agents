@@ -5,7 +5,7 @@ transforma o registro que um notebook específico grava no formato desse esquema
     python validar_memoria.py <esquema-memoria.json> --converter <registro.json> --unidade <u> --base <BASE_ID>
                               --parte-especifica notebook:<nome> --comando "<o que reproduz o registro>" --saida <arquivo>
 
-Os campos e a versão vêm do esquema (analysis/esquema-memoria.json), nunca deste script: mudar a estrutura da memória
+Os campos e a versão vêm do esquema (analysis/registros/esquema-memoria.json), nunca deste script: mudar a estrutura da memória
 é mudar só o esquema. A conferência:
   - a versão carimbada no arquivo é a do esquema;
   - todo campo obrigatório existe no registro e tem o tipo do esquema;

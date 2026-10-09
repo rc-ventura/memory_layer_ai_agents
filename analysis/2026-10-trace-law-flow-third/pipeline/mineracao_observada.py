@@ -66,7 +66,7 @@ def versoes_codigo():
              HERE / "validacao" / "validar_observada.py", HERE / "validacao" / "conferir_rodada_observada.py",
              HERE.parent.parent / "adaptador_trace.py",
              HERE.parent.parent / "episodios_trace.py", HERE.parent.parent / "leitor_trace.py",
-             HERE.parent.parent / "esquema-memoria.json"]
+             HERE.parent.parent / "registros" / "esquema-memoria.json"]
     return {p.relative_to(HERE.parent.parent).as_posix(): hash_codigo(p) for p in paths}
 
 
