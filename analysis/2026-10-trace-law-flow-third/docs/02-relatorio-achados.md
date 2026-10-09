@@ -157,7 +157,7 @@ fotografadas na máquina 2. As figuras foram lidas das fotos; **os totais que fe
 ### 7.1 · Os pendentes estão concentrados num papel e num mês
 
 Os 5.818 erros de nome não definido sem passo anterior identificado, pelas linhas do CSV (a soma das linhas lidas é
-5.817 erros e 101,7 mi de tokens; falta uma linha de 1 erro, cortada na foto):
+5.817 erros e 101,7 mi de tokens; falta 1 erro, provavelmente uma linha acima do corte da foto):
 
 | Papel | Mês | Erros | Tokens |
 |---|---|---:|---:|
@@ -209,9 +209,9 @@ gráfico):
 - **O retorno-string pesa pelos dois lados:** é frequente e cada erro custa o dobro da média. É por isso que lidera em
   tokens (29%).
 - **O protocolo do harness e o retorno colado de volta no código pesam só pela frequência:** o erro é barato.
-- **O custo por erro é o contexto acumulado até o erro**, não a gravidade do erro (tokens do passo, sem a recuperação).
-  O ranking por tokens, sozinho, não ordena o que vale minerar. Confirmar com a divisão entre tokens de entrada e de
-  saída ([roadmap](04-roadmap.md) #13).
+- **Tokens por erro são os do passo com erro, sem a recuperação.** O ranking por tokens, sozinho, não ordena o que vale
+  minerar. A leitura provável é que o custo reflete o contexto acumulado até o erro, e não a gravidade dele; **não
+  confirmada**: depende da divisão entre tokens de entrada e de saída ([roadmap](04-roadmap.md) #13).
 
 ### 7.4 · Poucos papéis concentram as candidatas
 
@@ -279,8 +279,8 @@ Passo seguinte ao erro, por candidata (figura do painel; percentuais lidos da fi
   erro dela é dos mais caros (44 mil tokens): é onde uma memória teria mais a ganhar, apesar de ter só 180 erros.
 - **Sem erro no passo seguinte não é sucesso:** pode ser outro problema que não é erro estruturado. A janela é de um
   passo; o fim da execução não está no arquivo.
-- **"O seguinte é a resposta final" tem leitura dupla:** no campo inexistente (77%) e no texto longo em literal (50%) o
-  agente parece resolver e entregar, ou desistir e entregar; a janela não diz qual dos dois.
+- **"O seguinte é a resposta final" tem leitura dupla:** no campo inexistente (77%), no texto longo em literal (50%) e no
+  inventário do sandbox (48%) o agente parece resolver e entregar, ou desistir e entregar; a janela não diz qual dos dois.
 
 ### 7.7 · O que o painel não mostra
 
