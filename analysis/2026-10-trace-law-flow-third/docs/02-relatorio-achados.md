@@ -150,8 +150,9 @@ sem resposta final (99,9% das execuções com erro têm resposta gravada, contra
 ## 7 · Leituras do painel
 
 Fonte: `<rodada>/painel/painel.md` e as figuras da pasta, mais as linhas de `consolidacao_pendencias_papel_mes.csv`
-fotografadas na máquina 2. As figuras foram lidas das fotos; **os totais que fecham com as tabelas das seções 2 e 3
-(os valores por mês somam o total de cada unidade) estão marcados como conferidos**. Contagem de erros não é taxa
+fotografadas na máquina 2. Todos os números abaixo foram lidos das fotos de 09/10 e **conferidos contra as tabelas das
+seções 2 e 3** (os valores por mês somam o total de cada unidade; os por papel somam 16.741; as linhas dos pendentes
+somam 5.817 dos 5.818, a que falta está acima do corte da foto). Contagem de erros não é taxa
 ([§6](#6--limitações-que-afetam-a-leitura)).
 
 ### 7.1 · Os pendentes estão concentrados num papel e num mês
@@ -248,8 +249,9 @@ linhas):
 
 - **Agosto de 2026 tem 10.963 dos 23.034 erros observáveis (48%)**, e mais pelo menos 5.708 dos pendentes. Os erros de
   protocolo do harness (90% em agosto) e o timeout (só em agosto) se concentram nesse mês.
-- **Duas candidatas começam tarde:** o retorno colado de volta no código aparece de fato a partir de maio (45) e cresce
-  até julho; o argumento nomeado e o inventário do sandbox crescem de abril a julho.
+- **O retorno colado de volta no código começa tarde:** o primeiro erro é de fevereiro (1), são 45 em maio e 389 em
+  junho; o pico é julho (686). O argumento nomeado (1.810) e o inventário do sandbox (2.029) têm o pico em julho e caem em
+  agosto (834 e 1.081); o retorno-string e o protocolo do harness têm o pico em agosto.
 - **O campo inexistente subiu até maio e caiu a 24 e 52 em julho e agosto.** Pode ter sido corrigido, ou o papel rodou
   menos; sem o denominador, é só uma observação a verificar na mineração dele.
 - **O timeout em um mês e um papel segue compatível com incidente pontual**, como na §4; continua em aberto
