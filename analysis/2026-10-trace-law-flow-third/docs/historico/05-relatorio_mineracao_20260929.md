@@ -1,7 +1,7 @@
 <!--
 Transcrição das fotos do guia `relatorio_mineracao_20260929.md` (máquina 2, `…/third/docs/`), feita em 09/10/2026.
 É o guia que acompanha a base minerada de erros e a query `ICTI_crossmemory_query_mineracao_erros`
-(ver `query_mineracao_erros.sql` nesta pasta). Não é a documentação atual da base 3 (essa está em `../`).
+(ver `06-ICTI_crossmemory_query_mineracao_erros.txt` nesta pasta). Não é a documentação atual da base 3 (essa está em `../`).
 Texto fiel ao das fotos. Marcas: `[linhas N–M não visíveis na foto]` onde o corte da foto impediu a leitura.
 Fotos usadas: IMG_5307 a IMG_5364 da pasta `relatorio_query_mineracao`. Pontos cortados na foto: fim da linha 389 (seção 7), linhas 955–956 (seção 19), 1241–1244 (seção 26) e 1313–1316 (seção 27).
 -->
