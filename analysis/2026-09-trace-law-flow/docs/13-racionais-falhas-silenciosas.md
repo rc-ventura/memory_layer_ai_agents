@@ -13,7 +13,7 @@ chamam as mesmas funções do `base_pipeline.py`. A história, na ordem em que a
 
 **Por que um conjunto próprio (decisão do Rafael, 22/09; nomes e desenho em 01/10).** É um método diferente do resto do
 notebook da esteira — a entrada não é a mensagem de uma exceção, é o texto que a ferramenta devolveu e o código que a
-chamou. Roadmap item 26; `../../plano-atual.md` §1.
+chamou. Roadmap item 26; `../../decisoes.md`.
 
 ---
 

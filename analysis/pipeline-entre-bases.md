@@ -706,8 +706,9 @@ não dependesse de leitura.
 
 ## 5. Próximas etapas — o plano
 
-> **O plano vivo está em [`plano-atual.md`](plano-atual.md) (desde 01/10/2026):** o que vale, o que foi feito, o que
-> ficou velho e o que vem agora. Esta seção ficou como **registro de cada etapa**. A tabela abaixo é a ordem de 25/09.
+> **O plano vivo foi, de 01/10 a 09/10/2026, o [`plano-atual.md`](plano-atual.md); desde 09/10 o que vale está em
+> [`decisoes.md`](decisoes.md) e o que fazer, no roadmap de cada análise** (o schema e o de-para estão no `plano-atual.md`).
+> Esta seção ficou como **registro de cada etapa**. A tabela abaixo é a ordem de 25/09.
 
 Cada etapa segue o combinado: **contexto verificado → solução → por que ela e não outra → o que falta de você →
 critério de aceitação.** Uma etapa por vez; cada uma abre uma nova conversa de plano. A ordem segue os baldes: primeiro

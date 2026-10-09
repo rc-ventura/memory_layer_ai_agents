@@ -11,7 +11,7 @@ investigação por leitura de caso: dois leitores, regra contada, leitura em dua
 monitoramento). É o mesmo papel do `12` e do `15`.
 
 **Regra de ouro:** o LLM propõe, o script conta. Nenhum número da mineração sai da leitura de um modelo, e o destino é
-decisão do pesquisador. Desenho decidido com o Rafael em 05/10/2026 (`plano-atual.md`, "O que vale").
+decisão do pesquisador. Desenho decidido com o Rafael em 05/10/2026 (`decisoes.md`).
 
 ## Como funciona
 
@@ -176,7 +176,7 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 ## O monitoramento (decidido com o Rafael em 06/10/2026)
 
 "Monitorar" não é uma nota para alguém lembrar: é um registro versionado e um script que para a rodada.
-- **O registro:** [`../../monitoramento.json`](../../monitoramento.json), em `analysis/`, **um só para as pastas de
+- **O registro:** [`../../registros/monitoramento.json`](../../registros/monitoramento.json), em `analysis/`, **um só para as pastas de
   todas as bases** (cada base tem a sua pasta de análise, e o monitoramento compara bases; versionado; só decisões,
   contagens e regras, nenhum dado de caso). Uma decisão de monitorar tomada na máquina de compliance volta para este
   arquivo, depois do `varrer_pii.py`. Cada item tem: o que é, o tipo (memória rara · sinal de harness), quando e
@@ -213,7 +213,7 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 
 ## O arquivo final — o esquema da memória
 
-- **A estrutura** está em [`../../esquema-memoria.json`](../../esquema-memoria.json): versão 0.1, provisória. Os
+- **A estrutura** está em [`../../registros/esquema-memoria.json`](../../registros/esquema-memoria.json): versão 0.1, provisória. Os
   campos do `06` §9 Passo 8 vêm do TRAIL (`location`, `evidence`, `impact`), do AgentDebug (`description`,
   `correction_guidance`) e da produção própria do projeto (`category`, `scope`, `occurrences`, `status`, `validation`);
   a comparação está no `01` §8.
@@ -308,7 +308,7 @@ A partição é dado que ninguém usou para escrever as regras. Ela não bloquei
 abaixo dos limiares numa partição nova, a lição volta ao estágio 1 (uma entrada no livro-razão). É também o teste de que
 a lição continua valendo no tempo.
 
-**Ou a decisão do Rafael**, registrada no `plano-atual.md`.
+**Ou a decisão do Rafael**, registrada no `decisoes.md`.
 
 **Depois do notebook, o LLM continua, com outro papel.** O notebook automatiza a parte repetitiva (reconhecer, contar,
 classificar os casos pela regra). A investigação por LLM passa a fazer três outras coisas:

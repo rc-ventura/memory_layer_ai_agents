@@ -862,7 +862,7 @@ seção, o método cobriria só um terço das ocorrências.
   (por que o agente escreveu aquilo) continua fora de alcance. O teste que decide se a memória basta é o mesmo, o replay
   contrafactual: se a reincidência cai depois da correção injetada, era buraco de hábito; se persiste, é harness. Por
   isso a `correction_guidance` de uma lição de hábito fica `hipotese` até as POCs.
-- **O Passo 8 (o formato final)** passou a morar num lugar só, ajustável: `analysis/esquema-memoria.json`.
+- **O Passo 8 (o formato final)** passou a morar num lugar só, ajustável: `analysis/registros/esquema-memoria.json`.
 
 ### A regra que não muda: o modelo propõe, o script conta
 
@@ -924,7 +924,7 @@ existe, mas a redação está em aberto; várias causas; certa, mas rara) e regi
 
 **8 · Monitorar é determinístico.** Uma lição certa, mas rara, não vira memória nem é descartada: fica em
 monitoramento. Uma anotação dependeria de alguém lembrar, numa base nova, que aquela lição estava sendo acompanhada.
-Por isso o monitoramento é um registro versionado (`analysis/monitoramento.json`, um só para as pastas de todas as bases),
+Por isso o monitoramento é um registro versionado (`analysis/registros/monitoramento.json`, um só para as pastas de todas as bases),
 com a linha de base, as regras que separam as sub-lições e os gatilhos, e um script que roda no começo de toda
 mineração e para a rodada com alerta. Na base 2, a lição do nome usado sem ter sido definido tem 118 erros, e é ali que
 o alerta deve disparar.
@@ -932,7 +932,7 @@ o alerta deve disparar.
 ### Onde ver o resto
 
 O passo a passo está no [`16-procedimento-mineracao-candidatas.md`](16-procedimento-mineracao-candidatas.md); as
-decisões, com data, no `plano-atual.md` ("Decidido em 05/10" e "Decidido em 06/10"); os dossiês das duas investigações,
+decisões, com data, no `decisoes.md` (decisões de 05/10 e de 06/10); os dossiês das duas investigações,
 com a evidência caso a caso, em `../pipeline/resultados/mineracao/<lição>/` (git-ignored, com identificadores).
 
 ---

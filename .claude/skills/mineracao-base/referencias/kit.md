@@ -117,7 +117,7 @@ pedindo em texto ("minere o protocolo da base X"). Uma execução dela numa base
 - `/mineracao-silenciosas <pasta da análise>`: preparação → auditor em paralelo → mineração das tabelas → encontro → relatório com as paradas.
 - `/mineracao-protocolo <pasta da análise>`: o mesmo fluxo para o protocolo do harness (auditoria `audit_recompute10`).
 - `/mineracao-candidata <U_...> [<pasta>]`: minera uma candidata a memória e entrega o arquivo final no esquema da memória
-  (`analysis/esquema-memoria.json`). O desenho está em `.claude/skills/mineracao-candidata/referencias/fluxo.md`.
+  (`analysis/registros/esquema-memoria.json`). O desenho está em `.claude/skills/mineracao-candidata/referencias/fluxo.md`.
 - `/propor-notebook <U_...>`: só quando a lição cumpre a regra de criação do procedimento; escreve em `propostas/` e
   pede o laudo do validador.
 - `/investigar silenciosas S2 [<pasta>]` ou `/investigar protocolo P2 [<pasta>]`: uma parada até o dossiê de decisão.

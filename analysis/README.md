@@ -16,7 +16,7 @@ Each analysis lives in its own dated folder (`YYYY-MM-slug/`) containing:
   range** (the mining notebook owns §11.x, the next takes §12.x, and so on — a number is never reused);
 - `docs/` — the narrative documents: `01-racionais.md` (the plain-language logic), `02-relatorio-achados.md`
   (the findings report, Portuguese), `03-procedimento-validacao.md` (validation/audit procedure),
-  `04-roadmap.md` (the analysis' numbered backlog — what to do *now*, across analyses, lives in [`plano-atual.md`](plano-atual.md)), `05-schema.md` (the raw-trace schema). Each analysis pass gets its own
+  `04-roadmap.md` (the analysis' numbered backlog, in checkboxes — the schema every roadmap follows is in [`plano-atual.md`](plano-atual.md); what crosses bases is in [`roadmap-transversal.md`](roadmap-transversal.md)), `05-schema.md` (the raw-trace schema). Each analysis pass gets its own
   numbered pair named after the pass — `06-racionais-mineracao-unidades-n2-n10.md` +
   `07-relatorio-mineracao-unidades-n2-n10.md` for the nº2/nº10 mining pass, so the doc slug matches the
   notebook slug (`mineracao_unidades_n2_n10.ipynb`) — keeping the original section numbering so existing

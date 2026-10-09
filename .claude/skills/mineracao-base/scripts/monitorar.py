@@ -160,10 +160,13 @@ def main():
     ap.add_argument("pasta"); ap.add_argument("--desde"); ap.add_argument("--ate"); ap.add_argument("--item")
     x = ap.parse_args()
     pasta = os.path.abspath(x.pasta)
-    candidatos = [os.path.join(pasta, "monitoramento.json"), os.path.join(os.path.dirname(pasta), "monitoramento.json")]
+    acima = os.path.dirname(pasta)
+    candidatos = [os.path.join(pasta, "monitoramento.json"),
+                  os.path.join(acima, "registros", "monitoramento.json"),   # o registro único das bases (analysis/registros/)
+                  os.path.join(acima, "monitoramento.json")]
     arq = next((a for a in candidatos if os.path.exists(a)), None)
     if not arq:
-        print("FALTA o monitoramento.json (nem na pasta da análise nem na pasta acima): o monitoramento não rodou")
+        print("FALTA o monitoramento.json (nem na pasta da análise nem em analysis/registros/): o monitoramento não rodou")
         sys.exit(2)
     print(f"registro: {arq}")
     itens = json.load(open(arq, encoding="utf-8"))["itens"]

@@ -297,7 +297,7 @@ então a pergunta estava aberta.
 ## 8 · Minerar uma candidata a memória (kit 0.5.0)
 
 `/mineracao-candidata <U_...>`: a parte genérica para todas as lições → o funil → a parte específica → o arquivo final no
-esquema da memória (`analysis/esquema-memoria.json`). Os diagramas estão em
+esquema da memória (`analysis/registros/esquema-memoria.json`). Os diagramas estão em
 `skills/mineracao-candidata/referencias/fluxo.md`.
 
 **A parte genérica, nas 11 candidatas da base 1:**

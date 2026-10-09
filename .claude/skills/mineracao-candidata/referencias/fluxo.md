@@ -37,7 +37,7 @@ flowchart TD
 - **A parte genérica** é a mesma para todas as lições. Ela descreve a lição (recorrência, sub-unidades, antes, depois,
   estabilidade) e grava a população. Ela não escreve a lição.
 - **O funil** é uma tabela do procedimento: para cada lição, `notebook:<nome>` ou `investigação:candidata`.
-- **O arquivo final** segue o esquema da análise (`analysis/esquema-memoria.json`). Cada campo diz se é `checado`
+- **O arquivo final** segue o esquema da análise (`analysis/registros/esquema-memoria.json`). Cada campo diz se é `checado`
   (com o comando), `hipotese` ou `pendente`.
 
 ## O ciclo de vida da parte específica

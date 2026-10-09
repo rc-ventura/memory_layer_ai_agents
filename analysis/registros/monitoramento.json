@@ -26,7 +26,7 @@
         {"tipo": "sub_muda", "delta": 0.3},
         {"tipo": "sem_regra", "fracao": 0.2}
       ],
-      "outras_bases": {"base2": "118 erros (plano-atual 4.11); a contar na máquina de compliance"}
+      "outras_bases": {"base2": "118 erros (b2 #3); a contar na máquina de compliance"}
     },
     {
       "id": "U_campo_inexistente",
@@ -53,7 +53,7 @@
       "tipo": "sinal de harness",
       "decidido_em": "2026-10-02",
       "decisao": "monitorar, não dar como corrigido: aparece só com a declaração antiga (dez/2025) e some com a nova (jan/2026)",
-      "onde_decidido": "plano-atual.md, Destinos já decididos; Ajuste 16",
+      "onde_decidido": "decisoes.md, Destinos decididos; Ajuste 16",
       "populacao": "evidencia/protocolo/casos.csv",
       "gerar": "uv run python drill_down.py protocolo (de dentro de pipeline/)",
       "filtro": ["anterior_ferramenta_final=True"],
@@ -62,7 +62,7 @@
       "gatilhos": [
         {"tipo": "aparece_desde", "mes": "2026-01"}
       ],
-      "outras_bases": {"base2": "dez/2025, com a declaração antiga (plano-atual, Destinos já decididos)"}
+      "outras_bases": {"base2": "dez/2025, com a declaração antiga (decisoes.md, Destinos decididos)"}
     }
   ]
 }

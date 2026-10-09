@@ -107,7 +107,7 @@ No notebook, §13.7. Os números da base 1 são a referência (inventário 90; R
   consolidação muda contra a triagem só do visível. Base 1: só a `U_repr_colado` (6 → 12). Conferência independente:
   bloco G do `audit_recompute9`.
 - Registro: números no `14`; mudança de regra no livro-razão (gatilho → evidência → mudança → verificação → o que
-  replicar); o item no `plano-atual.md`.
+  replicar); o item no roadmap (`b1 #26`).
 
 ## Conferências
 
