@@ -13,7 +13,7 @@ Proponha um notebook específico para a lição indicada no pedido (`$ARGUMENTS`
      (`valor_da_licao.py`). **E confiança:** dois leitores às cegas, com pelo menos 20 casos, kappa ≥ 0,6, e as regras
      do `regras.json` contadas com concordância ≥ 90% e "pega a mais" ≤ 10% (no painel, "pronta para notebook"), **e a
      decisão do gate registrada como "propor o notebook"** no `decisoes.json`. Ou:
-   - há uma decisão minha registrada no `plano-atual.md`.
+   - há uma decisão minha registrada no `analysis/decisoes.md`.
 
    Se nenhuma vale, **pare** e diga qual critério falta, com os números.
 2. **Escreva só em `propostas/<u>/`:**

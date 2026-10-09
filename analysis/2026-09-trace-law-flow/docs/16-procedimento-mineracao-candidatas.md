@@ -11,7 +11,7 @@ investigação por leitura de caso: dois leitores, regra contada, leitura em dua
 monitoramento). É o mesmo papel do `12` e do `15`.
 
 **Regra de ouro:** o LLM propõe, o script conta. Nenhum número da mineração sai da leitura de um modelo, e o destino é
-decisão do pesquisador. Desenho decidido com o Rafael em 05/10/2026 (`plano-atual.md`, "O que vale").
+decisão do pesquisador. Desenho decidido com o Rafael em 05/10/2026 (`decisoes.md`).
 
 ## Como funciona
 
@@ -308,7 +308,7 @@ A partição é dado que ninguém usou para escrever as regras. Ela não bloquei
 abaixo dos limiares numa partição nova, a lição volta ao estágio 1 (uma entrada no livro-razão). É também o teste de que
 a lição continua valendo no tempo.
 
-**Ou a decisão do Rafael**, registrada no `plano-atual.md`.
+**Ou a decisão do Rafael**, registrada no `decisoes.md`.
 
 **Depois do notebook, o LLM continua, com outro papel.** O notebook automatiza a parte repetitiva (reconhecer, contar,
 classificar os casos pela regra). A investigação por LLM passa a fazer três outras coisas:

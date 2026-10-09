@@ -74,7 +74,7 @@ Os números entre colchetes são as seções da saída do `drill_down.py silenci
 | **[2]** | o que vem depois | o 1º erro com exceção do mesmo papel nos 3 steps seguintes (se nenhum, a falha passou sem rastro) |
 | **[3]** | contrato precedido | quanto das memórias de contrato de retorno vem logo depois de uma falha silenciosa |
 | **[4]** | candidato a sucesso falso | a ferramenta falhou de verdade e o papel entregou a resposta final sem ela ter funcionado — **teto**, só a leitura confirma |
-| **[4b]** | sucesso falso conferido (proposta) | o mesmo, conferido pelo estado final das variáveis (`txt_vrvl_locl`) — plano-atual 4.1c |
+| **[4b]** | sucesso falso conferido (proposta) | o mesmo, conferido pelo estado final das variáveis (`txt_vrvl_locl`) — `transversal #1` (antigo plano 4.1c) |
 
 **Sucesso falso** = a execução parece ter dado certo, mas a resposta usa um dado que a ferramenta não entregou.
 **Desfecho de uma falha real de ferramenta** (o que aconteceu com a tarefa — não é família, submecanismo nem unidade;
@@ -90,7 +90,7 @@ recuperação · [6] cascata (o que vem logo depois) · [7] modo do agente (vers
 
 ## 6 · Os itens do plano (S1–S6, D2, números como 4.2b)
 
-Os números (4.1b, 4.2b-0, 4.11…) são as seções do [`plano-atual.md`](plano-atual.md) §4. Os códigos S e D vêm da
+Os números (4.1b, 4.2b-0, 4.11…) são as seções do plano antigo (de 06/10/2026); onde cada um está hoje, no de-para do [`plano-atual.md`](plano-atual.md) §3. Os códigos S e D vêm da
 investigação do erro crítico (01/10):
 
 | Código | Nome |

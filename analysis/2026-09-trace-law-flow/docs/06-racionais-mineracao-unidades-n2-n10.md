@@ -932,7 +932,7 @@ o alerta deve disparar.
 ### Onde ver o resto
 
 O passo a passo está no [`16-procedimento-mineracao-candidatas.md`](16-procedimento-mineracao-candidatas.md); as
-decisões, com data, no `plano-atual.md` ("Decidido em 05/10" e "Decidido em 06/10"); os dossiês das duas investigações,
+decisões, com data, no `decisoes.md` (decisões de 05/10 e de 06/10); os dossiês das duas investigações,
 com a evidência caso a caso, em `../pipeline/resultados/mineracao/<lição>/` (git-ignored, com identificadores).
 
 ---

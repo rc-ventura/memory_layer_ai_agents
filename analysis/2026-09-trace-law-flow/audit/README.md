@@ -4,7 +4,7 @@
 
 **Para que serve:** responder "isso já foi auditado?" sem abrir cada relatório. Uma linha por auditoria e uma por
 script de recomputação. Quando uma auditoria nova chegar: o relatório entra aqui com o estado **aberta**, as
-ressalvas viram item no [`../../plano-atual.md`](../../plano-atual.md), e a resposta do autor entra no próprio
+ressalvas viram item no roadmap da análise (o schema em [`../../plano-atual.md`](../../plano-atual.md)), e a resposta do autor entra no próprio
 relatório como **Parte II**. Só então o estado vira **fechada**.
 
 **Regras que valem para todas:**
