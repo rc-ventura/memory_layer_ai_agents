@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b244c0faff1f8ee4aab1421bc9d68f89c056e617d839e0476729e3c3635d7a0a",
+  "pageVersion": "sha256:f2bc28dbb30864cbda34402ae956b5cf51ebe6bb55adeb4e1206de83998e576a",
   "claims": [
     {
       "id": "claim_1499082288084005b7ced44849f00531",
@@ -51,10 +51,42 @@
           "version": "repo-lines-v1:sha256:3cfb61417577f2ea2eef074c1bba0c53ac66a1297952b18d4a8dccc58d7144a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGRiNmQxOGU3ZGY5ZTgxOTc5YzM2ODczMzI0NjU1OTAwNjYwNGE4Mzc5MTIxYWQ4ZjAzOTM4NDBmMTMzZDYxMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUwOGNlZDVmMzI3MjhkZmQyZGY1OWE5YmZjODEzZDY4MTExZWM5ZmIxMDM4MDRhMmQ0YWQ4ZGIxMjA4MjM2MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzdjY2M2M2JkNjNjYjI1ZTg4ZTY1YzhlMWZiMDY2MDQ5M2MzZmI2Y2YxMmFhOGU5MDJkNTU0NzNmMGViZDg4OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_cb5c7d0730d346bd8b40d00fe21ebe97",
+      "statement": "analysis/ now spans three trace bases with different extraction shapes (the reference complete-trace folder 2026-09-trace-law-flow/, the docs-only second sample mined inside the compliance machine, and the Parquet window extraction 2026-10-trace-law-flow-third/), plus shared root modules (leitor_trace.py, adaptador_trace.py, episodios_trace.py, base_utils.py), a small pytest suite under analysis/tests/, versioned JSON registries in analysis/registros/ and governance docs (plano-atual.md, decisoes.md, glossario.md, pipeline-entre-bases.md, roadmap-transversal.md).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/README.md#L12-L14",
+          "version": "repo-lines-v1:sha256:8b4e5907051e81a77b6f859317aebbc32a305e76bbb65109af1aae243f4b7cc3:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU2N2MwYjQyYzMwZmY5MjY0Y2MzNjk0YjEyMDFiNDJlODU0OWEzM2NlZDg0MWQzNTI0ZjAyMTg0MTNkMzY3NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzMzMzQ5NGI1ZTQ1ZDllZTBjNTc3M2E4OWRkMzIxY2E1MTkzNDZmMjM5NjQ2YjUwMjViYzI5NGY1NDgyMDJkOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWEzMzk4NGQxYWIwOTFjMWRiNTAwM2FiZWM4YTk4MGU5YWFkMzM4OWE2ODA5ZWJiMTgwMmRiNTdiM2NhNjdiNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTUwYzJhNThhYjVjMTllZDRkNDJiNjJkOTBhZTU1ZWNhMDhlYWY5NzRmY2I4OWQ0ZTk4ZDA3MzM2MWZlMTE3ZSJ9"
+        },
+        {
+          "resource": "repo://analysis/README.md#L55-L56",
+          "version": "repo-lines-v1:sha256:2e0cde01a8b3e04a661d86b494d562cc1c6289721e4d58f890d2aa20ddbab881:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzk1ODgyOTliZWM1YTJhYWU1ZDY2NmRmYTRiNDU2NWFjYmM5ZDE0YzYzZTJhNTU4MzgwYzAwMTBiMDc4M2NiOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjYwMzNjNDVkNTk3YmVjZDVhYWQ3MjQ3ZDIxMDNjMGNjMzVhOGI0YzNjM2YwMjIwZTIyZDQxYzEwMGVmOTNiOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGZkMWNlZmY5ZjcxN2I2ZTE1MzIwNmNkNzcwMDZhY2MwYzRjZDgwZjgzNTY3MjA1M2ZhZjI5YTU1Nzg2MWQ4OSJ9"
+        },
+        {
+          "resource": "repo://analysis/README.md#L72-L78",
+          "version": "repo-lines-v1:sha256:07022a6f06d5b09f60f8bbd9df687bdba553ad581aefd46443fd63a45f62e933:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRjZTg5MzAwMDUxMGUwY2Q4NjY5OTA0Y2ZkZjM5ZjcyY2E4ZmMwMGJiOTYwMThmYjY5Yzg1MjFlMWUxNjQ3YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2Q0NWFjNmRmYTE4MjhhMTU2MzRmOWNiNzdmYWJiNmI5Y2IzZjlhZDBlM2VmZGQ2NWViODZkYTJjMzY2ZmVjZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2UwNjkxMzNmZGVkOGY0NjU5NGE3YzNiOTNkZjQ4MDhiM2I1YzU1YWI5ZmVlM2EzOGE4MTgxMzc5ODA0ZWMzOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjNlMTE5MmEyNTllYTdjMGQzYTJkMWFlZTdjMmZlYWEzNDgyY2Y4ZDY2NTM1OWE5MWEyZTYxY2Q4OGJiMDkzMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_86603ba477cc41c3bc7c9e9538188fac",
+      "statement": "Beyond the six content folders, the repository now contains pocs/ — the blueprint of the M1 minimal-agent POCs for Sub-activities 1.6/1.7 (POC-A implicit/native loop vs POC-B programmatic/transparent memory, questions Q1–Q7, experiments EX-1..EX-7) — and .claude/, the versioned trace-mining kit (mineracao-* skills, four agents, scripts) read directly by Claude Code and GitHub Copilot.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L5-L12",
+          "version": "repo-lines-v1:sha256:9152cec7b315deb00ace7052cfeee77492c7bc831e6c36c5ba077a7bbee07e0e:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWMzYjViNmIxZGQyYzkyMmVmMjIyY2Q1NGI3MzhiOTRlYTc3NWM0MGJlZjU0NTE3MDJkNWYxMThlNzE4NTY4NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJhN2I5YmQzOTMwOGYyOWVkMjJjN2QxZTU5NmU4ZjY1YjEyZWY4ZTJjM2JmYTBhNjJkNDg1ZmQyNzYxOTRlYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2ZhY2VmNDdkMmZlNGJlYzUyNmIxOGJhYzgxMjA2YTA5MDZiN2UyYjJlNDllYmEwYmVkMWM0MzY4MjQzYTEyOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTk1NWM0MTFmOTUzYzJjMTZiNzFjNTI2MTU3NjQ1NTk5NmU0N2I0OTkyYjRkN2E1NWEyNjg5MTM3NmE4MzIyYyJ9"
+        },
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L1-L16",
+          "version": "repo-lines-v1:sha256:58b4cc00ef624311bfb9a8794f114cf74db4ceb1842399836df2f9e258bb5ca8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2ZmM4ODY1YTA4Y2NhOGUxNDYyY2VhYWM4ZWVkZTQ2NDYwYjQ0MDkwODIyNWZhNjIwM2ZiMjk5YjBmMmE4M2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzYzQ2NzNkNTkwNDlhZjJhMGY0NmJjODgyMTViM2Q3NGNjZWY4ZGNiYzE3YmQ5NGZjZTAzYTA3ZmVkOGM3YmMifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.1",
-    "at": "2026-09-18T11:27:06.172Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-09T17:09:54.387Z"
   }
 }

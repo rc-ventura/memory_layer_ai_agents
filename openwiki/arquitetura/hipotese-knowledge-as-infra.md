@@ -3,13 +3,15 @@ type: architecture-hypothesis
 title: Hipótese de Arquitetura "Knowledge as Infra"
 description: A arquitetura de trabalho (ainda não travada) do mecanismo de atualização de memória do projeto — seis componentes que combinam armazenamento não-paramétrico, captura dual de sinal, um Update Engine batched, um Commit Gate de governança e forgetting real, mais o critério de graduação para o Plano de Trabalho formal.
 tags: [architecture-hypothesis, memory-mechanism, commit-gate, update-engine, mcp-integration, forgetting, non-parametric-memory]
-verified:
-  - by: openwiki/0.5.1
-    at: 2026-09-21T19:21:20.640Z
 sources:
   - id: openwiki-source-56ccdf861a6bbaf0f353ce7c
     resource: repo://discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md
-generated: { by: "claude-code", at: "2026-09-21T19:21:20.640Z" }
+  - id: openwiki-source-4859aa37b78a50a40f57623f
+    resource: repo://pocs/blueprint-m1-pocs-minimos.md
+generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-09T17:09:54.387Z
 ---
 
 ## Status — hipótese, não arquitetura travada
@@ -80,3 +82,5 @@ A arquitetura é **estática por desenho** — todas as operações são regras 
 ## Critério de graduação para a Sub 2.2
 
 Os agentes mínimos da Sub 1.6 (loop de aprendizado fechado nativo vs. memória transparente programática) precisam testar as alegações reais deste desenho, não só assumi-las: um recall explícito via tool call MCP alcança eficácia comparável à injeção nativa automática do Hermes? O trigger ponderado por severidade se comporta de forma sensata contra casos reais anotados? A checagem de qualidade de sinal do Commit Gate reduz de fato o risco de erro correlacionado/sicofância que Casper et al. descrevem, ou é teatro de segurança sem diversidade real de avaliadores? A comparação implícito-vs-explícito da Sub 1.7 é onde esta hipótese sobrevive ao contato com um POC ou é revisada.
+
+Esse plano de teste já está especificado: [`pocs/blueprint-m1-pocs-minimos.md`](../../pocs/blueprint-m1-pocs-minimos.md) formaliza as perguntas Q1–Q7 (cada uma amarrada a uma alegação deste desenho), as duas POCs polo-a-polo, a suite de tarefas sintéticas e os experimentos EX-1–EX-7 — ver [Blueprint das POCs Mínimas do M1](../referencia/blueprint-pocs-m1.md).

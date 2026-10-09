@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:4eecdf4551ca824f04752f15623becd5d33ffb39ce19d8678474fb96b1286154",
+  "claims": [
+    {
+      "id": "claim_c6ec67445214458b80b07ffad15c19a4",
+      "statement": "pocs/blueprint-m1-pocs-minimos.md is the executable plan for the central pending item of Deliverable 1 — the minimal-agent POCs of Sub 1.6 and the implicit-vs-explicit comparative analysis of Sub 1.7 — and is explicitly not the POC or the comparative report itself, but the specification of what to build, in which order, and which experiments to run.",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L1-L16",
+          "version": "repo-lines-v1:sha256:58b4cc00ef624311bfb9a8794f114cf74db4ceb1842399836df2f9e258bb5ca8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2ZmM4ODY1YTA4Y2NhOGUxNDYyY2VhYWM4ZWVkZTQ2NDYwYjQ0MDkwODIyNWZhNjIwM2ZiMjk5YjBmMmE4M2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzYzQ2NzNkNTkwNDlhZjJhMGY0NmJjODgyMTViM2Q3NGNjZWY4ZGNiYzE3YmQ5NGZjZTAzYTA3ZmVkOGM3YmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fc0373f775a24aada179105108c6fb08",
+      "statement": "The blueprint is question-driven: seven questions Q1–Q7 (explicit recall vs native injection, severity-weighted trigger, Commit Gate signal quality, implicit vs explicit learning, the log→LTM promotion gate, DMF-lite score fields, and harness-destined errors not becoming memory) each trace to a canonical project document, under the rule 'no experiment without a question, no question without an experiment'.",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L18-L37",
+          "version": "repo-lines-v1:sha256:60839e8e99e0a620e0dba47fd9e79cb14a631117d1c5a3e6c7172451c68d839a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NjBlOTMwYjFiN2YxMmVlNzJmMWVkNTJlN2IxOTk3YWI3ZTE5OWFiYmM5OGNkN2IxMTZiNWI5ZGIzYWQ1NGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlZGZlMWI1MjUwY2FiMWU3MGY0N2UwMWRhMzg1OWRkNmJmMmE0NzY1MjAzNDUzMmUzODVmM2Q1Zjk3MTMxYzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjOGViZWE3ODQ5ZDUyYWM1YjY1MjgwZTQ4NTk2NzFlMmI4NjY5ZTQ5MmQ3OTc5MDE3NDZkYWFjMTA3N2I0OWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_618837ad860d497593a29b85660e4993",
+      "statement": "POC-A is the native closed learning loop (Hermes Agent with layered memory and automatic session→skill conversion), while POC-B is smolagents CodeAgent — the same framework as the analyzed legal-workflow traces — with fully explicit programmatic memory implementing the minimal project-mechanism skeleton: append-only episodic log, deterministic promotion gate, typed LTM, recall_memory as an in-loop tool call, severity-weighted trigger, proposal-producing Update Engine, manual human Commit Gate, and decay + demotion + gated hard-delete; real MCP, NLI in the gate, and the Option-B STM adapter are deliberately out of v1 scope.",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L33-L44",
+          "version": "repo-lines-v1:sha256:e70be0f3464031bcee560310563b74f16c5aedd5f7e405f36f2272b257597261:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzZTM2ZDRiODUxYWFiOTFkNmZmYjYxZDM3MzUxMjAxMjg0NGI0Yzg0NDNlZjQ0ZjgxMGQ0Y2YzMmQ1YTE0ZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiZjdkMWQ3OGRjNmFmYzI3ZGZjZTgxMDE0NWYyOGNjZTYzN2QyZjA2Y2IwMmY2ZjM0OGMyNjQxYzFmYjAyNTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2MWQzM2E1YTMyMTBlZjg4MmQyZTI0NGMzNTMwMWM5ZDA3OTgxYWU3ZmM2Zjg3YjgxOGYzZTkwMzFiZmNmMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhYjMzMThlNzcxZDg1MzMzYWYyNTkwMDg1ZmY3MTBlOTcyZjI3Y2I3M2I5OWU1MTRhNzgwYTJkMjE1YTUxZGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_04844771f404478192a90972a14f5d6e",
+      "statement": "The shared task suite is synthetic — mocked tools whose error signatures reproduce real mined error families, never real legal content: group A (recoverable-memory contract errors, from mined unit 2), B (harness signal, from unit 10 — must never be written as memory), C (~90% trivial beabá noise floor), and D (silent failure — timeout late in a plan with retry blocked); each task's pass/fail criterion is a Task.md spec from the Eval Engineering skill.",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L46-L59",
+          "version": "repo-lines-v1:sha256:daf4f2c9ad41b93c005f9c3a2aa6f1e9d9dbf3395573fe85c16ea1e53e1b768f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwN2U0YTE1MGM4MDY1ZWQxZTI1ZjVkYzg3YmM1NmM4NGZmMmI1NjQ5ZmQ5NGY2ZDY3MTU1OGU5MzMyZmRlOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1NjA2ZjhmZDdlZjgyOTU2OTc0MWQ0YzBhZWI3MjA5YTI0NTllMmJlYmU5ODczYmFhM2NhMzI2NmI0YTMyMjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzYTBjNWE0ZDQ1YWVmZWE3N2FhZDkzNzQwYTU5MDA5MzQyM2E1YTYyOWU2Njk1OGNlOTY0YjZhYzRlMTRkYjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3NjBiZGZiZmNhZTEwNGY1ZDZmYjQ2NjM3ZGM0N2EwMjdiZDkzMDZlZGVlZmVmNTNlM2QzMmI5M2E0NGQ2ODAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1b19ef19fe07400782615f0ebe0f748a",
+      "statement": "The suite execution format (Harbor vs a custom runner) is an open decision resolved at E0 by a 1-task Harbor spike: Harbor would give parallel trial orchestration, ATIF-standardized trajectories and a native Hermes adapter, while the memory layer between trials, the Update Engine + Commit Gate between batches, in-loop instrumentation and the POC-B BaseAgent adapter remain custom code either way.",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L147-L147",
+          "version": "repo-lines-v1:sha256:9e9cd42c616458512c22bcf172ddc74881c821ffe14cf3932d02adf8849c2f14:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWU5Y2Q0MmM2MTY0NTg1MTJjMjJiY2YxNzJkZGM3NDg4MWM4MjFmZmUxNGNmMzkzMmQwMmFkZjg4NDljMmYxNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWU5Y2Q0MmM2MTY0NTg1MTJjMjJiY2YxNzJkZGM3NDg4MWM4MjFmZmUxNGNmMzkzMmQwMmFkZjg4NDljMmYxNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWEyYzE3MTZhYzczMTNjMGUyNzQ1NmRkYzNjY2JlYjQxNmFiZGJkNTRmNzA1ZWM2NDczMDJjNTMxNDIyMGQ0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGU0Nzc5MTVmOWEwOWQ5NjA3Y2U2NTczYTU0YjQ2OTUyYzAzNGFmNjYzNWZmMGQ2ZmNiN2I1YTVhMzRkYjI4YSJ9"
+        },
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L61-L61",
+          "version": "repo-lines-v1:sha256:9ebe5e5b0b3ca9b505bb47e5368231813393e7021d5efead8709879b767b8b3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWViZTVlNWIwYjNjYTliNTA1YmI0N2U1MzY4MjMxODEzMzkzZTcwMjFkNWVmZWFkODcwOTg3OWI3NjdiOGIzYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWViZTVlNWIwYjNjYTliNTA1YmI0N2U1MzY4MjMxODEzMzkzZTcwMjFkNWVmZWFkODcwOTg3OWI3NjdiOGIzYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjM3ZDFmNDVhMjI1YzczZmI0YWVhNTMxMDIzNTUwMTM2NDc0ZDU4ZGFlMjkyZGIzM2U3YWE3MTM2MzBmM2Y0NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzc0YWRlMzY3YTRlNDBhOWYxNGE1ZjE5NzMyNDA1OTljNjhlOGVkYmQwMTYzYzY0MmQ0ZWZlZTUxZWJjMTY2MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1a7b89bd30684e889d99a0cf1d50b9fe",
+      "statement": "Construction proceeds in stages E0–E7 each ending in a versioned artifact — environment/decisions (E0), the task suite with deterministic verifier (E1, deliberately before either POC so neither is biased by what its framework makes easy), POC-A (E2), POC-B (E3), the cold-path mechanism skeleton (E4), experiments (E5), hypothesis updates back into discussion docs (E6), and the comparative report closing Sub 1.7 (E7).",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L63-L78",
+          "version": "repo-lines-v1:sha256:98e79e1f2b33c8b50c5c6d7576a394f6d5c83592417748cfc07567af32b56f2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkNWQwOGU5ZThhMzdjZDZiMWZhNThmYzk1OGFkMDUwMjM3YTRiYTczNmQ2M2RhNjU3NDNiOWU0M2JkNGMyNzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmNmFmNzU0NjdhMmM1MDVjODE1NTVhNGQ1YzIyNWY2Yjk3YmIzZWViNjFjODdiZWMzZTBlZmI2MWQ2NGI3MjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3NjBiZGZiZmNhZTEwNGY1ZDZmYjQ2NjM3ZGM0N2EwMjdiZDkzMDZlZGVlZmVmNTNlM2QzMmI5M2E0NGQ2ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0YTczYzc5NDczYjg4NzdlNTE2ODk3YTQ2NGFhNzRlODJkMzQwMzk1ZTcwY2I3MTFiMzc4OGMzNzZmOGNiNDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a7a1ca97e46b4f72b73ef405aa84e9ad",
+      "statement": "Seven experiments EX-1–EX-7 each follow question → design → measurement → criterion on the shared suite: explicit-recall vs native injection efficacy, cross-trial recurrence reduction, severity-trigger behavior, Commit Gate false-acceptance under biased raters, memory-vs-harness destination enforcement, promotion-gate noise-vs-rare-case balance, and controlled forgetting + immutable-log replay rollback; EX-3–EX-6 calibration is a documented first pass, not production-tuned values.",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L80-L126",
+          "version": "repo-lines-v1:sha256:73d5f572533722260345c2985adf3a2afe1333421a32eb11f0c1e4de96aa7c1f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3OTJjYTk3YzQyNWRiMzJkNmU3NmEzZGE2ZTQ4YmZhZDJlZTM1YzI0ZGQ3YjQzYTYxYmM2MWQyZGZkYmQwOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliZWNiMzVlZDkyNmI5ODkwZWI4OTMzODM0OWQ3MjIyMDc3NWM4MTkwNzY2NGYyZDlkYTA0NWZjYTlmYTVkYTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyNDg4M2YxOGVjMzQxODkwYzVhYWNiZDEyY2E1OTM1ZGRmZmM3MDI4ODQwOTkxNTk3Y2E1Nzg5OTg3ZmRmMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0NzNiODU4ZDVjMGI1ZjgxNWIyNjEwMGQ1NmU2NDdiZTRiNzk0MzBkNWM4OWY3OTQ4NThlYTNiYjA1MDQ0ZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_388aa5ca25ed467ea1b67f86b7bea84e",
+      "statement": "Declared open risks: the [ENGENHEIRO-3] meeting on the platform Hermes variant is still pending (POC-A uses open-source Hermes regardless), the LLM backend is decided at E0, and all POCs run 100% on mocked tools — no real trace content is versioned or sent to an external LLM, matching the analysis/ PII discipline.",
+      "evidence": [
+        {
+          "resource": "repo://pocs/blueprint-m1-pocs-minimos.md#L138-L147",
+          "version": "repo-lines-v1:sha256:09ec0af95b96e3c6a8b67016cff17aebb013ec65642dff786beb090f57996373:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhZGUxYmE4NjE4NDdhYTUxNjU4N2I2OGZmZWVmOWQ0NTk1ODdjNzZmY2UyNTYxOTQwNDAwYzhiMjQzMGRlOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllOWNkNDJjNjE2NDU4NTEyYzIyYmNmMTcyZGRjNzQ4ODFjODIxZmZlMTRjZjM5MzJkMDJhZGY4ODQ5YzJmMTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4MjFmMWVlNzdjMDJjNjljZWZkOWZiYzYwMjgyOWQ5NTFiMTM1OWZmYTFlYTA0MGY2MjIzMTQ2YTFlNWJkMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhlNDc3OTE1ZjlhMDlkOTYwN2NlNjU3M2E1NGI0Njk1MmMwMzRhZjY2MzVmZjBkNmZjYjdiNWE1YTM0ZGIyOGEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-09T17:09:54.387Z"
+  }
+}

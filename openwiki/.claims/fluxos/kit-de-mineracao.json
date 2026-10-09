@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:188a30c3a6acdc6292cacffc1f3b392001a67e1a8ad49c8741110384c751276a",
+  "claims": [
+    {
+      "id": "claim_ec724c991326476091ca94e0bd77c17e",
+      "statement": "The mining kit lives versioned in the repository's own .claude/ (skills in .claude/skills/mineracao-*, agents in .claude/agents/) and is read directly by both Claude Code and GitHub Copilot with nothing to install or copy — deliberately no .github/ copy, which would become a stale second version.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L5-L12",
+          "version": "repo-lines-v1:sha256:9152cec7b315deb00ace7052cfeee77492c7bc831e6c36c5ba077a7bbee07e0e:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWMzYjViNmIxZGQyYzkyMmVmMjIyY2Q1NGI3MzhiOTRlYTc3NWM0MGJlZjU0NTE3MDJkNWYxMThlNzE4NTY4NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJhN2I5YmQzOTMwOGYyOWVkMjJjN2QxZTU5NmU4ZjY1YjEyZWY4ZTJjM2JmYTBhNjJkNDg1ZmQyNzYxOTRlYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2ZhY2VmNDdkMmZlNGJlYzUyNmIxOGJhYzgxMjA2YTA5MDZiN2UyYjJlNDllYmEwYmVkMWM0MzY4MjQzYTEyOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTk1NWM0MTFmOTUzYzJjMTZiNzFjNTI2MTU3NjQ1NTk5NmU0N2I0OTkyYjRkN2E1NWEyNjg5MTM3NmE4MzIyYyJ9"
+        },
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L98-L111",
+          "version": "repo-lines-v1:sha256:2110ade74ef0002a47e9e435ae238bb1ae4c7211d694742c14cbab1623d7383b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlOThkOTY1ZDZlMTgxYzYxMmQ5NDBjNjAxYmE0NGY2NmRmZjA4MjcyYTc4YWU2MzU0OGJlMDFlMWRiMGY0ZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMmQ1NzZiZmE0YjRjZGQxN2FjNjdiZGFmMTJhYmNmM2M5YWYxYTEzYzAzYzZhMWRhYjk5NzZjNzE2ZDEwOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmOGY0Y2RkMWJmOWJiMTg5MGFmY2M2YjFmYzhmYzU2MDgxNzhhZjhiMjY4YTM4ZWY2Nzk1MDlhZTVhOWI2YTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiODVhMjc3YTc0MzBkNmFmMWM5MTk4MDlkZTJhNDBkNzdmNDQzODU3ZGUzM2E1OGJmNTE2YjdkODE0OThlZWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_16da5d5d844b4785909864c5fcb365e9",
+      "statement": "A mining round has three layers: deterministic mining reads the base's pipeline tables while an independent auditor recomputes the same measures straight from the trace in parallel; a per-skill meeting script (comparar_auditoria.py) confronts the two; mining ends in 'paradas' that the investigation skill turns into a decision dossier; and the decision is always the researcher's — a rule that would change a published number is an Ajuste and the kit stops there.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L14-L39",
+          "version": "repo-lines-v1:sha256:99aad5abba3d630ccafd24517ff69e5c5344e0b4848dfc637fe39cdecd7baf05:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3OGQzMDVlMmQwYzc3ZWJiNDU3YzZmMTU3MjNjYWYzYTc4NDUzM2Y5MTRhMTc5NjUwNjA5MWZjYTUzZjVjYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzYjNmOWFjZDc4ZDE3ZjRmM2Q3YzYwMjM0MjY5OTVmN2NlMGU2YTZkMDk3Zjc5MzUxZTlmNjgxOGNlOTgwZmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYwYWU0NzBkM2VlZjY1ZTMzMmJiYmQwNjhmNzg3OWUwMzRjNjUyYzEyZjA5NjA3MGY0ZGI5ODYwYmQyMjQ5N2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlYjg0YjcwZjUwMWI5MjRhNzFjMDViZTJhZTcxZjg0ZWIzNDA4ZThjNDlhMTg5YmU2NjdkNmYyNTFhNmFiNDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b96731c7a3b449adb28b19fc2020186e",
+      "statement": "mineracao-base is step 0 of every round: locate the dated analysis folder, read BASE_ID/TRACE, verify the analysis code matches the kit's manifesto (conferir_versao.py — TRACE/BASE_ID, line endings and notebook outputs don't count; on divergence it stops), run the folder's checklist.py intake, and run monitorar.py against analysis/registros/monitoramento.json — the kit's only deliberate cross-base comparison.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/SKILL.md#L36-L82",
+          "version": "repo-lines-v1:sha256:08a916cc3b51d748cb4c0f79b55cde8f979175f01d6b253a1a64a5b1b61aaea7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiYzU3MjYzMjcyYWJkNTViOTlkMjc4ZWUyMjUzZDM3NGQ0ZWYwMDVkYzg5MjI5OGM5MDM2ZTJkNDM4OGVlYTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmYWE3MjU2YTBjMzRiYjIyMmIxM2RiMzg3YzI5YjUxZGNmOWM2ZmY0MjVhNmE3MTU3MGNiNGJiNmY3OTFjYWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkYzE5ODhkMzdkYWI2ZWZiMDNjMjVkN2FlMjkzMDIyZDA2ZjE1Nzg3NmZjZmIxZjZlYzMzZTliZWZjZjZiMTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExYTdlZjI2M2U2NGMyZTQyZGRmZWRkZjNiYmQ0YjIxY2QyYjdhODE1NDVjMTA0ZWE5MThlMjljNjhlNWYzODYifQ"
+        },
+        {
+          "resource": "repo://analysis/registros/README.md#L6-L10",
+          "version": "repo-lines-v1:sha256:dde3eb8dc77d9e15feceff08dc4b20798496b8a4091a75ff9d8942c20cfbf071:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGQ2NTE1ZDY1MDI3ZjA0YTk3ZTk3Y2QwNzJkYTI5MDA5MjdiNzBhNGVlZDU1ZWM2NTE0YmIwMTY0NDE4MjU2YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTk2ZWY2NzlhNWM4YmJlMWQ4M2MyNjdkZmUxMWQ4ZDVmYTMyZjRmY2ZhMDFiYTMwMDgyY2ViNmYwNzIxN2RkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTUwZDUzYjliNTJhNGFhYzVhNWQ2OTk2Njk4ZDNiMGQyYWJjODc1MzI3YjExYzEyZWY2ZjcyZjcxZTdhZTkyOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ee4ad2daf014490eb2f1788803d9d35f",
+      "statement": "Every claim in a mining report carries evidence — the reproducing command, the derived table, and for decisions/paradas the raw cases (exec_id, crus/, drill_down.py caso) assembled by montar_evidencia.py under a fixed rule; no LLM is in the classification path, the kit never repairs divergences (they are the finding), never compares against a published report or another base, and writes only to git-ignored pipeline/resultados/.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/SKILL.md#L13-L34",
+          "version": "repo-lines-v1:sha256:992389cc3b942f8a3673623c32ff18409656c928c8863b97f34c243e51175436:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxMGNjYzRjY2JkYmUyZTdjOTZmZjBmMzViZWRkNjdlNTE0OGJhMDgxYzQ4NDAwMTZjNzRmOGUzNTNmNmRiYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmNWMyOGYzZDIwNDdlNGE1OGE4MWU0Nzc2OTE4MWMxOGFiOGNkMzA2YjJjOTFiMTFhZmFhZGQzYjFjY2U4ODMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiOGY2Mzc0MmY4OGFkNTVmNzhhNDlhY2JmMTNhMzcwNmNmZGQxNzNlYWJhMDJiZDA4NDZhNmUxYWY2ZDBiNzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3OTg3ZjdjYTYzNDA0MGRiZTQ1ODE1ZmE1YzI5Nzg5YzU4ZDc3ZmEwOTY5ZmViOWU1YzEyMjI4OTgwNWFiYjEifQ"
+        },
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L41-L51",
+          "version": "repo-lines-v1:sha256:6b59bed97a9106824659df8d309ca18e7ec4a8178f93ae4dc4a6b701be6b359e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NjllOTUxZmY1MDg1ZTE5YmE2NDNjMzU1NWM3YmJjYjIzNTcwMjk1YTdhZThhM2U3YTU4M2EwYTBkODVjOGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5ZWM3YWVjZDRmZDMyN2NhNDhjYjAyMjUzNmFhOWYyZTljYzE3YjFiN2FkYjIwOGE1NGRlZjAxZTk5NWQ3YWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzODU0NTlkNTc3NDQ1ZmE3OTEwNjE4MDdkMDNkOTNhMDRlMjZjM2IwNGNiY2YyMGNjYTc0YjEzNjFkN2I2ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyNDg1ZmYzNzUxYWE3ODUzOTYyOGY5MzFkMzhjNjEwMjNmZjJmMzllYmI0YzcyM2QwMWQ0MDgwNDgwYTVkZTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_85eb9f2b80d940ac9d1f6ef14809f8a2",
+      "statement": "Secrecy is enforced by script: the report version that leaves the environment replaces identifiers with caso-N via versao_para_sair.py (the mapping stays behind), and varrer_pii.py blocks the outgoing version if it finds case numbers, CPF, CNPJ, e-mail or execution identifiers — outside go only counts, role/tool/unit names, months, booleans and closed categories.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/SKILL.md#L30-L32",
+          "version": "repo-lines-v1:sha256:a8cfb62571846ebf9ac32a01dcd3e9cf283d816465986ce8022a7abbd4fc715f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQzMzk0NGIyNDI5YzMwOTI3MWZkOGY3MTdiM2E1ODBlODg1Nzk3NmRkNGE5ZTRhYzdjOTEzOGFhNTk2YzMxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDAzZWEzNzVhM2QxYzE1NTZlZDI3Y2JlZTcxZjAwODgxY2E3NmNkNjlhZjk4NTUzN2IwMmRhMjc4YTZkYmE0YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjU4NzEwODk4MTkwMjg2NDU3ODI4ODM0YmNlODkyN2QyOWNjOWQzYzQzN2VlY2ZkZTRmNGYwMDZkOGJkMTRkMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGRjMTk4OGQzN2RhYjZlZmIwM2MyNWQ3YWUyOTMwMjJkMDZmMTU3ODc2ZmNmYjFmNmVjMzNlOWJlZmNmNmIxMyJ9"
+        },
+        {
+          "resource": "repo://.claude/skills/mineracao-base/SKILL.md#L88-L96",
+          "version": "repo-lines-v1:sha256:0ac3d8c1e4d8b5402f4330ecbc6cb8e74d378f88b28e81670975b4c03f5748cf:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODBmYWMxNTUzNDUwNmIxODViNWUxOGVlMzdkYmE1Y2M3OWE5M2FlNDZmMGUxNTdiNmEyNTkzMGE2ZjJlNjM1YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzMxMjZkNjc2NWMyMGQzNTAxMTkyNjdiMmZjOGIyNmZmNjcwMDk1ZGE2NTZmOTMyYjMzMjdjY2UxMTYwNmFjNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTlkNTBkNjZhYTZmOThiMTUxM2Y4ZDE2M2MyYjA2YzE2MmZhMzZmZTgyNjM2YzFjMTg5MzgyNTg0ZDIzOGE5NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGFhZWJhMTFiMzlhYjJjOWMyZTc2Mzg5YmI3NTMwYTYxYTUzMDRhZWQ1MzEwYWJhZTFlYzk0MzIwNTVmY2NkNyJ9"
+        },
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L50-L51",
+          "version": "repo-lines-v1:sha256:089bb39aa25a2a5c7401aa98dfcef1ac6973bb26e1270d6ad14a211698978beb:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTc5YjgxNTYxZTY3ZDc2YzIxYWJmZWNiZjI3OGI4NWIyOGM3YjhjMTI3ZmU4ZWZmYjIyNDE2OWIxM2I0MjMzNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzllYzdhZWNkNGZkMzI3Y2E0OGNiMDIyNTM2YWE5ZjJlOWNjMTdiMWI3YWRiMjA4YTU0ZGVmMDFlOTk1ZDdhZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjM4ZmFiOTcyZWY5OWJkMDQ5MDVkNjk5ZDA5ZWViYjI4YWIwZmQ1YWZjY2JmMmI0NjdjNmQwZTNkYTk2OWQ4YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTI0ODVmZjM3NTFhYTc4NTM5NjI4ZjkzMWQzOGM2MTAyM2ZmMmYzOWViYjRjNzIzZDAxZDQwODA0ODBhNWRlMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_47affa9fcea74815a8409d178bb23687",
+      "statement": "The kit's version is the VERSAO file of mineracao-base, and manifesto.json pins per-file hashes of the analysis code the kit was written for; when the pipeline intentionally changes (an approved Ajuste) the manifesto is regenerated with conferir_versao.py --gerar and the version bumps — two bases are only comparable when mined by the same code.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/SKILL.md#L98-L102",
+          "version": "repo-lines-v1:sha256:dbaf3c26e66f9849eede5a8e28d37718beaa628fe79acb93313e554091ca5105:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTM3ZDEwOTA4NzllMjc2NmE5NzI1ODI3ZjE1YTIzOWFmYThiMzExOGU0ZmFkZjhkNjAxMWNmZTNjZDJiNzBkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzIxYmY5NDVkNjE3Y2FlNGQ2ZjJlYTA3NTE0ZGJhZTFlMmE3NjAxMzIyYjE0NjZmMDM5MWI0OGIyZmJkN2I1OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTRhNGI0ZDgwNmE5NWU3ZWM3MGJmOGE3MTE1NDA3NjVkMmQyOTAyOGQxODhmZTdmNTBjMTJmYTZiMDZhNGU1YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://.claude/skills/mineracao-base/manifesto.json",
+          "version": "repo-file-v1:sha256:c27bb902e4eac7c7a66baaaebf15dafbe3e930660b923efc903adc80825bab1c"
+        },
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L128-L133",
+          "version": "repo-lines-v1:sha256:fd3cc144e314d5d336c59ee3353e24138464bbc86403d22c47cb8880bc0b468a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTk0YjYwZGNkY2U1NTQxMzJkNzFhOWFkOTI4ZjliNzZiMjg3MjBmOWY1MWZkMGQyNzU1MzE1ZmUzOWIxNzRiYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmY5YTNiODc5ZjU5ZmE3YjhiOGE4YzE3ZWM2YjUzMWVlN2FhYTMyMTU3OGZiMmQyYzExMWE5NTBkYTgwNmQ5NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk2MThiMGUwOWZlZWIwZDczNDg3MTE1MWE3Yzk4Y2ZkN2ViMjg3YTUzYmQxZDRhYzRjMTIzNGIxMWZjMDJiNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmE3NThjNzBlOTkzYTkwOWE3MjU4NDkzNjI3ZWQzMDVkMDNiZjk3OTNiN2RmNTdhMDk3NDg1N2QwMTJmNjdiOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_934a799a56654396a7e2696895a68b74",
+      "statement": "The kit's inventory: mining skills mineracao-{base,silenciosas,protocolo,candidata,investigacao} plus manual-call-only skills investigar and propor-notebook (disable-model-invocation: true — propor-notebook only when a lesson meets the creation rule), and four agents — auditor-independente (parallel recomputation to JSON), investigador (first reader proposing rules), segundo-leitor (blind second reader for concordance) and validador-de-notebook (second implementation from the rationale alone, never correcting).",
+      "evidence": [
+        {
+          "resource": "repo://.claude/agents/auditor-independente.md#L1-L16",
+          "version": "repo-lines-v1:sha256:50457e2de29f1f4af58ce065ef196a70754579fba5c290fc9acc714bd9faf1bc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1MmQ3MTExMDNkNTBhNDM3ODMwYzZmYmNkMDRmYjRiYWI0OWEwZjgyZjZkMjZkMWM3OTFjNmU4NDg4ZGQwOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4NjJjYzM3OGIwMTE5Y2U5ZDIyYmM4NjEwOWZiZTY5MzE1YjdlM2NkYzgxMDI3ZjllZDU3YjBlOGVhMTQ2M2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExNmVhNmYwNDlhODY5YzU2Njg0NTNjNjZiNDVhNzNiMDUxZmMxYTk5NjFlOTg2ODBlNTZkNTliODBlY2IxMjMifQ"
+        },
+        {
+          "resource": "repo://.claude/agents/validador-de-notebook.md#L1-L14",
+          "version": "repo-lines-v1:sha256:af4ea16c95f19b36d56ccf156f5836b21c046e1a3ace24eabfabba9c6dc05dfb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1MmQ3MTExMDNkNTBhNDM3ODMwYzZmYmNkMDRmYjRiYWI0OWEwZjgyZjZkMjZkMWM3OTFjNmU4NDg4ZGQwOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDk4ZGJjNTg5NThkMzhiMDZiMDE0ZmQ4YWY1ZmZkMTc1YTIyNTQ3ZDRhN2RlZTc3MjUwOTg2MDE2MTRhYWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZTNlNmE1MmU0ODBiNjZkY2VmMzMxNzk4MWFiY2Y4YWMzYzhlMDQyNzY3NjYxNjRlMTE4NjFmYTJiYmNjMjIifQ"
+        },
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L65-L96",
+          "version": "repo-lines-v1:sha256:a7858e9bfd55cdb75444c265f519cd0e58dfe7ad79247e1f8c09d0337baa0e56:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlYWVmYjBhYjFkOWNkMmRjM2U2NTRmZGZiMGEyMmQyNDliMDAxZmUxNGI3NjIwMjkwMjhiODc0ZDdlOTMxNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2YjZjMzhlODMxY2Q2ZTFlMzJiMjAxMTBiMmQwNjM4ZTc1ZmZiMTE0NzVhNDg2ZGNjOTJiMjk5ZmJiMGNlMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkMzU3NTFlMzk5OWQzOGMzMDk5MmU0MjNjYjA0OTc2MzkxNjZjMzg2MDMyOWIzMmMxYmJjODMyY2VkZWQ4NzMifQ"
+        },
+        {
+          "resource": "repo://.claude/skills/propor-notebook/SKILL.md#L1-L27",
+          "version": "repo-lines-v1:sha256:bea723762d04ced53b3160bbbd435525226516f395a84b0e2b4238d7c65b82a9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1MmQ3MTExMDNkNTBhNDM3ODMwYzZmYmNkMDRmYjRiYWI0OWEwZjgyZjZkMjZkMWM3OTFjNmU4NDg4ZGQwOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyZmZkNTliZWM3NGM3OGNjNTJmOTQyMjQ1NDMwNjYyNzMyODRjZmQ2YWZjNGJhMmYzMGI5MWFiZGRhNGI0M2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_18a89f5c03544df19a20b6dc5f1bf406",
+      "statement": "Declared limits of this kit version: the investigador's reading has not yet run live (the bridge was validated by reproducing a known deterministic classification); parallel audit exists today only for silent failures and harness protocol (audit_recompute9 and 10 with --json) — new minings on the backlog (residue, critical error, transversal #8/#9) each need an --json audit and a meeting script first.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L135-L151",
+          "version": "repo-lines-v1:sha256:c03f6bd943527fb80167ec92c11f2ec0c96ec8930938955c2c25d700b11d9501:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzZjg4MjM1OWFjMGY0ODI0Njg5ZTg5NjEzMDAzODI1Y2VlODk4Y2EyNmE4NjUzMmZlNjU3ODljNzRhY2JiMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkOGFmNzY3YjUwZjExNDY5MDBjODE5NWIxM2NmOGFkYTAzNDcwMWI4MGJmOGNhZTI0ZjRhN2Y5OGQ3MTI1ZjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjOWYyNmFiMGUyYjc3NDA1YzMzMmYwNTI0MDNiNDdjYTA0MzhlZjY1MGIwZTBiZjM4YTVjMTdjZjMxYTYzZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://analysis/roadmap-transversal.md#L62-L65",
+          "version": "repo-lines-v1:sha256:11078a931931e26acab8ba11454d3c297e5dd4f2eb3d12825cc3d0a4f66fc5be:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2NiOTBlMWE5MmIxMThiYTk3ZDliZTRhMWZmYTVmODk3ZTNiYTJmZTQyYWU2ZTQ5Njc1MmVkM2JjNmU2ZjUyNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTg0M2NkYWYwNGZhMTk3MmVjOTA2NWRhNzUzNWIwYTQ3YTQ5NmJlZmRhOTE0MGYyMjVmNDcyOTEzNmI0ZDg0ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2IyOGZkYjA5ZmZiNmExMWM1OWNlYTA3NjlkMzk1ZGZjNzVmODNlN2ZlY2Y1NjMzZmU4NGY4NzAyOTczY2EwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjU3MThjMmEyMDIzYzE0MjRjM2EyMWI1ODA1MWNmZmM0ZjNmOTM4YzE5NzBlMWUyMDE1ODQxMmVkOWVlOTdkMyJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-09T17:09:54.387Z"
+  }
+}

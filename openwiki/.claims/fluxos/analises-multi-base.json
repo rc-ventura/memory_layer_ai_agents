@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0ef2e66eeebd14f3fb88afa5114228779db4c52b43126d960c4974d84ca71009",
+  "claims": [
+    {
+      "id": "claim_8fe6cafe00c146cebf5c0e411d1ae5ed",
+      "statement": "The project analyzes three independent extractions of the same production agent system, each in a dated folder: base 1 (2026-09-trace-law-flow, full trace of 1,000 executions, Oct/2025–Aug/2026, the foundational analysis where the taxonomy was born), base 2 (2026-09-trace-law-flow-second, an independent 1,000-execution full-trace sample that runs on the compliance machine — the repo folder holds documentation only), and base 3 (2026-10-trace-law-flow-third, an Athena parquet with one row per error step plus a context window — 31,421 rows: 30,141 structured errors and 1,280 suspects — the project's current source of truth).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow-second/README.md#L1-L12",
+          "version": "repo-lines-v1:sha256:2c80f43521fdbce05cad4b5356b55fb7ce7bf5edd6088f7d57a81852f187af65:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwYWRlNmIyMWMyZWI0ZjlmNzcyYjAzNTk0ODMyNmIxODgxMzk5MDgzOTJhNjA0Mzk5ZmM3NzE2NDE1NmZhNmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljOTJkMDVhMmYwN2VkMjBmNWUxNWQwMjI0MTc2MDU3OThmMTQ1Mjc5MDAwNzY3NWExZjIwMDU5YTViZjMxOTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzNjQ3NWM2ZDY0ZGQwNzMwNDhjZTc1ZmU4MzZlMWZlM2YxZTY4ZjZiNmIwNzZkYjFhMDczMzhjODIyYWZlNGQifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md#L15-L34",
+          "version": "repo-lines-v1:sha256:c825a1a84a392e9f997867ee6561c30adadf08d9f1b1ed495b6980a44185ad85:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhNmExZDIyODBjODNmNjJkYWFhMTgwMmVlMjFmZjRlMDM3ZDg1MjNhMDUyYWUzYWIxNGM2ZGFiYjcxMzE3MmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxMWE4OGI3ODFjODA4NDVmMTA1YzI0YzE5OTllM2VjYzMwMDRmYjNkY2FmNWQ2NDdkODkzOTEwYTA5ZmVmYjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlN2ZhOWE3NTFlM2M1ZjhmNDM2OWQxZTUzZTkzMWVlYTk0ZjdiZjJmZGIwNjExNjUxYTNkZGVhZTVmMTkzZTEifQ"
+        },
+        {
+          "resource": "repo://analysis/README.md#L229-L233",
+          "version": "repo-lines-v1:sha256:ad11c2a4a8cba4d315e862295818377f780c348d224274a11acda493f4afacb4:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDUxZThiYjhlMDZjZGY0MGExMWM1ZGE3MWYyNmU0MGY5ODBkMzQwNTMwNzE2OTcwYmUzNWI0MDE5NjYyYzYxYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmQzM2NkYjllZmJmYThiMjFmZDc0ZTRkNTc2MWNkNzZkMzNmYmUxM2FjZmM0MjJmN2U4YjU3MjU4ZjM3NDQyOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZjNTQxMDc2NzA3YmFjNjJlZDcyMzRkM2RlMzI2NGRkYzBhODAyZGJhOTYwOGQ1MGRhMjY3MTAzOGQ0ZDIxYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTFlMDVjOTI2NjBiODUwMzNlZmNlNzgwOGM0ZTEzOGIwY2NhN2JiZjBmMTVjYjY2MjY4Mzg2OTg4NDU3MzcxZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4d40b4017a4b403188b9788cd6c7ec52",
+      "statement": "Base 3 is analyzed in 'observed mode' (mineracao_observada.py): the same classification rules are reapplied only where the extraction window carries the inputs a rule needs; errors lacking inputs become 'pendente' with a written reason — a third state kept distinct from residual, excluded from the coverage alarm — and recurrence is measured only over observable errors ('candidato observado', with 'recorrência não demonstrada' otherwise).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md#L36-L59",
+          "version": "repo-lines-v1:sha256:c993d416b73e6152b10e9adde3693f70daf4e23342af71fa870f5cf5b1b91a2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MjdmZGZmNzg4ZDMyOTJmNzAxYjY2MmY5MzNlYjM3Nzg3YWZiMDFmMTkzM2U0MzdhOTlkOGExMDFjMmQ2NTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MGM2YmRhMzg2Y2NkNmViMGM3ZjcxZDJlM2RhM2VjYTA0Y2ZiMjZkMTRjYTkwZDcwODlkMGIzMzM4NDdkMWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzZTg4YWRmOTc5MmNlNzZhMWI4ZDZhN2VjZTkzMDdkYTEwMjgzNDg0NDNlNGI3ZjAwYWU1MDBmODJmNWZkYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhM2RlMzE2MjZkOGUyN2ZiNzYxMzY5NzIzYzE4ZDAwZmI5ZTFlM2IzNjFkYjIwNWI5NmNmZTg0OWI1MjBlMGUifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/mineracao_observada.py#L1-L25",
+          "version": "repo-lines-v1:sha256:14b0fa4a16742791564fb095d9e9198e33340a62bb78e2be8a0c536f698eeab0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNjI1ZGQ0OTAzMzQ1ODRjMjc5NmY4NTdkM2M3Y2FhYmRlZTljNzFhNmQ1NTQ3Y2M2YWM4MzczYTViY2FjM2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzNDE3Mjc3NmUyOWM4OTRhODZjODQxZGQzNmY0MzNhZmU2YzAwYzE2OTM2ZjY1NDVlN2Q1Yzk5NWY0NGM4NWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3YmFjZTkxN2FmNWIyZjg2YTg2M2UzMGEyM2EzMWZiNzNkZmJkN2I5ODZlNTY2OTcxMWJhZmNmYmQ0MmY5MjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_46d4ac57aee842879c4706855785b297",
+      "statement": "Mining destinations are per-base and never inherited: DESTINO_MINERACAO records which base a decision was made on and BASE_ID sits next to TRACE in each folder's base_pipeline.py (Ajuste 7), so on base 3 every candidate starts with destination open.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L44-L46",
+          "version": "repo-lines-v1:sha256:7ca6b75ebea775efb52a7713e14c2cd572faaae65ae9e7a7bd084b5e65db790e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjYzMWQwMTZmZWQwMjljNWIxNDFmNjI3MjUwNjBjMzA3MjA0YTg1ZDNkNGFhODAzMGZmYmZlN2MxNWYwOGMwZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTM0MWNjNWY1ZTIwNmQwODIxMjkyNDgyN2M2ODY4YTgxMTkyMzA4MWFhY2Q2ZjE2ZTk0ZGY0NzZkZGI5YWY5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjFlMWYzYTlkOGUxYTNkMDI2MTVhYzFlNGUwM2M2Yjk5Nzg4MWIzYmZjZWVlMjE3NGU4NjdiMTNlMzJjMmI3MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjEwOWEyYjg4Njc3NzU4NjQ1YmZmMDNjNzAyYTk3YWE5NDJhNjQ2M2ZmZjk5MTFlOTRmNDg1MmQ5YWIxNzFmMCJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md#L70-L76",
+          "version": "repo-lines-v1:sha256:36696a3869d4a3f198e29d41fb3abd772769249c1847ef49bfafc92045472411:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTdhZDNjMDJkZTljNjk5NzliMjNkNWMyMWViYjFlNGE5MWYwYzdjYzA4NmQxZmZlMjBhODBmNDUzM2NkOWJiMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzg3YTJiNzJjYzRiYzE0MjNjZWI1ZjI0MmM1M2ZkYjM2M2E0ZDhmMjg4MjA3OTk4Nzc1ZGFlZjZhYmZjNTIyOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTUzZTMzYmE0YzFmY2VlODg0MDljNTFmNzU1ZTU2MThlNTAyMmRlYWM0M2Q1YjkzNDMyMWE0OTc2YTQzOGYyMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDFhNzc5NmU3ZDZjMDkyM2E1MjU3N2UwZDIxYmZiYjI4ZGQyZDU0OWMxOTY1MGMxNThjODU4OTg5NTZlZThlZiJ9"
+        },
+        {
+          "resource": "repo://analysis/README.md#L196-L198",
+          "version": "repo-lines-v1:sha256:2c8ca2612f22f8bdb6849c834810bd4988c4a73062576f6f4d7cbba17baaabbf:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDlhMzkyZjU2Y2E1YTVkZTkzMWYyZGRmNjI2NDNlNmY1OWY5OGM3YmMxNzg3YmJhZWEzNzJjM2RlMGUyYWZlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTlkNjc3ZDRiMDBjMjM1OGRhZDg4N2ExMDFlZGUxOGIwZDY3OTliZTIzYzFiZGUxYWYyNjliYWY4N2Q4NDAyNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGEwM2NhNjRkMzY3M2Y2OTYzZmYxOWM3ZTg1ZTc3ZmE0OTNlMjFmOWUzNjM5ZDJmYmJkMjVkZjExNmFjZDIzMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzJhZGM2M2I4M2JhNjUwNDAwMTFlNTAzY2U3MzgxMmE1YWI5ODg5ODNlZTZiMGY2MWEyNjJiMWNmYTFmMzIwYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8508e085fedc474191d2b01555792a35",
+      "statement": "pipeline-entre-bases.md is the adjustment ledger of the method: every change triggered by a new base follows the same cycle — evidence on the new base, diagnosis, the adjustment written and tested so base 1 changes only in predicted errors with 0 divergences in the independent audit, replication on the base-2 copy, and registration; it currently records Ajustes 1–16 plus per-round Etapas and an errata of what went stale.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L39-L53",
+          "version": "repo-lines-v1:sha256:e44a7045d65eba393d584f409024c1448bdd55323a7995eeb66a2b34d0436554:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmODU1NzFjMTUzYzNlOGVmOTU0OTkwZjg0MGZkZTkwZDE2NDZiMDViYWE3NjE5OGRkMjdkZjVkODMyNmJkZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NTA5Mjk3YzQ0NWJhMjJhZmY3NzYyYTQyZGI4ZTZiMmQxZmQ1NWFmMTQ4NDFmNTJmMGQzN2JkNDljNjRiOGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlZDRmNTRmMmJhMWEwYTc2YTc1YTg3NmRhNTUyMTllNjFiNzFjZTk4Nzg4MGZlMTJlNDdiYmEzYzE3YmU2YTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3MjIxMWI2OGQ1NmZkMzZkYWYwOWFhY2I0MjMwZWQ1MDY5NmY3ODMzOTQwZDUzMGQwNTk3Y2E4ZWU5MDlkNzUifQ"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L55-L70",
+          "version": "repo-lines-v1:sha256:3c87df609de306883bbfce74670f3da5224c202a8b696e870b8e0108ad038f4d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxMWQyN2JiMzFmMDcxOTNhYmI5YzBmM2NjMTcwODAxMjI2MmNkMmZjMzdhMDliNzFlYzU3MjA4OTkwZTNjODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxYjQ2ODQ1OTUxNTQxNzM1NWE4YjhjMWJjODY4ZThiNGYwNjRlMTVmNTZhZGM3ZGRlZTQxNmRjNGQ3ZWNkZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4NjZjMWI3ZWJlOTE5YWM4MTIwODg4NTliZjQzZWNhOGU4MDQzYzdlMjA0MzJhNTgxZWJjYTg1YWYwZTI4OGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_944b23050472441eb613a6b63608f626",
+      "statement": "Only counts, exception-class names, role/tool/model names, months, booleans, sizes, tokens and masked skeletons leave the compliance machine where base 2 runs — never case text, agent code, client names, case numbers or exec_id; LLM reading done there is tagged [assistido] (hypothesis), while deterministic checks are [conferido].",
+      "evidence": [
+        {
+          "resource": "repo://analysis/decisoes.md#L24-L25",
+          "version": "repo-lines-v1:sha256:b9f9d4ccaec87911eb373021032dee6661f40d72122351ca3931b7e7d63f126a:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTc4OGM5MmIzODE3NTI4YzMxOTUxYWVhNmFkZWYxMWI2ODZjYTBiZWU1MmNmOTdkYTM1YzdkZjliOWIwN2IxNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBmZjllZjc2NjI0ODg1MGFlZTI4ZmQ1YjZlMDM1NmE5NzUxY2RkM2U5MjhhZGZjYWRhMDNjMDFlNWMxNzg0NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmU2MDRkMjUxMDcxNTVhM2YyZmI2MWQ1ZWEwYjFhY2Q2ZDFlYmFmNWI0OWE5ZTc0OTAyYjJhYmIxN2JmM2MwNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDA3MTAwNmE1NWFiY2Q0MDFjNjVlOTJlNjJjYzJiMDhiMmZmYzhjOTUzNDI4ZDBiYzZhN2E2MDhiYzEyZjQyZCJ9"
+        },
+        {
+          "resource": "repo://analysis/glossario.md#L110-L116",
+          "version": "repo-lines-v1:sha256:efebdb038270ff7261cbc0f955b8942f946ae5725b84f6e791d9fa1f908db1c3:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTIzZjdmMTZkNTg0MjEzMzdkMWRiZmZmMDRjZjYyMTlhOGQzNDFkYzc0MGQ4YTA1YjYxMWZkMDY4MDYyNzA1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTgyMTE4NTgyNzkwNTY3MTIxNDYyYjEzYzVlN2MzZjhkNThmMDFhM2Y1MGM3NTgwZmQyN2FjYjJiYzg5YWY1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTQ5MDkzMzI5OTQyZDQ5MGM3ZTc3NjlkOTdlMzYyNGZlMGFjMGJlMDAwM2QzNWUyZTBjMzE5OTk1YTIyYWZjZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L34-L37",
+          "version": "repo-lines-v1:sha256:ad8b75b117ed8d97334eb3101d67aea407c1ff651b34816d89bde2a625da8e70:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg2M2I5MjM3NWUyOGQyMjlkMmQ3MWVlMTdmMDBiMjgzNzUwOGVjYjI5MDI1MDVjNzk5NWI2MjFiYmMxNzI0NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjA5YTg3NjVjZmU3NzI2MjI5MzlmZWQ3NWI3YzQ2MDc5MWE3ODI3YTM0Zjg3ZDEzZDJkZTQxM2MwMmZhYWI4MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2YwZmZkNzYyNWFjYTZlZmE3YWU3YjM1NDA3Yzk4ZWM1N2RmN2UxNzk4ODllOTA4YzIzODFlNGMxYjViMDM1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGExYzNmMDcxYzUyYzhiZDdhYmM4ODIwOTRjNjYxNWYzMDc4NmY1ODQ4Y2U1NzI0NWJiOTZiMTE1NTRiMjQ1YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_55b8e375d7a041a6820aa2a0215f266f",
+      "statement": "analysis/leitor_trace.py is the single trace reader for all bases: it detects CSV/plain, .xz, .gz or a single parquet by magic bytes, delivers the same all-text contract as pd.read_csv(dtype=str), serializes nested parquet columns with json.dumps, and is the only import shared even by the audit_recompute* scripts (which otherwise cannot import the pipeline so their logic stays independent).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/audit/README.md#L12-L20",
+          "version": "repo-lines-v1:sha256:0c75e48dc2afa27c00d1ed6531b03b3c0836f4e20c69b33e1c07665b16bd3e39:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWYxZDM0M2MyYTdkZTBhMTI3NDkwMjY5YjhiYzE3Y2Q2MDNiYWNlOGFhYTE5OGViZWRmNTYyNzY5ZmY5MjA2YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGExYjAyMzhhNDk3MDQzNjIyZDgyNmRhMDNlMDY4NDBlMmZlNzFmYTM3MzY0MmZkMDYwMzFhNzY0M2Q2MDViYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjcyNTc0MTk4NzliMzdiMzBiNTVhZDQ1MjllZjEwNjU1NzUwMjEwNzRmNDA1N2FhNWJhMTY4YjQwOTJlMTYxNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTQ0M2RiNjUwOTI5OWUzYzMzOGEwOWY2ODUyNDEwMTRlNDlkYmY3YTA3NjMyOGUzYjA3ZjEyOTliOWM3MGRjMCJ9"
+        },
+        {
+          "resource": "repo://analysis/leitor_trace.py#L1-L45",
+          "version": "repo-lines-v1:sha256:ba02e9ace9a9601b7ade1c8e922ad876238d7953ef32d86c180f670c61ddb186:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0MDNkM2E2OWU5MzY0OGE2ZjU1NTk2MTE3M2U5MjBlNGYwZGY2NGM5NmMyYjc3MzI3ZDdmY2FhOTg3YzRiYjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1MjUyNDEwMDI1MjcyNzA5Zjg5YWVjOWQ4OGNhNTJjZGYwZDc3OWMzMGEwMjE1YTJmYjkxMzRiYWE4ZDQ4ZTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwNWNkNDYwNDAxMzFkMzhhZmUzYWM1ZGNkNGYxZmY3YzAzNDgyYTA2ZTZmNGYwMzljM2M4YTkyOTIyN2UyZDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c6ddb0fd35f44cdb9fcbc43387fba51b",
+      "statement": "The declared boundary between per-base code and shared code: what is a hypothesis about one base (classify(), submecanismo(), SUB2UNI, carregar_base()) stays in that dated folder's base_pipeline.py and is copied to new bases, while trace-format mechanics live at analysis/ root and are imported — leitor_trace.py (reading), base_utils.py (generic CodeAgent/smolagents primitives), adaptador_trace.py (step-source structural core for legacy windows and census v2) and episodios_trace.py (observed problem components).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/README.md#L255-L260",
+          "version": "repo-lines-v1:sha256:d2df06458a6ce909385ccc3c316962f966e3e633559240298a47531193e32598:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGE3ZjcyYThmNDkwYjJlNDVlYWZlYTRkN2E4MGUxMDlhYjMwYjEwZDRlYjNiODk5ZmIxZjJiYWI4YjdkODM1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTMzZGE0ZDljYTIzNmFkOWIxYWRhMjM5OWY1MzBmYThiNzUyNTJmZjEzNDM1NGUwOGY3NThiNTE2MGM5NzdlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDdlMWIyMWVlNTAzM2NiMjA4OTM5ZTIxNTkzMDQ3YTg1YjJjNmM3ODBlZGNmNmUyNTgxMzFmNTVjZmU5OGVjNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTFlMTQyNDMyNTYwOTY0NzAzZTE2NzQyYTA3OGQ5ODE2NGMwMTEyMGVmOTkyMDM4OTc1MzZiYjNiMTJmZTVjNSJ9"
+        },
+        {
+          "resource": "repo://analysis/adaptador_trace.py#L1-L8",
+          "version": "repo-lines-v1:sha256:ba3014add13ca078b3c86331668026f8cb25562f1560080c8641b8932c9a6477:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjU5MzY0MWFlYjU1ZDdkZDVlNzMzMTg5OWQyMzMyNWZlN2EwYjEwOTNjYTFkYTcwMDdmNzI3YjNiM2Y3NGU3ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTM4NGJmZGIyZGYzODBiNjU1N2NjN2E3MWQxNjg5MTQxNWJjY2FhODc2OTk0MDZlMjM2Zjc1MmM2NDE1Mzg5ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmI5MzlkOTc4ZDZkZDQ2MzEzMjVmNzlkMjJkOTczNjQ1MzUxYWU2ZjNlN2UzM2Q3OTk2Y2MyY2E3N2I1Y2U3ZiJ9"
+        },
+        {
+          "resource": "repo://analysis/base_utils.py#L1-L14",
+          "version": "repo-lines-v1:sha256:66038560cc026cb9ebdc212dd43089d10106a8ba324fcbfec3bddd5515a9b834:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkN2EyZWE1NGRiYTRiZTUyYTEwMzA5Zjg3OWRkZDhlZjc2YzFiYjNhNzk4MDY3YjZhMjYxZDlkOTQ0NWZkMTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzMGM5ODdjZDlkY2Y1MGRhNzAxNWUzMjcxNjlmNWFlMWFlMTVlNWNmMmZiZWMyYTc0N2M2YTRkNGU2NmU1ZTcifQ"
+        },
+        {
+          "resource": "repo://analysis/episodios_trace.py#L1-L9",
+          "version": "repo-lines-v1:sha256:13d1041f2b89ddd866a18d9b10dc8bafe96183e73e4aaf96426be537c1ed65d9:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzAxZDNiNGRlNDM1YTYyYTVhY2RjMDQ2YTExOTRhMzQ3ZTA3NzZlNjAzZTdiY2Q0YTNiYTM2OWNjODRkMDk4MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2IzZWEzY2RjNzA2OGE5ZTk3Y2ZjZGRiY2Q5ZDhlMGM1NGZlNGQwNjgzNDdiODBiMTU4ZmRkOGIxNDY3NmUzYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWRmZThhNDhjYTYzNjg0NmM0NzYwMzY4MjdjZTkzZDRkZWMxZjI2ZWZmNGUwN2M0NjRmYWNkNTU0ZjVlYmQ2NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f2d0d74fdf648e2a9d2014ab7b98290",
+      "statement": "analysis/tests/ holds a unittest/pytest suite over synthetic fixtures — no client data in versioned tests — covering the shared adapter, the base-3 single entry point and command routing, structural loading, episode mechanisms, observed-mode mining, symptom eligibility/costs and validation recomputation.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/tests/test_adaptador_trace.py#L1-L9",
+          "version": "repo-lines-v1:sha256:326137dba9309dc6c98429218610dc308119495e8a0ae4bb7df99f1545f19ba6:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2E5OTBmYjhiMjZlYTNmZjhlMDQzMDVmNGYxNTQ4OWM1MjBjODRhZjMxMDIxYTI1ZmYyN2RhMjI3MDU3OGUzMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDQxNjAxOTVkZGJkYWM3OGU1NGU1ZGRkN2NlZWE3YjkzMWZlMDE0YWUyMjRiMGE5MmUxNjBjNjIyMTMzNTA2YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTc1YTE5MmQxYWE3YmNiMWRjNmY0NzVmMzA4YWM2OGVjNTkzYjAzMGQ2NDY5NWM1NjE5NzU5M2IyMWRjOWNhNyJ9"
+        },
+        {
+          "resource": "repo://analysis/tests/test_integracao_carga_base3.py#L1-L8",
+          "version": "repo-lines-v1:sha256:9222bd99e19aa40a5f3ceb3f55f53a63d0e4c66ea41449f87f34f12082956ba3:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDlmZDFjMDM1NWUxY2RmZmY4MTRjMjE4MTI4YTRiNzBhZDYyOTFiOTE0ZTBiMTA3OWZkMzY1YTA4Y2U1YWZiMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzUxNzU3Nzg1MWM0ODllNDVhYmFlMjU5MTI1NmM0MDQwNGEwNWM2ZDE5Y2Q0ZDVhZTdmZDIyYjAwODRjZWM2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzY1YzJmMWZkODczYzliODE1OTBiNDFkNTdmYjI3Nzk5NTYxODQyYzE5OWRkZjQ5OWU0MDdjZDdmMGJhMDU1MCJ9"
+        },
+        {
+          "resource": "repo://analysis/tests/test_mineracao_observada_base3.py#L1-L8",
+          "version": "repo-lines-v1:sha256:ac16a1b87c411f719bcca9e45454d3e92dbf0b22bcd79ec5912624a066db3f86:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzBiN2QyMjI4YTkwNjA0MzRhYjA2MTg3YTExZDg0YTEyNjk5YTNmZWZjOTFiYjNiMTJmZTBiNzY3NzhiMzhiZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzkzOTRhNjViOWQyZDY1YjU1NTY4NmUwOTU5ZTUxNzAzMGNkZjNlOGM5MDliMmRlNWQzZjFiNTA1MjNmNWE0NCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8b508178aa0c4b1f996c16ac0cb36356",
+      "statement": "Audits are tracked in audit/README.md with state open/closed — an audit only closes when the report gains a Parte II (the author's reply) — and the audit_recompute*.py scripts are independent reimplementations from the rationales' prose (csv+json+ast, no pandas, no base_pipeline import) that accept --trace (CSV or parquet) and, for audit_recompute9/10, --base and --json so the mining kit can run them in parallel on any base including the compliance machine.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/audit/README.md#L1-L20",
+          "version": "repo-lines-v1:sha256:ef7c9a0546e6181b82d14bc692f132584b230dc105b07e7678cf3bb2aeac0a03:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhMWMxMjZlNmU4YTRlNWZjMmZmMzdhNjQ2YmZjNTcwZjA1MTdhODA1ZmQ1NzJmMjIyYTRjYzc4ZGNlOTNlOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhMWIwMjM4YTQ5NzA0MzYyMmQ4MjZkYTAzZTA2ODQwZTJmZTcxZmEzNzM2NDJmZDA2MDMxYTc2NDNkNjA1YmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0NDNkYjY1MDkyOTllM2MzMzhhMDlmNjg1MjQxMDE0ZTQ5ZGJmN2EwNzYzMjhlM2IwN2YxMjk5YjljNzBkYzAifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/audit/README.md#L44-L56",
+          "version": "repo-lines-v1:sha256:74c0a206ebb1568950d2b1ac620f1a96e97b324ab908971e46b07d0c795e14fe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhMTlkNTVmMTMwNzk2NjNjZmQyYzM2Y2RmMmI4NmRjMmE2MmFlYTU5Y2E2YzE0MjEyYmZjNjgwNzY5MGY4NmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3MjUxODFmZmRmOTYyMTRjMzcxZGE1Y2M0MzdjYWQyNGM5NDQzN2U5NTRjMzI1ZDdiODUxYjMxZTRiOWE5NTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e10772b0e2f741149297ba2fd5c11020",
+      "statement": "What base 3 cannot answer (error rates, silent failures, content-level success, system-prompt protocol) is measured in the folder's procedure §4 and turned into docs/05-pedido-queries.md — a prioritized request for complementary data (denominators first); the folder exposes a single entry point pipeline/executar.py with subcommands analisar/inventariar/validar/conferir/painel.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md#L87-L97",
+          "version": "repo-lines-v1:sha256:e7ded4f96eaaaac1488ca6ae2ecd57cab7966576265fa041dbbef22cc50eb426:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExOWQyM2NkNWQ1NjIwMzA0Yjc1NGJiOTc3YmIyYTAxZmI3NjIyYjNlOTkxNjgxOWRhZDJjODg0ZWQxYzIwZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxOTU1ZDRiMjQxNzQzN2U3MGM2NzY3NTIzODA2ZTFmNmU3MjMzYzY1NzhiMGUwZDhiMjEzZDFhMGE4NGFlMjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkNzRjMzdjOTk2ZDIyM2RkODllNzIxZDg5MmJlNGM5Y2UxMjc3YmU5ZWI3MTkzZDhlZTkxMGM3ZDBlMTE4YjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/05-pedido-queries.md#L1-L15",
+          "version": "repo-lines-v1:sha256:b49469fcece1f698c0fdb35e6d06c658c30012714773dd76820d0ba63e9fed6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiYjM5MjdmMmMwODljYTA5ZmU4ZDVmYWY1ZmVlZjU4M2ExZDY2ZjViZDE2ZDI2NTg1NDU3YTY4ODE5ZDMzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZjE4OWNiNzZjMmJmYTRlMWNhMTgyZWQwMGMzMjQxNzUzZTlhNWZiYTBjNzBkYjZlOTNlNzhmYmRlNDNhMzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmYjIxYzViMWU3ZTA4NTZhMzQ4NzU3NzUyMTIwYTZjMmUwMmYyMTM3Mjg0ZjM3M2FiNzJiYzIxYWUwZDEwMGQifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/executar.py#L1-L10",
+          "version": "repo-lines-v1:sha256:bcbeed77d60eafa75b74dddf5884e86d27c187a0ea191e92248477d0eb91f04d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzQ2YTBkM2RkNjA2MDBiN2I1OTUwOWI1Nzk1OTFkMjliZDdmZDlhMWFmNjgxZDRhYTk2ZDExZTQ0YmQ4YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjMWM5YWVkOTEzOTIzNTYxOWMwYzA5M2JhOWQ0NDA5ZmExOGNiNDAwMzU3YmIwMGQ4M2ZjN2RlYjNhMWRhNTkifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-09T17:09:54.387Z"
+  }
+}

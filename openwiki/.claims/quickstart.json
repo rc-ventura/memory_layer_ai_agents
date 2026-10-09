@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:350b0c0f5a7b8ac585180aec6f3801e268f66c140d83e0fb6431128012aded88",
+  "pageVersion": "sha256:4cc306a1ccb6c0a44f49b1a1ad0efb38c097c1af3fe90f283cf99051afbe927a",
   "claims": [
     {
       "id": "claim_5541f189b9e449a49d738f3064fb2713",
@@ -31,10 +31,34 @@
           "version": "repo-file-v1:sha256:419de0addc762a7052ab046c423e1cbf7f346f501b7e45d3be763ae4e328dd87"
         }
       ]
+    },
+    {
+      "id": "claim_733ed6c08d14473f8c4284e830f80b1b",
+      "statement": "The repository has no build or app entrypoints, but the analysis code has a small pytest suite under analysis/tests/ run via 'uv run pytest analysis/tests/'.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/README.md#L55-L56",
+          "version": "repo-lines-v1:sha256:2e0cde01a8b3e04a661d86b494d562cc1c6289721e4d58f890d2aa20ddbab881:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzk1ODgyOTliZWM1YTJhYWU1ZDY2NmRmYTRiNDU2NWFjYmM5ZDE0YzYzZTJhNTU4MzgwYzAwMTBiMDc4M2NiOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjYwMzNjNDVkNTk3YmVjZDVhYWQ3MjQ3ZDIxMDNjMGNjMzVhOGI0YzNjM2YwMjIwZTIyZDQxYzEwMGVmOTNiOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGZkMWNlZmY5ZjcxN2I2ZTE1MzIwNmNkNzcwMDZhY2MwYzRjZDgwZjgzNTY3MjA1M2ZhZjI5YTU1Nzg2MWQ4OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_31bbf8ea7c7b46e59d227882669d828f",
+      "statement": "Beyond the daily-research skills (diario-campo, sintese-diario, checkpoint-reuniao), the kit adds mineracao-base plus one skill per mining (silenciosas, protocolo, candidata) and mineracao-investigacao, plus the manual-call-only skills investigar and propor-notebook (disable-model-invocation: true).",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L65-L96",
+          "version": "repo-lines-v1:sha256:a7858e9bfd55cdb75444c265f519cd0e58dfe7ad79247e1f8c09d0337baa0e56:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlYWVmYjBhYjFkOWNkMmRjM2U2NTRmZGZiMGEyMmQyNDliMDAxZmUxNGI3NjIwMjkwMjhiODc0ZDdlOTMxNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2YjZjMzhlODMxY2Q2ZTFlMzJiMjAxMTBiMmQwNjM4ZTc1ZmZiMTE0NzVhNDg2ZGNjOTJiMjk5ZmJiMGNlMjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkMzU3NTFlMzk5OWQzOGMzMDk5MmU0MjNjYjA0OTc2MzkxNjZjMzg2MDMyOWIzMmMxYmJjODMyY2VkZWQ4NzMifQ"
+        },
+        {
+          "resource": "repo://.claude/skills/propor-notebook/SKILL.md#L1-L5",
+          "version": "repo-lines-v1:sha256:2895ef10ee13c97a13bd4f9f23702b2d6602984ce1efc3f02bc668b048f58680:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjUyZDcxMTEwM2Q1MGE0Mzc4MzBjNmZiY2QwNGZiNGJhYjQ5YTBmODJmNmQyNmQxYzc5MWM2ZTg0ODhkZDA5MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGI1MmRmYTU3YmEwYTAwMTA3ZTk2YWM0ODZhNjYxMmQ0OGVjMDNjYTJjMWU5ZTU3MWUzMDZiZTk1MGYyNjliNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQwODdkMmVkNTUwNzZmODk5NjFkY2RlMWQ1ODU0Y2Q1YTM3NTZiZjU0Y2UwNWY5NjUyYjNlNzc1MjFiZGE0NyJ9"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.1",
-    "at": "2026-09-21T19:21:20.640Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-09T17:09:54.387Z"
   }
 }

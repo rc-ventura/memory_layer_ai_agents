@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:93445fc5009dbab238fcee91087485407accb611f51709a9fc5656e70a22b503",
+  "pageVersion": "sha256:186df491dac0de656fec9b2bf1982108ebba4471959055328c1e4dbd56281ce6",
   "claims": [
     {
       "id": "claim_d78b4f78b7cc4e67bafff8c5f0ea932e",
@@ -74,25 +74,29 @@
     },
     {
       "id": "claim_32260b764f424aeaa962b6889f19bb12",
-      "statement": "As of 18/09/2026, the analytical core shared between trace-analysis folders lives in pipeline/base_pipeline.py (classify(), submecanismo(), SUB2UNI, triage), making the byte-identical requirement between the original and a new isolated analysis folder trivially checkable — the new folder copies that one file instead of duplicating notebook cells, as the intake checklist in analysis/README.md prescribes.",
+      "statement": "The analytical core shared between trace-analysis folders lives in each dated folder's pipeline/base_pipeline.py (classify(), submecanismo(), SUB2UNI, triagem — hypotheses mined on one base, copied unchanged, with BASE_ID set next to TRACE), which makes the byte-identical requirement between folders trivially checkable. The intake checklist in analysis/README.md now prescribes copying base_pipeline.py + drill_down.py + checklist.py + .gitignore, while the generic trace-format mechanics (leitor_trace.py — imported by base_pipeline.py itself — plus base_utils.py, adaptador_trace.py, episodios_trace.py) live at the analysis/ root and are imported, not copied.",
       "evidence": [
         {
-          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L21-L30",
-          "version": "repo-lines-v1:sha256:0df367ed9df35f2609d210335416cce30f9938d67446657870c97d1f2769e9fb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzOTkzYTc1NTQxM2U4N2M0NWRkZTgzZWUyZTMwMjA1ZWQ1NjU0MmNiZDM3ZThkYzQxMjkyOTdhYzk5OWIzMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkNDVhMzIzYjYyN2Y5NWQxNzQ4YWEzMGNkMmM1MjE1YmI1MGM3MjgzZDNlYjU3OTQyM2I5Mzk5NDg3NDJlYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5NjUwNjA5NDc2OWIzYmU0ZDNmNTM3YmE2NzE5ZmQyYjU1NDMzMWJmYjJiMGUxNDlhNzA5ZjQzZTk4ZjBiNDMifQ"
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L21-L46",
+          "version": "repo-lines-v1:sha256:be4203e1aae84763bef4f8f6b345f18edd32bf599e6778635981b54af7bf9a14:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMzJiZTM0MWZhZDk2MGEzMDRhMzVjZjk4Nzk1YTRhMjJhMDFkNTJhYjQ2NmQ5YzY5MDM0YTY1ZWRjNDZmMjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzNDFjYzVmNWUyMDZkMDgyMTI5MjQ4MjdjNjg2OGE4MTE5MjMwODFhYWNkNmYxNmU5NGRmNDc2ZGRiOWFmOTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkNDVhMzIzYjYyN2Y5NWQxNzQ4YWEzMGNkMmM1MjE1YmI1MGM3MjgzZDNlYjU3OTQyM2I5Mzk5NDg3NDJlYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxMDlhMmI4ODY3Nzc1ODY0NWJmZjAzYzcwMmE5N2FhOTQyYTY0NjNmZmY5OTExZTk0ZjQ4NTJkOWFiMTcxZjAifQ"
         },
         {
-          "resource": "repo://analysis/README.md#L160-L190",
-          "version": "repo-lines-v1:sha256:854d0569774d2cac71ef549debe4ebd9f43b28c1f48b33baeabd88e5127be791:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzRjYzlkZGIyYzEyNjIyNDY1YTEwMDUxODE4MjkxOGE1ZTRmMTQ5OGU4NjgzODUwNTA5MTUyOTQ0NjY2ZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3M2NjYTE0MDgwYzZlMmZiYzMwNGE1NGUxOWZiYjE5YWJhNWI3ZmE1NGEzZDFkMmNjMjc4ZTI3Y2ZiMTJjYjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjNWM1MjczMTk0MWUxYzA0YmEzYzk5MDJlNDQ2NWU5MWMxY2JjOTNhNjVjMjFkYjE5MzkxZGYzMzUyZWU2NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyYTEzZWEzNjExYjBjZDUxYWFiMmRlZmYxNGQzMzA3MTBiNzM0Y2M4YzBlNWIzY2QyN2Q2YmQ5NDk0ODllYWIifQ"
+          "resource": "repo://analysis/README.md#L160-L176",
+          "version": "repo-lines-v1:sha256:ca9f9d1e828082d38ca2ca910ab898d41cd94da72315c630814b81bf3dffb87e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzRjYzlkZGIyYzEyNjIyNDY1YTEwMDUxODE4MjkxOGE1ZTRmMTQ5OGU4NjgzODUwNTA5MTUyOTQ0NjY2ZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2MGM2OThkYTJkOGU0ODgwZjdkZmMxNjQ3YTMzMTk2MDY2YWI1ZDU4NDljYWZkNjY1M2Q0NDQwMjhmMTkyZjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjNWM1MjczMTk0MWUxYzA0YmEzYzk5MDJlNDQ2NWU5MWMxY2JjOTNhNjVjMjFkYjE5MzkxZGYzMzUyZWU2NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MjIwZGQ5NTRjZTVjN2NkOGJmOWI2NTBkZWVlM2ZkNmUwMDBmYTc5NmJlNTlkNjg1YzkzMjIzN2MzZWEyODIifQ"
+        },
+        {
+          "resource": "repo://analysis/README.md#L255-L260",
+          "version": "repo-lines-v1:sha256:d2df06458a6ce909385ccc3c316962f966e3e633559240298a47531193e32598:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGE3ZjcyYThmNDkwYjJlNDVlYWZlYTRkN2E4MGUxMDlhYjMwYjEwZDRlYjNiODk5ZmIxZjJiYWI4YjdkODM1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTMzZGE0ZDljYTIzNmFkOWIxYWRhMjM5OWY1MzBmYThiNzUyNTJmZjEzNDM1NGUwOGY3NThiNTE2MGM5NzdlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDdlMWIyMWVlNTAzM2NiMjA4OTM5ZTIxNTkzMDQ3YTg1YjJjNmM3ODBlZGNmNmUyNTgxMzFmNTVjZmU5OGVjNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTFlMTQyNDMyNTYwOTY0NzAzZTE2NzQyYTA3OGQ5ODE2NGMwMTEyMGVmOTkyMDM4OTc1MzZiYjNiMTJmZTVjNSJ9"
         }
       ]
     },
     {
       "id": "claim_ce57b05b50184b218dd02e7a606a8092",
-      "statement": "The second trace extraction has already happened: 'base 2' is an independent 1,000-execution sample that surfaced a new error.type unseen in base 1 (AgentMaxStepsError, n=1), reopened the harness-protocol bucket on 22/09/2026, and exposed that anomesdia dates the extraction batch, not the execution (real dates come from dat_hor_inio_exeo). The status lookup table also arrived (analysis/status_execucao_agente.csv; the 1/2/3/34/67 dictionary is in schema-e-taxonomia-de-erros.md), and new-base intake is operationalized by pipeline/checklist.py (column drift, error.type census, cross-base cod_idef_exeo overlap).",
+      "statement": "The second trace extraction has already happened: 'base 2' is an independent 1,000-execution sample that surfaced a new error.type unseen in base 1 (AgentMaxStepsError, n=1), reopened the harness-protocol bucket on 22/09/2026, and exposed that anomesdia dates the extraction batch, not the execution (real dates come from dat_hor_inio_exeo). The status lookup table also arrived (analysis/status_execucao_agente.csv; the 1/2/3/34/67 dictionary is in schema-e-taxonomia-de-erros.md), and new-base intake is operationalized by pipeline/checklist.py (column drift, error.type census, cross-base cod_idef_exeo overlap — now also parquet format and typed/nested-column checks).",
       "evidence": [
         {
-          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py#L1-L31",
-          "version": "repo-lines-v1:sha256:5a0b2f7cce2a1c4d080c64db6c1d59bdc41d2458dd3a49110ec585aa00a2847b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMDg0YTlmMzc4MTI0YjJiMWE1MTU2M2JmM2MyMjQ0NGViN2ZmMzM2OTIwMTdkYTI4YjIxMzZhZTU2OTg3ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzMDFlNDM2NWYxZTI4YThlMDQzMTM2ODI3YTgzYzA0MWJlZWE2OWExNjZhOTc2MzhlOTBkZWY4NDJmNWM1NzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0NzMyNjAyZjI5MWZiMDE1MGRlN2RhZWQ0NjdmY2ZiZWVhZGM3ZGEyOWZlNTY2YmQxNDA4Y2U4YjAyOTBmZjUifQ"
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/checklist.py#L1-L33",
+          "version": "repo-lines-v1:sha256:e2aa1867f9fc86aa5eded0a3d1ccdee25f29d0855e273314647bbd35e8909f35:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMDg0YTlmMzc4MTI0YjJiMWE1MTU2M2JmM2MyMjQ0NGViN2ZmMzM2OTIwMTdkYTI4YjIxMzZhZTU2OTg3ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzMDFlNDM2NWYxZTI4YThlMDQzMTM2ODI3YTgzYzA0MWJlZWE2OWExNjZhOTc2MzhlOTBkZWY4NDJmNWM1NzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlY2Q2NjE5MzVkYzgzYzUzNDNkZmY1N2UzNDRiNzYxMzAwMWI2ZDg5YzFmZDczN2Q1NzliMDg0MzI4NWRmYmUifQ"
         },
         {
           "resource": "repo://analysis/schema-e-taxonomia-de-erros.md#L125-L141",
@@ -100,17 +104,35 @@
         },
         {
           "resource": "repo://analysis/status_execucao_agente.csv",
-          "version": "repo-file-v1:sha256:c0866aa5db5c6fd0f850b63f863e8e302d0b72997be0a617e19165e5809bb3cd"
+          "version": "repo-file-v1:sha256:811934c7421b920e8a238b317b8833448e10bd6cfcabe7c274a3902335dd0852"
         },
         {
           "resource": "repo://research-diary/Set/diario_campo_2026-09-21.md#L27-L43",
-          "version": "repo-lines-v1:sha256:a1bb21eed8891ab5604b98b98e097db8da44d8c088b1668aa3423940f1412f4d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyYWI3MzBhZGNmNDJiZGM0OTI2YzM2ZDFiODljOTlmNmM5NzIwM2Y4YmVlMjgxNzMwYzcwYWRiMmY0M2IxNzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYjE3YTFhZDFiM2U1NDFiYjA0ZmM5MTdlNTU1ZjY1NjljMDQ0ZWU4Y2FhMjM0ZTNlY2QyMmNlMDhkNWIxMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhYmY1NDQwYWRhOWJhNzk5ZGIxN2NiZWViNDU2OGVhNGQ5OWY5ODI1ZDU1YjAwMWQ2Nzk5MzYzZjVjYWIyNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlODk1YTJlY2Q2YzU5ZGNhZjliNzBkMzNhNGVhMzlmY2M5MzBlNzEwYTI0MmFhNDQwYThmZGQ5ZmFmMjJiYmQifQ"
+          "version": "repo-lines-v1:sha256:a1bb21eed8891ab5604b98b98e097db8da44d8c088b1668aa3423940f1412f4d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyYWI3MzBhZGNmNDJiZGM0OTI2YzM2ZDFiODljOTlmNmM5NzIwM2Y4YmVlMjgxNzMwYzcwYWRiMmY0M2IxNzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYjE3YTFhZDFiM2U1NDFiYjA0ZmM5MTdlNTU1ZjY1NjljMDQ0ZWU4Y2FhMjM0ZTNlY2QyMmNlMDhkNWIxMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhYmY1NDQwYWRhOWJhNzk5ZGIxN2NiZWViNDU2OGVhNGQ5OWY5ODI1ZDU1YjAwMWQ2Nzk5MzYzZjVjYWIyNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlZWViNGVlYjRjM2QxM2I2ZjFkOWE0MWY2ODk2YzI1Y2UzZGQyMDliNzZlYTJiY2M3MzZkNmU0OGFjYTMyNzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3927540985e94154904b8941f2be5198",
+      "statement": "A third extraction also exists ('base 3', analysis/2026-10-trace-law-flow-third/): a parquet produced by the Athena query ICTI_crossmemory_query_mineracao_erros with one row per error step plus a context window (31,421 rows: 30,141 structured errors and 1,280 suspects), analyzed by the 'observed mode' (mineracao_observada.py) which reapplies the same classification rules only where the window carries enough data — with no denominator for rates and a third state 'pendente' (rule exists, data missing) kept distinct from residual.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md#L15-L34",
+          "version": "repo-lines-v1:sha256:c825a1a84a392e9f997867ee6561c30adadf08d9f1b1ed495b6980a44185ad85:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhNmExZDIyODBjODNmNjJkYWFhMTgwMmVlMjFmZjRlMDM3ZDg1MjNhMDUyYWUzYWIxNGM2ZGFiYjcxMzE3MmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxMWE4OGI3ODFjODA4NDVmMTA1YzI0YzE5OTllM2VjYzMwMDRmYjNkY2FmNWQ2NDdkODkzOTEwYTA5ZmVmYjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwMWYyZWMxNzU5M2MxMDU0ZWI0NjM2N2Q4NDUzZWYyNGExNzNjZTk2YjcxMTdkOTFmOWE2OGQ0NGZlZjhiMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlN2ZhOWE3NTFlM2M1ZjhmNDM2OWQxZTUzZTkzMWVlYTk0ZjdiZjJmZGIwNjExNjUxYTNkZGVhZTVmMTkzZTEifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md#L50-L59",
+          "version": "repo-lines-v1:sha256:c0be76f1f7965be9b8119f573c6ae7af5c61dd0791e855e6fbd88df4765230e1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3ZmMwZGIxM2NlNDI3Y2Q1OGM5ZGE5NzZjMzVmMjY1NjU5NzFhZmQ0MDJhY2U0ZWRkY2E2NTFhMDk4NzJmMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MGM2YmRhMzg2Y2NkNmViMGM3ZjcxZDJlM2RhM2VjYTA0Y2ZiMjZkMTRjYTkwZDcwODlkMGIzMzM4NDdkMWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1YmJlZTEzMjA1MDllM2YyNmE5M2RjNGUxNzNiNzY2MDYxMmQzMmIxMjI5MDhjYWM1NDM1ZDJmOTM3NjRhNGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhM2RlMzE2MjZkOGUyN2ZiNzYxMzY5NzIzYzE4ZDAwZmI5ZTFlM2IzNjFkYjIwNWI5NmNmZTg0OWI1MjBlMGUifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/mineracao_observada.py#L1-L25",
+          "version": "repo-lines-v1:sha256:14b0fa4a16742791564fb095d9e9198e33340a62bb78e2be8a0c536f698eeab0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNjI1ZGQ0OTAzMzQ1ODRjMjc5NmY4NTdkM2M3Y2FhYmRlZTljNzFhNmQ1NTQ3Y2M2YWM4MzczYTViY2FjM2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzNDE3Mjc3NmUyOWM4OTRhODZjODQxZGQzNmY0MzNhZmU2YzAwYzE2OTM2ZjY1NDVlN2Q1Yzk5NWY0NGM4NWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3YmFjZTkxN2FmNWIyZjg2YTg2M2UzMGEyM2EzMWZiNzNkZmJkN2I5ODZlNTY2OTcxMWJhZmNmYmQ0MmY5MjYifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-24T16:54:16.453Z"
+    "at": "2026-10-09T17:09:54.387Z"
   }
 }
