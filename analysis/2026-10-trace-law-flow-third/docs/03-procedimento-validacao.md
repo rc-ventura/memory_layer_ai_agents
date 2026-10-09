@@ -20,7 +20,7 @@ uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/resumo_rod
 ```
 
 O `<id>` da rodada é o hash de (contrato, base, fonte, código). Mesma fonte e mesmo código dão a mesma pasta — a
-rodada deste relatório é `observada_0d23103afd4fc0f4`. Código ou fonte diferentes dão outra pasta; a antiga não é
+rodada deste relatório é `observada_b4fcc7711a9ec8a6` (a `observada_0d23103afd4fc0f4` de 08/10 tinha as mesmas contagens; o id mudou porque o código mudou). Código ou fonte diferentes dão outra pasta; a antiga não é
 sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar --perfil <unidade>`.
 
 | Arquivo da rodada | O que tem |
@@ -111,7 +111,7 @@ por `cod_idef_exeo` na tabela de origem, que não está disponível hoje.
 
 ## 6 · Antes de apresentar
 
-- [ ] Os números do relatório saem da rodada `observada_0d23103afd4fc0f4` (a pasta existe e o manifesto está como
+- [ ] Os números do relatório saem da rodada `observada_b4fcc7711a9ec8a6` (a pasta existe e o manifesto está como
       `concluida_tecnicamente_sem_aprovacao_semantica`).
 - [ ] "Candidata" é dita como "recorrente o suficiente para minerar", não como memória aprovada.
 - [ ] Nenhuma taxa é citada (limitação 2).

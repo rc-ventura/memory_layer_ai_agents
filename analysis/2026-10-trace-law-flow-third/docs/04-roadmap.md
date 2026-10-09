@@ -6,9 +6,9 @@
 > item feito é marcado `[x]` e desce para "Fechado" com a prova, sem mudar de número. **Os números deste arquivo são da
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
-Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_0d23103afd4fc0f4` e
+Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_b4fcc7711a9ec8a6` (a `0d23103…` de 08/10, com outro id) e
 [limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 09/10/2026
-(branch `2026-10-09-roadmaps-schema`).
+(branch `2026-10-09-relatorio-leituras-painel`).
 
 ## O plano de adaptação: feito e pendente
 
@@ -22,22 +22,13 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 | **3** · Depois do erro, custo, versão; suspeitas e protocolo | **Em parte** | Há o gráfico e os perfis do que vem depois do erro, por candidata. **Pendente:** custo da janela completa, unidade por versão → #15; suspeitas e protocolo por papel, mês e versão → #16 |
 | **4** · Relatório e pedido de dados | **Feita** | `01` a `05` em `docs/` |
 | **5** · Kit e auditoria independente | **Não feita** | → #17 |
-| **6** · Painel | **Feita, falta rodar a versão final** | `executar.py painel`, com 7 gráficos de leitura → #9 |
+| **6** · Painel | **Feita e rodada** | `executar.py painel`, com 7 gráficos de leitura, rodada `b4fcc…` (#9) e leituras no relatório (#10) |
 | **7** · Quando a v2 e a agregada chegarem | **Aguarda o tutor** | O pedido está no [`05`](05-pedido-queries.md) → #2 |
 | **Documentos gerais** (glossário, livro-razão, `analysis/README`, `kit.md`) | **Não feita** | → #18 |
 | **Teste de equivalência** `triagem_observada` × `bp.triagem` na suíte | **Só como script** | → #19 |
 
 ## Backlog — em ordem de valor
 
-- [ ] **#9** **Rodar o painel novo** (`executar.py conferir` e depois `executar.py painel`). Gera a rodada com a tabela dos
-  pendentes por papel e mês e os 10 perfis, e os 7 gráficos de leitura (destinos, frequência × custo, concentração por
-  papel, papéis, linha do tempo, depois do erro, pendentes). A rodada muda de id (o código mudou); as contagens da
-  triagem têm que continuar as mesmas — se mudarem, é erro a investigar antes de seguir.
-- [ ] **#10** **Atualizar o relatório com as leituras do painel**, só depois do item 9 e com os números da rodada nova: custo por
-    erro × frequência (o ranking por tokens mede o contexto, não a gravidade), dois papéis com mais da metade dos
-    erros das candidatas, o protocolo do harness em cerca de 1 de cada 5 execuções com erro, o padrão no tempo
-    (timeout num mês só; retorno colado em 7 meses) e o que vem depois do erro. Hoje essas leituras são contas feitas
-    a partir das fotos — entram no relatório quando o gráfico da rodada as mostrar.
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere sem regra nova, os erros moram em poucos papéis, o maior problema isolado é de protocolo, e o
     que falta para as taxas e para os 24% pendentes.
@@ -45,7 +36,9 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   denominadores (taxas e gráficos de custo da base 1), B complemento dos pendentes (fecha os 24% sem unidade), C
   ajustes na extração. **Falta:** levar ao tutor (item 11) e, quando chegar, conferir a junção e integrar ao pipeline.
 - [ ] **#1** **Investigar os 5.818 erros de nome não definido sem passo anterior identificado** (102 mi de tokens, o maior
-  grupo pendente). Esse motivo cobre dois casos: não há passo anterior (primeiro ActionStep do papel) ou há, sem
+  grupo pendente). **Pista medida em 09/10:** 5.310 estão num papel e num mês (`ontestacaoCivel`, 2026-08) e pelo menos
+  5.708 são de agosto ([relatório §7.1](02-relatorio-achados.md#71--os-pendentes-estão-concentrados-num-papel-e-num-mês)):
+  a amostra e a leitura começam por aí. Esse motivo cobre dois casos: não há passo anterior (primeiro ActionStep do papel) ou há, sem
   `step_number` — a proporção na base 3 não foi medida. Primeiro só contagens: os dois casos, `step_number`, papel,
   mês e versão (o gráfico de pendentes do item 9 já mostra papel e mês), se o mesmo nome se repete entre execuções, o
   que o passo seguinte faz. Depois, amostra e leitura (skill `mineracao-investigacao`). Só então decidir a unidade —
@@ -93,6 +86,14 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
+- [x] **#10 · Relatório com as leituras do painel** (09/10): [`02` §7](02-relatorio-achados.md#7--leituras-do-painel) — onde estão
+  os pendentes, destino de erros e tokens, custo por erro × frequência, concentração por papel, o padrão no tempo e o
+  que vem depois do erro; cada número conferido com as tabelas das seções 2 e 3 (os valores por mês e por papel somam
+  os totais). Ressalva escrita: sem denominador, não se sabe se agosto teve mais execuções ou mais erro por execução.
+- [x] **#9 · Painel novo rodado** (09/10): rodada `observada_b4fcc7711a9ec8a6` na máquina 2; contagens iguais às da
+  `0d23103afd4fc0f4` (30.141, 23.034, 7.107, 17 unidades, 10 candidatas, 538 no resíduo) e os 7 gráficos de leitura
+  gerados, sem a seção "gráficos não gerados". **Resto:** a suíte lá rodou 162 testes em vez de 164 — dois arquivos de
+  teste estão na versão antiga (`test_comandos_third.py` e `test_mineracao_observada_base3.py`); copiar da `main`.
 - [x] **#8 · Painel** (08–09/10): `executar.py painel` gera `<rodada>/painel/` com `painel.md` (resumo, cobertura,
   triagem), as figuras da rodada, a figura de cobertura e 7 gráficos de leitura, cada um com pergunta, como ler e
   limitação. Tudo calculado dos CSVs da rodada, com o hash de cada um conferido. Rodado na versão só com as tabelas;

@@ -2,15 +2,17 @@
 
 > Códigos de unidade e siglas: [glossário](../../glossario.md). Cada código aparece junto do nome da lição.
 
-**Data:** 08/10/2026 · **Fonte:** `base_erros_minerados_full.parquet` (máquina 2), SHA-256
+**Data:** 08/10/2026, com as leituras do painel (§7) de 09/10/2026 · **Fonte:** `base_erros_minerados_full.parquet` (máquina 2), SHA-256
 `7604f77df9fe6127bd7fb9db18337b558b1f2587b0a99621c087b0cf3c2873f1` — saída da query
 `ICTI_crossmemory_query_mineracao_erros`, execuções iniciadas entre ago/2025 e set/2026.
-**Rodada:** `observada_0d23103afd4fc0f4`, estado `concluida_tecnicamente_sem_aprovacao_semantica`.
+**Rodada:** `observada_b4fcc7711a9ec8a6` (09/10), estado `concluida_tecnicamente_sem_aprovacao_semantica`. É a
+`observada_0d23103afd4fc0f4` de 08/10 com outro id, porque o código mudou (painel e tabelas novas); as contagens são
+as mesmas (30.141 erros, 23.034 observáveis, 7.107 pendentes, 17 unidades, 10 candidatas, 538 no resíduo).
 **Por que a análise é assim:** [`01-racionais.md`](01-racionais.md). **Como foi conferido e como reproduzir cada
 número:** [`03-procedimento-validacao.md`](03-procedimento-validacao.md).
 
 **Onde está a evidência.** Os arquivos da rodada ficam na máquina 2, em
-`analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_0d23103afd4fc0f4/` (abaixo, `<rodada>/`). Cada
+`analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_b4fcc7711a9ec8a6/` (abaixo, `<rodada>/`). Cada
 tabela deste relatório diz de que arquivo vem. Identificadores de execução e texto de caso não saem da máquina 2: os
 casos de cada candidata estão em `<rodada>/perfis/<unidade>/casos.csv`.
 
@@ -28,7 +30,12 @@ casos de cada candidata estão em `<rodada>/perfis/<unidade>/casos.csv`.
 - **A maior unidade isolada não é memória:** o agente responder sem bloco de código (`H_bloco_code`, 4.592 erros) —
   protocolo do harness.
 - **O maior grupo pendente** são 5.818 erros de nome não definido sem passo anterior identificado (102 mi de tokens) —
-  vira a primeira investigação ([roadmap](04-roadmap.md) #1).
+  vira a primeira investigação ([roadmap](04-roadmap.md) #1). **Eles estão concentrados:** pelo menos 5.708 (98%) são
+  de agosto de 2026, e 5.310 (91%) são de um papel num mês só ([§7](#7--leituras-do-painel)).
+- **O painel (§7) mostra três padrões:** o custo por erro e a frequência são coisas diferentes (o retorno-string pesa
+  pelos dois, o protocolo do harness só pela frequência); dois papéis têm 58% dos erros das candidatas; e agosto de
+  2026 concentra quase metade dos erros observáveis — sem denominador, não dá para dizer se foi mais execução ou mais
+  erro por execução.
 
 ---
 
@@ -64,7 +71,8 @@ Fonte: `<rodada>/cobertura_mecanismos.csv`.
 
 **Leitura.** Três quartos dos erros e três quartos dos tokens (449,7 mi) caem numa unidade. Os pendentes não são
 resíduo: a regra existe, faltou o dado ([racionais §3](01-racionais.md#3--pendente-não-é-resíduo)). O corte de 20.000
-caracteres responde por 1.009 erros; o teste na base 1 mostra que ele apaga sobretudo o retorno-dict (§4).
+caracteres responde por 1.009 erros; o teste na base 1 mostra que ele apaga sobretudo o retorno-dict (§4). Onde estão
+os pendentes, por papel e mês: [§7](#7--leituras-do-painel).
 
 ## 3 · Triagem: o destino de cada unidade
 
@@ -138,3 +146,144 @@ Medidas no [procedimento §4](03-procedimento-validacao.md#4--limitações-da-ex
 denominador não há taxa; a mensagem cortada esconde o retorno-dict; as falhas silenciosas não estão no arquivo;
 ocorrências são condicionais aos vínculos da janela; e há sinal de que a extração pode ter deixado de fora execuções
 sem resposta final (99,9% das execuções com erro têm resposta gravada, contra 11% na base 1).
+
+## 7 · Leituras do painel
+
+Fonte: `<rodada>/painel/painel.md` e as figuras da pasta, mais as linhas de `consolidacao_pendencias_papel_mes.csv`
+fotografadas na máquina 2. As figuras foram lidas das fotos; **os totais que fecham com as tabelas das seções 2 e 3
+(os valores por mês somam o total de cada unidade) estão marcados como conferidos**. Contagem de erros não é taxa
+([§6](#6--limitações-que-afetam-a-leitura)).
+
+### 7.1 · Os pendentes estão concentrados num papel e num mês
+
+Os 5.818 erros de nome não definido sem passo anterior identificado, pelas linhas do CSV (a soma das linhas lidas é
+5.817 erros e 101,7 mi de tokens; falta uma linha de 1 erro, cortada na foto):
+
+| Papel | Mês | Erros | Tokens |
+|---|---|---:|---:|
+| `ontestacaoCivel` | 2026-08 | 5.310 | 99,6 mi |
+| `RoteadorCivel` | 2026-08 | 397 | 1,1 mi |
+| `ontestacaoCivel` | 2026-07 | 16 | 0,3 mi |
+| `RespostaBacen` | 2026-02 a 2026-06 (5 meses) | 89 | 0,7 mi |
+| `AnaliseProcessual` (2026-08), `CalculoCivel` (2026-03), `OBPCivel` (2026-07) | | 5 | 0,03 mi |
+
+- **Um papel e um mês têm 91% do grupo** (5.310 de 5.818); agosto sozinho tem **pelo menos 98%** (5.708). O gráfico
+  de pendentes do painel mostra o mesmo: o papel com mais pendentes tem 90% de todos os 7.107.
+- **O que isso muda na investigação ([roadmap](04-roadmap.md) #1):** a amostra e a leitura de caso deixam de ser "a
+  base inteira" e passam a ser `ontestacaoCivel` em agosto. Isso estreita onde olhar; **não diz a causa**. As quatro
+  hipóteses do roadmap seguem em aberto. A contagem que falta é a divisão dos 5.310 entre primeiro ActionStep do papel
+  e passo anterior sem número.
+- **Não medido:** a divisão dos 1.009 de mensagem cortada por papel e mês (as linhas não foram fotografadas).
+
+### 7.2 · Para onde vão os erros e os tokens
+
+| Destino | % dos erros | % dos tokens |
+|---|---:|---:|
+| candidatas a memória | 56% | 61% |
+| harness / infra (não-memória) | 19% | 11% |
+| pendente (falta dado na extração) | 24% | 24% |
+| resíduo, crítico e sem recorrência | o restante | o restante |
+
+Conferido com a triagem: os tokens das candidatas são 361,7 mi de 592,9 mi (61%). O harness gasta menos tokens do que
+a sua fatia de erros: é frequente e barato.
+
+### 7.3 · Frequência e custo por erro são coisas diferentes
+
+Tokens por erro, de `triagem_visivel_observada.csv` (tokens ÷ erros; a média das observáveis é de 19,5 mil, a linha do
+gráfico):
+
+| Unidade | Erros | Tokens por erro |
+|---|---:|---:|
+| `C_limite_passos` | 25 | 100 mil |
+| `X_causa_nao_identificada` | 350 | 46 mil |
+| `U_texto_solto` | 180 | 44 mil |
+| `U_tipo_retorno` | 4.317 | 39 mil |
+| `H_timeout_ferramenta` | 1.117 | 26 mil |
+| `U_estado_perdido` | 878 | 23 mil |
+| `U_sandbox` | 3.653 | 19 mil |
+| `U_campo_inexistente` | 1.566 | 15 mil |
+| `U_arg_nomeado` | 3.927 | 13 mil |
+| `H_bloco_code` | 4.592 | 7,6 mil |
+| `U_repr_colado` | 1.587 | 4,0 mil |
+
+- **O retorno-string pesa pelos dois lados:** é frequente e cada erro custa o dobro da média. É por isso que lidera em
+  tokens (29%).
+- **O protocolo do harness e o retorno colado de volta no código pesam só pela frequência:** o erro é barato.
+- **O custo por erro é o contexto acumulado até o erro**, não a gravidade do erro (tokens do passo, sem a recuperação).
+  O ranking por tokens, sozinho, não ordena o que vale minerar. Confirmar com a divisão entre tokens de entrada e de
+  saída ([roadmap](04-roadmap.md) #13).
+
+### 7.4 · Poucos papéis concentram as candidatas
+
+Erros das candidatas por papel (figura de papéis do painel; os 13 grupos somam os 16.741 erros): `RoteadorCivel` 5.028,
+`ontestacaoCivel` 4.739, `RespostaBacen` 2.386, `CalculoTrabalhista` 1.558, `OBFCivel` 1.347, `JoogleAnalytics` 1.190.
+
+- **Dois papéis têm 58% dos erros das candidatas** (9.767 de 16.741) e **seis têm 97%** (16.248). São 6 dos 21 papéis
+  que têm erro de candidata.
+- Por candidata, o papel que mais pesa (figura de concentração): campo inexistente, `RespostaBacen` 89%; retorno colado,
+  `RoteadorCivel` 100%; argumento nomeado, `RoteadorCivel` 67%; inventário do sandbox, `ontestacaoCivel` 73%;
+  nome inventado, `RoteadorCivel` 44% e `ontestacaoCivel` 29%; estado perdido, `ontestacaoCivel` 45% e `RoteadorCivel`
+  37%; texto solto, `CalculoTrabalhista` 33%, `ontestacaoCivel` 32% e `JoogleAnalytics` 20%; retorno-string,
+  `ontestacaoCivel` 32% e `RespostaBacen` 21%, a mais espalhada.
+- **O que isto pede:** a mineração de cada candidata começa por perguntar se a lição vale para todos os agentes ou só
+  para o papel que concentra os erros. Sem o número de execuções por papel, não se sabe se o papel erra mais ou roda
+  mais (pedido A, [`05`](05-pedido-queries.md)).
+
+### 7.5 · O padrão no tempo: agosto de 2026 concentra quase metade
+
+Erros observáveis por unidade e mês (os valores de cada linha somam o total da unidade na triagem, conferido nas 17
+linhas):
+
+| Unidade | Total | Mês de maior valor | No pico |
+|---|---:|---|---:|
+| `H_bloco_code` | 4.592 | 2026-08 | 4.153 |
+| `U_tipo_retorno` | 4.317 | 2026-08 | 1.928 |
+| `U_arg_nomeado` | 3.927 | 2026-07 | 1.810 (ago: 834) |
+| `U_sandbox` | 3.653 | 2026-07 | 2.029 (ago: 1.081) |
+| `U_repr_colado` | 1.587 | 2026-07 | 686 (primeiro erro em 2026-02; 45 em maio) |
+| `U_campo_inexistente` | 1.566 | 2026-05 | 476 (jul: 24; ago: 52) |
+| `H_timeout_ferramenta` | 1.117 | 2026-08 | 1.117 (só esse mês) |
+| `U_estado_perdido` | 878 | 2026-08 | 668 |
+| `U_nome_inventado` | 477 | 2026-08 | 343 |
+
+- **Agosto de 2026 tem 10.963 dos 23.034 erros observáveis (48%)**, e mais pelo menos 5.708 dos pendentes. Os erros de
+  protocolo do harness (90% em agosto) e o timeout (só em agosto) se concentram nesse mês.
+- **Duas candidatas começam tarde:** o retorno colado de volta no código aparece de fato a partir de maio (45) e cresce
+  até julho; o argumento nomeado e o inventário do sandbox crescem de abril a julho.
+- **O campo inexistente subiu até maio e caiu a 24 e 52 em julho e agosto.** Pode ter sido corrigido, ou o papel rodou
+  menos; sem o denominador, é só uma observação a verificar na mineração dele.
+- **O timeout em um mês e um papel segue compatível com incidente pontual**, como na §4; continua em aberto
+  ([roadmap](04-roadmap.md) #6).
+- **O que não dá para dizer:** se agosto teve mais execuções ou mais erro por execução. Essa é a pergunta que o pedido
+  A responde, e a que muda a leitura de metade desta seção.
+
+### 7.6 · O que vem depois do erro
+
+Passo seguinte ao erro, por candidata (figura do painel; percentuais lidos da figura, e o que não é "sem erro" ou
+"novo erro" é pequeno e não rotulado):
+
+| Candidata | Passo seguinte sem erro | Novo erro (cascata) | O passo seguinte é a resposta final |
+|---|---:|---:|---:|
+| `U_texto_solto` | 37% | 63% | 23% |
+| `U_arg_nomeado` | 63% | 36% | 18% |
+| `U_tipo_retorno` | 64% | 30% | 22% |
+| `U_sandbox` | 71% | 28% | 48% |
+| `U_texto_literal` | 81% | 19% | 50% |
+| `U_estado_perdido` | 85% | 14% | 30% |
+| `U_nome_inventado` | 86% | 13% | 15% |
+| `U_next_gerador` | 87% | 13% | 7% |
+| `U_campo_inexistente` | 88% | 11% | 77% |
+| `U_repr_colado` | 96% | ~4% | 4% |
+
+- **A explicação solta no bloco de código é a única em que o agente erra de novo na maioria das vezes** (63%), e cada
+  erro dela é dos mais caros (44 mil tokens): é onde uma memória teria mais a ganhar, apesar de ter só 180 erros.
+- **Sem erro no passo seguinte não é sucesso:** pode ser outro problema que não é erro estruturado. A janela é de um
+  passo; o fim da execução não está no arquivo.
+- **"O seguinte é a resposta final" tem leitura dupla:** no campo inexistente (77%) e no texto longo em literal (50%) o
+  agente parece resolver e entregar, ou desistir e entregar; a janela não diz qual dos dois.
+
+### 7.7 · O que o painel não mostra
+
+Sem taxas (denominador), sem os passos sem erro, sem falhas silenciosas, sem tokens de entrada × saída por unidade, e
+sem a recuperação além do passo n+2. Cada ausência está no [roadmap](04-roadmap.md) (#13, #15, #16) ou no
+[pedido de dados](05-pedido-queries.md).
