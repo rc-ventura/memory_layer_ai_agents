@@ -128,10 +128,6 @@ def main(argv=None):
     p.add_argument("--mostrar-nomes", action="store_true", help="imprime os 10 nomes mais frequentes (confira antes se podem sair)")
     args = p.parse_args(argv)
     carga = bp.carregar_carga(args.fonte)
-    papeis = carga.steps[carga.steps.structured_error.eq(True) & carga.steps.role.astype(str).str.contains("estacao", case=False)]
-    print("papéis com 'estacao' no nome, na base inteira (erros estruturados) — confere se `ontestacaoCivel` e `ContestacaoCivel` são o mesmo papel:")
-    print(papeis.groupby("role").size().rename("erros").reset_index().to_string(index=False) if len(papeis) else "  nenhum")
-    print()
     _, P = contar(carga)
     if not P.empty:
         P = P[P.presenca_n_menos_1.eq(PRESENCA_PRIMEIRO)]

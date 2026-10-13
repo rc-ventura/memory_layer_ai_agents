@@ -75,30 +75,34 @@ unidade é a linha de execução, agente e papel.
 
 ---
 
-## B · Complemento dos pendentes: fecha os 24% sem unidade
+## B · Complemento dos pendentes: o que o parquet não traz
 
-**O que falta hoje.** 7.107 erros estruturados (24%, 143 mi de tokens) ficam pendentes: a regra de classificação
-existe, mas a janela da extração não traz o dado que ela precisa. Cada motivo pede um dado diferente
-([relatório §2](02-relatorio-achados.md#2--cobertura-o-que-as-regras-conseguem-decidir)). No teste com a base 1, os
-pendentes da mesma extração foram 83 de 498, e todos têm causa conhecida (o corte da mensagem e o histórico).
+**O que falta hoje.** 7.107 erros estruturados (24%, 143 mi de tokens) ficam pendentes. Desses, **5.818 não precisam de
+query**: a contagem de 13/10 (`validacao/contar_predecessor_pendentes.py`) mostrou que os 5.818 são todos o primeiro
+ActionStep do papel (nenhum campo do passo anterior preenchido; "anterior sem número": 0), 98% em agosto de 2026 e 92%
+em um papel (ontestacaoCivel). A janela do parquet já traz o anterior; o que decide a regra está lá. Ficam para a query os
+**1.289** abaixo, cujo dado a janela não traz ([relatório §2](02-relatorio-achados.md#2--cobertura-o-que-as-regras-conseguem-decidir)).
+No teste com a base 1, os pendentes da mesma extração foram 83 de 498, todos com causa conhecida (o corte da mensagem e o histórico).
 
 **O que pedir.** Uma tabela **só das linhas com erro estruturado** (as mesmas 30.141), com a mesma chave do parquet
 atual (execução, agente, papel, posição do passo), e estas colunas:
 
 | Pendência (erros) | O que trazer | Com isso |
 |---|---|---|
-| Nome não definido sem passo anterior identificado (5.818) | a **posição do ActionStep dentro do papel** (0 = primeiro) e o total de ActionSteps do papel; se existe ActionStep anterior e se ele teve erro | a regra de sempre decide entre "nome de um passo que falhou" e "nome nunca definido" |
-| | se o nome que falta **aparece no texto da tarefa** do papel e se **aparece no system prompt** (sim/não, calculado na consulta) | testa as hipóteses do [roadmap #1](04-roadmap.md): nome pedido pela tarefa ou pelo prompt × nome inventado |
-| | se a mesma conversa (`cod_idef_cvsa_asnc`) teve uma execução anterior com o mesmo papel (sim/não) | testa a hipótese "o agente espera estado de uma chamada anterior" |
 | Mensagem cortada em 20.000 caracteres (1.009) | o **comprimento original** da mensagem e os **últimos 4.000 caracteres** dela | o sintoma volta a ser reconhecido; na base 1, 81 dos 96 erros do retorno-dict só se reconhecem pelo fim |
 | Timeout sem prompt e código (215) | o comprimento original do código e o **código inteiro** (ou o fim dele) quando passa de 12.000; os **nomes das ferramentas declaradas** no system prompt do papel, numa tabelinha à parte (papel, versão, nome da ferramenta) | a regra separa código lento, timeout do interpretador e resultado bruto na resposta |
 | Linha rejeitada sem o código inteiro (46) | o mesmo comprimento e fim do código | a regra acha a linha rejeitada |
 | Histórico insuficiente para separar retorno colado (14) | **quantos pares `"chave": "texto"`** apareceram nas observações dos passos anteriores do papel (um número, calculado na consulta) | a regra decide entre retorno colado e texto em literal |
 | Numeração ambígua do passo anterior (5) | a posição do ActionStep e o **número da chamada** (contador de TaskStep antes do passo) | a regra decide se o passo anterior é da mesma chamada |
 
-**O que destrava:** todos os 7.107 pendentes passam a ter os dados que a regra pede. Isso não garante que todos
-caiam numa unidade — alguns podem ir para o resíduo — mas tira a pendência por falta de dado. Também traz de volta a
-recorrência do retorno-dict, que hoje aparece com 2 erros por causa do corte.
+**Os 5.818 do nome não definido: o que ainda pode precisar da query.** Saber *por que* o primeiro passo já usa um nome
+inexistente (investigação do [roadmap #1](04-roadmap.md)). Só se decide depois de medir: marcas de sim/não, calculadas na
+consulta, de o nome aparecer no texto da tarefa e no system prompt, e de a mesma conversa ter tido uma execução anterior
+com o mesmo papel. **Não entram no pedido ainda.**
+
+**O que destrava:** os 1.289 passam a ter os dados que a regra pede. Isso não garante que todos caiam numa unidade —
+alguns podem ir para o resíduo —, mas tira a pendência por falta de dado. Também traz de volta a recorrência do
+retorno-dict, que hoje aparece com 2 erros por causa do corte.
 
 **Conferência no recebimento:** 30.141 linhas; toda chave existe no parquet atual; nos erros sem corte, o fim da
 mensagem é igual ao fim da mensagem atual.
