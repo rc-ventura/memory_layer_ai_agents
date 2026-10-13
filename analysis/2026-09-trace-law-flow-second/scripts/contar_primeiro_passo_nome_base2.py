@@ -19,6 +19,8 @@ só saem com --mostrar-nomes. Uso, da raiz, na máquina onde está a base 2:
     uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py --trace <arquivo do trace da base 2> [--mostrar-nomes]
 """
 import argparse
+import difflib
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -27,6 +29,7 @@ import sys
 import pandas as pd
 
 ANALYSIS = Path(__file__).resolve().parents[2]
+REPO = ANALYSIS.parent
 sys.path.insert(0, str(ANALYSIS))
 sys.path.insert(0, str(ANALYSIS / "2026-09-trace-law-flow" / "pipeline"))
 import base_pipeline as bp
@@ -100,7 +103,11 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--trace", required=True, type=Path, help="o arquivo do trace cru da base 2 (CSV ou parquet)")
     p.add_argument("--mostrar-nomes", action="store_true", help="imprime os 10 nomes mais frequentes (confira antes se podem sair)")
+    p.add_argument("--evidencia", type=Path, help="pasta FORA do repositório onde gravar os casos para leitura (texto do caso; não sai da máquina)")
+    p.add_argument("--n-casos", type=int, default=3, help="quantos casos com erro gravar (padrão 3), mais 1 de contraste")
     args = p.parse_args(argv)
+    if args.evidencia is not None and args.evidencia.resolve().is_relative_to(REPO.resolve()):
+        p.error("--evidencia deve ficar fora do repositório: os casos têm texto e identificador e não podem ser versionados")
     bp.TRACE = str(args.trace)
     df = bp.carregar_trace()
     S = explodir(df)
@@ -199,7 +206,90 @@ def main(argv=None):
     print("\n  onde o nome aparece no system prompt (dos", no_prompt, "em que aparece):",
           "dentro de bloco de código", em_bloco, "| atribuído (nome = ...)", atribuido_no_prompt,
           "| declarado como função (def nome)", def_no_prompt, "| só no texto corrido", so_texto)
+
+    # G · o system prompt mudou? O prompt traz conteúdo do caso, então o hash do prompt inteiro varia por execução.
+    # O que se compara entre meses: se o prompt ATRIBUI algum nome do grupo ("nome = ..."), e a assinatura dessas
+    # linhas de atribuição (hash das linhas, ordenadas) — essa parte é do modelo de prompt, não do caso.
+    nomes_grupo = set(ok.nome)
+    def _linhas_atrib(t):
+        return sorted({l.strip() for l in t.splitlines() for n in nomes_grupo
+                       if re.search(rf"^[^=#]*\b{re.escape(n)}\b[^=#]*(?<![=!<>])=(?!=)", l)})
+    P1["atrib"] = P1.sysprompt.map(_linhas_atrib)
+    P1["atribui_nome"] = P1.atrib.map(bool)
+    P1["assinatura"] = P1.atrib.map(lambda ls: hashlib.sha256("\n".join(ls).encode("utf-8")).hexdigest()[:10] if ls else "(nenhuma)")
+    P1["hash_prompt"] = P1.sysprompt.map(lambda t: hashlib.sha256(t.encode("utf-8")).hexdigest()[:10])
+    H = P1.groupby(["role", "mes", "modelo"]).agg(
+        execucoes=("exec_id", "size"), comecam_com_nome=("comeca_com_nome", "sum"),
+        prompts_distintos=("hash_prompt", "nunique"), prompt_atribui_nome_do_grupo=("atribui_nome", "sum"),
+        assinaturas=("assinatura", "nunique"),
+        assinatura_mais_comum=("assinatura", lambda x: x.value_counts().index[0])).reset_index()
+    print("\nG · o system prompt atribui os nomes do grupo? (por papel, mês e modelo; dos", len(nomes_grupo), "nomes do grupo)")
+    print("  assinatura = hash das linhas do prompt que atribuem nomes do grupo — igual entre execuções = mesmo trecho de modelo")
+    print(H.sort_values(["role", "mes", "modelo"]).to_string(index=False))
+    X = P1[P1.atribui_nome].groupby(["role", "assinatura"]).agg(
+        execucoes=("exec_id", "size"), comecam_com_nome=("comeca_com_nome", "sum"),
+        primeiro_mes=("mes", "min"), ultimo_mes=("mes", "max")).reset_index().sort_values("execucoes", ascending=False).head(10)
+    print("\n  por assinatura (as 10 maiores): execuções, quantas começam com o erro, primeiro e último mês")
+    print(X.to_string(index=False))
+
+    if args.evidencia is not None:
+        gravar_evidencia(args.evidencia, args.n_casos, G, P1, seg)
     return 0
+
+
+def _trechos(texto, nome, contexto=6):
+    linhas = texto.splitlines()
+    alvo = [i for i, l in enumerate(linhas) if re.search(rf"\b{re.escape(nome)}\b", l)]
+    blocos, fim = [], -1
+    for i in alvo:
+        a, b = max(0, i - contexto), min(len(linhas), i + contexto + 1)
+        if a <= fim:
+            blocos[-1] = (blocos[-1][0], b)
+        else:
+            blocos.append((a, b))
+        fim = b
+    return "\n...\n".join("\n".join(f"{j + 1:5d}| {linhas[j]}" for j in range(a, b)) for a, b in blocos) or "(o nome não aparece)"
+
+
+def gravar_evidencia(pasta, n, G, P1, seg):
+    """Casos para LEITURA na própria máquina: o trecho do system prompt em volta do nome, o código do primeiro passo,
+    o erro e o código do passo seguinte; mais um caso de contraste (mesmo papel e modelo, mês anterior, sem o erro) e o
+    diff entre os dois prompts. Regra fixa de escolha: o papel com mais erros, no mês com mais erros, casos espalhados
+    no tempo (primeiro, do meio, último). Na tela, só contagens."""
+    pasta.mkdir(parents=True, exist_ok=True)
+    role, mes = G.groupby(["role", "mes"]).size().idxmax()
+    E = G[G.role.eq(role) & G.mes.eq(mes)].sort_values("inicio").reset_index(drop=True)
+    pos = sorted({round(i * (len(E) - 1) / max(1, n - 1)) for i in range(n)}) if len(E) > 1 else [0]
+    modelo = E.modelo.mode().iloc[0] if E.modelo.notna().any() else None
+    ctr = P1[P1.role.eq(role) & P1.modelo.eq(modelo if modelo is not None else "(sem modelo)") & P1.mes.lt(mes) & ~P1.comeca_com_nome]
+    ctr = ctr.sort_values("inicio").tail(1)
+    gravados = 0
+    for k, i in enumerate(pos, start=1):
+        r = E.iloc[i]
+        k1 = (r.exec_id, r.agente, r.role, 1)
+        prox = seg.loc[k1, "code"] if k1 in seg.index else "(sem passo seguinte)"
+        prox = prox.iloc[0] if isinstance(prox, pd.Series) else prox
+        h = hashlib.sha256(r.sysprompt.encode("utf-8")).hexdigest()[:10]
+        txt = (f"CASO {k} — papel {r.role} · mês {r.mes} · modelo {r.modelo} · hash do prompt {h}\n"
+               f"exec_id {r.exec_id} · agente {r.agente} · nome que falta: {r.nome}\n\n"
+               f"=== ERRO ===\n{r.err_msg}\n\n=== TRECHOS DO SYSTEM PROMPT EM VOLTA DO NOME ===\n{_trechos(r.sysprompt, r.nome)}\n\n"
+               f"=== CÓDIGO DO PRIMEIRO ActionStep ===\n{r.code}\n\n=== CÓDIGO DO PASSO SEGUINTE ===\n{prox}\n")
+        (pasta / f"caso_{k}.txt").write_text(txt, encoding="utf-8")
+        gravados += 1
+    linhas_diff = 0
+    if len(ctr):
+        c, r0 = ctr.iloc[0], E.iloc[pos[0]]
+        hc = hashlib.sha256(c.sysprompt.encode("utf-8")).hexdigest()[:10]
+        txt = (f"CONTRASTE — papel {c.role} · mês {c.mes} · modelo {c.modelo} · hash do prompt {hc} · SEM o erro\n"
+               f"exec_id {c.exec_id} · agente {c.agente}\n\n=== TRECHOS DO SYSTEM PROMPT EM VOLTA DO NOME '{r0.nome}' ===\n"
+               f"{_trechos(c.sysprompt, r0.nome)}\n\n=== CÓDIGO DO PRIMEIRO ActionStep ===\n{c.code}\n")
+        (pasta / "contraste.txt").write_text(txt, encoding="utf-8")
+        diff = list(difflib.unified_diff(c.sysprompt.splitlines(), r0.sysprompt.splitlines(),
+                                         fromfile=f"prompt {c.mes} ({hc}, sem erro)", tofile=f"prompt {r0.mes} (com erro)", lineterm="", n=3))
+        (pasta / "diff_prompt_contraste_x_caso1.txt").write_text("\n".join(diff), encoding="utf-8")
+        linhas_diff = sum(1 for l in diff if l[:1] in "+-" and not l.startswith(("+++", "---")))
+    print(f"\nEvidência gravada fora do repositório: {gravados} casos de {role} {mes}, contraste: {len(ctr)} (mês anterior, mesmo modelo, sem o erro);",
+          f"diff entre os prompts: {linhas_diff} linhas mudadas. Leia lá; não copie o texto para fora da máquina.")
 
 
 if __name__ == "__main__":
