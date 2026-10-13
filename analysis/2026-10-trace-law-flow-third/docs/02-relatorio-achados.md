@@ -158,7 +158,8 @@ somam 5.817 dos 5.818, a que falta está acima do corte da foto). Contagem de er
 ### 7.1 · Os pendentes estão concentrados num papel e num mês
 
 Os 5.818 erros de nome não definido sem passo anterior identificado, pelas linhas do CSV (a soma das linhas lidas é
-5.817 erros e 101,7 mi de tokens; falta 1 erro, provavelmente uma linha acima do corte da foto):
+5.817 erros e 101,7 mi de tokens; o erro que faltava é do `AgenteTestemunhas`, 2026-06, confirmado pela contagem de 13/10
+— §7.8):
 
 | Papel | Mês | Erros | Tokens |
 |---|---|---:|---:|
@@ -172,8 +173,8 @@ Os 5.818 erros de nome não definido sem passo anterior identificado, pelas linh
   de pendentes do painel mostra o mesmo: o papel com mais pendentes tem 90% de todos os 7.107.
 - **O que isso muda na investigação ([roadmap](04-roadmap.md) #1):** a amostra e a leitura de caso deixam de ser "a
   base inteira" e passam a ser `ontestacaoCivel` em agosto. Isso estreita onde olhar; **não diz a causa**. As quatro
-  hipóteses do roadmap seguem em aberto. A contagem que falta é a divisão dos 5.310 entre primeiro ActionStep do papel
-  e passo anterior sem número.
+  hipóteses do roadmap seguem em aberto. A divisão entre primeiro ActionStep do papel e passo anterior sem número foi
+  medida em 13/10: são todos primeiro ActionStep (§7.8).
 - **Não medido:** a divisão dos 1.009 de mensagem cortada por papel e mês (as linhas não foram fotografadas).
 
 ### 7.2 · Para onde vão os erros e os tokens
@@ -289,3 +290,57 @@ Passo seguinte ao erro, por candidata (figura do painel; percentuais lidos da fi
 Sem taxas (denominador), sem os passos sem erro, sem falhas silenciosas, sem tokens de entrada × saída por unidade, e
 sem a recuperação além do passo n+2. Cada ausência está no [roadmap](04-roadmap.md) (#13, #15, #16) ou no
 [pedido de dados](05-pedido-queries.md).
+
+### 7.8 · O nome não definido no primeiro passo (contagens de 13/10)
+
+Duas contagens na máquina 2, sobre a mesma rodada, explicam o maior grupo pendente (os 5.818 de "predecessor não
+identificado"). Nas saídas dos scripts, o papel aparece como `ontestacaoCivel`; é o `ContestacaoCivel`.
+
+**1. São todos o primeiro ActionStep do papel** (`pipeline/validacao/contar_predecessor_pendentes.py`; foto IMG_5706).
+A regra marcava o motivo para dois casos — não há passo anterior, ou há, sem `step_number`. O leitor do parquet já os
+separa: no primeiro, nenhuma coluna `prev_*` vem preenchida (a query calcula o vizinho n-1 sobre todos os ActionSteps,
+antes de filtrar os erros); no segundo, o número falta mas os outros campos vêm.
+
+| Medida | Resultado |
+|---|---:|
+| Nenhum campo do passo anterior preenchido (primeiro ActionStep) | 5.818 |
+| Anterior existente sem número | 0 |
+| Também `step_number` = 1 e posição na lista (`step_pos`) ≤ 3 | 5.818 |
+| `step_pos` = 2 (só a tarefa antes) / = 3 (tarefa e plano antes) | 5.729 / 89 |
+
+Três sinais independentes concordam em todos os casos. Na base 1, onde o trace inteiro permite conferir, "nenhum campo
+do anterior" é o primeiro ActionStep em 50 de 50, e a regra `step_number` = 1 e `step_pos` ≤ 3 acerta 1.550 de 1.550, sem
+falso positivo, em 5.781 ActionSteps. O `step_number` = 1 sozinho não basta: ele reinicia a cada nova chamada do papel
+(1.019 ActionSteps da base 1 com número 1 não eram o primeiro). **Consequência:** esse grupo não precisa de query —
+saiu do pedido B ([`05`](05-pedido-queries.md)).
+
+**2. Um erro por execução, poucos nomes, e o nome usado antes de ser definido**
+(`pipeline/validacao/contar_primeiro_passo_nome.py`; fotos IMG_5707 e IMG_5708).
+
+| Medida | Resultado |
+|---|---|
+| Execuções distintas | **5.818** — um erro por execução (mínimo, mediana e máximo = 1); as 10 execuções com mais erros têm 0,2% do grupo |
+| Nomes distintos (o nome que a mensagem diz não existir) | **27**; o mais frequente = 40,5%, os 3 mais = 90%, os 10 mais = 99,3% |
+| Por papel | `ContestacaoCivel` 17 nomes (3 mais = 98,3%); `RoteadorCivel` 5 (o mais frequente = 67,3%); `RespostaBacen` 1 nome em 89 erros |
+| Código do passo com erro inteiro (sem corte) | 2.313 (40%); 3.505 cortados ou ausentes |
+| …o nome aparece no código / é atribuído no mesmo código / a primeira atribuição vem **depois** do primeiro uso | 2.313 / 1.824 / **1.815** (regex, uma pista) |
+| Passo seguinte | existe nos 5.818; sem erro em 4.470 (77%), com erro em 1.348 |
+| Sinal de recuperação | final na ação seguinte 2.698; possível recuperação na seguinte 1.772; final em até 2 ações 593; cascata 384; possível em até 2 366; desconhecido 5 |
+| Tokens do passo com erro | 101,7 mi (≈ 17.500 por erro) |
+
+**Leitura (hipótese, não causa provada):** não é incidente de poucas execuções — milhares de execuções começam com o
+mesmo tipo de erro, um só cada. Não parece nome inventado ao acaso: 27 nomes cobrem tudo, e onde o código veio inteiro,
+em 78% o agente define o nome no próprio código, **mas depois de usá-lo**; o Python para no uso. Nos 489 em que o nome
+não é atribuído no código, o agente esperava que ele viesse de fora (do harness, da tarefa ou de uma chamada anterior).
+O agente costuma se corrigir no passo seguinte: o custo é o primeiro passo desperdiçado, multiplicado pelas execuções.
+
+**Por que é diferente das lições de nome que já existem:** o módulo sem import (a variável é um módulo, como `json`);
+o estado perdido (o nome viria de um passo anterior que falhou); o nome inventado (o passo anterior rodou e o nome nunca
+foi definido). Aqui não há passo anterior, e o nome existe — mais abaixo no mesmo código.
+
+**Proposta (a decidir):** tratar como grupo próprio, "nome usado antes de ser definido, no primeiro passo", sem
+juntá-lo ao nome inventado (somaria 5.818 a uma unidade que tem 5 erros na base 1 e mudaria a lição) nem criar a
+unidade ainda. Antes: ler uma amostra de casos (a pista vem de regex e cobre 40%), ver os nomes (só com autorização,
+`--mostrar-nomes`), conferir na base 2 com o trace inteiro
+(`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`) e, com os denominadores do pedido A,
+medir que fração das execuções do `ContestacaoCivel` em agosto começou com esse erro ([roadmap](04-roadmap.md) #1).

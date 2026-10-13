@@ -4,7 +4,7 @@
 > **Numeração:** os números são desta pasta e estáveis; de fora, cite como `b2 #N`. Índice do que existe da base 2:
 > [README](../README.md).
 
-**Atualizado:** 09/10/2026 · **Branch:** `2026-10-09-roadmaps-schema`. Até 06/10/2026 estes itens eram o §4.14, o §4.11 e
+**Atualizado:** 13/10/2026 · **Branch:** `2026-10-09-base3-painel-historico`. Até 06/10/2026 estes itens eram o §4.14, o §4.11 e
 linhas do §2 do plano atual (`git show e0335aa:analysis/plano-atual.md`).
 
 ## Backlog
@@ -26,7 +26,11 @@ a partir destes itens.
   `resultados/mineracao/U_nome_inventado/`). **O que fazer:** `/mineracao-candidata U_nome_inventado` no ambiente da
   base 2, com as regras da base 1 sem mudança; conferir se o ContestacaoCivel já usava o mesmo modelo antes de agosto
   sem o erro (`drill_down.py protocolo` [8]). **Tipo:** medição; pode virar Ajuste (separar o mês na triagem, ou
-  dividir a unidade).
+  dividir a unidade). **13/10, ligação com a base 3** ([`b3 #1`](../../2026-10-trace-law-flow-third/docs/04-roadmap.md)): lá,
+  5.818 erros de nome não definido são o primeiro ActionStep do papel, um por execução, 98% em agosto, 92% no
+  ContestacaoCivel. Antes da mineração, rodar `scripts/contar_primeiro_passo_nome_base2.py --trace <trace da base 2>`
+  (só contagens): quantos dos 101 são o primeiro passo, o denominador do papel no mês, nomes, modelo, o nome na tarefa
+  e no system prompt, usado antes de ser definido.
 - [ ] **#4 · As minerações de silenciosas e de protocolo, no método novo de leitura.** Comparar com o publicado (`14`,
   `11`, as 8 candidatas) **aqui, fora do kit**.
 

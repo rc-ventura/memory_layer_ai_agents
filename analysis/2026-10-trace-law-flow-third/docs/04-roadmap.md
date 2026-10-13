@@ -7,8 +7,8 @@
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_b4fcc7711a9ec8a6` (a `0d23103…` de 08/10, com outro id) e
-[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 09/10/2026
-(branch `2026-10-09-relatorio-leituras-painel`).
+[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 13/10/2026
+(branch `2026-10-09-base3-painel-historico`).
 
 ## O plano de adaptação: feito e pendente
 
@@ -36,15 +36,14 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   denominadores (taxas e gráficos de custo da base 1), B complemento dos pendentes (fecha os 24% sem unidade), C
   ajustes na extração. **Falta:** levar ao tutor (item 11) e, quando chegar, conferir a junção e integrar ao pipeline.
 - [ ] **#1** **Investigar os 5.818 erros de nome não definido sem passo anterior identificado** (102 mi de tokens, o maior
-  grupo pendente). **Pista medida em 09/10:** 5.310 estão num papel e num mês (`ontestacaoCivel`, 2026-08) e pelo menos
-  5.708 são de agosto ([relatório §7.1](02-relatorio-achados.md#71--os-pendentes-estão-concentrados-num-papel-e-num-mês)):
-  a amostra e a leitura começam por aí. Esse motivo cobre dois casos: não há passo anterior (primeiro ActionStep do papel) ou há, sem
-  `step_number` — a proporção na base 3 não foi medida. Primeiro só contagens: os dois casos, `step_number`, papel,
-  mês e versão (o gráfico de pendentes do item 9 já mostra papel e mês), se o mesmo nome se repete entre execuções, o
-  que o passo seguinte faz. Depois, amostra e leitura (skill `mineracao-investigacao`). Só então decidir a unidade —
-  as hipóteses levam a destinos diferentes (estado esperado de uma chamada anterior, variável que o harness deveria
-  injetar, nome citado pela tarefa ou pelo prompt, nome inventado). O pedido B do [`05`](05-pedido-queries.md) traz
-  as marcas que separam essas hipóteses.
+  grupo pendente). **Feito em 13/10 (contagens, [relatório §7.8](02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310)):**
+  os 5.818 são todos o primeiro ActionStep do papel (0 com anterior sem número), um erro por execução, 27 nomes (3 = 90%),
+  98% em agosto, 92% no `ContestacaoCivel`; onde o código veio inteiro (40%), 78% usam o nome antes de defini-lo no
+  mesmo código; 77% sem erro no passo seguinte. Saiu do pedido B (não precisa de query). **Falta:** (a) a base 2 com o
+  trace inteiro (`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`, também [`b2 #3`](../../2026-09-trace-law-flow-second/docs/04-roadmap.md));
+  (b) os nomes, só com autorização (`--mostrar-nomes`); (c) amostra e leitura (skill `mineracao-investigacao`);
+  (d) com o pedido A, a fração das execuções do papel que começa com o erro; (e) decidir: grupo próprio "nome usado
+  antes de ser definido, no primeiro passo" ou outra unidade — sem juntar ao nome inventado antes disso.
 - [ ] **#18** **Documentos gerais** (a dívida mais concreta): o glossário ganha `STRUCTURED_ERROR`, `OBSERVATION_SUSPECT`,
   "candidata observada", "pendente", "componente" (= a cascata das bases 1 e 2), `recovery_signal` e os estados de
   capacidade; o livro-razão (`pipeline-entre-bases.md`) ganha a etapa da base 3 — sem Ajuste novo, porque nenhuma

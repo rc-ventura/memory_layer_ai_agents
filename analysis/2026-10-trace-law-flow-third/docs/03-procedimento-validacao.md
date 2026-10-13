@@ -93,9 +93,10 @@ da próxima versão da query ([roadmap](04-roadmap.md) #2).
 **Sobre os 5.818 pendentes por "predecessor não identificado".** Esse motivo é gerado só para erros de nome não
 definido, quando a janela não identifica o passo anterior. Isso cobre dois casos: (a) não existe passo anterior — o
 erro está no primeiro ActionStep do papel; (b) existe passo anterior, mas sem `step_number`. Na base 1, todos os
-casos sem passo anterior são o primeiro ActionStep (50 de 50) e o caso (b) não ocorre. **Na base 3 a proporção entre
-(a) e (b) não foi medida.** Por isso esses erros continuam pendentes, sem unidade, até a investigação
-([roadmap](04-roadmap.md) #1).
+casos sem passo anterior são o primeiro ActionStep (50 de 50) e o caso (b) não ocorre. **Na base 3, medido em 13/10:**
+5.818 do caso (a) e 0 do (b), com `step_number` = 1 e `step_pos` ≤ 3 em todos
+(`pipeline/validacao/contar_predecessor_pendentes.py`; [relatório §7.8](02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310)).
+Continuam pendentes, sem unidade, até a investigação decidir o grupo ([roadmap](04-roadmap.md) #1).
 
 ## 5 · Do número ao caso
 
