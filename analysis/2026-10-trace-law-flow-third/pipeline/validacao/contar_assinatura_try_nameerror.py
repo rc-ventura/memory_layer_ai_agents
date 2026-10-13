@@ -52,7 +52,8 @@ def situacao(r):
 
 def contar(carga):
     EU = bp.analisar_mecanismos_observaveis(carga).EU
-    N = EU[[bp.submecanismo(m) == "nome_nao_definido" for m in EU.err_msg]].copy()
+    # depois do Ajuste 17, o erro com a assinatura tem mecanismo próprio; os dois são "nome não definido"
+    N = EU[[bp.submecanismo(m) in {"nome_nao_definido", "verificacao_try_nameerror"} for m in EU.err_msg]].copy()
     N["assinatura"] = N.err_msg.map(assinatura)
     N["situacao"] = [situacao(r) for r in N.itertuples()]
     return EU, N

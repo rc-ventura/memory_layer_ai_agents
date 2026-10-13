@@ -34,6 +34,8 @@ sys.path.insert(0, str(ANALYSIS))
 sys.path.insert(0, str(ANALYSIS / "2026-09-trace-law-flow" / "pipeline"))
 import base_pipeline as bp
 
+# depois do Ajuste 17, o erro com a assinatura try/except NameError tem mecanismo próprio; os dois são "nome não definido"
+NOMES = {"nome_nao_definido", "verificacao_try_nameerror"}
 RE_NOME = (re.compile(r"variable `(\w+)` is not defined"), re.compile(r"Forbidden function evaluation: '(\w+)'"))
 
 
@@ -130,10 +132,10 @@ def main(argv=None):
 
     # A · a base
     print("A · base: execuções", S.exec_id.nunique(), "| ActionSteps", len(S), "| erros estruturados", int(S.erro.sum()),
-          "| nome não definido", int(S["sub"].eq("nome_nao_definido").sum()))
+          "| nome não definido", int(S["sub"].isin(NOMES).sum()))
 
     # B · onde caem os erros de nome
-    N = S[S["sub"].eq("nome_nao_definido")].copy()
+    N = S[S["sub"].isin(NOMES)].copy()
     N["onde"] = "depois de passo sem erro (nome inventado)"
     N.loc[N.anterior_com_erro.eq(True), "onde"] = "depois de passo com erro (estado perdido)"
     N.loc[N.idx.eq(0), "onde"] = "primeiro ActionStep do papel"
@@ -144,7 +146,7 @@ def main(argv=None):
     N["assinatura"] = N.err_msg.map(assinatura)
     print("\nH · assinatura `try/except NameError` na linha que falhou, por posição do erro de nome:")
     print(pd.crosstab(N.onde, N.assinatura, margins=True, margins_name="total").to_string())
-    outros = S[S.erro & ~S["sub"].eq("nome_nao_definido") & S.err_msg.str.contains("except NameError", regex=False)]
+    outros = S[S.erro & ~S["sub"].isin(NOMES) & S.err_msg.str.contains("except NameError", regex=False)]
     print("  erros que não são de nome não definido, mas cuja mensagem traz 'except NameError':", len(outros),
           "| por tipo:", outros.err_type.value_counts().head(5).to_dict())
     com = N[N.assinatura.eq("try/except NameError")]
@@ -159,7 +161,7 @@ def main(argv=None):
 
     # D · o denominador: execuções do papel que começam com o erro
     prim = S[S.idx.eq(0)].copy()
-    prim["comeca_com_nome"] = prim["sub"].eq("nome_nao_definido")
+    prim["comeca_com_nome"] = prim["sub"].isin(NOMES)
     D = prim.groupby(["role", "mes"]).agg(execucoes_do_papel=("exec_id", "size"), comecam_com_nome=("comeca_com_nome", "sum")).reset_index()
     D = D[D.comecam_com_nome.gt(0)]
     D["parcela"] = (D.comecam_com_nome / D.execucoes_do_papel).round(3)

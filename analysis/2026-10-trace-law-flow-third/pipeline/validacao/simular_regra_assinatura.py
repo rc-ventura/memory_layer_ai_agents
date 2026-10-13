@@ -10,6 +10,9 @@ Este script aplica a proposta SÓ na tabela em memória e confere:
   3. cobertura: erros observáveis e pendentes, antes e depois;
   4. o que a régua da triagem (≥ 3 execuções e ≥ 2 meses) diz das unidades afetadas, antes e depois.
 
+**Histórico:** a proposta virou o Ajuste 17 (13/10). Com o código de depois do ajuste, o "antes" já traz a unidade
+nova e nada muda; os números da simulação (máquina 2, foto IMG_5721) são do código do commit `9fd032b`.
+
 Imprime só contagens e nomes de unidade, papel e mês. Uso, da raiz:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/simular_regra_assinatura.py [--fonte <parquet>]
 """
@@ -34,7 +37,7 @@ def simular(EU):
     """Devolve a tabela com `antes` e `depois` (a situação de cada erro) e a marca `muda`."""
     T = EU.copy()
     T["antes"] = [situacao(r) for r in T.itertuples()]
-    eh_nome = pd.Series([bp.submecanismo(m) == "nome_nao_definido" for m in T.err_msg], index=T.index)
+    eh_nome = pd.Series([bp.submecanismo(m) in {"nome_nao_definido", "verificacao_try_nameerror"} for m in T.err_msg], index=T.index)
     T["assinatura"] = "n/a"
     T.loc[eh_nome, "assinatura"] = T.loc[eh_nome, "err_msg"].map(assinatura)
     T["depois"] = T["antes"]

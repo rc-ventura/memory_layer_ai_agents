@@ -44,9 +44,11 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   variável com `try/except NameError` e o interpretador do sandbox não captura (reproduzido no smolagents 1.26.0); o
   modelo não explica; na amostra, só a versão nova do trecho do prompt deu o erro. **Na base 3** (assinatura na
   mensagem): 5.764 dos 7.178 erros de nome (80%), 91% dos 5.818; **460 estão em estado perdido (334) e nome inventado
-  (126)** só pela posição; 95 já em julho. **Destino proposto: harness.** **Falta:** (a) a conferência na base 2
-  (parte H do script); (b) simular a regra pela assinatura (`simular_regra_assinatura.py`, máquina 2) e decidir o
-  ajuste — a assinatura antes da posição, unidade própria; (c) os 514 do primeiro passo sem a assinatura
+  (126)** só pela posição; 95 já em julho. Base 2 (parte H): 105 de 129 com a assinatura. **Ajuste 17 aplicado
+  (13/10):** a assinatura decide antes da posição; unidade `U_verificacao_try_nameerror`, destino **harness** nas bases 2
+  e 3; base 1 sem mudança; 169 testes. **Falta:** (a) na máquina 2, replicar no pipeline da base 2
+  (`replicar_ajuste17.py --aplicar`), `validar`, `analisar` (rodada nova), `conferir` e `painel`, e atualizar os
+  números do relatório; (b) registro de monitoramento; (c) os 514 do primeiro passo sem a assinatura
   (`RoteadorCivel`, `RespostaBacen`); (d) o nome do modelo e o hash do system prompt no pedido A; (e) aviso a quem cuida
   do harness (`transversal #7`); (f) registro de monitoramento; (g) se o parágrafo da instrução já estava no prompt de
   julho (base 2).

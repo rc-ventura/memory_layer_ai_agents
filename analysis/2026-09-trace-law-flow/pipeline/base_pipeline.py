@@ -251,6 +251,20 @@ def e_texto(s):
     return len(toks) >= 3 and sum(t in PT_STOP for t in toks) / len(toks) >= 0.15
 
 
+# Ajuste 17 (13/10/2026): a linha que falhou é `try: nome` / `except NameError:` — a verificação de existência que o
+# system prompt do ContestacaoCivel instrui e que o interpretador do sandbox não captura (um nome inexistente levanta
+# InterpreterError, não NameError). A assinatura decide ANTES da posição do passo anterior: sem ela, o erro cai em estado
+# perdido, nome inventado ou pendente só pela posição. Base 1: 0 de 10 erros de nome; base 2: 105 de 129; base 3:
+# 5.764 de 7.178 (relatório da base 3 §7.9–7.10; pipeline-entre-bases.md, Ajuste 17).
+_LINHA_QUE_FALHOU = re.compile(r"failed at line '(.*?)' due to", re.S)
+
+
+def verificacao_try_nameerror(m):
+    """A linha que falhou — a mensagem a traz — tem `try` com `except NameError` (sozinho ou numa tupla)?"""
+    linha = _LINHA_QUE_FALHOU.search(str(m))
+    return bool(linha) and re.search(r"except\s+\(?[^)\n:]*\bNameError\b", linha.group(1)) is not None
+
+
 def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False,
                  fa_sem_laco=False):
     if "regex pattern" in m:
@@ -310,6 +324,8 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         return "nome_nao_definido"
     if f or "Import of" in m or "Import from" in m or "ModuleNotFound" in m or "Forbidden" in m:
         return "inventario_sandbox"
+    if v and verificacao_try_nameerror(m):
+        return "verificacao_try_nameerror"
     if v:
         return "nome_nao_definido"
     return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
@@ -326,6 +342,7 @@ SUB2UNI = {
     "next_sobre_gerador": "U_next_gerador",
     "nome_de_step_que_falhou": "U_estado_perdido",
     "nome_nunca_definido": "U_nome_inventado",
+    "verificacao_try_nameerror": "U_verificacao_try_nameerror",
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
@@ -362,6 +379,10 @@ UNI = {
                          "Se a observação anterior traz exceção, redefinir variáveis e funções auxiliares daquele step antes de usá-las."),
     "U_nome_inventado": ("Nome usado sem ter sido definido", ESTR,
                          "Usar só variáveis e funções definidas no próprio código; 'Observation' é rótulo do harness, não variável."),
+    "U_verificacao_try_nameerror": ("Verificação de existência por try/except NameError", FACT,
+                                    "No sandbox, um nome inexistente levanta InterpreterError, que o except NameError não captura: "
+                                    "para checar se uma variável já existe, usar except Exception; se ela ainda não foi criada, chamar a "
+                                    "ferramenta direto. O conserto é no prompt que instrui o except NameError (Ajuste 17)."),
     "U_repr_colado": ("Não colar retorno impresso de volta no código", ESTR,
                       "Referenciar a variável que guardou o retorno em vez de colar o print dele (truncado ou inteiro) "
                       "dentro do código; se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca "
@@ -478,6 +499,9 @@ ALARME_COBERTURA = 0.05
 DESTINO_MINERACAO = {
     "U_contrato_dict": {"destino": "memória", "bases": ("base1",)},
     "U_campo_inexistente": {"destino": "harness", "bases": ("base1", "base2")},
+    # Ajuste 17 (13/10): base 2 — causa vista no trace inteiro (3 casos; o prompt instrui o except NameError) e
+    # reproduzida no smolagents; base 3 — evidência própria do padrão (a assinatura em 5.764 de 7.178 erros de nome).
+    "U_verificacao_try_nameerror": {"destino": "harness", "bases": ("base2", "base3")},
 }
 SINAL_HARNESS = "sinal de harness"
 

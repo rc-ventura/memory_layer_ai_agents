@@ -685,6 +685,60 @@ não dependesse de leitura.
 - **Replicar na máquina 2:** como no Ajuste 15; conferir o [10] da base 2. Pela leitura de 02/10 (`10` §4 M2), o único
   M2 da base 2 é de dez/2025.
 
+### Ajuste 17 — a linha que falhou decide antes da posição: a verificação por `try/except NameError`
+
+**Gatilho.** Os 5.818 erros de nome não definido pendentes da base 3 (roadmap `b3 #1`, 24% dos erros). A investigação de
+13/10 mostrou que são o primeiro passo do papel e que a causa é uma instrução do system prompt do ContestacaoCivel:
+verificar se uma variável existe com `try: nome` / `except NameError:`. O interpretador do sandbox levanta
+`InterpreterError` para o nome inexistente, que esse `except` não captura. A regra de então dividia o erro de nome só
+pela posição do passo anterior (com erro → `U_estado_perdido`; sem erro → `U_nome_inventado`; sem passo → pendente) e
+não via o padrão.
+
+**Evidência** (relatório da base 3 §7.8–7.10; fotos IMG_5706–5722).
+- **Base 2, trace inteiro** (`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`): 103 de 129
+  erros de nome no primeiro passo; 65% das execuções do ContestacaoCivel em agosto começam com o erro; o mesmo
+  `gpt-5.2` teve 0 de 72 em julho no primeiro passo (o modelo não explica); três casos lidos — o prompt instrui o
+  `except NameError`, o agente obedece e, no passo seguinte, comenta que tira o `try/except` "para evitar o erro do
+  interpretador". Com a assinatura: **105 de 129** (97 no primeiro passo, 4 em estado perdido, 4 em nome inventado),
+  todos do ContestacaoCivel com `gpt-5.2` (2 em julho, 103 em agosto).
+- **Reprodução** (`2026-10-trace-law-flow-third/pipeline/validacao/testar_sandbox_try_nameerror.py`, smolagents 1.26.0;
+  a versão da plataforma não é conhecida): `except NameError` falha só quando a variável ainda não existe — por isso o
+  erro é do primeiro passo; `except InterpreterError` falha (o nome não existe no sandbox); `except Exception`, um
+  dicionário de estado injetado ou a chamada direta funcionam.
+- **Base 3** (`contar_assinatura_try_nameerror.py`): **5.764 de 7.178** erros de nome têm a assinatura — 5.304 dos 5.818
+  pendentes, **334 de 878** do estado perdido e **126 de 477** do nome inventado (classificados assim só pela posição).
+- **Base 1:** 0 de 10.
+
+**Solução.**
+- **Regra:** `verificacao_try_nameerror(m)` no `base_pipeline.py` (da base 3 e da base 1, que é o código da base 2): a
+  linha que falhou — a mensagem a traz — tem `try` com `except NameError`? No `submecanismo()`, para "variable `x` is
+  not defined", o teste vem depois do módulo sem import e **antes** da divisão por posição; o mecanismo novo é
+  `verificacao_try_nameerror`. No modo observado da base 3 ele decide pela mensagem, sem predecessor.
+- **Unidade:** `U_verificacao_try_nameerror` ("Verificação de existência por try/except NameError", tipo factual · ambiente).
+  Família e assinatura não mudam (Suposição sobre estado · Variável não definida).
+- **Destino:** `DESTINO_MINERACAO` → **harness** nas bases 2 e 3 (a triagem a mostra como "sinal de harness", como o
+  `U_campo_inexistente`). Base 2: causa vista no trace e reproduzida; base 3: o padrão medido na própria base (a causa,
+  vista na base 2; o hash do prompt no pedido A fecharia).
+- **Figuras:** rótulos novos em `paleta.py` e `genealogia_sankey.py`. **Scripts de contagem:** os três passam a tratar os
+  dois mecanismos como "nome não definido".
+- **Kit de mineração:** `VERSAO` 0.6.0 → **0.7.0** e o `manifesto.json` regenerado (`conferir_versao.py --gerar`; só o hash do
+  `base_pipeline.py` muda).
+- **Decisão do Rafael (13/10).**
+
+**Verificação.**
+- **Base 1:** os 498 erros ficam na mesma unidade, erro a erro, pelo pipeline clássico e pelo caminho da base 3; o
+  `comparar_base1.py` segue 415 / 83 / 0.
+- **Testes:** 169 (164 + 5 novos em `analysis/tests/test_verificacao_try_nameerror.py`: as duas bases classificam igual,
+  unidade e destino, o primeiro passo deixa de ser pendente, a assinatura vence a posição).
+- **Base 3, simulação** (`simular_regra_assinatura.py`, código de antes do ajuste, foto IMG_5721): mudam 5.764; dos 24.377
+  sem a assinatura, **0** mudam. Pendentes 7.107 (23,6%) → 1.803 (6,0%). Estado perdido 878 → 544 (19,8 → 10,1 mi de
+  tokens) e nome inventado 477 → 351 (8,9 → 6,0 mi); os dois seguem passando na régua. A unidade nova: 5.764 erros,
+  5.442 execuções, 4 meses, 112,0 mi de tokens.
+- **Replicar na máquina 2:** (1) `git pull`; (2) aplicar a mesma mudança ao pipeline da base 2
+  (`2026-09-trace-law-flow-second/scripts/replicar_ajuste17.py`, que mostra o que faria e só grava com `--aplicar`);
+  (3) `executar.py validar` (as regras da base 3 e da base 2 iguais); (4) `executar.py analisar` — rodada nova, a
+  `observada_b4fcc7711a9ec8a6` fica intacta; (5) `executar.py conferir` e `painel`.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e
@@ -703,6 +757,11 @@ não dependesse de leitura.
    parenthesis …`, 3 execuções, 2 meses) é o motivo que a base 2 traz nos 7 erros do `RoteadorCivel`. No cru da base 1
    são **2 erros de digitação e 1 texto longo dentro de uma chamada**; na base 2 é retorno colado. "O mesmo padrão em
    outra base sobe de prioridade" (Frente 3) precisa conferir o **mecanismo**, não só a chave.
+6. **Regra que decide pela posição falha em silêncio quando o ambiente muda.** A divisão do nome não definido pelo passo
+   anterior foi validada nas bases 1 e 2, onde o padrão `try/except NameError` não existia; quando o prompt passou a
+   instruí-lo, 460 erros da base 3 entraram em unidades de memória só pela posição (Ajuste 17). O próprio pipeline
+   rotulava a regra como proxy (`proxy_predecessor_estruturado_nao_prova_namespace`). Sinal local (a linha que falhou)
+   vem antes de proxy de posição.
 
 ## 5. Próximas etapas — o plano
 

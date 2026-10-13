@@ -42,6 +42,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 | Surtos da base 1 (modo) e da base 2 (modelo) | não-memória; achado para a plataforma | `10`, `11` |
 | `U_tipo_retorno`, `U_campo_inexistente` | continuam candidatas: não nascem de falha silenciosa | `13` §8, `14` §4 |
 | `U_campo_inexistente` | sinal de harness nas duas bases | livro-razão Ajustes 5 e 13 |
+| `U_verificacao_try_nameerror` (o `try/except NameError` que o prompt instrui e o sandbox não captura) | sinal de harness nas bases 2 e 3; a assinatura na linha que falhou decide antes da posição do passo anterior (13/10) | livro-razão Ajuste 17; relatório da base 3 §7.9–7.10 |
 | `json_invalido` do `busca_obf` | dono: o agente (o gesto da `U_repr_colado`); memória **e** sinal de harness; monitorar na base 3 | `13`, `14`; livro-razão Ajuste 12 |
 | Família do protocolo, base 1 | fechada | `11` |
 

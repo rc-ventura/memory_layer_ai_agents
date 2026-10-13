@@ -478,8 +478,10 @@ mecanismos diferentes, e só um sinal local mais fino os separa; quem decide é 
 é esse sinal. O pipeline já aplica o mesmo gesto ao módulo sem import, decidido antes da posição. Precedente do destino
 harness: o `validar_quebra_sigilo` (contradição do prompt com o ambiente, decidida sem LLM) e o `U_campo_inexistente`.
 
-**Proposta (não aplicada; o pipeline e os números continuam como estavam):** a assinatura na mensagem passa antes da
-posição, e leva o erro a uma unidade própria, com destino **harness proposto** — na base 3 "em aberto" até haver o
-hash do prompt. Ordem: (1) conferir a base 2 (`contar_primeiro_passo_nome_base2.py`, parte H); (2) simular
-(`simular_regra_assinatura.py`: só podem mudar os 5.764; o resto tem de ficar igual); (3) decisão do Rafael; (4) o
-ajuste, com registro no livro-razão. Nome sugerido para a unidade: *verificação de existência por `try/except NameError`*.
+**Aplicado como Ajuste 17 (13/10, decisão do Rafael; [livro-razão](../../pipeline-entre-bases.md)).** A assinatura na
+linha que falhou passa antes da posição e leva o erro à unidade `U_verificacao_try_nameerror`, com destino **harness**
+nas bases 2 e 3 (sinal de harness). Na base 1 nada muda (498 de 498 na mesma unidade). A simulação na base 3 (foto
+IMG_5721) mostrou: mudam 5.764, dos outros 24.377 nenhum muda; pendentes 7.107 (23,6%) → 1.803 (6,0%); estado perdido
+878 → 544 e nome inventado 477 → 351, os dois ainda candidatos; a unidade nova com 5.764 erros, 5.442 execuções e 112,0 mi
+de tokens. **Os números das seções 1 a 7.7 deste relatório são da rodada `observada_b4fcc7711a9ec8a6`, de antes do
+ajuste;** a rodada nova, na máquina 2, os substitui.
