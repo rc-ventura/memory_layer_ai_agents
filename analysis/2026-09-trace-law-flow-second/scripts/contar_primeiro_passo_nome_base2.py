@@ -45,6 +45,18 @@ def nome_do_erro(msg):
     return None
 
 
+LINHA_FALHA = re.compile(r"failed at line '(.*?)' due to", re.S)
+
+
+def assinatura(msg):
+    """Na linha que falhou (a mensagem a traz): 'try/except NameError', 'duvidoso' (começa com try: sem except NameError) ou 'não'."""
+    m = LINHA_FALHA.search(str(msg))
+    trecho = m.group(1) if m else ""
+    if re.search(r"except\s+\(?[^)\n:]*\bNameError\b", trecho):
+        return "try/except NameError"
+    return "duvidoso" if trecho.lstrip().startswith("try:") else "não"
+
+
 def _texto(c):
     if isinstance(c, list):
         return " ".join(p.get("text", "") for p in c if isinstance(p, dict))
@@ -127,6 +139,18 @@ def main(argv=None):
     N.loc[N.idx.eq(0), "onde"] = "primeiro ActionStep do papel"
     print("\nB · erros de nome não definido por posição:", N.onde.value_counts().to_dict())
     print(N.groupby(["role", "onde"]).size().rename("erros").reset_index().sort_values("erros", ascending=False).head(10).to_string(index=False))
+
+    # H · a assinatura try/except NameError na mensagem (a regra proposta para a base 3), em cada posição
+    N["assinatura"] = N.err_msg.map(assinatura)
+    print("\nH · assinatura `try/except NameError` na linha que falhou, por posição do erro de nome:")
+    print(pd.crosstab(N.onde, N.assinatura, margins=True, margins_name="total").to_string())
+    outros = S[S.erro & ~S["sub"].eq("nome_nao_definido") & S.err_msg.str.contains("except NameError", regex=False)]
+    print("  erros que não são de nome não definido, mas cuja mensagem traz 'except NameError':", len(outros),
+          "| por tipo:", outros.err_type.value_counts().head(5).to_dict())
+    com = N[N.assinatura.eq("try/except NameError")]
+    print("  com a assinatura, por papel × mês × modelo:")
+    print(com.groupby(["role", "mes", com.modelo.fillna("(sem modelo)")]).size().rename("erros").reset_index().to_string(index=False)
+          if len(com) else "    nenhum")
 
     # C · a regra da base 3, no trace real (todos os ActionSteps)
     regra = S.step.eq(1) & S.step_pos.le(3)

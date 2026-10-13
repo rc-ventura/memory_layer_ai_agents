@@ -383,7 +383,9 @@ execução, porque traz o caso) separa duas versões no `ContestacaoCivel`:
 | a nova (`7dc18e5e8c`) | 97 | **97 (100%)** | só 2026-08 |
 
 Em agosto, com o mesmo modelo, as 32 execuções que ainda tinham a versão antiga tiveram 0 erros e as 97 com a nova,
-97. O prompt do `RoteadorCivel` não atribui nenhum desses nomes em nenhum mês: ali o erro vem do modelo, não do prompt.
+97 — **na amostra da base 2** (1.000 registros). Isso não prova que a versão antiga nunca causa o erro: a base 3 tem 95
+erros com a mesma assinatura em julho (§7.10), e 0 em 72 execuções é compatível com uma taxa baixa. O prompt do
+`RoteadorCivel` não atribui nenhum desses nomes em nenhum mês: ali o erro vem do modelo, não do prompt.
 
 **Os três casos lidos** (`ContestacaoCivel`, agosto de 2026, `gpt-5.2`; casos espalhados no tempo, regra fixa):
 
@@ -431,7 +433,53 @@ do segundo.
 - **O custo:** 101,7 mi de tokens na base 3 em passos que falham e são refeitos (≈ 17.500 por erro), todos no primeiro
   passo.
 - **O que ainda não sabemos:** se o parágrafo da instrução já existia no prompt de julho. A parte G mostra que a versão do
-  trecho que atribui os nomes mudou, e que só a nova dá o erro; não mostra o parágrafo em si. O diff do prompt (521
+  trecho que atribui os nomes mudou, e que na amostra só a nova deu o erro; não mostra o parágrafo em si. O diff do prompt (521
   linhas) não foi lido. A próxima medida conta, por versão e mês, se o prompt traz a instrução.
 - **Nada mudou no pipeline nem nos números** (continuam 7.107 pendentes, 24%): isto é leitura e proposta, não ajuste.
 
+### 7.10 · A assinatura na base 3: o padrão não é só do primeiro passo (13/10)
+
+`pipeline/validacao/contar_assinatura_try_nameerror.py`; foto IMG_5720. A mensagem de erro traz a linha que falhou
+("Code execution failed at line 'try: … except NameError: …' due to: InterpreterError: The variable … is not defined").
+O script conta, em cada erro de nome não definido, se a linha tem `try` com `except NameError`; "duvidoso" = a linha
+começa com `try:` mas sem `except NameError`. Não precisa do prompt.
+
+| Situação atual do erro (pela posição do passo anterior) | Erros | Com a assinatura | Sem | Duvidoso |
+|---|---:|---:|---:|---:|
+| Pendente: predecessor não identificado (o primeiro passo) | 5.818 | **5.304 (91%)** | 514 | 0 |
+| `U_estado_perdido` | 878 | **334 (38%)** | 543 | 1 |
+| `U_nome_inventado` | 477 | **126 (26%)** | 350 | 1 |
+| Pendente: numeração ambígua | 5 | 0 | 5 | 0 |
+| **Total de erros de nome não definido** | **7.178** | **5.764 (80%)** | 1.412 | 2 |
+
+As somas fecham (5.304 + 334 + 126 = 5.764; 5.818 + 878 + 477 + 5 = 7.178). Com a assinatura: `ContestacaoCivel`
+2026-08, 5.667; 2026-07, 95; `RespostaBacen`, 1 em 2026-02 e 1 em 2026-05. Há 12 erros de outro tipo
+(`AgentExecutionError`) cuja mensagem também traz `except NameError`. Na base 1, 0 de 10 erros de nome têm a assinatura.
+
+**O que isso mostra**
+
+- **A base 3 tem evidência própria do padrão:** 91% dos 5.818 do primeiro passo. A assinatura prova o padrão, não que o
+  prompt o instruiu: isso só foi visto na base 2. O hash do prompt no pedido A fecharia a questão.
+- **O padrão acontece depois do primeiro passo.** 460 erros (334 + 126) estão hoje em unidades de memória só porque o
+  passo anterior teve erro (estado perdido) ou não teve (nome inventado). A regra atual olha só a posição, e o próprio
+  pipeline a rotula `proxy_predecessor_estruturado_nao_prova_namespace`. Foi validada nas bases 1 e 2, onde o padrão
+  não existia (0 de 10 na base 1); a base 3 criou um padrão que ela não enxerga.
+- **Por que isso importa para a lição.** Cada unidade vira um cartão de memória, escrito e medido a partir dos casos
+  dela. O cartão do estado perdido ("redefinir o que o passo anterior criaria") e o do nome inventado ("usar só o que
+  foi definido") não previnem um erro que vem de uma instrução do prompt: 38% e 26% dos casos nunca seriam evitados por
+  eles, a medida de eficácia sai menor, e um cartão escrito sobre esses casos poderia contradizer o prompt.
+- **Os 514 do primeiro passo sem a assinatura** são outro mecanismo. Pelas somas, quase todos devem ser os 397 do
+  `RoteadorCivel` (erro com o modelo novo, prompt sem essa instrução) e os 89 do `RespostaBacen`; é dedução, não contagem.
+- **Julho já tem 95 erros com a assinatura.** O problema não nasceu em agosto; em agosto ele explodiu. A hipótese de
+  que a versão nova do trecho do prompt aumentou a frequência continua aberta.
+
+**Fundamento no método** (`discussion/hipoteses/trace-error-taxonomy-methodology/`, §3.2): o mesmo sintoma pode ter
+mecanismos diferentes, e só um sinal local mais fino os separa; quem decide é o eixo do mecanismo. A linha que falhou
+é esse sinal. O pipeline já aplica o mesmo gesto ao módulo sem import, decidido antes da posição. Precedente do destino
+harness: o `validar_quebra_sigilo` (contradição do prompt com o ambiente, decidida sem LLM) e o `U_campo_inexistente`.
+
+**Proposta (não aplicada; o pipeline e os números continuam como estavam):** a assinatura na mensagem passa antes da
+posição, e leva o erro a uma unidade própria, com destino **harness proposto** — na base 3 "em aberto" até haver o
+hash do prompt. Ordem: (1) conferir a base 2 (`contar_primeiro_passo_nome_base2.py`, parte H); (2) simular
+(`simular_regra_assinatura.py`: só podem mudar os 5.764; o resto tem de ficar igual); (3) decisão do Rafael; (4) o
+ajuste, com registro no livro-razão. Nome sugerido para a unidade: *verificação de existência por `try/except NameError`*.

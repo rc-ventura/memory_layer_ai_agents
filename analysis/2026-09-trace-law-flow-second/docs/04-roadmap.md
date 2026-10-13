@@ -35,8 +35,8 @@ a partir destes itens.
   dos 118, **103 são o primeiro ActionStep** (97 `ContestacaoCivel`, 6 `RoteadorCivel`) e **15 são nome inventado de
   fato**; 11 de estado perdido à parte. 97 das 149 execuções do `ContestacaoCivel` em agosto (65%) começam com o erro.
   **Causa (3 casos lidos):** o prompt manda verificar a existência da variável com `try/except NameError` e o
-  interpretador do sandbox não captura esse erro; só a versão nova do trecho do prompt dá o erro (97 de 97, contra 0 de
-  127); o modelo não explica no `ContestacaoCivel` (`gpt-5.2` teve 0 de 72 em julho); no `RoteadorCivel` os 6 vêm do
+  interpretador do sandbox não captura esse erro; na amostra, só a versão nova do trecho do prompt deu o erro (97 de 97, contra 0 de
+  127; a base 3 tem 95 erros com a assinatura em julho); o modelo não explica no `ContestacaoCivel` (`gpt-5.2` teve 0 de 72 em julho); no `RoteadorCivel` os 6 vêm do
   `gpt-5.6-terra`. A mineração do nome inventado passa a ser sobre os 15; os 103 vão para o grupo próprio (`b3 #1`).
   **Falta aqui:** se o parágrafo da instrução já estava no prompt de julho (contagem por versão e mês).
 - [ ] **#4 · As minerações de silenciosas e de protocolo, no método novo de leitura.** Comparar com o publicado (`14`,
