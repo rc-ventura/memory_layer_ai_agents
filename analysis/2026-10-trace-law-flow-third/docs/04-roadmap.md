@@ -36,17 +36,21 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   denominadores (taxas e gráficos de custo da base 1), B complemento dos pendentes (fecha os 24% sem unidade), C
   ajustes na extração. **Falta:** levar ao tutor (item 11) e, quando chegar, conferir a junção e integrar ao pipeline.
 - [ ] **#1** **Investigar os 5.818 erros de nome não definido sem passo anterior identificado** (102 mi de tokens, o maior
-  grupo pendente). **Feito em 13/10 (contagens, [relatório §7.8](02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310)):**
+  grupo pendente). **Feito em 13/10 ([relatório §7.8](02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310)
+  e [§7.9](02-relatorio-achados.md#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310)):**
   os 5.818 são todos o primeiro ActionStep do papel (0 com anterior sem número), um erro por execução, 27 nomes (3 = 90%),
-  98% em agosto, 92% no `ContestacaoCivel`; onde o código veio inteiro (40%), 78% usam o nome antes de defini-lo no
-  mesmo código; 77% sem erro no passo seguinte. Saiu do pedido B (não precisa de query). **A base 2 com o trace
-  inteiro confirmou (13/10, §7.8 parte 3):** 103 no primeiro passo, regra validada em 3.907 ActionSteps, **65% das
-  execuções do `ContestacaoCivel` em agosto começam com o erro**, 94% usam o nome antes de defini-lo, o nome está no
-  system prompt em 83 de 103 e em nenhuma tarefa, nenhuma conversa com execução anterior, modelo `gpt-5.2` (97).
-  **Falta:** (a) onde o nome aparece no system prompt (exemplo de código ou instrução), papel × modelo e o modelo do
-  papel antes de agosto — contagens na máquina 2; (b) os nomes, só com autorização (`--mostrar-nomes`); (c) leitura de
-  poucos casos lá (skill `mineracao-investigacao`); (d) com o pedido A, a fração na base 3; (e) decidir: grupo próprio
-  "nome usado antes de ser definido, no primeiro passo" ou outra unidade — sem juntar ao nome inventado antes disso.
+  98% em agosto, 92% no `ContestacaoCivel`; saíram do pedido B (não precisam de query). **A causa, na base 2 (trace
+  inteiro):** o system prompt do `ContestacaoCivel` manda verificar a existência da variável com `try/except NameError`,
+  e o interpretador do sandbox levanta um erro que esse `except` não pega (3 casos lidos; os passos seguintes definem
+  direto e passam). Só a versão nova do trecho do prompt dá o erro (97 de 97, contra 0 de 127 da antiga); o modelo não
+  explica (o mesmo `gpt-5.2` teve 0 de 72 em julho). **Correção:** a primeira leitura ("usa o nome antes de definir,
+  ordem errada") era o regex contando o padrão `try/except`. **Destino proposto: harness**; na base 3, "em aberto" até
+  haver evidência própria. **Falta:** (a) **contar na base 3 a assinatura na mensagem de erro** (a linha que falhou
+  começa com `try:` e contém `except NameError`), nos 5.818 e em **todos** os erros de nome — pode haver casos hoje em
+  "estado perdido" ou "nome inventado" que são o mesmo padrão; (b) na base 2, se o parágrafo da instrução já existia no
+  prompt de julho (contagem por versão e mês); (c) o nome do modelo e o hash do system prompt no pedido A (a base 3 não
+  tem o prompt); (d) aviso ao responsável pelo harness (`transversal #7`); (e) registro de monitoramento; (f) decidir o
+  ajuste da regra (5.818 saem de pendente, 24% → 4%) e o nome da unidade — nada foi alterado no pipeline.
 - [ ] **#18** **Documentos gerais** (a dívida mais concreta): o glossário ganha `STRUCTURED_ERROR`, `OBSERVATION_SUSPECT`,
   "candidata observada", "pendente", "componente" (= a cascata das bases 1 e 2), `recovery_signal` e os estados de
   capacidade; o livro-razão (`pipeline-entre-bases.md`) ganha a etapa da base 3 — sem Ajuste novo, porque nenhuma

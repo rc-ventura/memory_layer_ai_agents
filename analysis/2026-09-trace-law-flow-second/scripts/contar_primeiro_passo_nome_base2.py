@@ -2,7 +2,7 @@
 
 Na base 3 (só os erros, em parquet), 5.818 erros de nome não definido são o primeiro ActionStep do papel, um por
 execução, 27 nomes (os 3 mais frequentes = 90%), 98% em agosto de 2026, 92% no ContestacaoCivel; onde o código veio
-inteiro, 78% usam o nome antes de defini-lo no mesmo código. A base 2 tem o trace inteiro e o mesmo mês: aqui dá para
+inteiro, 78% têm a referência ao nome antes da atribuição (a leitura de três casos, em 13/10, mostrou que é o padrão `try/except NameError` instruído pelo prompt). A base 2 tem o trace inteiro e o mesmo mês: aqui dá para
 conferir sem regex de janela e responder o que o parquet não responde.
 
   A. a base: execuções, ActionSteps, erros estruturados, erros de nome não definido;

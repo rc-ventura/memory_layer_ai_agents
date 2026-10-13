@@ -294,7 +294,8 @@ sem a recuperação além do passo n+2. Cada ausência está no [roadmap](04-roa
 ### 7.8 · O nome não definido no primeiro passo (contagens de 13/10)
 
 Duas contagens na máquina 2, sobre a mesma rodada, explicam o maior grupo pendente (os 5.818 de "predecessor não
-identificado"). Nas saídas dos scripts, o papel aparece como `ontestacaoCivel`; é o `ContestacaoCivel`.
+identificado"). Nas saídas dos scripts, o papel aparece como `ontestacaoCivel`; é o `ContestacaoCivel`. **A causa do
+grupo, e uma correção da leitura de mecanismo que estava aqui, estão em [§7.9](#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310).**
 
 **1. São todos o primeiro ActionStep do papel** (`pipeline/validacao/contar_predecessor_pendentes.py`; foto IMG_5706).
 A regra marcava o motivo para dois casos — não há passo anterior, ou há, sem `step_number`. O leitor do parquet já os
@@ -314,7 +315,7 @@ falso positivo, em 5.781 ActionSteps. O `step_number` = 1 sozinho não basta: el
 (1.019 ActionSteps da base 1 com número 1 não eram o primeiro). **Consequência:** esse grupo não precisa de query —
 saiu do pedido B ([`05`](05-pedido-queries.md)).
 
-**2. Um erro por execução, poucos nomes, e o nome usado antes de ser definido**
+**2. Um erro por execução, poucos nomes, e o padrão da verificação de existência**
 (`pipeline/validacao/contar_primeiro_passo_nome.py`; fotos IMG_5707 e IMG_5708).
 
 | Medida | Resultado |
@@ -323,20 +324,17 @@ saiu do pedido B ([`05`](05-pedido-queries.md)).
 | Nomes distintos (o nome que a mensagem diz não existir) | **27**; o mais frequente = 40,5%, os 3 mais = 90%, os 10 mais = 99,3% |
 | Por papel | `ContestacaoCivel` 17 nomes (3 mais = 98,3%); `RoteadorCivel` 5 (o mais frequente = 67,3%); `RespostaBacen` 1 nome em 89 erros |
 | Código do passo com erro inteiro (sem corte) | 2.313 (40%); 3.505 cortados ou ausentes |
-| …o nome aparece no código / é atribuído no mesmo código / a primeira atribuição vem **depois** do primeiro uso | 2.313 / 1.824 / **1.815** (regex, uma pista) |
+| …o nome aparece no código / é atribuído no mesmo código / a primeira atribuição vem **depois** do primeiro uso (regex) | 2.313 / 1.824 / **1.815** — **contagem do padrão `try/except NameError`**, não de "ordem errada" (correção em §7.9) |
 | Passo seguinte | existe nos 5.818; sem erro em 4.470 (77%), com erro em 1.348 |
 | Sinal de recuperação | final na ação seguinte 2.698; possível recuperação na seguinte 1.772; final em até 2 ações 593; cascata 384; possível em até 2 366; desconhecido 5 |
 | Tokens do passo com erro | 101,7 mi (≈ 17.500 por erro) |
 
-**Leitura (hipótese, não causa provada):** não é incidente de poucas execuções — milhares de execuções começam com o
-mesmo tipo de erro, um só cada. Não parece nome inventado ao acaso: 27 nomes cobrem tudo, e onde o código veio inteiro,
-em 78% o agente define o nome no próprio código, **mas depois de usá-lo**; o Python para no uso. Nos 489 em que o nome
-não é atribuído no código, o agente esperava que ele viesse de fora (do harness, da tarefa ou de uma chamada anterior).
-O agente costuma se corrigir no passo seguinte: o custo é o primeiro passo desperdiçado, multiplicado pelas execuções.
-
-**Por que é diferente das lições de nome que já existem:** o módulo sem import (a variável é um módulo, como `json`);
-o estado perdido (o nome viria de um passo anterior que falhou); o nome inventado (o passo anterior rodou e o nome nunca
-foi definido). Aqui não há passo anterior, e o nome existe — mais abaixo no mesmo código.
+**Leitura:** não é incidente de poucas execuções — milhares de execuções começam com o mesmo tipo de erro, um só
+cada. Não parece nome inventado ao acaso: 27 nomes cobrem tudo. O agente costuma se corrigir no passo seguinte; o custo
+é o primeiro passo desperdiçado, multiplicado pelas execuções. **Correção de 13/10:** esta leitura dizia que, nos casos
+com código inteiro, o agente "define o nome no próprio código, mas depois de usá-lo". A regra de texto contou como
+"atribuição depois do uso" o padrão `try: nome` / `except NameError: nome = ...` (a referência vem no `try`, a atribuição
+no `except`). A contagem vale; o mecanismo é o descrito em §7.9.
 
 **3. A base 2, com o trace inteiro, confirma o grupo**
 (`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`; fotos IMG_5709 e IMG_5710). A base 2 é o
@@ -350,7 +348,7 @@ lote de agosto de 2026 (1.000 execuções, 3.907 ActionSteps, 479 erros estrutur
 | Execuções do `ContestacaoCivel` em agosto que **começam** com o erro | **97 de 149 (65%)** | sem denominador (pedido A) |
 | Execuções do `RoteadorCivel` em agosto que começam com o erro | 6 de 267 (2%) | — |
 | Nomes distintos / os 3 mais frequentes | 5 / 92% | 27 / 90% |
-| Usa o nome antes de defini-lo no mesmo código | **97 de 103 (94%)**, código inteiro | 1.815 de 2.313 com código inteiro (78%) |
+| Padrão "referência no `try`, atribuição no `except`" (contado como "atribuição depois do uso", regex) | **97 de 103 (94%)**, código inteiro | 1.815 de 2.313 com código inteiro (78%) |
 | Define o nome no código do passo seguinte | 92 de 103 | — |
 | O nome aparece no texto da tarefa / no system prompt | **0 / 83** de 103 | — |
 | A mesma conversa teve antes uma execução com o mesmo papel | 0 de 103 | — |
@@ -360,16 +358,66 @@ lote de agosto de 2026 (1.000 execuções, 3.907 ActionSteps, 479 erros estrutur
   primeiro passo + 15 nomes inventados de fato; os "101 num papel, num mês e num modelo" são 97 do primeiro passo e 4
   inventados, todos do `ContestacaoCivel` ([`b2 #3`](../../2026-09-trace-law-flow-second/docs/04-roadmap.md)).
 - **As hipóteses do [roadmap](04-roadmap.md) #1 se separam:** estado de uma chamada anterior na conversa — não
-  sustentada (0); nome vindo da tarefa — não sustentada (0); variável que o harness deveria injetar — fraca (em 94% o
-  próprio agente define o nome, depois de usá-lo); nome vindo do system prompt — sustentada (83 de 103), com a ressalva
-  de que nomes curtos podem coincidir com palavras do texto; ligação com o modelo — provável (os 97 do `ContestacaoCivel`
-  e os 97 do `gpt-5.2` coincidem, mas o script não cruzou papel × modelo).
-- **Leitura (hipótese):** em agosto, no `ContestacaoCivel`, o primeiro código que o agente escreve usa um nome que
-  aparece no system prompt antes da linha que o define; o Python para; no passo seguinte o agente define o nome e
-  segue. Aconteceu em 65% das execuções do papel na amostra.
+  sustentada (0); nome vindo da tarefa — não sustentada (0); variável que o harness deveria injetar — não sustentada;
+  **instrução do system prompt — sustentada** (§7.9: três casos lidos, e 83 de 103 com o nome no prompt); ligação com o
+  modelo — no `ContestacaoCivel` descartada (§7.9, parte F); no `RoteadorCivel`, provável (6 casos).
 
-**Proposta (a decidir):** tratar como grupo próprio, "nome usado antes de ser definido, no primeiro passo", sem
-juntá-lo ao nome inventado (somaria milhares de erros a uma unidade que tem 5 erros na base 1 e 15 de fato na base 2, e
-mudaria a lição) nem criar a unidade ainda. Para fechar a causa: onde o nome aparece no system prompt (num exemplo de
-código ou numa instrução), o cruzamento papel × modelo e o modelo do `ContestacaoCivel` antes de agosto — contagens na
-máquina 2 e leitura de poucos casos lá, sem trazer texto ([roadmap](04-roadmap.md) #1).
+### 7.9 · A causa: uma instrução do prompt que o ambiente de execução não suporta (base 2, 13/10)
+
+Fontes: a parte F e a parte G do `contar_primeiro_passo_nome_base2.py` (fotos IMG_5712 e IMG_5713) e a leitura de três
+casos, feita por Rafael na máquina 2 (fotos IMG_5714 a IMG_5719). Tudo abaixo é contagem ou paráfrase; nenhum
+identificador de execução nem número de processo entra neste documento.
+
+**O papel × o modelo (parte F).** No grupo do primeiro passo da base 2, os 97 erros do `ContestacaoCivel` são todos do
+`gpt-5.2` e os 6 do `RoteadorCivel` são todos do `gpt-5.6-terra`. Mas **o modelo não explica o `ContestacaoCivel`**: o
+mesmo `gpt-5.2` rodou 72 execuções do primeiro passo em julho **sem nenhum erro**, e em agosto 97 de 129 (75%) tiveram o
+erro; a variante `gpt-5.2-gs` teve 0 de 20 em agosto. No `RoteadorCivel`, em agosto, o `gpt-4.1` teve 0 erros em 126
+execuções e o `gpt-5.6-terra`, 6 em 138 (4%).
+
+**O prompt (parte G).** O hash do trecho do system prompt que atribui os nomes do grupo (o prompt inteiro varia a cada
+execução, porque traz o caso) separa duas versões no `ContestacaoCivel`:
+
+| Versão do trecho | Execuções | Com o erro | Meses |
+|---|---:|---:|---|
+| a antiga (`0618beb504`) | 127 | **0** | 2026-06 a 2026-08 |
+| a nova (`7dc18e5e8c`) | 97 | **97 (100%)** | só 2026-08 |
+
+Em agosto, com o mesmo modelo, as 32 execuções que ainda tinham a versão antiga tiveram 0 erros e as 97 com a nova,
+97. O prompt do `RoteadorCivel` não atribui nenhum desses nomes em nenhum mês: ali o erro vem do modelo, não do prompt.
+
+**Os três casos lidos** (`ContestacaoCivel`, agosto de 2026, `gpt-5.2`; casos espalhados no tempo, regra fixa):
+
+| Caso | O primeiro passo | O passo seguinte |
+|---|---|---|
+| 1 | usa `try: variável` / `except NameError: variável = ...` para várias variáveis; o nome que falta não aparece no trecho do prompt | define direto, sem `try/except`, e termina com a resposta final |
+| 2 | o mesmo padrão, para o identificador do processo e para as saídas de quatro ferramentas | abre com um comentário do próprio agente: definição direta, "sem try/except para evitar o erro do interpretador" |
+| 3 | o mesmo padrão; **o trecho do prompt ao redor do nome (linhas ≈ 962–976 do prompt) é a instrução** | comenta que faz a chamada direta "para evitar erro de checagem de variável não definida" |
+
+A instrução, em paráfrase (caso 3): antes de chamar uma ferramenta, verificar se a variável de saída já está preenchida
+em memória e, se estiver, pular a chamada; não usar `globals()` nem `locals()` (proibidos pelo interpretador); para
+checar a existência, usar `try/except NameError`, com um exemplo para a variável da petição inicial; se a variável já
+foi definida num passo anterior, apenas referenciá-la.
+
+**O mecanismo.** Em Python comum, um nome inexistente levanta `NameError` e o `except NameError` o captura. O erro da
+nossa tabela é um `InterpreterError` ("The variable ... is not defined"), com o `except NameError` escrito no código:
+o interpretador do sandbox levanta o seu próprio erro, que o `except NameError` não pega. O passo seguinte passa porque o
+agente deixa de verificar e cria a variável direto. **Inferência:** não lemos o código do sandbox; a conclusão vem do
+tipo de erro na mensagem e dos comentários do agente nos três casos.
+
+**O que muda:**
+
+- **O mecanismo** deixa de ser "nome usado antes de ser definido" e passa a ser "verificação de existência por
+  `try/except NameError`, instruída pelo prompt, que o ambiente não suporta". Nome sugerido para a unidade: *verificação
+  de existência por `try/except NameError`*. Não é nome inventado (a variável é criada logo abaixo), nem estado perdido
+  (não há passo anterior), nem módulo sem import.
+- **O destino** proposto é o **harness** (a instrução do prompt ou o interpretador): o agente não tem como saber que a
+  instrução falha, e uma memória "não use try/except" contradiria o prompt. Na base 2 a evidência é forte; **na base 3
+  fica "em aberto"** até haver evidência dela — a mensagem de erro traz a linha que falhou (começa com `try:` e contém
+  `except NameError`), então a assinatura pode ser contada no parquet, sem o prompt (roadmap b3 #1).
+- **O custo:** 101,7 mi de tokens na base 3 em passos que falham e são refeitos (≈ 17.500 por erro), todos no primeiro
+  passo.
+- **O que ainda não sabemos:** se o parágrafo da instrução já existia no prompt de julho. A parte G mostra que a versão do
+  trecho que atribui os nomes mudou, e que só a nova dá o erro; não mostra o parágrafo em si. O diff do prompt (521
+  linhas) não foi lido. A próxima medida conta, por versão e mês, se o prompt traz a instrução.
+- **Nada mudou no pipeline nem nos números** (continuam 7.107 pendentes, 24%): isto é leitura e proposta, não ajuste.
+
