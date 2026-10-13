@@ -338,9 +338,38 @@ O agente costuma se corrigir no passo seguinte: o custo é o primeiro passo desp
 o estado perdido (o nome viria de um passo anterior que falhou); o nome inventado (o passo anterior rodou e o nome nunca
 foi definido). Aqui não há passo anterior, e o nome existe — mais abaixo no mesmo código.
 
+**3. A base 2, com o trace inteiro, confirma o grupo**
+(`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`; fotos IMG_5709 e IMG_5710). A base 2 é o
+lote de agosto de 2026 (1.000 execuções, 3.907 ActionSteps, 479 erros estruturados, 129 de nome não definido).
+
+| Medida | Base 2 | Base 3 |
+|---|---|---|
+| Erros de nome no primeiro ActionStep / depois de passo sem erro / depois de passo com erro | **103** / 15 / 11 | 5.818 / — / — |
+| A regra "`step_number` 1 e posição ≤ 3" × primeiro ActionStep real, em todos os ActionSteps | 1.000 de 1.000 e 2.907 de 2.907 (0 erros) | — |
+| Um erro por execução | 103 em 103 | 5.818 em 5.818 |
+| Execuções do `ContestacaoCivel` em agosto que **começam** com o erro | **97 de 149 (65%)** | sem denominador (pedido A) |
+| Execuções do `RoteadorCivel` em agosto que começam com o erro | 6 de 267 (2%) | — |
+| Nomes distintos / os 3 mais frequentes | 5 / 92% | 27 / 90% |
+| Usa o nome antes de defini-lo no mesmo código | **97 de 103 (94%)**, código inteiro | 1.815 de 2.313 com código inteiro (78%) |
+| Define o nome no código do passo seguinte | 92 de 103 | — |
+| O nome aparece no texto da tarefa / no system prompt | **0 / 83** de 103 | — |
+| A mesma conversa teve antes uma execução com o mesmo papel | 0 de 103 | — |
+| Modelo | `gpt-5.2-2025-12-11` 97; `gpt-5.6-terra-2026-07-09` 6 | sem a coluna |
+
+- **A "maior candidata" da base 2 era este grupo.** Os 118 erros de nome inventado do relatório da base 2 são 103 do
+  primeiro passo + 15 nomes inventados de fato; os "101 num papel, num mês e num modelo" são 97 do primeiro passo e 4
+  inventados, todos do `ContestacaoCivel` ([`b2 #3`](../../2026-09-trace-law-flow-second/docs/04-roadmap.md)).
+- **As hipóteses do [roadmap](04-roadmap.md) #1 se separam:** estado de uma chamada anterior na conversa — não
+  sustentada (0); nome vindo da tarefa — não sustentada (0); variável que o harness deveria injetar — fraca (em 94% o
+  próprio agente define o nome, depois de usá-lo); nome vindo do system prompt — sustentada (83 de 103), com a ressalva
+  de que nomes curtos podem coincidir com palavras do texto; ligação com o modelo — provável (os 97 do `ContestacaoCivel`
+  e os 97 do `gpt-5.2` coincidem, mas o script não cruzou papel × modelo).
+- **Leitura (hipótese):** em agosto, no `ContestacaoCivel`, o primeiro código que o agente escreve usa um nome que
+  aparece no system prompt antes da linha que o define; o Python para; no passo seguinte o agente define o nome e
+  segue. Aconteceu em 65% das execuções do papel na amostra.
+
 **Proposta (a decidir):** tratar como grupo próprio, "nome usado antes de ser definido, no primeiro passo", sem
-juntá-lo ao nome inventado (somaria 5.818 a uma unidade que tem 5 erros na base 1 e mudaria a lição) nem criar a
-unidade ainda. Antes: ler uma amostra de casos (a pista vem de regex e cobre 40%), ver os nomes (só com autorização,
-`--mostrar-nomes`), conferir na base 2 com o trace inteiro
-(`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`) e, com os denominadores do pedido A,
-medir que fração das execuções do `ContestacaoCivel` em agosto começou com esse erro ([roadmap](04-roadmap.md) #1).
+juntá-lo ao nome inventado (somaria milhares de erros a uma unidade que tem 5 erros na base 1 e 15 de fato na base 2, e
+mudaria a lição) nem criar a unidade ainda. Para fechar a causa: onde o nome aparece no system prompt (num exemplo de
+código ou numa instrução), o cruzamento papel × modelo e o modelo do `ContestacaoCivel` antes de agosto — contagens na
+máquina 2 e leitura de poucos casos lá, sem trazer texto ([roadmap](04-roadmap.md) #1).

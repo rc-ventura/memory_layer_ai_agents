@@ -39,11 +39,14 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   grupo pendente). **Feito em 13/10 (contagens, [relatório §7.8](02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310)):**
   os 5.818 são todos o primeiro ActionStep do papel (0 com anterior sem número), um erro por execução, 27 nomes (3 = 90%),
   98% em agosto, 92% no `ContestacaoCivel`; onde o código veio inteiro (40%), 78% usam o nome antes de defini-lo no
-  mesmo código; 77% sem erro no passo seguinte. Saiu do pedido B (não precisa de query). **Falta:** (a) a base 2 com o
-  trace inteiro (`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`, também [`b2 #3`](../../2026-09-trace-law-flow-second/docs/04-roadmap.md));
-  (b) os nomes, só com autorização (`--mostrar-nomes`); (c) amostra e leitura (skill `mineracao-investigacao`);
-  (d) com o pedido A, a fração das execuções do papel que começa com o erro; (e) decidir: grupo próprio "nome usado
-  antes de ser definido, no primeiro passo" ou outra unidade — sem juntar ao nome inventado antes disso.
+  mesmo código; 77% sem erro no passo seguinte. Saiu do pedido B (não precisa de query). **A base 2 com o trace
+  inteiro confirmou (13/10, §7.8 parte 3):** 103 no primeiro passo, regra validada em 3.907 ActionSteps, **65% das
+  execuções do `ContestacaoCivel` em agosto começam com o erro**, 94% usam o nome antes de defini-lo, o nome está no
+  system prompt em 83 de 103 e em nenhuma tarefa, nenhuma conversa com execução anterior, modelo `gpt-5.2` (97).
+  **Falta:** (a) onde o nome aparece no system prompt (exemplo de código ou instrução), papel × modelo e o modelo do
+  papel antes de agosto — contagens na máquina 2; (b) os nomes, só com autorização (`--mostrar-nomes`); (c) leitura de
+  poucos casos lá (skill `mineracao-investigacao`); (d) com o pedido A, a fração na base 3; (e) decidir: grupo próprio
+  "nome usado antes de ser definido, no primeiro passo" ou outra unidade — sem juntar ao nome inventado antes disso.
 - [ ] **#18** **Documentos gerais** (a dívida mais concreta): o glossário ganha `STRUCTURED_ERROR`, `OBSERVATION_SUSPECT`,
   "candidata observada", "pendente", "componente" (= a cascata das bases 1 e 2), `recovery_signal` e os estados de
   capacidade; o livro-razão (`pipeline-entre-bases.md`) ganha a etapa da base 3 — sem Ajuste novo, porque nenhuma

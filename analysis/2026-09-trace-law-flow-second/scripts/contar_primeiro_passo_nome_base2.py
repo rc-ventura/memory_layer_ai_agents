@@ -178,6 +178,27 @@ def main(argv=None):
           "| sem conversa registrada:", sem_conversa, "(de", len(G), ")")
     print("\n  por papel × mês:")
     print(G.groupby(["role", "mes"]).size().rename("erros").reset_index().sort_values("erros", ascending=False).head(10).to_string(index=False))
+
+    # F · a causa: papel × modelo, o modelo do papel ao longo dos meses, e onde o nome aparece no system prompt
+    print("\nF · papel × modelo, no grupo do primeiro passo:")
+    print(pd.crosstab(G.role, G.modelo.fillna("(sem modelo)")).to_string())
+    P1 = prim[prim.role.isin(set(G.role))].copy()
+    P1["modelo"] = P1.modelo.fillna("(sem modelo)")
+    F = P1.groupby(["role", "mes", "modelo"]).agg(execucoes=("exec_id", "size"), comecam_com_nome=("comeca_com_nome", "sum")).reset_index()
+    print("\n  execuções dos papéis do grupo (primeiro ActionStep), por mês e modelo, e quantas começam com o erro:")
+    print(F.sort_values(["role", "mes", "modelo"]).to_string(index=False))
+    em_bloco = atribuido_no_prompt = def_no_prompt = so_texto = 0
+    for sp, n in zip(ok.sysprompt, ok.nome):
+        if not re.search(rf"\b{re.escape(n)}\b", sp):
+            continue
+        blocos = re.findall(r"```.*?```|<code>.*?</code>", sp, re.S)
+        b = any(re.search(rf"\b{re.escape(n)}\b", x) for x in blocos)
+        a = bool(re.search(rf"^[^\n=#]*\b{re.escape(n)}\b[^\n=#]*(?<![=!<>])=(?!=)", sp, re.M))
+        d = bool(re.search(rf"\bdef\s+{re.escape(n)}\b", sp))
+        em_bloco += b; atribuido_no_prompt += a; def_no_prompt += d; so_texto += not (b or a or d)
+    print("\n  onde o nome aparece no system prompt (dos", no_prompt, "em que aparece):",
+          "dentro de bloco de código", em_bloco, "| atribuído (nome = ...)", atribuido_no_prompt,
+          "| declarado como função (def nome)", def_no_prompt, "| só no texto corrido", so_texto)
     return 0
 
 
