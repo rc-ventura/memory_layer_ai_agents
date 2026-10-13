@@ -401,8 +401,22 @@ foi definida num passo anterior, apenas referenciá-la.
 **O mecanismo.** Em Python comum, um nome inexistente levanta `NameError` e o `except NameError` o captura. O erro da
 nossa tabela é um `InterpreterError` ("The variable ... is not defined"), com o `except NameError` escrito no código:
 o interpretador do sandbox levanta o seu próprio erro, que o `except NameError` não pega. O passo seguinte passa porque o
-agente deixa de verificar e cria a variável direto. **Inferência:** não lemos o código do sandbox; a conclusão vem do
-tipo de erro na mensagem e dos comentários do agente nos três casos.
+agente deixa de verificar e cria a variável direto.
+
+**Reproduzido no interpretador** (`pipeline/validacao/testar_sandbox_try_nameerror.py`, código sintético; smolagents
+1.26.0 — a versão da plataforma não é conhecida):
+
+| Forma de verificar se a variável existe | Variável ainda não existe | Já existe (passo anterior) |
+|---|---|---|
+| `except NameError` (o que o prompt manda) | **falha**, com a mesma mensagem do trace | funciona |
+| `except InterpreterError` | **falha**: esse nome não existe dentro do sandbox | — |
+| `except Exception` / `except` sem tipo | funciona | funciona |
+| `'x' in globals()` | **falha**: `globals()` é proibida | — |
+| dicionário de estado injetado pelo harness (`if 'x' not in estado`) | funciona | — |
+| chamada direta, sem verificar (o passo seguinte do agente) | funciona | — |
+
+A instrução falha **só quando a variável ainda não existe** — por isso o erro é sempre do primeiro passo e some a partir
+do segundo.
 
 **O que muda:**
 
