@@ -43,6 +43,14 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   parquets só existem na máquina 2; o script `pipeline/validacao/inspecionar_parquet.py <parquet>` imprime só
   schema e agregados (nulos, min/max/soma, maior comprimento de texto e quantos valem exatamente 20.000), sem
   nenhum valor de célula. Rafael roda um por vez lá e fotografa; a leitura da foto decide o que é v2 e o que é A.
+  **O que a foto precisa bater** (do [guia da extração](historico/05-relatorio_mineracao_20260929.md) §7, §9, §10 e da
+  [query v1](historico/06-ICTI_crossmemory_query_mineracao_erros.txt)): v2 = 31.421 linhas (30.141 + 1.280), 20.986
+  execuções com erro e as mesmas colunas da v1 com os cortes `SUBSTR` mais altos (a v1 cortava em 8.000, 12.000, 16.000
+  e 20.000 conforme a coluna); denominadores = 283.925 ActionSteps no total, 71.882 execuções únicas e erros e suspeitas
+  somando 30.141 e 1.280, no mesmo período (`anomesdia` de 20250801 a 20260930).
+  **Já visto (foto do `print_schema`, 14/10):** um dos parquets tem **as mesmas 69 colunas, na mesma ordem**, de
+  `COLUNAS_JANELAS` (`adaptador_trace.py`) — o schema sozinho não separa v1 de v2; o que separa é o maior comprimento
+  de texto (o script). O outro parquet (denominadores) ainda não tem foto de schema.
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
     `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para

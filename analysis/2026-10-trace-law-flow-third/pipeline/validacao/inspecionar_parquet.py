@@ -16,7 +16,10 @@ import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 CHAVE = ["cod_idef_exeo", "cod_idef_aget"]
-CORTES_CONHECIDOS = (20_000,)   # o corte da mensagem na v1 (limitação 1)
+# Os cortes (SUBSTR) da query v1, por coluna (historico/06): 8.000 (n-1: modelo e código), 12.000 (tool_calls, modelo e
+# código de n, n+1 e n+2; observações de n-1), 16.000 (observações de n+1 e n+2) e 20.000 (mensagem e observações de n).
+# Um texto com exatamente esse comprimento foi truncado; na v2, o que sobra aí mostra se o corte subiu.
+CORTES_CONHECIDOS = (8_000, 12_000, 16_000, 20_000)
 
 
 def _agregar_texto(pf, col):
