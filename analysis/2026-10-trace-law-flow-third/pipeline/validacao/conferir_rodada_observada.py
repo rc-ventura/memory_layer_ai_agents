@@ -80,11 +80,18 @@ def main():
     exec_counts = E.loc[observed].drop_duplicates(["unidade", "exec_id", "agente"]).groupby("unidade").size()
     month_counts = E.loc[observed].groupby("unidade").mes.nunique()
     kind = T.unidade.map(lambda u: bp.UNI[u][1])
-    expected = set(T.loc[kind.isin([bp.FACT, bp.ESTR]) & T.unidade.map(exec_counts).ge(3)
-                         & T.unidade.map(month_counts).ge(2), "unidade"])
+    passa = set(T.loc[kind.isin([bp.FACT, bp.ESTR]) & T.unidade.map(exec_counts).ge(3)
+                      & T.unidade.map(month_counts).ge(2), "unidade"])
+    # Ajuste 17: quem passa na régua e tem destino harness registrado PARA ESTA BASE é sinal de harness, não candidata.
+    harness_aqui = {u for u in passa if bp.destino_mineracao(u, bp.BASE_ID) == "harness"}
     candidates = T.loc[T.decisao.eq(mo.CANDIDATO), "unidade"].tolist()
-    check("candidatura_recontada_internamente", expected == set(candidates))
-    check("destinos_nao_herdados", T.loc[kind.isin([bp.FACT, bp.ESTR]), "destino_proposto"].eq("em aberto").all())
+    check("candidatura_recontada_internamente", passa - harness_aqui == set(candidates)
+          and harness_aqui == set(T.loc[T.decisao.eq(bp.SINAL_HARNESS), "unidade"]))
+    # Nenhum destino vem de outra base: só o registrado para esta (DESTINO_MINERACAO[u]["bases"]); o resto, em aberto.
+    fe = T.loc[kind.isin([bp.FACT, bp.ESTR])]
+    check("destinos_nao_herdados", fe.destino_proposto.eq(fe.unidade.map(lambda u: bp.destino_mineracao(u, bp.BASE_ID))).all()
+          and set(fe.loc[fe.destino_proposto.ne("em aberto"), "unidade"])
+          <= {u for u, d in bp.DESTINO_MINERACAO.items() if bp.BASE_ID in d["bases"]})
     graph = mo.genealogia(A)
     stages = ["familia", "assinatura", "submecanismo", "unidade", "destino"]
     check("genealogia_sem_lacunas_ocultas", len(graph) == len(E) and not graph[stages].isna().any().any())

@@ -734,6 +734,13 @@ não via o padrão.
   sem a assinatura, **0** mudam. Pendentes 7.107 (23,6%) → 1.803 (6,0%). Estado perdido 878 → 544 (19,8 → 10,1 mi de
   tokens) e nome inventado 477 → 351 (8,9 → 6,0 mi); os dois seguem passando na régua. A unidade nova: 5.764 erros,
   5.442 execuções, 4 meses, 112,0 mi de tokens.
+- **A conferência da rodada** (`conferir_rodada_observada.py`) foi escrita quando nenhuma unidade da base 3 tinha
+  destino harness: recontava como candidata toda unidade que passa na régua e exigia "em aberto" em todos os destinos.
+  Na máquina 2 ela parou em `candidatura_recontada_internamente` (foto IMG_5727). Corrigida: a recontagem separa, entre
+  as que passam na régua, as de destino harness registrado **para esta base** (sinal de harness) das candidatas, e as
+  duas listas têm de bater com a triagem; "destinos não herdados" confere que cada destino é só o registrado para esta
+  base (o `U_campo_inexistente`, harness nas bases 1 e 2, segue "em aberto" na 3). Testada numa cópia da base 1 com a
+  assinatura nos erros de nome: a versão antiga falha como na máquina 2; a nova passa em todas as verificações.
 - **Replicar na máquina 2:** (1) `git pull`; (2) aplicar a mesma mudança ao pipeline da base 2
   (`2026-09-trace-law-flow-second/scripts/replicar_ajuste17.py`, que mostra o que faria e só grava com `--aplicar`);
   (3) `executar.py validar` (as regras da base 3 e da base 2 iguais); (4) `executar.py analisar` — rodada nova, a
