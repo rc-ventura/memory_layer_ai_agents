@@ -40,7 +40,7 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   (que ainda descreve A como "a enviar") e levar ao tutor (#11).
 - [ ] **#31** **Rodada na v2:** `executar.py analisar` (desde o Ajuste 18 a v2 é a fonte padrão; a primeira tentativa,
   de antes do ajuste, parou em "BLOQUEADO" porque a v2 era lida com o teto da v1) e `resumo_rodada.py`; depois,
-  registrar `FONTE_V2_SHA256` e `executar.py conferir`.
+  `executar.py conferir` (o hash da v2 já está registrado).
   A v2 tem as mesmas linhas, `error_type` e tokens da v1, então as contagens de erro devem ficar iguais; o que muda são
   os pendentes — dos 1.803 da rodada `3f9c…`, 1.009 eram mensagem cortada. Conferir quantos caem, para onde vão
   (unidade ou resíduo) e se o retorno-dict reaparece (na v1, 2 erros por causa do corte). Uma pasta de rodada nova

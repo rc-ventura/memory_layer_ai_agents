@@ -25,7 +25,7 @@ CHAVE_EXEC = ["exec_id", "agente"]
 # Snapshots conferidos da base 3 (docs 01 e 04). Ficam no código, e não num resultado de rodada antiga, para a
 # validação não depender de arquivos privados que podem ser apagados. Outra exportação = nova coorte, novo hash.
 FONTE_V1_SHA256 = "7604f77df9fe6127bd7fb9db18337b558b1f2587b0a99621c087b0cf3c2873f1"   # v1, com corte (rodada 3f9c…)
-FONTE_V2_SHA256 = None   # v2, sem corte (Ajuste 18): registrar o sha256 do arquivo antes do `conferir`
+FONTE_V2_SHA256 = "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306"   # v2, sem corte (Ajuste 18)
 FONTE_REFERENCIA_SHA256 = FONTE_V2_SHA256   # a referência é a da extração padrão
 CAPACIDADES = {
     "triagem_visivel": True, "perfil_candidata": True,

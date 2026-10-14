@@ -771,7 +771,7 @@ engolia a mensagem e não dizia qual trava tinha disparado.
 - **Comando:** `executar.py analisar` sem argumento usa a v2; `--extracao v1` usa a v1 (para reproduzir a rodada
   `3f9c…`). O "BLOQUEADO" passa a dizer o tipo e a mensagem da trava (nenhum dado da fonte).
 - **Trava cruzada** (`mineracao_observada.conferir_fonte`): o hash conhecido da v1 lido como v2, ou o da v2 lido como
-  v1, bloqueia com o comando certo na mensagem. `FONTE_V1_SHA256` é o hash de antes; `FONTE_V2_SHA256` fica por registrar.
+  v1, bloqueia com o comando certo na mensagem. `FONTE_V1_SHA256` é o hash de antes; `FONTE_V2_SHA256` = `908aa005…86306` (registrado em 14/10).
 - **Identidade da rodada:** a extração e o corte entram na impressão digital, então a mesma fonte lida de dois jeitos
   nunca cai na mesma pasta.
 - **Conferência** (`conferir_rodada_observada.py`): a elegibilidade recontada direto do Arrow passa a ser "mensagem
@@ -790,7 +790,7 @@ engolia a mensagem e não dizia qual trava tinha disparado.
   pendentes por mensagem limitada passam a ter a mensagem inteira. Os timeouts continuam pendentes enquanto a regra
   pedir o prompt declarado (o código inteiro não basta sozinho).
 - **Replicar no ambiente da base 3:** (1) `git pull`; (2) `executar.py analisar` — rodada nova; a `3f9c…` fica intacta;
-  (3) `resumo_rodada.py`; (4) registrar `FONTE_V2_SHA256` e rodar `executar.py conferir`; (5) `painel`.
+  (3) `resumo_rodada.py`; (4) `executar.py conferir`; (5) `painel`.
 
 ## 4. O que os ajustes ensinam sobre o método
 
