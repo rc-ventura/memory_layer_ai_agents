@@ -16,6 +16,8 @@ e as conferências contra o parquet. Da máquina 2 saem só contagens, nomes de 
 
 ```bash
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py analisar      # grava resultados/observada_<id>/
+# Ajuste 18 (14/10): sem argumento, a fonte é a v2 (sem corte de texto); a rodada 3f9c… deste relatório é da v1:
+#   executar.py analisar --extracao v1
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/resumo_rodada.py # resumo, triagem e cobertura
 ```
 

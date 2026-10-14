@@ -22,9 +22,11 @@ CONTRATO = "mineracao_erros_observados_v1"
 CANDIDATO = "candidato observado"
 SEM_RECORRENCIA = "recorrência não demonstrada"
 CHAVE_EXEC = ["exec_id", "agente"]
-# Snapshot conferido da base 3 (docs 01 e 04). Fica no código, e não num resultado de rodada antiga, para a
+# Snapshots conferidos da base 3 (docs 01 e 04). Ficam no código, e não num resultado de rodada antiga, para a
 # validação não depender de arquivos privados que podem ser apagados. Outra exportação = nova coorte, novo hash.
-FONTE_REFERENCIA_SHA256 = "7604f77df9fe6127bd7fb9db18337b558b1f2587b0a99621c087b0cf3c2873f1"
+FONTE_V1_SHA256 = "7604f77df9fe6127bd7fb9db18337b558b1f2587b0a99621c087b0cf3c2873f1"   # v1, com corte (rodada 3f9c…)
+FONTE_V2_SHA256 = None   # v2, sem corte (Ajuste 18): registrar o sha256 do arquivo antes do `conferir`
+FONTE_REFERENCIA_SHA256 = FONTE_V2_SHA256   # a referência é a da extração padrão
 CAPACIDADES = {
     "triagem_visivel": True, "perfil_candidata": True,
     "taxas_globais": False, "orcamento_global": False,
@@ -190,7 +192,8 @@ def analisar(carga=None):
     capabilities = {**CAPACIDADES, "indice_actionstep": carga.contrato != "janelas_legadas"}
     code = versoes_codigo()
     fingerprint = {"contrato": CONTRATO, "base": bp.BASE_ID,
-                   "fonte_id": carga.fonte["id"], "codigo": code}
+                   "fonte_id": carga.fonte["id"], "extracao": carga.fonte.get("extracao"),
+                   "corte_texto": carga.fonte.get("corte_texto"), "codigo": code}
     run = hashlib.sha256(_json(fingerprint).encode("utf-8")).hexdigest()
     manifest = {**fingerprint, "rodada_id": run, "fonte_sha256": carga.fonte.get("sha256"),
                 "contrato_fonte": carga.contrato, "capacidades": capabilities,
@@ -348,12 +351,17 @@ def inventariar(pipeline=HERE, second=None):
     return pd.DataFrame(rows, columns=["arquivo", "sha256", "registros", "igual_second", "estado", "celulas_com_outputs"])
 
 
-def conferir_fonte(path, referencia=None):
+def conferir_fonte(path, referencia=None, extracao="v2"):
     """Falha fechada em arquivo inválido ou divergência; nunca repara fonte."""
     import pyarrow.parquet as pq
-    source = {"sha256": sha256(path), "tamanho_bytes": Path(path).stat().st_size}
+    source = {"sha256": sha256(path), "tamanho_bytes": Path(path).stat().st_size, "extracao": extracao}
     if referencia is not None and source["sha256"] != referencia:
         raise bp.AnaliseNaoIntegrada("Fonte diferente da referência; validar nova coorte explicitamente.")
+    # Ajuste 18: o schema não separa v1 de v2; o hash conhecido impede ler uma como a outra.
+    if extracao == "v2" and source["sha256"] == FONTE_V1_SHA256:
+        raise bp.AnaliseNaoIntegrada("Este arquivo é a extração v1 (texto cortado); rode com --extracao v1.")
+    if extracao == "v1" and FONTE_V2_SHA256 is not None and source["sha256"] == FONTE_V2_SHA256:
+        raise bp.AnaliseNaoIntegrada("Este arquivo é a extração v2 (sem corte); rode sem --extracao.")
     try:
         metadata = pq.read_metadata(path)
     except (OSError, ValueError) as exc:

@@ -199,6 +199,24 @@ class TestProveniencia(unittest.TestCase):
             with self.assertRaisesRegex(mo.bp.AnaliseNaoIntegrada, "referência"):
                 mo.conferir_fonte(path, "0" * 64)
 
+    def test_v1_lida_como_v2_bloqueia(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "fonte.parquet"
+            path.write_bytes(b"fixture")
+            with patch.object(mo, "FONTE_V1_SHA256", mo.sha256(path)):
+                with self.assertRaisesRegex(mo.bp.AnaliseNaoIntegrada, "extracao v1"):
+                    mo.conferir_fonte(path)
+                with self.assertRaisesRegex(mo.bp.AnaliseNaoIntegrada, "Parquet"):
+                    mo.conferir_fonte(path, extracao="v1")
+
+    def test_v2_lida_como_v1_bloqueia(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "fonte.parquet"
+            path.write_bytes(b"fixture")
+            with patch.object(mo, "FONTE_V2_SHA256", mo.sha256(path)):
+                with self.assertRaisesRegex(mo.bp.AnaliseNaoIntegrada, "sem --extracao"):
+                    mo.conferir_fonte(path, extracao="v1")
+
     def test_saida_canonica_proibida(self):
         a = mo.analisar(state(*recorrentes()))
         with self.assertRaises(ValueError):

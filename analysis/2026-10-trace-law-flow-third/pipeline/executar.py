@@ -14,7 +14,8 @@ import argparse
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="analisar aceita --fonte, --referencia-sha256, --perfil e --saida; painel aceita --rodada.")
+        epilog="analisar aceita --extracao (v2 padrão, v1), --fonte, --referencia-sha256, --perfil e --saida; "
+               "painel aceita --rodada.")
     parser.add_argument("comando", nargs="?", choices=["analisar", "inventariar", "validar", "conferir", "painel"])
     args, rest = parser.parse_known_args(argv)
     if args.comando is None:

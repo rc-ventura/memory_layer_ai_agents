@@ -1,5 +1,5 @@
 """Entrada única, roteamento sem mineração acidental e scripts movidos."""
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 import io
 from pathlib import Path
 import subprocess
@@ -25,6 +25,16 @@ class TestEntradaUnica(unittest.TestCase):
         with patch.object(executar_observada, "main", return_value=0) as run:
             self.assertEqual(executar.main(["analisar", "--fonte", "fixture.parquet", "--perfil", "U_tipo_retorno"]), 0)
         run.assert_called_once_with(["--fonte", "fixture.parquet", "--perfil", "U_tipo_retorno"])
+
+    def test_bloqueio_diz_qual_trava(self):
+        with redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(executar_observada.main(["--fonte", "nao-existe.parquet"]), 1)
+        self.assertIn("BLOQUEADO", output.getvalue())
+        self.assertIn("FileNotFoundError", output.getvalue())
+
+    def test_extracao_desconhecida_recusada(self):
+        with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            executar_observada.main(["--extracao", "v3"])
 
     def test_inventariar_nao_e_analise_real(self):
         with patch.object(executar_observada, "main", return_value=0) as run:

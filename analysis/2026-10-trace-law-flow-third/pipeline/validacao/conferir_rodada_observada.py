@@ -43,6 +43,10 @@ def main():
             raise AssertionError("Conferência falhou: " + name)
 
     save()
+    if mo.FONTE_REFERENCIA_SHA256 is None:
+        report["estado"] = "falhou"
+        save()
+        raise SystemExit("Conferência bloqueada: registre o sha256 da v2 em mineracao_observada.FONTE_V2_SHA256.")
     source = mo.conferir_fonte(bp.TRACE, mo.FONTE_REFERENCIA_SHA256)
     report["fonte"] = source
     # Projeção Arrow direta: não usa leitor/adaptador nem conteúdos de casos em output.
@@ -52,7 +56,8 @@ def main():
     structured = pd.to_numeric(raw.structured_error).eq(1)
     suspect = pd.to_numeric(raw.observation_suspect).eq(1)
     messages = raw.error_message.astype("string").replace("", pd.NA)
-    eligible = structured & messages.notna() & messages.str.len().lt(20000)
+    # Ajuste 18: a fonte padrão é a v2, sem corte — toda mensagem presente é elegível (na v1 era < 20.000).
+    eligible = structured & messages.notna()
     tokens = pd.to_numeric(raw.total_tokens)
     duration = pd.to_numeric(raw.duration_seconds)
     A = bp.carregar_mineracao_observada()

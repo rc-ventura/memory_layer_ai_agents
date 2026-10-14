@@ -198,6 +198,34 @@ class TestTexto(unittest.TestCase):
         with self.assertRaises(ErroContrato):
             adapt(janela(error_code_action="x" * 12001))
 
+    # Ajuste 18: a v2 tem o schema da v1 sem o SUBSTR; quem chama declara `sem_corte`.
+    def test_v2_sem_corte_aceita_texto_longo(self):
+        b = adaptar(pd.DataFrame([janela(error_code_action="x" * 12001, error_message="m" * 30000)]),
+                    fonte_id="fonte-sintetica", sem_corte=True)
+        self.assertEqual(b.steps.code_estado.iloc[0], "sem_corte_sql")
+        self.assertEqual(b.steps.err_msg_estado.iloc[0], "sem_corte_sql")
+        self.assertEqual(len(b.steps.err_msg.iloc[0]), 30000)
+        self.assertEqual(b.fonte["corte_texto"], "sem_corte")
+        self.assertEqual(b.cobertura["texto_integral"], "integral")
+
+    def test_v2_no_teto_antigo_nao_e_corte(self):
+        b = adaptar(pd.DataFrame([janela(error_code_action="x" * 12000)]), fonte_id="fonte-sintetica", sem_corte=True)
+        self.assertEqual(b.steps.code_estado.iloc[0], "sem_corte_sql")
+
+    def test_janela_vizinha_sem_corte_so_na_v2(self):
+        r = janela(next_step_number="2", next_code_action="y" * 13000, next_error_like="0")
+        with self.assertRaises(ErroContrato):
+            adapt(r)
+        b = adaptar(pd.DataFrame([r]), fonte_id="fonte-sintetica", sem_corte=True)
+        self.assertEqual(b.fonte["corte_texto"], "sem_corte")
+
+    def test_v1_continua_marcando_o_corte(self):
+        self.assertEqual(adapt(janela()).fonte["corte_texto"], "substr_v1")
+
+    def test_sem_corte_so_no_contrato_de_janelas(self):
+        with self.assertRaisesRegex(ErroContrato, "janelas"):
+            adaptar(pd.DataFrame([census()]), fonte_id="fonte-sintetica", sem_corte=True)
+
     def test_censo_distingue_corte_e_exato(self):
         for length, state in [(12000, "sem_corte_sql"), (12001, "cortado")]:
             r = census()
