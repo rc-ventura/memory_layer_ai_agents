@@ -165,8 +165,8 @@ def gerar(pasta):
     md = [f"# Painel — base 3, rodada `{pasta.name}`", "",
           f"Fonte: SHA-256 `{m.get('fonte_sha256')}` · contrato `{m.get('contrato_fonte')}` · estado `{m.get('estado')}`.",
           "Gerado por `execucao/painel.py` a partir dos CSVs da rodada (hashes conferidos com o manifesto). "
-          "Só contagens; candidata = recorrente o suficiente para minerar, não memória aprovada; sem taxas "
-          "(a extração não traz os passos sem erro).", "",
+          "Só contagens; candidata = recorrente o suficiente para minerar, não memória aprovada. Sem taxas aqui: "
+          "elas precisam das contagens do pedido A e saem em `taxas/` e no relatório único (`executar.py relatorio`).", "",
           "## Resumo", "", _tabela(resumo, "ld"), "",
           "## Cobertura das regras", "", _tabela(cobertura, "llddd"), "",
           "![cobertura](cobertura.png)", "",

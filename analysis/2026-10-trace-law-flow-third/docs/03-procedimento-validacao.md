@@ -19,7 +19,15 @@ uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py analisa
 # Ajuste 18 (14/10): sem argumento, a fonte é a v2 (sem corte de texto); a rodada 3f9c… (v1) se reproduz com
 #   executar.py analisar --extracao v1
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/resumo_rodada.py # resumo, triagem e cobertura
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py relatorio     # painel + taxas → <rodada>/relatorio/relatorio.md
 ```
+
+O relatório único junta duas lógicas que continuam separadas: o **painel** (`execucao/painel.py`) lê só a rodada; as
+**taxas** (`execucao/taxas.py`, `executar.py taxas`) leem a rodada, a fonte e as contagens do pedido A
+(`data/base_contagens.parquet`) e só saem se a junção conferir — chaves únicas, toda chave da fonte nas contagens, erros
+e suspeitas iguais por chave, tokens dos erros dentro dos do papel, somas iguais às do manifesto. Se não conferir, a
+parte 2 do relatório diz por quê. `<rodada>/taxas/manifesto_taxas.json` guarda os hashes da rodada, da fonte e das
+contagens.
 
 O `<id>` da rodada é o hash de (contrato, base, fonte, código). Mesma fonte e mesmo código dão a mesma pasta — a
 rodada deste relatório é `observada_609c947b15295c84` (14/10, a v2, a primeira depois do Ajuste 18; na v1, `observada_3f9c2806cac9cd4d` de 14/10, depois do Ajuste 17, e antes `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). A extração e o corte do texto entram no hash: a mesma fonte lida como v1 e como v2 dá pastas diferentes. Código ou fonte diferentes dão outra pasta; a antiga não é

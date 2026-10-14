@@ -39,10 +39,14 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero; "todas as
   ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** reescrever B e C no `05`
   (que ainda descreve A como "a enviar") e levar ao tutor (#11).
-- [ ] **#32** **Taxas no relatório (pedido A integrado):** levar `base_contagens.parquet` ao pipeline e ao painel (taxa de
-  erro por papel, mês e chave; custo de execução com e sem erro; concentração de custo) e reescrever no
-  [relatório §7](02-relatorio-achados.md#7--leituras-do-painel) a ressalva "sem denominador". A primeira resposta já
-  está no #26 (fechado): agosto teve mais execuções **e** mais erro por ActionStep.
+- [ ] **#32** **Taxas e relatório único (pedido A integrado)** — **código pronto (14/10), falta rodar na base 3:**
+  `executar.py relatorio` gera o painel, as taxas e `<rodada>/relatorio/relatorio.md` (parte 1, os erros; parte 2, as
+  taxas). As taxas (`execucao/taxas.py`, `execucao/figuras_taxas.py`) só saem se a junção fonte × contagens conferir
+  (7 verificações; se falhar, a parte 2 diz o motivo). Dez gráficos: funil, taxa por mês (com e sem o sinal de harness),
+  papel volume × taxa, custo de execução com × sem erro, concentração (Lorenz), custo mensal por execução, entrada ×
+  saída (#13 no agregado), taxa por unidade e mês, fatia do orçamento de cada papel por destino, prioridade por
+  critério. 182 testes (4 novos em `test_taxas_base3.py`); figuras conferidas com tabelas sintéticas no tamanho da base.
+  **Falta:** rodar na base 3, ler o relatório e reescrever o [relatório](02-relatorio-achados.md) §7 com as taxas.
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
     `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para
