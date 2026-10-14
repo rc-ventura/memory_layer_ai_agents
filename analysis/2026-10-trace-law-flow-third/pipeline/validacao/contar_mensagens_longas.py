@@ -4,8 +4,9 @@ Na v2 (sem corte), as mensagens com mais de 20.000 caracteres são exatamente as
 real (`classify` e `submecanismo` do `base_pipeline`) e é comparada com as mensagens curtas. A regra do retorno-dict casa
 `KeyError: <número>` no FIM da mensagem; a do retorno-string, `string indices must be integers` em qualquer posição.
 O que o smolagents escreve é `Could not index <valor> with '<chave>': <Tipo>: <texto>`: o valor entra por inteiro, então a
-mensagem é longa quando o valor indexado é longo. Aqui se vê QUE valor é (começa com `{`, `[` ou texto) e COMO a mensagem
-termina — só categorias e contagens, nenhum texto de caso. Uso, da raiz:
+mensagem é longa quando o valor indexado é longo. Aqui se vê como o valor começa (`{`, `[` ou texto) e COMO a mensagem
+termina — só categorias e contagens, nenhum texto de caso. Resultado de 14/10 (roadmap #34, fechado): 848 das 854 longas
+com "Could not index" começam com `{`, e 849 terminam no erro de string — JSON chegando como texto, não dict. Uso, da raiz:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_mensagens_longas.py [--fonte <v2.parquet>]
 """
 import argparse
@@ -22,7 +23,8 @@ import base_pipeline as bp
 
 CORTE_V1 = 20_000
 FIM = [  # (rótulo, regex no fim da mensagem) — a primeira que casa
-    ("string indices must be integers", re.compile(r"string indices must be integers\s*$")),
+    # Python 3.11+: "string indices must be integers, not 'str'" — o sufixo entra no fim
+    ("string indices must be integers", re.compile(r"string indices must be integers(, not '\w+')?\s*$")),
     ("KeyError: <número>", re.compile(r"KeyError: \d+\s*$")),
     ("KeyError: '<campo>'", re.compile(r"KeyError: '[^']*'\s*$")),
     ("list indices must be integers", re.compile(r"list indices must be integers[^\n]*$")),
@@ -42,7 +44,10 @@ def valor(m):
     v = _VALOR.search(m)
     if not v:
         return "sem 'Could not index'"
-    return {"{": "dict ({)", "[": "lista ([)"}.get(v.group(1), "texto (outro)")
+    # O smolagents imprime str(valor): um dict e um JSON em texto começam os dois com "{". Quem decide se era string é o
+    # erro do Python ("string indices must be integers" só sai de str), não o primeiro caractere.
+    return {"{": "começa com { (dict ou JSON em texto)", "[": "começa com [ (lista ou JSON em texto)"}.get(
+        v.group(1), "texto (outro)")
 
 
 def main(argv=None):

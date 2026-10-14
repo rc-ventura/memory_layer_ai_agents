@@ -39,18 +39,6 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero; "todas as
   ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** reescrever B e C no `05`
   (que ainda descreve A como "a enviar") e levar ao tutor (#11).
-- [ ] **#34** **Por que o retorno-dict não voltou na v2:** na base 1, o corte apagava sobretudo o retorno-dict (81 de 96
-  só se reconhecem pelo `KeyError` do fim); na base 3, das 1.009 mensagens que a v1 cortava, ~1.002 caíram no
-  retorno-string (`U_tipo_retorno`) e o `U_contrato_dict` ficou em 2. Conferir pela regra e por contagem (sem ler caso
-  primeiro): quantas das 1.009 têm `KeyError` no fim, e qual sinal da mensagem decide o retorno-string antes.
-  **O que a regra diz** (`submecanismo`, ramo "Could not index"): `string indices must be integers` em qualquer posição
-  → retorno-string; senão, `KeyError: <número>` no **fim** → retorno-dict; senão, `KeyError: '<campo>'` → campo
-  inexistente; senão, causa sem regra. O smolagents escreve `Could not index <valor> with '<chave>': <Tipo>: <texto>`,
-  com o valor inteiro: a mensagem é longa quando o valor indexado é longo. Na base 1 o valor longo era o envelope
-  `{'result': [...]}` da `get_available_documents` indexado com `0` (o retorno-dict). **Hipótese a contar:** na base 3 o
-  valor longo é texto (o retorno de outra ferramenta, de outro papel), e o fim é `string indices must be integers`.
-  **Como:** `validacao/contar_mensagens_longas.py` — as mensagens > 20.000 (as que a v1 cortava) × as curtas: o que é o
-  valor (`{`, `[` ou texto), como a mensagem termina, o mecanismo pela regra real e os papéis; só contagens.
 - [ ] **#32** **Taxas no relatório (pedido A integrado):** levar `base_contagens.parquet` ao pipeline e ao painel (taxa de
   erro por papel, mês e chave; custo de execução com e sem erro; concentração de custo) e reescrever no
   [relatório §7](02-relatorio-achados.md#7--leituras-do-painel) a ressalva "sem denominador". A primeira resposta já
@@ -108,6 +96,18 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#34 · Por que o retorno-dict não voltou na v2** (14/10): **não estava escondido; quase não existe na base 3.**
+  `validacao/contar_mensagens_longas.py` passou pela regra real as 1.009 mensagens que a v1 cortava (> 20.000
+  caracteres; mediana 139 mil, máx. 833.507): 847 são do ContestacaoCivel; 854 são "Could not index", e 848 delas
+  indexam um valor que começa com `{`; pela regra, 1.002 vão para o retorno-string (849 por `string indices must be
+  integers`, 151 por objeto sem o atributo, 2 por formato inválido), 3 para campo inexistente, 3 sem regra, 1 código
+  mal escrito. Como o Python só levanta `string indices must be integers` ao indexar uma string, o valor que começa com
+  `{` é **JSON chegando como texto** — a lição do retorno-string, classificação certa. A regra do dict (`KeyError:
+  <número>` no fim) não perde nada: na base inteira esse fim aparece 2 vezes, nenhuma mensagem o tem fora do fim, e
+  nenhuma traz os dois padrões juntos. O retorno-dict da base 1 (o envelope `{'result': [...]}` da
+  `get_available_documents` indexado com `0`) é de uma ferramenta que a base 3 quase não exercita. (Na primeira
+  versão do script, a regex do fim exigia a frase exata e não via o sufixo `, not 'str'` do Python 3.11+: corrigida.)
 
 - [x] **#14 · Contrato da fonte (e0): o corte de texto** (14/10) — perdeu o objeto com a v2: o
   `inspecionar_parquet.py` mostra que nenhuma coluna de texto da v2 tem valores no corte da v1 além de 1 ou 2

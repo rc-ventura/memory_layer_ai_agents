@@ -130,9 +130,11 @@ pendentes num caminho próprio).
   mais em número absoluto.
 - **Reincidência dentro da execução:** a explicação solta no bloco de código tem 190 erros em 76 execuções (2,5 por
   execução); nas demais candidatas a razão fica entre 1,0 e 1,6 erro por execução.
-- **O retorno-dict continua com 2 erros, mesmo com a mensagem inteira.** Na base 1, o corte apagava sobretudo ele; na
-  base 3, das 1.055 mensagens e códigos que voltaram da pendência, 1.002 caíram no retorno-string. Por que, está em
-  aberto ([roadmap](04-roadmap.md) #34).
+- **O retorno-dict continua com 2 erros, mesmo com a mensagem inteira — e não estava escondido.** Na base 1, o corte
+  apagava sobretudo ele (o envelope `{'result': [...]}` indexado com `0`). Na base 3, as 1.009 mensagens que a v1
+  cortava são quase todas do ContestacaoCivel (847) e indexam um JSON que chega **como texto**: o Python responde
+  `string indices must be integers`, e a regra as põe no retorno-string (1.002), corretamente. O fim `KeyError:
+  <número>` do retorno-dict aparece 2 vezes na base inteira ([roadmap](04-roadmap.md) #34, `contar_mensagens_longas.py`).
 - **O estado perdido e o nome inventado ficaram menores e mais limpos** (878 → 544 e 477 → 351 erros; 19,8 → 10,1 e
   8,9 → 6,0 mi de tokens): os 460 erros do `try/except NameError` saíram deles (Ajuste 17). Os dois continuam
   passando na régua; o texto inteiro não os mudou.
