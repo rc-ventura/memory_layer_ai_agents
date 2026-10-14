@@ -23,7 +23,7 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 | **4** · Relatório e pedido de dados | **Feita** | `01` a `05` em `docs/` |
 | **5** · Kit e auditoria independente | **Não feita** | → #17 |
 | **6** · Painel | **Feita e rodada** | `executar.py painel`, 7 gráficos de leitura; leituras no relatório (#10), refeitas em 14/10 para a rodada `3f9c…`. A figura de destinos foi corrigida e o painel gerado de novo (#27) |
-| **7** · Quando a v2 e a agregada chegarem | **Chegaram e foram conferidas** (#26) | A v2 é a v1 sem o corte de texto; as contagens são o pedido A atendido, com a junção exata. **Pendente:** a rodada na v2 (#31), as taxas no relatório (#32) e B e C reescritos com o que sobrar (#2) |
+| **7** · Quando a v2 e a agregada chegarem | **Chegaram, conferidas e a v2 rodada** (#26, #31) | A v2 é a v1 sem o corte de texto; as contagens são o pedido A atendido, com a junção exata; rodada `609c…`: 97,5% classificados, 749 pendentes. **Pendente:** o relatório na rodada nova (#33), as taxas (#32) e B e C reescritos (#2) |
 | **Documentos gerais** (glossário, livro-razão, `analysis/README`, `kit.md`) | **Não feita** | → #18 |
 | **Teste de equivalência** `triagem_observada` × `bp.triagem` na suíte | **Só como script** | → #19 |
 
@@ -31,20 +31,22 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 
 - [ ] **#2** **Fechar os pedidos de dados** ([`05`](05-pedido-queries.md)): **A** (denominadores) **chegou e foi conferido**
   (#26: junção exata chave a chave) — sai do pedido; falta integrá-lo ao pipeline (#32). **B** (complemento dos
-  pendentes): a v2 trouxe o texto inteiro, então a parte do corte (1.009 mensagens, o código dos 215 timeouts e dos 46
-  de linha rejeitada) deve sair — confirmar com a rodada na v2 (#31); devem ficar os 14 de histórico, os 5 de
-  numeração ambígua e os nomes das ferramentas declaradas no prompt. **C** (ajustes na extração): o agente na partição
+  pendentes): **a parte do corte saiu** — na rodada da v2 (#31) os 1.009 de mensagem cortada e os 46 de linha
+  rejeitada viraram unidade ou resíduo; ficam os 15 de histórico, os 5 de numeração ambígua e, para os 215 timeouts,
+  os nomes das ferramentas declaradas no prompt (o código inteiro já veio). Os 514 do primeiro passo dependem do nome
+  do modelo (#29). **C** (ajustes na extração): o agente na partição
   **sai** (uma execução tem um agente só); ficam "Error calling tool", o nome do modelo e o hash do system prompt — mais
   importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero; "todas as
-  ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** #31, reescrever B e C no `05`
+  ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** reescrever B e C no `05`
   (que ainda descreve A como "a enviar") e levar ao tutor (#11).
-- [ ] **#31** **Rodada na v2:** `executar.py analisar` (desde o Ajuste 18 a v2 é a fonte padrão; a primeira tentativa,
-  de antes do ajuste, parou em "BLOQUEADO" porque a v2 era lida com o teto da v1) e `resumo_rodada.py`; depois,
-  `executar.py conferir` (o hash da v2 já está registrado).
-  A v2 tem as mesmas linhas, `error_type` e tokens da v1, então as contagens de erro devem ficar iguais; o que muda são
-  os pendentes — dos 1.803 da rodada `3f9c…`, 1.009 eram mensagem cortada. Conferir quantos caem, para onde vão
-  (unidade ou resíduo) e se o retorno-dict reaparece (na v1, 2 erros por causa do corte). Uma pasta de rodada nova
-  (a fonte mudou); a `3f9c…` não é sobrescrita.
+- [ ] **#33** **Migrar o relatório para a rodada `observada_609c947b15295c84`** (a da v2, #31): gerar o painel dela
+  (`executar.py painel --rodada pipeline/resultados/observada_609c947b15295c84`), refazer §1–7.7 do
+  [`02`](02-relatorio-achados.md) com os números novos e marcar no `03` a v2 como fonte. Tudo de uma vez — sem deixar
+  parte do relatório numa rodada e parte na outra.
+- [ ] **#34** **Por que o retorno-dict não voltou na v2:** na base 1, o corte apagava sobretudo o retorno-dict (81 de 96
+  só se reconhecem pelo `KeyError` do fim); na base 3, das 1.009 mensagens que a v1 cortava, ~1.002 caíram no
+  retorno-string (`U_tipo_retorno`) e o `U_contrato_dict` ficou em 2. Conferir pela regra e por contagem (sem ler caso
+  primeiro): quantas das 1.009 têm `KeyError` no fim, e qual sinal da mensagem decide o retorno-string antes.
 - [ ] **#32** **Taxas no relatório (pedido A integrado):** levar `base_contagens.parquet` ao pipeline e ao painel (taxa de
   erro por papel, mês e chave; custo de execução com e sem erro; concentração de custo) e reescrever no
   [relatório §7](02-relatorio-achados.md#7--leituras-do-painel) a ressalva "sem denominador". A primeira resposta já
@@ -52,7 +54,7 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
     `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para
-    as taxas e para os 6% pendentes. Depende de #2, #31 e #32.
+    as taxas e para os 2,5% pendentes. Depende de #2, #32 e #33.
 - [ ] **#28** **Registro de monitoramento do `try/except NameError`** em [`registros/monitoramento.json`](../../registros/monitoramento.json):
   linha de base (base 3: 5.764, com 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura
   depois de o prompt ser corrigido, ou num papel novo) e ação. O gatilho em % de execuções espera o denominador (#2).
@@ -105,6 +107,26 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#31 · Rodada na v2** (14/10): `observada_609c947b15295c84`, a primeira depois do Ajuste 18, **conferida (46
+  verificações**, 10 candidatas, 10 perfis, fonte inalterada). Comparada com a `3f9c…` (v1):
+
+  | Medida | `3f9c…` (v1) | `609c…` (v2) |
+  |---|---:|---:|
+  | Erros estruturados / suspeitas / tokens | 30.141 / 1.280 / 592,9 mi | iguais |
+  | Mensagem limitada | 1.009 | **0** |
+  | Observáveis | 28.338 (94,0%) | **29.392 (97,5%)** |
+  | Pendentes | 1.803 (6,0%) | **749 (2,5%)** |
+  | Resíduo (causa + sintoma) | 538 (1,8%) | 565 (1,9%) |
+  | Candidatas | 10 | 10 (as mesmas) |
+
+  **Para onde foram os 1.055 que saíram da pendência** (1.009 de mensagem cortada + 46 de linha rejeitada; o histórico
+  insuficiente foi de 14 para 15): retorno-string +1.002 (4.317 → 5.319 erros, 169,9 → 207,0 mi), causa não
+  identificada +26, texto em literal +11, explicação solta +10, campo inexistente +3, retorno colado +1, sintoma não
+  reconhecido +1. Ficam pendentes 514 (primeiro passo sem a assinatura), 215 (timeout: a regra pede o prompt), 15
+  (histórico) e 5 (numeração). As demais unidades não mudam. **O retorno-dict não voltou** (2 erros) → #34. As 10
+  candidatas somam 17.308 erros e 387,1 mi de tokens (65% dos tokens dos erros). As somas fecham: 29.392 + 749 =
+  30.141; tokens 587,7 + 5,1 = 592,8 mi (arredondamento).
 
 - [x] **#26 · Os dois parquets novos conferidos** (14/10), com `validacao/inspecionar_parquet.py` (schema e agregados)
   e `validacao/conferir_contagens.py` (junção), sem nenhum valor de célula:

@@ -789,6 +789,10 @@ engolia a mensagem e não dizia qual trava tinha disparado.
 - **O que se espera na v2** (a conferir na rodada, `b3 #31`): mesmas contagens de erro (30.141) e de tokens; os 1.009
   pendentes por mensagem limitada passam a ter a mensagem inteira. Os timeouts continuam pendentes enquanto a regra
   pedir o prompt declarado (o código inteiro não basta sozinho).
+- **Rodada real (14/10):** `observada_609c947b15295c84`, conferida (46 verificações). Erros, suspeitas e tokens iguais
+  à `3f9c…`; mensagem limitada 1.009 → 0; pendentes 1.803 → **749** (2,5%); observáveis 28.338 → 29.392. Dos 1.055
+  que saíram da pendência, 1.002 foram para o retorno-string; o retorno-dict ficou em 2 (a conferir, `b3 #34`).
+  Detalhe em `b3 #31`.
 - **Replicar no ambiente da base 3:** (1) `git pull`; (2) `executar.py analisar` — rodada nova; a `3f9c…` fica intacta;
   (3) `resumo_rodada.py`; (4) `executar.py conferir`; (5) `painel`.
 
