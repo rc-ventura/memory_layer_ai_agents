@@ -6,8 +6,8 @@
 > item feito é marcado `[x]` e desce para "Fechado" com a prova, sem mudar de número. **Os números deste arquivo são da
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
-Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_b4fcc7711a9ec8a6` (a `0d23103…` de 08/10, com outro id) e
-[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 13/10/2026
+Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_3f9c2806cac9cd4d` (14/10, depois do Ajuste 17; antes, `b4fcc77…` e `0d23103…`) e
+[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 14/10/2026
 (branch `2026-10-09-base3-painel-historico`).
 
 ## O plano de adaptação: feito e pendente
@@ -46,9 +46,9 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   mensagem): 5.764 dos 7.178 erros de nome (80%), 91% dos 5.818; **460 estão em estado perdido (334) e nome inventado
   (126)** só pela posição; 95 já em julho. Base 2 (parte H): 105 de 129 com a assinatura. **Ajuste 17 aplicado
   (13/10):** a assinatura decide antes da posição; unidade `U_verificacao_try_nameerror`, destino **harness** nas bases 2
-  e 3; base 1 sem mudança; 169 testes. **Falta:** (a) na máquina 2, replicar no pipeline da base 2
-  (`replicar_ajuste17.py --aplicar`), `validar`, `analisar` (rodada nova), `conferir` e `painel`, e atualizar os
-  números do relatório; (b) registro de monitoramento; (c) os 514 do primeiro passo sem a assinatura
+  e 3; base 1 sem mudança; 169 testes. **Rodada nova (14/10):** `observada_3f9c2806cac9cd4d`, conferida (46 verificações; a conferência passou a separar
+  sinal de harness das candidatas), 28.338 observáveis e 1.803 pendentes, como a simulação; relatório §1–§5 atualizado.
+  **Falta:** (a) ler as figuras do painel da rodada nova e refazer §7.1–7.7; (b) registro de monitoramento; (c) os 514 do primeiro passo sem a assinatura
   (`RoteadorCivel`, `RespostaBacen`); (d) o nome do modelo e o hash do system prompt no pedido A; (e) aviso a quem cuida
   do harness (`transversal #7`); (f) registro de monitoramento; (g) se o parágrafo da instrução já estava no prompt de
   julho (base 2).

@@ -20,7 +20,7 @@ uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/resumo_rod
 ```
 
 O `<id>` da rodada é o hash de (contrato, base, fonte, código). Mesma fonte e mesmo código dão a mesma pasta — a
-rodada deste relatório é `observada_b4fcc7711a9ec8a6` (a `observada_0d23103afd4fc0f4` de 08/10 tinha as mesmas contagens; o id mudou porque o código mudou). Código ou fonte diferentes dão outra pasta; a antiga não é
+rodada deste relatório é `observada_3f9c2806cac9cd4d` (14/10, a primeira depois do Ajuste 17; antes, `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). Código ou fonte diferentes dão outra pasta; a antiga não é
 sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar --perfil <unidade>`.
 
 | Arquivo da rodada | O que tem |
@@ -39,9 +39,9 @@ com o manifesto.
 
 ## 2 · O que foi conferido
 
-| Conferência | Onde | Resultado (08/10) |
+| Conferência | Onde | Resultado (14/10, rodada depois do Ajuste 17) |
 |---|---|---|
-| Suíte de testes (`analysis/tests/`, 7 arquivos) | as duas máquinas | **162 testes, todos passam** |
+| Suíte de testes (`analysis/tests/`, 8 arquivos) | as duas máquinas | **169 testes, todos passam** |
 | Regras e catálogos comparados por estrutura de código com a base 2 (`classify`, `submecanismo`, `SUB2UNI`, `UNI`, `triagem`…) | máquina 2, `executar.py validar` | **10 de 10 iguais** |
 | Conferência da rodada contra o parquet lido direto (contagens, tokens, duração, conservação de erros e tokens entre tabelas, genealogia, perfis, hashes, fonte inalterada) | máquina 2, `executar.py conferir` | **46 verificações, todas passam** |
 | Fonte | máquina 2 | SHA-256 `7604f77d…c2873f1`, igual à referência no código (`FONTE_REFERENCIA_SHA256`) |
@@ -113,7 +113,7 @@ por `cod_idef_exeo` na tabela de origem, que não está disponível hoje.
 
 ## 6 · Antes de apresentar
 
-- [ ] Os números do relatório saem da rodada `observada_b4fcc7711a9ec8a6` (a pasta existe e o manifesto está como
+- [ ] Os números do relatório saem da rodada `observada_3f9c2806cac9cd4d` (a pasta existe e o manifesto está como
       `concluida_tecnicamente_sem_aprovacao_semantica`).
 - [ ] "Candidata" é dita como "recorrente o suficiente para minerar", não como memória aprovada.
 - [ ] Nenhuma taxa é citada (limitação 2).
