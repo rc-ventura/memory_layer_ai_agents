@@ -39,7 +39,10 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   atualizar o `05`, levar ao tutor (#11) e, quando A chegar, conferir a junção (soma de erros e suspeitas = 30.141 e
   1.280) e integrar ao pipeline.
 - [ ] **#26** **Os dois parquets novos (recebidos em 14/10):** conferir só o schema (nomes de colunas, sem dado) de cada
-  um — qual base, qual período, se já são a v2 ou o pedido A — e decidir o que sai de B e C → #2.
+  um — qual base, qual período, se já são a v2 ou o pedido A — e decidir o que sai de B e C → #2. **Como (14/10):** os
+  parquets só existem na máquina 2; o script `pipeline/validacao/inspecionar_parquet.py <parquet>` imprime só
+  schema e agregados (nulos, min/max/soma, maior comprimento de texto e quantos valem exatamente 20.000), sem
+  nenhum valor de célula. Rafael roda um por vez lá e fotografa; a leitura da foto decide o que é v2 e o que é A.
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
     `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para
