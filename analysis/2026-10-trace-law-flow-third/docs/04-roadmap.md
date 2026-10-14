@@ -39,6 +39,13 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero; "todas as
   ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** reescrever B e C no `05`
   (que ainda descreve A como "a enviar") e levar ao tutor (#11).
+- [ ] **#35** **O que são os valores longos que começam com `{` e dão erro de string** (848 das 854 "Could not index"
+  longas da base 3, 847 do ContestacaoCivel). **Hipótese:** o retorno de uma ferramenta chega como texto JSON e o
+  agente o indexa como dict — a lição do retorno-string. **O que está provado** (#34): é texto, não dict (só texto dá o
+  erro de string). **O que falta:** (a) a aspa depois do `{` — `{"` = JSON, `{'` = repr Python em texto; (b) a função que
+  produziu a variável; (c) se o passo seguinte desserializa (`json.loads`/`literal_eval`) e se dá certo. Na base 3:
+  `contar_mensagens_longas.py` (já mede a, b e c com a v2). Na base 2, que tem o ContestacaoCivel com o trace inteiro:
+  `indexar_string_trace.py --trace <base 2>`. A base 1 não tem o caso (0 valores `{` com erro de string).
 - [ ] **#32** **Taxas no relatório (pedido A integrado):** levar `base_contagens.parquet` ao pipeline e ao painel (taxa de
   erro por papel, mês e chave; custo de execução com e sem erro; concentração de custo) e reescrever no
   [relatório §7](02-relatorio-achados.md#7--leituras-do-painel) a ressalva "sem denominador". A primeira resposta já
@@ -97,18 +104,18 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
-- [x] **#34 · Por que o retorno-dict não voltou na v2** (14/10): **não estava escondido; quase não existe na base 3.**
-  `validacao/contar_mensagens_longas.py` passou pela regra real as 1.009 mensagens que a v1 cortava (> 20.000
-  caracteres; mediana 139 mil, máx. 833.507): 847 são do ContestacaoCivel; 854 são "Could not index", e 848 delas
-  indexam um valor que começa com `{`; pela regra, 1.002 vão para o retorno-string (849 por `string indices must be
-  integers`, 151 por objeto sem o atributo, 2 por formato inválido), 3 para campo inexistente, 3 sem regra, 1 código
-  mal escrito. Como o Python só levanta `string indices must be integers` ao indexar uma string, o valor que começa com
-  `{` é **JSON chegando como texto** — a lição do retorno-string, classificação certa. A regra do dict (`KeyError:
-  <número>` no fim) não perde nada: na base inteira esse fim aparece 2 vezes, nenhuma mensagem o tem fora do fim, e
-  nenhuma traz os dois padrões juntos. O retorno-dict da base 1 (o envelope `{'result': [...]}` da
-  `get_available_documents` indexado com `0`) é de uma ferramenta que a base 3 quase não exercita. (Na primeira
-  versão do script, a regex do fim exigia a frase exata e não via o sufixo `, not 'str'` do Python 3.11+: corrigida.)
-
+- [x] **#34 · Por que o retorno-dict não voltou na v2** (14/10): **não estava escondido pelo corte.** Evidência:
+  (1) a regra do dict casa `KeyError: <número>` no fim da mensagem; nas 1.009 mensagens que a v1 cortava (> 20.000
+  caracteres, contadas na v2 por `validacao/contar_mensagens_longas.py`), esse fim aparece **0** vezes, nenhuma o tem
+  fora do fim e nenhuma traz os dois padrões juntos; na base inteira, 2 vezes. (2) Pela regra real, 1.002 das 1.009
+  vão para o retorno-string (849 por `string indices must be integers`, 151 por objeto sem o atributo, 2 por formato
+  inválido), 3 para campo inexistente, 3 sem regra, 1 código mal escrito; 847 são do ContestacaoCivel. (3) No sandbox
+  (`validacao/testar_sandbox_indexar.py`, smolagents 1.26.0), um dict indexado nunca dá o erro de string — só texto
+  dá; um dict indexado com `0` dá `KeyError: 0`. (4) Na base 1 (trace completo, `validacao/indexar_string_trace.py`):
+  88 retorno-dict (81 longos, valor `{'`, a `get_available_documents` onde a origem foi lida) e 37 erros de string —
+  valor `[` (9) ou texto (28), **nenhum começando com `{`**; 13 dos 37 desserializam no passo seguinte. **O que não está
+  provado:** que os 848 valores longos da base 3 que começam com `{` sejam JSON → #35. (A primeira versão do relatório
+  e deste item afirmou "JSON chegando como texto" sem essa evidência; corrigido.)
 - [x] **#14 · Contrato da fonte (e0): o corte de texto** (14/10) — perdeu o objeto com a v2: o
   `inspecionar_parquet.py` mostra que nenhuma coluna de texto da v2 tem valores no corte da v1 além de 1 ou 2
   coincidências, e a maior mensagem tem 833.507 caracteres; as 1.009 mensagens que a v1 cortava estão inteiras

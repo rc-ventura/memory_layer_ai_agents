@@ -80,7 +80,7 @@ dependem do fim da mensagem (retorno-dict).
 
 | # | Limitação | Evidência | Efeito na base 3 |
 |---|---|---|---|
-| 1 | A mensagem de erro é cortada em 20.000 caracteres | base 1: 82 de 498 erros passam do corte; 81 dos 96 do retorno-dict perdem a causa (o `KeyError` fica no fim) | 1.009 erros pendentes por mensagem limitada; retorno-dict com 2 erros observáveis **Resolvida pela v2** (Ajuste 18, 14/10): 0 mensagens limitadas; 1.002 dos 1.055 que saíram da pendência foram para o retorno-string (JSON chegando como texto, quase todo do ContestacaoCivel) e o retorno-dict ficou em 2: na base 3 ele é raro, não estava escondido (roadmap #34) |
+| 1 | A mensagem de erro é cortada em 20.000 caracteres | base 1: 82 de 498 erros passam do corte; 81 dos 96 do retorno-dict perdem a causa (o `KeyError` fica no fim) | 1.009 erros pendentes por mensagem limitada; retorno-dict com 2 erros observáveis **Resolvida pela v2** (Ajuste 18, 14/10): 0 mensagens limitadas; 1.002 dos 1.055 que saíram da pendência foram para o retorno-string (valor indexado é texto, quase todo do ContestacaoCivel; se é JSON, roadmap #35) e o retorno-dict ficou em 2: na base 3 ele é raro, não estava escondido (roadmap #34) |
 | 2 | Só há passos com erro — sem denominador | a query filtra antes de exportar | nenhuma taxa por passo, execução, papel ou versão. **Atendida pelo pedido A** (`base_contagens.parquet`, 14/10; junção exata, roadmap #26); as taxas ainda não estão no pipeline (#32) |
 | 3 | A regex de suspeita não reconhece "Error calling tool" | base 1: pega 0 das 119 falhas silenciosas | falhas silenciosas não medidas; as 1.280 suspeitas ficam fora da taxonomia |
 | 4 | Sem system prompt, modelo e resposta final | colunas ausentes na query | protocolo do harness só por contagem; sucesso por conteúdo indisponível; 215 timeouts pendentes |
@@ -120,4 +120,4 @@ por `cod_idef_exeo` na tabela de origem, que não está disponível hoje.
 - [ ] "Candidata" é dita como "recorrente o suficiente para minerar", não como memória aprovada.
 - [ ] Nenhuma taxa é citada além das que saem das contagens do pedido A conferidas no roadmap #26 (a global e a por mês); as por unidade e por papel esperam o #32.
 - [ ] Os pendentes são apresentados como limite da extração, não como erros sem explicação.
-- [ ] O retorno-dict (2 erros) é dito como raro na base 3, não como escondido pelo corte: as mensagens que a v1 cortava eram JSON chegando como texto, no retorno-string (roadmap #34).
+- [ ] O retorno-dict (2 erros) é dito como raro na base 3, não como escondido pelo corte (roadmap #34); que as mensagens longas sejam JSON em texto é hipótese até o #35.

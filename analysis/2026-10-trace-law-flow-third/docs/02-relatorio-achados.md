@@ -131,10 +131,11 @@ pendentes num caminho próprio).
 - **Reincidência dentro da execução:** a explicação solta no bloco de código tem 190 erros em 76 execuções (2,5 por
   execução); nas demais candidatas a razão fica entre 1,0 e 1,6 erro por execução.
 - **O retorno-dict continua com 2 erros, mesmo com a mensagem inteira — e não estava escondido.** Na base 1, o corte
-  apagava sobretudo ele (o envelope `{'result': [...]}` indexado com `0`). Na base 3, as 1.009 mensagens que a v1
-  cortava são quase todas do ContestacaoCivel (847) e indexam um JSON que chega **como texto**: o Python responde
-  `string indices must be integers`, e a regra as põe no retorno-string (1.002), corretamente. O fim `KeyError:
-  <número>` do retorno-dict aparece 2 vezes na base inteira ([roadmap](04-roadmap.md) #34, `contar_mensagens_longas.py`).
+  apagava sobretudo ele (o envelope `{'result': [...]}` indexado com `0`, que termina em `KeyError: 0`). Nas 1.009
+  mensagens que a v1 cortava, esse fim aparece 0 vezes (2 na base inteira). Elas são quase todas do ContestacaoCivel
+  (847) e terminam em `string indices must be integers`, que, no sandbox, só sai quando o valor indexado é **texto** —
+  daí o retorno-string (1.002). Se esse texto é JSON, e de que ferramenta, ainda não está medido
+  ([roadmap](04-roadmap.md) #34 e #35).
 - **O estado perdido e o nome inventado ficaram menores e mais limpos** (878 → 544 e 477 → 351 erros; 19,8 → 10,1 e
   8,9 → 6,0 mi de tokens): os 460 erros do `try/except NameError` saíram deles (Ajuste 17). Os dois continuam
   passando na régua; o texto inteiro não os mudou.
