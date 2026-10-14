@@ -4,7 +4,7 @@
 > **Numeração:** os números são desta pasta e estáveis; de fora, cite como `b2 #N`. Índice do que existe da base 2:
 > [README](../README.md).
 
-**Atualizado:** 09/10/2026 · **Branch:** `2026-10-09-roadmaps-schema`. Até 06/10/2026 estes itens eram o §4.14, o §4.11 e
+**Atualizado:** 13/10/2026 · **Branch:** `2026-10-09-base3-painel-historico`. Até 06/10/2026 estes itens eram o §4.14, o §4.11 e
 linhas do §2 do plano atual (`git show e0335aa:analysis/plano-atual.md`).
 
 ## Backlog
@@ -26,7 +26,19 @@ a partir destes itens.
   `resultados/mineracao/U_nome_inventado/`). **O que fazer:** `/mineracao-candidata U_nome_inventado` no ambiente da
   base 2, com as regras da base 1 sem mudança; conferir se o ContestacaoCivel já usava o mesmo modelo antes de agosto
   sem o erro (`drill_down.py protocolo` [8]). **Tipo:** medição; pode virar Ajuste (separar o mês na triagem, ou
-  dividir a unidade).
+  dividir a unidade). **13/10, ligação com a base 3** ([`b3 #1`](../../2026-10-trace-law-flow-third/docs/04-roadmap.md)): lá,
+  5.818 erros de nome não definido são o primeiro ActionStep do papel, um por execução, 98% em agosto, 92% no
+  ContestacaoCivel. Antes da mineração, rodar `scripts/contar_primeiro_passo_nome_base2.py --trace <trace da base 2>`
+  (só contagens): quantos dos 101 são o primeiro passo, o denominador do papel no mês, nomes, modelo, o nome na tarefa
+  e no system prompt, usado antes de ser definido. **Rodado em 13/10** (fotos IMG_5709–5719; [relatório da base 3 §7.8](../../2026-10-trace-law-flow-third/docs/02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310)
+  e [§7.9](../../2026-10-trace-law-flow-third/docs/02-relatorio-achados.md#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310)):
+  dos 118, **103 são o primeiro ActionStep** (97 `ContestacaoCivel`, 6 `RoteadorCivel`) e **15 são nome inventado de
+  fato**; 11 de estado perdido à parte. 97 das 149 execuções do `ContestacaoCivel` em agosto (65%) começam com o erro.
+  **Causa (3 casos lidos):** o prompt manda verificar a existência da variável com `try/except NameError` e o
+  interpretador do sandbox não captura esse erro; na amostra, só a versão nova do trecho do prompt deu o erro (97 de 97, contra 0 de
+  127; a base 3 tem 95 erros com a assinatura em julho); o modelo não explica no `ContestacaoCivel` (`gpt-5.2` teve 0 de 72 em julho); no `RoteadorCivel` os 6 vêm do
+  `gpt-5.6-terra`. A mineração do nome inventado passa a ser sobre os 15; os 103 vão para o grupo próprio (`b3 #1`).
+  Parte H: 105 de 129 erros de nome com a assinatura `try/except NameError` (4 dos 15 nomes inventados, 4 dos 11 estados perdidos): o nome inventado de fato da base 2 tem **11** erros. **Ajuste 17 (13/10):** replicar no pipeline desta base com `scripts/replicar_ajuste17.py --aplicar`. **Falta aqui:** se o parágrafo da instrução já estava no prompt de julho (contagem por versão e mês).
 - [ ] **#4 · As minerações de silenciosas e de protocolo, no método novo de leitura.** Comparar com o publicado (`14`,
   `11`, as 8 candidatas) **aqui, fora do kit**.
 

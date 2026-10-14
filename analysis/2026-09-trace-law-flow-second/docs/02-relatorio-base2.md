@@ -26,6 +26,11 @@ o que sustenta os números é o `audit_recompute9`.
 - **A maior candidata é `U_nome_inventado`: 118 erros em 112 execuções** (na base 1, 5). Mas **101 deles são um papel
   (ContestacaoCivel), um mês (ago/2026) e um modelo**: cara de incidente, não de lição. Os 17 espalhados sustentam a
   candidatura. Ainda não foi minerada (`b2 #3`). *(Etapa 10d)*
+  **Atualização 13/10:** com o trace inteiro, 103 dos 118 são o **primeiro ActionStep do papel** e 15 são nome
+  inventado de fato. Os 103 não são nomes inventados: o system prompt do ContestacaoCivel manda verificar a existência da
+  variável com `try/except NameError`, e o interpretador do sandbox não captura esse erro (97 no ContestacaoCivel, 65% das
+  execuções do papel em agosto, todas com a versão nova do trecho do prompt; na amostra, 0 de 127 com a antiga — a base 3 tem 95 erros com a assinatura em julho). O mesmo grupo
+  aparece na base 3 (5.818 erros) — [base 3 §7.8 e §7.9](../../2026-10-trace-law-flow-third/docs/02-relatorio-achados.md#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310).
 - **O protocolo do harness é incidente de plataforma, causado por troca de modelo:** 69 erros, 61 em ago/2026; no
   RoteadorCivel, o modelo antigo teve 0 erros em 381 steps de agosto e o novo, 54 em 478. *(`11` §2)*
 - **~87% das falhas de ferramenta são silenciosas** (134 contra 20 com exceção). **Nenhum sucesso falso confirmado:**

@@ -108,6 +108,7 @@ CURTO_MEM = {
     "U_next_gerador": "next() proibido",
     "U_estado_perdido": "redefinir após erro",
     "U_nome_inventado": "não inventar nomes",
+    "U_verificacao_try_nameerror": "corrigir a verificação no prompt",
     "H_infra_llm": "retry/backoff LLM",
     "H_timeout_ferramenta": "timeout de ferramenta",
     "U_codigo_lento": "nada de laço pesado no bloco",

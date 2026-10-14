@@ -13,6 +13,7 @@ import base_pipeline as bp
 from paleta import BASE, BLUE, COR_ERRO, GRID, INK, INK2, MUTED, ORANGE, RESIDUO, cor
 
 DESTINO = [("candidato observado", "candidata a memória", BLUE),
+           (bp.SINAL_HARNESS, "sinal de harness (corrigir no prompt/harness)", ORANGE),
            ("não-memória", "harness / infra (não-memória)", INK2),
            ("investigar — crítico", "crítico (limite de passos)", INK),
            ("revisar", "resíduo (revisar a taxonomia)", RESIDUO),
@@ -52,6 +53,12 @@ def destinos(tri, cob, destino):
             e, t = g.erros_observaveis.sum(), g.tokens_n_conhecidos.sum()
         linhas.append((rotulo, c, float(e), float(t)))
     tot_e, tot_t = sum(l[2] for l in linhas), sum(l[3] for l in linhas)
+    # Toda decisão da triagem precisa de uma faixa: sem isto, uma decisão nova some da figura em silêncio
+    # (aconteceu com o "sinal de harness" do Ajuste 17). As barras têm de somar todos os erros estruturados.
+    sem_faixa = sorted(set(tri.decisao) - {d for d in tri.decisao for k, _, _ in DESTINO if d.startswith(k)})
+    if sem_faixa or tot_e != float(cob.erros.sum()):
+        raise ValueError(f"figura de destinos incompleta: decisões sem faixa {sem_faixa}; "
+                         f"{tot_e:.0f} erros na figura × {float(cob.erros.sum()):.0f} na cobertura")
     fig, ax = plt.subplots(figsize=(12, 3.6))
     for y, (idx, total, nome) in [(1, (3, tot_t, "tokens")), (0, (2, tot_e, "erros"))]:
         esq = 0.0
