@@ -43,6 +43,14 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   só se reconhecem pelo `KeyError` do fim); na base 3, das 1.009 mensagens que a v1 cortava, ~1.002 caíram no
   retorno-string (`U_tipo_retorno`) e o `U_contrato_dict` ficou em 2. Conferir pela regra e por contagem (sem ler caso
   primeiro): quantas das 1.009 têm `KeyError` no fim, e qual sinal da mensagem decide o retorno-string antes.
+  **O que a regra diz** (`submecanismo`, ramo "Could not index"): `string indices must be integers` em qualquer posição
+  → retorno-string; senão, `KeyError: <número>` no **fim** → retorno-dict; senão, `KeyError: '<campo>'` → campo
+  inexistente; senão, causa sem regra. O smolagents escreve `Could not index <valor> with '<chave>': <Tipo>: <texto>`,
+  com o valor inteiro: a mensagem é longa quando o valor indexado é longo. Na base 1 o valor longo era o envelope
+  `{'result': [...]}` da `get_available_documents` indexado com `0` (o retorno-dict). **Hipótese a contar:** na base 3 o
+  valor longo é texto (o retorno de outra ferramenta, de outro papel), e o fim é `string indices must be integers`.
+  **Como:** `validacao/contar_mensagens_longas.py` — as mensagens > 20.000 (as que a v1 cortava) × as curtas: o que é o
+  valor (`{`, `[` ou texto), como a mensagem termina, o mecanismo pela regra real e os papéis; só contagens.
 - [ ] **#32** **Taxas no relatório (pedido A integrado):** levar `base_contagens.parquet` ao pipeline e ao painel (taxa de
   erro por papel, mês e chave; custo de execução com e sem erro; concentração de custo) e reescrever no
   [relatório §7](02-relatorio-achados.md#7--leituras-do-painel) a ressalva "sem denominador". A primeira resposta já
