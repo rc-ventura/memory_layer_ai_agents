@@ -48,7 +48,8 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   (13/10):** a assinatura decide antes da posição; unidade `U_verificacao_try_nameerror`, destino **harness** nas bases 2
   e 3; base 1 sem mudança; 169 testes. **Rodada nova (14/10):** `observada_3f9c2806cac9cd4d`, conferida (46 verificações; a conferência passou a separar
   sinal de harness das candidatas), 28.338 observáveis e 1.803 pendentes, como a simulação; relatório §1–§5 atualizado.
-  **Falta:** (a) ler as figuras do painel da rodada nova e refazer §7.1–7.7; (b) registro de monitoramento; (c) os 514 do primeiro passo sem a assinatura
+  Painel da rodada nova lido e §7.1–7.7 refeito (14/10); a figura de destinos descartava o sinal de harness — corrigida
+  (`figuras_painel.py`, com trava). **Falta:** (a) gerar o painel de novo na máquina 2; (b) registro de monitoramento; (c) os 514 do primeiro passo sem a assinatura
   (`RoteadorCivel`, `RespostaBacen`); (d) o nome do modelo e o hash do system prompt no pedido A; (e) aviso a quem cuida
   do harness (`transversal #7`); (f) registro de monitoramento; (g) se o parágrafo da instrução já estava no prompt de
   julho (base 2).
