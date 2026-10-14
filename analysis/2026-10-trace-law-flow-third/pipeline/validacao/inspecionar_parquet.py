@@ -3,7 +3,7 @@
 Para os dois parquets que chegaram em 14/10 (denominadores e query v2): quais colunas, de que tipo, quantas
 linhas, e por coluna só agregados — nulos, mínimo, máximo e soma nas numéricas; nulos, maior comprimento e quantos
 atingem esse maior comprimento nas de texto (é o que mostra o novo corte da mensagem e se ele ainda trunca).
-Nunca imprime valor de célula, identificador ou texto: só nomes de colunas e contagens, que podem sair da máquina 2.
+Nunca imprime valor de célula, identificador ou texto: só nomes de colunas e contagens.
 
 Uso, de qualquer pasta, um arquivo por vez:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/inspecionar_parquet.py <parquet>
