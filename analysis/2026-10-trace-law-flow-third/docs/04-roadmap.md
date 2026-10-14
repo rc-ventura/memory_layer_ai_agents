@@ -70,10 +70,14 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 - [ ] **#19** **Teste de equivalência na suíte:** `triagem_observada` × `bp.triagem` sobre a base 1 pela porta da query, fixando
     "mesmas decisões, 0 em unidade errada" como teste e não só como script (`validacao/comparar_base1.py`).
 - [ ] **#13** **Conferir tokens de entrada × saída por unidade** — contagem no ambiente da base 3. Confirma (ou não) que o custo
-    por erro é o contexto acumulado, a leitura do gráfico frequência × custo.
+    por erro é o contexto acumulado, a leitura do gráfico frequência × custo. **Já se sabe (14/10, #26):** a saída é
+    9,0% dos tokens nos passos com erro e 4,6% em todos os ActionSteps; a v2 traz entrada e saída de cada passo com
+    erro, e as contagens trazem as do papel — dá para fazer junto com o #32.
 - [ ] **#15** **Depois do erro, completo (e4):** a recuperação em n+1 e n+2 recalculada das colunas (sem usar o
     `recovery_signal` pronto da query); o custo da janela só quando ela está completa (`has_full_2_action_window`); a
-    unidade por versão do agente ("aparece ou some"), para o critério "ainda relevante".
+    unidade por versão do agente ("aparece ou some"), para o critério "ainda relevante". **A versão não serve (14/10,
+    #26):** `cod_vers_aget` vale 1 em 85 linhas de erro e 147 de 71.894 nas contagens; "aparece ou some" fica pelo mês
+    (a taxa por unidade e mês do #32) até haver o nome do modelo ou o hash do prompt (pedido C).
 - [ ] **#16** **Trilhas paralelas (e5):** as suspeitas da query por padrão × papel × mês (só contagem); o protocolo do harness
     por papel, mês e versão. O que não der na extração vai para o relatório como indisponível.
 - [ ] **#17** **Kit e auditoria independente (Fase 5):** o kit chamando o `executar.py` na preparação; o `conferir_versao`
@@ -82,8 +86,8 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 - [ ] **#3** **Protocolo do harness:** resposta sem bloco de código (`H_bloco_code`, 4.592 erros em 4.030 execuções, 14
   papéis, 10 meses). Racionais, relatório e procedimento próprios, como na base 1.
 - [ ] **#4** **Críticos:** as 25 execuções que esgotaram os passos (`C_limite_passos`) — o caminho de erros até o fim de cada uma.
-- [ ] **#5** **Resíduos:** os 538 erros de causa ou sintoma não reconhecidos — padrões recorrentes e regra nova, se houver
-  (regra nova só olhando as duas bases).
+- [ ] **#5** **Resíduos:** os 565 erros de causa ou sintoma não reconhecidos (376 + 189, rodada `609c…`; eram 538 na
+  v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

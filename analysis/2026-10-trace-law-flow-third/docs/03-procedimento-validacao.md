@@ -41,12 +41,17 @@ com o manifesto.
 
 ## 2 · O que foi conferido
 
-| Conferência | Onde | Resultado (14/10, rodada depois do Ajuste 17) |
+| Conferência | Onde | Resultado (14/10, rodada `609c…` da v2, depois do Ajuste 18) |
 |---|---|---|
-| Suíte de testes (`analysis/tests/`, 8 arquivos) | as duas máquinas | **169 testes, todos passam** |
+| Suíte de testes (`analysis/tests/`, 8 arquivos) | as duas máquinas | **178 testes, todos passam** (169 + 9 do Ajuste 18) |
 | Regras e catálogos comparados por estrutura de código com a base 2 (`classify`, `submecanismo`, `SUB2UNI`, `UNI`, `triagem`…) | máquina 2, `executar.py validar` | **10 de 10 iguais** |
 | Conferência da rodada contra o parquet lido direto (contagens, tokens, duração, conservação de erros e tokens entre tabelas, genealogia, perfis, hashes, fonte inalterada) | máquina 2, `executar.py conferir` | **46 verificações, todas passam** |
-| Fonte | máquina 2 | SHA-256 `7604f77d…c2873f1`, igual à referência no código (`FONTE_REFERENCIA_SHA256`) |
+| Fonte | ambiente da base 3 | SHA-256 `908aa005…f0ed86306` (v2), igual à referência no código (`FONTE_V2_SHA256`); a v1 (`7604f77d…c2873f1`, `FONTE_V1_SHA256`) é recusada sem `--extracao v1` |
+| Schema e agregados dos dois parquets novos, sem valor de célula | `validacao/inspecionar_parquet.py <parquet>` | v2: 31.421 linhas, as 69 colunas da v1, maior mensagem 833.507 caracteres; contagens: 71.894 linhas, 19 colunas, somas 283.925 ActionSteps, 30.141 erros, 1.280 suspeitas (roadmap #26) |
+| v1 × v2 e junção com as contagens (pedido A) | `validacao/conferir_contagens.py --v2 … --contagens … --v1 …` | as mesmas 31.421 linhas, `error_type` e tokens iguais, a mensagem da v1 é o começo da da v2 em todas; as 20.986 chaves da v2 nas contagens com 0 diferenças de erros e suspeitas; taxa por mês (roadmap #26) |
+| As 1.009 mensagens que a v1 cortava, pela regra real | `validacao/contar_mensagens_longas.py` | 1.002 no retorno-string; 849 "Could not index" com valor `{"` (845) da `get_peticao_inicial_from_pasta`/`ingestao_peticao_inicial`; 0 com o fim do retorno-dict (roadmap #34, #35) |
+| O que cada valor produz no "Could not index" | `validacao/testar_sandbox_indexar.py` (smolagents 1.26.0) | dict → `KeyError`; texto (JSON `{"` ou repr `{'`) → `string indices must be integers` (roadmap #34) |
+| O mesmo padrão nos traces completos | `validacao/indexar_string_trace.py [--trace <base 2>]` | base 1: 0 valores `{` com erro de string, 88 retorno-dict; base 2: 11, todos `{"`, ContestacaoCivel, mesma ferramenta (roadmap #35) |
 
 As 46 verificações estão listadas em `resultados/conferencia_observada_2026-10-07/conferencia.json` (máquina 2).
 Elas conferem que os números são consistentes entre si e com o parquet — **não** conferem que a causa atribuída a cada
