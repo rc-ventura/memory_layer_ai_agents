@@ -6,7 +6,7 @@
 > item feito é marcado `[x]` e desce para "Fechado" com a prova, sem mudar de número. **Os números deste arquivo são da
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
-Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_3f9c2806cac9cd4d` (14/10, depois do Ajuste 17; antes, `b4fcc77…` e `0d23103…`) e
+Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
 [limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 14/10/2026
 (branch `2026-10-14-base3-roadmap-queries`).
 
@@ -18,12 +18,12 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 |---|---|---|
 | **0** · Conferir o que já existia | **Feita** | Código e schema do parquet conferidos; o código passou a existir nos dois ambientes |
 | **1** · Base do pipeline, verificada na base 1 | **Feita** | A query da base 3 reescrita em Python (`validacao/porta_query_v1.py`) e comparada erro a erro com o pipeline da base 1: 498 erros, 415 na mesma unidade, 83 pendentes, 0 em unidade errada. Sem `analysis/etl/` próprio, sem `base.json`, sem `seguidor` opcional: o modo observado cobre |
-| **2** · Rodar a base 3 | **Feita, com um resto** | Rodada oficial `0d23103…` (76% classificados) e, depois do Ajuste 17, `3f9c2806…` (14/10): **94% classificados**, 10 candidatas, 1 sinal de harness, resíduo 1,8%. **Resto:** medir quantos códigos e observações bateram no corte (só o da mensagem foi medido) → #14 |
+| **2** · Rodar a base 3 | **Feita, com um resto** | Rodada oficial `0d23103…` (76% classificados) e, depois do Ajuste 17, `3f9c2806…` (14/10): 94% classificados; na v2 (Ajuste 18), `609c947b…` (14/10): **97,5% classificados**, 10 candidatas, 1 sinal de harness, resíduo 1,9%. O corte de texto acabou com a v2 (#14 fechado) |
 | **3** · Depois do erro, custo, versão; suspeitas e protocolo | **Em parte** | Há o gráfico e os perfis do que vem depois do erro, por candidata. **Pendente:** custo da janela completa, unidade por versão → #15; suspeitas e protocolo por papel, mês e versão → #16 |
 | **4** · Relatório e pedido de dados | **Feita** | `01` a `05` em `docs/` |
 | **5** · Kit e auditoria independente | **Não feita** | → #17 |
-| **6** · Painel | **Feita e rodada** | `executar.py painel`, 7 gráficos de leitura; leituras no relatório (#10), refeitas em 14/10 para a rodada `3f9c…`. A figura de destinos foi corrigida e o painel gerado de novo (#27) |
-| **7** · Quando a v2 e a agregada chegarem | **Chegaram, conferidas e a v2 rodada** (#26, #31) | A v2 é a v1 sem o corte de texto; as contagens são o pedido A atendido, com a junção exata; rodada `609c…`: 97,5% classificados, 749 pendentes. **Pendente:** o relatório na rodada nova (#33), as taxas (#32) e B e C reescritos (#2) |
+| **6** · Painel | **Feita e rodada** | `executar.py painel`, 7 gráficos de leitura; leituras no relatório (#10), refeitas em 14/10 para a rodada `609c…` da v2 (#33). A figura de destinos foi corrigida e bate com a triagem (#27) |
+| **7** · Quando a v2 e a agregada chegarem | **Chegaram, conferidas e a v2 rodada** (#26, #31) | A v2 é a v1 sem o corte de texto; as contagens são o pedido A atendido, com a junção exata; rodada `609c…`: 97,5% classificados, 749 pendentes. O relatório foi migrado para ela (#33). **Pendente:** as taxas (#32) e B e C reescritos (#2) |
 | **Documentos gerais** (glossário, livro-razão, `analysis/README`, `kit.md`) | **Não feita** | → #18 |
 | **Teste de equivalência** `triagem_observada` × `bp.triagem` na suíte | **Só como script** | → #19 |
 
@@ -39,10 +39,6 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero; "todas as
   ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** reescrever B e C no `05`
   (que ainda descreve A como "a enviar") e levar ao tutor (#11).
-- [ ] **#33** **Migrar o relatório para a rodada `observada_609c947b15295c84`** (a da v2, #31): gerar o painel dela
-  (`executar.py painel --rodada pipeline/resultados/observada_609c947b15295c84`), refazer §1–7.7 do
-  [`02`](02-relatorio-achados.md) com os números novos e marcar no `03` a v2 como fonte. Tudo de uma vez — sem deixar
-  parte do relatório numa rodada e parte na outra.
 - [ ] **#34** **Por que o retorno-dict não voltou na v2:** na base 1, o corte apagava sobretudo o retorno-dict (81 de 96
   só se reconhecem pelo `KeyError` do fim); na base 3, das 1.009 mensagens que a v1 cortava, ~1.002 caíram no
   retorno-string (`U_tipo_retorno`) e o `U_contrato_dict` ficou em 2. Conferir pela regra e por contagem (sem ler caso
@@ -54,7 +50,7 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
     `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para
-    as taxas e para os 2,5% pendentes. Depende de #2, #32 e #33.
+    as taxas e para os 2,5% pendentes. Depende de #2 e #32.
 - [ ] **#28** **Registro de monitoramento do `try/except NameError`** em [`registros/monitoramento.json`](../../registros/monitoramento.json):
   linha de base (base 3: 5.764, com 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura
   depois de o prompt ser corrigido, ou num papel novo) e ação. O gatilho em % de execuções espera o denominador (#2).
@@ -79,9 +75,6 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
     "mesmas decisões, 0 em unidade errada" como teste e não só como script (`validacao/comparar_base1.py`).
 - [ ] **#13** **Conferir tokens de entrada × saída por unidade** — contagem no ambiente da base 3. Confirma (ou não) que o custo
     por erro é o contexto acumulado, a leitura do gráfico frequência × custo.
-- [ ] **#14** **Contrato da fonte completo (e0):** contar quantas mensagens, códigos e observações bateram no corte de tamanho
-    (hoje só a mensagem: 1.009) e quantos "Could not index" perderam o `KeyError` do fim — a limitação 1 medida na
-    própria base 3, e não só na base 1.
 - [ ] **#15** **Depois do erro, completo (e4):** a recuperação em n+1 e n+2 recalculada das colunas (sem usar o
     `recovery_signal` pronto da query); o custo da janela só quando ela está completa (`has_full_2_action_window`); a
     unidade por versão do agente ("aparece ou some"), para o critério "ainda relevante".
@@ -107,6 +100,17 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#14 · Contrato da fonte (e0): o corte de texto** (14/10) — perdeu o objeto com a v2: o
+  `inspecionar_parquet.py` mostra que nenhuma coluna de texto da v2 tem valores no corte da v1 além de 1 ou 2
+  coincidências, e a maior mensagem tem 833.507 caracteres; as 1.009 mensagens que a v1 cortava estão inteiras
+  (`conferir_contagens.py`, #26). Quantos "Could not index" perderam o `KeyError` na v1 vira a pergunta do #34.
+
+- [x] **#33 · Relatório na rodada da v2** (14/10): painel da `observada_609c947b15295c84` gerado e lido; [`02`](02-relatorio-achados.md)
+  §1–7.7 refeito de uma vez (§7.8–7.10, de 13/10, ficam como estão), conferido contra a triagem e a cobertura: as 18
+  linhas por mês somam o total de cada unidade, os papéis somam 17.308, os destinos 30.141, e os pendentes por mês
+  (contagens menos observáveis) fecham em 749. Entrou a primeira taxa (agosto 15,7% × julho 6,7%, §7.5). O `03` marca a
+  v2 como fonte e as limitações 1, 2 e 6 como resolvida, atendida e sem efeito.
 
 - [x] **#31 · Rodada na v2** (14/10): `observada_609c947b15295c84`, a primeira depois do Ajuste 18, **conferida (46
   verificações**, 10 candidatas, 10 perfis, fonte inalterada). Comparada com a `3f9c…` (v1):

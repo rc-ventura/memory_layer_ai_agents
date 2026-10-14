@@ -16,13 +16,13 @@ e as conferências contra o parquet. Da máquina 2 saem só contagens, nomes de 
 
 ```bash
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py analisar      # grava resultados/observada_<id>/
-# Ajuste 18 (14/10): sem argumento, a fonte é a v2 (sem corte de texto); a rodada 3f9c… deste relatório é da v1:
+# Ajuste 18 (14/10): sem argumento, a fonte é a v2 (sem corte de texto); a rodada 3f9c… (v1) se reproduz com
 #   executar.py analisar --extracao v1
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/resumo_rodada.py # resumo, triagem e cobertura
 ```
 
 O `<id>` da rodada é o hash de (contrato, base, fonte, código). Mesma fonte e mesmo código dão a mesma pasta — a
-rodada deste relatório é `observada_3f9c2806cac9cd4d` (14/10, a primeira depois do Ajuste 17; antes, `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). Código ou fonte diferentes dão outra pasta; a antiga não é
+rodada deste relatório é `observada_609c947b15295c84` (14/10, a v2, a primeira depois do Ajuste 18; na v1, `observada_3f9c2806cac9cd4d` de 14/10, depois do Ajuste 17, e antes `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). A extração e o corte do texto entram no hash: a mesma fonte lida como v1 e como v2 dá pastas diferentes. Código ou fonte diferentes dão outra pasta; a antiga não é
 sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar --perfil <unidade>`.
 
 | Arquivo da rodada | O que tem |
@@ -80,12 +80,12 @@ dependem do fim da mensagem (retorno-dict).
 
 | # | Limitação | Evidência | Efeito na base 3 |
 |---|---|---|---|
-| 1 | A mensagem de erro é cortada em 20.000 caracteres | base 1: 82 de 498 erros passam do corte; 81 dos 96 do retorno-dict perdem a causa (o `KeyError` fica no fim) | 1.009 erros pendentes por mensagem limitada; retorno-dict com 2 erros observáveis |
-| 2 | Só há passos com erro — sem denominador | a query filtra antes de exportar | nenhuma taxa por passo, execução, papel ou versão |
+| 1 | A mensagem de erro é cortada em 20.000 caracteres | base 1: 82 de 498 erros passam do corte; 81 dos 96 do retorno-dict perdem a causa (o `KeyError` fica no fim) | 1.009 erros pendentes por mensagem limitada; retorno-dict com 2 erros observáveis **Resolvida pela v2** (Ajuste 18, 14/10): 0 mensagens limitadas; 1.002 dos 1.055 que saíram da pendência foram para o retorno-string, e o retorno-dict ficou em 2 (roadmap #34) |
+| 2 | Só há passos com erro — sem denominador | a query filtra antes de exportar | nenhuma taxa por passo, execução, papel ou versão. **Atendida pelo pedido A** (`base_contagens.parquet`, 14/10; junção exata, roadmap #26); as taxas ainda não estão no pipeline (#32) |
 | 3 | A regex de suspeita não reconhece "Error calling tool" | base 1: pega 0 das 119 falhas silenciosas | falhas silenciosas não medidas; as 1.280 suspeitas ficam fora da taxonomia |
 | 4 | Sem system prompt, modelo e resposta final | colunas ausentes na query | protocolo do harness só por contagem; sucesso por conteúdo indisponível; 215 timeouts pendentes |
 | 5 | A janela não traz a chamada | base 1: 27 erros com o passo anterior em outra chamada; o `step_number` reinicia nos 27 | componentes condicionais; 5 pendentes por numeração ambígua |
-| 6 | A partição do contexto não inclui o agente | `PARTITION BY execução, papel` na query | se dois agentes da mesma execução dividem um papel, os passos se misturam; o pipeline suspende esses vínculos |
+| 6 | A partição do contexto não inclui o agente | `PARTITION BY execução, papel` na query | se dois agentes da mesma execução dividem um papel, os passos se misturam; o pipeline suspende esses vínculos. **Não age nesta base:** uma execução tem um agente só (0 de 20.986; roadmap #26) |
 | 7 | O filtro de tamanho exclui a execução quando um dos três textos é NULL | no SQL, `length(NULL)` torna a soma NULL; base 1: se vazio fosse NULL, sobrariam 100 de 1.000 execuções | 20.971 de 20.986 execuções com erro têm resposta gravada (base 1: 34 de 318). Não dá para saber, sem a tabela de origem, se a extração cortou as sem resposta |
 | 8 | `tool_name` é só a primeira ferramenta do passo | base 1: 5.742 de 5.742 são `python_interpreter` | a coluna não identifica a ferramenta que falhou; ela sai do código e da mensagem |
 | 9 | O nome não definido é dividido pela posição (passo anterior com erro ou não), sem olhar a linha que falhou | base 3: 5.764 de 7.178 erros de nome têm `try/except NameError` na linha que falhou; 460 estão em `U_estado_perdido` (334 de 878) e `U_nome_inventado` (126 de 477) só pela posição; na base 1, 0 de 10 | as duas unidades ficam infladas por um padrão que o prompt instrui e o sandbox não suporta; **corrigida pelo Ajuste 17** (13/10): a assinatura decide antes da posição ([relatório §7.10](02-relatorio-achados.md#710--a-assinatura-na-base-3-o-padrão-não-é-só-do-primeiro-passo-1310)); vale a partir da rodada nova |
@@ -115,9 +115,9 @@ por `cod_idef_exeo` na tabela de origem, que não está disponível hoje.
 
 ## 6 · Antes de apresentar
 
-- [ ] Os números do relatório saem da rodada `observada_3f9c2806cac9cd4d` (a pasta existe e o manifesto está como
+- [ ] Os números do relatório saem da rodada `observada_609c947b15295c84` (a pasta existe e o manifesto está como
       `concluida_tecnicamente_sem_aprovacao_semantica`).
 - [ ] "Candidata" é dita como "recorrente o suficiente para minerar", não como memória aprovada.
-- [ ] Nenhuma taxa é citada (limitação 2).
+- [ ] Nenhuma taxa é citada além das que saem das contagens do pedido A conferidas no roadmap #26 (a global e a por mês); as por unidade e por papel esperam o #32.
 - [ ] Os pendentes são apresentados como limite da extração, não como erros sem explicação.
-- [ ] A ausência do retorno-dict é explicada pelo corte (limitação 1), não como "o padrão sumiu".
+- [ ] O retorno-dict (2 erros) é dito como questão em aberto (roadmap #34): na v2 o corte acabou e ele não voltou.
