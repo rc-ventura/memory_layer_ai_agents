@@ -32,13 +32,18 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 - [ ] **#2** **Fechar os pedidos de dados** ([`05`](05-pedido-queries.md)): **A** (denominadores) já está com o tutor e não
   recebe mais colunas; **B** (complemento dos pendentes) ficou só com os 1.289 que a janela não traz — falta decidir se
   leva o nome do modelo e o hash do system prompt; **C** (ajustes na extração) precisa ser revisto com o que 13–14/10
-  ensinaram. **Falta:** fechar B e C com os parquets de #26, levar ao tutor (#11) e, quando A chegar, conferir a junção
-  (soma de erros e suspeitas = 30.141 e 1.280) e integrar ao pipeline.
+  ensinaram. **Decisões abertas:** (a) o nome do modelo e o hash do system prompt vão no B ou no C? (a base 3 não tem o
+  prompt, e a causa do `try/except` só foi provada na base 2); (b) do C, o que sai e o que entra — agente na partição,
+  texto ausente como comprimento zero, "Error calling tool", todas as ferramentas do passo; (c) o `05` ainda descreve
+  A como "a enviar" e traz modelo e prompt no C, de antes do Ajuste 17. **Falta:** fechar B e C com os parquets de #26,
+  atualizar o `05`, levar ao tutor (#11) e, quando A chegar, conferir a junção (soma de erros e suspeitas = 30.141 e
+  1.280) e integrar ao pipeline.
 - [ ] **#26** **Os dois parquets novos (recebidos em 14/10):** conferir só o schema (nomes de colunas, sem dado) de cada
   um — qual base, qual período, se já são a v2 ou o pedido A — e decidir o que sai de B e C → #2.
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
-    o método transfere sem regra nova, os erros moram em poucos papéis, o maior problema isolado é de protocolo, e o
-    que falta para as taxas e para os 24% pendentes.
+    o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
+    `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para
+    as taxas e para os 6% pendentes. Depende de #2 e #26.
 - [ ] **#28** **Registro de monitoramento do `try/except NameError`** em [`registros/monitoramento.json`](../../registros/monitoramento.json):
   linha de base (base 3: 5.764, com 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura
   depois de o prompt ser corrigido, ou num papel novo) e ação. O gatilho em % de execuções espera o denominador (#2).
@@ -47,8 +52,8 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   Prioridade baixa: depois do nome do modelo (#2).
 - [ ] **#18** **Documentos gerais** (a dívida mais concreta): o glossário ganha `STRUCTURED_ERROR`, `OBSERVATION_SUSPECT`,
   "candidata observada", "pendente", "componente" (= a cascata das bases 1 e 2), `recovery_signal` e os estados de
-  capacidade; o livro-razão (`pipeline-entre-bases.md`) ganha a etapa da base 3 — sem Ajuste novo, porque nenhuma
-  regra mudou; o `analysis/README.md`, o intake por formato; o `kit.md`, o que o kit pode e não pode na base 3. Regra do
+  capacidade; o livro-razão (`pipeline-entre-bases.md`) ganha a etapa da base 3 (o Ajuste 17, de 13/10, já está lá; falta a
+  etapa da base 3 em si); o `analysis/README.md`, o intake por formato; o `kit.md`, o que o kit pode e não pode na base 3. Regra do
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
 - [ ] **#12** **Piloto de mineração de ponta a ponta: inventário do sandbox** (`U_sandbox`: 3.653 erros, 16 papéis). A lição
