@@ -39,13 +39,6 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero; "todas as
   ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** reescrever B e C no `05`
   (que ainda descreve A como "a enviar") e levar ao tutor (#11).
-- [ ] **#35** **O que são os valores longos que começam com `{` e dão erro de string** (848 das 854 "Could not index"
-  longas da base 3, 847 do ContestacaoCivel). **Hipótese:** o retorno de uma ferramenta chega como texto JSON e o
-  agente o indexa como dict — a lição do retorno-string. **O que está provado** (#34): é texto, não dict (só texto dá o
-  erro de string). **O que falta:** (a) a aspa depois do `{` — `{"` = JSON, `{'` = repr Python em texto; (b) a função que
-  produziu a variável; (c) se o passo seguinte desserializa (`json.loads`/`literal_eval`) e se dá certo. Na base 3:
-  `contar_mensagens_longas.py` (já mede a, b e c com a v2). Na base 2, que tem o ContestacaoCivel com o trace inteiro:
-  `indexar_string_trace.py --trace <base 2>`. A base 1 não tem o caso (0 valores `{` com erro de string).
 - [ ] **#32** **Taxas no relatório (pedido A integrado):** levar `base_contagens.parquet` ao pipeline e ao painel (taxa de
   erro por papel, mês e chave; custo de execução com e sem erro; concentração de custo) e reescrever no
   [relatório §7](02-relatorio-achados.md#7--leituras-do-painel) a ressalva "sem denominador". A primeira resposta já
@@ -103,6 +96,22 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#35 · O que são os valores longos que começam com `{` e dão erro de string** (14/10): **o retorno da petição
+  inicial chegando como texto JSON**, que o agente indexa como dict. Evidência, nas duas bases que têm o caso:
+  - **Base 3** (`validacao/contar_mensagens_longas.py`, nas 849 "Could not index" longas do retorno-string): a aspa
+    depois do `{` é `{"` em 845 (4 outros) — no sandbox, `{"` é o que um texto JSON dá; dict e repr Python dão `{'`
+    (`testar_sandbox_indexar.py`); a variável indexada vem de `get_peticao_inicial_from_pasta` (727) e
+    `ingestao_peticao_inicial` (106) (6 atribuídas em outro passo, 3 de `json.loads`, 2 de `draft_resposta`, 1 de
+    `coerce_to_obj`); no passo seguinte o agente desserializa (`json.loads`/`literal_eval`) em 789 (93%), e 382 (45%)
+    ficam sem erro.
+  - **Base 2, trace completo** (`validacao/indexar_string_trace.py --trace <base 2>`): 78 "Could not index"; 38 com
+    erro de string; **11 com valor `{` — todos `{"`, todos do ContestacaoCivel, 10 de `get_peticao_inicial_from_pasta`
+    e 1 de `ingestao_peticao_inicial`, 10 desserializam no passo seguinte**; 0 retorno-dict.
+  - **Base 1** não tem o caso (0 valores `{` com erro de string; não tem o ContestacaoCivel).
+  **Para a mineração do retorno-string (#7):** o grosso da unidade na base 3 é uma ferramenta e um papel; o agente
+  quase sempre conserta desserializando, e mais da metade erra de novo — a lição tem um alvo concreto. Os
+  identificadores ficam no ambiente de cada base (`--evidencia` no script da base 2; a base 3 conta direto do parquet).
 
 - [x] **#34 · Por que o retorno-dict não voltou na v2** (14/10): **não estava escondido pelo corte.** Evidência:
   (1) a regra do dict casa `KeyError: <número>` no fim da mensagem; nas 1.009 mensagens que a v1 cortava (> 20.000

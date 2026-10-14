@@ -134,7 +134,10 @@ pendentes num caminho próprio).
   apagava sobretudo ele (o envelope `{'result': [...]}` indexado com `0`, que termina em `KeyError: 0`). Nas 1.009
   mensagens que a v1 cortava, esse fim aparece 0 vezes (2 na base inteira). Elas são quase todas do ContestacaoCivel
   (847) e terminam em `string indices must be integers`, que, no sandbox, só sai quando o valor indexado é **texto** —
-  daí o retorno-string (1.002). Se esse texto é JSON, e de que ferramenta, ainda não está medido
+  daí o retorno-string (1.002). **É o retorno da petição inicial chegando como texto JSON:** em 845 de 849 o valor
+  começa com `{"` (o que um texto JSON dá; um dict daria `{'`), vem de `get_peticao_inicial_from_pasta` (727) ou
+  `ingestao_peticao_inicial` (106), e no passo seguinte o agente desserializa em 93% — mas só 45% ficam sem erro. A
+  base 2, com o trace inteiro, mostra o mesmo: 11 casos, todos `{"`, do ContestacaoCivel, da mesma ferramenta
   ([roadmap](04-roadmap.md) #34 e #35).
 - **O estado perdido e o nome inventado ficaram menores e mais limpos** (878 → 544 e 477 → 351 erros; 19,8 → 10,1 e
   8,9 → 6,0 mi de tokens): os 460 erros do `try/except NameError` saíram deles (Ajuste 17). Os dois continuam
