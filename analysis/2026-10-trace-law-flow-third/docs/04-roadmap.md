@@ -48,9 +48,29 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   execuções com erro e as mesmas colunas da v1 com os cortes `SUBSTR` mais altos (a v1 cortava em 8.000, 12.000, 16.000
   e 20.000 conforme a coluna); denominadores = 283.925 ActionSteps no total, 71.882 execuções únicas e erros e suspeitas
   somando 30.141 e 1.280, no mesmo período (`anomesdia` de 20250801 a 20260930).
-  **Já visto (14/10):** um dos parquets tem **as mesmas 69 colunas, na mesma ordem**, de `COLUNAS_JANELAS`
-  (`adaptador_trace.py`) — o schema sozinho não separa v1 de v2; o que separa é o maior comprimento de texto (o
-  script). Do outro parquet (denominadores) o schema ainda não foi visto.
+  **O que os dois parquets são (saída do `inspecionar_parquet.py`, 14/10):**
+  - `base_erros_minerados_full_v2.parquet` **é a v2**: 31.421 linhas (30.141 erros + 1.280 suspeitas), 20.986
+    execuções, as mesmas 69 colunas da v1 na mesma ordem, e **sem o corte de texto** — o maior `error_message` tem
+    833.507 caracteres e nenhum vale 20.000; `error_code_action` chega a 78.965, `tool_calls` a 83.910. Nos cortes
+    antigos sobram 1 ou 2 linhas por coluna, coincidência e não corte.
+  - `base_contagens.parquet` **é o pedido A atendido**: 71.894 linhas, 19 colunas — chave (execução, agente, papel),
+    início, encerramento, mês, versão, `status_memoria`, `qtd_actionsteps` (soma 283.925), tokens de entrada, saída e
+    total (3.559 mi, 170 mi, 3.729 mi), `qtd_erros_estruturados` (30.141), `qtd_suspeitas_observadas` (1.280),
+    `qtd_erros_total` (31.421) e `qtd_actionsteps_sem_tokens` (15); 71.882 execuções. As somas batem com o guia.
+  - **Uma execução tem um agente só**, nos dois parquets (execuções distintas = execução + agente distintos:
+    20.986 e 71.882). A limitação 6 (partição sem o agente) não muda nada nesta base.
+  - **A versão quase não varia:** `cod_vers_aget` vale 0 ou 1 e soma 85 em 31.421 linhas de erro e 147 em 71.894 nas
+    contagens. A "unidade por versão" do #15 não sai desse campo; precisa do nome do modelo ou do hash do prompt (C).
+  - Todas as linhas dos dois vêm da mesma partição (`anomesdia` = 20260830).
+  - **Primeiras contas (globais, das somas):** 10,6% dos ActionSteps têm erro estruturado; um ActionStep custa em
+    média 13.135 tokens e uma linha da v2 19.663 (erros e suspeitas juntos); a saída é 4,6% dos tokens no total e
+    8,7% nas linhas da v2. Os tokens das linhas da v2 são 16,6% do total (com os 592,9 mi dos erros estruturados da
+    rodada `3f9c…`, 15,9%). A conta por mês, papel e chave fica para a junção abaixo.
+  - **Falta:** (1) `conferir_contagens.py --v2 … --contagens … [--v1 …]` — a junção chave a chave (erros e suspeitas
+    iguais por chave, tokens dos erros dentro dos do papel), o que é `status_memoria` e a linha com quantidades
+    nulas, a taxa por mês; com a v1, se as linhas e o `error_type` são os mesmos e se a mensagem da v1 é o começo da
+    da v2; (2) rodar o pipeline na v2 (`executar.py analisar --fonte <v2>`) e ver quanto dos 1.803 pendentes cai;
+    (3) só então reescrever B e C no [`05`](05-pedido-queries.md).
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
     `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para
