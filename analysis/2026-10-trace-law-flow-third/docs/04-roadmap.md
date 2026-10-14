@@ -18,41 +18,35 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 |---|---|---|
 | **0** · Conferir o que já existia | **Feita** | Código e schema do parquet conferidos; o código passou a existir nos dois ambientes |
 | **1** · Base do pipeline, verificada na base 1 | **Feita** | A query da base 3 reescrita em Python (`validacao/porta_query_v1.py`) e comparada erro a erro com o pipeline da base 1: 498 erros, 415 na mesma unidade, 83 pendentes, 0 em unidade errada. Sem `analysis/etl/` próprio, sem `base.json`, sem `seguidor` opcional: o modo observado cobre |
-| **2** · Rodar a base 3 | **Feita, com um resto** | Rodada oficial `0d23103…`: 76% classificados, 10 candidatas, resíduo 1,8%. **Resto:** medir quantos códigos e observações bateram no corte (só o da mensagem foi medido) → #14 |
+| **2** · Rodar a base 3 | **Feita, com um resto** | Rodada oficial `0d23103…` (76% classificados) e, depois do Ajuste 17, `3f9c2806…` (14/10): **94% classificados**, 10 candidatas, 1 sinal de harness, resíduo 1,8%. **Resto:** medir quantos códigos e observações bateram no corte (só o da mensagem foi medido) → #14 |
 | **3** · Depois do erro, custo, versão; suspeitas e protocolo | **Em parte** | Há o gráfico e os perfis do que vem depois do erro, por candidata. **Pendente:** custo da janela completa, unidade por versão → #15; suspeitas e protocolo por papel, mês e versão → #16 |
 | **4** · Relatório e pedido de dados | **Feita** | `01` a `05` em `docs/` |
 | **5** · Kit e auditoria independente | **Não feita** | → #17 |
-| **6** · Painel | **Feita e rodada** | `executar.py painel`, com 7 gráficos de leitura, rodada `b4fcc…` (#9) e leituras no relatório (#10) |
-| **7** · Quando a v2 e a agregada chegarem | **Aguarda o tutor** | O pedido está no [`05`](05-pedido-queries.md) → #2 |
+| **6** · Painel | **Feita; gerar de novo** | `executar.py painel`, 7 gráficos de leitura; leituras no relatório (#10), refeitas em 14/10 para a rodada `3f9c…`. A figura de destinos foi corrigida e precisa ser gerada de novo na máquina 2 → #27 |
+| **7** · Quando a v2 e a agregada chegarem | **Aguarda o tutor** | O pedido A está com o tutor; B e C a fechar, com os dois parquets novos → #2 e #26 |
 | **Documentos gerais** (glossário, livro-razão, `analysis/README`, `kit.md`) | **Não feita** | → #18 |
 | **Teste de equivalência** `triagem_observada` × `bp.triagem` na suíte | **Só como script** | → #19 |
 
 ## Backlog — em ordem de valor
 
+- [ ] **#2** **Fechar os pedidos de dados** ([`05`](05-pedido-queries.md)): **A** (denominadores) já está com o tutor e não
+  recebe mais colunas; **B** (complemento dos pendentes) ficou só com os 1.289 que a janela não traz — falta decidir se
+  leva o nome do modelo e o hash do system prompt; **C** (ajustes na extração) precisa ser revisto com o que 13–14/10
+  ensinaram. **Falta:** fechar B e C com os parquets de #26, levar ao tutor (#11) e, quando A chegar, conferir a junção
+  (soma de erros e suspeitas = 30.141 e 1.280) e integrar ao pipeline.
+- [ ] **#26** **Os dois parquets novos (recebidos em 14/10):** conferir só o schema (nomes de colunas, sem dado) de cada
+  um — qual base, qual período, se já são a v2 ou o pedido A — e decidir o que sai de B e C → #2.
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere sem regra nova, os erros moram em poucos papéis, o maior problema isolado é de protocolo, e o
     que falta para as taxas e para os 24% pendentes.
-- [ ] **#2** **Pedido de dados complementares** — escrito em [`05-pedido-queries.md`](05-pedido-queries.md) (09/10): A
-  denominadores (taxas e gráficos de custo da base 1), B complemento dos pendentes (fecha os 24% sem unidade), C
-  ajustes na extração. **Falta:** levar ao tutor (item 11) e, quando chegar, conferir a junção e integrar ao pipeline.
-- [ ] **#1** **Investigar os 5.818 erros de nome não definido sem passo anterior identificado** (102 mi de tokens, o maior
-  grupo pendente). **Feito em 13/10 ([§7.8](02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310),
-  [§7.9](02-relatorio-achados.md#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310) e
-  [§7.10](02-relatorio-achados.md#710--a-assinatura-na-base-3-o-padrão-não-é-só-do-primeiro-passo-1310)):** os 5.818 são todos o
-  primeiro ActionStep (0 com anterior sem número), um erro por execução, 27 nomes, 98% em agosto, 92% no
-  `ContestacaoCivel`; saíram do pedido B. **Causa (base 2, trace inteiro, 3 casos lidos):** o prompt manda verificar a
-  variável com `try/except NameError` e o interpretador do sandbox não captura (reproduzido no smolagents 1.26.0); o
-  modelo não explica; na amostra, só a versão nova do trecho do prompt deu o erro. **Na base 3** (assinatura na
-  mensagem): 5.764 dos 7.178 erros de nome (80%), 91% dos 5.818; **460 estão em estado perdido (334) e nome inventado
-  (126)** só pela posição; 95 já em julho. Base 2 (parte H): 105 de 129 com a assinatura. **Ajuste 17 aplicado
-  (13/10):** a assinatura decide antes da posição; unidade `U_verificacao_try_nameerror`, destino **harness** nas bases 2
-  e 3; base 1 sem mudança; 169 testes. **Rodada nova (14/10):** `observada_3f9c2806cac9cd4d`, conferida (46 verificações; a conferência passou a separar
-  sinal de harness das candidatas), 28.338 observáveis e 1.803 pendentes, como a simulação; relatório §1–§5 atualizado.
-  Painel da rodada nova lido e §7.1–7.7 refeito (14/10); a figura de destinos descartava o sinal de harness — corrigida
-  (`figuras_painel.py`, com trava). **Falta:** (a) gerar o painel de novo na máquina 2; (b) registro de monitoramento; (c) os 514 do primeiro passo sem a assinatura
-  (`RoteadorCivel`, `RespostaBacen`); (d) o nome do modelo e o hash do system prompt no pedido A; (e) aviso a quem cuida
-  do harness (`transversal #7`); (f) registro de monitoramento; (g) se o parágrafo da instrução já estava no prompt de
-  julho (base 2).
+- [ ] **#27** **Gerar o painel de novo na máquina 2**, com `execucao/figuras_painel.py` corrigido (a figura de destinos
+  descartava os 5.764 erros do sinal de harness), e conferir que as barras somam 30.141 erros e 592,9 mi de tokens.
+- [ ] **#28** **Registro de monitoramento do `try/except NameError`** em [`registros/monitoramento.json`](../../registros/monitoramento.json):
+  linha de base (base 3: 5.764, com 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura
+  depois de o prompt ser corrigido, ou num papel novo) e ação. O gatilho em % de execuções espera o denominador (#2).
+- [ ] **#29** **Os 514 erros do primeiro passo sem a assinatura** (`RoteadorCivel` 397, `RespostaBacen` 89; 2,2 mi de
+  tokens): outro mecanismo; na base 2 os 6 casos do `RoteadorCivel` são do modelo novo e o prompt não tem a instrução.
+  Prioridade baixa: depois do nome do modelo (#2).
 - [ ] **#18** **Documentos gerais** (a dívida mais concreta): o glossário ganha `STRUCTURED_ERROR`, `OBSERVATION_SUSPECT`,
   "candidata observada", "pendente", "componente" (= a cascata das bases 1 e 2), `recovery_signal` e os estados de
   capacidade; o livro-razão (`pipeline-entre-bases.md`) ganha a etapa da base 3 — sem Ajuste novo, porque nenhuma
@@ -90,9 +84,27 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
+## Fora de escopo / adiado
+
+- **Aviso a quem cuida do harness** sobre o `try/except NameError` (`transversal #7`): decisão de 14/10 de não fazer agora;
+  a evidência está em [`02` §7.9–7.10](02-relatorio-achados.md#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310).
+- **Se o parágrafo da instrução já estava no prompt de julho** (base 2): é do [`b2 #3`](../../2026-09-trace-law-flow-second/docs/04-roadmap.md).
+
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#1 · Investigar os 5.818 erros de nome não definido sem passo anterior identificado** (13–14/10): os 5.818 são todos o
+  primeiro ActionStep do papel, um erro por execução, 98% em agosto; a causa é uma instrução do system prompt do
+  ContestacaoCivel (`try/except NameError`) que o interpretador do sandbox não captura — vista no trace inteiro da base 2
+  (3 casos lidos), reproduzida no smolagents 1.26.0 e contada na base 3 (5.764 de 7.178 erros de nome); 460 estavam
+  em estado perdido e nome inventado só pela posição → [`02` §7.8–7.10](02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310),
+  commits `ed06865`, `9fd032b` e `d975621`.
+- [x] **#30 · Ajuste 17 aplicado e conferido** (13–14/10): a assinatura na linha que falhou decide antes da posição;
+  `U_verificacao_try_nameerror`, destino harness nas bases 2 e 3; base 1 sem mudança (498 de 498); 169 testes; kit 0.7.0;
+  pipeline da base 2 replicado (`validar`: 10 de 10 iguais); rodada `observada_3f9c2806cac9cd4d` conferida (46
+  verificações), com 28.338 observáveis e 1.803 pendentes, como a simulação → [livro-razão, Ajuste 17](../../pipeline-entre-bases.md),
+  commits `d975621`, `0e55110` e `e7c6cc1`; painel lido e §7.1–7.7 refeito → `a4bd5f4`.
 
 - [x] **#10 · Relatório com as leituras do painel** (09/10): [`02` §7](02-relatorio-achados.md#7--leituras-do-painel) — onde estão
   os pendentes, destino de erros e tokens, custo por erro × frequência, concentração por papel, o padrão no tempo e o
