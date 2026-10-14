@@ -8,7 +8,7 @@
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_3f9c2806cac9cd4d` (14/10, depois do Ajuste 17; antes, `b4fcc77…` e `0d23103…`) e
 [limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 14/10/2026
-(branch `2026-10-09-base3-painel-historico`).
+(branch `2026-10-14-base3-roadmap-queries`).
 
 ## O plano de adaptação: feito e pendente
 
@@ -23,58 +23,34 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 | **4** · Relatório e pedido de dados | **Feita** | `01` a `05` em `docs/` |
 | **5** · Kit e auditoria independente | **Não feita** | → #17 |
 | **6** · Painel | **Feita e rodada** | `executar.py painel`, 7 gráficos de leitura; leituras no relatório (#10), refeitas em 14/10 para a rodada `3f9c…`. A figura de destinos foi corrigida e o painel gerado de novo (#27) |
-| **7** · Quando a v2 e a agregada chegarem | **Aguarda o tutor** | O pedido A está com o tutor; B e C a fechar, com os dois parquets novos → #2 e #26 |
+| **7** · Quando a v2 e a agregada chegarem | **Chegaram e foram conferidas** (#26) | A v2 é a v1 sem o corte de texto; as contagens são o pedido A atendido, com a junção exata. **Pendente:** a rodada na v2 (#31), as taxas no relatório (#32) e B e C reescritos com o que sobrar (#2) |
 | **Documentos gerais** (glossário, livro-razão, `analysis/README`, `kit.md`) | **Não feita** | → #18 |
 | **Teste de equivalência** `triagem_observada` × `bp.triagem` na suíte | **Só como script** | → #19 |
 
 ## Backlog — em ordem de valor
 
-- [ ] **#2** **Fechar os pedidos de dados** ([`05`](05-pedido-queries.md)): **A** (denominadores) já está com o tutor e não
-  recebe mais colunas; **B** (complemento dos pendentes) ficou só com os 1.289 que a janela não traz — falta decidir se
-  leva o nome do modelo e o hash do system prompt; **C** (ajustes na extração) precisa ser revisto com o que 13–14/10
-  ensinaram. **Decisões abertas:** (a) o nome do modelo e o hash do system prompt vão no B ou no C? (a base 3 não tem o
-  prompt, e a causa do `try/except` só foi provada na base 2); (b) do C, o que sai e o que entra — agente na partição,
-  texto ausente como comprimento zero, "Error calling tool", todas as ferramentas do passo; (c) o `05` ainda descreve
-  A como "a enviar" e traz modelo e prompt no C, de antes do Ajuste 17. **Falta:** fechar B e C com os parquets de #26,
-  atualizar o `05`, levar ao tutor (#11) e, quando A chegar, conferir a junção (soma de erros e suspeitas = 30.141 e
-  1.280) e integrar ao pipeline.
-- [ ] **#26** **Os dois parquets novos (recebidos em 14/10):** conferir só o schema (nomes de colunas, sem dado) de cada
-  um — qual base, qual período, se já são a v2 ou o pedido A — e decidir o que sai de B e C → #2. **Primeiro o que há nos parquets, depois o pedido** (14/10): o script
-  `pipeline/validacao/inspecionar_parquet.py <parquet>` imprime só schema e agregados (nulos, min/max/soma, maior
-  comprimento de texto e quantos valem exatamente um corte da v1), sem nenhum valor de célula. A saída decide o que é a
-  v2 e o que é o pedido A; só depois se reescreve o [`05`](05-pedido-queries.md) com o que sobrar.
-  **O que a saída precisa bater** (do [guia da extração](historico/05-relatorio_mineracao_20260929.md) §7, §9, §10 e da
-  [query v1](historico/06-ICTI_crossmemory_query_mineracao_erros.txt)): v2 = 31.421 linhas (30.141 + 1.280), 20.986
-  execuções com erro e as mesmas colunas da v1 com os cortes `SUBSTR` mais altos (a v1 cortava em 8.000, 12.000, 16.000
-  e 20.000 conforme a coluna); denominadores = 283.925 ActionSteps no total, 71.882 execuções únicas e erros e suspeitas
-  somando 30.141 e 1.280, no mesmo período (`anomesdia` de 20250801 a 20260930).
-  **O que os dois parquets são (saída do `inspecionar_parquet.py`, 14/10):**
-  - `base_erros_minerados_full_v2.parquet` **é a v2**: 31.421 linhas (30.141 erros + 1.280 suspeitas), 20.986
-    execuções, as mesmas 69 colunas da v1 na mesma ordem, e **sem o corte de texto** — o maior `error_message` tem
-    833.507 caracteres e nenhum vale 20.000; `error_code_action` chega a 78.965, `tool_calls` a 83.910. Nos cortes
-    antigos sobram 1 ou 2 linhas por coluna, coincidência e não corte.
-  - `base_contagens.parquet` **é o pedido A atendido**: 71.894 linhas, 19 colunas — chave (execução, agente, papel),
-    início, encerramento, mês, versão, `status_memoria`, `qtd_actionsteps` (soma 283.925), tokens de entrada, saída e
-    total (3.559 mi, 170 mi, 3.729 mi), `qtd_erros_estruturados` (30.141), `qtd_suspeitas_observadas` (1.280),
-    `qtd_erros_total` (31.421) e `qtd_actionsteps_sem_tokens` (15); 71.882 execuções. As somas batem com o guia.
-  - **Uma execução tem um agente só**, nos dois parquets (execuções distintas = execução + agente distintos:
-    20.986 e 71.882). A limitação 6 (partição sem o agente) não muda nada nesta base.
-  - **A versão quase não varia:** `cod_vers_aget` vale 0 ou 1 e soma 85 em 31.421 linhas de erro e 147 em 71.894 nas
-    contagens. A "unidade por versão" do #15 não sai desse campo; precisa do nome do modelo ou do hash do prompt (C).
-  - Todas as linhas dos dois vêm da mesma partição (`anomesdia` = 20260830).
-  - **Primeiras contas (globais, das somas):** 10,6% dos ActionSteps têm erro estruturado; um ActionStep custa em
-    média 13.135 tokens e uma linha da v2 19.663 (erros e suspeitas juntos); a saída é 4,6% dos tokens no total e
-    8,7% nas linhas da v2. Os tokens das linhas da v2 são 16,6% do total (com os 592,9 mi dos erros estruturados da
-    rodada `3f9c…`, 15,9%). A conta por mês, papel e chave fica para a junção abaixo.
-  - **Falta:** (1) `conferir_contagens.py --v2 … --contagens … [--v1 …]` — a junção chave a chave (erros e suspeitas
-    iguais por chave, tokens dos erros dentro dos do papel), o que é `status_memoria` e a linha com quantidades
-    nulas, a taxa por mês; com a v1, se as linhas e o `error_type` são os mesmos e se a mensagem da v1 é o começo da
-    da v2; (2) rodar o pipeline na v2 (`executar.py analisar --fonte <v2>`) e ver quanto dos 1.803 pendentes cai;
-    (3) só então reescrever B e C no [`05`](05-pedido-queries.md).
+- [ ] **#2** **Fechar os pedidos de dados** ([`05`](05-pedido-queries.md)): **A** (denominadores) **chegou e foi conferido**
+  (#26: junção exata chave a chave) — sai do pedido; falta integrá-lo ao pipeline (#32). **B** (complemento dos
+  pendentes): a v2 trouxe o texto inteiro, então a parte do corte (1.009 mensagens, o código dos 215 timeouts e dos 46
+  de linha rejeitada) deve sair — confirmar com a rodada na v2 (#31); devem ficar os 14 de histórico, os 5 de
+  numeração ambígua e os nomes das ferramentas declaradas no prompt. **C** (ajustes na extração): o agente na partição
+  **sai** (uma execução tem um agente só); ficam "Error calling tool", o nome do modelo e o hash do system prompt — mais
+  importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero; "todas as
+  ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** #31, reescrever B e C no `05`
+  (que ainda descreve A como "a enviar") e levar ao tutor (#11).
+- [ ] **#31** **Rodada na v2:** `executar.py analisar --fonte <base_erros_minerados_full_v2.parquet>` e `resumo_rodada.py`.
+  A v2 tem as mesmas linhas, `error_type` e tokens da v1, então as contagens de erro devem ficar iguais; o que muda são
+  os pendentes — dos 1.803 da rodada `3f9c…`, 1.009 eram mensagem cortada. Conferir quantos caem, para onde vão
+  (unidade ou resíduo) e se o retorno-dict reaparece (na v1, 2 erros por causa do corte). Uma pasta de rodada nova
+  (a fonte mudou); a `3f9c…` não é sobrescrita.
+- [ ] **#32** **Taxas no relatório (pedido A integrado):** levar `base_contagens.parquet` ao pipeline e ao painel (taxa de
+  erro por papel, mês e chave; custo de execução com e sem erro; concentração de custo) e reescrever no
+  [relatório §7](02-relatorio-achados.md#7--leituras-do-painel) a ressalva "sem denominador". A primeira resposta já
+  está no #26 (fechado): agosto teve mais execuções **e** mais erro por ActionStep.
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
     `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para
-    as taxas e para os 6% pendentes. Depende de #2 e #26.
+    as taxas e para os 6% pendentes. Depende de #2, #31 e #32.
 - [ ] **#28** **Registro de monitoramento do `try/except NameError`** em [`registros/monitoramento.json`](../../registros/monitoramento.json):
   linha de base (base 3: 5.764, com 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura
   depois de o prompt ser corrigido, ou num papel novo) e ação. O gatilho em % de execuções espera o denominador (#2).
@@ -127,6 +103,41 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#26 · Os dois parquets novos conferidos** (14/10), com `validacao/inspecionar_parquet.py` (schema e agregados)
+  e `validacao/conferir_contagens.py` (junção), sem nenhum valor de célula:
+  - **`base_erros_minerados_full_v2.parquet` é a v1 sem o corte de texto:** as mesmas 31.421 linhas (30.141 erros +
+    1.280 suspeitas, 20.986 execuções) e 69 colunas; nenhuma linha só numa das duas; `error_type` e `total_tokens`
+    iguais em todas; a mensagem da v1 é o começo da da v2 em 31.421 de 31.421; as 1.009 mensagens no corte de 20.000
+    são mais longas na v2 (a maior tem 833.507 caracteres).
+  - **`base_contagens.parquet` é o pedido A:** 71.894 linhas, chave (execução, agente, papel) sem duplicata; 71.882
+    execuções; `status_memoria` = OK em 71.893 e `JSON_INVALIDO` em 1 (a linha com quantidades nulas); 6 linhas com 0
+    ActionSteps; 15 ActionSteps sem tokens. **Junção exata:** as 20.986 chaves da v2 existem nas contagens, com 0
+    diferenças de erros, 0 de suspeitas e 0 casos de tokens dos erros acima dos do papel.
+  - **Uma execução tem um agente só** (0 de 20.986 e 0 de 71.882 com mais de um): a limitação 6 não age nesta base.
+    **A versão quase não varia** (`cod_vers_aget` = 1 em 85 linhas de erro e em 147 de 71.894 nas contagens).
+  - **Globais:** 30.141 erros em 283.925 ActionSteps (10,62%); os erros estruturados gastam 592.858.874 de 3.729.280.264
+    tokens (15,90%, o mesmo total da rodada `3f9c…`); 13.135 tokens por ActionStep, 19.670 por ActionStep com erro; a
+    saída é 4,55% dos tokens no total e 9,01% nos passos com erro.
+  - **Por mês** (soma igual aos totais):
+
+    | Mês | Execuções | ActionSteps | Erros | Erro por ActionStep | ActionSteps por execução | Tokens |
+    |---|---:|---:|---:|---:|---:|---:|
+    | 2025-11 | 71 | 446 | 32 | 7,2% | 6,28 | 13.088.561 |
+    | 2025-12 | 449 | 2.769 | 454 | 16,4% | 6,17 | 72.341.379 |
+    | 2026-01 | 997 | 6.611 | 1.086 | 16,4% | 6,63 | 194.793.326 |
+    | 2026-02 | 943 | 4.584 | 663 | 14,5% | 4,86 | 111.465.566 |
+    | 2026-03 | 883 | 4.452 | 656 | 14,7% | 5,04 | 84.836.441 |
+    | 2026-04 | 1.173 | 8.011 | 821 | 10,2% | 6,83 | 131.782.617 |
+    | 2026-05 | 2.543 | 14.014 | 1.234 | 8,8% | 5,51 | 203.480.945 |
+    | 2026-06 | 10.736 | 43.358 | 1.797 | 4,1% | 4,04 | 370.202.980 |
+    | 2026-07 | 24.824 | 88.307 | 5.913 | 6,7% | 3,56 | 890.416.053 |
+    | 2026-08 | 29.263 | 111.373 | 17.485 | 15,7% | 3,81 | 1.656.872.396 |
+
+    **Agosto teve mais execuções e mais erro por ActionStep:** 18% mais execuções que julho, mas 2,96 vezes os erros;
+    a taxa vai de 6,7% para 15,7%. Sem os erros do `try/except NameError` (5.667 em agosto, 95 em julho), fica 10,6%
+    contra 6,6% — o sinal de harness explica parte do salto, não todo. Em agosto, 29.275 linhas para 29.263 execuções:
+    12 execuções com dois papéis.
 
 - [x] **#27 · Gerar o painel de novo na máquina 2**, com `execucao/figuras_painel.py` corrigido (14/10): Rafael gerou o painel
   depois da correção (a figura de destinos descartava os 5.764 erros do sinal de harness e agora tem a faixa e uma trava)
