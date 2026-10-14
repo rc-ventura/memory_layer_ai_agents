@@ -22,7 +22,7 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 | **3** · Depois do erro, custo, versão; suspeitas e protocolo | **Em parte** | Há o gráfico e os perfis do que vem depois do erro, por candidata. **Pendente:** custo da janela completa, unidade por versão → #15; suspeitas e protocolo por papel, mês e versão → #16 |
 | **4** · Relatório e pedido de dados | **Feita** | `01` a `05` em `docs/` |
 | **5** · Kit e auditoria independente | **Não feita** | → #17 |
-| **6** · Painel | **Feita; gerar de novo** | `executar.py painel`, 7 gráficos de leitura; leituras no relatório (#10), refeitas em 14/10 para a rodada `3f9c…`. A figura de destinos foi corrigida e precisa ser gerada de novo na máquina 2 → #27 |
+| **6** · Painel | **Feita e rodada** | `executar.py painel`, 7 gráficos de leitura; leituras no relatório (#10), refeitas em 14/10 para a rodada `3f9c…`. A figura de destinos foi corrigida e o painel gerado de novo (#27) |
 | **7** · Quando a v2 e a agregada chegarem | **Aguarda o tutor** | O pedido A está com o tutor; B e C a fechar, com os dois parquets novos → #2 e #26 |
 | **Documentos gerais** (glossário, livro-razão, `analysis/README`, `kit.md`) | **Não feita** | → #18 |
 | **Teste de equivalência** `triagem_observada` × `bp.triagem` na suíte | **Só como script** | → #19 |
@@ -39,8 +39,6 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere sem regra nova, os erros moram em poucos papéis, o maior problema isolado é de protocolo, e o
     que falta para as taxas e para os 24% pendentes.
-- [ ] **#27** **Gerar o painel de novo na máquina 2**, com `execucao/figuras_painel.py` corrigido (a figura de destinos
-  descartava os 5.764 erros do sinal de harness), e conferir que as barras somam 30.141 erros e 592,9 mi de tokens.
 - [ ] **#28** **Registro de monitoramento do `try/except NameError`** em [`registros/monitoramento.json`](../../registros/monitoramento.json):
   linha de base (base 3: 5.764, com 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura
   depois de o prompt ser corrigido, ou num papel novo) e ação. O gatilho em % de execuções espera o denominador (#2).
@@ -93,6 +91,11 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#27 · Gerar o painel de novo na máquina 2**, com `execucao/figuras_painel.py` corrigido (14/10): Rafael gerou o painel
+  depois da correção (a figura de destinos descartava os 5.764 erros do sinal de harness e agora tem a faixa e uma trava)
+  → commit `a4bd5f4`. **Ressalva:** a figura nova ainda não foi fotografada; o que o relatório §7.2 cita sai da triagem
+  e da cobertura, não da figura. A foto das barras (30.141 erros, 592,9 mi) fecha a conferência.
 
 - [x] **#1 · Investigar os 5.818 erros de nome não definido sem passo anterior identificado** (13–14/10): os 5.818 são todos o
   primeiro ActionStep do papel, um erro por execução, 98% em agosto; a causa é uma instrução do system prompt do

@@ -175,8 +175,8 @@ unidade (5.762 no ContestacaoCivel e 2 no RespostaBacen). Contagem de erros não
 tokens, e não 30.141 e 592,9: a lista de destinos dela não tinha "sinal de harness", e os 5.764 erros da unidade nova
 sumiram da figura, inflando o título ("67% dos erros e 73% dos tokens em candidatas"). O código
 (`execucao/figuras_painel.py`) ganhou a faixa e uma trava — a figura para se uma decisão da triagem não tiver faixa ou
-se a soma não bater com a cobertura. Os números de §7.2 saem da triagem, não da figura; o painel precisa ser gerado de
-novo na máquina 2.
+se a soma não bater com a cobertura. Os números de §7.2 saem da triagem, não da figura; o painel foi gerado de novo na máquina 2 em 14/10, e a figura
+corrigida ainda não foi fotografada.
 
 ### 7.1 · Os pendentes: o que sobrou depois do Ajuste 17
 
