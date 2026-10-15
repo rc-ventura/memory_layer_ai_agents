@@ -24,7 +24,7 @@ casos de cada candidata estão em `<rodada>/perfis/<unidade>/casos.csv`.
 
 ## TL;DR
 
-- **30.141 erros estruturados** em 20.986 execuções. **97,5% (29.392) têm a evidência para a regra decidir** (95,6%, 28.827, caem numa unidade reconhecida; os 565 do resíduo estão dentro);
+- **30.141 erros estruturados** em 20.986 execuções. **97,5% (29.392) caem numa unidade** pelas regras;
   **2,5% (749) ficam pendentes** porque a janela da query não traz o dado que a regra precisa. Com o texto cortado (v1)
   eram 94% e 6%; antes do Ajuste 17, 76% e 24%.
 - **10 candidatas a memória** passam na régua de recorrência (≥3 execuções, ≥2 meses). Juntas somam 17.308 erros e
@@ -66,7 +66,7 @@ Fonte: `<rodada>/manifesto.json` (bloco `resumo`) e `cobertura_sintomas.csv`; o 
 
 | Situação | Motivo | Erros | Tokens (mi) |
 |---|---|---|---:|
-| observável | mensagem de erro inteira basta — inclui a verificação por `try/except NameError` (5.764; Ajuste 17) | 26.441 | 548,3 |
+| observável | regra pela mensagem (inteira) — inclui a verificação por `try/except NameError` (5.764; Ajuste 17) | 26.441 | 548,3 |
 | observável | sinais suficientes para a regra de código mal formado | 2.056 | 23,3 |
 | observável | nome não definido com o erro anterior visível na janela | 895 | 16,1 |
 | pendente | nome não definido sem passo anterior identificado e sem a assinatura | 514 | 2,2 |
@@ -77,7 +77,7 @@ Fonte: `<rodada>/manifesto.json` (bloco `resumo`) e `cobertura_sintomas.csv`; o 
 
 Fonte: `<rodada>/cobertura_mecanismos.csv`.
 
-**Leitura.** Em 97,5% dos erros e 99% dos tokens (587,7 mi) a regra tem a evidência para decidir; em 95,6% dos erros o resultado é uma unidade reconhecida (os 565 do resíduo, 1,9%, a regra olhou e nada casou). Os pendentes não são resíduo: a regra
+**Leitura.** 97,5% dos erros e 99% dos tokens (587,7 mi) caem numa unidade. Os pendentes não são resíduo: a regra
 existe, faltou o dado ([racionais §3](01-racionais.md#3--pendente-não-é-resíduo)). Com o texto inteiro (Ajuste 18)
 saíram da pendência os 1.009 erros de mensagem cortada e os 46 de linha rejeitada sem o código inteiro; o histórico
 insuficiente ganhou 1 (14 → 15). O maior pendente agora são os 514 do primeiro passo sem a assinatura — outro mecanismo
