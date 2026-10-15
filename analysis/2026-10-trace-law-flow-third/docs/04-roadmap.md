@@ -70,7 +70,11 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   | 10 | Prioridade por critério | **Sem defeito.** Os dois rankings batem com o gráfico 9; só o ContestacaoCivel é primeiro nos dois | — | [ ] |
 
   **Também a corrigir (transversais):** (a) números acima de 1.000 mi em bilhões ("3,73 bi", não "3.729,3 mi"), no
-  resumo e nos rótulos; (b) o funil dá 20.442 execuções com erro estruturado e o parquet de erros, 20.986: a diferença
+  resumo e nos rótulos; (a2) **a base da taxa não está definida nos gráficos** e muda entre eles (pergunta do Rafael,
+  15/10): os gráficos 2 e 3 usam % ("a cada 100 passos", implícito no rótulo "% dos ActionSteps") e o 8 usa "por 1.000
+  ActionSteps" (escolhido porque as taxas por unidade são pequenas). Regra: a base escrita no eixo e no "Como ler" de
+  todo gráfico de taxa ("erros a cada 100 passos (%)"; "erros a cada 1.000 passos do mês") e, se possível, uma base só no
+  relatório (% com uma casa a mais no 8) — ou, mantendo 1.000 no 8, a frase "≈ 10 vezes o valor em %"; (b) o funil dá 20.442 execuções com erro estruturado e o parquet de erros, 20.986: a diferença
   (544) deve ser de execuções só com suspeita — **hipótese**, fechar com uma contagem no `conferir_contagens.py`
   (execuções com suspeita e sem erro estruturado); (c) o nome do papel aparece como `ontestacaoCivel` nos dados
   (já anotado no relatório §7.8; é o ContestacaoCivel). **Complementações pedidas pelo auditor:** (acrescentar aqui,
