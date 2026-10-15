@@ -3,14 +3,13 @@ type: governance-reference
 title: "Governança das Análises: Roadmaps, Decisões e Glossário"
 description: A camada de governança que organiza o trabalho empírico em analysis/ — o schema de roadmaps por base e transversal, o índice de decisões em vigor, o glossário único de códigos e os registros JSON lidos por scripts.
 tags: [governance, roadmap-schema, decisions, glossary, registries, analysis-workflow]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-09T17:09:54.387Z
 sources:
   - id: openwiki-source-b1f655aa6d87090fc6d82043
     resource: repo://analysis/decisoes.md
   - id: openwiki-source-afeb1c5ba90e2da2476aeaf0
     resource: repo://analysis/glossario.md
+  - id: openwiki-source-390363992e7f2499e94a84a2
+    resource: repo://analysis/pipeline-entre-bases.md
   - id: openwiki-source-295082e85eb115be41963847
     resource: repo://analysis/plano-atual.md
   - id: openwiki-source-c4fb8acd94b51651383c6dea
@@ -19,7 +18,10 @@ sources:
     resource: repo://analysis/registros/README.md
   - id: openwiki-source-7c2d1833faef47d99e8e11da
     resource: repo://analysis/roadmap-transversal.md
-generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
+generated: { by: "claude-code", at: "2026-10-15T13:12:35.828Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-15T13:12:35.828Z
 ---
 
 Desde a reorganização de 09/10/2026, "o que fazer" nas análises não mora mais num plano único que cresce — vive numa **camada de governança** de arquivos com papéis separados. A divisão de trabalho é explícita e cada arquivo cobre um pedaço só:
@@ -62,6 +64,8 @@ As regras de trabalho registradas lá incluem:
 - **regra nova só olhando as duas bases** (Ajuste 7);
 - **leitura por LLM é `[assistido]`** e vale como hipótese; o determinístico é `[conferido]` — nenhum LLM no caminho da classificação;
 - **fronteira da máquina de compliance**: da máquina 2 só saem contagens, nomes de papel/ferramenta/modelo, hashes, sim/não, tamanhos, tokens e motivos mascarados — nunca texto de caso nem `exec_id`.
+
+A mesma tabela de destinos decididos por achado ganhou uma linha recente que exemplifica o padrão: `U_verificacao_try_nameerror` → **sinal de harness nas bases 2 e 3** (Ajuste 17, 13/10) — e o código correspondente entrou no `glossario.md` no mesmo commit, como manda a regra.
 
 ## `glossario.md` — uma definição por código
 

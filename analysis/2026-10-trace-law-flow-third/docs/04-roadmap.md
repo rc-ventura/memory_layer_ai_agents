@@ -45,8 +45,48 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   (7 verificações; se falhar, a parte 2 diz o motivo). Dez gráficos: funil, taxa por mês (com e sem o sinal de harness),
   papel volume × taxa, custo de execução com × sem erro, concentração (Lorenz), custo mensal por execução, entrada ×
   saída (#13 no agregado), taxa por unidade e mês, fatia do orçamento de cada papel por destino, prioridade por
-  critério. 182 testes (4 novos em `test_taxas_base3.py`); figuras conferidas com tabelas sintéticas no tamanho da base.
-  **Falta:** rodar na base 3, ler o relatório e reescrever o [relatório](02-relatorio-achados.md) §7 com as taxas.
+  critério. 182 testes (4 novos em `test_taxas_base3.py`). **Rodado na base 3 em 15/10** (rodada `609c…`): a junção
+  passou nas 7 verificações e os números batem com o resumo (283.925 ActionSteps; 30.141 erros, 10,6%; 3.729,3 mi de
+  tokens, 592,9 mi em passos com erro). **Falta:** auditar e corrigir os gráficos (#36) e só então reescrever o
+  [relatório](02-relatorio-achados.md) §7 com as taxas.
+- [ ] **#36** **Auditoria dos 10 gráficos de taxas, um por um** (aberto em 15/10; Rafael audita cada gráfico e
+  acrescenta complementações). Conferido em 15/10 por duas vias — os números lidos das imagens cruzados entre si e
+  com os totais, e o código de cada figura (`execucao/figuras_taxas.py`, `execucao/taxas.py`). **Os números
+  conferem:** somas por mês (283.925 / 30.141 / 71.881); as 10 taxas do gráfico 2 recalculadas das barras; 5 células
+  do gráfico 8 = contagem do painel ÷ ActionSteps do mês; fatia × gasto do papel (gráfico 9) = tokens em erro do gráfico
+  10 nos 10 papéis, com diferença máxima de 0,4 mi; os 10 papéis somam 589,5 dos 592,9 mi. **O que precisa corrigir:**
+
+  | # | Gráfico | O que a conferência achou | Correção | Auditado |
+  |---|---|---|---|---|
+  | 1 | Funil | A barra "com ActionStep" repete "execuções" (71.881). "Com erro" conta execuções com ao menos um erro (20.442) e o painel ao lado conta passos (30.141), e a figura não diz isso | Rótulos "execuções com pelo menos um erro" e "passos com erro"; linha "1,47 erro por execução com erro" (30.141 ÷ 20.442); tirar a barra repetida | [ ] |
+  | 2 | Taxa por mês | **Sem defeito.** As 10 taxas batem. Leitura: sem queda sustentada (16,4% → 4,1% → 15,7%); agosto sem o `try/except` ainda 10,6% × 6,6% em julho; meses antigos com pouca amostra (novembro: 446 passos) | Marcar na figura os meses com menos de 1.000 passos como "amostra pequena" | [ ] |
+  | 3 | Papel: volume × taxa | O título cita AnaliseProcessual e AgenteProcuracoes, mas os pontos não têm rótulo (rótulo só nos 10 papéis com mais erros); os dois têm cerca de 50 a 70 passos | Rotular também os papéis citados no título | [ ] |
+  | 4 | Custo com × sem erro | **Sem defeito.** 43.774 ÷ 10.074 = 4,3×. É associação, não causa (execução longa erra mais e custa mais) | — (a limitação já está na figura) | [ ] |
+  | 5 | Concentração (Lorenz) | **Sem defeito.** 10% mais caras = 64% do gasto; 1% = 21%. A curva começa em 1/n, não em 0 (efeito visual) | Começar a curva em (0, 0) | [ ] |
+  | 6 | Custo mensal por execução | O título "de 18.324 (2025-11) a 15.114 (2026-08)" sugere estabilidade; novembro tem 71 execuções. O padrão é ≈ 48 mil (dez–abr) → 10 a 15 mil (jun–ago). **A queda não é aprendizado**: a taxa de erro (gráfico 2) não caiu junto, e as execuções foram de ≈ 1 mil para 25 a 29 mil por mês — provável mudança de mistura de papéis (hipótese, a medir no #37) | Título com o pico e o último mês; mês de amostra pequena fora do título | [ ] |
+  | 7 | Entrada × saída | **Leitura errada minha.** O 9,0% × 4,6% é sobretudo **composição**: 59% dos tokens de erro são do ContestacaoCivel (saída ≈ 11–12%) e o total é dominado pelo OBFCivel (≈ 1%). Ponderando papel a papel (valores lidos da figura, aproximados): dentro dos papéis ≈ 1,5 ponto; mistura ≈ 2,9 pontos de 4,4. A frase do relatório §7.3 "a saída pesa o dobro nos passos com erro" estava errada | Título "dentro de cada papel"; acrescentar a conta de composição; reescrever o §7.3 (feito: ressalva já no texto) | [ ] |
+  | 8 | Taxa por unidade e mês | **Leitura errada minha.** "O campo inexistente cai de verdade" não se sustenta: o denominador é o mês inteiro (todos os papéis), e o sistema cresceu ≈ 13× de janeiro a julho. Só a **contagem** caiu (234–476 → 25 e 54); se foi correção ou o RespostaBacen rodou menos, só a taxa do próprio papel decide (#37) | Aviso do denominador no título; usar o denominador do papel dominante da unidade, quando houver | [ ] |
+  | 9 | Orçamento de cada papel | **Defeito de código.** A `triagem_por_papel.csv` só tem unidades de memória (`mineracao_observada.py:135`); a faixa "harness / infra" nunca é desenhada e `H_bloco_code` e `H_timeout_ferramenta` caem na faixa roxa "resíduo, crítico ou pendente". O total da barra está certo; a divisão por destino, mal rotulada. A legenda fica fora da área visível | Ler `consolidacao_unidade_papel_mes.csv` (todas as unidades observáveis) e separar infra de resíduo; legenda dentro da área; cor do resto distinta da infra | [ ] |
+  | 10 | Prioridade por critério | **Sem defeito.** Os dois rankings batem com o gráfico 9; só o ContestacaoCivel é primeiro nos dois | — | [ ] |
+
+  **Também a corrigir (transversais):** (a) números acima de 1.000 mi em bilhões ("3,73 bi", não "3.729,3 mi"), no
+  resumo e nos rótulos; (b) o funil dá 20.442 execuções com erro estruturado e o parquet de erros, 20.986: a diferença
+  (544) deve ser de execuções só com suspeita — **hipótese**, fechar com uma contagem no `conferir_contagens.py`
+  (execuções com suspeita e sem erro estruturado); (c) o nome do papel aparece como `ontestacaoCivel` nos dados
+  (já anotado no relatório §7.8; é o ContestacaoCivel). **Complementações pedidas pelo auditor:** (acrescentar aqui,
+  uma linha por pedido, com a data).
+- [ ] **#37** **Gráfico novo — taxa de erro e custo por papel × mês, com o papel fixo (o baseline da tese).** Resolve de
+  uma vez três pontos do #36: a queda do custo mensal (gráfico 6), a queda do campo inexistente (gráfico 8) e a oscilação
+  da taxa (gráfico 2) — todos podem ser mudança da mistura de papéis, e só a taxa do próprio papel separa "o sistema errou
+  menos" de "entrou um papel que erra menos". **Dados:** as contagens já têm papel e mês. **Gráfico 6 da base 1 que ele
+  continua:** §3.6/8.11, o teste da hipótese nula ("o custo cai sozinho, sem memória?"). **Aguarda o sim do Rafael.**
+- [ ] **#38** **Unidades por destino e tipo de memória (factual × estratégia)** — o §14.6 do
+  `consolidacao_unidades.ipynb` (antes 9.3 da esteira) e o §8.5 ("só o que o agente pode aprender"): uma barra por
+  unidade, agrupada pela decisão, com o tipo no rótulo. **Não migrado**; o tipo já existe no pipeline (`bp.UNI[u][1]`),
+  falta desenhar. **Também não migrados, só código:** §2.1 (teste do ToolScan) e §2.3 (duração por assinatura; a v2 tem
+  `duration_seconds` dos passos com erro). **Não migráveis com a extração atual** (faltam dados, pedido C): sucesso por
+  conteúdo (§3.1/8.12), tokens por chamada de ferramenta (§3.3/8.9), posição na trajetória (§4/8.6) e propagação
+  (§5/8.2), falhas silenciosas (§7).
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
     `try/except NameError`, 5.764 erros) e o maior problema isolado de protocolo é o `H_bloco_code`, e o que falta para

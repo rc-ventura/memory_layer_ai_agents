@@ -249,9 +249,10 @@ gráfico):
   29 mil cada (Ajuste 17).
 - **O protocolo do harness e o retorno colado de volta no código pesam só pela frequência:** o erro é barato.
 - **Tokens por erro são os do passo com erro, sem a recuperação.** A leitura provável é que o custo reflete o contexto
-  acumulado até o erro, e não a gravidade dele; **não confirmada**. As contagens (pedido A) já mostram que a saída pesa
-  o dobro nos passos com erro (9,0% dos tokens, contra 4,6% em todos os ActionSteps); por unidade, falta medir
-  ([roadmap](04-roadmap.md) #13).
+  acumulado até o erro, e não a gravidade dele; **não confirmada**. A saída é 9,0% dos tokens dos passos com erro e 4,6%
+  dos de todos os ActionSteps, mas essa diferença é em boa parte **mistura de papéis** (59% dos tokens de erro são do
+  ContestacaoCivel, que gera mais texto; o total é dominado pelo OBFCivel, que gera pouco): dentro de cada papel a
+  diferença é bem menor (em revisão, [roadmap](04-roadmap.md) #36); por unidade, falta medir (#13).
 
 ### 7.4 · Poucos papéis concentram as candidatas
 

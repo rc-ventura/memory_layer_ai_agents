@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:402161629144e1c779ea14d35d8b0b074b5961663713c61a15a632df3d853f16",
+  "pageVersion": "sha256:84a5315b716e0c9764ea1b5e038aa3a900d76e17a15b67a4bf0cfb1a4614eb49",
   "claims": [
     {
       "id": "claim_9b4219f67448476ebdc33ce5d7ec6283",
@@ -229,10 +229,46 @@
           "version": "repo-lines-v1:sha256:721f1a95bca50ff8c1914f1ae3f74fa13f6726e8ff9242631e1c6d7fe9c60d4c:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDY4MjJlOGVjZmIzYzRkNDA4MDUxM2ViMzNhOGNjNDYzMTNiYmJmMjU3NzFjNTU1NWU3OTI2YjFiNDcyYjVlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjUyZDcxMTEwM2Q1MGE0Mzc4MzBjNmZiY2QwNGZiNGJhYjQ5YTBmODJmNmQyNmQxYzc5MWM2ZTg0ODhkZDA5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmY1N2Y3ZTU4YTA4M2RhZDQ5NDRlMTcwM2M2MGFjNjI0NTFmZmU0ZTA3NjNhYzBjYmRkMmNlNDQ3NGZlNDI4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjVlMWM3ODNjMGJiMGI2ZTgxYTg5Y2NiNzRjNzdkNTNmMWRlMDlhYzJlNzNhYmJkMGRhZjE3YzA5M2U5ZTE2NiJ9"
         }
       ]
+    },
+    {
+      "id": "claim_da740c82135748d789df9e0df092a80f",
+      "statement": "Base 3's parquet extraction still carries no denominator (only error steps plus a context window); the denominator arrived later as a separate table, base_contagens.parquet (pedido A), used only after a key-by-key join validates — and since Ajuste 18 the default source is the v2 extraction without text cuts.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/04-roadmap.md#L173-L173",
+          "version": "repo-lines-v1:sha256:263fdfb3e8190b8fead4f47ee3910dc46a38baeb34bc13a32c5b15d9fae9c051:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjYzZmRmYjNlODE5MGI4ZmVhZDRmNDdlZTM5MTBkYzQ2YTM4YmFlYjM0YmMxM2EzMmM1YjE1ZDlmYWU5YzA1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjYzZmRmYjNlODE5MGI4ZmVhZDRmNDdlZTM5MTBkYzQ2YTM4YmFlYjM0YmMxM2EzMmM1YjE1ZDlmYWU5YzA1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmYxY2VkY2ZkM2UzZmM3MzQwMjU5M2YxYmQ3M2M2MWEzM2RmNzMyMmM3M2ZlYjBlYjM3YWY5MjllZDhkZGU2ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2Y0ZGJlNjJjYTAzY2I2ZWQxYTJjYmEwYWM3YjRlMDg3N2ViNDRjMDA0YWVhODBjYTk2NGYzZGU5ZGYxYWMyYiJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/execucao/taxas.py#L1-L16",
+          "version": "repo-lines-v1:sha256:838779f4a82db460e9193f4aceb2f9a844f2c6e681f8716e6766bec27290af75:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YjQ5NTVhYTg5NjYwZGRmNGU0Mjk4MjY4NmY3NjQyYmFmMmUwYjJkZDMwODRiNGYyNThjMzRmMzljNjJhMGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2M2E4ZjAzMTI1ZDA1ZWJmNWJiYjI1NDM4OGFhMGU0OGZlZGRhMzA3YjA2ZDhjNmNiNzY3MGY4NDZmOWIxZjMifQ"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L749-L796",
+          "version": "repo-lines-v1:sha256:8c3289c4947f8e0a3ea1943109c0fa38479f59966d97e2e11eb1b303c846b251:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwMDVhMTBjZjRhZmIwNGNjNjJkYmVlNjk1OTM1NTExMjQ3NDkwMjE4MmM3YmM3NzQ1OGQ5YzYyY2Y2MGNjMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3OWQxOWI4N2VlMzM3YTA2OTk3NjliZDllZTRjODEwNmVkNTVjNDdlMzJlNjFkY2JhNjBlODNmZTc1ZWJkZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyODUwY2MyZjM3MThmNTUyNzU0YThjNWUwN2U4YzUwZmUwN2FiZjMwZmM0ZDJkNThjYzNjZDkzZGExNzJkOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMmU2NWUxMDc4ZjljOTRiZDVlZWNhMDE0ZjBjMDY3MGQwMzAyYTQ4YTlkY2M1MTI2ODA5Njk1MTAzMjlkOGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ee812858fea342698d182887c7a1dd95",
+      "statement": "The analysis/tests pytest suite (182 tests today) also covers the Ajuste 17 rule (test_verificacao_try_nameerror) and the pedido-A join lock (test_taxas_base3).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/tests/test_comandos_third.py",
+          "version": "repo-file-v1:sha256:02fd7fbbcdda328629f6b11d683ab87a6619ea34f070ea7a598f5b2fcdc0e957"
+        },
+        {
+          "resource": "repo://analysis/tests/test_taxas_base3.py",
+          "version": "repo-file-v1:sha256:12e6436a591d82b58208e75aa4ba3d164f984ae320cee24e312bc687245151b3"
+        },
+        {
+          "resource": "repo://analysis/tests/test_verificacao_try_nameerror.py",
+          "version": "repo-file-v1:sha256:b742fd76fa80fc95ced13e824bce96b0f932a6b33c8ffa11f475400ef4b50aec"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-09T17:09:54.387Z"
+    "at": "2026-10-15T13:12:35.828Z"
   }
 }

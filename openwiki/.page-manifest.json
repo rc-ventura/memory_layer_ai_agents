@@ -2,25 +2,25 @@
   "schemaVersion": 1,
   "pages": {
     "/openwiki/arquitetura/escopo-terminologia-e-questoes-abertas.md": {
-      "pageVersion": "sha256:186df491dac0de656fec9b2bf1982108ebba4471959055328c1e4dbd56281ce6",
+      "pageVersion": "sha256:3a7e8ce36a91e8da5d9ae2585d781233343629e667e830b3ca606163b5d8bfca",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "31f25260-2ff7-4f50-989f-bb403d38edbf",
+      "gitHead": "27df14ddf04bd03b1dd98a76a190d444bdeb5719",
+      "sourceFingerprint": "sha256:253104023ff1f2f8be377483c6b133cd732e942c925423b602b756009b5549c3"
     },
     "/openwiki/arquitetura/hipotese-knowledge-as-infra.md": {
+      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
+      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6",
       "pageVersion": "sha256:4020d38d7bd5efaec0fda67ed7c349c62dcf6df0540fe65ba68c26bdfe1d2617",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab"
     },
     "/openwiki/fluxos/analises-multi-base.md": {
-      "pageVersion": "sha256:0ef2e66eeebd14f3fb88afa5114228779db4c52b43126d960c4974d84ca71009",
+      "pageVersion": "sha256:108eb4b92e95d6b3823d47331da9783fc03a78508fa8dd17704df43a80c42e77",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "31f25260-2ff7-4f50-989f-bb403d38edbf",
+      "gitHead": "27df14ddf04bd03b1dd98a76a190d444bdeb5719",
+      "sourceFingerprint": "sha256:253104023ff1f2f8be377483c6b133cd732e942c925423b602b756009b5549c3"
     },
     "/openwiki/fluxos/diario-de-campo.md": {
       "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
@@ -30,25 +30,25 @@
       "completedRunId": "ae616853-4b9a-4e5f-93c9-176598f01bb8"
     },
     "/openwiki/fluxos/kit-de-mineracao.md": {
-      "pageVersion": "sha256:188a30c3a6acdc6292cacffc1f3b392001a67e1a8ad49c8741110384c751276a",
+      "pageVersion": "sha256:4a5f5f9ba17a59e9208b8487f92e8a832618aeed3ad8a9dfecf199de422bad76",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "31f25260-2ff7-4f50-989f-bb403d38edbf",
+      "gitHead": "27df14ddf04bd03b1dd98a76a190d444bdeb5719",
+      "sourceFingerprint": "sha256:253104023ff1f2f8be377483c6b133cd732e942c925423b602b756009b5549c3"
     },
     "/openwiki/fluxos/metodologia-de-analise-de-traces.md": {
-      "pageVersion": "sha256:402161629144e1c779ea14d35d8b0b074b5961663713c61a15a632df3d853f16",
+      "pageVersion": "sha256:84a5315b716e0c9764ea1b5e038aa3a900d76e17a15b67a4bf0cfb1a4614eb49",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "31f25260-2ff7-4f50-989f-bb403d38edbf",
+      "gitHead": "27df14ddf04bd03b1dd98a76a190d444bdeb5719",
+      "sourceFingerprint": "sha256:253104023ff1f2f8be377483c6b133cd732e942c925423b602b756009b5549c3"
     },
     "/openwiki/fluxos/metodologia-de-taxonomia-de-erros.md": {
-      "pageVersion": "sha256:ef2a50b4d3b8322fda5b1e7aca7ed917a851cd628b7e4e6cac49105a3734c52e",
+      "pageVersion": "sha256:5e3026ae626348d46565d499625dbce5ac1b1b4bfb1933609dad9fa76bd54b2f",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "31f25260-2ff7-4f50-989f-bb403d38edbf",
+      "gitHead": "27df14ddf04bd03b1dd98a76a190d444bdeb5719",
+      "sourceFingerprint": "sha256:253104023ff1f2f8be377483c6b133cd732e942c925423b602b756009b5549c3"
     },
     "/openwiki/fluxos/registros-de-reuniao-e-notas-de-discussao.md": {
       "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",
@@ -65,32 +65,32 @@
       "completedRunId": "2aa6978e-e94f-4a6f-9a23-e65a2ac698a3"
     },
     "/openwiki/overview.md": {
+      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
+      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6",
       "pageVersion": "sha256:f2bc28dbb30864cbda34402ae956b5cf51ebe6bb55adeb4e1206de83998e576a",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab"
     },
     "/openwiki/quickstart.md": {
+      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
+      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6",
       "pageVersion": "sha256:4cc306a1ccb6c0a44f49b1a1ad0efb38c097c1af3fe90f283cf99051afbe927a",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab"
     },
     "/openwiki/referencia/blueprint-pocs-m1.md": {
+      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
+      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6",
       "pageVersion": "sha256:4eecdf4551ca824f04752f15623becd5d33ffb39ce19d8678474fb96b1286154",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab"
     },
     "/openwiki/referencia/governanca-das-analises.md": {
-      "pageVersion": "sha256:66a2284d8de80f0b38d7965523b0eeb7eca8c8d475bbe5b1552cdfde9148e8bb",
+      "pageVersion": "sha256:11f7b57a56e24ac03fda3d2039fe05141e9e54df7000a5fe262204fe2bd73675",
       "completedBy": "claude-code",
-      "completedRunId": "732ad58d-a14c-48cf-9197-97cc94b700ab",
-      "gitHead": "7fecdc82350613e25e32f87fee82bf8da7ea8082",
-      "sourceFingerprint": "sha256:0f3cf6be8624add70230b6efe9e6c3a7789a8f37649c7e148f155e505bba53b6"
+      "completedRunId": "31f25260-2ff7-4f50-989f-bb403d38edbf",
+      "gitHead": "27df14ddf04bd03b1dd98a76a190d444bdeb5719",
+      "sourceFingerprint": "sha256:253104023ff1f2f8be377483c6b133cd732e942c925423b602b756009b5549c3"
     },
     "/openwiki/referencia/plano-de-trabalho.md": {
       "gitHead": "5a386cf7d9310dd9539ff579dd2a4b388bcfc904",

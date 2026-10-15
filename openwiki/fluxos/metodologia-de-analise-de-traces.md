@@ -18,6 +18,10 @@ sources:
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/resultados/evidencia/relatorio_meta_11.1-11.10.md
   - id: openwiki-source-4e5bd038f77a72e191e7c372
     resource: repo://analysis/2026-09-trace-law-flow/README.md
+  - id: openwiki-source-d070523480134977db8a4863
+    resource: repo://analysis/2026-10-trace-law-flow-third/docs/04-roadmap.md
+  - id: openwiki-source-2e30b3083d1be7b3942956b0
+    resource: repo://analysis/2026-10-trace-law-flow-third/pipeline/execucao/taxas.py
   - id: openwiki-source-94c25a5250b636767039ae69
     resource: repo://analysis/2026-10-trace-law-flow-third/pipeline/mineracao_observada.py
   - id: openwiki-source-1748b7ddacfe941301be6af0
@@ -28,10 +32,16 @@ sources:
     resource: repo://analysis/plano-atual.md
   - id: openwiki-source-968204141b3124543370ca68
     resource: repo://analysis/README.md
-generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
+  - id: openwiki-source-a681f66e5216d0e17e311c00
+    resource: repo://analysis/tests/test_comandos_third.py
+  - id: openwiki-source-84f850e06dd10c38b9eb141c
+    resource: repo://analysis/tests/test_taxas_base3.py
+  - id: openwiki-source-c4fee69dbae99a41428bd7ef
+    resource: repo://analysis/tests/test_verificacao_try_nameerror.py
+generated: { by: "claude-code", at: "2026-10-15T13:12:35.828Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-09T17:09:54.387Z
+    at: 2026-10-15T13:12:35.828Z
 ---
 
 `analysis/` guarda as análises empíricas de traces brutos de agentes reais da esteira jurídica — a base de evidência de "memória de trabalho" para a hipótese de memória do projeto. Não é só um lugar para contar erros ou juntar gráficos: o objetivo recorrente é construir uma ponte empírica entre o **trace bruto** de um sistema de agentes real, os **mecanismos reais de falha** visíveis nesse trace, e a menor **lição/memória/correção operacional** reutilizável que poderia evitar a mesma falha de novo. A classificação de erro em si (sintoma → mecanismo → unidade → destino) tem sua própria metodologia dedicada — ver [Metodologia de Taxonomia de Erros (Genealogia)](metodologia-de-taxonomia-de-erros.md); esta página cobre o que envolve essa classificação: layout de pasta, disciplina de PII e a escada de validação.
@@ -102,7 +112,7 @@ Algumas coisas mudaram de lugar e vivem na raiz de `analysis/`, não dentro da p
 - **`literature/`** — as notas 🔎 dos papers de taxonomia de erro (texto completo lido por um agente, verificado contra o PDF, mas não lido pelo Rafael) foram promovidas a `analysis/literature/`, compartilhadas entre análises em vez de pertencer a uma pasta só — ver [Revisão de Literatura e Disciplina de Citação](revisao-de-literatura-e-disciplina-de-citacao.md) para o que 🔎 significa.
 - **`base_utils.py`** — primitivas genéricas de análise de trace de CodeAgent (formato smolagents): agrupar steps em sequências ordenadas `(exec_id, role)`, o inventário autoritativo de ferramentas (`def name(...)` no system prompt), helpers de AST sobre `code_action` e extração de entidades tipadas + checagem de suporte. Nada nele conhece a esteira jurídica nem a taxonomia de erros — a fronteira declarada é: **hipótese sobre uma base** (`classify()`, `submecanismo()`, `SUB2UNI`, `carregar_base()`) fica no `base_pipeline.py` da pasta datada e é **copiado** para a pasta nova; **mecânica do formato do trace** mora em `base_utils.py` e é importada. Criado em 22/09/2026 e verificado reproduzindo exatamente os números dos detectores de falha silenciosa da §7.
 - **`leitor_trace.py`, `adaptador_trace.py`, `episodios_trace.py`** — a camada de leitura/adaptação genérica que a chegada da base 3 forçou: um leitor único CSV/XZ/GZ/Parquet com contrato all-text, um adaptador que distingue as três formas estruturais de trace (janela, censo, completo) sem classificar erro, e um derivador de componentes/episódios observados. Detalhe completo em [Análises Multi-Base](analises-multi-base.md).
-- **`tests/`** — a suíte pytest pequena (`uv run pytest analysis/tests/`) que fecha o ciclo de qualidade do código de análise.
+- **`tests/`** — a suíte pytest (`uv run pytest analysis/tests/`, 182 testes hoje) que fecha o ciclo de qualidade do código de análise — inclui a regra do Ajuste 17 (`test_verificacao_try_nameerror`) e a trava de junção do pedido A (`test_taxas_base3`).
 
 ## Três bases — e o intake delas virou checklist
 
@@ -110,7 +120,7 @@ Hoje há **três bases** de trace no projeto, com formatos de extração diferen
 
 - **Base 1** (`2026-09-trace-law-flow/`) — trace completo, a análise de referência;
 - **Base 2** (`2026-09-trace-law-flow-second/`) — amostra independente que roda na máquina de compliance; a pasta aqui é de documentação, porque os dados são descobertos lá dentro;
-- **Base 3** (`2026-10-trace-law-flow-third/`) — extração Parquet do Athena, só steps com erro + janela de contexto, sem denominador: roda no **modo observado** (`mineracao_observada.py`), onde "pendente" (falta contexto na janela para aplicar a regra) é estritamente separado de "resíduo" (a regra viu os dados e não explicou).
+- **Base 3** (`2026-10-trace-law-flow-third/`) — extração Parquet do Athena, só steps com erro + janela de contexto, sem denominador na própria extração (o denominador chegou depois, como tabela separada — `base_contagens.parquet`, o pedido A): roda no **modo observado** (`mineracao_observada.py`), onde "pendente" (falta contexto na janela para aplicar a regra) é estritamente separado de "resíduo" (a regra viu os dados e não explicou), hoje sobre a fonte v2, sem corte de texto (Ajuste 18).
 
 A chegada da base 2 provou na prática por que intake precisa de procedimento: trouxe um `error.type` que a taxonomia nunca tinha visto (`AgentMaxStepsError`, n=1) e um erro que parecia extinto reapareceu com força, reabrindo a triagem do bucket "Protocolo do harness" (22/09/2026). O setup mecânico de uma base nova (pasta datada, cópia de `base_pipeline.py` + `drill_down.py` + `checklist.py` + `.gitignore`, dump em `data/`, apontar `TRACE`) está descrito no `analysis/README.md`; o que não é mecânico virou `pipeline/checklist.py`, que roda antes de qualquer notebook — agora sobre CSV **e Parquet**, via `leitor_trace.py`:
 
