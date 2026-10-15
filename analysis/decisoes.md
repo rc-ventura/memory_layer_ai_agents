@@ -89,5 +89,9 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   (`consolidacao_unidade_papel_tokens.csv`), com os pendentes como "sem unidade"; os números que já existem não mudam
   (conferido por teste e por hash) e a rodada ganha um identificador novo. **Só entra no código quando a auditoria dos gráficos
   fechar** → [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #36 (gráfico 9) e #40 (gráfico 4); destrava #39.
+- **15/10, cada gráfico do relatório tem um insight único:** se dois gráficos contam a mesma história a partir da mesma tabela,
+  corta-se um e o que ele tinha de único passa para o outro. Aplicação: o gráfico de papéis das candidatas (um papel por barra)
+  foi cortado da parte 1; o total por papel passa para a margem do mapa papel × unidade e as cores vivas por papel, para a
+  concentração por candidata → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #40, gráficos 4, 7 e 8.
 
 ---
