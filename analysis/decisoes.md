@@ -65,5 +65,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 - **06/10, o kit:** mora no próprio `.claude/`, versionado; cada mineração tem um nome só (`/mineracao-<assunto>`);
   `investigar` e `propor-notebook` são skills de chamada manual; o Copilot lê o mesmo `.claude/`, sem cópia →
   [`kit.md`](../.claude/skills/mineracao-base/referencias/kit.md).
+- **15/10, gráficos de volume e de taxa não separam destino:** nos gráficos de volume, taxa e custo, **erro é erro** — sem
+  linha, marcador ou cor por destino (memória, sinal de harness, infra). O destino de cada erro depende da classificação,
+  que muda a cada investigação; um gráfico de volume que dependesse dela teria de ser refeito a cada sinal novo. A
+  separação por destino mora nos gráficos de destino (a fatia do orçamento de cada papel por destino; as unidades por
+  destino e tipo de memória). A taxa de erro por mês e por papel é, portanto, a taxa de **todos** os erros estruturados →
+  base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #36.
 
 ---
