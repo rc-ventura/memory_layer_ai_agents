@@ -77,5 +77,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   de resultados (fora do git, e que pode ser refeita com outro código) → [racionais da base 3 §7](2026-10-trace-law-flow-third/docs/01-racionais.md#7--o-teto-de-economia-e-o-teste-de-compensação-da-memória),
   [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #39. O arquivo só é criado depois da tabela de tokens por unidade
   e papel (#36, gráfico 9).
+- **15/10, a rodada da base 3 passa a guardar os tokens e os erros por unidade × papel, de todas as unidades:** hoje só as
+  unidades de memória têm essa abertura por papel, e por isso o gráfico das taxas que divide o orçamento de cada papel por destino
+  e o de papel × unidade do painel saem incompletos. Aprovada pelo Rafael (opção A): tabela nova na rodada
+  (`consolidacao_unidade_papel_tokens.csv`), com os pendentes como "sem unidade"; os números que já existem não mudam
+  (conferido por teste e por hash) e a rodada ganha um identificador novo. **Só entra no código quando a auditoria dos gráficos
+  fechar** → [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #36 (gráfico 9) e #40 (gráfico 4); destrava #39.
 
 ---
