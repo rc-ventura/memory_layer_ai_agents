@@ -131,7 +131,8 @@ denominador é o dos passos do papel). Com eficácia *e* menor que 100%, o ponto
 **tamanho da memória < e × orçamento de injeção**.
 
 **O teste de compensação (quando existir uma memória).** Com a rodada de hoje como **linha de base congelada** (fonte, contagens
-e rodada com hash), mede-se depois da injeção, nos mesmos papéis e unidades: (1) a **economia medida** = tokens em erro da
+e rodada com hash; os números ficam num **registro versionado** em `analysis/registros/`, e não só na pasta de resultados, que está fora
+do git e pode ser refeita com outro código — decisão de 15/10, [`decisoes.md`](../../decisoes.md)), mede-se depois da injeção, nos mesmos papéis e unidades: (1) a **economia medida** = tokens em erro da
 base − tokens em erro depois; (2) o **custo da injeção** = tokens injetados × passos em que entraram; (3) a memória
 **compensa** se economia medida − custo da injeção > 0; (4) a **eficácia** = economia medida ÷ teto. A comparação é por
 **taxa e por papel**, nunca por total: o gráfico mensal de custo mostrou que a mistura de papéis muda o custo por execução

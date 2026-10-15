@@ -71,5 +71,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   separação por destino mora nos gráficos de destino (a fatia do orçamento de cada papel por destino; as unidades por
   destino e tipo de memória). A taxa de erro por mês e por papel é, portanto, a taxa de **todos** os erros estruturados →
   base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #36.
+- **15/10, a linha de base da economia da memória é congelada num registro versionado:** o "antes" do teste de compensação
+  (teto de economia por papel e unidade, passos por papel, hashes da fonte, das contagens e da rodada; só números, nenhum
+  identificador) fica num arquivo em [`registros/`](registros/README.md), no estilo do `monitoramento.json`, e não só na pasta
+  de resultados (fora do git, e que pode ser refeita com outro código) → [racionais da base 3 §7](2026-10-trace-law-flow-third/docs/01-racionais.md#7--o-teto-de-economia-e-o-teste-de-compensação-da-memória),
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #39. O arquivo só é criado depois da tabela de tokens por unidade
+  e papel (#36, gráfico 9).
 
 ---

@@ -96,12 +96,16 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   (#36, gráfico 9) vira a **linha de base**: o **teto de economia** (candidatas: 387,0 mi = 10,4% do gasto; hipótese, sem
   descontar a injeção) e o **orçamento de injeção** (≈ 1.363 tokens por passo do sistema; `U_tipo_retorno`, 207,0 mi ÷ 283.925 ≈ 729).
   **Quando houver uma memória:** (1) congelar a linha de base (rodada `609c…`, fonte `908aa005…`, contagens com hash) —
-  proposta: um registro em `analysis/registros/` no estilo do `monitoramento.json`, com o teto por papel e unidade; (2) medir,
+  **decidido pelo Rafael em 15/10 ([`decisoes.md`](../../decisoes.md)): um registro versionado em `analysis/registros/`, no estilo do
+  `monitoramento.json`**, com o teto por papel e unidade, os passos por papel, os hashes (fonte, contagens, rodada) e a data;
+  só números, nenhum identificador; **só é criado depois da tabela de tokens por unidade × papel** (#36, gráfico 9, opção A),
+  porque o teto por papel e unidade sai dela; ao criar, entra na lista do [`registros/README.md`](../../registros/README.md); (2) medir,
   nos mesmos papéis e unidades, os tokens em erro depois da injeção; (3) **economia medida** = base − depois; **custo da
   injeção** = tokens injetados × passos em que entrou; **compensa** se economia medida − custo > 0; **eficácia** = economia
   medida ÷ teto; (4) comparar **por taxa e por papel**, nunca por total (a mistura de papéis muda o custo sem mudar a
   eficiência — #36, gráfico 6; #37). **Falta:** definir onde a memória é injetada (todos os passos do papel? só no início?),
-  o desenho do experimento (antes × depois, ou papéis com e sem memória no mesmo período) e o registro da linha de base.
+  o desenho do experimento (antes × depois, ou papéis com e sem memória no mesmo período) e **o formato do registro** da
+  linha de base (a decisão de guardar está tomada; o formato se define aqui).
   Depende de #37 e do gráfico 9 corrigido.
 - [ ] **#11** **Apresentação ao tutor** com o painel (relatório + gráficos) e o pedido de dados ([`05`](05-pedido-queries.md)):
     o método transfere (com um ajuste, o 17), os erros moram em poucos papéis, a maior unidade é um sinal de harness (o
