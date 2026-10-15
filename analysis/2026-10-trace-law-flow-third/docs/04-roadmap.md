@@ -72,7 +72,7 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   **Princípio (decisão de 15/10, [`decisoes.md`](../../decisoes.md)): nos gráficos de volume, taxa e custo, erro é erro** — sem linha, marcador ou cor por destino; o destino mora no gráfico 9 e no #38. **Também a corrigir (transversais):** (a) números acima de 1.000 mi em bilhões ("3,73 bi", não "3.729,3 mi"), no
   resumo e nos rótulos; (a2) **a base da taxa não está definida nos gráficos** e muda entre eles (pergunta do Rafael,
   15/10): os gráficos 2 e 3 usam % ("a cada 100 passos", implícito no rótulo "% dos ActionSteps") e o 8 usa "por 1.000
-  ActionSteps" (escolhido porque as taxas por unidade são pequenas). Regra: a base escrita no eixo e no "Como ler" de
+  ActionSteps" (escolhido porque as taxas por unidade são pequenas). **Confirmado como confusão real (Rafael, 15/10): perguntou se o "71,9" da célula é porcentagem ou número absoluto** — é número de erros a cada 1.000 passos (71,9 por 1.000 = 7,19%); a coluna de um mês soma a taxa total do mês em milésimos (agosto: células ≈ 153 por 1.000 + pendentes 4,1 = 157 = os 15,7% do gráfico 2), e isso deve estar no "Como ler". Regra: a base escrita no eixo e no "Como ler" de
   todo gráfico de taxa ("erros a cada 100 passos (%)"; "erros a cada 1.000 passos do mês") e, se possível, uma base só no
   relatório (% com uma casa a mais no 8) — ou, mantendo 1.000 no 8, a frase "≈ 10 vezes o valor em %"; (b) o funil dá 20.442 execuções com erro estruturado e o parquet de erros, 20.986: a diferença
   (544) deve ser de execuções só com suspeita — **hipótese**, fechar com uma contagem no `conferir_contagens.py`
