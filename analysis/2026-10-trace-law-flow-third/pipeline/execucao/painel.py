@@ -27,7 +27,7 @@ FIGURAS = [("genealogia_observada.png", "Genealogia: família → assinatura →
            ("unidades_observadas.png", "Tokens dos erros por unidade"),
            ("papel_unidade.png", "Erros por papel × unidade")]
 MOTIVO = {
-    "regra_por_mensagem_elegivel": "regra pela mensagem (inteira)",
+    "regra_por_mensagem_elegivel": "mensagem de erro inteira basta",
     "sinais_suficientes_para_regra_de_parsing": "sinais suficientes para a regra de código mal formado",
     "proxy_predecessor_estruturado_nao_prova_namespace": "nome não definido com o erro anterior visível na janela",
     "linha_rejeitada_na_mensagem_ou_codigo": "linha rejeitada visível na mensagem ou no código",
@@ -82,20 +82,35 @@ def _tabela(df, alinhar):
     return "\n".join([cab, sep] + linhas)
 
 
-def figura_cobertura(cob, destino):
+def figura_cobertura(cob, destino, residuo=0):
+    """Cobertura: em quantos erros a regra tem a evidência para decidir (azul) e em quantos falta o dado (cinza).
+
+    "Observável" não é "reconhecido": os `residuo` erros que nenhuma regra reconheceu estão dentro do azul."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from paleta import BASE, BLUE, INK2
+    from matplotlib.patches import Patch
+    from paleta import CINZA, BLUE, INK2
     c = cob.assign(motivo=cob.motivo_evidencia.map(lambda m: MOTIVO.get(m, m))).sort_values("erros")
-    fig, ax = plt.subplots(figsize=(11, max(3, 0.45 * len(c) + 1)))
-    cores = [BLUE if s == "observavel" else BASE for s in c.situacao_mecanismo]
-    ax.barh(c.motivo, c.erros, color=cores)
-    for i, v in enumerate(c.erros):
-        ax.text(v, i, " " + _n(v), va="center", fontsize=9, color=INK2)
-    obs = int(cob.loc[cob.situacao_mecanismo.eq("observavel"), "erros"].sum())
-    fig.suptitle(f"Cobertura das regras: {_n(obs)} de {_n(cob.erros.sum())} erros estruturados caem numa unidade (azul)\n"
-                 "os demais ficam pendentes por falta de dado (cinza)", x=0.01, ha="left", fontsize=11)
+    total = c.erros.sum()
+    fig, ax = plt.subplots(figsize=(11, max(3.4, 0.45 * len(c) + 1.8)))
+    obs_mask = c.situacao_mecanismo.eq("observavel")
+    ax.barh(c.motivo, c.erros, color=[BLUE if o else CINZA for o in obs_mask])
+    for i, (v, t) in enumerate(zip(c.erros, c.tokens_n_conhecidos)):
+        pct = 100 * v / total
+        ax.text(v, i, f" {_n(v)} ({'<0,1' if pct < 0.05 else _n(pct, 1)}%) · {_n(t / 1e6, 1)} mi tokens",
+                va="center", fontsize=9, color=INK2)
+    ax.set_xlim(0, c.erros.max() * 1.6)
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: _n(v)))
+    obs, pend = int(c.erros[obs_mask].sum()), int(c.erros[~obs_mask].sum())
+    tok_obs, tok_pend = c.tokens_n_conhecidos[obs_mask].sum() / 1e6, c.tokens_n_conhecidos[~obs_mask].sum() / 1e6
+    ax.legend(handles=[Patch(color=BLUE, label=f"evidência disponível: {_n(obs)} ({_n(100 * obs / total, 1)}%) · {_n(tok_obs, 1)} mi tokens"),
+                       Patch(color=CINZA, label=f"pendente, falta o dado: {_n(pend)} ({_n(100 * pend / total, 1)}%) · {_n(tok_pend, 1)} mi tokens")],
+              loc="lower right", frameon=False, fontsize=9)
+    sub = (f"Dos {_n(obs)} observáveis, {_n(residuo)} nenhuma regra reconheceu (resíduo): "
+           f"{_n(obs - residuo)} ({_n(100 * (obs - residuo) / total, 1)}%) caem numa unidade reconhecida.")
+    fig.suptitle(f"A regra tem a evidência para decidir em {_n(obs)} de {_n(total)} erros estruturados ({_n(100 * obs / total, 1)}%); "
+                 f"{_n(pend)} ficam pendentes por falta de dado\n{sub}", x=0.01, ha="left", fontsize=11)
     ax.set_xlabel("erros estruturados")
     for lado in ["top", "right"]:
         ax.spines[lado].set_visible(False)
@@ -125,7 +140,7 @@ def gerar(pasta):
     resumo = pd.DataFrame([
         ("Erros estruturados", _n(r["erros_estruturados"])),
         ("Suspeitas da query (fora da taxonomia)", _n(r.get("suspeitas_fora_taxonomia"))),
-        ("Caem numa unidade (observáveis)", f"{_n(r['mecanismos_observaveis'])} ({_n(100 * r['mecanismos_observaveis'] / total_err)}%)"),
+        ("A regra tem a evidência para decidir (observáveis)", f"{_n(r['mecanismos_observaveis'])} ({_n(100 * r['mecanismos_observaveis'] / total_err)}%)"),
         ("Pendentes por falta de dado", f"{_n(r['pendentes'])} ({_n(100 * r['pendentes'] / total_err)}%)"),
         ("Unidades observáveis", _n(r["unidades_observaveis"])),
         ("Candidatas a memória (≥3 execuções, ≥2 meses)", _n(len(cand))),
@@ -155,7 +170,7 @@ def gerar(pasta):
         "Papéis": t.papeis.map(_n), "Tokens (mi)": (t.tokens_n_conhecidos / 1e6).map(lambda v: _n(v, 1)),
         "% tokens": (100 * t.tokens_n_conhecidos / total_tok).map(lambda v: _n(v, 1))})
 
-    figura_cobertura(cob, saida / "cobertura.png")
+    figura_cobertura(cob, saida / "cobertura.png", int(residuo.erros_observaveis.sum()))
     figuras = [("cobertura.png", "Cobertura das regras: observável × pendente, por motivo")]
     for nome, titulo in FIGURAS:
         if (pasta / nome).exists():
