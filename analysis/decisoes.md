@@ -74,6 +74,9 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   **Aplicação à parte 1 do relatório (15/10, #40):** os gráficos por unidade (tokens por unidade, frequência × custo, papel × unidade,
   concentração por papel) trazem **todas** as unidades, sem cor, agrupamento nem texto de destino; só o gráfico de destinos (e o
   orçamento por papel, nas taxas) separam por destino.
+  Sem exceção no gráfico de tokens por unidade; a cor desses gráficos é a **família** do erro, com legenda; o destino e o tipo da
+  memória (factual · ambiente × experiencial · estratégia, Hu et al. 2025) ficam no gráfico de unidades por destino (#38), que
+  entra na parte 1 (#40, gráfico 8).
 - **15/10, a linha de base da economia da memória é congelada num registro versionado:** o "antes" do teste de compensação
   (teto de economia por papel e unidade, passos por papel, hashes da fonte, das contagens e da rodada; só números, nenhum
   identificador) fica num arquivo em [`registros/`](registros/README.md), no estilo do `monitoramento.json`, e não só na pasta
