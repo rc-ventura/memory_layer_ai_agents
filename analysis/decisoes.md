@@ -76,7 +76,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   orçamento por papel, nas taxas) separam por destino.
   Sem exceção no gráfico de tokens por unidade; a cor desses gráficos é a **família** do erro, com legenda; o destino e o tipo da
   memória (factual · ambiente × experiencial · estratégia, Hu et al. 2025) ficam no gráfico de unidades por destino (#38), que
-  entra na parte 1 (#40, gráfico 9).
+  entra na parte 1 (#40, gráfico 12).
 - **15/10, a linha de base da economia da memória é congelada num registro versionado:** o "antes" do teste de compensação
   (teto de economia por papel e unidade, passos por papel, hashes da fonte, das contagens e da rodada; só números, nenhum
   identificador) fica num arquivo em [`registros/`](registros/README.md), no estilo do `monitoramento.json`, e não só na pasta
@@ -92,6 +92,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 - **15/10, cada gráfico do relatório tem um insight único:** se dois gráficos contam a mesma história a partir da mesma tabela,
   corta-se um e o que ele tinha de único passa para o outro. Aplicação: o gráfico de papéis das candidatas (um papel por barra)
   foi cortado da parte 1; o total por papel passa para a margem do mapa papel × unidade e as cores vivas por papel, para a
-  concentração por candidata → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #40, gráficos 4, 7 e 8.
+  concentração por candidata; e o gráfico de erros por unidade e mês (contagem) foi cortado da parte 1, virando o painel da esquerda do
+  gráfico de taxa por unidade e mês da parte 2 → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #40, gráficos 4, 7, 8 e 9.
 
 ---
