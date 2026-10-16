@@ -50,20 +50,16 @@ def funil(execs, extra, destino):
     asteps, erros = int(execs.actionsteps.sum()), int(execs.erros.sum())
     com_susp = int((execs.erros.gt(0) | execs.suspeitas.gt(0)).sum())
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(12, 3.4))
-    for ax, rot, val, nota in [
-            (a1, ["execuções", "execuções com pelo menos um erro"], [n, com_erro],
-             f"{_n(erros / com_erro, 2) if com_erro else '—'} erros por execução com erro"),
-            (a2, ["passos (ActionSteps)", "passos com erro"], [asteps, erros],
-             f"{_n(asteps / n, 2)} passos por execução")]:
-        ax.barh(rot[::-1], val[::-1], color=[ORANGE, BASE])
+    for ax, rot, val in [(a1, ["execuções", "com erro"], [n, com_erro]), (a2, ["passos", "com erro"], [asteps, erros])]:
+        ax.barh(rot[::-1], val[::-1], color=[ORANGE, BLUE])
         for i, v in enumerate(val[::-1]):
             ax.text(v, i, " " + _n(v) + (f" ({_p(v, val[0])})" if v != val[0] else ""), va="center", fontsize=9,
                     color=INK2)
         ax.set_xlim(0, val[0] * 1.35)
+        ax.xaxis.set_major_locator(MaxNLocator(4))
         _milhar(ax, "x")
-        ax.text(0, -0.32, nota, transform=ax.transAxes, fontsize=9, color=INK2)
         _limpar(ax)
-    a1.set_title("Execuções (execução + agente)", loc="left", fontsize=10)
+    a1.set_title("Execuções", loc="left", fontsize=10)
     a2.set_title("Passos", loc="left", fontsize=10)
     fig.suptitle(f"{_p(com_erro, n)} das execuções têm pelo menos um erro · {_p(erros, asteps)} dos passos são erro",
                  x=0.01, ha="left", fontsize=11)
@@ -77,8 +73,9 @@ def funil(execs, extra, destino):
     return ("O tamanho do problema: execuções e passos com erro",
             "Quanto do trabalho do sistema esbarra num erro estruturado?",
             "À esquerda as execuções, à direita os passos (ActionSteps), cada painel na sua escala; a barra de baixo é um "
-            "subconjunto da de cima e o percentual é sobre ela. Uma execução com erro pode ter vários: por isso os dois "
-            "percentuais são diferentes (as linhas embaixo dão a ligação).",
+            "subconjunto da de cima e o percentual é sobre ela. Uma execução com erro pode ter vários — "
+            f"{_n(erros / com_erro, 2) if com_erro else '—'} erros por execução com erro, e {_n(asteps / n, 2)} passos por "
+            "execução —, por isso os dois percentuais são diferentes.",
             "Execução = execução + agente, somando os papéis. " + passos + "Erro estruturado = levantou exceção; as "
             "suspeitas da query e as falhas silenciosas não entram. Com as suspeitas, "
             f"{_p(com_susp, n)} das execuções ({_n(com_susp)}) têm erro ou suspeita.")
@@ -158,10 +155,13 @@ def papel_volume(papel, destino):
     rotular(ax, rot.actionsteps.tolist(), (100 * rot.taxa).tolist(),
             [f"{i} {_pct(100 * r.taxa)}" for i, r in rot.iterrows()],
             raios=(np.sqrt(tam[rot.index]) / 2).tolist(), fontsize=7.5)
-    refs = refs_tamanho(float(p.tokens_total.max()))
-    ax.legend(handles=[plt.scatter([], [], s=v * escala, color=BLUE, alpha=0.6, edgecolor="white") for v in refs],
-              labels=[tok(v) for v in refs], title="tamanho = gasto total do papel", loc="upper right", frameon=False,
-              fontsize=8, title_fontsize=8, labelspacing=1.5, borderpad=1)
+    mx = float(p.tokens_total.max())
+    refs = [v for v in [1e9, 1e8, 1e7] if v <= mx] or refs_tamanho(mx)
+    leg = ax.legend(handles=[plt.scatter([], [], s=max(v * escala, 15), color=BLUE, alpha=0.6, edgecolor="white")
+                             for v in refs], labels=[tok(v) for v in refs], title="tamanho = gasto total\ndo papel em tokens",
+                    loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False, fontsize=8, title_fontsize=8,
+                    labelspacing=2.0, borderpad=1)
+    leg._legend_box.sep = 12
     _limpar(ax)
     alto, vol = grandes.taxa.idxmax(), grandes.actionsteps.idxmax()
     if alto != vol:
@@ -178,7 +178,8 @@ def papel_volume(papel, destino):
             "Um papel aparece com muitos erros porque erra mais por passo ou porque roda mais?",
             "Cada ponto é um papel: à direita, os que rodam mais; acima, os que erram mais por passo (erros a cada 100 "
             "passos do papel). O tamanho é o gasto total do papel em tokens, em todos os seus passos (com ou sem erro); a "
-            f"legenda dá a escala. Rótulo em todo papel com pelo menos {MIN_N} execuções. A linha pontilhada é a taxa "
+            "área da bolha é proporcional ao gasto e a legenda dá três referências (uma bolha entre a de 100 mi e a de 1 bi "
+            f"gasta algumas centenas de milhões). Rótulo em todo papel com pelo menos {MIN_N} execuções. A linha pontilhada é a taxa "
             "global do sistema (ponderada pelo volume, puxada pelos papéis grandes), não a média dos papéis. Acima do "
             f"dobro da taxa global: {lista}.",
             f"Pontos cinza: menos de {MIN_N} execuções do papel. A taxa é a do período inteiro (esconde o mês) e conta todos "
@@ -199,8 +200,7 @@ def custo_execucao(execs, custo_papel, destino):
         ax.barh(["sem erro", "com erro"], [1, k[col]], color=[BLUE, ORANGE])
         for i, grupo in enumerate([False, True]):
             v = 1 if not grupo else k[col]
-            ax.text(v, i, f"  {_n(v, 1)}× · mediana {_n(med.loc[grupo, col])} {unid} (n = {_n(n[grupo])})", va="center",
-                    fontsize=8.5, color=INK2)
+            ax.text(v, i, f"  {_n(v, 1)}×", va="center", fontsize=10, color=INK2)
         ax.set_xlim(0, max(k[col], 1) * 2.1)
         ax.set_xlabel("× a execução típica sem erro")
         ax.set_title(rot, loc="left", fontsize=10)
@@ -223,7 +223,10 @@ def custo_execucao(execs, custo_papel, destino):
             "Quanto mais tokens e mais passos usa uma execução que teve erro?",
             "Duas barras por painel, normalizadas: a execução sem erro vale 1×. A estatística é a mediana — a execução do "
             "meio: metade custa menos, metade custa mais (robusta à cauda longa: poucas execuções levam boa parte do "
-            "gasto). Execução = execução + agente, somando os papéis." + dentro,
+            f"gasto). Os valores: com erro, mediana de {_n(med.loc[True, 'tokens_total'])} tokens e "
+            f"{_n(med.loc[True, 'actionsteps'])} passos ({_n(n[True])} execuções); sem erro, {_n(med.loc[False, 'tokens_total'])} "
+            f"tokens e {_n(med.loc[False, 'actionsteps'])} passos ({_n(n[False])} execuções). Execução = execução + agente, "
+            "somando os papéis." + dentro,
             "Não é causa: uma execução longa tem mais chance de errar e custa mais de qualquer jeito. Só os passos (o "
             "planejamento não entra). \"Sem erro\" inclui as execuções só com suspeita. A média e o p90 estão no CSV.")
 
@@ -244,7 +247,8 @@ def concentracao(execs, destino):
         tops[q] = (v, e)
         yc = 100 * np.interp(xt / 100, x, acum)
         ax.scatter([q], [100 * v], color=ORANGE, zorder=3)
-        ax.annotate(f"{q}% mais caras = {_n(100 * v)}% do gasto\ndessas, {_n(100 * e)}% têm erro", (q, 100 * v),
+        ax.annotate(f"{q}% mais caras = {_n(100 * v)}% do gasto\n{_n(100 * e)}% dessas execuções tiveram erro\n"
+                    f"(no total: {_n(100 * err.mean())}%)", (q, 100 * v),
                     xytext=(xt, yc - 12), fontsize=9, va="center",
                     arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.6))
     ax.set_xlim(0, 100)
@@ -259,7 +263,9 @@ def concentracao(execs, destino):
             "O gasto total é dominado por uma cauda de execuções caras — e essas execuções têm erro?",
             "A curva soma o gasto da execução mais cara para a mais barata: cada ponto diz que as N% execuções mais caras "
             "levam tal fatia do gasto. A diagonal tracejada é o custo igual para todas; quanto mais a curva sobe cedo, "
-            "mais concentrado. Nos dois pontos marcados, a % das execuções que têm pelo menos um erro estruturado. É uma "
+            "mais concentrado. Nos dois pontos marcados, a % daquelas execuções (contagem, não tokens) que tiveram pelo "
+            "menos um erro estruturado, comparada com a % no sistema todo: as execuções caras têm erro com mais "
+            "frequência. É uma "
             "curva de concentração (uma Lorenz invertida: por somar da mais cara, fica acima da diagonal); a análise da "
             "base 1 a chama de Lorenz.",
             "Execução = execução + agente, somando os papéis; só os tokens dos passos (o planejamento não entra), com ou "
@@ -287,7 +293,7 @@ def custo_mensal(execs, mes, destino):
     a2.spines["top"].set_visible(False)
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = a2.get_legend_handles_labels()
-    ax.legend(h1 + h2, l1 + l2, frameon=False, fontsize=8, loc="upper left")
+    ax.legend(h1 + h2, l1 + l2, frameon=False, fontsize=8, loc="lower left", bbox_to_anchor=(0.0, 1.06), ncol=2)
     ax.spines["top"].set_visible(False)
     ok = med[n >= MIN_N] if (n >= MIN_N).any() else med
     pico = ok.idxmax()
@@ -299,13 +305,21 @@ def custo_mensal(execs, mes, destino):
         if ok.index[-1] != mn:
             partes.append(f"{_n(ok.iloc[-1])} em {_mes(ok.index[-1])}")
     ax.set_title("Custo mediano por execução: " + ", ".join(partes[:-1]) + (" e " if len(partes) > 1 else "") + partes[-1],
-                 loc="left", fontsize=11)
+                 loc="left", fontsize=11, pad=30)
     _salvar(fig, destino)
+    k = n >= MIN_N
+    r = float(np.corrcoef(med[k], taxa[k])[0, 1]) if k.sum() >= 3 else float("nan")
+    par = ("poucos meses para medir" if np.isnan(r) else
+           f"{'o custo da execução típica e a taxa de erro andam juntos' if r >= 0.5 else 'custo e taxa de erro não andam juntos'} "
+           f"(correlação de {_n(r, 2)} nos {int(k.sum())} meses com pelo menos {MIN_N} execuções; n pequeno: sugere, não prova)")
     return ("Evolução mensal do custo por execução",
             "O custo por execução cai sozinho, sem memória — e anda junto com a taxa de erro?",
             "Barras: a mediana dos tokens por execução no mês (a execução do meio), com o número de execuções. Linha "
-            "laranja, no eixo da direita: a taxa de erro do mesmo mês (o gráfico de taxa por mês), para ver o par. A média "
-            "por mês está em `taxas_por_mes.csv`.",
+            "laranja, no eixo da direita: a taxa de erro do mesmo mês (o gráfico de taxa por mês). O que este gráfico "
+            f"acrescenta é o par: {par}. Duas leituras possíveis, as duas hipóteses: o erro encarece a execução, ou uma "
+            "causa comum (a mistura de papéis de cada mês) mexe nos dois; separar é o gráfico por papel e mês (roadmap b3 "
+            "#37). "
+            "A média por mês está em `taxas_por_mes.csv`.",
             f"Barras cinza: menos de {MIN_N} execuções. Uma mudança na mistura de papéis muda a mediana sem mudar a "
             "eficiência de nenhum deles (roadmap b3 #37). O que cai aqui é o custo por execução, não o gasto total do mês.")
 
@@ -335,35 +349,42 @@ def entrada_saida(papel, total_erro, destino, topo=10):
         ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _mil(v)))
         ax.set_title(tit, loc="left", fontsize=10)
         _limpar(ax)
-    a1.set_yticks(y, [f"{nome_papel(i)}\n{_n(r.erros)} passos com erro" for i, r in p.iterrows()], fontsize=8)
+    a1.set_yticks(y, [nome_papel(i) for i in p.index], fontsize=8.5)
     a1.invert_yaxis()
-    for yy, (_, r) in zip(y, p.iterrows()):
-        a2.text(1.02, yy, f"com erro: {_mil(r.e_err + r.s_err)} ({'+' if r.excesso >= 0 else '−'}"
-                f"{_mil(abs((r.e_err + r.s_err) - (r.e_ok + r.s_ok)))})\nexcesso: {'−' if r.excesso < 0 else ''}{tok(abs(r.excesso))}",
-                transform=a2.get_yaxis_transform(), va="center", fontsize=7.5, color=INK2)
     a1.legend(frameon=False, fontsize=8, loc="lower right")
-    minimo = p.entrada_err.min()
-    fig.suptitle(f"Em todos os {len(p)} papéis com mais tokens em erro, pelo menos {_n(100 * minimo)}% dos tokens do "
-                 "passo com erro são de entrada", x=0.01, ha="left", fontsize=11)
+    # o achado: dentro do mesmo papel, o passo com erro custa quase o mesmo que o sem erro? (soma do excesso de cada
+    # papel × o excesso que a média do sistema sugere)
+    err_ps = papel.tokens_erro.sum() / papel.erros.sum()
+    ok_ps = (papel.tokens_total.sum() - papel.tokens_erro.sum()) / (papel.actionsteps.sum() - papel.erros.sum())
+    excesso_sistema = (err_ps - ok_ps) * papel.erros.sum()
+    excesso_dentro = float(q.excesso.sum())
+    if abs(excesso_dentro) < 0.25 * abs(excesso_sistema):
+        titulo = (f"Dentro do mesmo papel, o passo com erro custa quase o mesmo que o passo sem erro: os "
+                  f"{_n(err_ps / ok_ps, 1)}× do sistema ({_mil(err_ps)} × {_mil(ok_ps)} por passo) vêm da mistura de papéis")
+    else:
+        titulo = (f"Dentro do mesmo papel, os passos com erro gastam {tok(abs(excesso_dentro))} "
+                  f"{'a mais' if excesso_dentro > 0 else 'a menos'} que gastariam passos sem erro")
+    fig.suptitle(titulo, x=0.01, ha="left", fontsize=11)
     _salvar(fig, destino)
-    # composição: quanto da diferença global de fatia de saída é dentro dos papéis e quanto é mistura
     w = q.tokens_erro / q.tokens_erro.sum()
     dentro = float((w * (q.saida_erro - q.saida_total)).sum())
     total = total_erro[1] - total_erro[0]
-    err_ps = papel.tokens_erro.sum() / papel.erros.sum()
-    ok_ps = (papel.tokens_total.sum() - papel.tokens_erro.sum()) / (papel.actionsteps.sum() - papel.erros.sum())
+    minimo = p.entrada_err.min()
     return ("Tokens de entrada × saída por passo",
-            "Quanto um passo com erro gasta a mais que o passo típico do mesmo papel, e onde — na entrada ou na saída?",
+            "Um passo com erro gasta mais que o passo sem erro do mesmo papel — e onde, na entrada ou na saída?",
             "Entrada = o que o modelo lê no passo (prompt, histórico, retorno das ferramentas); saída = o que ele escreve "
             "(raciocínio e código). Para cada papel (os de mais tokens em erro), a média de tokens por passo: azul = os "
-            "passos sem erro do papel, laranja = os passos com erro. À direita, duas medidas: o gasto do passo com erro "
-            "(tudo o que ele gastou; o passo é descartado) com a diferença sobre o passo sem erro, e o excesso no papel "
-            "(essa diferença × os passos com erro). No sistema: passo com erro "
-            f"{_mil(err_ps)}, passo sem erro {_mil(ok_ps)} ({_n(err_ps / ok_ps, 1)}×), excesso ≈ "
-            f"{tok((err_ps - ok_ps) * papel.erros.sum())}. A fatia de saída sobe de {_pct(100 * total_erro[0])} (todos os "
-            f"passos) a {_pct(100 * total_erro[1])} (passos com erro), mas dentro dos papéis a diferença é "
-            f"{_n(100 * dentro, 1)} ponto(s); os outros {_n(100 * (total - dentro), 1)} vêm da mistura (os erros se "
-            "concentram em papéis que escrevem mais).",
+            "passos sem erro do papel, laranja = os passos com erro. Barras parecidas = o passo com erro custa o mesmo "
+            "que um passo comum: o gasto do erro vem de quantos passos falham (cada um é descartado), não de passos mais "
+            f"caros. No sistema, o passo com erro custa {_mil(err_ps)} e o sem erro {_mil(ok_ps)} ({_n(err_ps / ok_ps, 1)}×), "
+            f"o que sugeriria {tok(excesso_sistema)} a mais; somando papel a papel, a diferença é "
+            f"{'+' if excesso_dentro >= 0 else '−'}{tok(abs(excesso_dentro))}: o resto é mistura (os erros se concentram "
+            "nos papéis de passo caro). Um passo com erro mais barato que o comum costuma ser erro cedo na trajetória, com "
+            f"pouco contexto (hipótese). Em todos os {len(p)} papéis, pelo menos {_n(100 * minimo)}% dos tokens do passo "
+            f"com erro são de entrada. A fatia de saída sobe de {_pct(100 * total_erro[0])} (todos os passos) a "
+            f"{_pct(100 * total_erro[1])} (passos com erro), mas dentro dos papéis a diferença é {_n(100 * dentro, 1)} "
+            f"ponto(s); os outros {_n(100 * (total - dentro), 1)} vêm da mistura. Passos com erro por papel: "
+            + "; ".join(f"{nome_papel(i)} {_n(r.erros)}" for i, r in p.iterrows()) + ".",
             "Média por passo (as contagens dão somas, não a distribuição); não inclui os passos de recuperação depois do "
             "erro (cascata). Hipóteses, não medidas: que a entrada alta seja contexto acumulado (falta a entrada por "
             "posição do passo, roadmap b3 #13); que a saída maior no passo com erro venha de erros que geram texto "
@@ -404,7 +425,7 @@ def taxa_unidade_mes(upm, ppm, tri, mes, destino):
                             color="white" if escuro else (MUTED if poucos[j] else INK),
                             fontweight="bold" if i == n_l - 1 else "normal")
         ax.axhline(n_l - 1.5, color=INK2, lw=0.8)
-        ax.set_xticks(range(n_c), [f"{_mes(m)}\n{_n(d)} passos" if pd.notna(d) else _mes(m)
+        ax.set_xticks(range(n_c), [f"{_mes(m)}\n{_n(d)}" if pd.notna(d) else _mes(m)
                                    for m, d in zip(meses, den)], fontsize=7.5)
         for lab, pq in zip(ax.get_xticklabels(), poucos):
             if pq:
@@ -415,12 +436,6 @@ def taxa_unidade_mes(upm, ppm, tri, mes, destino):
         cb.ax.tick_params(labelsize=7)
         cb.set_label(rot + " (escala log)", fontsize=8)
     axes[0].set_yticks(range(n_l), [unidade(u) if u != "total do mês" else "total do mês" for u in piv.index], fontsize=7.5)
-    picos = taxa.iloc[:-1]
-    for i, (u, r) in enumerate(picos.iterrows()):
-        if r.max() > 0:
-            mm = r.idxmax()
-            axes[1].text(n_c - 0.4, i, f" pico {_n(r.max(), 2)}% ({_mes(mm)})", va="center", fontsize=7, color=INK2,
-                         clip_on=False)
     ult = meses[-1]
     fig.suptitle(f"Erros por unidade e mês — à esquerda a contagem, à direita a taxa: % dos passos do sistema no mês "
                  f"(todos os papéis). Cinza: mês com menos de {_n(MIN_PASSOS)} passos no sistema (fora da escala de cor)",
@@ -436,10 +451,12 @@ def taxa_unidade_mes(upm, ppm, tri, mes, destino):
             "A unidade cresce porque o sistema rodou mais, ou porque o erro ficou mais frequente por passo?",
             "Mesmas linhas e meses nos dois painéis: à esquerda a contagem de erros, à direita a taxa — os erros da "
             "unidade como % de todos os passos do sistema no mês (a mesma unidade da taxa por mês). Embaixo de cada mês, "
-            "o denominador (passos do mês). Uma régua de cor só por painel, em escala log, com a barra de cores: células "
-            "de mesma cor têm o mesmo valor. À direita, o pico de cada linha. A linha do total soma a coluna; na taxa, é "
-            f"a taxa total do mês (a do gráfico de taxa por mês). Exemplo: {exemplo}. Onde a contagem sobe e a taxa não, "
-            f"foi volume. Um mês com menos de {_n(MIN_PASSOS)} passos no sistema mostra os números, mas fica cinza e fora "
+            "o número de passos do sistema no mês (o denominador). Uma régua de cor só por painel, em escala log, com a "
+            "barra de cores: células de mesma cor têm o mesmo valor. A linha do total soma a coluna; na taxa, é a taxa "
+            f"total do mês (a do gráfico de taxa por mês) e serve de régua: a unidade com {_n(taxa.loc[u_ex, m_ex], 2)}% "
+            f"em {_mes(m_ex)} é {_n(100 * taxa.loc[u_ex, m_ex] / taxa.loc['total do mês', m_ex])}% de todos os erros "
+            f"daquele mês. Exemplo: {exemplo}. Onde a contagem sobe e a taxa não, foi volume: o sistema rodou mais, o erro "
+            f"não ficou mais frequente. Um mês com menos de {_n(MIN_PASSOS)} passos no sistema mostra os números, mas fica cinza e fora "
             "da régua de cor: poucos erros nele viram uma taxa alta e pintariam o pico da linha.",
             "O denominador é o mês inteiro (todos os papéis), não só os papéis onde a unidade aparece: uma unidade que cai "
             "pode ser um papel que rodou menos (a taxa por papel é o roadmap b3 #37). Meses com poucos passos têm taxa "
@@ -498,8 +515,8 @@ def orcamento_papel(papel, upt, tri, destino, topo=12):
     fx = {k: por[k].sum() for k, _, _ in FAIXAS}
     quadro = ("Sistema todo (gasto total " + tok(tot) + "):\n" + "\n".join(
         f"{rot.split(' (')[0]}: {tok(fx[k])} = {_pct(100 * fx[k] / tot)}" for k, rot, _ in FAIXAS) +
-        f"\norçamento de injeção: ≈ {_n(fx['candidata'] / asteps)} tokens por passo\n"
-        "hipótese: teto, sem o custo de injetar a memória")
+        f"\npara empatar, a memória pode custar até ≈ {_n(fx['candidata'] / asteps)} tokens por passo\n"
+        "(teto = hipótese: supõe evitar todos esses erros, sem o custo de injetar a memória)")
     ax.text(0.99, 0.32, quadro, transform=ax.transAxes, ha="right", va="bottom", fontsize=7.5, color=INK2,
             bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor=GRID))
     _limpar(ax)
@@ -522,94 +539,51 @@ def orcamento_papel(papel, upt, tri, destino, topo=12):
             f"{_n(dif.max())} tokens.")
 
 
-def _painel_prioridade(ax, p, col, sist, sem, maior, rot_valor, cobertura):
-    """Um painel do gráfico de prioridade: x = `col` ÷ gasto total do papel, y = `col` (log); papéis até `cobertura`
-    do total da coluna, o resto num ponto; o fator sobre a referência no rótulo; em laranja, quem mais muda de posição
-    entre os dois painéis (marcado de fora, em `p.destaque`)."""
-    p = p[p[col].gt(0)].sort_values(col, ascending=False)
-    acum = p[col].cumsum() / p[col].sum()
+def prioridade(papel, upt, tri, destino, cobertura=0.95):
+    """10 · Prioridade em tokens absolutos, um painel só (redesenhado em 16/10: os dois painéis de pontos ficaram ilegíveis).
+    A barra inteira é o que o papel gastou em passos com erro ("para reduzir erros"); a parte azul, o que é de candidatas a
+    memória ("para memória", o teto). O gráfico anterior dá a fatia de cada papel sobre o próprio gasto; este, o volume."""
+    papel = papel.copy()
+    cand = set(tri.loc[tri.decisao.eq("candidato observado"), "unidade"]) if upt is not None else set()
+    papel["teto"] = (upt[upt.unidade.isin(cand)].groupby("role").tokens_n_conhecidos.sum().reindex(papel.index).fillna(0)
+                     if upt is not None else 0.0)
+    p = papel[papel.tokens_erro.gt(0)].sort_values("tokens_erro", ascending=False)
+    acum = p.tokens_erro.cumsum() / p.tokens_erro.sum()
     k = max(int((acum < cobertura).sum()) + 1, min(3, len(p)))
     sel, resto = p.head(k), p.iloc[k:]
-    pct = sel[col] / sel.tokens_total
-    ax.scatter(100 * pct, sel[col], s=60, color=[ORANGE if d else BLUE for d in sel.destaque], zorder=3)
-    xs, ys, textos = (100 * pct).tolist(), sel[col].tolist(), []
-    for i, r in sel.iterrows():
-        ref, nome_ref = (sist, "o sistema") if i == maior else (sem, f"sem o {nome_papel(maior)}")
-        textos.append(f"{nome_papel(i)}: {_pct(100 * r[col] / r.tokens_total)} de {tok(r.tokens_total)} = {tok(r[col])}"
-                      f" · {_n(r[col] / r.tokens_total / ref, 1)}× {nome_ref}")
+    linhas = [(nome_papel(i), r.tokens_erro, r.teto) for i, r in sel.iterrows()]
     if len(resto):
-        rp = resto[col].sum() / resto.tokens_total.sum()
-        ax.scatter([100 * rp], [resto[col].sum()], s=60, color=BASE, zorder=3)
-        xs.append(100 * rp)
-        ys.append(resto[col].sum())
-        textos.append(f"demais {len(resto)} papéis: {_pct(100 * rp)} de {tok(resto.tokens_total.sum())}")
-    ax.set_yscale("log")
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: tok(v)))
-    for v, r, ls in [(sist, f"referência: sistema todo {_pct(100 * sist)}", "--"),
-                     (sem, f"referência: sem o {nome_papel(maior)} {_pct(100 * sem)}", ":")]:
-        ax.axvline(100 * v, color=MUTED, linestyle=ls, linewidth=1, label=r)
-    ax.legend(frameon=False, fontsize=8, loc="lower right")
-    ax.set_xlim(0, 100 * max(pct.max(), sist) * 1.3)
-    ax.set_ylim(min(ys) / 2.5, max(ys) * 2.5)
-    rotular(ax, xs, ys, textos, raios=[4] * len(xs), fontsize=7)
-    ax.set_xlabel(f"% do gasto total do papel {rot_valor}")
-    ax.grid(color=GRID, lw=0.6, zorder=0)
+        linhas.append((f"demais {len(resto)} papéis", resto.tokens_erro.sum(), resto.teto.sum()))
+    tot_err, tot_teto = papel.tokens_erro.sum(), papel.teto.sum()
+    fig, ax = plt.subplots(figsize=(12, 0.55 * len(linhas) + 2))
+    y = np.arange(len(linhas))
+    ax.barh(y, [l[1] / 1e6 for l in linhas], color=BASE, label="tokens em passos com erro (todos os destinos)")
+    if upt is not None:
+        ax.barh(y, [l[2] / 1e6 for l in linhas], color=BLUE, height=0.5, label="… dos quais de candidatas a memória (teto)")
+    for yy, (nome, e, t) in zip(y, linhas):
+        ax.text(e / 1e6, yy, f"  {tok(e)} ({_n(100 * e / tot_err)}% dos erros)"
+                + (f" · candidatas {tok(t)}" if upt is not None else ""), va="center", fontsize=8.5, color=INK2)
+    ax.set_yticks(y, [l[0] for l in linhas], fontsize=9)
+    ax.invert_yaxis()
+    ax.set_xlim(0, max(l[1] for l in linhas) / 1e6 * 1.45)
+    ax.set_xlabel("milhões de tokens")
+    ax.legend(frameon=False, fontsize=8.5, loc="lower right")
     _limpar(ax)
-    return sel
-
-
-def prioridade(papel, upt, tri, destino, cobertura=0.95):
-    """10 · A prioridade em dois critérios, um por painel (decisão D3 de 16/10): para reduzir erros (todos os tokens em
-    passos com erro) e para memória (o teto: só os tokens das candidatas)."""
-    papel = papel.copy()
-    criterios = [("tokens_erro", "que foi para passos com erro", "Para reduzir erros: todos os tokens em passos com erro")]
-    if upt is not None:
-        cand = set(tri.loc[tri.decisao.eq("candidato observado"), "unidade"])
-        papel["teto"] = (upt[upt.unidade.isin(cand)].groupby("role").tokens_n_conhecidos.sum()
-                         .reindex(papel.index).fillna(0))
-    p = papel[papel.tokens_erro.gt(0)].copy()
-    if p.execucoes.ge(MIN_N).any():   # base pequena: todos os papéis com erro
-        p = p[p.execucoes.ge(MIN_N)]
-    if upt is not None:
-        criterios.append(("teto", "que foi para erros das candidatas (teto)",
-                          "Para memória: só os tokens das candidatas (o teto de economia, hipótese)"))
-    # quem mais muda de posição entre os dois critérios (ou entre % e absoluto, se só há um)
-    if len(criterios) == 2:
-        r1, r2 = p.tokens_erro.rank(ascending=False, method="first"), p.teto.rank(ascending=False, method="first")
-    else:
-        r1 = p.tokens_erro.rank(ascending=False, method="first")
-        r2 = (p.tokens_erro / p.tokens_total).rank(ascending=False, method="first")
-    mov = (r1 - r2).abs().sort_values(ascending=False)
-    p["destaque"] = p.index.isin(mov[mov.gt(0)].head(3).index)
-    fig, axes = plt.subplots(1, len(criterios), figsize=(12.5 * len(criterios) / 1.5 + 2, 7), squeeze=False)
-    lideres = []
-    for ax, (col, rot_valor, titulo) in zip(axes[0], criterios):
-        tot_col, tot = papel[col].sum(), papel.tokens_total.sum()
-        sist = tot_col / tot
-        maior = p[col].idxmax()
-        sem = (tot_col - p[col][maior]) / (tot - p.tokens_total[maior])
-        sel = _painel_prioridade(ax, p, col, sist, sem, maior, rot_valor, cobertura)
-        ax.set_title(titulo, loc="left", fontsize=10)
-        lideres.append((col, sel[col].idxmax()))
-    axes[0][0].set_ylabel("tokens (escala log)")
-    if len(lideres) == 2:
-        a, b = lideres[0][1], lideres[1][1]
-        titulo = (f"Prioridade: {nome_papel(a)} lidera nos dois critérios — para reduzir erros e para memória" if a == b else
-                  f"Prioridade: {nome_papel(a)} lidera para reduzir erros; {nome_papel(b)}, para memória")
-    else:
-        titulo = f"Prioridade para reduzir erros: {nome_papel(lideres[0][1])} lidera em tokens em erro"
-    fig.suptitle(titulo, x=0.01, ha="left", fontsize=11)
+    lider_e = linhas[0][0]
+    lider_t = max(linhas, key=lambda l: l[2])[0] if upt is not None else lider_e
+    titulo = (f"Prioridade: o {lider_e} tem {_n(100 * linhas[0][1] / tot_err)}% dos tokens em erro"
+              + (f" e o maior teto para memória ({tok(max(l[2] for l in linhas))})" if lider_t == lider_e and upt is not None
+                 else (f"; o maior teto para memória é do {lider_t}" if upt is not None else "")))
+    ax.set_title(titulo, loc="left", fontsize=11)
     _salvar(fig, destino)
-    movem = ", ".join(f"{nome_papel(i)} ({int(r1[i])}.º → {int(r2[i])}.º)" for i in mov[mov.gt(0)].head(3).index)
-    return ("Prioridade: para reduzir erros e para memória",
-            "Onde começar — o papel que mais gasta em erros é o mesmo em que uma memória economizaria mais?",
-            "Um painel por critério. À esquerda, para reduzir erros: todos os tokens gastos em passos com erro, de "
-            "qualquer destino. À direita, para memória: só os tokens dos erros das candidatas (o teto de economia: se uma "
-            "memória evitasse todos eles; hipótese, sem o custo de injetar a memória). Em cada painel, um ponto por papel "
-            f"(os que somam {_n(100 * cobertura)}% do critério; o resto num ponto só): à direita, os que perdem uma fatia "
-            "maior do próprio gasto total (todos os tokens dos seus passos); acima, os que gastam mais tokens. O rótulo dá "
-            "a conta (fatia × gasto) e o fator sobre a referência — o papel que mais gasta é comparado com o sistema todo; "
-            "os demais, com o sistema sem ele. As linhas são referências, não metas. Em laranja, os que mais mudam de "
-            f"posição entre os dois critérios: {movem or 'nenhum'}.",
-            f"Só papéis com pelo menos {MIN_N} execuções. Tokens do passo com erro, não da recuperação. A composição do "
-            "gasto de cada papel por destino está no gráfico anterior.")
+    return ("Prioridade: onde está o volume",
+            "Em que papel reduzir erros economiza mais tokens — e quanto disso uma memória alcançaria?",
+            f"Os papéis que somam {_n(100 * cobertura)}% dos tokens gastos em passos com erro, do maior para o menor (o resto "
+            "numa linha). A barra cinza inteira é o que o papel gastou em passos com erro, de qualquer destino: é a "
+            "prioridade para reduzir erros. A barra azul por dentro é a parte desses tokens que vem de candidatas a memória "
+            f"— o teto de economia por memória (hipótese: se uma memória evitasse todos esses erros). No sistema: "
+            f"{tok(tot_err)} em erros, {tok(tot_teto)} de candidatas. A diferença entre cinza e azul é o que se resolve "
+            "fora da memória (prompt, harness, infra) ou ainda não tem destino (resíduo, pendentes). O gráfico anterior "
+            "mostra a mesma coisa como fatia do gasto de cada papel; este mostra o volume, que é o que decide onde começar.",
+            "Tokens do passo com erro, não da recuperação. O teto não desconta o custo de injetar a memória e supõe evitar "
+            "todos os erros das candidatas.")
