@@ -33,4 +33,4 @@ e `test_mineracao_<unidade>.py`.
 **Regras:**
 - Não corrija nada: nem o script, nem o teste, nem o racional. O laudo é o resultado.
 - Não aprove com divergência, nem com item faltando.
-- Na resposta, só o veredito, os itens e as contagens. Nada de texto de caso nem identificador de execução.
+- Na resposta, só o veredito, os itens e as contagens. Nada de dado pessoal nem conteúdo do cliente.

@@ -1,5 +1,5 @@
 """Confere o arquivo final de uma mineração de candidata contra o esquema da memória da análise — e, com --converter,
-transforma o registro que um notebook específico da base 1 (legado) grava no formato desse esquema. Um script
+transforma o registro que um notebook específico (legado) grava no formato desse esquema. Um script
 específico grava o arquivo já no esquema e só usa a conferência.
 
     python validar_memoria.py <esquema-memoria.json> <memoria_<u>_<base>.json>
@@ -12,7 +12,7 @@ Os campos e a versão vêm do esquema (analysis/registros/esquema-memoria.json),
   - a parte específica começa por um dos prefixos do esquema (notebook: | script: | investigacao:);
   - todo campo obrigatório existe no registro e tem o tipo do esquema;
   - cada caso de `location.casos` tem os campos do `casos_item` e um localizador completo (exec_id + idx, ou
-    step_ref + fonte_id + rodada_id, na base 3);
+    step_ref + fonte_id + rodada_id, numa base sem idx);
   - todo campo do registro tem origem (checado | hipotese | pendente); checado exige o comando que o reproduz;
   - campo não obrigatório do esquema que falta no registro vira PENDÊNCIA (não reprova): é assim que um campo novo do
     esquema aparece na próxima mineração sem mudar código.

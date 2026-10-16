@@ -1,6 +1,6 @@
 ---
 name: mineracao-candidata
-description: "Minera uma candidata a memória (uma lição/unidade que passou na triagem) de uma base do trace de agentes: a parte genérica para todas as lições (recorrência, sub-unidades, antes, depois, estabilidade, população), a auditoria independente em paralelo, o encontro por script e, pelo funil do procedimento da análise, a parte específica da lição — um script determinístico (ou um notebook, legado da base 1) ou a investigação por subagentes. Entrega o arquivo final da memória no esquema da análise (validado), o relatório e o dossiê. Use quando pedirem 'minere a candidata <U_...>', 'minerar a lição <...>', 'rode a mineração da unidade <...>'. Começa pela skill mineracao-base; a investigação usa a mineracao-investigacao com o roteiro candidata."
+description: "Minera uma candidata a memória (uma lição/unidade que passou na triagem) de uma base do trace de agentes: a parte genérica para todas as lições (recorrência, sub-unidades, antes, depois, estabilidade, população), a auditoria independente em paralelo, o encontro por script e, pelo funil do procedimento da análise, a parte específica da lição — um script determinístico (ou um notebook, legado) ou a investigação por subagentes. Entrega o arquivo final da memória no esquema da análise (validado), o relatório e o dossiê. Use quando pedirem 'minere a candidata <U_...>', 'minerar a lição <...>', 'rode a mineração da unidade <...>'. Começa pela skill mineracao-base; a investigação usa a mineracao-investigacao com o roteiro candidata."
 argument-hint: "<unidade, ex.: U_...> [pasta da análise]"
 ---
 
@@ -17,6 +17,42 @@ diagramas da rodada e do ciclo de vida, está em [`referencias/fluxo.md`](refere
 - o dossiê;
 - `pipeline/resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json`, no esquema da análise (`analysis/registros/esquema-memoria.json`),
   aprovado pelo `scripts/validar_memoria.py`.
+
+## 0 · Análise com comando de mineração (rodada com manifesto)
+
+Se a pasta da análise tem `pipeline/especificas/minerar.py`, a mineração é esse comando, e esta skill o roda e
+organiza a entrega. **A skill e o passo a passo manual são a mesma coisa:** cada passo abaixo é um `--passo N` do
+comando, documentado no procedimento da análise (`docs/*procedimento-mineracao-candidatas*.md`), com o porquê no
+racional genérico (`docs/*racionais-mineracao-candidatas*.md`) e o que é da lição no racional dela
+(`propostas/<u>/racional.md`).
+
+| Passo | O que faz | Para se |
+|---|---|---|
+| 1 · Conferir a rodada | rodada concluída, artefatos no manifesto, lição candidata com perfil | algo falta |
+| 2 · Monitoramento | `monitorar.py` da `mineracao-base` | alerta |
+| 3 · Parte genérica | lê o perfil da rodada | — |
+| 4 · Parte específica | o script da lição (`script:` no funil) | a linha é `investigação:` |
+| 5 · Confiança | a cobertura da regra contra o limiar do racional | abaixo do limiar |
+| 6 · Destino | os números que o racional pede para memória × harness | — |
+| 7 · Auditoria e encontro | a segunda implementação, medida a medida | qualquer diferença |
+| 8 · Arquivo final | monta e valida (`validar_memoria.py`) | reprovado |
+| 9 · Saída | manifesto, relatório, versão que sai (varrida) e o resumo | o varredor acha algo |
+
+1. **Rodada:** a pedida; se não vier, pergunte (o comando não escolhe a mais recente sozinho).
+2. **Rode, da raiz do repositório,** todos os passos de uma vez:
+   ```
+   uv run python <pasta-da-analise>/pipeline/especificas/minerar.py <u> --rodada <rodada_id>
+   ```
+   (ou um passo só, com `--passo N`, para refazer a partir de onde parou). **Saída 1: pare** e leve ao pesquisador a
+   linha do motivo; não conserte.
+3. **Se a linha do funil for `investigação:`,** o comando para no passo 4: siga o §5 desta skill
+   (`investigação:candidata`) a partir da parte genérica que ele já conferiu.
+4. **A entrega:** o resumo que o comando imprime, o relatório completo que ele grava (fica no ambiente) e a versão que
+   sai, já varrida. Na resposta: a lição, a confiança, o encontro, o inventário, os números para o destino e as
+   paradas. As decisões (a lição, o destino, a criação do script) são do pesquisador: registre-as com
+   `scripts/registrar_decisao.py`.
+
+Os §1–§6 abaixo são o caminho das análises sem esse comando.
 
 ## 1 · Preparação: a skill `mineracao-base`
 
@@ -67,7 +103,7 @@ específica:
 - **`script:<nome>`:** rode `uv run python <pasta-da-analise>/pipeline/especificas/<nome>.py --rodada <rodada_id>`
   (procedimento, "Como o script roda"). Ele grava o arquivo final já no esquema e o valida antes de terminar; confira
   o manifesto próprio dele em `resultados/mineracao/<u>/`.
-- **`notebook:<nome>`** (legado, base 1): rode `uv run jupyter nbconvert --to notebook --execute --inplace <nome>.ipynb` e leve o
+- **`notebook:<nome>`** (legado): rode `uv run jupyter nbconvert --to notebook --execute --inplace <nome>.ipynb` e leve o
   registro que ele grava para o esquema. Para o notebook que grava `resultados/unidades_memoria.json`:
   ```
   uv run python <esta skill>/scripts/validar_memoria.py <analysis>/registros/esquema-memoria.json --converter resultados/unidades_memoria.json --unidade <u> --base <BASE_ID> --parte-especifica notebook:<nome> --comando "<o comando do notebook>" --saida resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json

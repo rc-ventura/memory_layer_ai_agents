@@ -22,7 +22,8 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 - **Leitura por LLM é `[assistido]`** e vale como hipótese; o determinístico é `[conferido]`. Nenhum LLM no caminho da
   classificação.
 - **Da máquina 2 só saem** contagens, nomes de papel, ferramenta e modelo, hashes, sim/não, tamanhos, tokens e motivos
-  mascarados. Nunca texto de caso nem `exec_id`.
+  mascarados. Nunca texto de caso nem `exec_id`. **Revogada em 16/10** pela decisão do sigilo, abaixo (só o dado pessoal
+  e o conteúdo do cliente não saem).
 
 **Organização:**
 - Cada análise com método próprio tem o seu conjunto: notebook + racional + relatório + procedimento (protocolo
@@ -112,9 +113,20 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
     roteiros de protocolo, crítico, resíduo e timeout;
   - **sem índice de Gini** na concentração de custo.
 - **16/10, o arquivo final da memória na base 3 aponta o caso por hash** (esquema 0.2): `step_ref` + `fonte_id` + `rodada_id`
-  no lugar de `exec_id` + `idx` (a base 3 não tem `idx`). Os três são hashes, que podem sair da máquina 2; o `exec_id` não sai
-  (a regra de sigilo continua). Assim o arquivo sai inteiro, sem a troca por `caso-N`. Os arquivos 0.1 da base 1 continuam
+  no lugar de `idx` (a base 3 não tem `idx`). Assim o arquivo sai inteiro, sem a troca por `caso-N`. O `exec_id` vai junto
+  (decisão seguinte). Os arquivos 0.1 da base 1 continuam
   válidos → livro-razão, [Ajuste 19](pipeline-entre-bases.md#ajuste-19--o-arquivo-final-da-memória-aponta-o-caso-por-hash-na-base-3-esquema-02); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #44.
+- **16/10, o sigilo protege só o dado pessoal e o conteúdo do cliente** (decisão do Rafael, opção 1 entre "liberar o
+  técnico" e "liberar tudo"): saem o `exec_id`, o `step_ref`, a mensagem de erro, o código do agente, nomes de variável,
+  chamadas de ferramenta e o texto do prompt; não saem nome de pessoa, CPF, CNPJ, número de processo, e-mail, o
+  documento, a pergunta do usuário, a resposta entregue a ele e os valores do caso. O `varrer_pii.py` continua
+  obrigatório antes de algo sair (sem procurar mais o identificador); a troca por `caso-N` fica opcional. Revoga o
+  "nunca texto de caso nem `exec_id`" das regras de trabalho. O arquivo final da memória leva o `exec_id` ao lado do
+  `step_ref` → [sigilo](../.claude/skills/mineracao-base/referencias/sigilo.md).
+- **16/10, o inventário do sandbox ganha script específico por decisão do Rafael** (a porta da regra de criação que
+  dispensa os dois leitores): a lição sai da mensagem de erro, e a confiança é a cobertura da regra, **≥ 95%**, escrita
+  antes de rodar → base 3, [`propostas/U_sandbox/racional.md`](2026-10-trace-law-flow-third/propostas/U_sandbox/racional.md),
+  [`07`](2026-10-trace-law-flow-third/docs/07-racionais-mineracao-candidatas.md).
 - **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
   lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
   passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,

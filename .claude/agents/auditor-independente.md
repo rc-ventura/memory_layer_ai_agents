@@ -21,4 +21,4 @@ confira que o JSON foi gravado.
      `DIVERGE` ou "a conferir" que aparecer;
    - se o script falhou, a última linha do erro, sem dado de caso.
 
-   Nada de texto de caso, identificador de execução ou interpretação.
+   Nada de dado pessoal, conteúdo do cliente ou interpretação.

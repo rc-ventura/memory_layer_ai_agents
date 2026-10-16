@@ -47,7 +47,7 @@ O relatório é a análise final: quem o lê não pode precisar ir buscar evidê
   visão conferida em `derivados/` e o comando de recorte `drill_down.py caso <exec_id> <role>`.
 
 O `montar_evidencia.py` monta tudo isso por regra fixa e escreve o bloco do relatório. O relatório completo fica no
-ambiente do trace; a versão que sai troca os identificadores por `caso-N`, por script (`versao_para_sair.py`).
+ambiente do trace; o que sai passa pelo `varrer_pii.py` (dado pessoal não sai; o identificador de execução pode).
 Detalhe em `skills/mineracao-base/referencias/evidencia.md`.
 
 ## O que mora onde
@@ -70,8 +70,8 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   scripts/conferir_versao.py      o código da análise é o do manifesto? (CRLF, TRACE/BASE_ID e saídas de notebook não contam)
   scripts/montar_evidencia.py     a evidência de um achado: casos por regra fixa, crus, visões, origem e o bloco do relatório
   scripts/amostrar.py             a regra fixa de escolha de casos (usada pela evidência e pela investigação)
-  scripts/versao_para_sair.py     a versão do relatório que sai: identificadores → caso-N (o mapa fica no ambiente)
-  scripts/varrer_pii.py           bloqueia a versão que sai se tiver processo, CPF, CNPJ, e-mail ou identificador de execução
+  scripts/versao_para_sair.py     opcional: identificadores → caso-N (o mapa fica no ambiente)
+  scripts/varrer_pii.py           bloqueia o que vai sair se tiver processo, CPF, CNPJ ou e-mail
   scripts/monitorar.py            o monitoramento (passo 0.5): confere as lições e sinais monitorados da análise e para com alerta
   manifesto.json                  os hashes do código para o qual esta versão do kit foi escrita
 .claude/skills/mineracao-silenciosas/  a mineração das falhas silenciosas (lê as tabelas, passo a passo do procedimento da análise)

@@ -16,7 +16,7 @@ concordancia.py e o testar_regra.py gravam com --registrar; vale a última medid
   padrão não confirmado   alguma regra abaixo dos limiares
   poucos casos            a leitura dos dois leitores tem menos de 20 casos (ou menos que a população, se ela é menor)
   não avaliada            sem confianca.json, sem leitura dupla ou sem regra contada
-Situação: script · notebook (legado, base 1) · pronta para script · lição existe, redação em aberto · várias causas: investigar a fundo ·
+Situação: script · notebook (legado) · pronta para script · lição existe, redação em aberto · várias causas: investigar a fundo ·
 importante e mal entendida · prioridade de investigação · certa, mas rara: monitorar · baixa prioridade.
 Decisão (lê pipeline/resultados/mineracao/<u>/decisoes.json, gravado pelo registrar_decisao.py): nas situações com
 gate, "aguardando" até o pesquisador decidir para a situação atual.
@@ -56,7 +56,7 @@ def populacao(pasta, u):
 
 
 def confianca(pasta, u, parte):
-    for tipo in ("script", "notebook"):  # a parte específica já existe; notebook é o legado da base 1
+    for tipo in ("script", "notebook"):  # a parte específica já existe; notebook é o legado
         if parte.startswith(tipo + ":"):
             return f"confirmada ({tipo})"
     arq = os.path.join(pasta, "pipeline", "resultados", "mineracao", u, "confianca.json")

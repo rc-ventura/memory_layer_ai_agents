@@ -22,6 +22,6 @@ definida, e isso só vale às cegas.
    com `exec_id`, `role`, a coluna de idx, uma coluna por eixo (e as livres) e `onde_no_cru`.
 
 **Regras:**
-- Não copie texto de caso nem identificador para a resposta.
+- Não copie dado pessoal nem conteúdo do cliente (documento, pergunta, resposta) para a resposta.
 - Devolva só as contagens por categoria e, se houver, as categorias que achou ambíguas, com a razão em uma frase,
   sem citar o caso.
