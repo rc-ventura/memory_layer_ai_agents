@@ -7,7 +7,7 @@
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
-[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026
+[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, fim do dia
 (branch `2026-10-14-base3-roadmap-queries`): correções dos gráficos do #36 e do #40 aplicadas no código.
 **A ordem do que falta** (decisões antes da rodada nova, conferência na máquina 2, gráficos migráveis, pedido ao tutor,
 primeira mineração): a seção [Plano de evolução](#plano-de-evolução-1610-a-ordem-do-que-falta), de 16/10.
@@ -41,6 +41,21 @@ conferidas numa rodada de teste (a base 1 pela porta da query da base 3); 183 te
 - [ ] **3** · Gráficos da base 1 que já têm dado: duração por assinatura, global × papel, posição na trajetória → #43
 - [ ] **4** · Pedido ao tutor reescrito e apresentação → #2, #11
 - [ ] **5** · Mineração: localizador da memória → kit mínimo → registro do `try/except` → piloto do inventário do sandbox → #44, #17, #28, #12
+
+**Onde estamos (16/10, fim do dia):** etapas 0–2 feitas — os 20 gráficos das duas partes foram auditados, refeitos,
+lidos pelo Rafael na rodada `96958e65` e ajustados (`9dfb729`, `762527f`; o relatório não quebra mais no Windows com o
+`.md` aberto, `f9cab0c`). Ficam **ajustes gerais de forma**, menores, que o Rafael lista quando rever o relatório
+(#45 g), e as contagens e decisões do #45. **A ordem a seguir:**
+1. **#42** — fechar a etapa 2: o `comparar_rodadas.py` prova por hash que a rodada nova não mudou nenhum número da `609c…`
+   (escrito aqui, um comando na máquina 2);
+2. **etapa 4 (#2, #11)** — o pedido ao tutor: os gráficos estão prontos e o `05` está desatualizado (descreve o pedido A
+   como "a enviar"); é o que destrava os gráficos que ainda faltam dado e é a etapa que depende de outra pessoa, então
+   quanto antes sair, antes volta;
+3. **em paralelo, o que só pede uma decisão do Rafael:** o localizador da memória (#44), que abre a etapa 5, e as decisões
+   do #45 (o asterisco; OBP × OBF);
+4. **etapa 3 (#43)** — começa pela conferência do `step_number` na base 1 (aqui, sem a máquina 2), que decide se a posição
+   na trajetória migra ou vai para o pedido;
+5. **etapa 5** — kit mínimo (#17), registro do `try/except` (#28) e o piloto do inventário do sandbox (#12).
 
 ### Etapa 1 · As decisões antes de rodar o relatório novo (#41)
 
@@ -241,7 +256,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
   esquema v0.2) — pré-requisito do piloto (#12) → [Etapa 5](#etapa-5--a-hora-da-mineração-o-primeiro-arquivo-de-memória-da-base-3).
 
-- [ ] **#45** **O que sobrou da auditoria dos gráficos (#36, #40) e não é desenho:** (a) **o asterisco do papel × unidade** marca "candidata dentro do papel" (destino), num gráfico de volume — tirar? (proposta de 16/10, a decidir); (b) **OBPCivel × OBFCivel** — papel real ou nome cortado na origem (como "ontestacaoCivel")? Se for corte, entra no mapa de exibição; (c) a genealogia tem "Protocolo do harness" 4.591 e `H_bloco_code` 4.592 — contar por família as arestas que chegam em `harness_bloco_code`; (d) a composição dos erros dos papéis pequenos de taxa alta (AnaliseProcessual 44%, AgenteProcuracoes 25,5%: unidade e pendentes); (e) quantas trajetórias terminam num passo com erro (`recovery_signal = NO_NEXT_ACTION`); (f) a amostra de ≈ 20 casos do campo inexistente na base 1, para as hipóteses da "resposta final alta" (a aprovar). São contagens na máquina 2 ou decisões; nenhuma muda gráfico sem passar pelo Rafael.
+- [ ] **#45** **O que sobrou da auditoria dos gráficos (#36, #40) e não é desenho:** (a) **o asterisco do papel × unidade** marca "candidata dentro do papel" (destino), num gráfico de volume — tirar? (proposta de 16/10, a decidir); (b) **OBPCivel × OBFCivel** — papel real ou nome cortado na origem (como "ontestacaoCivel")? Se for corte, entra no mapa de exibição; (c) a genealogia tem "Protocolo do harness" 4.591 e `H_bloco_code` 4.592 — contar por família as arestas que chegam em `harness_bloco_code`; (d) a composição dos erros dos papéis pequenos de taxa alta (AnaliseProcessual 44%, AgenteProcuracoes 25,5%: unidade e pendentes); (e) quantas trajetórias terminam num passo com erro (`recovery_signal = NO_NEXT_ACTION`); (f) a amostra de ≈ 20 casos do campo inexistente na base 1, para as hipóteses da "resposta final alta" (a aprovar). (g) ajustes gerais de forma nos gráficos (o Rafael lista ao rever o relatório da rodada `96958e65`, 16/10). São contagens na máquina 2 ou decisões; nenhuma muda gráfico sem passar pelo Rafael.
 
 ## Fora de escopo / adiado
 
