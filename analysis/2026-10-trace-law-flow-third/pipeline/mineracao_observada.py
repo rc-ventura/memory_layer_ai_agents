@@ -21,10 +21,13 @@ HERE = Path(__file__).resolve().parent
 CONTRATO = "mineracao_erros_observados_v1"
 CANDIDATO = "candidato observado"
 SEM_RECORRENCIA = "recorrência não demonstrada"
+SEM_UNIDADE = "sem unidade (pendente)"
 CHAVE_EXEC = ["exec_id", "agente"]
-# Snapshot conferido da base 3 (docs 01 e 04). Fica no código, e não num resultado de rodada antiga, para a
+# Snapshots conferidos da base 3 (docs 01 e 04). Ficam no código, e não num resultado de rodada antiga, para a
 # validação não depender de arquivos privados que podem ser apagados. Outra exportação = nova coorte, novo hash.
-FONTE_REFERENCIA_SHA256 = "7604f77df9fe6127bd7fb9db18337b558b1f2587b0a99621c087b0cf3c2873f1"
+FONTE_V1_SHA256 = "7604f77df9fe6127bd7fb9db18337b558b1f2587b0a99621c087b0cf3c2873f1"   # v1, com corte (rodada 3f9c…)
+FONTE_V2_SHA256 = "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306"   # v2, sem corte (Ajuste 18)
+FONTE_REFERENCIA_SHA256 = FONTE_V2_SHA256   # a referência é a da extração padrão
 CAPACIDADES = {
     "triagem_visivel": True, "perfil_candidata": True,
     "taxas_globais": False, "orcamento_global": False,
@@ -180,6 +183,7 @@ def analisar(carga=None):
     tables["triagem_por_papel"] = triagem_observada(carga, mecanismos, por_papel=True)
     tables["triagem_por_papel_sensibilidade"] = triagem_observada(carga, mecanismos, 5, 3, True)
     tables.update(consolidacao(tables, mecanismos))
+    tables["consolidacao_depois_unidade"] = depois_por_unidade(carga, mecanismos)
     E = mecanismos.EU
     candidates = tables["triagem_visivel_observada"].decisao.eq(CANDIDATO)
     summary = {**sintomas.resumo, **mecanismos.resumo,
@@ -190,7 +194,8 @@ def analisar(carga=None):
     capabilities = {**CAPACIDADES, "indice_actionstep": carga.contrato != "janelas_legadas"}
     code = versoes_codigo()
     fingerprint = {"contrato": CONTRATO, "base": bp.BASE_ID,
-                   "fonte_id": carga.fonte["id"], "codigo": code}
+                   "fonte_id": carga.fonte["id"], "extracao": carga.fonte.get("extracao"),
+                   "corte_texto": carga.fonte.get("corte_texto"), "codigo": code}
     run = hashlib.sha256(_json(fingerprint).encode("utf-8")).hexdigest()
     manifest = {**fingerprint, "rodada_id": run, "fonte_sha256": carga.fonte.get("sha256"),
                 "contrato_fonte": carga.contrato, "capacidades": capabilities,
@@ -228,7 +233,16 @@ def consolidacao(tabelas, mecanismos):
                .groupby(["motivo_evidencia", "role", "mes"], dropna=False)
                .agg(erros=("step_ref", "size"), tokens_n_conhecidos=("tok_tot", lambda s: s.sum(min_count=1)))
                .reset_index())
+    # Erros e tokens por unidade × papel de TODAS as unidades (a triagem_por_papel só abre as de memória); os
+    # pendentes entram como SEM_UNIDADE. Somada por unidade, bate com a triagem; somada por papel, com a fonte.
+    E = mecanismos.EU.assign(unidade=mecanismos.EU.unidade.where(mecanismos.EU.situacao_mecanismo.eq("observavel"),
+                                                                 SEM_UNIDADE))
+    upt = (E.groupby(["unidade", "role"], dropna=False)
+           .agg(erros=("step_ref", "size"), tokens_n_conhecidos=("tok_tot", lambda s: s.sum(min_count=1)),
+                tokens_n_ausentes=("tok_tot", lambda s: int(s.isna().sum())))
+           .reset_index().sort_values(["unidade", "erros", "role"], ascending=[True, False, True]))
     return {"consolidacao_limitrofes": lim.reset_index(drop=True),
+            "consolidacao_unidade_papel_tokens": upt.reset_index(drop=True),
             "consolidacao_pendencias_papel_mes": pend_pm,
             "consolidacao_componentes_limites": comp,
             "consolidacao_unidade_papel_mes": upm,
@@ -267,19 +281,54 @@ def _vizinho(slot, lookup, incoming, ref, offset):
     return "suspeita observada" if flag else "sem sinal do produtor observado – não sucesso"
 
 
-def perfil_unidade(analise, unidade):
-    """G1–G6 com localização real e NULL preservado; nunca lê ocorrências legadas."""
+def _ligacoes(carga):
+    """O contexto local e os vínculos confirmados (origem → alvo e o inverso) — os mesmos do perfil e do depois."""
+    links = carga.vinculos
+    good = links[links.estado.isin(["compativel_candidato", "ordem_censo"])]
+    return contexto_local(carga), dict(zip(good.origem_ref, good.alvo_ref)), dict(zip(good.alvo_ref, good.origem_ref))
+
+
+def _proximo_final(ctx, ref):
+    slot = ctx.get((ref, 1), {})
+    return slot.get("is_final", pd.NA) if slot.get("presenca") in {"identificado_por_numero", "ordem_censo"} else pd.NA
+
+
+def depois_por_unidade(carga, mecanismos):
+    """O que vem no passo seguinte a cada erro, de TODAS as unidades (decisão D5 de 16/10; antes só as candidatas, pelo
+    perfil): a mesma conta do perfil (`_vizinho`), só contagem. Com a unidade do erro seguinte quando o vínculo está
+    confirmado (a matriz de transição): sequência, não causa."""
+    E = mecanismos.EU
+    ctx, out, inc = _ligacoes(carga)
+    unidade = E.unidade.where(E.situacao_mecanismo.eq("observavel"), SEM_UNIDADE)
+    uni_ref = dict(zip(E.step_ref, unidade))
+    depois = [_vizinho(ctx.get((r, 1)), out, inc, r, 1) for r in E.step_ref]
+    seguinte = [uni_ref.get(out.get(r), "fora da extração") if d == "erro estruturado vinculado"
+                else ("desconhecida (vínculo não confirmado)" if d.startswith("erro estruturado observado")
+                      else "não se aplica") for r, d in zip(E.step_ref, depois)]
+    final = [_proximo_final(ctx, r) for r in E.step_ref]
+    t = pd.DataFrame({"unidade": unidade.to_numpy(), "depois": depois,
+                      "proximo_final_observado": ["desconhecido" if pd.isna(f) else str(bool(f)) for f in final],
+                      "unidade_seguinte": seguinte})
+    return (t.groupby(["unidade", "depois", "proximo_final_observado", "unidade_seguinte"]).size()
+            .rename("erros").reset_index().sort_values(["unidade", "erros"], ascending=[True, False])
+            .reset_index(drop=True))
+
+
+def perfil_unidade(analise, unidade, investigacao=False):
+    """G1–G6 com localização real e NULL preservado; nunca lê ocorrências legadas.
+
+    Por padrão só para candidatas. `investigacao=True` (decisão de 16/10) gera o perfil de qualquer unidade observada —
+    sinal de harness, harness/infra, resíduo, crítico — para os roteiros de investigação; a tabela `perfil` diz que não
+    é candidatura."""
     _validar(analise.carga, analise.mecanismos)
     T = analise.tabelas["triagem_visivel_observada"]
     target = T[T.unidade.eq(unidade)]
-    if target.empty or target.decisao.iloc[0] != CANDIDATO:
+    if target.empty or (target.decisao.iloc[0] != CANDIDATO and not investigacao):
         raise bp.AnaliseNaoIntegrada("A unidade não passou na triagem observada desta rodada.")
+    target = target.assign(finalidade="candidatura" if target.decisao.iloc[0] == CANDIDATO
+                           else "investigação — não é candidatura")
     g = analise.EU[analise.EU.unidade.eq(unidade)].copy()
-    ctx = contexto_local(analise.carga)
-    links = analise.carga.vinculos
-    good = links[links.estado.isin(["compativel_candidato", "ordem_censo"])]
-    out = dict(zip(good.origem_ref, good.alvo_ref))
-    inc = dict(zip(good.alvo_ref, good.origem_ref))
+    ctx, out, inc = _ligacoes(analise.carga)
     cases = g[["exec_id", "agente", "role", "step_ref", "step_pos", "idx", "indice_tipo", "mes",
                "versao_agente", "particao_fonte", "unidade", "submecanismo", "assinatura", "tool_name",
                "ocorrencia_observada", "limites_componente_fechados", "motivo_evidencia",
@@ -288,10 +337,7 @@ def perfil_unidade(analise, unidade):
     cases["rodada_id"] = analise.manifesto["rodada_id"]
     cases["antes"] = [_vizinho(ctx.get((r, -1)), out, inc, r, -1) for r in g.step_ref]
     cases["depois"] = [_vizinho(ctx.get((r, 1)), out, inc, r, 1) for r in g.step_ref]
-    cases["proximo_final_observado"] = pd.array([
-        ctx.get((r, 1), {}).get("is_final", pd.NA)
-        if ctx.get((r, 1), {}).get("presenca") in {"identificado_por_numero", "ordem_censo"}
-        else pd.NA for r in g.step_ref], dtype="boolean")
+    cases["proximo_final_observado"] = pd.array([_proximo_final(ctx, r) for r in g.step_ref], dtype="boolean")
     cases["mesma_chamada"] = pd.NA
     cases["sucesso_semantico"] = pd.NA
     cases["modelo"] = pd.NA
@@ -348,12 +394,17 @@ def inventariar(pipeline=HERE, second=None):
     return pd.DataFrame(rows, columns=["arquivo", "sha256", "registros", "igual_second", "estado", "celulas_com_outputs"])
 
 
-def conferir_fonte(path, referencia=None):
+def conferir_fonte(path, referencia=None, extracao="v2"):
     """Falha fechada em arquivo inválido ou divergência; nunca repara fonte."""
     import pyarrow.parquet as pq
-    source = {"sha256": sha256(path), "tamanho_bytes": Path(path).stat().st_size}
+    source = {"sha256": sha256(path), "tamanho_bytes": Path(path).stat().st_size, "extracao": extracao}
     if referencia is not None and source["sha256"] != referencia:
         raise bp.AnaliseNaoIntegrada("Fonte diferente da referência; validar nova coorte explicitamente.")
+    # Ajuste 18: o schema não separa v1 de v2; o hash conhecido impede ler uma como a outra.
+    if extracao == "v2" and source["sha256"] == FONTE_V1_SHA256:
+        raise bp.AnaliseNaoIntegrada("Este arquivo é a extração v1 (texto cortado); rode com --extracao v1.")
+    if extracao == "v1" and FONTE_V2_SHA256 is not None and source["sha256"] == FONTE_V2_SHA256:
+        raise bp.AnaliseNaoIntegrada("Este arquivo é a extração v2 (sem corte); rode sem --extracao.")
     try:
         metadata = pq.read_metadata(path)
     except (OSError, ValueError) as exc:
@@ -362,7 +413,7 @@ def conferir_fonte(path, referencia=None):
     return source
 
 
-def gravar(analise, saida=None, perfis=()):
+def gravar(analise, saida=None, perfis=(), perfis_investigacao=()):
     """Publica somente em rodada privada, com hash de cada artefato e estado final."""
     _validar(analise.carga, analise.mecanismos)
     if analise.manifesto["codigo"] != versoes_codigo():
@@ -409,10 +460,11 @@ def gravar(analise, saida=None, perfis=()):
         manifest["artefatos"][name] = sha256(dest / name)
     if len(graph):
         render_png(graph, dest / "genealogia_observada.png",
-                   titulo=f"{bp.BASE_ID} · {len(graph):,} erros estruturados · triagem observada, não memórias aprovadas")
+                   titulo=f"{bp.BASE_ID} · {len(graph):,}".replace(",", ".")
+                   + " erros estruturados · triagem observada, não memórias aprovadas")
         manifest["artefatos"]["genealogia_observada.png"] = sha256(dest / "genealogia_observada.png")
-    for u in perfis:
-        for name, table in perfil_unidade(analise, u).items():
+    for u, inv in [(u, False) for u in perfis] + [(u, True) for u in perfis_investigacao]:
+        for name, table in perfil_unidade(analise, u, investigacao=inv).items():
             save(f"perfis/{u}/{name}.csv", table)
     if source and sha256(source_path) != source:
         raise bp.AnaliseNaoIntegrada("Fonte mudou durante a publicação; rodada não concluída.")

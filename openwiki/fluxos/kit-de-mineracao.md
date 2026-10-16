@@ -3,9 +3,6 @@ type: tooling-workflow
 title: "Kit de Mineração de Traces (skills, agentes e scripts)"
 description: O pacote versionado em .claude/ que roda uma rodada de mineração do trace igual em qualquer ambiente e base — preparação comum, mineração determinística com auditoria independente em paralelo, encontro por script, relatório com evidência por afirmação, investigação assistida até o dossiê de decisão.
 tags: [mining-kit, claude-skills, deterministic-pipeline, independent-audit, evidence-discipline, pii-secrecy]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-09T17:09:54.387Z
 sources:
   - id: openwiki-source-4c0def1f2b951f491e33a3e9
     resource: repo://.claude/agents/auditor-independente.md
@@ -17,13 +14,20 @@ sources:
     resource: repo://.claude/skills/mineracao-base/referencias/kit.md
   - id: openwiki-source-849c31889570728b74f0720c
     resource: repo://.claude/skills/mineracao-base/SKILL.md
+  - id: openwiki-source-4ad076ab909426784c750bf7
+    resource: repo://.claude/skills/mineracao-base/VERSAO
   - id: openwiki-source-97af608bd2887674b819dc83
     resource: repo://.claude/skills/propor-notebook/SKILL.md
+  - id: openwiki-source-390363992e7f2499e94a84a2
+    resource: repo://analysis/pipeline-entre-bases.md
   - id: openwiki-source-eb3a346108886797f62f7271
     resource: repo://analysis/registros/README.md
   - id: openwiki-source-7c2d1833faef47d99e8e11da
     resource: repo://analysis/roadmap-transversal.md
-generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
+generated: { by: "claude-code", at: "2026-10-15T13:12:35.828Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-15T13:12:35.828Z
 ---
 
 O kit de mineração é um pacote de **skills, agentes e scripts que vive no próprio `.claude/` do repositório, versionado** — sem nada a instalar: o Claude Code e o GitHub Copilot (documentação de 2026: lê `.claude/skills/` e `.claude/agents/` direto) enxergam o mesmo lugar, e não há cópia para `.github/` porque a cópia viraria uma segunda versão que envelhece. Ele existe para que uma **rodada de mineração** rode com o mesmo procedimento em qualquer ambiente (esta máquina, a máquina de compliance) e em qualquer base. O documento de desenho é `.claude/skills/mineracao-base/referencias/kit.md`; uma rodada real de exemplo, passo a passo, está em `referencias/exemplo.md`.
@@ -89,7 +93,7 @@ O relatório fica em `pipeline/resultados/relatorio_<mineração>_<BASE_ID>_<AAA
 
 ## Versão e limites desta versão
 
-A versão do kit é o arquivo `VERSAO` da skill `mineracao-base`; o `manifesto.json` guarda os hashes do código para o qual essa versão foi escrita. Quando o pipeline muda de propósito (um Ajuste aprovado), o manifesto é regenerado com `conferir_versao.py <pasta> --gerar` e a versão sobe.
+A versão do kit é o arquivo `VERSAO` da skill `mineracao-base`; o `manifesto.json` guarda os hashes do código para o qual essa versão foi escrita. Quando o pipeline muda de propósito (um Ajuste aprovado), o manifesto é regenerado com `conferir_versao.py <pasta> --gerar` e a versão sobe. Hoje o kit está em **0.7.0** — o bump veio do Ajuste 17, que mudou só o hash do `base_pipeline.py` no manifesto; o Ajuste 18 não tocou o kit, porque o manifesto acompanha o pipeline da base 1, que a v2 não alterou.
 
 Limites declarados: a leitura do `investigador` ainda não rodou ao vivo (a ponte foi validada reproduzindo uma classificação determinística conhecida); a auditoria em paralelo existe hoje só para falhas silenciosas e protocolo (`audit_recompute9` e `10`, com `--json`) — cada mineração nova do backlog (resíduo, erro crítico — itens `transversal #8` e `#9`) precisa antes de uma auditoria com `--json` e um script de encontro; e a leitura do `.claude/` pelo Copilot depende da versão do VS Code.
 

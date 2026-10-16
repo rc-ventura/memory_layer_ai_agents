@@ -115,3 +115,15 @@ investigação do erro crítico (01/10):
 | **[conferido]** | verificado de forma determinística (contagem, AST, regex reproduzida) |
 | **[assistido]** | leitura feita por LLM na máquina 2 — entra como hipótese, nunca como fato |
 | **teto** | contagem que inclui tudo o que *pode* ser o fenômeno; o número real é menor ou igual |
+
+---
+
+## 8 · Medidas de custo e de economia (base 3)
+
+| Termo | O que é |
+|---|---|
+| **teto de economia** | tokens dos passos com erro das unidades **candidatas** (por papel e no total): o máximo que uma memória poderia economizar, com eficácia de 100% e sem contar o custo dela — **hipótese**, não previsão ([racionais da base 3 §7](2026-10-trace-law-flow-third/docs/01-racionais.md#7--o-teto-de-economia-e-o-teste-de-compensação-da-memória)) |
+| **orçamento de injeção** | o teto dividido pelos passos em que a memória seria injetada: o tamanho máximo da memória, em tokens por passo, para empatar |
+| **linha de base** | a rodada, a fonte e as contagens congeladas (com hash) contra as quais se mede o efeito de uma memória |
+| **ponto de equilíbrio** | tamanho da memória = eficácia × orçamento de injeção; abaixo disso, a memória compensa |
+| **eficácia** | economia medida ÷ teto de economia |

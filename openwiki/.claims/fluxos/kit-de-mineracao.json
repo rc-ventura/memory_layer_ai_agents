@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:188a30c3a6acdc6292cacffc1f3b392001a67e1a8ad49c8741110384c751276a",
+  "pageVersion": "sha256:4a5f5f9ba17a59e9208b8487f92e8a832618aeed3ad8a9dfecf199de422bad76",
   "claims": [
     {
       "id": "claim_ec724c991326476091ca94e0bd77c17e",
@@ -82,7 +82,7 @@
         },
         {
           "resource": "repo://.claude/skills/mineracao-base/manifesto.json",
-          "version": "repo-file-v1:sha256:c27bb902e4eac7c7a66baaaebf15dafbe3e930660b923efc903adc80825bab1c"
+          "version": "repo-file-v1:sha256:24d24af3d21a3b73298efe367969c3628d1a0442ffa1c7c87763fc0c3144c9aa"
         },
         {
           "resource": "repo://.claude/skills/mineracao-base/referencias/kit.md#L128-L133",
@@ -125,10 +125,32 @@
           "version": "repo-lines-v1:sha256:11078a931931e26acab8ba11454d3c297e5dd4f2eb3d12825cc3d0a4f66fc5be:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2NiOTBlMWE5MmIxMThiYTk3ZDliZTRhMWZmYTVmODk3ZTNiYTJmZTQyYWU2ZTQ5Njc1MmVkM2JjNmU2ZjUyNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTg0M2NkYWYwNGZhMTk3MmVjOTA2NWRhNzUzNWIwYTQ3YTQ5NmJlZmRhOTE0MGYyMjVmNDcyOTEzNmI0ZDg0ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2IyOGZkYjA5ZmZiNmExMWM1OWNlYTA3NjlkMzk1ZGZjNzVmODNlN2ZlY2Y1NjMzZmU4NGY4NzAyOTczY2EwYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjU3MThjMmEyMDIzYzE0MjRjM2EyMWI1ODA1MWNmZmM0ZjNmOTM4YzE5NzBlMWUyMDE1ODQxMmVkOWVlOTdkMyJ9"
         }
       ]
+    },
+    {
+      "id": "claim_a5f9cac8296549babe9a6119f38cd375",
+      "statement": "The kit is currently at version 0.7.0: the bump came from Ajuste 17, which changed only the base_pipeline.py hash in manifesto.json; Ajuste 18 did not touch the kit because the manifesto tracks the base-1 pipeline, which the v2 extraction did not alter.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/mineracao-base/VERSAO",
+          "version": "repo-file-v1:sha256:967d9afb101346667166f2e76e81910bc190488d7d41d50ca0072e9d92f00e32"
+        },
+        {
+          "resource": "repo://.claude/skills/mineracao-base/manifesto.json",
+          "version": "repo-file-v1:sha256:24d24af3d21a3b73298efe367969c3628d1a0442ffa1c7c87763fc0c3144c9aa"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L724-L725",
+          "version": "repo-lines-v1:sha256:a670f0f540ebf7aa22180cb8efe68f73b665a69c8ba44957f846bf540cc07e92:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VhOTNjMjU5M2MyMjgwZWY2ZGUxMzM4ODRjYjgxMjdhZDc1YTk0MmEyMjI3M2I1YTNjYzc0N2Y5NjcyMTRiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTgwNGZhYmU5OGMwOWRlOTRkNzUyODZiNGU5MWE0MTFkMzA5NmI4OTY0NjdjNTE5ZTAxYjU5OWEzNjMzODZhMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDk2MzFlYjVkN2FkZDAyZTE4MTVjNTk5N2I4ZThkNGJiMjNlMmU2ZWYzMjQ2NTNjNThhYmU5ZTU4NzZjNmQzZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzAyYjA3YWJiMmMxM2M4MTE0MzEyMTk4OWQ2NTM3NTAwZDNlOWI1ODYxOTc3YzdkMjY0NWEwYzQ5ODY4MjE5NCJ9"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L779-L779",
+          "version": "repo-lines-v1:sha256:2cebba5c7030fa769e06514702d4e5f6910ae57e6575267f3370e3a8e0cb185a:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmNlYmJhNWM3MDMwZmE3NjllMDY1MTQ3MDJkNGU1ZjY5MTBhZTU3ZTY1NzUyNjdmMzM3MGUzYThlMGNiMTg1YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmNlYmJhNWM3MDMwZmE3NjllMDY1MTQ3MDJkNGU1ZjY5MTBhZTU3ZTY1NzUyNjdmMzM3MGUzYThlMGNiMTg1YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzBkNmFhNDI5YmE4YTg1Y2NiZDM1MWUwMzVjODczMTQ5ODJlMmVkNzdjY2VmODViYTM4ZDU5MmFlNGRhZTA4ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjU2NmUzNWExZmI4NzZjYWYxZWZkMWRjYmYxYjRiMWQ4MmJjYmI3ZTk3MzQ4ZWE4ODA3OGY3MjE3MGFhZTNmNiJ9"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-09T17:09:54.387Z"
+    "at": "2026-10-15T13:12:35.828Z"
   }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ef2a50b4d3b8322fda5b1e7aca7ed917a851cd628b7e4e6cac49105a3734c52e",
+  "pageVersion": "sha256:5e3026ae626348d46565d499625dbce5ac1b1b4bfb1933609dad9fa76bd54b2f",
   "claims": [
     {
       "id": "claim_19302d51362a45d98d6145a78488cf0a",
@@ -209,8 +209,8 @@
           "version": "repo-lines-v1:sha256:7ca6b75ebea775efb52a7713e14c2cd572faaae65ae9e7a7bd084b5e65db790e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjYzMWQwMTZmZWQwMjljNWIxNDFmNjI3MjUwNjBjMzA3MjA0YTg1ZDNkNGFhODAzMGZmYmZlN2MxNWYwOGMwZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTM0MWNjNWY1ZTIwNmQwODIxMjkyNDgyN2M2ODY4YTgxMTkyMzA4MWFhY2Q2ZjE2ZTk0ZGY0NzZkZGI5YWY5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjFlMWYzYTlkOGUxYTNkMDI2MTVhYzFlNGUwM2M2Yjk5Nzg4MWIzYmZjZWVlMjE3NGU4NjdiMTNlMzJjMmI3MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjEwOWEyYjg4Njc3NzU4NjQ1YmZmMDNjNzAyYTk3YWE5NDJhNjQ2M2ZmZjk5MTFlOTRmNDg1MmQ5YWIxNzFmMCJ9"
         },
         {
-          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L478-L489",
-          "version": "repo-lines-v1:sha256:4bf104925d2614c59dc778338f28108d7329b7fd89291090b04711336b5dcff5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjODZmMzhiOWIxOTAwZjAzNjFmMjZiZTg3MmE0YThjNjRlMzJmMWRiNDM1NWQ5YTY5MWM2ZmM3M2RhZGQxMTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3MmMzOTUxNTdkYTEyODNhYWFlMWYzYmE0ZDg4ZTA3YzZmODVlNjIxMmU0YWI5MmFkNDZlODFiY2ExY2U5MzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgyNTM3MjQ5NDY5OGQxZjRiNzY1ZTZmODY3MTRhODRlNmZkNTMzYzE0ZmY0ODUwNzdlZDEwM2JiYjE2M2IyODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI5MTEzMTY3YjJjOWFlZGIxNzlkYjM4MDFkZmY3MDkwMGVlMmZjZTBhM2EzNjBiNDBkNjQyNTY3YzMyODVjOGEifQ"
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L490-L513",
+          "version": "repo-lines-v1:sha256:fc8966d07d9f3c63d1181af406f743ae1816107faa12da0ab8f20b4568dabf16:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1NTlkZDIzMDYwM2UyMmE3ZTAxMWE0YzIwYzcxNDlmNmZlMzI5OTU3MjgwYjQ3MmE3ZjdhYmY4MTg4ZDc4ZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3MmMzOTUxNTdkYTEyODNhYWFlMWYzYmE0ZDg4ZTA3YzZmODVlNjIxMmU0YWI5MmFkNDZlODFiY2ExY2U5MzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjliZjdmMjg0NDM0MTM5N2UwMDEyZmY5Njg2MDQ4ZGFjNWY2NTEyYjhiYWEyNTI1NjM3YTI3NDdiYThhNDdkNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI5MTEzMTY3YjJjOWFlZGIxNzlkYjM4MDFkZmY3MDkwMGVlMmZjZTBhM2EzNjBiNDBkNjQyNTY3YzMyODVjOGEifQ"
         },
         {
           "resource": "repo://analysis/pipeline-entre-bases.md#L329-L337",
@@ -231,10 +231,32 @@
           "version": "repo-lines-v1:sha256:c9b7e9768efd70cc2463b1704c0416b14fe6aa753992327835501e8bef0d466c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkZTg5NjllN2Y4OTBlMjE3ZmNjNjk4Y2MzZTA1Njk4M2Q0MWY1NDIzNWEwNWE2MDQ2MTE5NzcyMjYzNzNjNjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxNmQ4ZDE3MGFkYzUxNzgwNmYxZWVhZmE4NGE3ODI3YmNmOWU4YWIzODFjZTBmYjMzN2ZiZjM2MjU0ZWYwMWYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_cdcc8447e2d04998a8bbccb59ff0b4ae",
+      "statement": "Ajuste 17 reordered mechanism resolution for 'variable not defined' errors: the signature on the failed line (a prompt-instructed try/except NameError existence check that the sandbox interpreter cannot catch) is decided before the predecessor-position rule, creating the mechanism verificacao_try_nameerror and unit U_verificacao_try_nameerror, which migrated 5.764 errors in base 3 and was registered with destination 'sinal de harness' for bases 2 and 3.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L262-L328",
+          "version": "repo-lines-v1:sha256:1316fb4ebb9ea9094d47d05042a2b19ee6dfd285e33c7d0f035ef7455bcfeec2:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZTkwNTkxMGM4MjZhMTI4OGI0ODEyYTA3ZTM0ZGZhNDI2M2VmNzcwNDZiMDBiMzc0ZTI2Yjk5MTA1OGYwMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5NTNhZTMxZjRkM2JmMzlhZWZjMTM1ZGIxYTI5NTc2M2I3OWEwODMyNGFiMjJhYTFmN2I4NDhlM2ZmNzU4MTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMzBlOTNiMjE3YjQ3MTBiY2RkOTljZmFiZjg2ZWYxOTcyOTIzNmU3MzQ3NDI0OGRmMGJjODdmNTk4MWMwNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZmY3ZDk3NmY5ZDJjNDYzZTZlY2ZjOWM4ZTU1OGRjODQxODU4NjVlOTRiM2RjMGI2NDQzYWFmZWFhZWIzOGEifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py#L504-L504",
+          "version": "repo-lines-v1:sha256:0b6cbc35e574222e72db70caafd19a04b36ebe89051e4700b28900f100ddfdba:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI2Y2JjMzVlNTc0MjIyZTcyZGI3MGNhYWZkMTlhMDRiMzZlYmU4OTA1MWU0NzAwYjI4OTAwZjEwMGRkZmRiYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI2Y2JjMzVlNTc0MjIyZTcyZGI3MGNhYWZkMTlhMDRiMzZlYmU4OTA1MWU0NzAwYjI4OTAwZjEwMGRkZmRiYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTBhZTFhZTc2Y2QxYzA5NTliZjNmZWUzNWI3ZmM0YzU4OTNhZTRhNzM2NTkyYTQzMmUwYTgyM2RhN2U4MGEzNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODhlYWJiYjE4OTNhMDkwMDM3ZmZmM2ZiMmQ3OWMwOWQ5ZjYyYTc2NGIxMDRjYzVkNmUwZjFhYWRkOTUyZTY2ZCJ9"
+        },
+        {
+          "resource": "repo://analysis/glossario.md#L38-L38",
+          "version": "repo-lines-v1:sha256:45ccb9a6dcb0c3b96e3bdd94979a26894661349694cd2683c2a698855b41705f:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVjY2I5YTZkY2IwYzNiOTZlM2JkZDk0OTc5YTI2ODk0NjYxMzQ5Njk0Y2QyNjgzYzJhNjk4ODU1YjQxNzA1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVjY2I5YTZkY2IwYzNiOTZlM2JkZDk0OTc5YTI2ODk0NjYxMzQ5Njk0Y2QyNjgzYzJhNjk4ODU1YjQxNzA1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzQ0ZDdlZWYxMTVhOThjYjVlNDAxYjg0NjlkMzMxZTI2MmRlNTc2ODVlNmFhNzQwY2U1YTUwZjIyYzUyYTgxZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2IwNzY4ZjZkOTY0NzJlZWJmZjgxZWY3Y2YzNTM1ZDFhMzYwMDkyMzQxZGIyNWUyN2Q1YTc1OTExNDhkZGQ1NCJ9"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L688-L747",
+          "version": "repo-lines-v1:sha256:08131ac83d6ee0738ae960065bcfb0b8469df5317107a1656c85f6bdfbcb07b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwMTNkYzg4M2M5YTdlNDVhODFmYjVmY2IyN2QxNDAwZDFlMTcwMjJlZjk2NGZkZDE4MDA4NzhlY2Q1NGNkZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMTgyODBlZDhkODU0NzkxMDQ0NzY3OGFhNjQyNWY1MzAxNDRjZTMyNjkyZTU2MDE1MDQ2OTg0MzhkNjlmMWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwYzI5ZmYyNWNiYjYyMzg2ZmQ5NWU3NTg2NDE3ZDExZTY1YjA2ZjhmZDBjNTU4NzViNmRhNmY3Y2NmOWYxMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkMjUzMjViYjUyNTgwMmE4MmZmMGM5OThkYzM0YjBiMDZlYjJmYTNmNGYzMjQ0MThlOTQ5MGU2YTU2MDU3YjUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-09T17:09:54.387Z"
+    "at": "2026-10-15T13:12:35.828Z"
   }
 }

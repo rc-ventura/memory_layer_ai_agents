@@ -23,11 +23,8 @@ if str(PIPELINE) not in sys.path:
 import base_pipeline as bp
 
 RESULTADOS = PIPELINE / "resultados"
-FIGURAS = [("genealogia_observada.png", "Genealogia: família → assinatura → mecanismo → unidade → destino"),
-           ("unidades_observadas.png", "Tokens dos erros por unidade"),
-           ("papel_unidade.png", "Erros por papel × unidade")]
 MOTIVO = {
-    "regra_por_mensagem_elegivel": "regra pela mensagem (inteira)",
+    "regra_por_mensagem_elegivel": "mensagem de erro inteira basta",
     "sinais_suficientes_para_regra_de_parsing": "sinais suficientes para a regra de código mal formado",
     "proxy_predecessor_estruturado_nao_prova_namespace": "nome não definido com o erro anterior visível na janela",
     "linha_rejeitada_na_mensagem_ou_codigo": "linha rejeitada visível na mensagem ou no código",
@@ -49,6 +46,29 @@ MOTIVO = {
 def _sha256(path):
     with open(path, "rb") as f:
         return hashlib.file_digest(f, "sha256").hexdigest()
+
+
+def limpar_saida(pasta, padroes=("*.png", "*.md")):
+    """Apaga as figuras e o MD de uma geração anterior, um arquivo por vez (no lugar de apagar a pasta inteira). No
+    Windows um arquivo aberto em outro programa (a pré-visualização do relatorio.md no VS Code, uma imagem aberta) não
+    pode ser apagado: tenta tirar o "somente leitura" e, se ainda assim falhar, para com a lista do que fechar."""
+    import os
+    import stat
+    presos = []
+    for padrao in padroes:
+        for f in Path(pasta).glob(padrao):
+            try:
+                f.unlink()
+            except PermissionError:
+                try:
+                    os.chmod(f, stat.S_IWRITE)
+                    f.unlink()
+                except OSError:
+                    presos.append(f.name)
+    if presos:
+        raise SystemExit(f"Não consegui apagar {len(presos)} arquivo(s) de {pasta} (acesso negado): "
+                         f"{', '.join(sorted(presos)[:8])}. Feche a pré-visualização do relatorio.md e as imagens abertas "
+                         "dessa pasta (no VS Code, a aba \"Preview\") e rode de novo.")
 
 
 def _rodada(arg):
@@ -82,29 +102,42 @@ def _tabela(df, alinhar):
     return "\n".join([cab, sep] + linhas)
 
 
-def figura_cobertura(cob, destino):
+def figura_cobertura(cob, tri, destino):
+    """1 · Cobertura das regras: em quantos erros a regra tem a evidência para decidir (observável) e, desses, quantos
+    caem numa unidade reconhecida (o resto é resíduo); os pendentes, por motivo."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from paleta import BASE, BLUE, INK2
+    from matplotlib.ticker import FuncFormatter
+    from paleta import BLUE, INK2, MUTED
+    from execucao.figuras_painel import _pct
+    tot_e = float(cob.erros.sum())
     c = cob.assign(motivo=cob.motivo_evidencia.map(lambda m: MOTIVO.get(m, m))).sort_values("erros")
-    fig, ax = plt.subplots(figsize=(11, max(3, 0.45 * len(c) + 1)))
-    cores = [BLUE if s == "observavel" else BASE for s in c.situacao_mecanismo]
-    ax.barh(c.motivo, c.erros, color=cores)
-    for i, v in enumerate(c.erros):
-        ax.text(v, i, " " + _n(v), va="center", fontsize=9, color=INK2)
-    obs = int(cob.loc[cob.situacao_mecanismo.eq("observavel"), "erros"].sum())
-    fig.suptitle(f"Cobertura das regras: {_n(obs)} de {_n(cob.erros.sum())} erros estruturados caem numa unidade (azul)\n"
-                 "os demais ficam pendentes por falta de dado (cinza)", x=0.01, ha="left", fontsize=11)
+    fig, ax = plt.subplots(figsize=(12, max(3.5, 0.45 * len(c) + 2)))
+    ax.barh(c.motivo, c.erros, color=[BLUE if s == "observavel" else MUTED for s in c.situacao_mecanismo])
+    for i, (v, t) in enumerate(zip(c.erros, c.tokens_n_conhecidos)):
+        ax.text(v, i, f" {_n(v)} ({_pct(100 * v / tot_e)}) · {_n(t / 1e6, 1)} mi tokens", va="center", fontsize=8.5,
+                color=INK2)
+    ax.set_xlim(0, c.erros.max() * 1.4)
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _n(v)))
+    obs = float(cob.loc[cob.situacao_mecanismo.eq("observavel"), "erros"].sum())
+    res = float(tri.loc[tri.unidade.str.startswith("X_"), "erros_observaveis"].sum())
+    # sem legenda (Rafael, 16/10: ela só repetia o título); as cores ficam ditas no título
+    fig.suptitle(f"Cobertura das regras: a regra tem a evidência para decidir em {_n(obs)} de {_n(tot_e)} erros "
+                 f"({_pct(100 * obs / tot_e)}, azul); {_n(tot_e - obs)} ficam pendentes por falta de dado (cinza)\n"
+                 f"{_n(obs - res)} ({_pct(100 * (obs - res) / tot_e)}) caem numa unidade reconhecida; {_n(res)} são resíduo "
+                 "(nenhuma regra reconheceu a causa)", x=0.01, ha="left", fontsize=11)
     ax.set_xlabel("erros estruturados")
     for lado in ["top", "right"]:
         ax.spines[lado].set_visible(False)
     fig.tight_layout()
-    fig.savefig(destino, dpi=150)
+    fig.savefig(destino, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
 
-def gerar(pasta):
+def gerar(pasta, gasto_total=None):
+    """`gasto_total`: os tokens de todos os ActionSteps do sistema (das contagens, pelo relatório único); sem ele, o
+    gráfico de destinos fica só com a base dos tokens dos erros."""
     pasta = Path(pasta)
     m = json.loads((pasta / "manifesto.json").read_text(encoding="utf-8"))
     if m.get("estado") != "concluida_tecnicamente_sem_aprovacao_semantica":
@@ -115,6 +148,7 @@ def gerar(pasta):
     r = m["resumo"]
     saida = pasta / "painel"
     saida.mkdir(exist_ok=True)
+    limpar_saida(saida)   # sem isto, figuras cortadas de gerações antigas ficariam na pasta e iriam para o relatório
 
     total_err, total_tok = int(cob.erros.sum()), float(cob.tokens_n_conhecidos.sum())
     obs = cob.situacao_mecanismo.eq("observavel")
@@ -125,8 +159,10 @@ def gerar(pasta):
     resumo = pd.DataFrame([
         ("Erros estruturados", _n(r["erros_estruturados"])),
         ("Suspeitas da query (fora da taxonomia)", _n(r.get("suspeitas_fora_taxonomia"))),
-        ("Caem numa unidade (observáveis)", f"{_n(r['mecanismos_observaveis'])} ({_n(100 * r['mecanismos_observaveis'] / total_err)}%)"),
-        ("Pendentes por falta de dado", f"{_n(r['pendentes'])} ({_n(100 * r['pendentes'] / total_err)}%)"),
+        ("A regra tem a evidência para decidir (observáveis)", f"{_n(r['mecanismos_observaveis'])} ({_n(100 * r['mecanismos_observaveis'] / total_err, 1)}%)"),
+        ("… caem numa unidade reconhecida (sem o resíduo)", f"{_n(r['mecanismos_observaveis'] - residuo.erros_observaveis.sum())} "
+                                                           f"({_n(100 * (r['mecanismos_observaveis'] - residuo.erros_observaveis.sum()) / total_err, 1)}%)"),
+        ("Pendentes por falta de dado", f"{_n(r['pendentes'])} ({_n(100 * r['pendentes'] / total_err, 1)}%)"),
         ("Unidades observáveis", _n(r["unidades_observaveis"])),
         ("Candidatas a memória (≥3 execuções, ≥2 meses)", _n(len(cand))),
         ("… que passam também na régua estrita (≥5, ≥3)", _n(len(firmes & set(cand.unidade)))),
@@ -155,53 +191,58 @@ def gerar(pasta):
         "Papéis": t.papeis.map(_n), "Tokens (mi)": (t.tokens_n_conhecidos / 1e6).map(lambda v: _n(v, 1)),
         "% tokens": (100 * t.tokens_n_conhecidos / total_tok).map(lambda v: _n(v, 1))})
 
-    figura_cobertura(cob, saida / "cobertura.png")
-    figuras = [("cobertura.png", "Cobertura das regras: observável × pendente, por motivo")]
-    for nome, titulo in FIGURAS:
-        if (pasta / nome).exists():
-            shutil.copy2(pasta / nome, saida / nome)
-            figuras.append((nome, titulo))
+    figura_cobertura(cob, tri, saida / "cobertura.png")
 
     md = [f"# Painel — base 3, rodada `{pasta.name}`", "",
           f"Fonte: SHA-256 `{m.get('fonte_sha256')}` · contrato `{m.get('contrato_fonte')}` · estado `{m.get('estado')}`.",
           "Gerado por `execucao/painel.py` a partir dos CSVs da rodada (hashes conferidos com o manifesto). "
-          "Só contagens; candidata = recorrente o suficiente para minerar, não memória aprovada; sem taxas "
-          "(a extração não traz os passos sem erro).", "",
+          "Só contagens; candidata = recorrente o suficiente para minerar, não memória aprovada. Sem taxas aqui: "
+          "elas precisam das contagens do pedido A e saem em `taxas/` e no relatório único (`executar.py relatorio`).", "",
           "## Resumo", "", _tabela(resumo, "ld"), "",
           "## Cobertura das regras", "", _tabela(cobertura, "llddd"), "",
           "![cobertura](cobertura.png)", "",
           "## Triagem", "", _tabela(triagem, "llldddddd"), "",
           "Execuções se sobrepõem entre unidades: não somar a coluna.", ""]
-    for nome, titulo in figuras[1:]:
-        md += [f"## {titulo}", "", f"![{titulo}]({nome})", ""]
 
     # Gráficos de leitura: cada um responde a uma pergunta; os que dependem de tabela ausente são pulados com o motivo.
+    # Ordem e conteúdo: auditoria da parte 1 (roadmap b3 #40). Cortados por "um insight por gráfico": os papéis das
+    # candidatas (o total por papel foi para a margem do papel × unidade) e a contagem por unidade e mês (virou o painel
+    # esquerdo da taxa por unidade e mês, na parte 2).
     import execucao.figuras_painel as fp
     tpp = ler(pasta, m, "triagem_por_papel.csv")
-    graficos = [("destinos.png", lambda d: fp.destinos(tri, cob, d)),
-                ("frequencia_custo.png", lambda d: fp.frequencia_custo(tri, d)),
-                ("concentracao_papel.png", lambda d: fp.concentracao_papel(tri, tpp, d)),
-                ("papeis_candidatas.png", lambda d: fp.papeis_candidatas(tri, tpp, d))]
-    pulados = []
-    if "consolidacao_unidade_papel_mes.csv" in m["artefatos"]:
-        upm = ler(pasta, m, "consolidacao_unidade_papel_mes.csv")
-        graficos.append(("linha_do_tempo.png", lambda d: fp.linha_do_tempo(tri, upm, d)))
+    graficos, pulados = [], []
+    if (pasta / "genealogia_observada.png").exists() and "genealogia_observada.png" in m["artefatos"]:
+        shutil.copy2(pasta / "genealogia_observada.png", saida / "genealogia_observada.png")
+        graficos.append(("genealogia_observada.png", lambda d: fp.genealogia()))
+    graficos.append(("unidades_observadas.png", lambda d: fp.tokens_unidade(tri, cob, d)))
+    upt = (ler(pasta, m, "consolidacao_unidade_papel_tokens.csv")
+           if "consolidacao_unidade_papel_tokens.csv" in m["artefatos"] else None)
+    if upt is not None:
+        graficos.append(("papel_unidade.png", lambda d: fp.papel_unidade(upt, tpp, tri, d)))
     else:
-        pulados.append("Erros por unidade e mês: a rodada não tem `consolidacao_unidade_papel_mes.csv`.")
-    perfis = {}
-    for u in cand.unidade:
-        nomes = [f"perfis/{u}/depois.csv", f"perfis/{u}/proximo_final.csv"]
-        if all(n in m["artefatos"] for n in nomes):
-            perfis[u] = {"depois": ler(pasta, m, nomes[0]), "proximo_final": ler(pasta, m, nomes[1])}
-    if perfis:
-        graficos.append(("depois_do_erro.png", lambda d: fp.depois_do_erro(perfis, d)))
+        pulados.append("Erros por papel × unidade e concentração por papel: a rodada não tem "
+                       "`consolidacao_unidade_papel_tokens.csv` (tabela de 15/10; rode `executar.py analisar` de novo).")
+    graficos += [("destinos.png", lambda d: fp.destinos(tri, cob, d, gasto_total)),
+                 ("unidades_destino_tipo.png", lambda d: fp.unidades_destino_tipo(tri, d)),
+                 ("frequencia_custo.png", lambda d: fp.frequencia_custo(tri, d))]
+    if upt is not None:
+        graficos.append(("concentracao_papel.png", lambda d: fp.concentracao_papel(upt, tri, d)))
+    if "consolidacao_depois_unidade.csv" in m["artefatos"]:
+        dep = ler(pasta, m, "consolidacao_depois_unidade.csv")
+    else:   # rodada de antes de 16/10: só as candidatas, pelos perfis
+        perfis = {u: ler(pasta, m, f"perfis/{u}/casos.csv")[["depois", "proximo_final_observado"]]
+                  for u in cand.unidade if f"perfis/{u}/casos.csv" in m["artefatos"]}
+        dep = fp.depois_de_perfis(perfis) if perfis else None
+    if dep is not None and len(dep):
+        graficos.append(("depois_do_erro.png", lambda d: fp.depois_do_erro(dep, tri, d)))
     else:
-        pulados.append("O que vem depois do erro: a rodada não tem perfis (`executar.py analisar --perfil <unidade>` "
-                       "ou `executar.py conferir`).")
+        pulados.append("O que vem depois do erro: a rodada não tem `consolidacao_depois_unidade.csv` nem perfis.")
     if "consolidacao_pendencias_papel_mes.csv" in m["artefatos"]:
         ppm = ler(pasta, m, "consolidacao_pendencias_papel_mes.csv")
+        meses = (ler(pasta, m, "consolidacao_unidade_papel_mes.csv").mes.unique().tolist()
+                 if "consolidacao_unidade_papel_mes.csv" in m["artefatos"] else [])
         if len(ppm):
-            graficos.append(("pendentes.png", lambda d: fp.pendentes(ppm, d)))
+            graficos.append(("pendentes.png", lambda d: fp.pendentes(ppm, meses, total_err, total_tok, d)))
     else:
         pulados.append("Onde estão os pendentes: a rodada não tem `consolidacao_pendencias_papel_mes.csv` "
                        "(gerado a partir de 09/10; rode `executar.py analisar` de novo).")
@@ -210,6 +251,17 @@ def gerar(pasta):
         titulo, pergunta, ler_como, limite = desenhar(saida / nome)
         md += [f"## {titulo}", "", f"**Pergunta:** {pergunta}", "", f"![{titulo}]({nome})", "",
                f"**Como ler:** {ler_como}", "", f"**Limitação:** {limite}", ""]
+    if dep is not None and dep.depois.eq("erro estruturado vinculado").any():
+        v = dep[dep.depois.eq("erro estruturado vinculado")]
+        tot_u = dep.groupby("unidade").erros.sum()
+        tr = v.groupby(["unidade", "unidade_seguinte"]).erros.sum().sort_values(ascending=False).head(15).reset_index()
+        if len(tr):
+            md += ["## As transições mais frequentes (o erro seguinte, com vínculo confirmado)", "",
+                   "Sequência, não causa. A matriz inteira: `consolidacao_depois_unidade.csv`.", "",
+                   _tabela(pd.DataFrame({"Erro": tr.unidade, "Erro seguinte": tr.unidade_seguinte,
+                                         "Erros": tr.erros.map(_n),
+                                         "% dos erros da unidade": (100 * tr.erros / tr.unidade.map(tot_u)).map(lambda x: _n(x, 1))}),
+                           "lldd"), ""]
     if pulados:
         md += ["## Gráficos não gerados nesta rodada", ""] + [f"- {x}" for x in pulados] + [""]
     (saida / "painel.md").write_text("\n".join(md), encoding="utf-8")

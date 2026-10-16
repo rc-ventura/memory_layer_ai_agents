@@ -746,6 +746,56 @@ não via o padrão.
   (3) `executar.py validar` (as regras da base 3 e da base 2 iguais); (4) `executar.py analisar` — rodada nova, a
   `observada_b4fcc7711a9ec8a6` fica intacta; (5) `executar.py conferir` e `painel`.
 
+### Ajuste 18 — a fonte principal da base 3 passa a ser a extração v2, sem o corte de texto
+
+**Gatilho.** A query da base 3 foi reexecutada sem o `SUBSTR` nos textos (`base_erros_minerados_full_v2.parquet`,
+`b3 #26`). Rodar o pipeline nela parou em "BLOQUEADO": o adaptador lia a v2 como o contrato da v1, e no contrato da v1
+um texto acima do corte é sinal de fonte errada (`_estado_texto` levanta `ErroContrato`). O `executar_observada.py`
+engolia a mensagem e não dizia qual trava tinha disparado.
+
+**Evidência** (`b3 #26`; `validacao/inspecionar_parquet.py` e `validacao/conferir_contagens.py`).
+- As mesmas 31.421 linhas na v1 e na v2 (chave execução, agente, papel, `step_pos`), nenhuma só numa das duas;
+  `error_type` e `total_tokens` iguais em todas; a mensagem da v1 é o começo da da v2 em 31.421 de 31.421.
+- As 1.009 mensagens que a v1 cortava em 20.000 caracteres são mais longas na v2 (a maior tem 833.507); o código chega a
+  78.965 e `tool_calls` a 83.910. O schema é o mesmo (69 colunas, na mesma ordem): **não dá para separar v1 de v2 pelas
+  colunas**.
+
+**Solução.**
+- **Adaptador** (`analysis/adaptador_trace.py`): `adaptar(..., sem_corte=False)` e `carregar_fonte(..., sem_corte=False)`.
+  Com `sem_corte=True`, todo texto presente fica `sem_corte_sql` (inclusive o que tem exatamente o comprimento de um
+  corte antigo) e as janelas vizinhas também; a cobertura diz `texto_integral: integral` e a fonte guarda
+  `corte_texto` (`sem_corte` ou `substr_v1`). Só vale no contrato de janelas; no censo, recusado. Com `False`, nada
+  muda: o teto da v1 segue bloqueando.
+- **Fonte padrão** (`base_pipeline.py` da base 3): `TRACE` aponta para a v2 e `TRACE_V1` para a v1; `carregar_carga`,
+  `carregar_trace` e `carregar_mineracao_observada` aceitam `extracao="v2"` (padrão) ou `"v1"`.
+- **Comando:** `executar.py analisar` sem argumento usa a v2; `--extracao v1` usa a v1 (para reproduzir a rodada
+  `3f9c…`). O "BLOQUEADO" passa a dizer o tipo e a mensagem da trava (nenhum dado da fonte).
+- **Trava cruzada** (`mineracao_observada.conferir_fonte`): o hash conhecido da v1 lido como v2, ou o da v2 lido como
+  v1, bloqueia com o comando certo na mensagem. `FONTE_V1_SHA256` é o hash de antes; `FONTE_V2_SHA256` = `908aa005…86306` (registrado em 14/10).
+- **Identidade da rodada:** a extração e o corte entram na impressão digital, então a mesma fonte lida de dois jeitos
+  nunca cai na mesma pasta.
+- **Conferência** (`conferir_rodada_observada.py`): a elegibilidade recontada direto do Arrow passa a ser "mensagem
+  presente" (antes, "< 20.000"); a conferência só roda com o hash da v2 registrado.
+- **Kit de mineração:** sem mudança — o manifesto dele é o do pipeline da base 1, que não mudou.
+- **Decisão do Rafael (14/10):** a v2 é a fonte principal, a v1 por argumento.
+
+**Verificação.**
+- **Testes:** 178, todos passando (9 novos, sobre 169: texto longo aceito na v2, comprimento igual ao corte antigo não é corte,
+  janela vizinha longa só passa na v2, a v1 continua marcada como `substr_v1`, censo recusa `sem_corte`, as duas travas
+  cruzadas, o "BLOQUEADO" diz a trava, extração desconhecida recusada).
+- **Ponta a ponta, parquet sintético** com mensagens de 25.000 caracteres: lido como v2, as 3 ficam elegíveis e o
+  manifesto registra `v2`/`sem_corte`; lido como v1, para em "Texto excede limite do contrato: error_message".
+- **Base 1:** sem mudança de código no pipeline dela; o caminho da base 3 com `extracao="v1"` é o de antes.
+- **O que se espera na v2** (a conferir na rodada, `b3 #31`): mesmas contagens de erro (30.141) e de tokens; os 1.009
+  pendentes por mensagem limitada passam a ter a mensagem inteira. Os timeouts continuam pendentes enquanto a regra
+  pedir o prompt declarado (o código inteiro não basta sozinho).
+- **Rodada real (14/10):** `observada_609c947b15295c84`, conferida (46 verificações). Erros, suspeitas e tokens iguais
+  à `3f9c…`; mensagem limitada 1.009 → 0; pendentes 1.803 → **749** (2,5%); observáveis 28.338 → 29.392. Dos 1.055
+  que saíram da pendência, 1.002 foram para o retorno-string; o retorno-dict ficou em 2 (a conferir, `b3 #34`).
+  Detalhe em `b3 #31`.
+- **Replicar no ambiente da base 3:** (1) `git pull`; (2) `executar.py analisar` — rodada nova; a `3f9c…` fica intacta;
+  (3) `resumo_rodada.py`; (4) `executar.py conferir`; (5) `painel`.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e

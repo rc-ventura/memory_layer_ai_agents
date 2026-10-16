@@ -56,6 +56,53 @@ class TestTriagemObservada(unittest.TestCase):
             a = mo.analisar(state(*recorrentes(message)))
             self.assertFalse(a.tabelas["triagem_visivel_observada"].decisao.eq(mo.CANDIDATO).any())
 
+    def test_tabela_unidade_papel_tokens_de_todas_as_unidades(self):
+        """A tabela de 15/10 (b3 #36, gráfico 9): todas as unidades, pendentes como "sem unidade"; somada por unidade
+        bate com a triagem e no total com todos os erros estruturados."""
+        rows = (recorrentes() + [janela(cod_idef_exeo=f"exec-bloco-{i}", error_message="No code block found")
+                                 for i in range(2)]
+                + [janela(cod_idef_exeo="exec-pendente", error_message="x" * 20000, total_tokens="100")])
+        a = mo.analisar(state(*rows))
+        upt, tri = a.tabelas["consolidacao_unidade_papel_tokens"], a.tabelas["triagem_visivel_observada"]
+        self.assertEqual(int(upt.erros.sum()), len(a.EU))
+        self.assertIn(mo.SEM_UNIDADE, set(upt.unidade))
+        por_u = upt[upt.unidade.ne(mo.SEM_UNIDADE)].groupby("unidade").agg(e=("erros", "sum"),
+                                                                           t=("tokens_n_conhecidos", "sum"))
+        t = tri.set_index("unidade")
+        self.assertEqual(set(por_u.index), set(t.index))
+        for u, r in por_u.iterrows():
+            self.assertEqual(r.e, t.loc[u, "erros_observaveis"])
+            self.assertAlmostEqual(float(r.t), float(t.loc[u, "tokens_n_conhecidos"]))
+        self.assertFalse(set(upt.unidade) - set(t.index) - {mo.SEM_UNIDADE})
+
+    def test_depois_de_todas_as_unidades_bate_com_o_perfil(self):
+        """D5 de 16/10: o "depois" de todas as unidades, só contagem; nas candidatas, igual ao perfil."""
+        rows = recorrentes() + [janela(cod_idef_exeo=f"exec-bloco-{i}", error_message="No code block found")
+                                for i in range(2)]
+        a = mo.analisar(state(*rows))
+        dep = a.tabelas["consolidacao_depois_unidade"]
+        self.assertEqual(int(dep.erros.sum()), len(a.EU))
+        tri = a.tabelas["triagem_visivel_observada"].set_index("unidade")
+        self.assertTrue(set(dep.unidade) - {mo.SEM_UNIDADE} <= set(tri.index))
+        perfil = mo.perfil_unidade(a, "U_tipo_retorno")["depois"].set_index("depois").erros
+        tabela = dep[dep.unidade.eq("U_tipo_retorno")].groupby("depois").erros.sum()
+        self.assertEqual(perfil.sort_index().to_dict(), tabela.sort_index().to_dict())
+        self.assertTrue(dep.unidade_seguinte[dep.depois.ne("erro estruturado vinculado")
+                                             & ~dep.depois.str.startswith("erro estruturado observado")]
+                        .eq("não se aplica").all())
+
+    def test_perfil_de_investigacao_so_quando_pedido(self):
+        """B+2 de 16/10: perfil de unidade não candidata só com investigacao=True, e marcado como tal."""
+        rows = recorrentes() + [janela(cod_idef_exeo=f"exec-bloco-{i}", error_message="No code block found")
+                                for i in range(2)]
+        a = mo.analisar(state(*rows))
+        with self.assertRaises(mo.bp.AnaliseNaoIntegrada):
+            mo.perfil_unidade(a, "X_sintoma_nao_reconhecido")
+        p = mo.perfil_unidade(a, "X_sintoma_nao_reconhecido", investigacao=True)
+        self.assertEqual(p["perfil"].finalidade.iloc[0], "investigação — não é candidatura")
+        self.assertEqual(len(p["casos"]), 2)
+        self.assertEqual(mo.perfil_unidade(a, "U_tipo_retorno")["perfil"].finalidade.iloc[0], "candidatura")
+
     def test_pendencias_preservadas_no_custo_e_genealogia(self):
         rows = recorrentes() + [janela(cod_idef_exeo="exec-pendente", error_message="x" * 20000, total_tokens="100")]
         a = mo.analisar(state(*rows))
@@ -199,6 +246,24 @@ class TestProveniencia(unittest.TestCase):
             with self.assertRaisesRegex(mo.bp.AnaliseNaoIntegrada, "referência"):
                 mo.conferir_fonte(path, "0" * 64)
 
+    def test_v1_lida_como_v2_bloqueia(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "fonte.parquet"
+            path.write_bytes(b"fixture")
+            with patch.object(mo, "FONTE_V1_SHA256", mo.sha256(path)):
+                with self.assertRaisesRegex(mo.bp.AnaliseNaoIntegrada, "extracao v1"):
+                    mo.conferir_fonte(path)
+                with self.assertRaisesRegex(mo.bp.AnaliseNaoIntegrada, "Parquet"):
+                    mo.conferir_fonte(path, extracao="v1")
+
+    def test_v2_lida_como_v1_bloqueia(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "fonte.parquet"
+            path.write_bytes(b"fixture")
+            with patch.object(mo, "FONTE_V2_SHA256", mo.sha256(path)):
+                with self.assertRaisesRegex(mo.bp.AnaliseNaoIntegrada, "sem --extracao"):
+                    mo.conferir_fonte(path, extracao="v1")
+
     def test_saida_canonica_proibida(self):
         a = mo.analisar(state(*recorrentes()))
         with self.assertRaises(ValueError):
@@ -245,9 +310,12 @@ class TestPainel(unittest.TestCase):
             self.assertIn("U_tipo_retorno", md)
             self.assertNotIn("exec-sintetica", md)
             self.assertTrue((saida / "cobertura.png").is_file())
-            for nome in ["destinos.png", "frequencia_custo.png", "concentracao_papel.png", "papeis_candidatas.png",
-                         "linha_do_tempo.png"]:
+            for nome in ["genealogia_observada.png", "unidades_observadas.png", "papel_unidade.png", "destinos.png",
+                         "unidades_destino_tipo.png", "frequencia_custo.png", "concentracao_papel.png"]:
                 self.assertTrue((saida / nome).is_file(), nome)
+            # cortados na auditoria da parte 1 (b3 #40): um insight por gráfico
+            for nome in ["papeis_candidatas.png", "linha_do_tempo.png"]:
+                self.assertFalse((saida / nome).exists(), nome)
             self.assertIn("**Limitação:**", md)
             (dest / "triagem_visivel_observada.csv").write_text("adulterado", encoding="utf-8")
             with self.assertRaises(SystemExit):

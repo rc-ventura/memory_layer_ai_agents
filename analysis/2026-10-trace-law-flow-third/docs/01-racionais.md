@@ -95,3 +95,45 @@ Duas diferenças da base 3:
 
 Cada uma dessas lacunas está medida no procedimento (§4) e vira item do pedido da próxima versão da query
 ([roadmap](04-roadmap.md)).
+
+## 7 · O teto de economia e o teste de compensação da memória
+
+**A pergunta de fundo.** Criar uma memória compensa? Uma lição injetada no contexto **custa tokens em todo passo em que é
+injetada**; ela só vale a pena se evitar mais tokens em erro do que custa. Esta seção fixa o enquadramento — **hipótese,
+não resultado** — para que o número de hoje sirva de linha de base quando houver uma memória para testar.
+
+**O teto de economia.** É a soma dos tokens dos passos com erro das unidades **candidatas** (as que passaram na régua de
+recorrência), por papel e no total: o que se gastou em passos que falharam por um erro que uma lição poderia evitar. Na
+rodada `609c…` (fonte v2, contagens do pedido A):
+
+| Destino do erro | Tokens (mi) | % do gasto total (3.729,3 mi) | Quem resolve |
+|---|---:|---:|---|
+| Candidatas a memória | 387,0 | **10,4%** | memória (hipótese) |
+| Sinal de harness (`try/except NameError`) | 112,0 | 3,0% | prompt/harness |
+| Harness / infra (não-memória) | 64,2 | 1,7% | plataforma |
+| Resíduo | 21,9 | 0,6% | taxonomia (investigar) |
+| Crítico e sem recorrência | 2,5 | 0,1% | — |
+| Pendente (falta dado na extração) | 5,1 | 0,1% | — |
+| **Todos os erros estruturados** | **592,9** | **15,9%** | |
+
+**Por que é um teto, e não uma previsão** (cada item torna o número real menor):
+1. supõe que a memória evita **todos** os erros das candidatas (eficácia de 100%);
+2. **não desconta o custo da injeção** da própria memória;
+3. candidata é "recorrente o suficiente para minerar", não memória aprovada — algumas terão destino harness;
+4. mede o passo que falhou, **não a recuperação** que vem depois (roadmap #15);
+5. mistura papéis: a economia real depende de **em quais passos** a memória é injetada.
+
+**O orçamento de injeção** é o teto dividido pelos passos onde a memória entraria — o tamanho máximo que a memória pode ter
+para empatar com 100% de eficácia. Com todas as candidatas e injeção em todos os passos do sistema: 387,0 mi ÷ 283.925 passos
+= **≈ 1.363 tokens por passo** (10,4% dos 13.135 tokens de um passo médio); uma unidade só, `U_tipo_retorno`: 207,0 mi ÷
+283.925 = ≈ 729 tokens por passo. Injetar só nos papéis onde a unidade ocorre **aumenta** o orçamento por passo (o
+denominador é o dos passos do papel). Com eficácia *e* menor que 100%, o ponto de equilíbrio é
+**tamanho da memória < e × orçamento de injeção**.
+
+**O teste de compensação (quando existir uma memória).** Com a rodada de hoje como **linha de base congelada** (fonte, contagens
+e rodada com hash; os números ficam num **registro versionado** em `analysis/registros/`, e não só na pasta de resultados, que está fora
+do git e pode ser refeita com outro código — decisão de 15/10, [`decisoes.md`](../../decisoes.md)), mede-se depois da injeção, nos mesmos papéis e unidades: (1) a **economia medida** = tokens em erro da
+base − tokens em erro depois; (2) o **custo da injeção** = tokens injetados × passos em que entraram; (3) a memória
+**compensa** se economia medida − custo da injeção > 0; (4) a **eficácia** = economia medida ÷ teto. A comparação é por
+**taxa e por papel**, nunca por total: o gráfico mensal de custo mostrou que a mistura de papéis muda o custo por execução
+sem mudar a eficiência de nenhum deles ([roadmap](04-roadmap.md) #36, gráfico 6; #37).

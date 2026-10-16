@@ -172,9 +172,14 @@ def _ref(fonte_id: str, parts: list) -> str:
     return fonte_id + ":" + hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def _estado_texto(frame: pd.DataFrame, field: str, cap: int, census: bool) -> pd.Series:
+def _estado_texto(frame: pd.DataFrame, field: str, cap: int | None, census: bool) -> pd.Series:
+    """Estado do texto pelo contrato da extração. `cap=None`: extração sem SUBSTR (v2), todo texto presente é integral."""
     s = _text(frame[field])
     lengths = s.str.len()
+    if cap is None:
+        result = pd.Series("ausente_na_projecao", index=frame.index, dtype=TEXTO_DTYPE)
+        result.loc[s.notna()] = "sem_corte_sql"
+        return result
     if lengths.gt(cap).any():
         raise ErroContrato(f"Texto excede limite do contrato: {field}.")
     result = pd.Series("ausente_na_projecao", index=frame.index, dtype=TEXTO_DTYPE)
@@ -201,8 +206,11 @@ def _unavailable(index: pd.Index, dtype: str = "Int64") -> pd.Series:
     return pd.Series(pd.NA, index=index, dtype=dtype)
 
 
-def adaptar(df: pd.DataFrame, *, fonte_id: str) -> BaseEstrutural:
+def adaptar(df: pd.DataFrame, *, fonte_id: str, sem_corte: bool = False) -> BaseEstrutural:
     """Normaliza a fonte sem mutation. Exige ID de fonte para referências estáveis.
+
+    `sem_corte` (Ajuste 18): a extração v2 das janelas tem o mesmo schema da v1, sem o SUBSTR. Não se detecta pelas
+    colunas; quem chama declara. Com False, o teto da v1 vale e um texto acima dele bloqueia (fonte errada).
 
     Não aceita trace completo neste núcleo: preservar o caminho existente.
     Censo B precisa satisfazer índices e contagens declarados dentro dos grupos;
@@ -213,6 +221,8 @@ def adaptar(df: pd.DataFrame, *, fonte_id: str) -> BaseEstrutural:
     mode = detectar_contrato(df)
     if mode == TRACE_COMPLETO:
         raise ErroContrato("Trace completo: use o caminho existente; este núcleo não o substitui.")
+    if sem_corte and mode != JANELAS:
+        raise ErroContrato("Extração sem corte só existe para o contrato de janelas.")
     required = COLUNAS_JANELAS if mode == JANELAS else COLUNAS_CENSO
     if set(required) - set(df.columns):
         raise ErroContrato("Schema incompleto para o contrato detectado.")
@@ -270,7 +280,7 @@ def adaptar(df: pd.DataFrame, *, fonte_id: str) -> BaseEstrutural:
     text_map = TEXTOS_JANELAS if mode == JANELAS else TEXTOS_CENSO
     for dest, (src, cap) in text_map.items():
         steps[dest] = _text(origin[src])
-        steps[dest + "_estado"] = _estado_texto(origin, src, cap, mode == CENSO)
+        steps[dest + "_estado"] = _estado_texto(origin, src, None if sem_corte else cap, mode == CENSO)
     for dest in ["sysprompt", "ctx"]:
         steps[dest] = _unavailable(idx, TEXTO_DTYPE)
         steps[dest + "_estado"] = pd.Series("nao_exportado", index=idx, dtype=TEXTO_DTYPE)
@@ -287,10 +297,10 @@ def adaptar(df: pd.DataFrame, *, fonte_id: str) -> BaseEstrutural:
         steps["indice_tipo"] = "posicao_original_sem_ordinal_actionstep"
         steps["tem_final_no_papel"] = _boolean(origin.execution_has_final_step, "execution_has_final_step")
         steps["recovery_signal_produtor"] = _text(origin.recovery_signal)
-        slots = _slots_janelas(origin, steps)
+        slots = _slots_janelas(origin, steps, sem_corte)
         links = _vinculos_janelas(steps, slots)
         coverage = {"populacao_global": "nao_observavel", "idx_global": "nao_observavel",
-                    "fronteira_chamada": "nao_observavel", "texto_integral": "parcial",
+                    "fronteira_chamada": "nao_observavel", "texto_integral": "integral" if sem_corte else "parcial",
                     "vinculos": "candidatos_conferir_trace", "contexto_modelo": "nao_observavel"}
     else:
         steps["idx"] = _number(origin.action_idx, "action_idx", True)
@@ -305,11 +315,12 @@ def adaptar(df: pd.DataFrame, *, fonte_id: str) -> BaseEstrutural:
         coverage = {"populacao_global": "condicionada_manifesto_externo", "idx_global": "consistente_no_arquivo",
                     "fronteira_chamada": "contador_taskstep_nao_prova_namespace", "texto_integral": "parcial",
                     "vinculos": "ordem_declarada_censo", "contexto_modelo": "nao_observavel"}
-    return BaseEstrutural(mode, {"id": fonte_id, "colunas": list(origin.columns),
+    corte = "declarado_por_coluna" if mode == CENSO else ("sem_corte" if sem_corte else "substr_v1")
+    return BaseEstrutural(mode, {"id": fonte_id, "colunas": list(origin.columns), "corte_texto": corte,
                                  "formato": dict(df.attrs.get("formato", {}))}, origin, steps, slots, links, coverage)
 
 
-def _slots_janelas(origin: pd.DataFrame, steps: pd.DataFrame) -> pd.DataFrame:
+def _slots_janelas(origin: pd.DataFrame, steps: pd.DataFrame, sem_corte: bool = False) -> pd.DataFrame:
     parts = []
     mapping = {"step": "step_number", "err_type": "error_type", "error_like": "error_like",
                "is_final": "is_final_answer", "err_msg": "error_message", "tool_name": "tool_name",
@@ -333,7 +344,7 @@ def _slots_janelas(origin: pd.DataFrame, steps: pd.DataFrame) -> pd.DataFrame:
             else:
                 s[name] = _text(origin[field])
             if name in {"code", "thought", "observations", "err_msg"}:
-                s[name + "_estado"] = _estado_texto(origin, field, LIMITES_SLOT[prefix][name], False) \
+                s[name + "_estado"] = _estado_texto(origin, field, None if sem_corte else LIMITES_SLOT[prefix][name], False) \
                     if field in origin else pd.Series("nao_exportado", index=origin.index, dtype=TEXTO_DTYPE)
         has_number = s.step.notna()
         fields = [c for c in origin if c.startswith(prefix + "_") and c != prefix + "_step_number"]
@@ -477,7 +488,7 @@ def _vinculos_censo(steps: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(links, columns=LINK_COLUMNS)
 
 
-def carregar_fonte(caminho: str | Path) -> BaseEstrutural:
+def carregar_fonte(caminho: str | Path, sem_corte: bool = False) -> BaseEstrutural:
     """Reusa o leitor existente; fingerprint do arquivo ancora as referências."""
     path = Path(caminho)
     cols = colunas_do_trace(path)
@@ -487,7 +498,7 @@ def carregar_fonte(caminho: str | Path) -> BaseEstrutural:
     with path.open("rb") as f:
         for block in iter(lambda: f.read(1024 * 1024), b""):
             h.update(block)
-    result = adaptar(ler_trace(path), fonte_id=h.hexdigest())
+    result = adaptar(ler_trace(path), fonte_id=h.hexdigest(), sem_corte=sem_corte)
     final = path.stat()
     if (initial.st_size, initial.st_mtime_ns) != (final.st_size, final.st_mtime_ns):
         raise ErroContrato("Fonte mudou durante a leitura.")

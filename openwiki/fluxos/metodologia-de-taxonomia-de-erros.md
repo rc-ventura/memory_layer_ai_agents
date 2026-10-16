@@ -14,6 +14,8 @@ sources:
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/genealogia_sankey.py
   - id: openwiki-source-b5d2e6c4b6578b784bc74767
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/paleta.py
+  - id: openwiki-source-afeb1c5ba90e2da2476aeaf0
+    resource: repo://analysis/glossario.md
   - id: openwiki-source-390363992e7f2499e94a84a2
     resource: repo://analysis/pipeline-entre-bases.md
   - id: openwiki-source-8d465556f06784418e84e1c5
@@ -24,10 +26,10 @@ sources:
     resource: repo://discussion/hipoteses/trace-error-taxonomy-methodology/general-error-taxonomy-methodology.md
   - id: openwiki-source-e2588285d2ac910e627dab99
     resource: repo://discussion/teoria/agentdebug-vs-trail-error-taxonomy.md
-generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
+generated: { by: "claude-code", at: "2026-10-15T13:12:35.828Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-09T17:09:54.387Z
+    at: 2026-10-15T13:12:35.828Z
 ---
 
 Sistemas de agentes sem memória persistente redescobrem as mesmas falhas em cada execução. Transformar erros registrados em memória útil exige uma taxonomia — mas taxonomia boa não é rótulo bonito, é **roteamento**: cada erro bruto precisa chegar, por regras determinísticas e reabíveis no dado cru, até a menor lição reutilível que o evitaria (ou até fora da memória). A contribuição central é a **genealogia de erros** — dois eixos paralelos de classificação (o que o sistema reclamou × o que o agente fez de errado) que se **dividem** (um sintoma pode ter várias causas) e se **fundem** (causas diferentes podem pedir a mesma cura) até convergir numa decisão de escrita.
@@ -57,6 +59,8 @@ Sintoma (E1) e mecanismo (E2) são duas leituras independentes da mesma mensagem
 | unidade → decisão | **N:1** | a triagem decide pela unidade **global**, não por (contexto × unidade) |
 
 Consequência arquitetural: o eixo sintoma **não alimenta a decisão** — é a camada de descrição, proveniência e descoberta (o censo dos sintomas, a trilha de auditoria, o catch-all que sinaliza erro novo numa extração maior). Quem decide é sempre o eixo mecanismo — **com uma única exceção, declarada**: no fechamento da unidade (`montar_unidades()` na instanciação), a família do sintoma é consultada só para separar os dois baldes de resíduo entre si (ver abaixo), que nunca viram memória. Nenhuma candidata depende disso — na base 1 as 10 candidatas saem idênticas com ou sem a separação.
+
+O salto de evidência local também **reordena regras dentro do mecanismo**: no Ajuste 17, a assinatura lida na **linha que falhou** passou a decidir antes da posição do passo anterior para o erro "variável não definida" — o `try`/`except NameError` que o system prompt instrui para checar se uma variável existe, e que o interpretador do sandbox não captura (ele levanta outro erro). Assim nasceram o mecanismo `verificacao_try_nameerror` e a unidade `U_verificacao_try_nameerror`: na base 3, 5.764 erros que estavam pendentes ou classificados só pela posição migraram para ela, com destino **sinal de harness** registrado nas bases 2 e 3.
 
 ### O resíduo — dois baldes, não um catch-all
 
@@ -109,7 +113,7 @@ A candidatura continua sendo decidida pela unidade **global**. Mas quando a mem�
 
 ## A figura-canônica — a genealogia como árvore de roteamento
 
-A cadeia inteira cabe numa figura só (o Sankey da instanciação, gerado por `pipeline/genealogia_sankey.py`): cinco colunas — família → assinatura → mecanismo → unidade → destino — com **contagem real por nó e por aresta** (a soma se conserva em todos os estágios; as arestas cruas ficam em `resultados/genealogia_arestas.csv`). Todas as assinaturas e mecanismos aparecem pelo nome — é uma árvore de roteamento auditável, não um agregado. A última coluna nomeia o destino 1:1 com a unidade: `MEM`/`SINAL-HARNESS`/`HARNESS`/`REVISAR`/`FORA` + o título real da lição (`SINAL-HARNESS` é o erro do agente cujo conserto a mineração pôs no ambiente — o caso da unidade nº10, Ajuste 5).
+A cadeia inteira cabe numa figura só (o Sankey da instanciação, gerado por `pipeline/genealogia_sankey.py`): cinco colunas — família → assinatura → mecanismo → unidade → destino — com **contagem real por nó e por aresta** (a soma se conserva em todos os estágios; as arestas cruas ficam em `resultados/genealogia_arestas.csv`). Todas as assinaturas e mecanismos aparecem pelo nome — é uma árvore de roteamento auditável, não um agregado. A última coluna nomeia o destino 1:1 com a unidade: `MEM`/`SINAL-HARNESS`/`HARNESS`/`REVISAR`/`FORA` + o título real da lição (`SINAL-HARNESS` é o erro do agente cujo conserto a mineração pôs no ambiente — o caso da unidade nº10, Ajuste 5, e, nas bases 2 e 3, da `U_verificacao_try_nameerror`, Ajuste 17).
 
 Todas as figuras que pintam erros dividem **uma língua de cor única** (`pipeline/paleta.py`, `COR_ERRO`, aplicada por `categoria_do_erro`): a cor é a **família** do erro (dominante, quando um nó mistura famílias); **roxo = resíduo**, **cinzas = plataforma**, **preto = erro crítico** (o agente não se recuperou — família própria desde o Ajuste 10), cinza-claro = "outros". Um nome sem cor fixa cai em cinza **com aviso impresso** — família nova aparece como pendência, não herda a cor de outra em silêncio. O mesmo erro tem a mesma cor em qualquer figura e qualquer base.
 

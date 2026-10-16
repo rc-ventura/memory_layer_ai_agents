@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:66a2284d8de80f0b38d7965523b0eeb7eca8c8d475bbe5b1552cdfde9148e8bb",
+  "pageVersion": "sha256:11f7b57a56e24ac03fda3d2039fe05141e9e54df7000a5fe262204fe2bd73675",
   "claims": [
     {
       "id": "claim_f91f9a8d0ff047f9947cbe64375b1701",
@@ -95,10 +95,28 @@
           "version": "repo-lines-v1:sha256:9d1504d86007865ce2315830a424ff6e8a226140447a088795fabcd2e13866a7:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmY2MDU5ODAzOThhNmJjNWVmY2NkYTlhNWYxMmNlNzcwZGNlYzk4NWNjZWEzZmNhMDI1MWVlM2UzMzdlM2U2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQ4NmEzYWVlZjUzMTA5NjEyNTYyYzJmNDIyMzc2ZTZkMjIzOGY4Y2I0ZTFhMDc3M2I2MGE2NzhmYWJiNjA4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTRmNmI3ODQyYzkzMTkyMjUxYmIyMDg1ZTQ0MTNiNTc0NDM0YWVkZThhNGI0Yjg1Mzg1ZGRmMTE3OTllZmZjNCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_f5eb4a4d557f40a99cdd89a494c95d82",
+      "statement": "decisoes.md's per-finding destinations table now registers U_verificacao_try_nameerror as 'sinal de harness' in bases 2 and 3 (Ajuste 17, 13/10), and the corresponding code entered glossario.md in the same commit as required by the same-commit rule.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/decisoes.md#L45-L45",
+          "version": "repo-lines-v1:sha256:b4f9dbc8eec03ef6513ffec1c8600c54ebe5277abc0abbf0c2073eec841a6030:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRmOWRiYzhlZWMwM2VmNjUxM2ZmZWMxYzg2MDBjNTRlYmU1Mjc3YWJjMGFiYmYwYzIwNzNlZWM4NDFhNjAzMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRmOWRiYzhlZWMwM2VmNjUxM2ZmZWMxYzg2MDBjNTRlYmU1Mjc3YWJjMGFiYmYwYzIwNzNlZWM4NDFhNjAzMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWM5MTk5YmU4M2RmMjZjZmY3YmEyMjc1YmJjYjhhMmZiMTM5NGI2ODQzZTVmNTM3ZTJjYjIyYjAwOGUwZTA5YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDBmNjY5NDhhZWI2MDYxOTcyMTlmNmQ2NDJjYzBhYjIzZTVlMGY3YmQ3ZThlZDM1MDkzZjg4YmE0ZGJkYzI3NyJ9"
+        },
+        {
+          "resource": "repo://analysis/glossario.md#L38-L38",
+          "version": "repo-lines-v1:sha256:45ccb9a6dcb0c3b96e3bdd94979a26894661349694cd2683c2a698855b41705f:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVjY2I5YTZkY2IwYzNiOTZlM2JkZDk0OTc5YTI2ODk0NjYxMzQ5Njk0Y2QyNjgzYzJhNjk4ODU1YjQxNzA1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVjY2I5YTZkY2IwYzNiOTZlM2JkZDk0OTc5YTI2ODk0NjYxMzQ5Njk0Y2QyNjgzYzJhNjk4ODU1YjQxNzA1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzQ0ZDdlZWYxMTVhOThjYjVlNDAxYjg0NjlkMzMxZTI2MmRlNTc2ODVlNmFhNzQwY2U1YTUwZjIyYzUyYTgxZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2IwNzY4ZjZkOTY0NzJlZWJmZjgxZWY3Y2YzNTM1ZDFhMzYwMDkyMzQxZGIyNWUyN2Q1YTc1OTExNDhkZGQ1NCJ9"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L688-L747",
+          "version": "repo-lines-v1:sha256:08131ac83d6ee0738ae960065bcfb0b8469df5317107a1656c85f6bdfbcb07b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwMTNkYzg4M2M5YTdlNDVhODFmYjVmY2IyN2QxNDAwZDFlMTcwMjJlZjk2NGZkZDE4MDA4NzhlY2Q1NGNkZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMTgyODBlZDhkODU0NzkxMDQ0NzY3OGFhNjQyNWY1MzAxNDRjZTMyNjkyZTU2MDE1MDQ2OTg0MzhkNjlmMWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwYzI5ZmYyNWNiYjYyMzg2ZmQ5NWU3NTg2NDE3ZDExZTY1YjA2ZjhmZDBjNTU4NzViNmRhNmY3Y2NmOWYxMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkMjUzMjViYjUyNTgwMmE4MmZmMGM5OThkYzM0YjBiMDZlYjJmYTNmNGYzMjQ0MThlOTQ5MGU2YTU2MDU3YjUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-09T17:09:54.387Z"
+    "at": "2026-10-15T13:12:35.828Z"
   }
 }

@@ -65,5 +65,50 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 - **06/10, o kit:** mora no próprio `.claude/`, versionado; cada mineração tem um nome só (`/mineracao-<assunto>`);
   `investigar` e `propor-notebook` são skills de chamada manual; o Copilot lê o mesmo `.claude/`, sem cópia →
   [`kit.md`](../.claude/skills/mineracao-base/referencias/kit.md).
+- **15/10, gráficos de volume e de taxa não separam destino:** nos gráficos de volume, taxa e custo, **erro é erro** — sem
+  linha, marcador ou cor por destino (memória, sinal de harness, infra). O destino de cada erro depende da classificação,
+  que muda a cada investigação; um gráfico de volume que dependesse dela teria de ser refeito a cada sinal novo. A
+  separação por destino mora nos gráficos de destino (a fatia do orçamento de cada papel por destino; as unidades por
+  destino e tipo de memória). A taxa de erro por mês e por papel é, portanto, a taxa de **todos** os erros estruturados →
+  base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #36.
+  **Aplicação à parte 1 do relatório (15/10, #40):** os gráficos por unidade (tokens por unidade, frequência × custo, papel × unidade,
+  concentração por papel) trazem **todas** as unidades, sem cor, agrupamento nem texto de destino; só o gráfico de destinos (e o
+  orçamento por papel, nas taxas) separam por destino.
+  Sem exceção no gráfico de tokens por unidade; a cor desses gráficos é a **família** do erro, com legenda; o destino e o tipo da
+  memória (factual · ambiente × experiencial · estratégia, Hu et al. 2025) ficam no gráfico de unidades por destino (#38), que
+  entra na parte 1 (#40, gráfico 12).
+- **15/10, a linha de base da economia da memória é congelada num registro versionado:** o "antes" do teste de compensação
+  (teto de economia por papel e unidade, passos por papel, hashes da fonte, das contagens e da rodada; só números, nenhum
+  identificador) fica num arquivo em [`registros/`](registros/README.md), no estilo do `monitoramento.json`, e não só na pasta
+  de resultados (fora do git, e que pode ser refeita com outro código) → [racionais da base 3 §7](2026-10-trace-law-flow-third/docs/01-racionais.md#7--o-teto-de-economia-e-o-teste-de-compensação-da-memória),
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #39. O arquivo só é criado depois da tabela de tokens por unidade
+  e papel (#36, gráfico 9).
+- **15/10, a rodada da base 3 passa a guardar os tokens e os erros por unidade × papel, de todas as unidades:** hoje só as
+  unidades de memória têm essa abertura por papel, e por isso o gráfico das taxas que divide o orçamento de cada papel por destino
+  e o de papel × unidade do painel saem incompletos. Aprovada pelo Rafael (opção A): tabela nova na rodada
+  (`consolidacao_unidade_papel_tokens.csv`), com os pendentes como "sem unidade"; os números que já existem não mudam
+  (conferido por teste e por hash) e a rodada ganha um identificador novo. **Só entra no código quando a auditoria dos gráficos
+  fechar** → [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #36 (gráfico 9) e #40 (gráfico 4); destrava #39.
+- **15/10, cada gráfico do relatório tem um insight único:** se dois gráficos contam a mesma história a partir da mesma tabela,
+  corta-se um e o que ele tinha de único passa para o outro. Aplicação: o gráfico de papéis das candidatas (um papel por barra)
+  foi cortado da parte 1; o total por papel passa para a margem do mapa papel × unidade e as cores vivas por papel, para a
+  concentração por candidata; e o gráfico de erros por unidade e mês (contagem) foi cortado da parte 1, virando o painel da esquerda do
+  gráfico de taxa por unidade e mês da parte 2 → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #40, gráficos 4, 7, 8 e 9.
+- **16/10, as seis escolhas dos gráficos da base 3** (o porquê de cada uma e o que se perde: [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md),
+  Plano de evolução, Etapa 1; #41):
+  - **taxa de erro por mês: nenhuma faixa de incerteza nem cor** — o título se apoia em meses grandes e o painel de cima já mostra
+    o tamanho de cada mês; uma faixa "de livro" seria estreita demais (os erros vêm em sequência na mesma execução) e poluiria;
+    só uma frase no "Como ler" sobre o mês pequeno;
+  - **taxa por unidade e mês em % dos passos do sistema, com 2 casas** (uma unidade só no relatório); **um mês com menos de 1.000
+    passos no sistema** mostra os números mas fica cinza e fora da régua de cor (nenhum erro sai da conta);
+  - **prioridade em dois painéis, um insight por painel:** para reduzir erros (todos os tokens em erro) e para memória (o teto: só
+    as candidatas);
+  - **genealogia: unidade e destino numa coluna só** (são 1 para 1; as arestas gravadas continuam com as cinco colunas); a cauda
+    **não** é agrupada (a decisão de 24/09 continua; rever com a foto);
+  - **"o que vem depois do erro" de todas as unidades,** por uma tabela só de contagem na rodada (`consolidacao_depois_unidade.csv`),
+    com **a unidade do erro seguinte** quando o vínculo está confirmado (a matriz de transição: sequência, não causa); e o
+    **perfil sob demanda de qualquer unidade** (`--perfil-investigacao`), marcado como "investigação — não é candidatura", para os
+    roteiros de protocolo, crítico, resíduo e timeout;
+  - **sem índice de Gini** na concentração de custo.
 
 ---

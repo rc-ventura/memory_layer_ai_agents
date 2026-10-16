@@ -21,7 +21,7 @@ from types import SimpleNamespace
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 from leitor_trace import ler_trace   # analysis/leitor_trace.py — CSV (.csv/.xz/.gz) ou um único parquet (plano §4.10)
 from leitor_trace import colunas_do_trace
-from adaptador_trace import adaptar, carregar_fonte, detectar_contrato, TRACE_COMPLETO, CENSO
+from adaptador_trace import adaptar, carregar_fonte, detectar_contrato, TRACE_COMPLETO, CENSO, JANELAS
 from episodios_trace import construir_episodios_observados, contexto_local
 
 # Texto do pandas guardado em Python, não em arrow. Com o pyarrow instalado (para o parquet), o pandas 3 passaria a guardar
@@ -44,8 +44,19 @@ __all__ = ["TRACE", "ler_trace", "carregar_trace", "explodir_memoria", "classify
            "analisar_sintomas", "classificar_sintomas_elegiveis", "analisar_mecanismos_observaveis",
            "carregar_mineracao_observada"]
 
+# Ajuste 18 (14/10): a fonte principal é a v2 (a mesma extração da v1, sem o SUBSTR nos textos). A v1 continua
+# legível com `extracao="v1"` (o teto do corte vale e um texto acima dele bloqueia) — é a fonte da rodada `3f9c…`.
 TRACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
-                     "base_erros_minerados_full.parquet")
+                     "base_erros_minerados_full_v2.parquet")
+TRACE_V1 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data",
+                        "base_erros_minerados_full.parquet")
+EXTRACOES = {"v2": TRACE, "v1": TRACE_V1}   # extração -> arquivo padrão; só a v2 é sem corte
+
+
+def _fonte(caminho, extracao):
+    if extracao not in EXTRACOES:
+        raise ValueError(f"Extração desconhecida: {extracao}; use uma de {sorted(EXTRACOES)}.")
+    return EXTRACOES[extracao] if caminho is None else caminho
 # qual base é esta: "base1" aqui, "base2" na pasta -second, "base3" na -third. Junto com o TRACE, é o que se ajusta ao
 # copiar o pipeline para uma base nova — a decisão da mineração (DESTINO_MINERACAO) só vale na base em que foi tomada.
 BASE_ID = "base3"
@@ -82,11 +93,11 @@ def _identificar_df(estrutura):
     return df
 
 
-def carregar_trace(caminho=None):
-    caminho = TRACE if caminho is None else caminho
+def carregar_trace(caminho=None, extracao="v2"):
+    caminho = _fonte(caminho, extracao)
     contrato = detectar_contrato(colunas_do_trace(caminho))
     if contrato != TRACE_COMPLETO:
-        return _identificar_df(carregar_fonte(caminho))
+        return _identificar_df(carregar_fonte(caminho, sem_corte=contrato == JANELAS and extracao == "v2"))
     df = ler_trace(caminho)
     # `mes` = mês em que a execução RODOU (dat_hor_inio_exeo). `anomesdia` não serve para isso: é a data de corte
     # do lote (1 valor por mês, sempre posterior ao início — mediana 46 dias, até 230), e só bate com o mês real
@@ -135,17 +146,21 @@ def _estado_estrutural(estrutura):
     )
 
 
-def carregar_carga(caminho=None):
+def carregar_carga(caminho=None, extracao="v2"):
     """Fachada de carga sem executar classificadores ou medir sucesso.
 
     Não busca/concatena automaticamente complemento A ou censo B. União e
     validação de snapshot/população pertencem a uma etapa posterior aprovada.
+    `extracao`: "v2" (padrão, sem corte) ou "v1" (com o corte SUBSTR) — Ajuste 18.
     """
-    caminho = TRACE if caminho is None else caminho
+    caminho = _fonte(caminho, extracao)
     contrato = detectar_contrato(colunas_do_trace(caminho))
     if contrato != TRACE_COMPLETO:
-        carga = _estado_estrutural(carregar_fonte(caminho))
+        # v1/v2 só existe no contrato de janelas (Ajuste 18); o censo declara o corte coluna a coluna.
+        janelas = contrato == JANELAS
+        carga = _estado_estrutural(carregar_fonte(caminho, sem_corte=janelas and extracao == "v2"))
         carga.fonte["caminho_local"] = os.path.abspath(caminho)
+        carga.fonte["extracao"] = extracao if janelas else None
         return carga
     df = carregar_trace(caminho)
     steps, RAW, execs = explodir_memoria(df)
@@ -1342,10 +1357,10 @@ def medir_sucesso(df):
     return S
 
 
-def carregar_mineracao_observada(caminho=None):
+def carregar_mineracao_observada(caminho=None, extracao="v2"):
     """Fachada explícita sem habilitar carregar_base/sucesso/consumidores raw."""
     from mineracao_observada import analisar
-    return analisar(carregar_carga(caminho))
+    return analisar(carregar_carga(caminho, extracao))
 
 
 def carregar_base(*, apenas_carga=False, caminho=None):

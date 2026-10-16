@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0ef2e66eeebd14f3fb88afa5114228779db4c52b43126d960c4974d84ca71009",
+  "pageVersion": "sha256:108eb4b92e95d6b3823d47331da9783fc03a78508fa8dd17704df43a80c42e77",
   "claims": [
     {
       "id": "claim_8fe6cafe00c146cebf5c0e411d1ae5ed",
@@ -29,8 +29,12 @@
           "version": "repo-lines-v1:sha256:c993d416b73e6152b10e9adde3693f70daf4e23342af71fa870f5cf5b1b91a2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MjdmZGZmNzg4ZDMyOTJmNzAxYjY2MmY5MzNlYjM3Nzg3YWZiMDFmMTkzM2U0MzdhOTlkOGExMDFjMmQ2NTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MGM2YmRhMzg2Y2NkNmViMGM3ZjcxZDJlM2RhM2VjYTA0Y2ZiMjZkMTRjYTkwZDcwODlkMGIzMzM4NDdkMWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzZTg4YWRmOTc5MmNlNzZhMWI4ZDZhN2VjZTkzMDdkYTEwMjgzNDg0NDNlNGI3ZjAwYWU1MDBmODJmNWZkYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhM2RlMzE2MjZkOGUyN2ZiNzYxMzY5NzIzYzE4ZDAwZmI5ZTFlM2IzNjFkYjIwNWI5NmNmZTg0OWI1MjBlMGUifQ"
         },
         {
-          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/mineracao_observada.py#L1-L25",
-          "version": "repo-lines-v1:sha256:14b0fa4a16742791564fb095d9e9198e33340a62bb78e2be8a0c536f698eeab0:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNjI1ZGQ0OTAzMzQ1ODRjMjc5NmY4NTdkM2M3Y2FhYmRlZTljNzFhNmQ1NTQ3Y2M2YWM4MzczYTViY2FjM2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzNDE3Mjc3NmUyOWM4OTRhODZjODQxZGQzNmY0MzNhZmU2YzAwYzE2OTM2ZjY1NDVlN2Q1Yzk5NWY0NGM4NWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3YmFjZTkxN2FmNWIyZjg2YTg2M2UzMGEyM2EzMWZiNzNkZmJkN2I5ODZlNTY2OTcxMWJhZmNmYmQ0MmY5MjYifQ"
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/mineracao_observada.py#L1-L5",
+          "version": "repo-lines-v1:sha256:c5efe90747c0ba85c8165da2a9540e0d8be2b4d9d8db1731b7caa8509b6676ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGM2MjVkZDQ5MDMzNDU4NGMyNzk2Zjg1N2QzYzdjYWFiZGVlOWM3MWE2ZDU1NDdjYzZhYzgzNzNhNWJjYWMzYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTMwM2VjZGQ0YTRkMTBmMTljNzNmZDQyZmQxMjQzN2ZkMzM1NGE4MjY4MTYwNWRhNTI1NWE5N2EzOTA2OGRiYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzBkMGQyNWU4ZTk0ODVmYTU4ZGU4MDlhYTZmNThjYzA5MmI4M2UyNWNlYjM3ZDBiMTk4NWVmNjE4MTNiYWYxMiJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/mineracao_observada.py#L249-L251",
+          "version": "repo-lines-v1:sha256:0d09d99725d48bbe8fcd0d6b070cf102b6a973b42ea08ad18644b22f8aee8147:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWQ1NWNhZjMyMDY0ODg0MThkNTY2MmU2ODY5MmI2OGNmOTlhMTc0Njc3NmZkNzIwOGVmNGU0MTNhZjFlMjFiMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjEwM2Q5YmQ1N2E1MjdhNDdmYTc2OGM4MDcyZjIzMGM4NzViNjk3ZTQ0ZDVmYjQ1ZjI5ZGE3NmI5ZGM1YmMyZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjBlYjdkNjgyYjY4YmYwOGViMmY1ZDhiMzhlMDYxMzliNDE4YmU0YTViMGMyYzk2YzJhMjIwN2E0ODZjZmM1MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjJhNDY0YmNmMGJjMWQ0ODI5MTUxMjUwNGZmOTZmMmRjNGYzMTQ3NDgxYWZmZmYzYzYwMGNhNTZkMTc4N2VjZSJ9"
         }
       ]
     },
@@ -154,25 +158,121 @@
     },
     {
       "id": "claim_e10772b0e2f741149297ba2fd5c11020",
-      "statement": "What base 3 cannot answer (error rates, silent failures, content-level success, system-prompt protocol) is measured in the folder's procedure §4 and turned into docs/05-pedido-queries.md — a prioritized request for complementary data (denominators first); the folder exposes a single entry point pipeline/executar.py with subcommands analisar/inventariar/validar/conferir/painel.",
+      "statement": "What base 3 cannot answer on its own (silent failures, content-level success, system-prompt protocol) is measured in the folder's procedure §4 and turned into docs/05-pedido-queries.md — a prioritized request for complementary data (denominators first); pedido A was already delivered as base_contagens.parquet and is consumed under a join lock, while pedidos B and C remain open; the folder exposes a single entry point pipeline/executar.py with subcommands analisar/inventariar/validar/conferir/painel/taxas/relatorio.",
       "evidence": [
         {
           "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md#L87-L97",
           "version": "repo-lines-v1:sha256:e7ded4f96eaaaac1488ca6ae2ecd57cab7966576265fa041dbbef22cc50eb426:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExOWQyM2NkNWQ1NjIwMzA0Yjc1NGJiOTc3YmIyYTAxZmI3NjIyYjNlOTkxNjgxOWRhZDJjODg0ZWQxYzIwZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxOTU1ZDRiMjQxNzQzN2U3MGM2NzY3NTIzODA2ZTFmNmU3MjMzYzY1NzhiMGUwZDhiMjEzZDFhMGE4NGFlMjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkNzRjMzdjOTk2ZDIyM2RkODllNzIxZDg5MmJlNGM5Y2UxMjc3YmU5ZWI3MTkzZDhlZTkxMGM3ZDBlMTE4YjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/04-roadmap.md#L32-L42",
+          "version": "repo-lines-v1:sha256:a011c059f0a3214fec48fa1a256b48982f138ad94f5e156f64fe8def023883b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhZGI4NDg4ZmIxNmE4MmJjM2I0MjdjNTNjNjFlNzI5N2IwYzVjZjlkMGM0MGYzYjk0ZWNkZGI3NzUyYjE2MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMzQ0YWRjZDViYTA3MjFkMmFjMzIyYjExOTM0YTU0NGM2YmUyZDkyMmI1NTVjNTY1OWUzZWNmNTQ2NzZiYmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwNGU4NDI5MDJlYmZjMTc2Yzg1MTE1ZGFhZTJmYjQ0ODk3ZjM1YWM4YWM5MDMwNmRkYjE4N2U3ODI2YmE3ZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjY2Y0Yjc0YTlkYjE4ZjVkMTcyNjQ0YmIxZjhkMGNkZmZjYWRiMDQ3MGEwNmYxOGY0YTI2ZmU1YjJkMDliMDYifQ"
+        },
+        {
           "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/05-pedido-queries.md#L1-L15",
           "version": "repo-lines-v1:sha256:b49469fcece1f698c0fdb35e6d06c658c30012714773dd76820d0ba63e9fed6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiYjM5MjdmMmMwODljYTA5ZmU4ZDVmYWY1ZmVlZjU4M2ExZDY2ZjViZDE2ZDI2NTg1NDU3YTY4ODE5ZDMzZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZjE4OWNiNzZjMmJmYTRlMWNhMTgyZWQwMGMzMjQxNzUzZTlhNWZiYTBjNzBkYjZlOTNlNzhmYmRlNDNhMzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmYjIxYzViMWU3ZTA4NTZhMzQ4NzU3NzUyMTIwYTZjMmUwMmYyMTM3Mjg0ZjM3M2FiNzJiYzIxYWUwZDEwMGQifQ"
         },
         {
-          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/executar.py#L1-L10",
-          "version": "repo-lines-v1:sha256:bcbeed77d60eafa75b74dddf5884e86d27c187a0ea191e92248477d0eb91f04d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzQ2YTBkM2RkNjA2MDBiN2I1OTUwOWI1Nzk1OTFkMjliZDdmZDlhMWFmNjgxZDRhYTk2ZDExZTQ0YmQ4YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjMWM5YWVkOTEzOTIzNTYxOWMwYzA5M2JhOWQ0NDA5ZmExOGNiNDAwMzU3YmIwMGQ4M2ZjN2RlYjNhMWRhNTkifQ"
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/executar.py#L1-L21",
+          "version": "repo-lines-v1:sha256:066da7dbc7d569504d9c1e3d1c13b41dd2d4b5a7ecb2e9f814eaa4f8eeba7d53:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzQ2YTBkM2RkNjA2MDBiN2I1OTUwOWI1Nzk1OTFkMjliZDdmZDlhMWFmNjgxZDRhYTk2ZDExZTQ0YmQ4YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhMDMxMmIwOGFkOTgyNzI0MjhhNmQzYTUzNjJiMWVjODc4MjI3M2MzOWQyYjYzMDJiNzE4NmU0NzQ4MmYzMWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwYmQ4NzM5NWFhYzNhZTk3NzEyODhhMDA3Mjc5ZWY5OTZkMDc5NTg0OGRlMGVmNGI2MTRiMjUzZTcxYmU3MmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ea492e5672254f4283be55264ecfd2f9",
+      "statement": "Ajuste 17 created the mechanism verificacao_try_nameerror and unit U_verificacao_try_nameerror — the signature on the failed line (try/except NameError instructed by the prompt that the sandbox does not catch) is decided before the predecessor-position rule — with mining destination 'sinal de harness' registered for bases 2 and 3; it reclassified 5.764 errors in base 3 and cut pendings from 23.6% to 6.0% on the v1 extraction.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py#L487-L553",
+          "version": "repo-lines-v1:sha256:1316fb4ebb9ea9094d47d05042a2b19ee6dfd285e33c7d0f035ef7455bcfeec2:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZTkwNTkxMGM4MjZhMTI4OGI0ODEyYTA3ZTM0ZGZhNDI2M2VmNzcwNDZiMDBiMzc0ZTI2Yjk5MTA1OGYwMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5NTNhZTMxZjRkM2JmMzlhZWZjMTM1ZGIxYTI5NTc2M2I3OWEwODMyNGFiMjJhYTFmN2I4NDhlM2ZmNzU4MTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMzBlOTNiMjE3YjQ3MTBiY2RkOTljZmFiZjg2ZWYxOTcyOTIzNmU3MzQ3NDI0OGRmMGJjODdmNTk4MWMwNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZmY3ZDk3NmY5ZDJjNDYzZTZlY2ZjOWM4ZTU1OGRjODQxODU4NjVlOTRiM2RjMGI2NDQzYWFmZWFhZWIzOGEifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py#L878-L878",
+          "version": "repo-lines-v1:sha256:0b6cbc35e574222e72db70caafd19a04b36ebe89051e4700b28900f100ddfdba:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI2Y2JjMzVlNTc0MjIyZTcyZGI3MGNhYWZkMTlhMDRiMzZlYmU4OTA1MWU0NzAwYjI4OTAwZjEwMGRkZmRiYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI2Y2JjMzVlNTc0MjIyZTcyZGI3MGNhYWZkMTlhMDRiMzZlYmU4OTA1MWU0NzAwYjI4OTAwZjEwMGRkZmRiYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTBhZTFhZTc2Y2QxYzA5NTliZjNmZWUzNWI3ZmM0YzU4OTNhZTRhNzM2NTkyYTQzMmUwYTgyM2RhN2U4MGEzNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODhlYWJiYjE4OTNhMDkwMDM3ZmZmM2ZiMmQ3OWMwOWQ5ZjYyYTc2NGIxMDRjYzVkNmUwZjFhYWRkOTUyZTY2ZCJ9"
+        },
+        {
+          "resource": "repo://analysis/decisoes.md#L45-L45",
+          "version": "repo-lines-v1:sha256:b4f9dbc8eec03ef6513ffec1c8600c54ebe5277abc0abbf0c2073eec841a6030:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRmOWRiYzhlZWMwM2VmNjUxM2ZmZWMxYzg2MDBjNTRlYmU1Mjc3YWJjMGFiYmYwYzIwNzNlZWM4NDFhNjAzMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRmOWRiYzhlZWMwM2VmNjUxM2ZmZWMxYzg2MDBjNTRlYmU1Mjc3YWJjMGFiYmYwYzIwNzNlZWM4NDFhNjAzMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWM5MTk5YmU4M2RmMjZjZmY3YmEyMjc1YmJjYjhhMmZiMTM5NGI2ODQzZTVmNTM3ZTJjYjIyYjAwOGUwZTA5YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDBmNjY5NDhhZWI2MDYxOTcyMTlmNmQ2NDJjYzBhYjIzZTVlMGY3YmQ3ZThlZDM1MDkzZjg4YmE0ZGJkYzI3NyJ9"
+        },
+        {
+          "resource": "repo://analysis/glossario.md#L38-L38",
+          "version": "repo-lines-v1:sha256:45ccb9a6dcb0c3b96e3bdd94979a26894661349694cd2683c2a698855b41705f:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVjY2I5YTZkY2IwYzNiOTZlM2JkZDk0OTc5YTI2ODk0NjYxMzQ5Njk0Y2QyNjgzYzJhNjk4ODU1YjQxNzA1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVjY2I5YTZkY2IwYzNiOTZlM2JkZDk0OTc5YTI2ODk0NjYxMzQ5Njk0Y2QyNjgzYzJhNjk4ODU1YjQxNzA1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzQ0ZDdlZWYxMTVhOThjYjVlNDAxYjg0NjlkMzMxZTI2MmRlNTc2ODVlNmFhNzQwY2U1YTUwZjIyYzUyYTgxZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2IwNzY4ZjZkOTY0NzJlZWJmZjgxZWY3Y2YzNTM1ZDFhMzYwMDkyMzQxZGIyNWUyN2Q1YTc1OTExNDhkZGQ1NCJ9"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L688-L747",
+          "version": "repo-lines-v1:sha256:08131ac83d6ee0738ae960065bcfb0b8469df5317107a1656c85f6bdfbcb07b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwMTNkYzg4M2M5YTdlNDVhODFmYjVmY2IyN2QxNDAwZDFlMTcwMjJlZjk2NGZkZDE4MDA4NzhlY2Q1NGNkZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMTgyODBlZDhkODU0NzkxMDQ0NzY3OGFhNjQyNWY1MzAxNDRjZTMyNjkyZTU2MDE1MDQ2OTg0MzhkNjlmMWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwYzI5ZmYyNWNiYjYyMzg2ZmQ5NWU3NTg2NDE3ZDExZTY1YjA2ZjhmZDBjNTU4NzViNmRhNmY3Y2NmOWYxMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkMjUzMjViYjUyNTgwMmE4MmZmMGM5OThkYzM0YjBiMDZlYjJmYTNmNGYzMjQ0MThlOTQ5MGU2YTU2MDU3YjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_edefaa305bae45449e013489e9cff2d3",
+      "statement": "Since Ajuste 18 the default source for base 3 is the v2 parquet extraction — the same 31.421 rows without the SUBSTR text cuts — while v1 remains reachable via `executar.py analisar --extracao v1`; cross SHA-256 locks (FONTE_V1_SHA256/FONTE_V2_SHA256) block reading one extraction as the other, and the first v2 rodada (observada_609c947b15295c84) recorded 29.392 observable errors and 749 pendings (2.5%).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py#L48-L58",
+          "version": "repo-lines-v1:sha256:ade7100fe451b94de6c8de511505b474adb8d8f399c434c1beaabf96073453c3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YjhkMzdlNjgzYTNlYjEyZDk1NzZiNjgyYzBkZTExMzMyYmY3ZTU5MjBkNzI5Y2RiYzgzMDE1ZTZjNjg0MTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3NmM3MTZiM2M5NWUzMzkzMDkwMTNjNWYyYTI4OTRkMDFjOTY0NDQwYTJmODkxZGM4NThiMWJiYmYyZTI1YTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwNjZmMzY2OTcwZTJkOGVmZmY0ZjA5ODVjODNhMTAxZjIzYTFkZTI4ZWM5ZDJhZTYxODQ4NDk5MjY0ZDNhZGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFiM2IwZTdkYjI4MDNlZDQ4NjFhMDk4YzgyMTQ1M2VmY2FkNDI3ODZiN2ZkMmQwZmEzYWJlNzJhYjI2NTg5YmUifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/executar.py#L19-L21",
+          "version": "repo-lines-v1:sha256:de1876a0fae680f3ba125156938be713801b229a007b52aef1f6c5da750cf34f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGRkMWY4MTcyOTkxOTc0ZWUxMjYxZjJmYzY5ZDYzNDdkNGRhMDBiYjgxZDMxMGU5OGQ5ZGMzN2NlMTYxMTY1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2EwMzEyYjA4YWQ5ODI3MjQyOGE2ZDNhNTM2MmIxZWM4NzgyMjczYzM5ZDJiNjMwMmI3MTg2ZTQ3NDgyZjMxZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzY0MzRjNTAxZTE2Yjg5MmEwOTk1NmQ5YWZhOTA2ZmQxNTMwNDQ5YzM4YjkxNTQ3NGZmNTljZTljZTAyN2E3ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTBiZDg3Mzk1YWFjM2FlOTc3MTI4OGEwMDcyNzllZjk5NmQwNzk1ODQ4ZGUwZWY0YjYxNGIyNTNlNzFiZTcyZCJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/mineracao_observada.py#L27-L29",
+          "version": "repo-lines-v1:sha256:9d998b707b875ba3d81a61224f20a9416c8b0b21469b54fb0d809abd7ff8e6a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDBjZWI0MGNhZmM4M2YxZWZjMzAyNmNjYzgwMjA1NWU3OTIyYjJjYzUwMzM4N2EzMjExYWJhNDU5N2JiNWJlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU3MjJiZDEyNjdiYTU1NzhiZGY3NGUyYjE2Y2Y2ZmRjZjMxNzYyYjg3OTRjOGM4ZmJjYjdmOGY3MTQ4NTk4NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2RmNWFkMTc0MTI5NmVlOTA3NWJhZjc4MmYxNTM2MDkyNWE1N2FhNmY2ZDY4NWRkMDAwOGE0Y2FkNjAzMWM4MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmJkNTVlZDZhMTI0Y2RlMTZjNDVmY2Y1MTgwMjc3YTI0NjgwYTQ0YTQxOTY5NjAxYjVkZmQ5MGQ1YWI2NzU2ZiJ9"
+        },
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L749-L796",
+          "version": "repo-lines-v1:sha256:8c3289c4947f8e0a3ea1943109c0fa38479f59966d97e2e11eb1b303c846b251:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwMDVhMTBjZjRhZmIwNGNjNjJkYmVlNjk1OTM1NTExMjQ3NDkwMjE4MmM3YmM3NzQ1OGQ5YzYyY2Y2MGNjMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3OWQxOWI4N2VlMzM3YTA2OTk3NjliZDllZTRjODEwNmVkNTVjNDdlMzJlNjFkY2JhNjBlODNmZTc1ZWJkZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyODUwY2MyZjM3MThmNTUyNzU0YThjNWUwN2U4YzUwZmUwN2FiZjMwZmM0ZDJkNThjYzNjZDkzZGExNzJkOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMmU2NWUxMDc4ZjljOTRiZDVlZWNhMDE0ZjBjMDY3MGQwMzAyYTQ4YTlkY2M1MTI2ODA5Njk1MTAzMjlkOGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_30eb645477094eb4b5ce21653c99661f",
+      "statement": "The pedido A denominator arrived as base_contagens.parquet (71.894 rows keyed by execução×agente×papel) and is consumed by executar.py's taxas and relatorio subcommands — the join is a hard lock (duplicate keys, missing source keys, mismatched error/token sums block all output), and relatorio consolidates painel+taxas into <rodada>/relatorio/relatorio.md.",
+      "evidence": [
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/04-roadmap.md#L173-L173",
+          "version": "repo-lines-v1:sha256:263fdfb3e8190b8fead4f47ee3910dc46a38baeb34bc13a32c5b15d9fae9c051:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjYzZmRmYjNlODE5MGI4ZmVhZDRmNDdlZTM5MTBkYzQ2YTM4YmFlYjM0YmMxM2EzMmM1YjE1ZDlmYWU5YzA1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjYzZmRmYjNlODE5MGI4ZmVhZDRmNDdlZTM5MTBkYzQ2YTM4YmFlYjM0YmMxM2EzMmM1YjE1ZDlmYWU5YzA1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmYxY2VkY2ZkM2UzZmM3MzQwMjU5M2YxYmQ3M2M2MWEzM2RmNzMyMmM3M2ZlYjBlYjM3YWY5MjllZDhkZGU2ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2Y0ZGJlNjJjYTAzY2I2ZWQxYTJjYmEwYWM3YjRlMDg3N2ViNDRjMDA0YWVhODBjYTk2NGYzZGU5ZGYxYWMyYiJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/docs/04-roadmap.md#L32-L42",
+          "version": "repo-lines-v1:sha256:a011c059f0a3214fec48fa1a256b48982f138ad94f5e156f64fe8def023883b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhZGI4NDg4ZmIxNmE4MmJjM2I0MjdjNTNjNjFlNzI5N2IwYzVjZjlkMGM0MGYzYjk0ZWNkZGI3NzUyYjE2MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlMzQ0YWRjZDViYTA3MjFkMmFjMzIyYjExOTM0YTU0NGM2YmUyZDkyMmI1NTVjNTY1OWUzZWNmNTQ2NzZiYmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwNGU4NDI5MDJlYmZjMTc2Yzg1MTE1ZGFhZTJmYjQ0ODk3ZjM1YWM4YWM5MDMwNmRkYjE4N2U3ODI2YmE3ZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjY2Y0Yjc0YTlkYjE4ZjVkMTcyNjQ0YmIxZjhkMGNkZmZjYWRiMDQ3MGEwNmYxOGY0YTI2ZmU1YjJkMDliMDYifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/execucao/relatorio.py#L1-L9",
+          "version": "repo-lines-v1:sha256:c1947f3db8652ec66290c870034869543030911b01f773a67278e00c404f91b0:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzU3MTA3YmNjMTc5NWQ3MzRjOGUyNTk0ZDlkNDYwZWUyNWUyNzM5ODM5ZjliN2I3MTQzYTdkNWQ1Y2EzMGY2MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTMwM2VjZGQ0YTRkMTBmMTljNzNmZDQyZmQxMjQzN2ZkMzM1NGE4MjY4MTYwNWRhNTI1NWE5N2EzOTA2OGRiYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzkyZmIyNjBjNzkzNTEzZDg1OTdhOTJhNzY5NjU0ZGJmNDYwYzVlMTA4NmExYmUyMmRjMWM3YmFjOWYwNmQ5NCJ9"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/execucao/taxas.py#L1-L16",
+          "version": "repo-lines-v1:sha256:838779f4a82db460e9193f4aceb2f9a844f2c6e681f8716e6766bec27290af75:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YjQ5NTVhYTg5NjYwZGRmNGU0Mjk4MjY4NmY3NjQyYmFmMmUwYjJkZDMwODRiNGYyNThjMzRmMzljNjJhMGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2M2E4ZjAzMTI1ZDA1ZWJmNWJiYjI1NDM4OGFhMGU0OGZlZGRhMzA3YjA2ZDhjNmNiNzY3MGY4NDZmOWIxZjMifQ"
+        },
+        {
+          "resource": "repo://analysis/2026-10-trace-law-flow-third/pipeline/executar.py#L7-L9",
+          "version": "repo-lines-v1:sha256:fb10494a5174e66a00f9294d59aa4e9e5552fcfc2d9ac7c4ce027dc62b9b3851:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTZiYTYzZmVhOTYxYjBkMmVlYjE2YjM1MDJmNzJjNDViYTExZDAyN2NiMjlkMGU2Yzk0MzVkZWEzODU3Yjg4MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTY0ZWU2NmQ3YmNkYTY1NTI2YmI4YWRjOWM0NTUxYjQzOWQyYmQxNzA0YjI0NGY2Y2MxYWRhZjRmYTM2YzY5ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmI0MzYyYTczMmNhMzUxZjkyNWJiYmNhMDcxMWQ4ZTYzMTRkNzQwMjNiNTA1MzViYzQ0ZTIxODg3ODI5MmFmMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOThlNGNiZmExYjVjMzY1MjlhMzc5ZmNiOGZkYmEzNDJjMTgwM2QxOTc1NzliNzU1N2UyMDYyYzFhMjU0M2JkNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_01ba7ee8e3d44924ade892bea4d48cd3",
+      "statement": "The analysis/tests suite grew to 182 tests on synthetic fixtures, including test_verificacao_try_nameerror.py (the Ajuste 17 signature rule, applied identically in both bases) and test_taxas_base3.py (the pedido A join lock).",
+      "evidence": [
+        {
+          "resource": "repo://analysis/pipeline-entre-bases.md#L786-L787",
+          "version": "repo-lines-v1:sha256:be83a6e2184bb616f2f482173b0fd258616ae1701875e79a76459a7b91f98a40:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjhlYTQzMDdkNzBmMmE0N2VjNzE2ZDQ1YzRjZjQxNzRjYWIwZjE0Y2NjMGEwZjc5YmM5NDcwZTdmNTM3YmQyZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjIzM2Q1N2RjNzdmMjYxNzc2Mzk0ZDg0M2MzMjg0OWY2YTBlYTQ5N2Y4YTE4ZjE3M2U1MDA0YjA2OGJhYmE2YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzYzNjllZjA5OWEwMWVmYmUzZGQxYzVmZWRmYzc1MDZjNTBmN2M2OGYxMjFjOTRlNjkyMGE1MjI0YzNiYTA5NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjc0NmZmMWViYmViMDYyMGZhODkxODk4ODYzMmQ0MTdiZGNmMjdiYzcxOTk2MmZjZmFmYTI5MmM1ZTZkMTJiOCJ9"
+        },
+        {
+          "resource": "repo://analysis/tests/test_taxas_base3.py",
+          "version": "repo-file-v1:sha256:12e6436a591d82b58208e75aa4ba3d164f984ae320cee24e312bc687245151b3"
+        },
+        {
+          "resource": "repo://analysis/tests/test_verificacao_try_nameerror.py",
+          "version": "repo-file-v1:sha256:b742fd76fa80fc95ced13e824bce96b0f932a6b33c8ffa11f475400ef4b50aec"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-09T17:09:54.387Z"
+    "at": "2026-10-15T13:12:35.828Z"
   }
 }

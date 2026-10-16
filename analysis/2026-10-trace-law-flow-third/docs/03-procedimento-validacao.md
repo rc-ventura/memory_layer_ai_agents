@@ -16,12 +16,31 @@ e as conferências contra o parquet. Da máquina 2 saem só contagens, nomes de 
 
 ```bash
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py analisar      # grava resultados/observada_<id>/
+# Ajuste 18 (14/10): sem argumento, a fonte é a v2 (sem corte de texto); a rodada 3f9c… (v1) se reproduz com
+#   executar.py analisar --extracao v1
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/resumo_rodada.py # resumo, triagem e cobertura
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py relatorio     # painel + taxas → <rodada>/relatorio/relatorio.md
 ```
 
+Atalho usado desde 16/10: `executar.py conferir` grava a rodada **com o perfil das candidatas** e roda as verificações
+da rodada (46), no lugar do `analisar` com um `--perfil` por candidata; depois, `executar.py relatorio --rodada
+<caminho da rodada, a partir da raiz>`. Rode sempre da raiz do repositório (os caminhos são relativos a ela). O relatório
+apaga as figuras e os MDs da geração anterior arquivo a arquivo; se um deles estiver aberto (a pré-visualização do
+`relatorio.md` no VS Code, no Windows), ele para e diz qual fechar. Tudo em `pipeline/resultados/` fica fora do git
+(`.gitignore` da pasta), exceto o `validacao.json` do `validar`.
+
+O relatório único junta duas lógicas que continuam separadas: o **painel** (`execucao/painel.py`) lê só a rodada; as
+**taxas** (`execucao/taxas.py`, `executar.py taxas`) leem a rodada, a fonte e as contagens do pedido A
+(`data/base_contagens.parquet`) e só saem se a junção conferir — chaves únicas, toda chave da fonte nas contagens, erros
+e suspeitas iguais por chave, tokens dos erros dentro dos do papel, somas iguais às do manifesto. Se não conferir, a
+parte 2 do relatório diz por quê. `<rodada>/taxas/manifesto_taxas.json` guarda os hashes da rodada, da fonte e das
+contagens.
+
 O `<id>` da rodada é o hash de (contrato, base, fonte, código). Mesma fonte e mesmo código dão a mesma pasta — a
-rodada deste relatório é `observada_3f9c2806cac9cd4d` (14/10, a primeira depois do Ajuste 17; antes, `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). Código ou fonte diferentes dão outra pasta; a antiga não é
-sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar --perfil <unidade>`.
+rodada dos números deste relatório é `observada_609c947b15295c84`; a das figuras atuais, `observada_96958e65cb7e615a`
+(16/10: o mesmo método, com as tabelas novas abaixo e as figuras refeitas; que os números são os mesmos se prova por hash
+no roadmap #42). A `609c…` é de 14/10 (a v2, a primeira depois do Ajuste 18; na v1, `observada_3f9c2806cac9cd4d` de 14/10, depois do Ajuste 17, e antes `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). A extração e o corte do texto entram no hash: a mesma fonte lida como v1 e como v2 dá pastas diferentes. Código ou fonte diferentes dão outra pasta; a antiga não é
+sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar --perfil <unidade>`; de uma unidade que não é candidata (sinal de harness, harness/infra, resíduo, crítico), para uma investigação: `--perfil-investigacao <unidade>` (a tabela `perfil` marca a `finalidade` como "investigação — não é candidatura"; decisão de 16/10).
 
 | Arquivo da rodada | O que tem |
 |---|---|
@@ -30,8 +49,10 @@ sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar
 | `triagem_sensibilidade.csv`, `triagem_por_papel*.csv` | régua estrita; triagem dentro de cada papel |
 | `cobertura_mecanismos.csv`, `cobertura_sintomas.csv` | o que é observável e o que é pendente, com o motivo |
 | `consolidacao_*.csv` | limítrofes, componentes, unidade × papel × mês, fila de pendências, global × papel |
-| `genealogia_arestas.csv`, `genealogia_observada.png` | a genealogia completa, todos os erros em cada coluna |
-| `unidades_observadas.png`, `papel_unidade.png` | tokens por unidade; erros por papel × unidade |
+| `consolidacao_unidade_papel_tokens.csv` (16/10) | erros e tokens por unidade × papel de **todas** as unidades, os pendentes como "sem unidade (pendente)"; somada por unidade = a triagem (teste) |
+| `consolidacao_depois_unidade.csv` (16/10) | o que vem no passo seguinte a cada erro, de todas as unidades, com "o seguinte é final" e a unidade do erro seguinte quando o vínculo é confirmado (a matriz de transição); nas candidatas, igual ao perfil (teste) |
+| `genealogia_arestas.csv`, `genealogia_observada.png` | a genealogia completa, todos os erros em cada coluna (as arestas com as cinco colunas; a figura junta unidade e destino numa só) |
+| `unidades_observadas.png`, `papel_unidade.png` | as versões antigas destas figuras; o relatório desenha as suas a partir das tabelas |
 | `perfis/<unidade>/` | casos, amostra de investigação (até 30, por regra fixa), antes/depois, estabilidade |
 
 `ler_artefato()` (em `mineracao_observada.py`) só aceita um arquivo se o hash dele, o da fonte e o do código baterem
@@ -39,12 +60,17 @@ com o manifesto.
 
 ## 2 · O que foi conferido
 
-| Conferência | Onde | Resultado (14/10, rodada depois do Ajuste 17) |
+| Conferência | Onde | Resultado (14/10, rodada `609c…` da v2, depois do Ajuste 18) |
 |---|---|---|
-| Suíte de testes (`analysis/tests/`, 8 arquivos) | as duas máquinas | **169 testes, todos passam** |
+| Suíte de testes (`analysis/tests/`, 8 arquivos) | as duas máquinas | **178 testes, todos passam** (169 + 9 do Ajuste 18) |
 | Regras e catálogos comparados por estrutura de código com a base 2 (`classify`, `submecanismo`, `SUB2UNI`, `UNI`, `triagem`…) | máquina 2, `executar.py validar` | **10 de 10 iguais** |
 | Conferência da rodada contra o parquet lido direto (contagens, tokens, duração, conservação de erros e tokens entre tabelas, genealogia, perfis, hashes, fonte inalterada) | máquina 2, `executar.py conferir` | **46 verificações, todas passam** |
-| Fonte | máquina 2 | SHA-256 `7604f77d…c2873f1`, igual à referência no código (`FONTE_REFERENCIA_SHA256`) |
+| Fonte | ambiente da base 3 | SHA-256 `908aa005…f0ed86306` (v2), igual à referência no código (`FONTE_V2_SHA256`); a v1 (`7604f77d…c2873f1`, `FONTE_V1_SHA256`) é recusada sem `--extracao v1` |
+| Schema e agregados dos dois parquets novos, sem valor de célula | `validacao/inspecionar_parquet.py <parquet>` | v2: 31.421 linhas, as 69 colunas da v1, maior mensagem 833.507 caracteres; contagens: 71.894 linhas, 19 colunas, somas 283.925 ActionSteps, 30.141 erros, 1.280 suspeitas (roadmap #26) |
+| v1 × v2 e junção com as contagens (pedido A) | `validacao/conferir_contagens.py --v2 … --contagens … --v1 …` | as mesmas 31.421 linhas, `error_type` e tokens iguais, a mensagem da v1 é o começo da da v2 em todas; as 20.986 chaves da v2 nas contagens com 0 diferenças de erros e suspeitas; taxa por mês (roadmap #26) |
+| As 1.009 mensagens que a v1 cortava, pela regra real | `validacao/contar_mensagens_longas.py` | 1.002 no retorno-string; 849 "Could not index" com valor `{"` (845) da `get_peticao_inicial_from_pasta`/`ingestao_peticao_inicial`; 0 com o fim do retorno-dict (roadmap #34, #35) |
+| O que cada valor produz no "Could not index" | `validacao/testar_sandbox_indexar.py` (smolagents 1.26.0) | dict → `KeyError`; texto (JSON `{"` ou repr `{'`) → `string indices must be integers` (roadmap #34) |
+| O mesmo padrão nos traces completos | `validacao/indexar_string_trace.py [--trace <base 2>]` | base 1: 0 valores `{` com erro de string, 88 retorno-dict; base 2: 11, todos `{"`, ContestacaoCivel, mesma ferramenta (roadmap #35) |
 
 As 46 verificações estão listadas em `resultados/conferencia_observada_2026-10-07/conferencia.json` (máquina 2).
 Elas conferem que os números são consistentes entre si e com o parquet — **não** conferem que a causa atribuída a cada
@@ -78,12 +104,12 @@ dependem do fim da mensagem (retorno-dict).
 
 | # | Limitação | Evidência | Efeito na base 3 |
 |---|---|---|---|
-| 1 | A mensagem de erro é cortada em 20.000 caracteres | base 1: 82 de 498 erros passam do corte; 81 dos 96 do retorno-dict perdem a causa (o `KeyError` fica no fim) | 1.009 erros pendentes por mensagem limitada; retorno-dict com 2 erros observáveis |
-| 2 | Só há passos com erro — sem denominador | a query filtra antes de exportar | nenhuma taxa por passo, execução, papel ou versão |
+| 1 | A mensagem de erro é cortada em 20.000 caracteres | base 1: 82 de 498 erros passam do corte; 81 dos 96 do retorno-dict perdem a causa (o `KeyError` fica no fim) | 1.009 erros pendentes por mensagem limitada; retorno-dict com 2 erros observáveis **Resolvida pela v2** (Ajuste 18, 14/10): 0 mensagens limitadas; 1.002 dos 1.055 que saíram da pendência foram para o retorno-string (o retorno da petição inicial chegando como texto JSON, quase todo do ContestacaoCivel; roadmap #35) e o retorno-dict ficou em 2: na base 3 ele é raro, não estava escondido (roadmap #34) |
+| 2 | Só há passos com erro — sem denominador | a query filtra antes de exportar | nenhuma taxa por passo, execução, papel ou versão. **Atendida pelo pedido A** (`base_contagens.parquet`, 14/10; junção exata, roadmap #26); as taxas ainda não estão no pipeline (#32) |
 | 3 | A regex de suspeita não reconhece "Error calling tool" | base 1: pega 0 das 119 falhas silenciosas | falhas silenciosas não medidas; as 1.280 suspeitas ficam fora da taxonomia |
 | 4 | Sem system prompt, modelo e resposta final | colunas ausentes na query | protocolo do harness só por contagem; sucesso por conteúdo indisponível; 215 timeouts pendentes |
 | 5 | A janela não traz a chamada | base 1: 27 erros com o passo anterior em outra chamada; o `step_number` reinicia nos 27 | componentes condicionais; 5 pendentes por numeração ambígua |
-| 6 | A partição do contexto não inclui o agente | `PARTITION BY execução, papel` na query | se dois agentes da mesma execução dividem um papel, os passos se misturam; o pipeline suspende esses vínculos |
+| 6 | A partição do contexto não inclui o agente | `PARTITION BY execução, papel` na query | se dois agentes da mesma execução dividem um papel, os passos se misturam; o pipeline suspende esses vínculos. **Não age nesta base:** uma execução tem um agente só (0 de 20.986; roadmap #26) |
 | 7 | O filtro de tamanho exclui a execução quando um dos três textos é NULL | no SQL, `length(NULL)` torna a soma NULL; base 1: se vazio fosse NULL, sobrariam 100 de 1.000 execuções | 20.971 de 20.986 execuções com erro têm resposta gravada (base 1: 34 de 318). Não dá para saber, sem a tabela de origem, se a extração cortou as sem resposta |
 | 8 | `tool_name` é só a primeira ferramenta do passo | base 1: 5.742 de 5.742 são `python_interpreter` | a coluna não identifica a ferramenta que falhou; ela sai do código e da mensagem |
 | 9 | O nome não definido é dividido pela posição (passo anterior com erro ou não), sem olhar a linha que falhou | base 3: 5.764 de 7.178 erros de nome têm `try/except NameError` na linha que falhou; 460 estão em `U_estado_perdido` (334 de 878) e `U_nome_inventado` (126 de 477) só pela posição; na base 1, 0 de 10 | as duas unidades ficam infladas por um padrão que o prompt instrui e o sandbox não suporta; **corrigida pelo Ajuste 17** (13/10): a assinatura decide antes da posição ([relatório §7.10](02-relatorio-achados.md#710--a-assinatura-na-base-3-o-padrão-não-é-só-do-primeiro-passo-1310)); vale a partir da rodada nova |
@@ -113,9 +139,9 @@ por `cod_idef_exeo` na tabela de origem, que não está disponível hoje.
 
 ## 6 · Antes de apresentar
 
-- [ ] Os números do relatório saem da rodada `observada_3f9c2806cac9cd4d` (a pasta existe e o manifesto está como
+- [ ] Os números do relatório saem da rodada `observada_609c947b15295c84` (a pasta existe e o manifesto está como
       `concluida_tecnicamente_sem_aprovacao_semantica`).
 - [ ] "Candidata" é dita como "recorrente o suficiente para minerar", não como memória aprovada.
-- [ ] Nenhuma taxa é citada (limitação 2).
+- [ ] Nenhuma taxa é citada além das que saem das contagens do pedido A conferidas no roadmap #26 (a global e a por mês); as por unidade e por papel esperam o #32.
 - [ ] Os pendentes são apresentados como limite da extração, não como erros sem explicação.
-- [ ] A ausência do retorno-dict é explicada pelo corte (limitação 1), não como "o padrão sumiu".
+- [ ] O retorno-dict (2 erros) é dito como raro na base 3, não como escondido pelo corte (roadmap #34); as mensagens longas são o retorno da petição inicial chegando como texto JSON, com a evidência das bases 3 e 2 (roadmap #35).

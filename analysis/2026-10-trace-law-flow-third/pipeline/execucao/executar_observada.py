@@ -19,9 +19,14 @@ import mineracao_observada as mo
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inventario-only", action="store_true")
-    parser.add_argument("--fonte", type=Path, default=Path(bp.TRACE))
+    parser.add_argument("--extracao", choices=sorted(bp.EXTRACOES), default="v2",
+                        help="v2 (padrão): sem corte de texto; v1: a extração com SUBSTR (rodada 3f9c…). Ajuste 18.")
+    parser.add_argument("--fonte", type=Path, help="Arquivo da extração; sem ele, o padrão da --extracao.")
     parser.add_argument("--referencia-sha256", help="Hash esperado do snapshot; divergência interrompe.")
     parser.add_argument("--perfil", action="append", default=[], help="Unidade que passou na triagem atual.")
+    parser.add_argument("--perfil-investigacao", action="append", default=[],
+                        help="Unidade fora da candidatura (sinal de harness, harness/infra, resíduo, crítico): perfil só "
+                             "para investigação, marcado como tal.")
     parser.add_argument("--saida", type=Path, help="Subpasta privada; não sobrescreve resultados canônicos.")
     args = parser.parse_args(argv)
     if args.inventario_only:
@@ -31,12 +36,15 @@ def main(argv=None):
         table.to_csv(out / "inventario.csv", index=False)
         print("Inventário (sem leitura de casos):", table.estado.value_counts().to_dict())
         return 0
+    fonte = Path(bp.EXTRACOES[args.extracao]) if args.fonte is None else args.fonte
     try:
-        mo.conferir_fonte(args.fonte, args.referencia_sha256)
-        analysis = bp.carregar_mineracao_observada(args.fonte)
-        out = mo.gravar(analysis, args.saida, args.perfil)
-    except (bp.AnaliseNaoIntegrada, OSError, ValueError):
-        print("BLOQUEADO: fonte/contrato/rodada não validada. Nenhuma memória aprovada; conferir intake local.")
+        mo.conferir_fonte(fonte, args.referencia_sha256, args.extracao)
+        analysis = bp.carregar_mineracao_observada(fonte, args.extracao)
+        out = mo.gravar(analysis, args.saida, args.perfil, args.perfil_investigacao)
+    except (bp.AnaliseNaoIntegrada, OSError, ValueError) as exc:
+        # A mensagem das travas não traz dado da fonte: só qual regra bloqueou (e o nome da coluna, se for o caso).
+        print(f"BLOQUEADO: fonte/contrato/rodada não validada ({type(exc).__name__}: {exc}). "
+              "Nenhuma memória aprovada; conferir intake local.")
         return 1
     print(json.dumps(analysis.resumo, ensure_ascii=False, indent=2))
     print("Rodada:", out.name, ". taxas globais e sucesso semântico não habilitados")

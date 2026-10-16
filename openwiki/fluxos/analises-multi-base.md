@@ -3,9 +3,6 @@ type: methodology
 title: "Análises Multi-Base: Três Extrações, um Método"
 description: Como o projeto analisa três extrações independentes do mesmo trace de produção — as diferenças de formato e de máquina entre as bases, o livro-razão que registra cada ajuste do método, os módulos compartilhados de leitura/adaptação e a suite de testes sintéticos.
 tags: [trace-analysis, multi-base, etl-pipeline, compliance-boundary, adjustment-ledger, observed-mode]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-09T17:09:54.387Z
 sources:
   - id: openwiki-source-ad06e2a4dd2b5ea3fcfeb3f3
     resource: repo://analysis/2026-09-trace-law-flow-second/README.md
@@ -15,8 +12,16 @@ sources:
     resource: repo://analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py
   - id: openwiki-source-e252a5d791f4958574b4088a
     resource: repo://analysis/2026-10-trace-law-flow-third/docs/01-racionais.md
+  - id: openwiki-source-d070523480134977db8a4863
+    resource: repo://analysis/2026-10-trace-law-flow-third/docs/04-roadmap.md
   - id: openwiki-source-4380ebe15eaa84879ea087cb
     resource: repo://analysis/2026-10-trace-law-flow-third/docs/05-pedido-queries.md
+  - id: openwiki-source-1df4a08c7342fe8280d07d4c
+    resource: repo://analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py
+  - id: openwiki-source-fe04ac2a23a4eb97e6b423a4
+    resource: repo://analysis/2026-10-trace-law-flow-third/pipeline/execucao/relatorio.py
+  - id: openwiki-source-2e30b3083d1be7b3942956b0
+    resource: repo://analysis/2026-10-trace-law-flow-third/pipeline/execucao/taxas.py
   - id: openwiki-source-ae8741ef52ecef7f0ae8a584
     resource: repo://analysis/2026-10-trace-law-flow-third/pipeline/executar.py
   - id: openwiki-source-94c25a5250b636767039ae69
@@ -43,7 +48,14 @@ sources:
     resource: repo://analysis/tests/test_integracao_carga_base3.py
   - id: openwiki-source-4003dfabf13d9651d0b0cc0f
     resource: repo://analysis/tests/test_mineracao_observada_base3.py
-generated: { by: "claude-code", at: "2026-10-09T17:09:54.387Z" }
+  - id: openwiki-source-84f850e06dd10c38b9eb141c
+    resource: repo://analysis/tests/test_taxas_base3.py
+  - id: openwiki-source-c4fee69dbae99a41428bd7ef
+    resource: repo://analysis/tests/test_verificacao_try_nameerror.py
+generated: { by: "claude-code", at: "2026-10-15T13:12:35.828Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-15T13:12:35.828Z
 ---
 
 `analysis/` não é mais uma análise só: são **três extrações independentes** do mesmo sistema de agentes em produção (a esteira jurídica), cada uma numa pasta datada `AAAA-MM-slug/`, todas respondidas pelo mesmo método — a genealogia erro → memória descrita em [Metodologia de Taxonomia de Erros](metodologia-de-taxonomia-de-erros.md). Esta página cobre o que muda de uma base para outra e onde fica o quê; o método em si e a disciplina de PII/validação estão em [Metodologia de Análise de Traces](metodologia-de-analise-de-traces.md).
@@ -61,19 +73,19 @@ A base 2 não tem racionais nem procedimento próprios, de propósito: **raciona
 
 ## O que muda quando a extração muda de formato — o "modo observado" da base 3
 
-A base 3 não pode usar o `carregar_base()` das bases 1 e 2, porque o parquet não é o trace inteiro: não há denominador (os passos sem erro não vêm), o contexto é uma janela em volta do erro (não o histórico) e os textos vêm cortados (mensagem em 20.000, código em 12.000 caracteres). Em vez disso ela roda o **modo observado** (`pipeline/mineracao_observada.py`):
+A base 3 não pode usar o `carregar_base()` das bases 1 e 2, porque o parquet não é o trace inteiro: o contexto é uma janela em volta do erro (não o histórico) e, na v1 da extração, os textos vinham cortados (mensagem em 20.000, código em 12.000 caracteres). Desde o **Ajuste 18** a fonte padrão é a **v2** — as mesmas 31.421 linhas, sem o `SUBSTR` — e a v1 segue acessível por `executar.py analisar --extracao v1`, com travas cruzadas de hash SHA-256 que bloqueiam ler uma extração como se fosse a outra. O denominador (os passos sem erro) também não vem no parquet: chegou como uma segunda tabela, `base_contagens.parquet` (o pedido A de `docs/05-pedido-queries.md`, uma linha por execução × agente × papel), que só é usada depois de a junção chave a chave conferir. Em vez do caminho clássico ela roda o **modo observado** (`pipeline/mineracao_observada.py`):
 
 - **As mesmas regras, só onde decidem.** Cada regra da taxonomia precisa de certos insumos (a mensagem inteira, saber se o passo anterior teve erro, o histórico de chaves). O modo observado checa, erro a erro, se os insumos estão na janela: se sim, aplica a regra de sempre; se não, o erro fica **pendente** com o motivo escrito (`mensagem_limitada_ou_ausente`, `predecessor_nao_identificado_sql`…). Nenhuma regra nova foi criada para a base 3 — as regras foram comparadas por estrutura de código com as da base 2.
 - **Pendente não é resíduo.** O pendente (a regra existe, o dado não chegou) fica sem unidade e aparece na cobertura com motivo e custo em tokens; o resíduo continua sendo só o que a regra viu e não explicou; o alarme de cobertura é calculado sobre o resíduo, não sobre os pendentes.
 - **"Candidato observado", não "candidato".** A recorrência é medida só nos erros observáveis — uma unidade que não passa na régua tem *recorrência não demonstrada*, pode existir nos pendentes.
-- **Nenhum destino é herdado.** A decisão de mineração de uma base (`DESTINO_MINERACAO` + `BASE_ID`, Ajuste 7) só vale na base em que foi tomada; na base 3 toda candidata começa com o destino em aberto.
+- **Nenhum destino é herdado.** A decisão de mineração de uma base (`DESTINO_MINERACAO` + `BASE_ID`, Ajuste 7) só vale na base em que foi tomada; na base 3 toda candidata começa com o destino em aberto — mas pode fechá-lo nela mesma: o Ajuste 17 registrou `U_verificacao_try_nameerror` como **sinal de harness nas bases 2 e 3** depois que a causa foi vista no trace da base 2 e reproduzida no sandbox.
 - **Componente, não cascata exata.** A janela não traz a chamada nem o histórico, então a "componente" (sequência de erros ligados pela janela) é condicional — as contagens de ocorrência não são contagens exatas de episódios.
 
-O que a base 3 não responde (taxas, falhas silenciosas, sucesso por conteúdo, protocolo do system prompt) está medido no procedimento §4 da pasta e virou o pedido de dados complementares (`docs/05-pedido-queries.md`), ordenado por valor: denominadores primeiro. A pasta também tem uma entrada única de comando (`pipeline/executar.py`) com os subcomandos `analisar`, `inventariar`, `validar`, `conferir` e `painel`.
+O que a base 3 não responde (falhas silenciosas, sucesso por conteúdo, protocolo do system prompt) está medido no procedimento §4 da pasta e virou o pedido de dados complementares (`docs/05-pedido-queries.md`), ordenado por valor: denominadores primeiro. Do pedido, **A já foi entregue e conferido** (a junção chave a chave bateu; os subcomandos `taxas` e `relatorio` consomem `base_contagens.parquet` — a junção é uma trava: divergiu, nada é gerado) e **B e C seguem em aberto**. As taxas saíram da lista de lacunas assim que o denominador chegou — na rodada da v2 (`observada_609c947b15295c84`, 14/10) ficaram **29.392 observáveis, 749 pendentes (2,5%)**, 18 unidades, 10 candidatas e 565 erros no resíduo. A pasta tem uma entrada única de comando (`pipeline/executar.py`) com os subcomandos `analisar`, `inventariar`, `validar`, `conferir`, `painel`, `taxas` e `relatorio`.
 
 ## O livro-razão — `pipeline-entre-bases.md`
 
-Quando uma base nova estressa o método, a resposta certa é **corrigir o método** — com a base 1 como teste de regressão — e não remendar a base. O livro-razão registra, ajuste por ajuste (hoje Ajustes 1–16), o que disparou a mudança, a evidência, o que foi alterado, como foi verificado e o efeito em cada base. O ciclo de um ajuste é sempre o mesmo:
+Quando uma base nova estressa o método, a resposta certa é **corrigir o método** — com a base 1 como teste de regressão — e não remendar a base. O livro-razão registra, ajuste por ajuste (hoje Ajustes 1–18), o que disparou a mudança, a evidência, o que foi alterado, como foi verificado e o efeito em cada base. O ciclo de um ajuste é sempre o mesmo:
 
 1. **Evidência na base nova** (tabela por padrão, drill-down de caso);
 2. **Diagnóstico** (de quem é a falha — agente × plataforma);
@@ -94,7 +106,7 @@ A regra de divisão é explícita: **o que é hipótese sobre uma base** (`class
 
 ## Testes e auditoria
 
-- **`analysis/tests/`** — suite unittest/pytest sobre **fixtures sintéticas**, sem nenhum dado de cliente nos testes versionados: cobre o adaptador (`test_adaptador_trace`), a entrada única da base 3 (`test_comandos_third`), a carga estrutural (`test_integracao_carga_base3`), mecanismos/episódios (`test_mecanismos_episodios_base3`), a mineração observada (`test_mineracao_observada_base3`), sintomas/custos (`test_sintomas_base3`) e a recomputação de validação (`test_validacao_base3`).
+- **`analysis/tests/`** — suite unittest/pytest sobre **fixtures sintéticas**, sem nenhum dado de cliente nos testes versionados (182 testes hoje): cobre o adaptador (`test_adaptador_trace`), a entrada única da base 3 (`test_comandos_third`), a carga estrutural (`test_integracao_carga_base3`), mecanismos/episódios (`test_mecanismos_episodios_base3`), a mineração observada (`test_mineracao_observada_base3`), sintomas/custos (`test_sintomas_base3`), a recomputação de validação (`test_validacao_base3`), a regra do Ajuste 17 (`test_verificacao_try_nameerror` — a assinatura na linha que falhou decide antes da posição do passo anterior, nas duas bases) e a trava de junção do pedido A (`test_taxas_base3`).
 - **Auditorias independentes** — `2026-09-trace-law-flow/audit/` guarda os relatórios e os `audit_recompute*.py`: segundas implementações feitas da prosa dos racionais (`csv` + `json` + `ast`, sem pandas e sem importar o pipeline), porque "reexecutar não é verificar". Todos aceitam `--trace <arquivo>` (CSV ou parquet); o `audit_recompute9` aceita `--base` e `--json`, que é como o [kit de mineração](kit-de-mineracao.md) o roda em paralelo a uma rodada — inclusive na máquina de compliance, de onde só saem contagens. Uma auditoria só fecha quando o relatório ganha uma Parte II (a resposta do autor); os estados estão em `audit/README.md`.
 
 ## A fronteira da máquina de compliance

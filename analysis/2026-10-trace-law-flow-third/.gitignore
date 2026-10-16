@@ -1,0 +1,14 @@
+# Saídas das rodadas da base 3 (pipeline/resultados/): regeneráveis com `executar.py conferir` e `executar.py relatorio`
+# a partir da fonte (hash no manifesto) e do código versionado. Ficam fora do git: as tabelas (algumas, como
+# perfis/*/casos.csv, têm exec_id), as figuras (≈ 20 MB por rodada, uma pasta nova a cada mudança de código), os MDs
+# gerados, os manifestos e os logs (testes.txt). Os números que importam moram nos docs versionados (relatório, roadmap)
+# e nos registros de analysis/registros/. Figuras escolhidas para o tutor vão para docs/figuras/<rodada>/, de propósito.
+# Exceção: o validacao.json do `executar.py validar`, versionado como prova da validação sintética. O git não reinclui
+# arquivo dentro de diretório ignorado, por isso a abertura é nível a nível.
+pipeline/resultados/*
+!pipeline/resultados/validacao_observada_2026-10-07/
+pipeline/resultados/validacao_observada_2026-10-07/*
+!pipeline/resultados/validacao_observada_2026-10-07/validacao.json
+
+# Dados da base 3 (parquets da fonte e das contagens): já barrados por *.parquet na raiz; aqui a pasta inteira.
+data/
