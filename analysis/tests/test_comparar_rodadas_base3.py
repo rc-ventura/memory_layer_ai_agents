@@ -89,11 +89,33 @@ class TestCompararRodadas(unittest.TestCase):
         falhas, _ = self.comparar(rodada(self.tmp / "b", "b" * 64, {"perfis/U_x/casos.csv": None}))
         self.assertIn("tabela removida: perfis/U_x/casos.csv", falhas)
 
-    def test_artefato_alterado_depois_da_rodada_nao_fecha(self):
+    def test_artefato_alterado_nao_fecha_nem_e_lido_mas_o_resto_e_comparado(self):
+        depois = rodada(self.tmp / "b", "b" * 64)
+        (depois / "perfis/U_x/casos.csv").write_text("rodada_id,erros\nX,9\n", encoding="utf-8")
+        falhas, out = self.comparar(depois)
+        self.assertEqual(falhas, ["b: perfis/U_x/casos.csv alterado depois da rodada"])
+        self.assertIn("conteúdo diferente)", out)
+        self.assertIn("igual (hash)", out)
+        self.assertNotIn("perfis/*/casos.csv", out)
+
+    def test_artefato_ausente_e_dito_ausente(self):
+        (self.antes / "perfis/U_x/casos.csv").unlink()
+        falhas, _ = self.comparar(rodada(self.tmp / "b", "b" * 64))
+        self.assertEqual(falhas, ["a: perfis/U_x/casos.csv ausente depois da rodada"])
+
+    def test_pista_de_editor_so_o_fim_de_linha(self):
+        depois = rodada(self.tmp / "b", "b" * 64)
+        p = depois / "perfis/U_x/casos.csv"
+        p.write_bytes(p.read_bytes().replace(b"\n", b"\r\n"))
+        _, out = self.comparar(depois)
+        self.assertIn("só o fim de linha", out)
+
+    def test_tabela_usada_na_conferencia_alterada_pula_a_conferencia(self):
         depois = rodada(self.tmp / "b", "b" * 64)
         (depois / "triagem_visivel_observada.csv").write_text("unidade\n", encoding="utf-8")
-        falhas, _ = self.comparar(depois)
-        self.assertTrue(any("alterado" in f for f in falhas))
+        falhas, out = self.comparar(depois)
+        self.assertIn("não conferidas: triagem_visivel_observada.csv", out)
+        self.assertEqual(len(falhas), 1)
 
     def test_fonte_diferente_para(self):
         depois = rodada(self.tmp / "b", "b" * 64)

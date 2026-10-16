@@ -184,6 +184,28 @@ def _por_papel_na_fonte(upt, m, fonte):
             "por papel = fonte (tokens)": (bool(d_tok.eq(0).all()), f"diferença máxima {int(d_tok.max())} tokens")}
 
 
+def _fora_do_manifesto(path, esperado, gerado_em):
+    """None se o arquivo tem o hash do manifesto; senão, o que aconteceu com ele (sem abrir o conteúdo na tela)."""
+    if not path.is_file():
+        return "ausente"
+    if _sha256(path) == esperado:
+        return None
+    from datetime import datetime, timezone
+    st = path.stat()
+    quando = datetime.fromtimestamp(st.st_mtime, timezone.utc).isoformat(timespec="seconds")[:19]
+    # Pistas de um editor que regravou o arquivo: só o fim de linha (CRLF) ou a marca BOM do UTF-8 mudou.
+    bruto = path.read_bytes()
+    pista = ""
+    for nome, versao in (("só o fim de linha (CRLF → LF volta ao hash)", bruto.replace(b"\r\n", b"\n")),
+                         ("só a marca BOM no começo", bruto.removeprefix(b"\xef\xbb\xbf")),
+                         ("BOM e fim de linha", bruto.removeprefix(b"\xef\xbb\xbf").replace(b"\r\n", b"\n"))):
+        if versao != bruto and hashlib.sha256(versao).hexdigest() == esperado:
+            pista = f"; {nome}"
+            break
+    return (f"alterado (modificado em {quando} UTC; rodada gerada em {(gerado_em or '?')[:19]} UTC; "
+            f"{st.st_size} bytes{pista or '; conteúdo diferente'})")
+
+
 def _juntar_perfis(itens):
     """perfis/<unidade>/<tabela> com a mesma situação e o mesmo detalhe numa linha só (a saída cabe numa foto)."""
     vistos, ordem = {}, []
@@ -222,19 +244,24 @@ def comparar(antes, depois, fonte=None, detalhe_iguais=False):
     for k in sorted(k for k in set(ca) | set(cb) if ca.get(k) != cb.get(k)):
         print(f"    capacidade {k}: {ca.get(k)!r} → {cb.get(k)!r} (informativo)")
 
+    # Como o painel: um arquivo fora do manifesto não é comparado (o conteúdo não vale como prova), mas o resto é.
+    fora = {}
     for pasta, m in ((antes, ma), (depois, mb)):
-        alterados = [n for n, h in m["artefatos"].items() if not (pasta / n).is_file() or _sha256(pasta / n) != h]
-        if alterados:
-            falhas.append(f"{pasta.name}: {len(alterados)} artefato(s) ausente(s) ou alterado(s) depois da rodada")
-            print(f"\n{pasta.name}: ausentes ou alterados depois da rodada: " + ", ".join(sorted(alterados)))
-    if falhas:
-        # Como o painel: nenhum arquivo alterado é lido; o conteúdo não vale como prova.
-        print("\nveredito: NÃO FECHA (artefato fora do manifesto; refaça a rodada ou restaure os arquivos)")
-        return falhas
+        for nome, h in sorted(m["artefatos"].items()):
+            estado = _fora_do_manifesto(pasta / nome, h, m.get("gerado_em"))
+            if estado:
+                fora.setdefault(nome, []).append(f"{pasta.name}: {estado}")
+                falhas.append(f"{pasta.name}: {nome} {estado.split(' (')[0]} depois da rodada")
+    if fora:
+        print(f"\nfora do manifesto (não comparados): {len(fora)}")
+        for nome, estados in fora.items():
+            print(f"    {nome}" + "".join(f"\n        {e}" for e in estados))
 
     aa, ab = ma["artefatos"], mb["artefatos"]
     grupos = {}
     for nome in sorted(set(aa) | set(ab)):
+        if nome in fora:
+            continue
         if nome not in ab:
             grupos.setdefault("removido", []).append((nome, ""))
             if nome.endswith(".csv"):
@@ -264,9 +291,13 @@ def comparar(antes, depois, fonte=None, detalhe_iguais=False):
             print(f"    {nome}" + (f" — {detalhe}" if detalhe and not detalhe.startswith("\n") else detalhe))
 
     print("\ntabelas novas da rodada depois:")
-    f, linhas = conferir_tabelas_novas(depois, mb, fonte)
-    print("\n".join(linhas))
-    falhas += f
+    usadas = {"consolidacao_unidade_papel_tokens.csv", "triagem_visivel_observada.csv", "consolidacao_depois_unidade.csv"}
+    if usadas & set(fora):
+        print("    não conferidas: " + ", ".join(sorted(usadas & set(fora))) + " fora do manifesto")
+    else:
+        f, linhas = conferir_tabelas_novas(depois, mb, fonte)
+        print("\n".join(linhas))
+        falhas += f
 
     print(f"\nveredito: {'nenhum número mudou e as conferências fecham' if not falhas else 'NÃO FECHA'}")
     for x in falhas:
