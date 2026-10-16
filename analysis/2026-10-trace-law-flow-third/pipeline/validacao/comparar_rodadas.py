@@ -29,6 +29,10 @@ import sys
 import pandas as pd
 
 PIPELINE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PIPELINE))
+# O mesmo acesso a caminho longo do Windows (\\?\) com que a rodada é gravada e conferida: sem ele, um arquivo com
+# caminho de 260 caracteres ou mais (perfis/U_campo_inexistente/amostra_investigacao.csv dentro do OneDrive) parece ausente.
+from mineracao_observada import caminho_io  # noqa: E402
 RESULTADOS = PIPELINE / "resultados"
 FONTE_PADRAO = PIPELINE.parent / "data" / "base_erros_minerados_full_v2.parquet"  # o bp.TRACE (a v2)
 CONCLUIDA = "concluida_tecnicamente_sem_aprovacao_semantica"
@@ -49,10 +53,10 @@ def _sha256(path):
 def _pasta(arg):
     p = Path(arg)
     if p.is_dir():
-        return p.resolve()
+        return caminho_io(p.resolve())
     for nome in (arg, "observada_" + arg):
         if (RESULTADOS / nome).is_dir():
-            return (RESULTADOS / nome).resolve()
+            return caminho_io((RESULTADOS / nome).resolve())
     raise SystemExit(f"rodada não encontrada: {arg}")
 
 

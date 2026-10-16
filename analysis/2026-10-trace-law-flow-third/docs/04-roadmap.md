@@ -48,8 +48,9 @@ lidos pelo Rafael na rodada `96958e65` e ajustados (`9dfb729`, `762527f`; o rela
 `.md` aberto, `f9cab0c`). Ficam **ajustes gerais de forma**, menores, que o Rafael lista quando rever o relatório
 (#45 g), e as contagens e decisões do #45. **A ordem a seguir:**
 1. **#42** — fechar a etapa 2: o `comparar_rodadas.py` prova por hash que a rodada nova não mudou nenhum número da `609c…`
-   (escrito e ensaiado na base 1 em 16/10). **Pendente:** na máquina 2 ele parou porque a
-   `amostra_investigacao.csv` do campo inexistente está fora do manifesto nas duas rodadas (Etapa 2, passo 2);
+   (escrito e ensaiado na base 1 em 16/10). Na máquina 2 tudo fechou, menos a amostra do campo inexistente, dada como
+   ausente nas duas rodadas: era o caminho de 260 caracteres que o script não abria (corrigido). **Falta** rodar o script
+   corrigido (Etapa 2, passo 2);
 2. **etapa 4 (#2, #11)** — o pedido ao tutor: os gráficos estão prontos e o `05` está desatualizado (descreve o pedido A
    como "a enviar"); é o que destrava os gráficos que ainda faltam dado e é a etapa que depende de outra pessoa, então
    quanto antes sair, antes volta;
@@ -117,15 +118,21 @@ por `figuras_painel.depois_do_erro`; testes: soma = todos os erros e, nas candid
    duas passaram, o arquivo mudou ou sumiu depois. Nessa versão o script parava ali, e o resto não foi comparado.
 
    **Pendência (para fecharmos):**
-   - [ ] levar o script de `6909c21` para a máquina 2 e rodar de novo. Ele diz se o arquivo está ausente ou alterado
-     (hora, tamanho, se só o fim de linha CRLF ou a marca BOM mudou) e compara todo o resto. Não muda o id da rodada:
-     o script não entra no hash do código.
-   - [ ] achar a causa. Hipóteses, a confirmar: o arquivo foi aberto e salvo num editor ou no Excel (é a amostra que
-     se lê na investigação), ou o OneDrive ou a política de dados da máquina mexeu nele (tem texto de caso).
-   - [ ] restaurar: a `96958e65…` com `executar.py conferir` de novo (mesmo código e fonte = mesma pasta, arquivo
-     refeito). A `609c…` é do código `16bb4a6`: se o resto fechar e só essa amostra ficar fora, decidir entre
-     refazê-la com o código antigo ou registrar a exceção aqui.
-   - [ ] não abrir arquivos de `resultados/` em editor que salve. Para ler uma amostra, copiar antes.
+   - [x] levar o script de `6909c21` para a máquina 2 e rodar de novo (16/10, foto): o arquivo aparece **ausente nas
+     duas rodadas**, e todo o resto fecha — resumo 29 campos, 0 diferentes; 76 artefatos com o mesmo hash; 2 novos;
+     a genealogia como figura diferente; `casos.csv` (10 unidades) e `amostra_investigacao.csv` (as outras 9) diferem só
+     no `rodada_id`; `perfil.csv` só com a coluna nova `finalidade`; as tabelas novas conferem com o resumo e a fonte.
+   - [x] achar a causa: **o arquivo não sumiu; foi o script que não o achou.** Na máquina 2 o repositório está dentro do
+     OneDrive, e o caminho completo de `perfis/U_campo_inexistente/amostra_investigacao.csv` tem 260 caracteres — o
+     único da rodada que chega ao limite do Windows (`MAX_PATH`; o mais longo depois dele tem 257). A gravação e a
+     conferência usam `mineracao_observada.caminho_io`, que acrescenta o prefixo `\\?\` de caminho longo; o
+     `comparar_rodadas.py` abria o caminho comum, e o `is_file()` voltava falso. As hipóteses de editor, Excel,
+     OneDrive ou política de dados ficam descartadas. Correção: o script passa a abrir a rodada pelo mesmo `caminho_io`
+     (teste novo em `test_comparar_rodadas_base3.py`; 213 testes).
+   - [ ] rodar o script corrigido na máquina 2: espera-se a amostra do campo inexistente entre as que "diferem só em
+     `rodada_id`" (10 unidades), nenhuma fora do manifesto e saída 0. Com isso o #42 fecha. Nada a restaurar.
+   - [ ] (risco a registrar) qualquer script novo que leia uma rodada na máquina 2 passa pelo `caminho_io`; um nome de
+     unidade mais longo que `U_campo_inexistente` cruzaria o limite também em `casos.csv`.
 3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte —
    o mesmo script confere (o gasto por papel, com a fonte): por unidade = triagem, sem unidade = pendentes, total = resumo, por papel =
    fonte (diferença máxima 0), e o que vem depois do erro somado = todos os erros. No ensaio da base 1, tudo fechou
