@@ -36,7 +36,7 @@ conferidas numa rodada de teste (a base 1 pela porta da query da base 3); 183 te
 **passo a passo**, em cinco etapas; cada linha aponta para o item do backlog, que é onde se marca `[x]` com a prova.
 
 - [x] **0** · Commit das correções de 15/10 → `51a9d15`
-- [ ] **1** · Decisões D1–D6 fechadas com o Rafael → #41
+- [x] **1** · Decisões D1–D6 fechadas com o Rafael e aplicadas → #41, `b56204c`
 - [ ] **2** · Rodada nova na máquina 2, fotos e conferência gráfico a gráfico → #42, #36, #40
 - [ ] **3** · Gráficos da base 1 que já têm dado: duração por assinatura, global × papel, posição na trajetória → #43
 - [ ] **4** · Pedido ao tutor reescrito e apresentação → #2, #11
@@ -60,19 +60,28 @@ fotos).
 | D5 | O que vem depois do erro (parte 1) | Só as 10 candidatas; "erro é erro" pede todas (o `try/except`, a resposta sem bloco de código, o resíduo também têm cascata) | (a) o perfil inteiro de toda unidade (pesado; `perfil_unidade` recusa não-candidata); (b) uma tabela só de contagem na rodada: unidade × "o que vem depois" × "o seguinte é final" | **(b)** — a mesma conta do perfil, sem os casos; entra na mesma rodada nova | rodada |
 | D6 | Concentração de custo (parte 2) | Pôr o índice de Gini (um número de 0 a 1 que resume a concentração) | no título / só no "Como ler" / não | **não** — "10% das execuções levam 64% do gasto" diz o mesmo sem pedir que o leitor aprenda um índice | relatório |
 
+**Decidido em 16/10 e aplicado (`b56204c`; [`decisoes.md`](../../decisoes.md)):** D1 nenhuma faixa nem cor — o título se
+apoia em meses grandes e o painel de cima já mostra o tamanho de cada mês (só uma frase no "Como ler"); D2 % com 2 casas e
+mês com menos de 1.000 passos no sistema em cinza, fora da cor (nenhum erro sai da conta); D3 **(a)**, dois painéis, um
+insight por painel (para reduzir erros | para memória); D4 como recomendado; D5 **(b) com duas extensões** — a unidade do
+erro seguinte (a matriz de transição, que mostra se o agente repete o erro ou esbarra em outro) e o perfil sob demanda de
+qualquer unidade (`executar.py analisar --perfil-investigacao <unidade>`, para os roteiros #3, #4, #5 e #6); D6 sem Gini.
+Na rodada de teste da base 1, as transições já aparecem (ex.: explicação solta no código → a mesma unidade em 61% dos
+erros; resposta sem bloco de código → explicação solta em 21%). 185 testes.
+
 **Também antes do `analisar` (conferência, não decisão):** a genealogia tem "Protocolo do harness 4.591" na família e
 `H_bloco_code` 4.592 na unidade — um erro de outra família entra nessa unidade; olhar no `genealogia_arestas.csv` da
-rodada `609c…` as arestas que chegam em `harness_bloco_code` e trazer a contagem por família. **Se D4(ii) e D5(b)
-forem aprovados:** coluna única em `genealogia_sankey.py`; tabela `consolidacao_depois_unidade.csv` em
-`mineracao_observada.consolidacao`, lida por `figuras_painel.depois_do_erro`; teste: soma por unidade = triagem e, nas
-candidatas, igual ao perfil.
+rodada `609c…` as arestas que chegam em `harness_bloco_code` e trazer a contagem por família. **D4 e D5 no código:** coluna única em
+`genealogia_sankey.render_png`; tabela `consolidacao_depois_unidade.csv` (`mineracao_observada.depois_por_unidade`), lida
+por `figuras_painel.depois_do_erro`; testes: soma = todos os erros e, nas candidatas, igual ao perfil.
 
 ### Etapa 2 · Rodada nova na máquina 2 e conferência (#42)
 
 1. `executar.py analisar` (id novo) e `executar.py relatorio --rodada <nova>`.
 2. **A rodada nova não muda nenhum número** (decidido em 15/10): `validacao/comparar_rodadas.py` (a escrever) compara os
    SHA-256 dos artefatos dos dois `manifesto.json` e lista só o que difere; o esperado: iguais os CSVs de erros, cobertura e
-   triagem; novos só `consolidacao_unidade_papel_tokens.csv` (e o de D5); figuras diferentes.
+   triagem; novos só `consolidacao_unidade_papel_tokens.csv` e `consolidacao_depois_unidade.csv`; diferentes a
+   genealogia e os perfis (a tabela `perfil` ganhou a coluna `finalidade`).
 3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte (o
    gráfico do gasto por papel escreve a diferença máxima na limitação: tem de ser ≈ 0).
 4. Fotos dos 10 gráficos de cada parte, conferidos um a um contra a coluna "Correção" do #36 e do #40; o conferido marca
@@ -319,9 +328,6 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
-- [ ] **#41** **Decisões D1–D6 antes da rodada nova** (taxa por mês, régua da taxa por unidade e mês, prioridade,
-  genealogia, depois do erro com todas as unidades, Gini): a explicação, as opções e a recomendação de cada uma estão no
-  [Plano de evolução, Etapa 1](#etapa-1--as-decisões-antes-de-rodar-o-relatório-novo-41); D4 e D5 antes do `analisar`.
 - [ ] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, a escrever) e a tabela
   nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
 - [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
@@ -338,6 +344,9 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#41 · Decisões D1–D6 antes da rodada nova** (16/10): fechadas com o Rafael e aplicadas → `b56204c`,
+  [`decisoes.md`](../../decisoes.md) (16/10) e o [Plano de evolução, Etapa 1](#etapa-1--as-decisões-antes-de-rodar-o-relatório-novo-41).
 
 - [x] **#35 · O que são os valores longos que começam com `{` e dão erro de string** (14/10): **o retorno da petição
   inicial chegando como texto JSON**, que o agente indexa como dict. Evidência, nas duas bases que têm o caso:
