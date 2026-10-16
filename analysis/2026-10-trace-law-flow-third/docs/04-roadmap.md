@@ -7,8 +7,10 @@
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
-[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 15/10/2026
+[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026
 (branch `2026-10-14-base3-roadmap-queries`): correções dos gráficos do #36 e do #40 aplicadas no código.
+**A ordem do que falta** (decisões antes da rodada nova, conferência na máquina 2, gráficos migráveis, pedido ao tutor,
+primeira mineração): a seção [Plano de evolução](#plano-de-evolução-1610-a-ordem-do-que-falta), de 16/10.
 
 ## O plano de adaptação: feito e pendente
 
@@ -26,6 +28,104 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 | **7** · Quando a v2 e a agregada chegarem | **Chegaram, conferidas e a v2 rodada** (#26, #31) | A v2 é a v1 sem o corte de texto; as contagens são o pedido A atendido, com a junção exata; rodada `609c…`: 97,5% classificados, 749 pendentes. O relatório foi migrado para ela (#33). **Pendente:** as taxas (#32) e B e C reescritos (#2) |
 | **Documentos gerais** (glossário, livro-razão, `analysis/README`, `kit.md`) | **Não feita** | → #18 |
 | **Teste de equivalência** `triagem_observada` × `bp.triagem` na suíte | **Só como script** | → #19 |
+
+## Plano de evolução (16/10): a ordem do que falta
+
+Em 15/10 as correções da auditoria dos gráficos (#36, parte 2; #40, parte 1) foram aplicadas no código (`51a9d15`) e
+conferidas numa rodada de teste (a base 1 pela porta da query da base 3); 183 testes. Esta seção é a **ordem** e o
+**passo a passo**, em cinco etapas; cada linha aponta para o item do backlog, que é onde se marca `[x]` com a prova.
+
+- [x] **0** · Commit das correções de 15/10 → `51a9d15`
+- [ ] **1** · Decisões D1–D6 fechadas com o Rafael → #41
+- [ ] **2** · Rodada nova na máquina 2, fotos e conferência gráfico a gráfico → #42, #36, #40
+- [ ] **3** · Gráficos da base 1 que já têm dado: duração por assinatura, global × papel, posição na trajetória → #43
+- [ ] **4** · Pedido ao tutor reescrito e apresentação → #2, #11
+- [ ] **5** · Mineração: localizador da memória → kit mínimo → registro do `try/except` → piloto do inventário do sandbox → #44, #17, #28, #12
+
+### Etapa 1 · As decisões antes de rodar o relatório novo (#41)
+
+**"Rodar" são dois comandos, com custo diferente.** `executar.py analisar` refaz a **rodada** (classificação, tabelas,
+genealogia, perfis): é lento e, como o código mudou, gera um **identificador novo** — tudo o que muda a rodada tem de estar
+decidido antes dele, senão roda duas vezes. `executar.py relatorio` só **lê** a rodada e desenha as duas partes: é rápido e
+se repete à vontade. Por isso nenhuma decisão impede rodar hoje (o código tem um comportamento provisório em cada uma),
+mas **D4 e D5 mexem na rodada** (fechar antes do `analisar`) e **D1, D2, D3 e D6 só no relatório** (podem vir depois das
+fotos).
+
+| # | Gráfico | O problema, em uma frase | Opções | Recomendação | Muda |
+|---|---|---|---|---|---|
+| D1 | Taxa de erro por mês (parte 2) | Novembro tem 446 passos: o 7,2% dele parece tão firme quanto o 15,7% de agosto (111 mil passos), e não é; os erros vêm em sequência na mesma execução, então a incerteza real é maior que a da conta simples | (a) faixa binomial (fácil, subestima por causa da sequência); (b) faixa por reamostragem de execuções (honesta, mais código e explicação); (c) mês com menos de 1.000 passos em cinza, sem estatística | **(c)** — simples de explicar ao tutor e a mesma régua do D2; (b) quando houver a taxa por papel e mês (#37) | relatório |
+| D2 | Taxa por unidade e mês (parte 2) | (i) "por 1.000 passos" confundiu ("71,9 é %?"); em %, quase metade das células vira "<0,1%"; (ii) o limite de "mês com poucos passos" (cinza e fora da cor; hoje provisório em 1.000) | (i) % com 2 casas ("0,72%") ou manter por 1.000 com "≈ 10× o valor em %"; (ii) 1.000 passos (só nov/25 sai) ou 3.000 (nov e dez saem) | **% com 2 casas** (uma unidade só no relatório, como a taxa por mês) e **1.000 passos** (o mesmo do D1) | relatório |
+| D3 | Prioridade (parte 2) | O gráfico ordena os papéis "para reduzir erros" (todos os tokens em erro, inclusive harness e infra); para memória, o critério é o teto (só as candidatas) | (a) segundo painel "para memória"; (b) não acrescentar | **(b)** — o teto por papel já está no gráfico do gasto por papel; repetir quebra "um insight por gráfico" | relatório |
+| D4 | Genealogia (parte 1) | (i) os nós pequenos se amontoam; (ii) as colunas "unidade" e "destino" são 1 para 1 — a segunda repete a primeira com o nome da lição | (i) agrupar a cauda (< ~30 erros) em "outros" ou não; (ii) juntar as duas colunas ("lição (U_…) · decisão") ou manter | (i) **não agrupar** (a decisão de 24/09, seguir cada balde até o destino, continua; rever com a foto); (ii) **juntar** | rodada (a genealogia é desenhada no `analisar`) |
+| D5 | O que vem depois do erro (parte 1) | Só as 10 candidatas; "erro é erro" pede todas (o `try/except`, a resposta sem bloco de código, o resíduo também têm cascata) | (a) o perfil inteiro de toda unidade (pesado; `perfil_unidade` recusa não-candidata); (b) uma tabela só de contagem na rodada: unidade × "o que vem depois" × "o seguinte é final" | **(b)** — a mesma conta do perfil, sem os casos; entra na mesma rodada nova | rodada |
+| D6 | Concentração de custo (parte 2) | Pôr o índice de Gini (um número de 0 a 1 que resume a concentração) | no título / só no "Como ler" / não | **não** — "10% das execuções levam 64% do gasto" diz o mesmo sem pedir que o leitor aprenda um índice | relatório |
+
+**Também antes do `analisar` (conferência, não decisão):** a genealogia tem "Protocolo do harness 4.591" na família e
+`H_bloco_code` 4.592 na unidade — um erro de outra família entra nessa unidade; olhar no `genealogia_arestas.csv` da
+rodada `609c…` as arestas que chegam em `harness_bloco_code` e trazer a contagem por família. **Se D4(ii) e D5(b)
+forem aprovados:** coluna única em `genealogia_sankey.py`; tabela `consolidacao_depois_unidade.csv` em
+`mineracao_observada.consolidacao`, lida por `figuras_painel.depois_do_erro`; teste: soma por unidade = triagem e, nas
+candidatas, igual ao perfil.
+
+### Etapa 2 · Rodada nova na máquina 2 e conferência (#42)
+
+1. `executar.py analisar` (id novo) e `executar.py relatorio --rodada <nova>`.
+2. **A rodada nova não muda nenhum número** (decidido em 15/10): `validacao/comparar_rodadas.py` (a escrever) compara os
+   SHA-256 dos artefatos dos dois `manifesto.json` e lista só o que difere; o esperado: iguais os CSVs de erros, cobertura e
+   triagem; novos só `consolidacao_unidade_papel_tokens.csv` (e o de D5); figuras diferentes.
+3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte (o
+   gráfico do gasto por papel escreve a diferença máxima na limitação: tem de ser ≈ 0).
+4. Fotos dos 10 gráficos de cada parte, conferidos um a um contra a coluna "Correção" do #36 e do #40; o conferido marca
+   `[x]` com a rodada como prova. Depois, o relatório §7 relido e as taxas no §7 (#32).
+
+### Etapa 3 · Gráficos da base 1 que ainda não migraram mas já têm dado (#43)
+
+| | Gráfico da base 1 | Dado que já existe na base 3 | Pergunta que responde | Onde entra | O que conferir antes |
+|---|---|---|---|---|---|
+| M1 | Duração por assinatura (§2.3 da esteira) | `duracoes_assinaturas.csv` da rodada: erros, execuções, tokens, duração conhecida e ausente, medianas por assinatura (`duration_seconds` da v2) | Que erro faz o agente **esperar** mais, não só gastar tokens? | parte 1, depois de frequência × custo | quantas durações faltam por assinatura; insight único: frequência × custo é por unidade e em tokens, este é por assinatura e em segundos |
+| M2 | Global × papel (§14.8 da consolidação) | `consolidacao_global_papel.csv`: papel, unidade, decisão, candidata no sistema, candidata no papel pela régua estrita (5 execuções, 3 meses) | A lição é recorrente no sistema todo mas em nenhum papel isolado (ou o contrário)? Decide o **escopo** da memória (papel ou global) | **tabela** no painel, não gráfico: o asterisco do papel × unidade já mostra a régua por papel | se a régua estrita por papel muda alguma candidata |
+| M3 | Posição do erro na trajetória (§4/8.6) e "quantas trajetórias terminam num erro" (complemento do gráfico de custo com × sem erro) | **hipótese:** o número do passo com erro (`step_number`, v2) ÷ o total de passos do papel (`qtd_actionsteps`, contagens) = posição relativa; `recovery_signal = NO_NEXT_ACTION` marca o erro no último passo | O erro vem no começo (pouco contexto) ou no fim (contexto acumulado)? Testa o custo por contexto acumulado (#13) com a entrada do passo com erro × posição | parte 2 (precisa das contagens) | **na base 1, aqui:** se `step_number` conta só ActionSteps, bate com o `idx` do clássico e o máximo = total de passos do papel; se não, M3 vai para o pedido ao tutor |
+
+Fica de fora o teste do ToolScan (§2.1): é verificação de código, não gráfico. Continuam sem dado (Etapa 4): sucesso por
+conteúdo (§3.1/8.12), tokens por chamada de ferramenta (§3.3/8.9), propagação completa (§5/8.2), falhas silenciosas (§7).
+A rodada de teste da base 1 (fonte pela `validacao/porta_query_v1.py`, contagens dos ActionSteps do trace dela) vira
+script em `validacao/` aqui, para conferir as figuras antes de cada ida à máquina 2.
+
+### Etapa 4 · O pedido ao tutor (#2, #11)
+
+O pedido A (denominadores) **chegou e foi conferido** (#26), mas o [`05`](05-pedido-queries.md) ainda o descreve como "a
+enviar" e pede coisas que a v2 resolveu (o corte de 20.000 caracteres acabou). Reescrever o `05` e montar a página do
+tutor nesta ordem de valor; cada pedido leva a frase para o tutor, o porquê (a limitação medida), o que destrava e a
+conferência no recebimento.
+
+| Ordem | Pedido | Frase para o tutor (resumo) | Por quê | O que destrava |
+|---|---|---|---|---|
+| 1 | **Novo — tabela leve de todos os passos** | "Uma linha por ActionStep de todas as execuções do mesmo recorte, **sem nenhum texto**: execução, agente, papel, número do passo, se teve erro estruturado, tokens de entrada e saída, duração, nomes das ferramentas chamadas, se é a resposta final" | A base 3 só tem os passos com erro e a janela até n+2; o resto da trajetória é invisível. Só números e nomes: sem risco de sigilo; ~284 mil linhas | posição e propagação completas (§4, §5), recuperação além de n+2 e o custo da cascata (#15), tokens por chamada de ferramenta (§3.3/8.9), entrada × posição do passo (#13) |
+| 2 | **C — nome do modelo e hash do system prompt** | "Em cada execução, o nome do modelo e um hash do system prompt de cada papel" | A versão do agente quase não varia (1 em 85 linhas de erro): não se separa erro do modelo de erro do prompt, nem se diz se uma unidade "aparece ou some" | os 514 do primeiro passo (#29); o critério "ainda relevante"; o antes × depois do prompt do `try/except` |
+| 3 | **B — o que sobrou dos pendentes** (234 erros) | (i) os nomes das ferramentas declaradas no prompt de cada papel (papel × versão × ferramenta) — 215 timeouts; (ii) quantos pares `"chave": "texto"` nas observações anteriores do papel — 15 de histórico; (iii) o número da chamada antes do passo — 5 de numeração | a v2 já tirou 1.055 da pendência; estes três dependem de dado fora da janela | 0,8% dos erros saem da pendência; a regra do timeout separa código lento, tempo do interpretador e resultado bruto |
+| 4 | **C — ajustes na extração** | (i) no filtro de tamanho, texto ausente = comprimento 0 (hoje exclui a execução); (ii) "Error calling tool" nas observações como sinal próprio; (iii) todas as ferramentas do passo, não só a primeira | (i) 15 execuções sem resposta gravada podem estar sendo cortadas; (ii) a regra de suspeita pega 0 de 119 falhas silenciosas na base 1; (iii) na base 1 a primeira ferramenta é sempre o interpretador | o balde das falhas silenciosas; a ferramenta que de fato falhou (antes de pedir (iii), medir no `tool_calls` inteiro da v2) |
+
+**Sai do pedido:** o agente na partição (uma execução tem um agente só) e a mensagem cortada e a linha rejeitada
+(resolvidas pela v2). **Não pedir ainda:** o sucesso por conteúdo (exige a resposta final, texto sensível), até decidir
+que marcas sim/não calculadas na consulta bastariam (`transversal #1`, `#2`). Passos: `05` reescrito → página de uma tela
+com o painel novo (depende da Etapa 2) → levado ao tutor, resposta registrada no `05`.
+
+### Etapa 5 · A hora da mineração: o primeiro arquivo de memória da base 3
+
+A base 1 já tem dois arquivos finais (`memoria_U_campo_inexistente_base1.json`, `memoria_U_contrato_dict_base1.json`); a
+base 3, nenhum. O piloto é o **inventário do sandbox** (`U_sandbox`, 3.653 erros, 16 papéis) porque a lição sai da
+**própria mensagem de erro** (import não permitido, função proibida): fecha só com o parquet, sem esperar o tutor, e o
+resultado é uma lista determinística dos nomes bloqueados, sem LLM na classificação.
+
+| Passo | O que fazer | Por quê | Decisão do Rafael |
+|---|---|---|---|
+| 5.1 (#44) | **Localizador da memória:** o [esquema](../../registros/esquema-memoria.json) (v0.1) pede `idx` em `location.casos`; a base 3 não tem `idx`. Proposta: aceitar `step_ref` + `fonte_id` + `rodada_id`; esquema v0.2, entrada no livro-razão, `validar_memoria.py` aceitando os dois | sem isso o arquivo final não valida | **sim:** aprovar o campo |
+| 5.2 (#17) | **Kit mínimo para a base 3:** o `conferir_versao` reconhece o código da third; a preparação da `mineracao-base` chama `executar.py` e lê a capacidade (a skill de falhas silenciosas para e explica); um `audit_recompute` da base 3, só biblioteca padrão e `leitor_trace`, que recalcula a parte genérica (recorrência, sub-unidades, antes, depois, estabilidade, população) direto do parquet | o método exige a auditoria independente em paralelo: "re-rodar não é verificar" | não (método de 05/10) |
+| 5.3 (#28) | **Primeiro registro:** o monitoramento do `try/except NameError` em [`monitoramento.json`](../../registros/monitoramento.json): linha de base (base 3: 5.764, 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura depois de corrigido o prompt, ou num papel novo), ação | destino já decidido (sinal de harness); o `monitorar.py` lê o arquivo no passo 0 de toda mineração | se o gatilho entra também em % (o denominador já existe) |
+| 5.4 (#12) | **Piloto** `/mineracao-candidata U_sandbox` na máquina 2: parte genérica (o perfil já existe na rodada), auditoria em paralelo, encontro por script; pelo funil, parte específica **determinística**: contar os nomes bloqueados por papel e mês a partir da mensagem | gera o inventário (o `correction_guidance`) e o escopo (papel ou global, com o M2) | aprovar a proposta do notebook específico (procedimento `16`) |
+| 5.5 (#12) | **Saída:** `memoria_U_sandbox_base3.json` validado, relatório e dossiê de decisão; da máquina 2 saem só contagens e nomes de função e módulo | o destino "memória" vira arquivo, com a origem de cada campo (`checado` / `hipótese`) | **sim:** aprovar a memória (o gate do pesquisador) |
+| 5.6 (#39) | **Linha de base da economia:** o registro versionado em `registros/` com o teto por papel e unidade, os passos por papel e os hashes — sai da tabela nova da Etapa 2 | o "antes" do teste de compensação (decidido em 15/10) | o formato do registro |
+| 5.7 (#7) | **Próximas candidatas**, pela ordem de tokens: retorno-string (207 mi; o #35 já aponta a ferramenta e o papel), argumento nomeado, `next()` sobre gerador; as que precisam do contrato da ferramenta esperam o pedido C | — | — |
 
 ## Backlog — em ordem de valor
 
@@ -218,6 +318,16 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
   v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
+
+- [ ] **#41** **Decisões D1–D6 antes da rodada nova** (taxa por mês, régua da taxa por unidade e mês, prioridade,
+  genealogia, depois do erro com todas as unidades, Gini): a explicação, as opções e a recomendação de cada uma estão no
+  [Plano de evolução, Etapa 1](#etapa-1--as-decisões-antes-de-rodar-o-relatório-novo-41); D4 e D5 antes do `analisar`.
+- [ ] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, a escrever) e a tabela
+  nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
+- [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
+  trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
+- [ ] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
+  esquema v0.2) — pré-requisito do piloto (#12) → [Etapa 5](#etapa-5--a-hora-da-mineração-o-primeiro-arquivo-de-memória-da-base-3).
 
 ## Fora de escopo / adiado
 
