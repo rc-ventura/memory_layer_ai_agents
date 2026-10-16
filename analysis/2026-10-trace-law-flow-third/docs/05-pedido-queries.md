@@ -80,7 +80,7 @@ unidade é a linha de execução, agente e papel.
 **O que falta hoje.** 7.107 erros estruturados (24%, 143 mi de tokens) ficam pendentes. Desses, **5.818 não precisam de
 query**: a contagem de 13/10 (`validacao/contar_predecessor_pendentes.py`) mostrou que os 5.818 são todos o primeiro
 ActionStep do papel (nenhum campo do passo anterior preenchido; "anterior sem número": 0), 98% em agosto de 2026 e 92%
-em um papel (ontestacaoCivel). A janela do parquet já traz o anterior; o que decide a regra está lá. Ficam para a query os
+em um papel (ContestacaoCivel). A janela do parquet já traz o anterior; o que decide a regra está lá. Ficam para a query os
 **1.289** abaixo, cujo dado a janela não traz ([relatório §2](02-relatorio-achados.md#2--cobertura-o-que-as-regras-conseguem-decidir)).
 No teste com a base 1, os pendentes da mesma extração foram 83 de 498, todos com causa conhecida (o corte da mensagem e o histórico).
 

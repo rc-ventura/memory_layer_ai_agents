@@ -24,7 +24,8 @@ casos de cada candidata estão em `<rodada>/perfis/<unidade>/casos.csv`.
 
 ## TL;DR
 
-- **30.141 erros estruturados** em 20.986 execuções. **97,5% (29.392) caem numa unidade** pelas regras;
+- **30.141 erros estruturados** em 20.986 execuções. **Em 97,5% (29.392) a regra tem a evidência para decidir**:
+  95,6% (28.827) caem numa unidade reconhecida e 565 são resíduo (nenhuma regra reconheceu a causa);
   **2,5% (749) ficam pendentes** porque a janela da query não traz o dado que a regra precisa. Com o texto cortado (v1)
   eram 94% e 6%; antes do Ajuste 17, 76% e 24%.
 - **10 candidatas a memória** passam na régua de recorrência (≥3 execuções, ≥2 meses). Juntas somam 17.308 erros e
@@ -66,7 +67,7 @@ Fonte: `<rodada>/manifesto.json` (bloco `resumo`) e `cobertura_sintomas.csv`; o 
 
 | Situação | Motivo | Erros | Tokens (mi) |
 |---|---|---|---:|
-| observável | regra pela mensagem (inteira) — inclui a verificação por `try/except NameError` (5.764; Ajuste 17) | 26.441 | 548,3 |
+| observável | mensagem de erro inteira basta — inclui a verificação por `try/except NameError` (5.764; Ajuste 17) | 26.441 | 548,3 |
 | observável | sinais suficientes para a regra de código mal formado | 2.056 | 23,3 |
 | observável | nome não definido com o erro anterior visível na janela | 895 | 16,1 |
 | pendente | nome não definido sem passo anterior identificado e sem a assinatura | 514 | 2,2 |
@@ -77,7 +78,7 @@ Fonte: `<rodada>/manifesto.json` (bloco `resumo`) e `cobertura_sintomas.csv`; o 
 
 Fonte: `<rodada>/cobertura_mecanismos.csv`.
 
-**Leitura.** 97,5% dos erros e 99% dos tokens (587,7 mi) caem numa unidade. Os pendentes não são resíduo: a regra
+**Leitura.** Em 97,5% dos erros e 99% dos tokens (587,7 mi) a regra tem a evidência para decidir; tirando o resíduo (565 erros), 95,6% caem numa unidade reconhecida. Os pendentes não são resíduo: a regra
 existe, faltou o dado ([racionais §3](01-racionais.md#3--pendente-não-é-resíduo)). Com o texto inteiro (Ajuste 18)
 saíram da pendência os 1.009 erros de mensagem cortada e os 46 de linha rejeitada sem o código inteiro; o histórico
 insuficiente ganhou 1 (14 → 15). O maior pendente agora são os 514 do primeiro passo sem a assinatura — outro mecanismo
@@ -185,6 +186,13 @@ erros das candidatas por papel somam 17.308; no mapa papel × unidade, as coluna
 somam 5.296 e 5.029, os valores da figura de papéis. Contagem de erros não é taxa ([§6](#6--limitações-que-afetam-a-leitura));
 as primeiras taxas, do pedido A, estão em §7.5. As leituras da rodada `3f9c…` (v1) estão no histórico do git.
 
+**Figuras refeitas na auditoria dos gráficos (15/10, [roadmap](04-roadmap.md) #36 e #40; código aplicado, falta gerar na
+máquina 2):** os números citados abaixo saem das tabelas e não mudam; mudam as figuras. Dois gráficos saíram da parte 1
+por "um insight por gráfico": o de **papéis das candidatas** (a figura citada em §7.4; o total por papel passou para a
+margem do mapa papel × unidade) e o de **erros por unidade e mês** (§7.5; virou o painel esquerdo da taxa por unidade e
+mês, na parte 2). Entrou o de **unidades por destino e tipo de memória**. Os gráficos por unidade passam a trazer todas
+as unidades, cor da família e nenhum destino ([`decisoes.md`](../../decisoes.md), 15/10).
+
 **A figura de destinos** traz a faixa do sinal de harness (a correção de 14/10 em `execucao/figuras_painel.py`, com a
 trava que para a figura se uma decisão não tiver faixa) e bate com a triagem: 30.141 erros e 592,9 mi de tokens.
 
@@ -256,7 +264,7 @@ gráfico):
 
 ### 7.4 · Poucos papéis concentram as candidatas
 
-Erros das candidatas por papel (figura de papéis; os 13 grupos somam os 17.308 erros): `ontestacaoCivel` 5.296,
+Erros das candidatas por papel (figura de papéis; os 13 grupos somam os 17.308 erros): `ContestacaoCivel` 5.296,
 `RoteadorCivel` 5.029, `RespostaBacen` 2.390, `CalculoTrabalhista` 1.560, `OBFCivel` 1.347, `JoogleAnalytics` 1.191,
 `CadastroTrabalhista` 112, `RespostaOficios` 107, `CalculoCivel` 86, `CadastroCivel` 75, `AgenteEstruturador` 30,
 `OficiosResposta` 22 e os demais 9 papéis 63.
@@ -265,11 +273,11 @@ Erros das candidatas por papel (figura de papéis; os 13 grupos somam os 17.308 
   que têm erro de candidata. **O ContestacaoCivel passou o RoteadorCivel** (4.279 → 5.296): os erros da mensagem
   cortada eram dele, no retorno-string (2.385 erros dele nessa unidade).
 - Por candidata, o papel que mais pesa (figura de concentração): campo inexistente, `RespostaBacen` 89%; retorno colado,
-  `RoteadorCivel` 100%; argumento nomeado, `RoteadorCivel` 67%; inventário do sandbox, `ontestacaoCivel` 73%;
-  **estado perdido, `RoteadorCivel` 60%**, `OBFCivel` 14% e `ontestacaoCivel` 11%; **nome inventado, `RoteadorCivel`
-  60%**, `CalculoTrabalhista` 17% e `RespostaBacen` 9%; texto solto, `ontestacaoCivel` 35%, `CalculoTrabalhista` 31% e
-  `JoogleAnalytics` 19%; texto longo em literal, `ontestacaoCivel` 36%, `CadastroCivel` 25% e `OBFCivel` 16%; `next()`
-  sobre gerador, `CalculoProprios` 60% e `RespostaBacen` 27%; **retorno-string, `ontestacaoCivel` 45%** e `RespostaBacen`
+  `RoteadorCivel` 100%; argumento nomeado, `RoteadorCivel` 67%; inventário do sandbox, `ContestacaoCivel` 73%;
+  **estado perdido, `RoteadorCivel` 60%**, `OBFCivel` 14% e `ContestacaoCivel` 11%; **nome inventado, `RoteadorCivel`
+  60%**, `CalculoTrabalhista` 17% e `RespostaBacen` 9%; texto solto, `ContestacaoCivel` 35%, `CalculoTrabalhista` 31% e
+  `JoogleAnalytics` 19%; texto longo em literal, `ContestacaoCivel` 36%, `CadastroCivel` 25% e `OBFCivel` 16%; `next()`
+  sobre gerador, `CalculoProprios` 60% e `RespostaBacen` 27%; **retorno-string, `ContestacaoCivel` 45%** e `RespostaBacen`
   17% (na v1, 32% e 21%).
 - **O Ajuste 17 mudou o retrato de duas candidatas:** sem o `try/except`, o estado perdido e o nome inventado são
   sobretudo do RoteadorCivel. A mineração delas começa por ele.
@@ -353,7 +361,7 @@ depois do erro não traz a unidade de sinal de harness.
 ### 7.8 · O nome não definido no primeiro passo (contagens de 13/10)
 
 Duas contagens na máquina 2, sobre a mesma rodada, explicam o maior grupo pendente (os 5.818 de "predecessor não
-identificado"). Nas saídas dos scripts, o papel aparece como `ontestacaoCivel`; é o `ContestacaoCivel`. **A causa do
+identificado"). Nas saídas dos scripts, o papel aparece como `ContestacaoCivel`; é o `ContestacaoCivel`. **A causa do
 grupo, e uma correção da leitura de mecanismo que estava aqui, estão em [§7.9](#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310).**
 
 **1. São todos o primeiro ActionStep do papel** (`pipeline/validacao/contar_predecessor_pendentes.py`; foto IMG_5706).

@@ -94,22 +94,23 @@ def carregar(pasta, contagens, fonte):
     return m, f, c, sha_fonte, _sha256(contagens)
 
 
-def tabelas(f, c, tri, upm):
-    """Execução, mês e papel, com o denominador; nada de identificador sai daqui (as tabelas gravadas não têm chave)."""
+def tabelas(f, c):
+    """Execução, mês e papel, com o denominador; nada de identificador sai daqui (as tabelas gravadas não têm chave).
+
+    A taxa é a de TODOS os erros estruturados (decisão de 15/10, "erro é erro"): nenhuma separação por destino aqui."""
     sem = c.qtd_actionsteps.isna()
     ok = c[~sem]
     execs = ok.groupby(["cod_idef_exeo", "cod_idef_aget"]).agg(
         actionsteps=("qtd_actionsteps", "sum"), erros=("qtd_erros_estruturados", "sum"),
-        tokens_total=("tokens_total", "sum"), mes=("mes_execucao", "first")).reset_index(drop=True)
+        suspeitas=("qtd_suspeitas_observadas", "sum"), tokens_total=("tokens_total", "sum"),
+        mes=("mes_execucao", "first")).reset_index(drop=True)
     mes = ok.groupby("mes_execucao").agg(actionsteps=("qtd_actionsteps", "sum"), erros=("qtd_erros_estruturados", "sum"),
                                           tokens_total=("tokens_total", "sum"))
     mes["execucoes"] = execs.groupby("mes").size()
     mes.index.name = "mes"
-    harness = set(tri.loc[tri.decisao.eq(bp.SINAL_HARNESS), "unidade"])
-    h = upm[upm.unidade.isin(harness)].groupby("mes").erros.sum() if upm is not None else pd.Series(dtype=float)
-    mes["erros_sinal_harness"] = h.reindex(mes.index).fillna(0)
     mes["taxa"] = mes.erros / mes.actionsteps
-    mes["taxa_sem_harness"] = (mes.erros - mes.erros_sinal_harness) / mes.actionsteps
+    com_passo = execs[execs.actionsteps.gt(0)].groupby("mes").tokens_total
+    mes["mediana_tokens_execucao"], mes["media_tokens_execucao"] = com_passo.median(), com_passo.mean()
     papel = ok.groupby("papel").agg(execucoes=("cod_idef_exeo", "size"), actionsteps=("qtd_actionsteps", "sum"),
                                     erros=("qtd_erros_estruturados", "sum"), tokens_total=("tokens_total", "sum"),
                                     tokens_saida=("tokens_saida", "sum"))
@@ -120,7 +121,16 @@ def tabelas(f, c, tri, upm):
     papel["saida_total"] = papel.tokens_saida / papel.tokens_total.where(papel.tokens_total.gt(0))
     papel["saida_erro"] = papel.saida_erro_tok / papel.tokens_erro.where(papel.tokens_erro.gt(0))
     total_erro = (ok.tokens_saida.sum() / ok.tokens_total.sum(), e.output_tokens.sum() / e.total_tokens.sum())
-    return execs, mes, papel, total_erro, int(sem.sum())
+    # custo por papel: cada linha (execução, agente, papel) com passo, com × sem erro — mediana, média e p90
+    lin = ok[ok.qtd_actionsteps.gt(0)].assign(grupo=lambda d: d.qtd_erros_estruturados.gt(0).map({True: "com_erro",
+                                                                                                    False: "sem_erro"}))
+    custo_papel = lin.groupby(["papel", "grupo"]).agg(
+        n=("tokens_total", "size"), mediana_tokens=("tokens_total", "median"), media_tokens=("tokens_total", "mean"),
+        p90_tokens=("tokens_total", lambda x: x.quantile(0.9)), mediana_passos=("qtd_actionsteps", "median"),
+        media_passos=("qtd_actionsteps", "mean")).unstack("grupo")
+    custo_papel.columns = [f"{a}_{b}" for a, b in custo_papel.columns]
+    extra = {"linhas_zero_passos": int(ok.qtd_actionsteps.eq(0).sum())}
+    return execs, mes, papel, total_erro, int(sem.sum()), custo_papel.reset_index(), extra
 
 
 def gerar(pasta, contagens=None, fonte=None):
@@ -129,36 +139,41 @@ def gerar(pasta, contagens=None, fonte=None):
     m, f, c, sha_fonte, sha_cont = carregar(pasta, contagens, fonte)
     verif = conferir_juncao(f, c, m["resumo"])
     tri = ler(pasta, m, "triagem_visivel_observada.csv")
-    tpp = ler(pasta, m, "triagem_por_papel.csv")
-    upm = ler(pasta, m, "consolidacao_unidade_papel_mes.csv") if "consolidacao_unidade_papel_mes.csv" in m["artefatos"] else None
-    execs, mes, papel, total_erro, sem_contagem = tabelas(f, c, tri, upm)
+    opc = lambda nome: ler(pasta, m, nome) if nome in m["artefatos"] else None
+    upm, ppm = opc("consolidacao_unidade_papel_mes.csv"), opc("consolidacao_pendencias_papel_mes.csv")
+    upt = opc("consolidacao_unidade_papel_tokens.csv")
+    execs, mes, papel, total_erro, sem_contagem, custo_papel, extra = tabelas(f, c)
     saida = pasta / "taxas"
     saida.mkdir(exist_ok=True)
-    graficos = [("taxas_funil.png", lambda d: ft.funil(execs, d)),
+    graficos = [("taxas_funil.png", lambda d: ft.funil(execs, extra, d)),
                 ("taxas_mes.png", lambda d: ft.taxa_mes(mes, d)),
                 ("taxas_papel.png", lambda d: ft.papel_volume(papel, d)),
-                ("taxas_custo_execucao.png", lambda d: ft.custo_execucao(execs, d)),
+                ("taxas_custo_execucao.png", lambda d: ft.custo_execucao(execs, custo_papel, d)),
                 ("taxas_concentracao.png", lambda d: ft.concentracao(execs, d)),
-                ("taxas_custo_mensal.png", lambda d: ft.custo_mensal(execs, d)),
+                ("taxas_custo_mensal.png", lambda d: ft.custo_mensal(execs, mes, d)),
                 ("taxas_entrada_saida.png", lambda d: ft.entrada_saida(papel, total_erro, d))]
     pulados = []
     if upm is not None:
-        graficos.append(("taxas_unidade_mes.png", lambda d: ft.taxa_unidade_mes(upm, tri, mes, d)))
+        graficos.append(("taxas_unidade_mes.png", lambda d: ft.taxa_unidade_mes(upm, ppm, tri, mes, d)))
     else:
-        pulados.append("Taxa por unidade e mês: a rodada não tem `consolidacao_unidade_papel_mes.csv`.")
-    graficos += [("taxas_orcamento_papel.png", lambda d: ft.orcamento_papel(papel, tpp, tri, d)),
-                 ("taxas_prioridade.png", lambda d: ft.prioridade(papel, d))]
+        pulados.append("Erros e taxa por unidade e mês: a rodada não tem `consolidacao_unidade_papel_mes.csv`.")
+    if upt is not None:
+        graficos.append(("taxas_orcamento_papel.png", lambda d: ft.orcamento_papel(papel, upt, tri, d)))
+    else:
+        pulados.append("Gasto de cada papel por destino: a rodada não tem `consolidacao_unidade_papel_tokens.csv` "
+                       "(tabela de 15/10; rode `executar.py analisar` de novo).")
+    graficos.append(("taxas_prioridade.png", lambda d: ft.prioridade(papel, d)))
 
     asteps, erros = int(execs.actionsteps.sum()), int(execs.erros.sum())
     tok_tot, tok_err = float(papel.tokens_total.sum()), float(papel.tokens_erro.sum())
+    com_erro = int(execs.erros.gt(0).sum())
     resumo = pd.DataFrame([
         ("Execuções (execução + agente)", _n(len(execs))),
-        ("… com pelo menos um ActionStep", _n(execs.actionsteps.gt(0).sum())),
-        ("… com erro estruturado", _n(execs.erros.gt(0).sum())),
-        ("ActionSteps", _n(asteps)),
-        ("Erros estruturados por ActionStep", f"{_n(erros)} ({_n(100 * erros / asteps, 1)}%)"),
-        ("Tokens em todos os ActionSteps", f"{_n(tok_tot / 1e6, 1)} mi"),
-        ("… nos ActionSteps com erro estruturado", f"{_n(tok_err / 1e6, 1)} mi ({_n(100 * tok_err / tok_tot, 1)}%)"),
+        ("… com pelo menos um erro estruturado", f"{_n(com_erro)} ({_n(100 * com_erro / len(execs), 1)}%)"),
+        ("ActionSteps (passos)", _n(asteps)),
+        ("Passos com erro estruturado", f"{_n(erros)} ({_n(100 * erros / asteps, 1)}%)"),
+        ("Tokens em todos os passos", ft.tok(tok_tot)),
+        ("… nos passos com erro estruturado", f"{ft.tok(tok_err)} ({_n(100 * tok_err / tok_tot, 1)}%)"),
         ("Saída ÷ total: todos os passos · passos com erro", f"{_n(100 * total_erro[0], 1)}% · {_n(100 * total_erro[1], 1)}%"),
         ("Linhas das contagens sem quantidade (fora das contas)", _n(sem_contagem)),
     ], columns=["Medida", "Valor"])
@@ -166,7 +181,9 @@ def gerar(pasta, contagens=None, fonte=None):
           f"Fonte: SHA-256 `{sha_fonte}` · contagens (pedido A): SHA-256 `{sha_cont}`.",
           "Gerado por `execucao/taxas.py`. **Junção conferida** antes de qualquer conta: "
           + ", ".join(f"`{k}`" for k in verif) + f" — {len(verif)} de {len(verif)}. Só contagens; nenhum "
-          "identificador de execução.", "", "## Resumo", "", _tabela(resumo, "ld"), "", "# Leituras com denominador", ""]
+          "identificador de execução. Nos gráficos de volume, taxa e custo, erro é erro (todos os erros estruturados, "
+          "sem separar destino); só o gráfico do gasto de cada papel separa por destino.", "",
+          "## Resumo", "", _tabela(resumo, "ld"), "", "# Leituras com denominador", ""]
     artefatos = {}
     for nome, desenhar in graficos:
         titulo, pergunta, ler_como, limite = desenhar(saida / nome)
@@ -177,13 +194,15 @@ def gerar(pasta, contagens=None, fonte=None):
         md += ["## Gráficos não gerados nesta rodada", ""] + [f"- {x}" for x in pulados] + [""]
     mes.reset_index().to_csv(saida / "taxas_por_mes.csv", index=False)
     papel.reset_index().to_csv(saida / "taxas_por_papel.csv", index=False)
+    custo_papel.to_csv(saida / "taxas_custo_por_papel.csv", index=False)
     (saida / "taxas.md").write_text("\n".join(md), encoding="utf-8")
-    for nome in ["taxas_por_mes.csv", "taxas_por_papel.csv", "taxas.md"]:
+    for nome in ["taxas_por_mes.csv", "taxas_por_papel.csv", "taxas_custo_por_papel.csv", "taxas.md"]:
         artefatos[nome] = _sha256(saida / nome)
     (saida / "manifesto_taxas.json").write_text(json.dumps({
         "rodada": pasta.name, "rodada_id": m.get("rodada_id"), "fonte_sha256": sha_fonte, "contagens_sha256": sha_cont,
-        "verificacoes_juncao": verif, "linhas_sem_contagem": sem_contagem, "artefatos": artefatos,
-        "gerado_em": datetime.now(timezone.utc).isoformat()}, ensure_ascii=False, indent=2), encoding="utf-8")
+        "verificacoes_juncao": verif, "linhas_sem_contagem": sem_contagem, "tokens_total_sistema": tok_tot,
+        "artefatos": artefatos, "gerado_em": datetime.now(timezone.utc).isoformat()}, ensure_ascii=False, indent=2),
+        encoding="utf-8")
     return saida
 
 

@@ -8,6 +8,7 @@ Uso, da raiz:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py relatorio [--rodada <pasta>] [--contagens <parquet>] [--fonte <parquet>]
 """
 import argparse
+import json
 from pathlib import Path
 import re
 import shutil
@@ -30,11 +31,15 @@ def _corpo(md):
 
 def gerar(pasta, contagens=None, fonte=None):
     pasta = Path(pasta)
-    dir_painel = painel.gerar(pasta)
     try:
         dir_taxas, motivo = taxas.gerar(pasta, contagens, fonte), None
     except taxas.TravaTaxas as e:
         dir_taxas, motivo = None, str(e)
+    # o gasto total do sistema (das contagens) dá ao gráfico de destinos da parte 1 a fatia sobre o gasto, não só
+    # sobre os tokens dos erros; sem as taxas, a parte 1 sai sem essa fatia
+    gasto = (json.loads((dir_taxas / "manifesto_taxas.json").read_text(encoding="utf-8")).get("tokens_total_sistema")
+             if dir_taxas else None)
+    dir_painel = painel.gerar(pasta, gasto)
     saida = pasta / "relatorio"
     if saida.exists():
         shutil.rmtree(saida)

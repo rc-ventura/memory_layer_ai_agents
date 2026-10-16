@@ -56,6 +56,25 @@ class TestTriagemObservada(unittest.TestCase):
             a = mo.analisar(state(*recorrentes(message)))
             self.assertFalse(a.tabelas["triagem_visivel_observada"].decisao.eq(mo.CANDIDATO).any())
 
+    def test_tabela_unidade_papel_tokens_de_todas_as_unidades(self):
+        """A tabela de 15/10 (b3 #36, gráfico 9): todas as unidades, pendentes como "sem unidade"; somada por unidade
+        bate com a triagem e no total com todos os erros estruturados."""
+        rows = (recorrentes() + [janela(cod_idef_exeo=f"exec-bloco-{i}", error_message="No code block found")
+                                 for i in range(2)]
+                + [janela(cod_idef_exeo="exec-pendente", error_message="x" * 20000, total_tokens="100")])
+        a = mo.analisar(state(*rows))
+        upt, tri = a.tabelas["consolidacao_unidade_papel_tokens"], a.tabelas["triagem_visivel_observada"]
+        self.assertEqual(int(upt.erros.sum()), len(a.EU))
+        self.assertIn(mo.SEM_UNIDADE, set(upt.unidade))
+        por_u = upt[upt.unidade.ne(mo.SEM_UNIDADE)].groupby("unidade").agg(e=("erros", "sum"),
+                                                                           t=("tokens_n_conhecidos", "sum"))
+        t = tri.set_index("unidade")
+        self.assertEqual(set(por_u.index), set(t.index))
+        for u, r in por_u.iterrows():
+            self.assertEqual(r.e, t.loc[u, "erros_observaveis"])
+            self.assertAlmostEqual(float(r.t), float(t.loc[u, "tokens_n_conhecidos"]))
+        self.assertFalse(set(upt.unidade) - set(t.index) - {mo.SEM_UNIDADE})
+
     def test_pendencias_preservadas_no_custo_e_genealogia(self):
         rows = recorrentes() + [janela(cod_idef_exeo="exec-pendente", error_message="x" * 20000, total_tokens="100")]
         a = mo.analisar(state(*rows))
@@ -263,9 +282,12 @@ class TestPainel(unittest.TestCase):
             self.assertIn("U_tipo_retorno", md)
             self.assertNotIn("exec-sintetica", md)
             self.assertTrue((saida / "cobertura.png").is_file())
-            for nome in ["destinos.png", "frequencia_custo.png", "concentracao_papel.png", "papeis_candidatas.png",
-                         "linha_do_tempo.png"]:
+            for nome in ["genealogia_observada.png", "unidades_observadas.png", "papel_unidade.png", "destinos.png",
+                         "unidades_destino_tipo.png", "frequencia_custo.png", "concentracao_papel.png"]:
                 self.assertTrue((saida / nome).is_file(), nome)
+            # cortados na auditoria da parte 1 (b3 #40): um insight por gráfico
+            for nome in ["papeis_candidatas.png", "linha_do_tempo.png"]:
+                self.assertFalse((saida / nome).exists(), nome)
             self.assertIn("**Limitação:**", md)
             (dest / "triagem_visivel_observada.csv").write_text("adulterado", encoding="utf-8")
             with self.assertRaises(SystemExit):

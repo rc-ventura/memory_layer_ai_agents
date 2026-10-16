@@ -21,6 +21,7 @@ HERE = Path(__file__).resolve().parent
 CONTRATO = "mineracao_erros_observados_v1"
 CANDIDATO = "candidato observado"
 SEM_RECORRENCIA = "recorrência não demonstrada"
+SEM_UNIDADE = "sem unidade (pendente)"
 CHAVE_EXEC = ["exec_id", "agente"]
 # Snapshots conferidos da base 3 (docs 01 e 04). Ficam no código, e não num resultado de rodada antiga, para a
 # validação não depender de arquivos privados que podem ser apagados. Outra exportação = nova coorte, novo hash.
@@ -231,7 +232,16 @@ def consolidacao(tabelas, mecanismos):
                .groupby(["motivo_evidencia", "role", "mes"], dropna=False)
                .agg(erros=("step_ref", "size"), tokens_n_conhecidos=("tok_tot", lambda s: s.sum(min_count=1)))
                .reset_index())
+    # Erros e tokens por unidade × papel de TODAS as unidades (a triagem_por_papel só abre as de memória); os
+    # pendentes entram como SEM_UNIDADE. Somada por unidade, bate com a triagem; somada por papel, com a fonte.
+    E = mecanismos.EU.assign(unidade=mecanismos.EU.unidade.where(mecanismos.EU.situacao_mecanismo.eq("observavel"),
+                                                                 SEM_UNIDADE))
+    upt = (E.groupby(["unidade", "role"], dropna=False)
+           .agg(erros=("step_ref", "size"), tokens_n_conhecidos=("tok_tot", lambda s: s.sum(min_count=1)),
+                tokens_n_ausentes=("tok_tot", lambda s: int(s.isna().sum())))
+           .reset_index().sort_values(["unidade", "erros", "role"], ascending=[True, False, True]))
     return {"consolidacao_limitrofes": lim.reset_index(drop=True),
+            "consolidacao_unidade_papel_tokens": upt.reset_index(drop=True),
             "consolidacao_pendencias_papel_mes": pend_pm,
             "consolidacao_componentes_limites": comp,
             "consolidacao_unidade_papel_mes": upm,
@@ -417,7 +427,8 @@ def gravar(analise, saida=None, perfis=()):
         manifest["artefatos"][name] = sha256(dest / name)
     if len(graph):
         render_png(graph, dest / "genealogia_observada.png",
-                   titulo=f"{bp.BASE_ID} · {len(graph):,} erros estruturados · triagem observada, não memórias aprovadas")
+                   titulo=f"{bp.BASE_ID} · {len(graph):,}".replace(",", ".")
+                   + " erros estruturados · triagem observada, não memórias aprovadas")
         manifest["artefatos"]["genealogia_observada.png"] = sha256(dest / "genealogia_observada.png")
     for u in perfis:
         for name, table in perfil_unidade(analise, u).items():
