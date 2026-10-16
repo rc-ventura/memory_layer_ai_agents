@@ -21,7 +21,7 @@ Tudo roda da raiz do repositório, no ambiente onde está a base. Para ensaiar c
 |---|---|---|
 | Parte genérica | `mineracao_generica.ipynb` | já está na rodada: `perfis/<u>/`, gravada pelo `executar.py analisar` |
 | Auditoria independente | `audit_recompute6.py` | `audit/scripts/audit_candidata_base3.py`: recalcula a lição direto do parquet, sem importar o pipeline |
-| Parte específica | notebook (legado) ou investigação | **script** em `pipeline/especificas/mineracao_<u>.py` (Ajuste 20) ou investigação |
+| Parte específica | notebook (legado) ou investigação | **script** `mineracao_<u>.py` (Ajuste 20): em `propostas/<u>/` até a aprovação, depois em `pipeline/especificas/`; ou investigação |
 | Localizador no arquivo final | `exec_id` + `idx` | `step_ref` + `fonte_id` + `rodada_id` (esquema 0.2, Ajuste 19) |
 
 ## 2 · O passo a passo
@@ -57,10 +57,10 @@ o dossiê e as decisões do pesquisador (`07`, "O gate").
 
 ```bash
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/rodada_base1.py --saida <pasta>
-uv run python analysis/2026-10-trace-law-flow-third/pipeline/especificas/minerar.py <u> --rodada <pasta>
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/especificas/minerar.py <u> --rodada <pasta>/rodada --fonte <pasta>/fonte_base1_v1.parquet --saida <outra pasta>
 ```
 
-O primeiro gera uma rodada da base 1 no formato da base 3 (a mesma porta do `comparar_base1.py`), com o perfil de
+O padrão de `--saida` é `pipeline/resultados/ensaio_base1/`. O primeiro gera uma rodada da base 1 no formato da base 3 (a mesma porta do `comparar_base1.py`), com o perfil de
 todas as candidatas. O segundo é o mesmo comando da base real.
 
 ## 4 · O funil — a parte específica de cada lição

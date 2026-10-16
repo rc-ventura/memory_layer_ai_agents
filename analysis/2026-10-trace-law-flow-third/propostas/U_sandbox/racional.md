@@ -84,11 +84,14 @@ A população, a cobertura, o inventário por tipo e nome e as listas autorizada
 | `location` | até 10 casos, o primeiro de cada papel na ordem (papel, mês, `step_ref`), com `exec_id`, `step_ref`, `fonte_id`, `rodada_id` | checado |
 | `evidence` | 3 casos: o primeiro de cada um dos três tipos mais frequentes, com tipo e nome | checado |
 | `description` | frase montada das contagens: quantos erros, de que tipos, em quantos papéis | checado |
-| `correction_guidance` | montada da tabela, sem texto livre: "Não chame: …; não importe: …; importe antes de usar: …; não existe no ambiente: …; imports autorizados: …" — todos os nomes vistos, por ordem de erros | checado |
+| `correction_guidance` | montada da tabela, sem texto livre: "Não chame: …; não importe: …; importe antes de usar: …; não existe no ambiente: …; não acesse: …; imports autorizados: …" — todos os nomes vistos, por ordem de erros; com mais de uma lista autorizada, uma por grupo de papéis | checado |
 | `occurrences` | erros, ocorrências, execuções e meses do perfil da rodada | checado |
 | `status` | `derived-and-checked` se a cobertura passa e o encontro fecha | checado |
 | `validation` | cobertura, encontro, listas autorizadas, os números do passo 6; `destino: "em aberto"` até o Rafael decidir | checado / pendente |
 | `impact` | `null` | pendente |
+
+**Nota de 16/10, antes de qualquer rodada na base 3:** o rótulo "não acesse" (o tipo `atributo_dunder`) entrou na
+`correction_guidance` ao escrever o script; o tipo já estava no passo 4, só faltava o rótulo. Nenhum limiar mudou.
 
 ## O que não mede
 
