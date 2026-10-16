@@ -818,7 +818,7 @@ deixa sair hashes e proíbe o `exec_id`.
 - **Decisão do Rafael (16/10):** o arquivo da base 3 sai da máquina 2 inteiro. Como o localizador da base 3 é só de
   hashes, isso não muda a regra de sigilo.
 - **Fora deste ajuste:** a parte específica como script em vez de notebook (procedimento `16`, skills
-  `propor-notebook` e `validador-de-notebook`). O esquema já aceita o rótulo `script:`; o método muda no próximo ajuste.
+  `propor-notebook` e `validador-de-notebook`). O esquema já aceita o rótulo `script:`; o método muda no Ajuste 20.
 
 **Verificação.**
 - **Testes:** `analysis/tests/test_validar_memoria.py`, 9 novos: o localizador da base 3 sem `exec_id` nem `idx` passa;
@@ -836,6 +836,48 @@ deixa sair hashes e proíbe o `exec_id`.
   `a753c2f` (o `conferir` da `96958e65…` precisa do código com que ela foi gravada); (2) `git pull`; (3)
   `executar.py analisar` (rodada nova) e `comparar_rodadas.py --antes 96958e65cb7e615a --depois <nova>`, saída esperada
   0; (4) `executar.py relatorio --rodada <nova>`.
+
+### Ajuste 20 — a parte específica da mineração passa a ser um script, não um notebook
+
+**Gatilho.** O piloto de mineração da base 3 (`b3 #12`, o inventário do sandbox) é o primeiro a ter parte específica
+fora da base 1. O procedimento (`16`) pedia um notebook, rodado com `jupyter nbconvert`, e a base 3 roda tudo por
+comando (`executar.py`), com manifesto e hash, numa máquina Windows.
+
+**Evidência.**
+- O resultado de um notebook não entra em manifesto: o `hash_codigo` da base 3 ignora as saídas de um `.ipynb`, e o
+  notebook da nº2/nº10 grava `resultados/unidades_memoria.json` sem hash de nada.
+- A suíte de testes (`analysis/tests/`, 213 testes antes deste ajuste) não alcança notebook.
+- O "ausente" do `b3 #42` (16/10): um script que abria a rodada sem o código do pipeline não achou um arquivo de 260
+  caracteres no OneDrive da máquina 2. Quem lê pela `ler_artefato` / `caminho_io` não tem esse problema.
+
+**Solução** (aprovada pelo Rafael em 16/10, com a troca dos nomes).
+- **Procedimento `16`:** o estágio 3 do ciclo de vida é o **script específico**, em
+  `<pasta-da-analise>/pipeline/especificas/mineracao_<u>.py`, com o teste em `analysis/tests/`. A seção "Como o script
+  roda" fixa o formato: `--rodada <id>` (e `--saida`), lê a rodada já conferida pelo código do pipeline, grava em
+  `resultados/mineracao/<u>/` as tabelas, o arquivo final validado e um manifesto próprio (hash do script, rodada e fonte
+  lidas, hash de cada arquivo), e fica **fora da lista do hash do código da rodada** (criar ou mudar um script não troca
+  o identificador da rodada). A proposta em `propostas/<u>/` leva o script e o teste, com dados sintéticos.
+- **Skills e agente renomeados:** `propor-notebook` → `propor-script`; `validador-de-notebook` → `validador-de-script`
+  (roda o teste e o script, com `--saida` num rascunho, e confere o manifesto próprio).
+- **Painel** (`valor_da_licao.py`): "pronta para notebook" → "pronta para script", com a opção "propor o script
+  (/propor-script)"; a parte específica `script:` ou `notebook:` dá "confirmada (script)" ou "confirmada (notebook)".
+  O único `decisoes.json` gravado (base 1, `U_nome_inventado`) é de "certa, mas rara: monitorar": nenhuma decisão
+  registrada perde a situação.
+- **O que não muda:** a regra de criação (frequência, confiança, gate, a decisão do Rafael), o validador como segunda
+  implementação a partir do racional, a ordem do pré-registro e o esquema da memória. Os notebooks da base 1 (a
+  nº2/nº10 e a parte genérica `mineracao_generica.ipynb`) ficam como estão: o funil e o esquema aceitam `notebook:`.
+- Também atualizados: a skill `mineracao-candidata` (o funil com `script:`), o `fluxo.md`, o `kit.md`, o
+  `validar_memoria.py` (docstring) e o `CLAUDE.md`.
+
+**Verificação.**
+- **Testes:** `analysis/tests/test_valor_da_licao.py`, 2 novos (as duas partes específicas e o gate novo); 215 na
+  suíte, todos passando.
+- **Base 1:** o painel `valor_da_licao.py analysis/2026-09-trace-law-flow` sai com as mesmas situações de antes
+  (`U_contrato_dict` "notebook", `U_nome_inventado` com a decisão de 06/10).
+- **Nomes antigos:** nenhuma referência ativa a `propor-notebook` ou `validador-de-notebook` fora deste livro-razão e
+  das decisões datadas.
+- **Replicar no ambiente da base 3:** só `git pull`. Nenhuma rodada muda: nenhum arquivo da lista do hash do código
+  foi tocado.
 
 ## 4. O que os ajustes ensinam sobre o método
 

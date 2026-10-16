@@ -8,7 +8,7 @@
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
 [limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, noite
-(branch `2026-10-16-base3-comparar-rodadas`): esquema da memória 0.2, o localizador da base 3 (#44, Ajuste 19); **#42 fechado**: na máquina 2 a `96958e65…` não muda
+(branch `2026-10-16-base3-comparar-rodadas`): esquema da memória 0.2, o localizador da base 3 (#44, Ajuste 19); a parte específica da mineração vira script (Ajuste 20); **#42 fechado**: na máquina 2 a `96958e65…` não muda
 nenhum número da `609c…` (o arquivo que parecia ausente era um caminho de 260 caracteres que o script não abria).
 **A ordem do que falta** (decisões antes da rodada nova, conferência na máquina 2, gráficos migráveis, pedido ao tutor,
 primeira mineração): a seção [Plano de evolução](#plano-de-evolução-1610-a-ordem-do-que-falta), de 16/10.
@@ -255,7 +255,9 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   roadmaps — ver o #20, fechado.)
 - [ ] **#12** **Piloto de mineração de ponta a ponta: inventário do sandbox** (`U_sandbox`: 3.653 erros, 16 papéis). A lição
     sai da própria mensagem de erro, então fecha só com o parquet. O localizador do arquivo final está decidido (#44,
-    esquema 0.2). **Antes:** a parte específica como script, não notebook (o próximo ajuste do método), e o kit mínimo (#17).
+    esquema 0.2). A parte específica é um script (Ajuste 20, 16/10). **Antes:** o kit mínimo (#17), e a base 3 precisa de um
+    procedimento de mineração com a tabela do funil (o painel e a skill leem `docs/*procedimento-mineracao-candidatas*.md` da
+    própria análise, e a base 3 ainda não tem).
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do

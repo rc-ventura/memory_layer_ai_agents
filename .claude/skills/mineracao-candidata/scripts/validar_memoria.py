@@ -1,5 +1,6 @@
 """Confere o arquivo final de uma mineração de candidata contra o esquema da memória da análise — e, com --converter,
-transforma o registro que um notebook específico grava no formato desse esquema.
+transforma o registro que um notebook específico da base 1 (legado) grava no formato desse esquema. Um script
+específico grava o arquivo já no esquema e só usa a conferência.
 
     python validar_memoria.py <esquema-memoria.json> <memoria_<u>_<base>.json>
     python validar_memoria.py <esquema-memoria.json> --converter <registro.json> --unidade <u> --base <BASE_ID>

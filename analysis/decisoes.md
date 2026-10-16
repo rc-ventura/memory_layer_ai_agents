@@ -55,7 +55,8 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   determinístico, e o modelo propõe e o script conta · as skills são genéricas → [`kit.md`](../.claude/skills/mineracao-base/referencias/kit.md),
   skill `mineracao-base`. Os Ajustes 14–16 do protocolo → livro-razão.
 - **05/10, notebook específico:** só com frequência **e** confiança, sem sorteio, reconfirmado a cada partição; a
-  aprovação é do Rafael → `16`, `06` §10 peça 6.
+  aprovação é do Rafael → `16`, `06` §10 peça 6. (Desde 16/10 a parte específica nova é script; a regra é a mesma →
+  livro-razão, Ajuste 20.)
 - **06/10, a leitura e o gate:** leitura em duas etapas (aberta → gate da lista → fechada em outros casos, ≥ 20) ·
   "os leitores discordam" não é "não há lição" · o gate do pesquisador · dividir a unidade é resultado normal →
   `06` §10, `16`.
@@ -63,7 +64,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `monitorar.py` no passo 0 de toda mineração). Em monitoramento: `U_nome_inventado`, `U_campo_inexistente`, a
   ferramenta concorrente do `final_answer` → `16` § O monitoramento.
 - **06/10, o kit:** mora no próprio `.claude/`, versionado; cada mineração tem um nome só (`/mineracao-<assunto>`);
-  `investigar` e `propor-notebook` são skills de chamada manual; o Copilot lê o mesmo `.claude/`, sem cópia →
+  `investigar` e `propor-notebook` (renomeada `propor-script` em 16/10, Ajuste 20) são skills de chamada manual; o Copilot lê o mesmo `.claude/`, sem cópia →
   [`kit.md`](../.claude/skills/mineracao-base/referencias/kit.md).
 - **15/10, gráficos de volume e de taxa não separam destino:** nos gráficos de volume, taxa e custo, **erro é erro** — sem
   linha, marcador ou cor por destino (memória, sinal de harness, infra). O destino de cada erro depende da classificação,
@@ -114,5 +115,9 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   no lugar de `exec_id` + `idx` (a base 3 não tem `idx`). Os três são hashes, que podem sair da máquina 2; o `exec_id` não sai
   (a regra de sigilo continua). Assim o arquivo sai inteiro, sem a troca por `caso-N`. Os arquivos 0.1 da base 1 continuam
   válidos → livro-razão, [Ajuste 19](pipeline-entre-bases.md#ajuste-19--o-arquivo-final-da-memória-aponta-o-caso-por-hash-na-base-3-esquema-02); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #44.
+- **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
+  lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
+  passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,
+  [Ajuste 20](pipeline-entre-bases.md#ajuste-20--a-parte-específica-da-mineração-passa-a-ser-um-script-não-um-notebook); `16`, "Como o script roda".
 
 ---

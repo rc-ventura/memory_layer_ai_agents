@@ -1,6 +1,6 @@
 ---
 name: mineracao-candidata
-description: "Minera uma candidata a memória (uma lição/unidade que passou na triagem) de uma base do trace de agentes: a parte genérica para todas as lições (recorrência, sub-unidades, antes, depois, estabilidade, população), a auditoria independente em paralelo, o encontro por script e, pelo funil do procedimento da análise, a parte específica da lição — um notebook determinístico ou a investigação por subagentes. Entrega o arquivo final da memória no esquema da análise (validado), o relatório e o dossiê. Use quando pedirem 'minere a candidata <U_...>', 'minerar a lição <...>', 'rode a mineração da unidade <...>'. Começa pela skill mineracao-base; a investigação usa a mineracao-investigacao com o roteiro candidata."
+description: "Minera uma candidata a memória (uma lição/unidade que passou na triagem) de uma base do trace de agentes: a parte genérica para todas as lições (recorrência, sub-unidades, antes, depois, estabilidade, população), a auditoria independente em paralelo, o encontro por script e, pelo funil do procedimento da análise, a parte específica da lição — um script determinístico (ou um notebook, legado da base 1) ou a investigação por subagentes. Entrega o arquivo final da memória no esquema da análise (validado), o relatório e o dossiê. Use quando pedirem 'minere a candidata <U_...>', 'minerar a lição <...>', 'rode a mineração da unidade <...>'. Começa pela skill mineracao-base; a investigação usa a mineracao-investigacao com o roteiro candidata."
 argument-hint: "<unidade, ex.: U_...> [pasta da análise]"
 ---
 
@@ -64,7 +64,10 @@ Se sair com 1, **pare**: a divergência é o achado.
 
 Leia a tabela entre `<!-- funil` e `<!-- /funil -->` no procedimento da análise. A linha da lição diz a parte
 específica:
-- **`notebook:<nome>`:** rode `uv run jupyter nbconvert --to notebook --execute --inplace <nome>.ipynb` e leve o
+- **`script:<nome>`:** rode `uv run python <pasta-da-analise>/pipeline/especificas/<nome>.py --rodada <rodada_id>`
+  (procedimento, "Como o script roda"). Ele grava o arquivo final já no esquema e o valida antes de terminar; confira
+  o manifesto próprio dele em `resultados/mineracao/<u>/`.
+- **`notebook:<nome>`** (legado, base 1): rode `uv run jupyter nbconvert --to notebook --execute --inplace <nome>.ipynb` e leve o
   registro que ele grava para o esquema. Para o notebook que grava `resultados/unidades_memoria.json`:
   ```
   uv run python <esta skill>/scripts/validar_memoria.py <analysis>/registros/esquema-memoria.json --converter resultados/unidades_memoria.json --unidade <u> --base <BASE_ID> --parte-especifica notebook:<nome> --comando "<o comando do notebook>" --saida resultados/mineracao/<u>/memoria_<u>_<BASE_ID>.json
@@ -87,7 +90,7 @@ uv run python <esta skill>/scripts/validar_memoria.py <analysis>/registros/esque
 - **Para fora:** `versao_para_sair.py` e `varrer_pii.py`, no relatório, no dossiê e no arquivo final.
 - **O painel:** rode `uv run python <esta skill>/scripts/valor_da_licao.py <pasta-da-analise> <u>` e atualize as
   colunas Frequência, Confiança, Situação e Decisão da lição na tabela do funil.
-- **O gate do pesquisador.** Se a situação tem gate (o painel imprime as opções: "pronta para notebook", "lição existe,
+- **O gate do pesquisador.** Se a situação tem gate (o painel imprime as opções: "pronta para script", "lição existe,
   redação em aberto", "várias causas: investigar a fundo", "certa, mas rara: monitorar"), **pare** e leve ao
   pesquisador o que o roteiro `candidata` pede em "O que o dossiê leva ao gate": a lição principal com a cobertura, os
   leitores lado a lado, o resto e as opções, com a sua recomendação. Registre a resposta com
@@ -101,10 +104,10 @@ uv run python <esta skill>/scripts/validar_memoria.py <analysis>/registros/esque
   - as pendências;
   - os caminhos do relatório, do dossiê e do arquivo final.
 
-## Quando propor um notebook específico
+## Quando propor um script específico
 
 Nunca por conta própria. Só quando a regra de criação do procedimento valer: **frequência** (Pareto das ocorrências ou
 presença na maior parte dos meses: `scripts/valor_da_licao.py <pasta> <u>`, que sai com 0 se tem) **e confiança**
 (dois leitores às cegas, com pelo menos 20 casos, kappa ≥ 0,6; regras contadas com ≥ 90% e ≤ 10%; laudo do
-validador) — no painel, a situação "pronta para notebook", que também passa pelo gate; ou uma decisão do pesquisador. A cada partição nova, reaplique as regras do `regras.json` sem mudança e anote em `confirmacoes`. Aí use a skill `/propor-notebook`.
-Ele escreve só em `propostas/<u>/`, e o agente `validador-de-notebook` dá o laudo. A aprovação é do pesquisador.
+validador) — no painel, a situação "pronta para script", que também passa pelo gate; ou uma decisão do pesquisador. A cada partição nova, reaplique as regras do `regras.json` sem mudança e anote em `confirmacoes`. Aí use a skill `/propor-script`.
+Ele escreve só em `propostas/<u>/`, e o agente `validador-de-script` dá o laudo. A aprovação é do pesquisador.

@@ -1,7 +1,7 @@
-"""O painel das lições candidatas: a FREQUÊNCIA (vale um notebook?), a CONFIANÇA (o padrão existe? a lição está
+"""O painel das lições candidatas: a FREQUÊNCIA (vale um script específico?), a CONFIANÇA (o padrão existe? a lição está
 escrita de um jeito que duas pessoas aplicam igual?), a SITUAÇÃO de cada uma e a DECISÃO do pesquisador nas situações
 que pedem uma. As regras estão no procedimento da análise (`docs/*procedimento-mineracao-candidatas*.md`, "A regra de
-criação de um notebook específico" e "O gate do pesquisador").
+criação de um script específico" e "O gate do pesquisador").
 
     python valor_da_licao.py <pasta-da-analise> [<unidade>]
 
@@ -16,7 +16,7 @@ concordancia.py e o testar_regra.py gravam com --registrar; vale a última medid
   padrão não confirmado   alguma regra abaixo dos limiares
   poucos casos            a leitura dos dois leitores tem menos de 20 casos (ou menos que a população, se ela é menor)
   não avaliada            sem confianca.json, sem leitura dupla ou sem regra contada
-Situação: notebook · pronta para notebook · lição existe, redação em aberto · várias causas: investigar a fundo ·
+Situação: script · notebook (legado, base 1) · pronta para script · lição existe, redação em aberto · várias causas: investigar a fundo ·
 importante e mal entendida · prioridade de investigação · certa, mas rara: monitorar · baixa prioridade.
 Decisão (lê pipeline/resultados/mineracao/<u>/decisoes.json, gravado pelo registrar_decisao.py): nas situações com
 gate, "aguardando" até o pesquisador decidir para a situação atual.
@@ -30,7 +30,7 @@ PARETO, KAPPA, CONCORDANCIA, A_MAIS, MIN_LEITURA, NULA = 0.80, 0.6, 0.90, 0.10, 
 
 # as situações que param e pedem a decisão do pesquisador, com as opções que o relatório leva
 GATE = {
-    "pronta para notebook": ["propor o notebook (/propor-notebook)", "esperar a próxima partição"],
+    "pronta para script": ["propor o script (/propor-script)", "esperar a próxima partição"],
     "lição existe, redação em aberto": ["aprovar a lição de um dos leitores", "escrever uma lição geral que cubra as duas",
                                         "investigar mais a fundo (várias causas; dividir a lição)"],
     "várias causas: investigar a fundo": ["dividir a lição por causa", "investigar mais a fundo"],
@@ -56,8 +56,9 @@ def populacao(pasta, u):
 
 
 def confianca(pasta, u, parte):
-    if parte.startswith("notebook:"):
-        return "confirmada (notebook)"
+    for tipo in ("script", "notebook"):  # a parte específica já existe; notebook é o legado da base 1
+        if parte.startswith(tipo + ":"):
+            return f"confirmada ({tipo})"
     arq = os.path.join(pasta, "pipeline", "resultados", "mineracao", u, "confianca.json")
     if not os.path.exists(arq):
         return "não avaliada"
@@ -85,10 +86,10 @@ def confianca(pasta, u, parte):
 
 
 def situacao(freq, conf):
-    if conf == "confirmada (notebook)":
-        return "notebook"
+    if conf in ("confirmada (script)", "confirmada (notebook)"):
+        return conf[len("confirmada ("):-1]
     if freq != "não":
-        return {"confirmada": "pronta para notebook",
+        return {"confirmada": "pronta para script",
                 "redação em aberto": "lição existe, redação em aberto",
                 "várias causas": "várias causas: investigar a fundo",
                 "padrão não confirmado": "importante e mal entendida"}.get(conf, "prioridade de investigação")
