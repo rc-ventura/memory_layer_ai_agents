@@ -153,23 +153,24 @@ def preparar_dados():
     return EU, tri
 
 
-def montar_grafo(EU):
-    tot = {c: EU[c].value_counts() for c in STAGES}
+def montar_grafo(EU, stages=STAGES):
+    pares = list(zip(stages, stages[1:]))
+    tot = {c: EU[c].value_counts() for c in stages}
 
     def fluxo(a, b):
         return EU.groupby([a, b, "cat"], sort=False).size().reset_index(name="n")
 
-    arestas = {par: fluxo(*par) for par in PARES}
-    comp = {c: EU.groupby([c, "cat"]).size() for c in STAGES}   # quantos erros de cada decisão em cada nó
+    arestas = {par: fluxo(*par) for par in pares}
+    comp = {c: EU.groupby([c, "cat"]).size() for c in stages}   # quantos erros de cada decisão em cada nó
     return tot, arestas, comp
 
 
-def ordenar_colunas(tot, arestas):
+def ordenar_colunas(tot, arestas, stages=STAGES):
     """Ordem vertical de cada coluna: 1ª coluna por valor desc.; as demais por
     baricentro das arestas de entrada (média da posição das origens, ponderada
     pelo n da aresta) — mesmo princípio do d3-sankey, reduz cruzamento visual."""
-    ordem = {STAGES[0]: list(tot[STAGES[0]].sort_values(ascending=False).index)}
-    for a, b in PARES:
+    ordem = {stages[0]: list(tot[stages[0]].sort_values(ascending=False).index)}
+    for a, b in zip(stages, stages[1:]):
         pos_a = {n: i for i, n in enumerate(ordem[a])}
         pesos = {}
         for _, r in arestas[(a, b)].iterrows():
@@ -179,12 +180,12 @@ def ordenar_colunas(tot, arestas):
     return ordem
 
 
-def calcular_ys(tot, ordem, min_h, pad, scale, pad_pequeno=None):
+def calcular_ys(tot, ordem, min_h, pad, scale, pad_pequeno=None, stages=STAGES):
     """Posição de cada nó; um nó inflado até a altura mínima ganha `pad_pequeno` de folga (o rótulo dele tem a altura
     do próprio nó e encostaria no vizinho)."""
     pad_pequeno = pad if pad_pequeno is None else pad_pequeno
     ys = {}
-    for col in STAGES:
+    for col in stages:
         y = 0.0
         extents = {}
         for nome in ordem[col]:
@@ -195,10 +196,10 @@ def calcular_ys(tot, ordem, min_h, pad, scale, pad_pequeno=None):
     return ys
 
 
-def centralizar(ys):
+def centralizar(ys):  # as colunas são as chaves de ys
     totais = {col: max(y1 for _, y1, _ in ex.values()) for col, ex in ys.items()}
     maior = max(totais.values())
-    for col in STAGES:
+    for col in ys:
         off = (maior - totais[col]) / 2
         ys[col] = {n: (y0 + off, y1 + off, h) for n, (y0, y1, h) in ys[col].items()}
     return ys, maior
@@ -271,30 +272,38 @@ def afastar(centros, altura):
             return [t + k * altura for t, g in zip(topo, grupos) for k in range(len(g))]
 
 
-def render_png(EU, out_path, titulo=None):
-    tot, arestas, comp = montar_grafo(EU)
-    ordem = ordenar_colunas(tot, arestas)
+def render_png(EU, out_path, titulo=None, juntar_destino=True):
+    """`juntar_destino` (decisão D4 de 16/10): unidade e destino são 1 para 1 — a figura desenha uma coluna só,
+    "decisão · lição (unidade)"; as arestas gravadas (`montar_grafo` com as 5 colunas) não mudam."""
+    stages = STAGES
+    if juntar_destino:
+        EU = EU.assign(unidade=[f"{d} ({u})" if not str(d).startswith("COMPLEMENTAR") else f"pendente: {d.lower()}"
+                                for u, d in zip(EU["unidade"], EU["destino"])])
+        stages = STAGES[:-1]
+    pares = list(zip(stages, stages[1:]))
+    tot, arestas, comp = montar_grafo(EU, stages)
+    ordem = ordenar_colunas(tot, arestas, stages)
 
-    maior_valor = max(int(v) for col in STAGES for v in tot[col].values)
+    maior_valor = max(int(v) for col in stages for v in tot[col].values)
     MIN_H, PAD, PAD_PEQ, ALTURA_ROTULO = 0.16, 0.12, 0.2, 0.25
     scale = 3.4 / maior_valor
     limiar = MIN_H / scale   # abaixo disso, a altura do nó é o piso, não o volume
-    ys = calcular_ys(tot, ordem, MIN_H, PAD, scale, PAD_PEQ)
+    ys = calcular_ys(tot, ordem, MIN_H, PAD, scale, PAD_PEQ, stages)
     ys, altura_dados = centralizar(ys)
 
-    fat = {col: fatias(col, comp, ys, ordem) for col in STAGES}
+    fat = {col: fatias(col, comp, ys, ordem) for col in stages}
 
     NODE_W = 0.22
     GAP = {"familia": 3.6, "assinatura": 3.6, "submecanismo": 4.9, "unidade": 3.6}   # o mecanismo tem rótulo longo
     X, x = {}, 0.0
-    for col in STAGES:
+    for col in stages:
         X[col] = x
         x += GAP.get(col, 0)
 
     fig_w, fig_h = 23, altura_dados + 1.6
     fig, ax = plt.subplots(figsize=(fig_w, fig_h))
 
-    for a, b in PARES:
+    for a, b in pares:
         g = arestas[(a, b)]
         saida = dividir(a, b, g, fat[a], ordem)
         entrada = dividir(b, a, g, fat[b], ordem)
@@ -304,7 +313,7 @@ def render_png(EU, out_path, titulo=None):
             ax.add_patch(mpatches.PathPatch(path, facecolor=cor(COR_ERRO, c),
                                              edgecolor="none", alpha=0.42, zorder=1))
 
-    for col in STAGES:
+    for col in stages:
         nomes = ordem[col]
         centros = [(ys[col][n][0] + ys[col][n][1]) / 2 for n in nomes]
         for nome, centro, y_rot in zip(nomes, centros, afastar(centros, ALTURA_ROTULO)):
@@ -317,10 +326,10 @@ def render_png(EU, out_path, titulo=None):
                 ax.plot([X[col] + NODE_W, x_rot - 0.02], [centro, y_rot], color="#52514e", lw=0.6, zorder=3)
             ax.text(x_rot, y_rot, rotulo(col, nome, tot), va="center", ha="left", fontsize=8.3, zorder=4,
                     bbox=dict(boxstyle="round,pad=0.12", facecolor="white", edgecolor="white", linewidth=1.2))
-        ax.text(X[col] + NODE_W / 2, -0.45, TITULOS[col], ha="center", va="bottom",
+        ax.text(X[col] + NODE_W / 2, -0.45, "unidade · destino" if juntar_destino and col == "unidade" else TITULOS[col], ha="center", va="bottom",
                 fontsize=11, fontweight="bold", color="#333333")
 
-    ax.set_xlim(-0.2, X[STAGES[-1]] + NODE_W + 3.6)
+    ax.set_xlim(-0.2, X[stages[-1]] + NODE_W + 5.6)   # a última coluna leva "decisão · lição (unidade)"
     ax.set_ylim(-0.7, altura_dados + 0.6)
     ax.invert_yaxis()
     ax.axis("off")

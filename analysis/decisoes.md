@@ -94,5 +94,21 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   foi cortado da parte 1; o total por papel passa para a margem do mapa papel × unidade e as cores vivas por papel, para a
   concentração por candidata; e o gráfico de erros por unidade e mês (contagem) foi cortado da parte 1, virando o painel da esquerda do
   gráfico de taxa por unidade e mês da parte 2 → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #40, gráficos 4, 7, 8 e 9.
+- **16/10, as seis escolhas dos gráficos da base 3** (o porquê de cada uma e o que se perde: [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md),
+  Plano de evolução, Etapa 1; #41):
+  - **taxa de erro por mês: nenhuma faixa de incerteza nem cor** — o título se apoia em meses grandes e o painel de cima já mostra
+    o tamanho de cada mês; uma faixa "de livro" seria estreita demais (os erros vêm em sequência na mesma execução) e poluiria;
+    só uma frase no "Como ler" sobre o mês pequeno;
+  - **taxa por unidade e mês em % dos passos do sistema, com 2 casas** (uma unidade só no relatório); **um mês com menos de 1.000
+    passos no sistema** mostra os números mas fica cinza e fora da régua de cor (nenhum erro sai da conta);
+  - **prioridade em dois painéis, um insight por painel:** para reduzir erros (todos os tokens em erro) e para memória (o teto: só
+    as candidatas);
+  - **genealogia: unidade e destino numa coluna só** (são 1 para 1; as arestas gravadas continuam com as cinco colunas); a cauda
+    **não** é agrupada (a decisão de 24/09 continua; rever com a foto);
+  - **"o que vem depois do erro" de todas as unidades,** por uma tabela só de contagem na rodada (`consolidacao_depois_unidade.csv`),
+    com **a unidade do erro seguinte** quando o vínculo está confirmado (a matriz de transição: sequência, não causa); e o
+    **perfil sob demanda de qualquer unidade** (`--perfil-investigacao`), marcado como "investigação — não é candidatura", para os
+    roteiros de protocolo, crítico, resíduo e timeout;
+  - **sem índice de Gini** na concentração de custo.
 
 ---

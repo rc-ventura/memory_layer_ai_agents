@@ -75,6 +75,34 @@ class TestTriagemObservada(unittest.TestCase):
             self.assertAlmostEqual(float(r.t), float(t.loc[u, "tokens_n_conhecidos"]))
         self.assertFalse(set(upt.unidade) - set(t.index) - {mo.SEM_UNIDADE})
 
+    def test_depois_de_todas_as_unidades_bate_com_o_perfil(self):
+        """D5 de 16/10: o "depois" de todas as unidades, só contagem; nas candidatas, igual ao perfil."""
+        rows = recorrentes() + [janela(cod_idef_exeo=f"exec-bloco-{i}", error_message="No code block found")
+                                for i in range(2)]
+        a = mo.analisar(state(*rows))
+        dep = a.tabelas["consolidacao_depois_unidade"]
+        self.assertEqual(int(dep.erros.sum()), len(a.EU))
+        tri = a.tabelas["triagem_visivel_observada"].set_index("unidade")
+        self.assertTrue(set(dep.unidade) - {mo.SEM_UNIDADE} <= set(tri.index))
+        perfil = mo.perfil_unidade(a, "U_tipo_retorno")["depois"].set_index("depois").erros
+        tabela = dep[dep.unidade.eq("U_tipo_retorno")].groupby("depois").erros.sum()
+        self.assertEqual(perfil.sort_index().to_dict(), tabela.sort_index().to_dict())
+        self.assertTrue(dep.unidade_seguinte[dep.depois.ne("erro estruturado vinculado")
+                                             & ~dep.depois.str.startswith("erro estruturado observado")]
+                        .eq("não se aplica").all())
+
+    def test_perfil_de_investigacao_so_quando_pedido(self):
+        """B+2 de 16/10: perfil de unidade não candidata só com investigacao=True, e marcado como tal."""
+        rows = recorrentes() + [janela(cod_idef_exeo=f"exec-bloco-{i}", error_message="No code block found")
+                                for i in range(2)]
+        a = mo.analisar(state(*rows))
+        with self.assertRaises(mo.bp.AnaliseNaoIntegrada):
+            mo.perfil_unidade(a, "X_sintoma_nao_reconhecido")
+        p = mo.perfil_unidade(a, "X_sintoma_nao_reconhecido", investigacao=True)
+        self.assertEqual(p["perfil"].finalidade.iloc[0], "investigação — não é candidatura")
+        self.assertEqual(len(p["casos"]), 2)
+        self.assertEqual(mo.perfil_unidade(a, "U_tipo_retorno")["perfil"].finalidade.iloc[0], "candidatura")
+
     def test_pendencias_preservadas_no_custo_e_genealogia(self):
         rows = recorrentes() + [janela(cod_idef_exeo="exec-pendente", error_message="x" * 20000, total_tokens="100")]
         a = mo.analisar(state(*rows))

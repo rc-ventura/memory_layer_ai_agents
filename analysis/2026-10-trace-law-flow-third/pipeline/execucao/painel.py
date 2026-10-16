@@ -210,16 +210,16 @@ def gerar(pasta, gasto_total=None):
                  ("frequencia_custo.png", lambda d: fp.frequencia_custo(tri, d))]
     if upt is not None:
         graficos.append(("concentracao_papel.png", lambda d: fp.concentracao_papel(upt, tri, d)))
-    perfis = {}
-    for u in cand.unidade:
-        nome = f"perfis/{u}/casos.csv"
-        if nome in m["artefatos"]:
-            perfis[u] = {"casos": ler(pasta, m, nome)[["depois", "proximo_final_observado"]]}
-    if perfis:
-        graficos.append(("depois_do_erro.png", lambda d: fp.depois_do_erro(perfis, tri, d)))
+    if "consolidacao_depois_unidade.csv" in m["artefatos"]:
+        dep = ler(pasta, m, "consolidacao_depois_unidade.csv")
+    else:   # rodada de antes de 16/10: só as candidatas, pelos perfis
+        perfis = {u: ler(pasta, m, f"perfis/{u}/casos.csv")[["depois", "proximo_final_observado"]]
+                  for u in cand.unidade if f"perfis/{u}/casos.csv" in m["artefatos"]}
+        dep = fp.depois_de_perfis(perfis) if perfis else None
+    if dep is not None and len(dep):
+        graficos.append(("depois_do_erro.png", lambda d: fp.depois_do_erro(dep, tri, d)))
     else:
-        pulados.append("O que vem depois do erro: a rodada não tem perfis (`executar.py analisar --perfil <unidade>` "
-                       "ou `executar.py conferir`).")
+        pulados.append("O que vem depois do erro: a rodada não tem `consolidacao_depois_unidade.csv` nem perfis.")
     if "consolidacao_pendencias_papel_mes.csv" in m["artefatos"]:
         ppm = ler(pasta, m, "consolidacao_pendencias_papel_mes.csv")
         meses = (ler(pasta, m, "consolidacao_unidade_papel_mes.csv").mes.unique().tolist()
@@ -234,6 +234,17 @@ def gerar(pasta, gasto_total=None):
         titulo, pergunta, ler_como, limite = desenhar(saida / nome)
         md += [f"## {titulo}", "", f"**Pergunta:** {pergunta}", "", f"![{titulo}]({nome})", "",
                f"**Como ler:** {ler_como}", "", f"**Limitação:** {limite}", ""]
+    if dep is not None and dep.depois.eq("erro estruturado vinculado").any():
+        v = dep[dep.depois.eq("erro estruturado vinculado")]
+        tot_u = dep.groupby("unidade").erros.sum()
+        tr = v.groupby(["unidade", "unidade_seguinte"]).erros.sum().sort_values(ascending=False).head(15).reset_index()
+        if len(tr):
+            md += ["## As transições mais frequentes (o erro seguinte, com vínculo confirmado)", "",
+                   "Sequência, não causa. A matriz inteira: `consolidacao_depois_unidade.csv`.", "",
+                   _tabela(pd.DataFrame({"Erro": tr.unidade, "Erro seguinte": tr.unidade_seguinte,
+                                         "Erros": tr.erros.map(_n),
+                                         "% dos erros da unidade": (100 * tr.erros / tr.unidade.map(tot_u)).map(lambda x: _n(x, 1))}),
+                           "lldd"), ""]
     if pulados:
         md += ["## Gráficos não gerados nesta rodada", ""] + [f"- {x}" for x in pulados] + [""]
     (saida / "painel.md").write_text("\n".join(md), encoding="utf-8")

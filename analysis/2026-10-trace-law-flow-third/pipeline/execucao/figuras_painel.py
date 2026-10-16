@@ -160,13 +160,14 @@ def rotular(ax, xs, ys, textos, raios=None, fontsize=8, cores=None):
 
 def genealogia():
     """2 · A genealogia é desenhada na rodada (genealogia_sankey.py); aqui, só o texto da leitura."""
-    return ("Genealogia: família → assinatura → mecanismo → unidade → destino",
+    return ("Genealogia: família → assinatura → mecanismo → unidade · destino",
             "Por que caminho cada erro chega ao seu destino — e onde os caminhos se juntam?",
-            "Cinco colunas; cada uma soma todos os erros estruturados. A largura de cada fita e a altura de cada nó são o "
+            "Quatro colunas; cada uma soma todos os erros estruturados. A largura de cada fita e a altura de cada nó são o "
             "número de erros (não tokens). A cor é a família do erro, carregada de ponta a ponta (legenda embaixo): roxo = "
             "resíduo (nenhuma regra reconheceu a causa), cinzas = plataforma (harness/infra), preto = erro crítico, "
             "dourado = evidência insuficiente (pendente). Na coluna do mecanismo, o nome legível vem com o identificador "
-            "entre parênteses. As colunas unidade e destino são 1 para 1: o destino só dá o nome da lição à unidade.",
+            "entre parênteses. A última coluna junta unidade e destino, que são 1 para 1 (decisão de 16/10): \"decisão · lição "
+            "(unidade)\"; o arquivo de arestas da rodada continua com as cinco colunas.",
             "Abaixo do limiar escrito na figura, o nó tem a altura mínima (para o rótulo caber) e a espessura deixa de ser "
             "volume. O destino é o da triagem desta rodada: muda quando uma investigação muda a classificação.")
 
@@ -487,53 +488,81 @@ ROTULO_DEPOIS = [("final", "o seguinte é a resposta final", "#1b4332"),
 MIN_BASE_DEPOIS = 100   # abaixo disso, a linha fica em cinza: poucos erros para comparar porcentagens
 
 
-def depois_do_erro(perfis, tri, destino):
-    """10 · O que vem depois do erro, por candidata: a resposta final separada do "segue sem erro"."""
+def depois_do_erro(dep, tri, destino):
+    """10 · O que vem depois do erro, de TODAS as unidades (decisão D5 de 16/10), com a resposta final separada do
+    "segue sem erro" e, à direita, quanto da cascata repete a mesma unidade (a matriz de transição, decisão B+1)."""
     t = tri.set_index("unidade")
-    us = list(perfis)
-    fig, ax = plt.subplots(figsize=(13, 0.62 * len(us) + 2.6))
+    d = dep.copy()
+    verde = ROTULO_DEPOIS[1][0]
+    d["cat"] = d.depois.where(~(d.depois.eq(verde) & d.proximo_final_observado.astype(str).eq("True")), "final")
+    tot_u = d.groupby("unidade").erros.sum().sort_values(ascending=False)
+    us = tot_u.index.tolist()
+    fig, ax = plt.subplots(figsize=(13.5, 0.62 * len(us) + 2.6))
     for y, u in enumerate(us):
-        c = perfis[u]["casos"]
-        final = c.proximo_final_observado.astype(str).str.lower().eq("true")
-        cat = c.depois.where(~(final & c.depois.eq(ROTULO_DEPOIS[1][0])), "final")
-        d = cat.value_counts()
-        tot = d.sum()
+        g = d[d.unidade.eq(u)]
+        cats = g.groupby("cat").erros.sum()
+        tot = tot_u[u]
         esq = 0.0
         for chave, _, cr in ROTULO_DEPOIS:
-            v = d.get(chave, 0) / tot * 100
+            v = cats.get(chave, 0) / tot * 100
             ax.barh(y, v, left=esq, color=cr, edgecolor="white")
             if v >= 4:
                 ax.text(esq + v / 2, y, f"{_n(v)}%", ha="center", va="center", fontsize=7.5,
                         color=INK if cr in ("#74c69d", "#e8a0a0", "#e9c46a", "#d9d9d9") else "white")
             esq += v
-        casc = (d.get(ROTULO_DEPOIS[2][0], 0) + d.get(ROTULO_DEPOIS[3][0], 0)) / tot * 100
-        ax.text(101, y, f"novo erro: {_n(casc)}%", va="center", fontsize=8, color=INK2)
-    rotulos = [f"{unidade(u)}\n{_n(t.loc[u, 'erros_observaveis'])} erros · {_n(t.loc[u, 'execucoes'])} execuções · "
-               f"{_n(t.loc[u, 'ocorrencias_condicionais'])} ocorrências" for u in us]
-    ax.set_yticks(range(len(us)), rotulos, fontsize=7.5)
+        casc = (cats.get(ROTULO_DEPOIS[2][0], 0) + cats.get(ROTULO_DEPOIS[3][0], 0)) / tot * 100
+        vinc = g[g.depois.eq(ROTULO_DEPOIS[2][0])].groupby("unidade_seguinte").erros.sum()
+        txt = f"novo erro: {_n(casc)}%"
+        if vinc.sum():
+            txt += f" · a mesma unidade: {_n(100 * vinc.get(u, 0) / tot)}%"
+            outras = vinc.drop(u, errors="ignore").sort_values(ascending=False)
+            if len(outras) and outras.iloc[0] > 0:
+                txt += f" · outra mais comum: {outras.index[0]} ({_n(100 * outras.iloc[0] / tot)}%)"
+        ax.text(101, y, txt, va="center", fontsize=7.5, color=INK2)
+    rot = []
+    for u in us:
+        base = f"{_n(tot_u[u])} {'erro' if tot_u[u] == 1 else 'erros'}"
+        if u in t.index:
+            base += f" · {_n(t.loc[u, 'execucoes'])} execuções · {_n(t.loc[u, 'ocorrencias_condicionais'])} ocorrências"
+        rot.append(f"{unidade(u)}\n{base}")
+    ax.set_yticks(range(len(us)), rot, fontsize=7.5)
     for lab, u in zip(ax.get_yticklabels(), us):
-        if t.loc[u, "erros_observaveis"] < MIN_BASE_DEPOIS:
+        if tot_u[u] < MIN_BASE_DEPOIS:
             lab.set_color(MUTED)
     ax.invert_yaxis()
-    ax.set_xlim(0, 118)
+    ax.set_xlim(0, 100)
     ax.set_xticks(range(0, 101, 25))
     ax.set_xlabel("% dos erros da unidade, pelo que acontece no passo seguinte")
     ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in ROTULO_DEPOIS],
               labels=[r for _, r, _ in ROTULO_DEPOIS], ncol=3, fontsize=8, frameon=False,
               loc="lower left", bbox_to_anchor=(0, 1.0))
-    ax.set_title("O que vem no passo seguinte ao erro, por candidata", loc="left", fontsize=11, pad=42)
-    _limpar(ax)
+    ax.set_title("O que vem no passo seguinte ao erro, por unidade (todas)", loc="left", fontsize=11, pad=42)
+    for lado in ["top", "right"]:
+        ax.spines[lado].set_visible(False)
     _salvar(fig, destino)
     return ("O que vem depois do erro",
-            "O agente se corrige no passo seguinte, entrega a resposta ou entra em cascata?",
-            "Cada barra soma 100% dos erros da unidade. Verde-escuro: o passo seguinte é a resposta final; verde-claro: o "
-            "passo seguinte é outro passo de trabalho e não tem erro; vermelho-escuro e rosa: o passo seguinte também erra "
-            "(a cascata é a soma dos dois, escrita à direita). Cada linha traz o tamanho da base: erros, execuções e "
-            "ocorrências (sequências de erros da mesma unidade na execução); muitos erros por execução = poucas execuções "
-            f"com erros em sequência. Linhas com menos de {MIN_BASE_DEPOIS} erros ficam com o nome em cinza. Hipótese, "
-            "não testada: muita cascata = o agente não aprende com a mensagem de erro (o novo erro pode ser outro problema).",
-            "\"Segue sem erro\" e \"resposta final\" não são sucesso: a qualidade da resposta não está no arquivo. Só a "
-            "janela de um passo. Só as candidatas: os perfis das demais unidades não são gerados na rodada.")
+            "O agente se corrige no passo seguinte, entrega a resposta ou entra em cascata — e, quando erra de novo, "
+            "repete o mesmo erro ou cai em outro?",
+            "Uma barra por unidade (todas, inclusive sinal de harness, harness/infra, resíduo e os pendentes), somando 100% "
+            "dos erros dela. Verde-escuro: o passo seguinte é a resposta final; verde-claro: é outro passo de trabalho, sem "
+            "erro; vermelho-escuro e rosa: o passo seguinte também erra (a cascata é a soma dos dois, escrita à direita). "
+            "À direita também: quanto dos erros é seguido por um erro da **mesma** unidade (o agente repete o erro) e qual "
+            "**outra** unidade vem com mais frequência (o agente conserta e esbarra no próximo) — só quando o vínculo entre "
+            "os dois erros está confirmado. Cada linha traz o tamanho da base: erros, execuções e ocorrências "
+            f"(sequências de erros da mesma unidade na execução); menos de {MIN_BASE_DEPOIS} erros, nome em cinza. "
+            "Hipótese, não testada: muita repetição da mesma unidade = o agente não aprende com a mensagem de erro.",
+            "\"Segue sem erro\" e \"resposta final\" não são sucesso: a qualidade da resposta não está no arquivo. Só o "
+            "passo seguinte (a janela vai até dois). A sequência entre dois erros não prova que um causou o outro. A "
+            "matriz inteira (unidade → unidade seguinte) está em `consolidacao_depois_unidade.csv`.")
+
+
+def depois_de_perfis(perfis):
+    """Rodadas antigas (sem `consolidacao_depois_unidade.csv`): a mesma tabela, só das candidatas, a partir dos perfis."""
+    linhas = [c.assign(unidade=u) for u, c in perfis.items()]
+    d = pd.concat(linhas, ignore_index=True)
+    d["proximo_final_observado"] = d.proximo_final_observado.astype(str).str.capitalize()
+    d["unidade_seguinte"] = "não medida (rodada antiga)"
+    return d.groupby(["unidade", "depois", "proximo_final_observado", "unidade_seguinte"]).size().rename("erros").reset_index()
 
 
 MOTIVO_RESOLVE = {

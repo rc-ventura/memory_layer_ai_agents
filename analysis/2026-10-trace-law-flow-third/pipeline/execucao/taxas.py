@@ -162,7 +162,7 @@ def gerar(pasta, contagens=None, fonte=None):
     else:
         pulados.append("Gasto de cada papel por destino: a rodada não tem `consolidacao_unidade_papel_tokens.csv` "
                        "(tabela de 15/10; rode `executar.py analisar` de novo).")
-    graficos.append(("taxas_prioridade.png", lambda d: ft.prioridade(papel, d)))
+    graficos.append(("taxas_prioridade.png", lambda d: ft.prioridade(papel, upt, tri, d)))
 
     asteps, erros = int(execs.actionsteps.sum()), int(execs.erros.sum())
     tok_tot, tok_err = float(papel.tokens_total.sum()), float(papel.tokens_erro.sum())

@@ -183,6 +183,7 @@ def analisar(carga=None):
     tables["triagem_por_papel"] = triagem_observada(carga, mecanismos, por_papel=True)
     tables["triagem_por_papel_sensibilidade"] = triagem_observada(carga, mecanismos, 5, 3, True)
     tables.update(consolidacao(tables, mecanismos))
+    tables["consolidacao_depois_unidade"] = depois_por_unidade(carga, mecanismos)
     E = mecanismos.EU
     candidates = tables["triagem_visivel_observada"].decisao.eq(CANDIDATO)
     summary = {**sintomas.resumo, **mecanismos.resumo,
@@ -280,19 +281,54 @@ def _vizinho(slot, lookup, incoming, ref, offset):
     return "suspeita observada" if flag else "sem sinal do produtor observado – não sucesso"
 
 
-def perfil_unidade(analise, unidade):
-    """G1–G6 com localização real e NULL preservado; nunca lê ocorrências legadas."""
+def _ligacoes(carga):
+    """O contexto local e os vínculos confirmados (origem → alvo e o inverso) — os mesmos do perfil e do depois."""
+    links = carga.vinculos
+    good = links[links.estado.isin(["compativel_candidato", "ordem_censo"])]
+    return contexto_local(carga), dict(zip(good.origem_ref, good.alvo_ref)), dict(zip(good.alvo_ref, good.origem_ref))
+
+
+def _proximo_final(ctx, ref):
+    slot = ctx.get((ref, 1), {})
+    return slot.get("is_final", pd.NA) if slot.get("presenca") in {"identificado_por_numero", "ordem_censo"} else pd.NA
+
+
+def depois_por_unidade(carga, mecanismos):
+    """O que vem no passo seguinte a cada erro, de TODAS as unidades (decisão D5 de 16/10; antes só as candidatas, pelo
+    perfil): a mesma conta do perfil (`_vizinho`), só contagem. Com a unidade do erro seguinte quando o vínculo está
+    confirmado (a matriz de transição): sequência, não causa."""
+    E = mecanismos.EU
+    ctx, out, inc = _ligacoes(carga)
+    unidade = E.unidade.where(E.situacao_mecanismo.eq("observavel"), SEM_UNIDADE)
+    uni_ref = dict(zip(E.step_ref, unidade))
+    depois = [_vizinho(ctx.get((r, 1)), out, inc, r, 1) for r in E.step_ref]
+    seguinte = [uni_ref.get(out.get(r), "fora da extração") if d == "erro estruturado vinculado"
+                else ("desconhecida (vínculo não confirmado)" if d.startswith("erro estruturado observado")
+                      else "não se aplica") for r, d in zip(E.step_ref, depois)]
+    final = [_proximo_final(ctx, r) for r in E.step_ref]
+    t = pd.DataFrame({"unidade": unidade.to_numpy(), "depois": depois,
+                      "proximo_final_observado": ["desconhecido" if pd.isna(f) else str(bool(f)) for f in final],
+                      "unidade_seguinte": seguinte})
+    return (t.groupby(["unidade", "depois", "proximo_final_observado", "unidade_seguinte"]).size()
+            .rename("erros").reset_index().sort_values(["unidade", "erros"], ascending=[True, False])
+            .reset_index(drop=True))
+
+
+def perfil_unidade(analise, unidade, investigacao=False):
+    """G1–G6 com localização real e NULL preservado; nunca lê ocorrências legadas.
+
+    Por padrão só para candidatas. `investigacao=True` (decisão de 16/10) gera o perfil de qualquer unidade observada —
+    sinal de harness, harness/infra, resíduo, crítico — para os roteiros de investigação; a tabela `perfil` diz que não
+    é candidatura."""
     _validar(analise.carga, analise.mecanismos)
     T = analise.tabelas["triagem_visivel_observada"]
     target = T[T.unidade.eq(unidade)]
-    if target.empty or target.decisao.iloc[0] != CANDIDATO:
+    if target.empty or (target.decisao.iloc[0] != CANDIDATO and not investigacao):
         raise bp.AnaliseNaoIntegrada("A unidade não passou na triagem observada desta rodada.")
+    target = target.assign(finalidade="candidatura" if target.decisao.iloc[0] == CANDIDATO
+                           else "investigação — não é candidatura")
     g = analise.EU[analise.EU.unidade.eq(unidade)].copy()
-    ctx = contexto_local(analise.carga)
-    links = analise.carga.vinculos
-    good = links[links.estado.isin(["compativel_candidato", "ordem_censo"])]
-    out = dict(zip(good.origem_ref, good.alvo_ref))
-    inc = dict(zip(good.alvo_ref, good.origem_ref))
+    ctx, out, inc = _ligacoes(analise.carga)
     cases = g[["exec_id", "agente", "role", "step_ref", "step_pos", "idx", "indice_tipo", "mes",
                "versao_agente", "particao_fonte", "unidade", "submecanismo", "assinatura", "tool_name",
                "ocorrencia_observada", "limites_componente_fechados", "motivo_evidencia",
@@ -301,10 +337,7 @@ def perfil_unidade(analise, unidade):
     cases["rodada_id"] = analise.manifesto["rodada_id"]
     cases["antes"] = [_vizinho(ctx.get((r, -1)), out, inc, r, -1) for r in g.step_ref]
     cases["depois"] = [_vizinho(ctx.get((r, 1)), out, inc, r, 1) for r in g.step_ref]
-    cases["proximo_final_observado"] = pd.array([
-        ctx.get((r, 1), {}).get("is_final", pd.NA)
-        if ctx.get((r, 1), {}).get("presenca") in {"identificado_por_numero", "ordem_censo"}
-        else pd.NA for r in g.step_ref], dtype="boolean")
+    cases["proximo_final_observado"] = pd.array([_proximo_final(ctx, r) for r in g.step_ref], dtype="boolean")
     cases["mesma_chamada"] = pd.NA
     cases["sucesso_semantico"] = pd.NA
     cases["modelo"] = pd.NA
@@ -380,7 +413,7 @@ def conferir_fonte(path, referencia=None, extracao="v2"):
     return source
 
 
-def gravar(analise, saida=None, perfis=()):
+def gravar(analise, saida=None, perfis=(), perfis_investigacao=()):
     """Publica somente em rodada privada, com hash de cada artefato e estado final."""
     _validar(analise.carga, analise.mecanismos)
     if analise.manifesto["codigo"] != versoes_codigo():
@@ -430,8 +463,8 @@ def gravar(analise, saida=None, perfis=()):
                    titulo=f"{bp.BASE_ID} · {len(graph):,}".replace(",", ".")
                    + " erros estruturados · triagem observada, não memórias aprovadas")
         manifest["artefatos"]["genealogia_observada.png"] = sha256(dest / "genealogia_observada.png")
-    for u in perfis:
-        for name, table in perfil_unidade(analise, u).items():
+    for u, inv in [(u, False) for u in perfis] + [(u, True) for u in perfis_investigacao]:
+        for name, table in perfil_unidade(analise, u, investigacao=inv).items():
             save(f"perfis/{u}/{name}.csv", table)
     if source and sha256(source_path) != source:
         raise bp.AnaliseNaoIntegrada("Fonte mudou durante a publicação; rodada não concluída.")
