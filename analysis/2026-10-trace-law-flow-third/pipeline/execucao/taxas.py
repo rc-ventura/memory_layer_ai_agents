@@ -145,6 +145,8 @@ def gerar(pasta, contagens=None, fonte=None):
     execs, mes, papel, total_erro, sem_contagem, custo_papel, extra = tabelas(f, c)
     saida = pasta / "taxas"
     saida.mkdir(exist_ok=True)
+    from execucao.painel import limpar_saida
+    limpar_saida(saida, ("*.png",))
     graficos = [("taxas_funil.png", lambda d: ft.funil(execs, extra, d)),
                 ("taxas_mes.png", lambda d: ft.taxa_mes(mes, d)),
                 ("taxas_papel.png", lambda d: ft.papel_volume(papel, d)),

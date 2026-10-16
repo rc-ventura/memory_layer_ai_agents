@@ -48,6 +48,29 @@ def _sha256(path):
         return hashlib.file_digest(f, "sha256").hexdigest()
 
 
+def limpar_saida(pasta, padroes=("*.png", "*.md")):
+    """Apaga as figuras e o MD de uma geração anterior, um arquivo por vez (no lugar de apagar a pasta inteira). No
+    Windows um arquivo aberto em outro programa (a pré-visualização do relatorio.md no VS Code, uma imagem aberta) não
+    pode ser apagado: tenta tirar o "somente leitura" e, se ainda assim falhar, para com a lista do que fechar."""
+    import os
+    import stat
+    presos = []
+    for padrao in padroes:
+        for f in Path(pasta).glob(padrao):
+            try:
+                f.unlink()
+            except PermissionError:
+                try:
+                    os.chmod(f, stat.S_IWRITE)
+                    f.unlink()
+                except OSError:
+                    presos.append(f.name)
+    if presos:
+        raise SystemExit(f"Não consegui apagar {len(presos)} arquivo(s) de {pasta} (acesso negado): "
+                         f"{', '.join(sorted(presos)[:8])}. Feche a pré-visualização do relatorio.md e as imagens abertas "
+                         "dessa pasta (no VS Code, a aba \"Preview\") e rode de novo.")
+
+
 def _rodada(arg):
     if arg:
         return Path(arg)
@@ -125,6 +148,7 @@ def gerar(pasta, gasto_total=None):
     r = m["resumo"]
     saida = pasta / "painel"
     saida.mkdir(exist_ok=True)
+    limpar_saida(saida)   # sem isto, figuras cortadas de gerações antigas ficariam na pasta e iriam para o relatório
 
     total_err, total_tok = int(cob.erros.sum()), float(cob.tokens_n_conhecidos.sum())
     obs = cob.situacao_mecanismo.eq("observavel")

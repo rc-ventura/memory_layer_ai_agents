@@ -41,9 +41,8 @@ def gerar(pasta, contagens=None, fonte=None):
              if dir_taxas else None)
     dir_painel = painel.gerar(pasta, gasto)
     saida = pasta / "relatorio"
-    if saida.exists():
-        shutil.rmtree(saida)
-    saida.mkdir()
+    saida.mkdir(exist_ok=True)
+    painel.limpar_saida(saida)   # arquivo a arquivo: no Windows, apagar a pasta inteira falha se algo dela estiver aberto
     for d in [dir_painel, dir_taxas]:
         for png in (d.glob("*.png") if d else []):
             shutil.copy2(png, saida / png.name)
