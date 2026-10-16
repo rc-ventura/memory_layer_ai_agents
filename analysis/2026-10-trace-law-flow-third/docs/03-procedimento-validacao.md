@@ -22,6 +22,13 @@ uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/resumo_rod
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py relatorio     # painel + taxas → <rodada>/relatorio/relatorio.md
 ```
 
+Atalho usado desde 16/10: `executar.py conferir` grava a rodada **com o perfil das candidatas** e roda as verificações
+da rodada (46), no lugar do `analisar` com um `--perfil` por candidata; depois, `executar.py relatorio --rodada
+<caminho da rodada, a partir da raiz>`. Rode sempre da raiz do repositório (os caminhos são relativos a ela). O relatório
+apaga as figuras e os MDs da geração anterior arquivo a arquivo; se um deles estiver aberto (a pré-visualização do
+`relatorio.md` no VS Code, no Windows), ele para e diz qual fechar. Tudo em `pipeline/resultados/` fica fora do git
+(`.gitignore` da pasta), exceto o `validacao.json` do `validar`.
+
 O relatório único junta duas lógicas que continuam separadas: o **painel** (`execucao/painel.py`) lê só a rodada; as
 **taxas** (`execucao/taxas.py`, `executar.py taxas`) leem a rodada, a fonte e as contagens do pedido A
 (`data/base_contagens.parquet`) e só saem se a junção conferir — chaves únicas, toda chave da fonte nas contagens, erros
@@ -30,8 +37,10 @@ parte 2 do relatório diz por quê. `<rodada>/taxas/manifesto_taxas.json` guarda
 contagens.
 
 O `<id>` da rodada é o hash de (contrato, base, fonte, código). Mesma fonte e mesmo código dão a mesma pasta — a
-rodada deste relatório é `observada_609c947b15295c84` (14/10, a v2, a primeira depois do Ajuste 18; na v1, `observada_3f9c2806cac9cd4d` de 14/10, depois do Ajuste 17, e antes `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). A extração e o corte do texto entram no hash: a mesma fonte lida como v1 e como v2 dá pastas diferentes. Código ou fonte diferentes dão outra pasta; a antiga não é
-sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar --perfil <unidade>`.
+rodada dos números deste relatório é `observada_609c947b15295c84`; a das figuras atuais, `observada_96958e65cb7e615a`
+(16/10: o mesmo método, com as tabelas novas abaixo e as figuras refeitas; que os números são os mesmos se prova por hash
+no roadmap #42). A `609c…` é de 14/10 (a v2, a primeira depois do Ajuste 18; na v1, `observada_3f9c2806cac9cd4d` de 14/10, depois do Ajuste 17, e antes `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). A extração e o corte do texto entram no hash: a mesma fonte lida como v1 e como v2 dá pastas diferentes. Código ou fonte diferentes dão outra pasta; a antiga não é
+sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar --perfil <unidade>`; de uma unidade que não é candidata (sinal de harness, harness/infra, resíduo, crítico), para uma investigação: `--perfil-investigacao <unidade>` (a tabela `perfil` marca a `finalidade` como "investigação — não é candidatura"; decisão de 16/10).
 
 | Arquivo da rodada | O que tem |
 |---|---|
@@ -40,8 +49,10 @@ sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar
 | `triagem_sensibilidade.csv`, `triagem_por_papel*.csv` | régua estrita; triagem dentro de cada papel |
 | `cobertura_mecanismos.csv`, `cobertura_sintomas.csv` | o que é observável e o que é pendente, com o motivo |
 | `consolidacao_*.csv` | limítrofes, componentes, unidade × papel × mês, fila de pendências, global × papel |
-| `genealogia_arestas.csv`, `genealogia_observada.png` | a genealogia completa, todos os erros em cada coluna |
-| `unidades_observadas.png`, `papel_unidade.png` | tokens por unidade; erros por papel × unidade |
+| `consolidacao_unidade_papel_tokens.csv` (16/10) | erros e tokens por unidade × papel de **todas** as unidades, os pendentes como "sem unidade (pendente)"; somada por unidade = a triagem (teste) |
+| `consolidacao_depois_unidade.csv` (16/10) | o que vem no passo seguinte a cada erro, de todas as unidades, com "o seguinte é final" e a unidade do erro seguinte quando o vínculo é confirmado (a matriz de transição); nas candidatas, igual ao perfil (teste) |
+| `genealogia_arestas.csv`, `genealogia_observada.png` | a genealogia completa, todos os erros em cada coluna (as arestas com as cinco colunas; a figura junta unidade e destino numa só) |
+| `unidades_observadas.png`, `papel_unidade.png` | as versões antigas destas figuras; o relatório desenha as suas a partir das tabelas |
 | `perfis/<unidade>/` | casos, amostra de investigação (até 30, por regra fixa), antes/depois, estabilidade |
 
 `ler_artefato()` (em `mineracao_observada.py`) só aceita um arquivo se o hash dele, o da fonte e o do código baterem

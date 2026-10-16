@@ -24,7 +24,7 @@ O plano era levar a base 3 (só os erros, em parquet) para o método das bases 1
 | **3** · Depois do erro, custo, versão; suspeitas e protocolo | **Em parte** | Há o gráfico e os perfis do que vem depois do erro, por candidata. **Pendente:** custo da janela completa, unidade por versão → #15; suspeitas e protocolo por papel, mês e versão → #16 |
 | **4** · Relatório e pedido de dados | **Feita** | `01` a `05` em `docs/` |
 | **5** · Kit e auditoria independente | **Não feita** | → #17 |
-| **6** · Painel | **Feita e rodada** | `executar.py painel`, 7 gráficos de leitura; leituras no relatório (#10), refeitas em 14/10 para a rodada `609c…` da v2 (#33). A figura de destinos foi corrigida e bate com a triagem (#27) |
+| **6** · Painel e relatório | **Feita, auditada e rodada** | `executar.py relatorio`: parte 1 (os erros, 10 gráficos) e parte 2 (as taxas, 10 gráficos), auditados um a um e refeitos em 15–16/10 (#36, #40, fechados), lidos na rodada `96958e65`. Antes: 7 gráficos de leitura (#8–#10), refeitos em 14/10 para a `609c…` (#33) |
 | **7** · Quando a v2 e a agregada chegarem | **Chegaram, conferidas e a v2 rodada** (#26, #31) | A v2 é a v1 sem o corte de texto; as contagens são o pedido A atendido, com a junção exata; rodada `609c…`: 97,5% classificados, 749 pendentes. O relatório foi migrado para ela (#33). **Pendente:** as taxas (#32) e B e C reescritos (#2) |
 | **Documentos gerais** (glossário, livro-razão, `analysis/README`, `kit.md`) | **Não feita** | → #18 |
 | **Teste de equivalência** `triagem_observada` × `bp.triagem` na suíte | **Só como script** | → #19 |

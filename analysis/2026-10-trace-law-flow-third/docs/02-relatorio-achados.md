@@ -2,7 +2,7 @@
 
 > Códigos de unidade e siglas: [glossário](../../glossario.md). Cada código aparece junto do nome da lição.
 
-**Data:** 08/10/2026; leituras do painel (§7) de 09/10; investigação do nome não definido (§7.8–7.10) de 13/10;
+**Data:** 08/10/2026; leituras do painel (§7) de 09/10; figuras refeitas em 15–16/10 (rodada `96958e65`); investigação do nome não definido (§7.8–7.10) de 13/10;
 números das seções 1 a 7.7 atualizados em 14/10 para a rodada da extração v2 (Ajuste 18) · **Fonte:**
 `base_erros_minerados_full_v2.parquet`, SHA-256 `908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306` — a
 query `ICTI_crossmemory_query_mineracao_erros` sem o corte de texto (as mesmas 31.421 linhas da v1, com o texto
@@ -186,8 +186,9 @@ erros das candidatas por papel somam 17.308; no mapa papel × unidade, as coluna
 somam 5.296 e 5.029, os valores da figura de papéis. Contagem de erros não é taxa ([§6](#6--limitações-que-afetam-a-leitura));
 as primeiras taxas, do pedido A, estão em §7.5. As leituras da rodada `3f9c…` (v1) estão no histórico do git.
 
-**Figuras refeitas na auditoria dos gráficos (15/10, [roadmap](04-roadmap.md) #36 e #40; código aplicado, falta gerar na
-máquina 2):** os números citados abaixo saem das tabelas e não mudam; mudam as figuras. Dois gráficos saíram da parte 1
+**Figuras refeitas na auditoria dos gráficos (15–16/10, [roadmap](04-roadmap.md) #36 e #40, fechados; geradas e lidas na
+rodada `observada_96958e65cb7e615a`, de 16/10):** os números citados abaixo saem das tabelas e não mudam (os totais lidos
+nas figuras novas são os da `609c…`; a prova por hash é o #42); mudam as figuras. Dois gráficos saíram da parte 1
 por "um insight por gráfico": o de **papéis das candidatas** (a figura citada em §7.4; o total por papel passou para a
 margem do mapa papel × unidade) e o de **erros por unidade e mês** (§7.5; virou o painel esquerdo da taxa por unidade e
 mês, na parte 2). Entrou o de **unidades por destino e tipo de memória**. Os gráficos por unidade passam a trazer todas
