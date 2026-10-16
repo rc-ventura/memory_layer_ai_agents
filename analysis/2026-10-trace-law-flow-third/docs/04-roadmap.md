@@ -7,8 +7,9 @@
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
-[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, fim do dia
-(branch `2026-10-14-base3-roadmap-queries`): correções dos gráficos do #36 e do #40 aplicadas no código.
+[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, noite
+(branch `2026-10-16-base3-comparar-rodadas`): `validacao/comparar_rodadas.py` escrito e ensaiado na base 1 (#42; falta
+rodar na máquina 2).
 **A ordem do que falta** (decisões antes da rodada nova, conferência na máquina 2, gráficos migráveis, pedido ao tutor,
 primeira mineração): a seção [Plano de evolução](#plano-de-evolução-1610-a-ordem-do-que-falta), de 16/10.
 
@@ -47,7 +48,7 @@ lidos pelo Rafael na rodada `96958e65` e ajustados (`9dfb729`, `762527f`; o rela
 `.md` aberto, `f9cab0c`). Ficam **ajustes gerais de forma**, menores, que o Rafael lista quando rever o relatório
 (#45 g), e as contagens e decisões do #45. **A ordem a seguir:**
 1. **#42** — fechar a etapa 2: o `comparar_rodadas.py` prova por hash que a rodada nova não mudou nenhum número da `609c…`
-   (escrito aqui, um comando na máquina 2);
+   (escrito e ensaiado na base 1 em 16/10; falta o comando na máquina 2, abaixo na Etapa 2);
 2. **etapa 4 (#2, #11)** — o pedido ao tutor: os gráficos estão prontos e o `05` está desatualizado (descreve o pedido A
    como "a enviar"); é o que destrava os gráficos que ainda faltam dado e é a etapa que depende de outra pessoa, então
    quanto antes sair, antes volta;
@@ -93,12 +94,25 @@ por `figuras_painel.depois_do_erro`; testes: soma = todos os erros e, nas candid
 ### Etapa 2 · Rodada nova na máquina 2 e conferência (#42)
 
 1. `executar.py analisar` (id novo) e `executar.py relatorio --rodada <nova>`.
-2. **A rodada nova não muda nenhum número** (decidido em 15/10): `validacao/comparar_rodadas.py` (a escrever) compara os
-   SHA-256 dos artefatos dos dois `manifesto.json` e lista só o que difere; o esperado: iguais os CSVs de erros, cobertura e
-   triagem; novos só `consolidacao_unidade_papel_tokens.csv` e `consolidacao_depois_unidade.csv`; diferentes a
-   genealogia e os perfis (a tabela `perfil` ganhou a coluna `finalidade`).
-3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte (o
-   gráfico do gasto por papel escreve a diferença máxima na limitação: tem de ser ≈ 0).
+2. **A rodada nova não muda nenhum número** (decidido em 15/10): `validacao/comparar_rodadas.py` (escrito em 16/10)
+   compara os SHA-256 dos artefatos dos dois `manifesto.json`. O que tem o mesmo hash não se abre; um CSV diferente é
+   classificado (só colunas novas, só `rodada_id`, só a ordem das linhas, ou conteúdo diferente, com quantas linhas, nunca
+   quais). Sai com 0 se nada mudou e com 1 e a lista do que não fechou, se não. Na máquina 2, da raiz:
+   ```bash
+   uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/comparar_rodadas.py \
+       --antes 609c947b15295c84 --depois 96958e65cb7e615a
+   ```
+   (a fonte para o gasto por papel é a v2 em `data/`, sozinha; outra, com `--fonte`)
+   **Ensaio na base 1 (16/10):** a mesma fonte pela porta da query, com o código da `609c…` (`16bb4a6`) e o atual.
+   Resultado: resumo 0 de 26 campos diferentes; 81 artefatos com o mesmo hash, inclusive os CSVs de erros, cobertura,
+   triagem e `genealogia_arestas.csv` (a D4 só mudou o desenho). Novos só `consolidacao_unidade_papel_tokens.csv` e
+   `consolidacao_depois_unidade.csv`. Nos perfis, `casos` e `amostra_investigacao` diferem só no `rodada_id`, e o
+   `perfil` ganhou só a coluna `finalidade`. Mudou ainda o `genealogia_observada.png`, como esperado. Saída 0. Na
+   máquina 2 espera-se o mesmo padrão.
+3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte —
+   o mesmo script confere (o gasto por papel, com a fonte): por unidade = triagem, sem unidade = pendentes, total = resumo, por papel =
+   fonte (diferença máxima 0), e o que vem depois do erro somado = todos os erros. No ensaio da base 1, tudo fechou
+   (498 erros, 13.946.017 tokens, 13 papéis).
 4. Fotos dos 10 gráficos de cada parte, conferidos um a um contra a coluna "Correção" do #36 e do #40; o conferido marca
    `[x]` com a rodada como prova. Depois, o relatório §7 relido e as taxas no §7 (#32).
 
@@ -249,8 +263,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
-- [ ] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, a escrever) e a tabela
-  nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
+- [ ] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, escrito e ensaiado na
+  base 1 em 16/10, saída 0; falta rodar na máquina 2) e a tabela nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
 - [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
   trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
 - [ ] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
