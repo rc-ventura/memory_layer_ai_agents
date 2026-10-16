@@ -110,5 +110,9 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
     **perfil sob demanda de qualquer unidade** (`--perfil-investigacao`), marcado como "investigação — não é candidatura", para os
     roteiros de protocolo, crítico, resíduo e timeout;
   - **sem índice de Gini** na concentração de custo.
+- **16/10, o arquivo final da memória na base 3 aponta o caso por hash** (esquema 0.2): `step_ref` + `fonte_id` + `rodada_id`
+  no lugar de `exec_id` + `idx` (a base 3 não tem `idx`). Os três são hashes, que podem sair da máquina 2; o `exec_id` não sai
+  (a regra de sigilo continua). Assim o arquivo sai inteiro, sem a troca por `caso-N`. Os arquivos 0.1 da base 1 continuam
+  válidos → livro-razão, [Ajuste 19](pipeline-entre-bases.md#ajuste-19--o-arquivo-final-da-memória-aponta-o-caso-por-hash-na-base-3-esquema-02); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #44.
 
 ---

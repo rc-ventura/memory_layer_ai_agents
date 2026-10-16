@@ -1,7 +1,15 @@
 {
   "titulo": "Esquema do arquivo final de uma mineração de candidata a memória",
-  "versao": "0.1",
-  "situacao": "provisória — a estrutura final da memória ainda não está fechada. Os campos vêm do 06-racionais-mineracao-unidades-n2-n10.md §9 Passo 8, que os tira do TRAIL, do AgentDebug e da produção própria do projeto (comparação em 01-racionais.md §8). Para mudar a estrutura, mude só este arquivo, suba a versao e registre no livro-razão (pipeline-entre-bases.md): a skill mineracao-candidata e o validar_memoria.py leem daqui.",
+  "versao": "0.2",
+  "versoes_aceitas": [
+    "0.1",
+    "0.2"
+  ],
+  "historico": {
+    "0.1": "16/09/2026 — os campos do 06 §9 Passo 8 (base 1: o caso apontado por exec_id + idx).",
+    "0.2": "16/10/2026 — a base 3 não tem idx: o caso pode ser apontado por step_ref + fonte_id + rodada_id (hashes, podem sair do ambiente), e exec_id deixa de ser obrigatório nesse caso; parte_especifica aceita script:<nome>. Um arquivo 0.1 continua válido (versoes_aceitas). Livro-razão, Ajuste 19."
+  },
+  "situacao": "provisória — a estrutura final da memória ainda não está fechada. Os campos vêm do 06-racionais-mineracao-unidades-n2-n10.md §9 Passo 8, que os tira do TRAIL, do AgentDebug e da produção própria do projeto (comparação em 01-racionais.md §8). Para mudar a estrutura, mude só este arquivo, suba a versao (e, se o arquivo antigo continuar válido, acrescente-a em versoes_aceitas) e registre no livro-razão (pipeline-entre-bases.md): a skill mineracao-candidata e o validar_memoria.py leem daqui.",
   "arquivo": {
     "caminho": "pipeline/resultados/mineracao/<unidade>/memoria_<unidade>_<BASE_ID>.json",
     "cabecalho": {
@@ -9,10 +17,15 @@
       "unidade": "o código da unidade (ex.: U_...)",
       "base": "o BASE_ID da análise",
       "gerado_em": "AAAA-MM-DD",
-      "parte_especifica": "notebook:<nome> | investigacao:<roteiro>",
+      "parte_especifica": "notebook:<nome> | script:<nome> | investigacao:<roteiro>",
       "memoria": "o registro, com os campos abaixo",
       "origem": "para cada campo do registro: {tipo: checado | hipotese | pendente, comando: <o que reproduz, obrigatório se checado>, nota}"
-    }
+    },
+    "parte_especifica_prefixos": [
+      "notebook:",
+      "script:",
+      "investigacao:"
+    ]
   },
   "campos": {
     "category": {
@@ -31,7 +44,25 @@
       "tipo": "objeto",
       "obrigatorio": true,
       "fonte": "TRAIL (Apêndice A.11 — anotação por span)",
-      "o_que_e": "{total_erros, casos: [{exec_id, role, idx, mes}]} — a lista, capada em ~10, por regra fixa"
+      "o_que_e": "{total_erros, casos: [...]} — a lista, capada em ~10, por regra fixa; cada caso com role e mes e um dos localizadores abaixo",
+      "casos_item": {
+        "obrigatorio": [
+          "role",
+          "mes"
+        ],
+        "localizadores": {
+          "base 1 e 2 (trace com idx)": [
+            "exec_id",
+            "idx"
+          ],
+          "base 3 (parquet, sem idx)": [
+            "step_ref",
+            "fonte_id",
+            "rodada_id"
+          ]
+        },
+        "nota": "basta um localizador completo. step_ref é o hash do passo (adaptador_trace.py), fonte_id o hash da extração e rodada_id o da rodada: os três podem sair do ambiente (sigilo.md: hashes); exec_id não sai, então no localizador da base 3 ele é dispensado."
+      }
     },
     "evidence": {
       "tipo": "lista",

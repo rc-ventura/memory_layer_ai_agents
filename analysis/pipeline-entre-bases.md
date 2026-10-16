@@ -796,6 +796,47 @@ engolia a mensagem e não dizia qual trava tinha disparado.
 - **Replicar no ambiente da base 3:** (1) `git pull`; (2) `executar.py analisar` — rodada nova; a `3f9c…` fica intacta;
   (3) `resumo_rodada.py`; (4) `executar.py conferir`; (5) `painel`.
 
+### Ajuste 19 — o arquivo final da memória aponta o caso por hash na base 3 (esquema 0.2)
+
+**Gatilho.** O piloto de mineração da base 3 (`b3 #12`, o inventário do sandbox) termina num arquivo final da memória
+validado pelo esquema. O esquema 0.1 aponta cada caso de `location.casos` por `exec_id` + `idx` (o ordinal do ActionStep
+no trace da base 1), e a base 3 não tem `idx`: o parquet só traz os passos com erro e a janela até n+2 (`b3 #44`).
+
+**Evidência.** No adaptador (`analysis/adaptador_trace.py`), o modo de janelas marca `idx` como indisponível, e cada passo
+ganha um `step_ref`, o hash de (fonte, execução, agente, papel, posição do passo). O `rodada_id` e o `fonte_id` já são
+hashes registrados no manifesto da rodada. A regra de sigilo (`.claude/skills/mineracao-base/referencias/sigilo.md`)
+deixa sair hashes e proíbe o `exec_id`.
+
+**Solução.**
+- **Esquema** (`analysis/registros/esquema-memoria.json`, 0.1 → 0.2): `location.casos_item` diz o que cada caso
+  precisa ter: `role` e `mes`, mais um localizador completo, `exec_id` + `idx` (bases 1 e 2) **ou** `step_ref` +
+  `fonte_id` + `rodada_id` (base 3, sem `exec_id`). `parte_especifica` aceita também `script:<nome>`. Campo novo
+  `versoes_aceitas` (`0.1`, `0.2`): a 0.2 só alarga, então um arquivo 0.1 continua válido. Campo `historico` com o que
+  mudou em cada versão.
+- **Validador** (`.claude/skills/mineracao-candidata/scripts/validar_memoria.py`): aceita as versões de `versoes_aceitas`,
+  confere o prefixo da parte específica e confere cada caso contra o `casos_item`, tudo lido do esquema.
+- **Decisão do Rafael (16/10):** o arquivo da base 3 sai da máquina 2 inteiro. Como o localizador da base 3 é só de
+  hashes, isso não muda a regra de sigilo.
+- **Fora deste ajuste:** a parte específica como script em vez de notebook (procedimento `16`, skills
+  `propor-notebook` e `validador-de-notebook`). O esquema já aceita o rótulo `script:`; o método muda no próximo ajuste.
+
+**Verificação.**
+- **Testes:** `analysis/tests/test_validar_memoria.py`, 9 novos: o localizador da base 3 sem `exec_id` nem `idx` passa;
+  o da base 1 passa; um arquivo 0.1 passa; versão desconhecida, localizador incompleto (sem cada um dos três hashes, ou
+  `idx` sem `exec_id`), caso sem papel ou mês e prefixo desconhecido reprovam; os arquivos finais da base 1 que estão no
+  repositório passam. A suíte toda: 212 testes, todos passando.
+- **Base 1:** os arquivos finais (`memoria_U_contrato_dict_base1.json`, `memoria_U_campo_inexistente_base1.json`)
+  aprovados pelo validador novo, sem mudança.
+- **Efeito nas rodadas da base 3:** a rodada não lê o esquema, mas ele está na lista do hash do código
+  (`mineracao_observada.versoes_codigo`). Mudar o esquema muda o hash: o próximo `executar.py analisar` gera um
+  identificador novo, e as rodadas já gravadas (`96958e65…`, `609c…`) deixam de ser lidas pelos consumidores
+  (`ler_artefato` recusa código incompatível). Nenhum número muda: o `comparar_rodadas.py` deve mostrar só
+  `registros/esquema-memoria.json` em "código que mudou" e os artefatos com o mesmo hash.
+- **Replicar no ambiente da base 3:** (1) **antes do `git pull`**, fechar a pendência do `b3 #42` no código de
+  `a753c2f` (o `conferir` da `96958e65…` precisa do código com que ela foi gravada); (2) `git pull`; (3)
+  `executar.py analisar` (rodada nova) e `comparar_rodadas.py --antes 96958e65cb7e615a --depois <nova>`, saída esperada
+  0; (4) `executar.py relatorio --rodada <nova>`.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e

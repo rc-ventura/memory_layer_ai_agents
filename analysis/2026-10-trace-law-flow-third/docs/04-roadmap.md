@@ -8,7 +8,7 @@
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
 [limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, noite
-(branch `2026-10-16-base3-comparar-rodadas`): `validacao/comparar_rodadas.py` escrito e ensaiado na base 1 (#42); rodado
+(branch `2026-10-16-base3-comparar-rodadas`): esquema da memória 0.2, o localizador da base 3 (#44, Ajuste 19); `validacao/comparar_rodadas.py` escrito e ensaiado na base 1 (#42); rodado
 na máquina 2, parou num arquivo fora do manifesto — **pendência aberta no #42**.
 **A ordem do que falta** (decisões antes da rodada nova, conferência na máquina 2, gráficos migráveis, pedido ao tutor,
 primeira mineração): a seção [Plano de evolução](#plano-de-evolução-1610-a-ordem-do-que-falta), de 16/10.
@@ -181,7 +181,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 | Passo | O que fazer | Por quê | Decisão do Rafael |
 |---|---|---|---|
-| 5.1 (#44) | **Localizador da memória:** o [esquema](../../registros/esquema-memoria.json) (v0.1) pede `idx` em `location.casos`; a base 3 não tem `idx`. Proposta: aceitar `step_ref` + `fonte_id` + `rodada_id`; esquema v0.2, entrada no livro-razão, `validar_memoria.py` aceitando os dois | sem isso o arquivo final não valida | **sim:** aprovar o campo |
+| 5.1 (#44, **feito**: Ajuste 19) | **Localizador da memória:** o [esquema](../../registros/esquema-memoria.json) (v0.1) pedia `idx` em `location.casos`; a base 3 não tem `idx`. Proposta: aceitar `step_ref` + `fonte_id` + `rodada_id`; esquema v0.2, entrada no livro-razão, `validar_memoria.py` aceitando os dois | sem isso o arquivo final não valida | **aprovado em 16/10** (o arquivo sai inteiro: só hashes) |
 | 5.2 (#17) | **Kit mínimo para a base 3:** o `conferir_versao` reconhece o código da third; a preparação da `mineracao-base` chama `executar.py` e lê a capacidade (a skill de falhas silenciosas para e explica); um `audit_recompute` da base 3, só biblioteca padrão e `leitor_trace`, que recalcula a parte genérica (recorrência, sub-unidades, antes, depois, estabilidade, população) direto do parquet | o método exige a auditoria independente em paralelo: "re-rodar não é verificar" | não (método de 05/10) |
 | 5.3 (#28) | **Primeiro registro:** o monitoramento do `try/except NameError` em [`monitoramento.json`](../../registros/monitoramento.json): linha de base (base 3: 5.764, 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura depois de corrigido o prompt, ou num papel novo), ação | destino já decidido (sinal de harness); o `monitorar.py` lê o arquivo no passo 0 de toda mineração | se o gatilho entra também em % (o denominador já existe) |
 | 5.4 (#12) | **Piloto** `/mineracao-candidata U_sandbox` na máquina 2: parte genérica (o perfil já existe na rodada), auditoria em paralelo, encontro por script; pelo funil, parte específica **determinística**: contar os nomes bloqueados por papel e mês a partir da mensagem | gera o inventário (o `correction_guidance`) e o escopo (papel ou global, com o M2) | aprovar a proposta do notebook específico (procedimento `16`) |
@@ -256,9 +256,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
 - [ ] **#12** **Piloto de mineração de ponta a ponta: inventário do sandbox** (`U_sandbox`: 3.653 erros, 16 papéis). A lição
-    sai da própria mensagem de erro, então fecha só com o parquet. **Antes:** decidir o localizador do arquivo final
-    da memória — o [esquema](../../registros/esquema-memoria.json) pede `idx`, que a base 3 não tem; a proposta é aceitar
-    `step_ref` com a origem e a fonte.
+    sai da própria mensagem de erro, então fecha só com o parquet. O localizador do arquivo final está decidido (#44,
+    esquema 0.2). **Antes:** a parte específica como script, não notebook (o próximo ajuste do método), e o kit mínimo (#17).
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do
@@ -292,9 +291,6 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   pendência na Etapa 2) e a tabela nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
 - [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
   trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
-- [ ] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
-  esquema v0.2) — pré-requisito do piloto (#12) → [Etapa 5](#etapa-5--a-hora-da-mineração-o-primeiro-arquivo-de-memória-da-base-3).
-
 - [ ] **#45** **O que sobrou da auditoria dos gráficos (#36, #40) e não é desenho:** (a) **o asterisco do papel × unidade** marca "candidata dentro do papel" (destino), num gráfico de volume — tirar? (proposta de 16/10, a decidir); (b) **OBPCivel × OBFCivel** — papel real ou nome cortado na origem (como "ontestacaoCivel")? Se for corte, entra no mapa de exibição; (c) a genealogia tem "Protocolo do harness" 4.591 e `H_bloco_code` 4.592 — contar por família as arestas que chegam em `harness_bloco_code`; (d) a composição dos erros dos papéis pequenos de taxa alta (AnaliseProcessual 44%, AgenteProcuracoes 25,5%: unidade e pendentes); (e) quantas trajetórias terminam num passo com erro (`recovery_signal = NO_NEXT_ACTION`); (f) a amostra de ≈ 20 casos do campo inexistente na base 1, para as hipóteses da "resposta final alta" (a aprovar). (g) ajustes gerais de forma nos gráficos (o Rafael lista ao rever o relatório da rodada `96958e65`, 16/10). São contagens na máquina 2 ou decisões; nenhuma muda gráfico sem passar pelo Rafael.
 
 ## Fora de escopo / adiado
@@ -306,6 +302,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
+  esquema v0.2) — pré-requisito do piloto (#12) → esquema 0.2 e `validar_memoria.py` aceitando os dois localizadores;
+  aprovado pelo Rafael em 16/10, com o arquivo saindo inteiro da máquina 2 (só hashes, sem `exec_id`); 9 testes novos, 212
+  na suíte → livro-razão, [Ajuste 19](../../pipeline-entre-bases.md#ajuste-19--o-arquivo-final-da-memória-aponta-o-caso-por-hash-na-base-3-esquema-02).
 
 - [x] **#40** **Auditoria dos gráficos da parte 1 do relatório (painel), um por um** (aberta em 15/10; mesma regra do #36: Rafael
   audita, a correção é só registrada aqui e aplicada em lote quando a auditoria fechar). Ordem do painel: cobertura, destinos, frequência × custo,
