@@ -88,7 +88,7 @@ def figura_cobertura(cob, tri, destino):
     from matplotlib.ticker import FuncFormatter
     from paleta import BLUE, INK2, MUTED
     from execucao.figuras_painel import _pct
-    tot_e, tot_t = float(cob.erros.sum()), float(cob.tokens_n_conhecidos.sum())
+    tot_e = float(cob.erros.sum())
     c = cob.assign(motivo=cob.motivo_evidencia.map(lambda m: MOTIVO.get(m, m))).sort_values("erros")
     fig, ax = plt.subplots(figsize=(12, max(3.5, 0.45 * len(c) + 2)))
     ax.barh(c.motivo, c.erros, color=[BLUE if s == "observavel" else MUTED for s in c.situacao_mecanismo])
@@ -97,20 +97,13 @@ def figura_cobertura(cob, tri, destino):
                 color=INK2)
     ax.set_xlim(0, c.erros.max() * 1.4)
     ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _n(v)))
-    grupos = {}
-    for s in ["observavel", "pendente"]:
-        g = cob[cob.situacao_mecanismo.eq(s)]
-        grupos[s] = (float(g.erros.sum()), float(g.tokens_n_conhecidos.sum()))
-    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=BLUE), plt.Rectangle((0, 0), 1, 1, color=MUTED)],
-              labels=[f"{nome}: {_n(e)} {'erro' if e == 1 else 'erros'} ({_pct(100 * e / tot_e)}) · {_n(t / 1e6, 1)} mi tokens ({_pct(100 * t / tot_t)})"
-                      for nome, (e, t) in [("a regra tem a evidência para decidir", grupos["observavel"]),
-                                           ("pendente (faltou dado na extração)", grupos["pendente"])]],
-              loc="lower right", frameon=False, fontsize=9)
-    obs = grupos["observavel"][0]
+    obs = float(cob.loc[cob.situacao_mecanismo.eq("observavel"), "erros"].sum())
     res = float(tri.loc[tri.unidade.str.startswith("X_"), "erros_observaveis"].sum())
+    # sem legenda (Rafael, 16/10: ela só repetia o título); as cores ficam ditas no título
     fig.suptitle(f"Cobertura das regras: a regra tem a evidência para decidir em {_n(obs)} de {_n(tot_e)} erros "
-                 f"({_pct(100 * obs / tot_e)})\n{_n(obs - res)} ({_pct(100 * (obs - res) / tot_e)}) caem numa unidade "
-                 f"reconhecida; {_n(res)} são resíduo (nenhuma regra reconheceu a causa)", x=0.01, ha="left", fontsize=11)
+                 f"({_pct(100 * obs / tot_e)}, azul); {_n(tot_e - obs)} ficam pendentes por falta de dado (cinza)\n"
+                 f"{_n(obs - res)} ({_pct(100 * (obs - res) / tot_e)}) caem numa unidade reconhecida; {_n(res)} são resíduo "
+                 "(nenhuma regra reconheceu a causa)", x=0.01, ha="left", fontsize=11)
     ax.set_xlabel("erros estruturados")
     for lado in ["top", "right"]:
         ax.spines[lado].set_visible(False)

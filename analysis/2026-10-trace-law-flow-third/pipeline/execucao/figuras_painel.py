@@ -32,11 +32,15 @@ SEM_UNIDADE = "sem unidade (pendente)"   # = mineracao_observada.SEM_UNIDADE (se
 # achou harness/infra, sem recorrência e crítico confundidos).
 DESTINO = [("candidato observado", "candidata a memória", BLUE),
            (bp.SINAL_HARNESS, "sinal de harness", ORANGE),
-           ("não-memória", "harness / infra (não vira memória)", INK2),
-           ("investigar — crítico", "crítico (limite de passos)", "#7a4a2a"),
-           ("revisar", "resíduo (nenhuma regra reconheceu a causa)", RESIDUO),
-           ("recorrência não demonstrada", "poucas execuções ou meses (sem recorrência)", "#1baf7a"),
-           ("pendente", "pendente (faltou dado na extração)", "#b58a32")]
+           ("não-memória", "harness / infra", INK2),
+           ("investigar — crítico", "crítico", "#7a4a2a"),
+           ("revisar", "resíduo", RESIDUO),
+           ("recorrência não demonstrada", "sem recorrência", "#1baf7a"),
+           ("pendente", "pendente", "#b58a32")]
+# O que cada destino quer dizer (vai para o "Como ler", não para a legenda — Rafael, 16/10: a legenda poluía).
+SIGNIFICADO_DESTINO = ("sinal de harness = erro do agente com conserto no prompt ou no ambiente; harness / infra = não vira "
+                       "memória; crítico = limite de passos (o agente não se recuperou); resíduo = nenhuma regra reconheceu "
+                       "a causa; sem recorrência = poucas execuções ou meses; pendente = faltou dado na extração")
 
 # Mapa de exibição do nome do papel (decidido em 15/10): só o rótulo; a chave da junção e os hashes não mudam.
 # "ontestacaoCivel" é o ContestacaoCivel com o C cortado pelo regex que gera o nome na origem.
@@ -67,12 +71,13 @@ def papel(nome):
     return NOME_PAPEL.get(nome, nome)
 
 
-def unidade(u, quebra=False):
-    """Nome da lição com o identificador entre parênteses."""
+def unidade(u, com_id=False):
+    """Nome da lição, por extenso — é o que explica a unidade (Rafael, 16/10: o identificador entre parênteses só
+    alongava o rótulo). `com_id` acrescenta o identificador, para os textos que o leitor cruza com as tabelas."""
     if u == SEM_UNIDADE:
         return "Sem unidade: pendente (falta dado)"
     nome = bp.UNI[u][0] if u in bp.UNI else u
-    return f"{nome}\n({u})" if quebra else f"{nome} ({u})"
+    return f"{nome} ({u})" if com_id else nome
 
 
 def refs_tamanho(maximo):
@@ -106,8 +111,11 @@ def _legenda_familias(ax, unidades_familias, **kw):
         if c not in cats:
             cats.append(c)
     ordem = [c for c in COR_ERRO if c in cats] + [c for c in cats if c not in COR_ERRO]
-    return ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=cor(COR_ERRO, c)) for c in ordem],
-                     labels=ordem, title="cor = família do erro", frameon=False, fontsize=8, title_fontsize=8, **kw)
+    leg = ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=cor(COR_ERRO, c)) for c in ordem],
+                    labels=ordem, title="cor = família do erro", frameon=False, fontsize=8, title_fontsize=8, **kw)
+    leg._legend_box.sep = 9   # folga entre o título da legenda e a primeira cor
+    leg._legend_box.align = "left"
+    return leg
 
 
 def _salvar(fig, destino):
@@ -116,7 +124,7 @@ def _salvar(fig, destino):
     plt.close(fig)
 
 
-def rotular(ax, xs, ys, textos, raios=None, fontsize=8, cores=None):
+def rotular(ax, xs, ys, textos, raios=None, fontsize=8, cores=None, folga_direita=140):
     """Rótulos que não se sobrepõem nem cobrem as bolhas: para cada ponto, na ordem dada (o mais importante primeiro),
     tenta posições em volta dele, cada vez mais longe, e fica com a primeira livre; longe do ponto, um traço o liga.
     `raios` em pontos tipográficos (o raio da bolha); `xs`, `ys` em coordenadas dos dados."""
@@ -142,7 +150,7 @@ def rotular(ax, xs, ys, textos, raios=None, fontsize=8, cores=None):
                                   arrowprops=(dict(arrowstyle="-", color=MUTED, lw=0.5, shrinkA=0, shrinkB=rp * 0.8)
                                               if dist > rp + 10 else None))
                 bb = ann.get_window_extent(r).expanded(1.04, 1.2)
-                dentro = (bb.x0 >= caixa.x0 - 40 and bb.x1 <= caixa.x1 + 140 and bb.y0 >= caixa.y0 and bb.y1 <= caixa.y1 + 20)
+                dentro = (bb.x0 >= caixa.x0 - 40 and bb.x1 <= caixa.x1 + folga_direita and bb.y0 >= caixa.y0 and bb.y1 <= caixa.y1 + 20)
                 if dentro and not any(bb.overlaps(o) for o in ocupados):
                     colocado = bb
                     break
@@ -243,8 +251,9 @@ def papel_unidade(upt, tpp, tri, destino):
     tot = piv.to_numpy().sum()
     dois = piv.sum(axis=1).head(2)
     fig.suptitle(f"Erros por papel × unidade: {_n(tot)} erros observáveis em {n_l} papéis e {n_c} unidades; "
-                 f"{' e '.join(dois.index)} têm {_n(100 * dois.sum() / tot)}%\n* = a unidade recorre nesse papel "
-                 "(≥ 3 execuções e ≥ 2 meses no papel)", x=0.01, ha="left", fontsize=11)
+                 f"{' e '.join(dois.index)} têm {_n(100 * dois.sum() / tot)}% desses erros\n* = a unidade é candidata "
+                 "a memória dentro desse papel (≥ 3 execuções e ≥ 2 meses no papel; só as unidades de memória têm essa "
+                 "conta)", x=0.01, ha="left", fontsize=11)
     _salvar(fig, destino)
     return ("Erros por papel × unidade",
             "Onde, na esteira, cada unidade de erro acontece?",
@@ -289,10 +298,11 @@ def destinos(tri, cob, destino, gasto_total=None):
     linhas_leg = [l for l in linhas if l[2] > 0]   # destino sem erro nesta rodada não entra na legenda
     rotulos = []
     for rot, c, e, t, us in linhas_leg:
-        extra = f" — {', '.join(us)}" if rot.startswith("sinal de harness") and us else ""
-        rotulos.append(f"{rot}{extra}: {_n(e)} erros · {_tok(t)}")
-    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, c, _, _, _ in linhas_leg], labels=rotulos, ncol=2,
-              loc="upper center", bbox_to_anchor=(0.5, -0.22), frameon=False, fontsize=8)
+        rotulos.append(f"{rot}: {_n(e)} erros · {_tok(t)}")
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, c, _, _, _ in linhas_leg], labels=rotulos,
+              ncol=min(3, len(rotulos)), columnspacing=3.5, handletextpad=0.6, loc="upper center",
+              bbox_to_anchor=(0.5, -0.24), frameon=False, fontsize=8.5)
+    sinal = [u for rot, _, _, _, us in linhas if rot == "sinal de harness" for u in us]
     cand = linhas[0]
     base = (f" ({_n(100 * cand[3] / gasto_total, 1)}% do gasto total do sistema, {_tok(gasto_total)})"
             if gasto_total else "")
@@ -306,7 +316,8 @@ def destinos(tri, cob, destino, gasto_total=None):
             "Duas barras de 100%: em cima os erros, embaixo os tokens dos passos com erro, divididas pelo destino da "
             "triagem (a legenda dá os absolutos de cada faixa). Uma faixa mais larga embaixo que em cima = erros mais caros "
             f"que a média. Tokens por erro (destinos com pelo menos 100 erros): {por_erro}; média "
-            f"{_n(tot_t / tot_e / 1e3, 1)} mil.",
+            f"{_n(tot_t / tot_e / 1e3, 1)} mil. Os destinos: {SIGNIFICADO_DESTINO}"
+            + (f" (o sinal de harness desta rodada: {', '.join(unidade(u) for u in sinal)})." if sinal else "."),
             "A base dos % de baixo são os tokens dos passos com erro, não o gasto do sistema"
             + ("" if gasto_total else " (a fatia sobre o gasto total está na parte 2)")
             + ". Tokens só do passo com erro (sem a recuperação). Candidata = recorrente o bastante para minerar, não "
@@ -330,7 +341,7 @@ def unidades_destino_tipo(tri, destino):
             ys.append(y)
             y += 1
         y += 0.4
-    fig, ax = plt.subplots(figsize=(13, 0.36 * y + 1.8))
+    fig, ax = plt.subplots(figsize=(13, 0.48 * y + 1.8))
     vmax = float(t.tokens_n_conhecidos.max()) / 1e6
     for (tipo, r, _), yy in zip(linhas, ys):
         if tipo == "grupo":
@@ -339,13 +350,14 @@ def unidades_destino_tipo(tri, destino):
             continue
         v = float(r.tokens_n_conhecidos) / 1e6
         ax.barh(yy, v, color=_cor_unidade(r.unidade, r.familia_dominante), height=0.7)
-        tipo_mem = bp.UNI[r.unidade][1] if r.unidade in bp.UNI else "—"
-        ax.text(v + vmax * 0.01, yy, f"{_n(v, 1)} mi · {_n(r.erros_observaveis)} {'erro' if r.erros_observaveis == 1 else 'erros'} · "
-                f"{_n(r.ocorrencias_condicionais)} ocorrências · tipo: {tipo_mem}", va="center", fontsize=7.5, color=INK2)
+        tipo_mem = {bp.FACT: "factual", bp.ESTR: "estratégia"}.get(bp.UNI[r.unidade][1] if r.unidade in bp.UNI else None)
+        ax.text(v + vmax * 0.01, yy, f"{_n(v, 1)} mi · {_n(r.erros_observaveis)} "
+                f"{'erro' if r.erros_observaveis == 1 else 'erros'}" + (f" · {tipo_mem}" if tipo_mem else ""),
+                va="center", fontsize=8, color=INK2)
     ax.set_yticks([yy for (tipo, _, _), yy in zip(linhas, ys) if tipo == "unidade"],
                   [unidade(r.unidade) for tipo, r, _ in linhas if tipo == "unidade"], fontsize=8)
     ax.set_ylim(y, -1)
-    ax.set_xlim(0, vmax * 1.9)
+    ax.set_xlim(0, vmax * 1.45)
     ax.set_xlabel("Tokens dos passos com erro (milhões)")
     _legenda_familias(ax, zip(t.unidade, t.familia_dominante), loc="lower right")
     cand = t[t.decisao.eq("candidato observado")]
@@ -359,8 +371,8 @@ def unidades_destino_tipo(tri, destino):
             "Para onde vai cada unidade, e que tipo de memória a lição seria?",
             "Uma barra por unidade, agrupada pela decisão da triagem (candidata a memória, sinal de harness, harness/infra, "
             "crítico, resíduo, sem recorrência) e ordenada por tokens dentro do grupo. A cor é a família do erro; o rótulo "
-            "dá tokens, erros, ocorrências (sequências de erros da mesma unidade na execução) e o tipo da memória na régua "
-            "de Hu et al. 2025 (§4): factual · ambiente, ou experiencial · estratégia.",
+            "dá tokens, erros e, nas unidades de memória, o tipo na régua de Hu et al. 2025 (§4): \"factual\" = factual · "
+            "ambiente; \"estratégia\" = experiencial · estratégia.",
             "O tipo é o da lição (catálogo do pipeline), não medido no trace. Candidata é recorrência, não memória "
             "aprovada; o destino muda quando uma investigação muda a classificação.")
 
@@ -392,16 +404,21 @@ def frequencia_custo(tri, destino):
     ax.set_ylim(0, (teto or t.tok_erro.max()) * 1.12)
     ax.set_xlim(t.erros_observaveis.min() / 2, t.erros_observaveis.max() * 3)
     ordem = t.assign(y=y).sort_values("tokens_n_conhecidos", ascending=False)
-    textos = [(unidade(r.unidade) + (f" ▲ {_n(r.tok_erro, 1)} mil (fora da escala)" if teto and r.tok_erro > teto else ""))
+    # aqui o rótulo é o identificador (Rafael, 16/10): o nome por extenso não cabe sem sobrepor; o "Como ler" remete
+    # ao gráfico de tokens por unidade, que tem os nomes
+    textos = [(r.unidade + (f" ▲ {_n(r.tok_erro, 1)} mil" if teto and r.tok_erro > teto else ""))
               for r in ordem.itertuples()]
     rotular(ax, ordem.erros_observaveis.tolist(), ordem.y.tolist(), textos,
-            raios=(np.sqrt(ordem.tokens_n_conhecidos * escala).clip(lower=np.sqrt(20)) / 2).tolist(), fontsize=7.5)
+            raios=(np.sqrt(ordem.tokens_n_conhecidos * escala).clip(lower=np.sqrt(20)) / 2).tolist(), fontsize=7.5,
+            folga_direita=0)
     refs = refs_tamanho(float(t.tokens_n_conhecidos.max()))
     leg1 = ax.legend(handles=[plt.scatter([], [], s=v * escala, color=BASE, edgecolor="white") for v in refs],
-                     labels=[_tok(v) for v in refs], title="tamanho = tokens da unidade", loc="upper right",
-                     frameon=False, fontsize=8, title_fontsize=8, labelspacing=1.6, borderpad=1)
+                     labels=[_tok(v) for v in refs], title="tamanho = tokens da unidade", loc="upper left",
+                     bbox_to_anchor=(1.02, 1.0), frameon=False, fontsize=8, title_fontsize=8, labelspacing=2.2,
+                     borderpad=1.2)
+    leg1._legend_box.sep = 14
     ax.add_artist(leg1)
-    _legenda_familias(ax, zip(t.unidade, t.familia_dominante), loc="upper left")
+    _legenda_familias(ax, zip(t.unidade, t.familia_dominante), loc="lower left", bbox_to_anchor=(1.02, 0.0))
     grandes = t[t.erros_observaveis.ge(1000)]
     caros = grandes[grandes.tok_erro.ge(1.5 * media)].sort_values("tok_erro", ascending=False)
     if len(caros):
@@ -418,7 +435,8 @@ def frequencia_custo(tri, destino):
             "Mais à direita = mais erros; mais alto = cada erro custa mais tokens; o tamanho da bolha é o total de tokens "
             "da unidade (erros × custo por erro), o que ela pesa no gasto. A linha pontilhada é a média dos erros "
             "observáveis (sem os pendentes). Uma unidade muito acima das outras é desenhada no teto do eixo, com o valor "
-            "no rótulo. A cor é a família do erro. Hipótese, não testada: um custo alto por erro vem de o erro acontecer "
+            "no rótulo. A cor é a família do erro; o rótulo é o identificador da unidade (o nome por extenso de cada uma "
+            "está no gráfico de tokens por unidade). Hipótese, não testada: um custo alto por erro vem de o erro acontecer "
             "tarde na trajetória ou num papel de contexto grande.",
             "Custo do passo com erro, sem a recuperação. Na parte 2, a entrada domina os tokens dos passos com erro em "
             "todos os papéis (gráfico de entrada × saída); se ela cresce com a posição do passo ainda não foi medido.")
@@ -446,24 +464,34 @@ def concentracao_papel(upt, tri, destino, cores=len(CORES_PAPEL)):
                 ax.text(esq + v / 2, y, f"{_n(v)}%", ha="center", va="center", color="white", fontsize=7.5)
             esq += v
         resto = p[~p.role.isin(papeis_cor)]
-        if len(resto):
+        if 0 < len(resto) <= 2:   # um ou dois papéis fora das cores: o nome deles, não "demais" (Rafael, 16/10)
+            for k, r in enumerate(resto.itertuples()):
+                v = r.erros / tot * 100
+                ax.barh(y, v, left=esq, color=["#c3c2b7", "#dcdbd3"][k], edgecolor="white")
+                rot = f"{r.role} {_n(v)}%"
+                if v >= 1.25 * len(rot):
+                    ax.text(esq + v / 2, y, rot, ha="center", va="center", fontsize=7.5, color=INK2)
+                elif v >= 5:
+                    ax.text(esq + v / 2, y, f"{_n(v)}%", ha="center", va="center", fontsize=7.5, color=INK2)
+                esq += v
+        elif len(resto):
             v = 100 - esq
             ax.barh(y, v, left=esq, color=BASE, edgecolor="white")
             if v >= 14:
-                ax.text(esq + v / 2, y, f"demais {len(resto)} · {_n(v)}%", ha="center", va="center", fontsize=7.5,
-                        color=INK2)
+                ax.text(esq + v / 2, y, f"demais {len(resto)} papéis · {_n(v)}%", ha="center", va="center",
+                        fontsize=7.5, color=INK2)
         acum = (p.erros.cumsum() / tot).to_numpy()
         k90 = int(np.argmax(acum >= 0.9)) + 1
         um_papel += k90 == 1
-        ax.text(101, y, f"{_n(tot)} {'erro' if tot == 1 else 'erros'} · {len(p)} {'papel' if len(p) == 1 else 'papéis'} · "
-                f"90% em {k90}", va="center", fontsize=8, color=INK2)
+        ax.text(101, y, f"{_n(tot)} · 90% em {k90} {'papel' if k90 == 1 else 'papéis'}", va="center", fontsize=8,
+                color=INK2)
     ax.set_yticks(range(len(ordem_u)), [unidade(x) for x in ordem_u], fontsize=8)
     ax.invert_yaxis()
-    ax.set_xlim(0, 132)
+    ax.set_xlim(0, 122)
     ax.set_xticks(range(0, 101, 25))
     ax.set_xlabel("% dos erros da unidade (linhas ordenadas por erros)")
     ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=cor_p[p]) for p in papeis_cor] +
-              [plt.Rectangle((0, 0), 1, 1, color=BASE)], labels=papeis_cor + ["demais papéis"], ncol=4, fontsize=8,
+              [plt.Rectangle((0, 0), 1, 1, color=BASE)], labels=papeis_cor + ["outros papéis (cinza)"], ncol=4, fontsize=8,
               frameon=False, loc="upper center", bbox_to_anchor=(0.45, -0.04 - 0.6 / (0.5 * len(ordem_u) + 2.4)))
     ax.set_title(f"Em quantos papéis cai cada unidade: em {um_papel} das {len(ordem_u)} unidades, um papel só tem "
                  "90% dos erros", loc="left", fontsize=11)
@@ -472,8 +500,10 @@ def concentracao_papel(upt, tri, destino, cores=len(CORES_PAPEL)):
     return ("Concentração de cada unidade por papel",
             "A lição vale para todos os agentes ou para um papel específico?",
             f"Uma barra por unidade (todas, ordenadas por erros), dividida pelos papéis em que o erro aconteceu; os "
-            f"{len(papeis_cor)} papéis com mais erros têm cor própria (legenda), os outros ficam em cinza. À direita, quantos "
-            "papéis a unidade tem e em quantos estão 90% dos erros. Barra quase toda de uma cor = o erro cai num papel "
+            f"{len(papeis_cor)} papéis com mais erros no sistema têm cor própria (legenda), os outros ficam em cinza — com "
+            "o nome, quando são um ou dois; agrupados em \"demais\", quando são mais. Não é falta de dado: é só um papel "
+            "fora das sete cores. À direita, os erros da unidade e em quantos papéis estão 90% deles (\"90% em 1 papel\" = "
+            "um papel sozinho tem 90% ou mais dos erros da unidade). Barra quase toda de uma cor = o erro cai num papel "
             "só, o que aponta para o prompt ou as ferramentas desse papel (hipótese a conferir caso a caso).",
             "Contagem, não taxa: um papel que roda mais erra mais em número. O peso de cada papel em passos está na parte 2 "
             "(papel: volume × taxa); a taxa por papel e mês é o roadmap b3 #37.")
@@ -497,7 +527,7 @@ def depois_do_erro(dep, tri, destino):
     d["cat"] = d.depois.where(~(d.depois.eq(verde) & d.proximo_final_observado.astype(str).eq("True")), "final")
     tot_u = d.groupby("unidade").erros.sum().sort_values(ascending=False)
     us = tot_u.index.tolist()
-    fig, ax = plt.subplots(figsize=(13.5, 0.62 * len(us) + 2.6))
+    fig, ax = plt.subplots(figsize=(14, 0.7 * len(us) + 2.6))
     for y, u in enumerate(us):
         g = d[d.unidade.eq(u)]
         cats = g.groupby("cat").erros.sum()
@@ -512,18 +542,18 @@ def depois_do_erro(dep, tri, destino):
             esq += v
         casc = (cats.get(ROTULO_DEPOIS[2][0], 0) + cats.get(ROTULO_DEPOIS[3][0], 0)) / tot * 100
         vinc = g[g.depois.eq(ROTULO_DEPOIS[2][0])].groupby("unidade_seguinte").erros.sum()
-        txt = f"novo erro: {_n(casc)}%"
+        txt = ""
         if vinc.sum():
-            txt += f" · a mesma unidade: {_n(100 * vinc.get(u, 0) / tot)}%"
+            txt = f"repete: {_n(100 * vinc.get(u, 0) / tot)}%"
             outras = vinc.drop(u, errors="ignore").sort_values(ascending=False)
             if len(outras) and outras.iloc[0] > 0:
-                txt += f" · outra mais comum: {outras.index[0]} ({_n(100 * outras.iloc[0] / tot)}%)"
-        ax.text(101, y, txt, va="center", fontsize=7.5, color=INK2)
+                txt += f" · outra: {outras.index[0]} {_n(100 * outras.iloc[0] / tot)}%"
+        ax.text(101, y, txt, va="center", fontsize=8, color=INK2)
     rot = []
     for u in us:
         base = f"{_n(tot_u[u])} {'erro' if tot_u[u] == 1 else 'erros'}"
         if u in t.index:
-            base += f" · {_n(t.loc[u, 'execucoes'])} execuções · {_n(t.loc[u, 'ocorrencias_condicionais'])} ocorrências"
+            base += f" · {_n(t.loc[u, 'execucoes'])} exec."
         rot.append(f"{unidade(u)}\n{base}")
     ax.set_yticks(range(len(us)), rot, fontsize=7.5)
     for lab, u in zip(ax.get_yticklabels(), us):
@@ -545,11 +575,11 @@ def depois_do_erro(dep, tri, destino):
             "repete o mesmo erro ou cai em outro?",
             "Uma barra por unidade (todas, inclusive sinal de harness, harness/infra, resíduo e os pendentes), somando 100% "
             "dos erros dela. Verde-escuro: o passo seguinte é a resposta final; verde-claro: é outro passo de trabalho, sem "
-            "erro; vermelho-escuro e rosa: o passo seguinte também erra (a cascata é a soma dos dois, escrita à direita). "
-            "À direita também: quanto dos erros é seguido por um erro da **mesma** unidade (o agente repete o erro) e qual "
-            "**outra** unidade vem com mais frequência (o agente conserta e esbarra no próximo) — só quando o vínculo entre "
-            "os dois erros está confirmado. Cada linha traz o tamanho da base: erros, execuções e ocorrências "
-            f"(sequências de erros da mesma unidade na execução); menos de {MIN_BASE_DEPOIS} erros, nome em cinza. "
+            "erro; vermelho-escuro e rosa: o passo seguinte também erra (a cascata). À direita: \"repete\" = % dos erros "
+            "seguidos por um erro da **mesma** unidade (o agente repete o erro); \"outra\" = a unidade diferente que vem "
+            "depois com mais frequência, pelo identificador (o agente conserta e esbarra no próximo) — só quando o vínculo "
+            "entre os dois erros está confirmado. Cada linha traz o tamanho da base: erros e execuções; menos de "
+            f"{MIN_BASE_DEPOIS} erros, nome em cinza. "
             "Hipótese, não testada: muita repetição da mesma unidade = o agente não aprende com a mensagem de erro.",
             "\"Segue sem erro\" e \"resposta final\" não são sucesso: a qualidade da resposta não está no arquivo. Só o "
             "passo seguinte (a janela vai até dois). A sequência entre dois erros não prova que um causou o outro. A "
@@ -618,10 +648,14 @@ def pendentes(ppm, meses, total_erros, total_tokens, destino, topo=12):
     a2.set_title("Por mês", loc="left", fontsize=10)
     _milhar(a2, "y")
     total = p.erros.sum()
-    rot_leg = [f"{r.motivo} — {_n(r.erros)} ({_pct(100 * r.erros / total_erros)} dos erros · {_tok(r.tok)}) → "
-               f"{MOTIVO_RESOLVE.get(r.motivo_evidencia, 'a definir')}" for r in por_motivo.itertuples()]
-    fig.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=cores[m]) for m in motivos], labels=rot_leg, ncol=1,
-               fontsize=8, frameon=False, loc="upper left", bbox_to_anchor=(0.01, 0.0))
+    # legenda curta (Rafael, 16/10): motivo, quantos, o que resolve; a % e os tokens de cada motivo vão no "Como ler"
+    rot_leg = [f"{r.motivo}: {_n(r.erros)}\n→ {MOTIVO_RESOLVE.get(r.motivo_evidencia, 'a definir')}"
+               for r in por_motivo.itertuples()]
+    fig.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=cores[m]) for m in motivos], labels=rot_leg,
+               ncol=min(2, len(rot_leg)), columnspacing=4, labelspacing=1.2, handletextpad=0.7, fontsize=8.5,
+               frameon=False, loc="upper left", bbox_to_anchor=(0.01, 0.0))
+    peso = "; ".join(f"{r.motivo}: {_n(r.erros)} ({_pct(100 * r.erros / total_erros)} dos erros, {_tok(r.tok)})"
+                     for r in por_motivo.itertuples())
     top_p = p.groupby("role").erros.sum().sort_values(ascending=False)
     top_m = p.groupby("mes").erros.sum().sort_values(ascending=False)
     cel = p.groupby(["role", "mes"]).erros.sum().sort_values(ascending=False)
@@ -637,8 +671,8 @@ def pendentes(ppm, meses, total_erros, total_tokens, destino, topo=12):
             "Os erros que a extração não deixa classificar estão espalhados ou concentrados — e o que falta para "
             "classificá-los?",
             "À esquerda por papel, à direita por mês (os mesmos meses dos outros gráficos), cada barra dividida pelo motivo "
-            "da pendência. A legenda dá o peso de cada motivo e o que o resolve. O título dá o papel, o mês e a célula "
-            "papel × mês com mais pendentes.",
+            "da pendência. A legenda dá quantos erros cada motivo tem e o que o resolve. O título dá o papel, o mês e a "
+            f"célula papel × mês com mais pendentes. O peso de cada motivo: {peso}.",
             "Pendente é lacuna de dado (a regra existe, faltou o dado), não resíduo. A concentração mostra onde falta dado, "
             "não a causa: pode vir de como as execuções do papel são montadas (ex.: erro no primeiro passo não tem passo "
             "anterior).")
