@@ -8,8 +8,8 @@
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
 [limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, noite
-(branch `2026-10-16-base3-comparar-rodadas`): `validacao/comparar_rodadas.py` escrito e ensaiado na base 1 (#42; falta
-rodar na máquina 2).
+(branch `2026-10-16-base3-comparar-rodadas`): `validacao/comparar_rodadas.py` escrito e ensaiado na base 1 (#42); rodado
+na máquina 2, parou num arquivo fora do manifesto — **pendência aberta no #42**.
 **A ordem do que falta** (decisões antes da rodada nova, conferência na máquina 2, gráficos migráveis, pedido ao tutor,
 primeira mineração): a seção [Plano de evolução](#plano-de-evolução-1610-a-ordem-do-que-falta), de 16/10.
 
@@ -48,7 +48,8 @@ lidos pelo Rafael na rodada `96958e65` e ajustados (`9dfb729`, `762527f`; o rela
 `.md` aberto, `f9cab0c`). Ficam **ajustes gerais de forma**, menores, que o Rafael lista quando rever o relatório
 (#45 g), e as contagens e decisões do #45. **A ordem a seguir:**
 1. **#42** — fechar a etapa 2: o `comparar_rodadas.py` prova por hash que a rodada nova não mudou nenhum número da `609c…`
-   (escrito e ensaiado na base 1 em 16/10; falta o comando na máquina 2, abaixo na Etapa 2);
+   (escrito e ensaiado na base 1 em 16/10). **Pendente:** na máquina 2 ele parou porque a
+   `amostra_investigacao.csv` do campo inexistente está fora do manifesto nas duas rodadas (Etapa 2, passo 2);
 2. **etapa 4 (#2, #11)** — o pedido ao tutor: os gráficos estão prontos e o `05` está desatualizado (descreve o pedido A
    como "a enviar"); é o que destrava os gráficos que ainda faltam dado e é a etapa que depende de outra pessoa, então
    quanto antes sair, antes volta;
@@ -109,6 +110,22 @@ por `figuras_painel.depois_do_erro`; testes: soma = todos os erros e, nas candid
    `consolidacao_depois_unidade.csv`. Nos perfis, `casos` e `amostra_investigacao` diferem só no `rodada_id`, e o
    `perfil` ganhou só a coluna `finalidade`. Mudou ainda o `genealogia_observada.png`, como esperado. Saída 0. Na
    máquina 2 espera-se o mesmo padrão.
+
+   **Na máquina 2 (16/10, foto):** mesma fonte (`908aa005…`, v2), os mesmos 4 arquivos de código mudados e o resumo
+   do manifesto igual (29 campos, nenhum diferente). Mas `perfis/U_campo_inexistente/amostra_investigacao.csv` não tem
+   mais o hash do manifesto **nas duas rodadas**. Como o `conferir` confere todos os hashes no fim da gravação, e as
+   duas passaram, o arquivo mudou ou sumiu depois. Nessa versão o script parava ali, e o resto não foi comparado.
+
+   **Pendência (para fecharmos):**
+   - [ ] levar o script de `6909c21` para a máquina 2 e rodar de novo. Ele diz se o arquivo está ausente ou alterado
+     (hora, tamanho, se só o fim de linha CRLF ou a marca BOM mudou) e compara todo o resto. Não muda o id da rodada:
+     o script não entra no hash do código.
+   - [ ] achar a causa. Hipóteses, a confirmar: o arquivo foi aberto e salvo num editor ou no Excel (é a amostra que
+     se lê na investigação), ou o OneDrive ou a política de dados da máquina mexeu nele (tem texto de caso).
+   - [ ] restaurar: a `96958e65…` com `executar.py conferir` de novo (mesmo código e fonte = mesma pasta, arquivo
+     refeito). A `609c…` é do código `16bb4a6`: se o resto fechar e só essa amostra ficar fora, decidir entre
+     refazê-la com o código antigo ou registrar a exceção aqui.
+   - [ ] não abrir arquivos de `resultados/` em editor que salve. Para ler uma amostra, copiar antes.
 3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte —
    o mesmo script confere (o gasto por papel, com a fonte): por unidade = triagem, sem unidade = pendentes, total = resumo, por papel =
    fonte (diferença máxima 0), e o que vem depois do erro somado = todos os erros. No ensaio da base 1, tudo fechou
@@ -264,7 +281,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
 - [ ] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, escrito e ensaiado na
-  base 1 em 16/10, saída 0; falta rodar na máquina 2) e a tabela nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
+  base 1 em 16/10, saída 0; na máquina 2 parou: a amostra do campo inexistente está fora do manifesto nas duas rodadas —
+  pendência na Etapa 2) e a tabela nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
 - [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
   trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
 - [ ] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
