@@ -8,8 +8,8 @@
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
 [limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, noite
-(branch `2026-10-16-base3-comparar-rodadas`): esquema da memória 0.2, o localizador da base 3 (#44, Ajuste 19); `validacao/comparar_rodadas.py` escrito e ensaiado na base 1 (#42); rodado
-na máquina 2, parou num arquivo fora do manifesto — **pendência aberta no #42**.
+(branch `2026-10-16-base3-comparar-rodadas`): esquema da memória 0.2, o localizador da base 3 (#44, Ajuste 19); **#42 fechado**: na máquina 2 a `96958e65…` não muda
+nenhum número da `609c…` (o arquivo que parecia ausente era um caminho de 260 caracteres que o script não abria).
 **A ordem do que falta** (decisões antes da rodada nova, conferência na máquina 2, gráficos migráveis, pedido ao tutor,
 primeira mineração): a seção [Plano de evolução](#plano-de-evolução-1610-a-ordem-do-que-falta), de 16/10.
 
@@ -38,7 +38,7 @@ conferidas numa rodada de teste (a base 1 pela porta da query da base 3); 183 te
 
 - [x] **0** · Commit das correções de 15/10 → `51a9d15`
 - [x] **1** · Decisões D1–D6 fechadas com o Rafael e aplicadas → #41, `b56204c`
-- [x] **2** · Rodada nova na máquina 2 (`observada_96958e65cb7e615a`), fotos e conferência gráfico a gráfico → #36 e #40 fechados (16/10); a comparação por hash com a `609c…` continua no #42
+- [x] **2** · Rodada nova na máquina 2 (`observada_96958e65cb7e615a`), fotos e conferência gráfico a gráfico → #36 e #40 fechados (16/10); a comparação por hash com a `609c…` fechou no #42 (16/10)
 - [ ] **3** · Gráficos da base 1 que já têm dado: duração por assinatura, global × papel, posição na trajetória → #43
 - [ ] **4** · Pedido ao tutor reescrito e apresentação → #2, #11
 - [ ] **5** · Mineração: localizador da memória → kit mínimo → registro do `try/except` → piloto do inventário do sandbox → #44, #17, #28, #12
@@ -47,10 +47,8 @@ conferidas numa rodada de teste (a base 1 pela porta da query da base 3); 183 te
 lidos pelo Rafael na rodada `96958e65` e ajustados (`9dfb729`, `762527f`; o relatório não quebra mais no Windows com o
 `.md` aberto, `f9cab0c`). Ficam **ajustes gerais de forma**, menores, que o Rafael lista quando rever o relatório
 (#45 g), e as contagens e decisões do #45. **A ordem a seguir:**
-1. **#42** — fechar a etapa 2: o `comparar_rodadas.py` prova por hash que a rodada nova não mudou nenhum número da `609c…`
-   (escrito e ensaiado na base 1 em 16/10). Na máquina 2 tudo fechou, menos a amostra do campo inexistente, dada como
-   ausente nas duas rodadas: era o caminho de 260 caracteres que o script não abria (corrigido). **Falta** rodar o script
-   corrigido (Etapa 2, passo 2);
+1. **#42, feito (16/10):** o `comparar_rodadas.py` corrigido, na máquina 2, saiu com "nenhum número mudou e as
+   conferências fecham" (Etapa 2, passo 2);
 2. **etapa 4 (#2, #11)** — o pedido ao tutor: os gráficos estão prontos e o `05` está desatualizado (descreve o pedido A
    como "a enviar"); é o que destrava os gráficos que ainda faltam dado e é a etapa que depende de outra pessoa, então
    quanto antes sair, antes volta;
@@ -129,9 +127,9 @@ por `figuras_painel.depois_do_erro`; testes: soma = todos os erros e, nas candid
      `comparar_rodadas.py` abria o caminho comum, e o `is_file()` voltava falso. As hipóteses de editor, Excel,
      OneDrive ou política de dados ficam descartadas. Correção: o script passa a abrir a rodada pelo mesmo `caminho_io`
      (teste novo em `test_comparar_rodadas_base3.py`; 213 testes).
-   - [ ] rodar o script corrigido na máquina 2: espera-se a amostra do campo inexistente entre as que "diferem só em
-     `rodada_id`" (10 unidades), nenhuma fora do manifesto e saída 0. Com isso o #42 fecha. Nada a restaurar.
-   - [ ] (risco a registrar) qualquer script novo que leia uma rodada na máquina 2 passa pelo `caminho_io`; um nome de
+   - [x] rodar o script corrigido na máquina 2 (16/10, validado pelo Rafael): nenhum arquivo fora do manifesto, a
+     amostra do campo inexistente entre as que diferem só em `rodada_id`, veredito "nenhum número mudou". Nada a restaurar.
+   - [x] (risco registrado aqui) qualquer script novo que leia uma rodada na máquina 2 passa pelo `caminho_io`; um nome de
      unidade mais longo que `U_campo_inexistente` cruzaria o limite também em `casos.csv`.
 3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte —
    o mesmo script confere (o gasto por papel, com a fonte): por unidade = triagem, sem unidade = pendentes, total = resumo, por papel =
@@ -286,9 +284,6 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
-- [ ] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, escrito e ensaiado na
-  base 1 em 16/10, saída 0; na máquina 2 parou: a amostra do campo inexistente está fora do manifesto nas duas rodadas —
-  pendência na Etapa 2) e a tabela nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
 - [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
   trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
 - [ ] **#45** **O que sobrou da auditoria dos gráficos (#36, #40) e não é desenho:** (a) **o asterisco do papel × unidade** marca "candidata dentro do papel" (destino), num gráfico de volume — tirar? (proposta de 16/10, a decidir); (b) **OBPCivel × OBFCivel** — papel real ou nome cortado na origem (como "ontestacaoCivel")? Se for corte, entra no mapa de exibição; (c) a genealogia tem "Protocolo do harness" 4.591 e `H_bloco_code` 4.592 — contar por família as arestas que chegam em `harness_bloco_code`; (d) a composição dos erros dos papéis pequenos de taxa alta (AnaliseProcessual 44%, AgenteProcuracoes 25,5%: unidade e pendentes); (e) quantas trajetórias terminam num passo com erro (`recovery_signal = NO_NEXT_ACTION`); (f) a amostra de ≈ 20 casos do campo inexistente na base 1, para as hipóteses da "resposta final alta" (a aprovar). (g) ajustes gerais de forma nos gráficos (o Rafael lista ao rever o relatório da rodada `96958e65`, 16/10). São contagens na máquina 2 ou decisões; nenhuma muda gráfico sem passar pelo Rafael.
@@ -303,6 +298,13 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
+- [x] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, escrito e ensaiado na
+  base 1 em 16/10, saída 0; na máquina 2 parou: a amostra do campo inexistente está fora do manifesto nas duas rodadas —
+  pendência na Etapa 2) e a tabela nova contra a triagem e a fonte → a `96958e65…` não muda nenhum número da `609c…`
+  (resumo 29 campos iguais; 76 artefatos com o mesmo hash; perfis diferem só no `rodada_id`; as duas tabelas novas
+  conferem com o resumo e a fonte, 21 papéis, diferença 0). O "ausente" era o caminho de 260 caracteres no OneDrive,
+  que o script não abria pelo `caminho_io`: `6909c21`, `08daa7f`; rodado na máquina 2 e validado pelo Rafael em 16/10
+  → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
 - [x] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
   esquema v0.2) — pré-requisito do piloto (#12) → esquema 0.2 e `validar_memoria.py` aceitando os dois localizadores;
   aprovado pelo Rafael em 16/10, com o arquivo saindo inteiro da máquina 2 (só hashes, sem `exec_id`); 9 testes novos, 212
