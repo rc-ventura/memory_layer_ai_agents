@@ -26,6 +26,10 @@ RE_FORBIDDEN = re.compile(r"Forbidden")
 RE_VARIAVEL = re.compile(r"The variable `([^`]+)` is not defined")
 # os sinais que o pipeline decide antes (o racional os nomeia; o padrão literal é a leitura deste validador)
 SINAIS_ANTES = {
+    # emenda 2 do racional (fd93e93): os três sinais que faltavam, com os padrões literais que o racional dá
+    "bloco_de_codigo": re.compile(r"regex pattern"),
+    "falha_llm": re.compile(r"AgentGenerationError|internally hosted|Error code: 422|UnprocessableEntity"),
+    "timeout_ferramenta": re.compile(r"excedeu o timeout|TimeoutError"),
     "sintaxe": re.compile(r"SyntaxError|invalid syntax|Error in code parsing"),
     "could_not_index": re.compile(r"Could not index"),
     "has_no_attribute": re.compile(r"has no attribute"),

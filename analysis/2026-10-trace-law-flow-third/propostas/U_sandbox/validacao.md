@@ -209,3 +209,49 @@ sem o tipo, como diz o racional; o `minerar.py` não mudou neste commit. Comando
   execução e papel 0 × 0 (17 grupos, 0 com repetição); execuções com repetição 0 × 0. **Diferenças: 0.**
 
 Observações que continuam abertas, sem efeito nesta base: (a) e (e).
+
+---
+
+# Revalidação 3 — 16/10/2026, depois de `fd93e93` (emenda 2 do racional)
+
+**Veredito: continua APROVADO.** A emenda 2 está declarada e só mexe na população em prosa do passo 1. A conferência
+foi atualizada por ela e segue com 17 erros. O script não mudou desde a revalidação 2 (sha256 `39481621…`) e as
+saídas dele são as mesmas.
+
+1. **A emenda (`git show fd93e93 -- …/racional.md`): ok.** O diff tem **um só trecho**, na prosa da população do
+   passo 1. Os três sinais novos entram com os padrões literais: bloco de código (`regex pattern`), falha do LLM
+   (`AgentGenerationError`, `internally hosted`, `Error code: 422`, `UnprocessableEntity`) e timeout de ferramenta
+   (`excedeu o timeout`, `TimeoutError`). A nota diz **o que** mudou (os três sinais), **por quê** (a primeira rodada na
+   base 3, `observada_e3ebc8274dcf108c`, divergiu em 1 erro de 3.653, com função proibida e timeout de ferramenta na
+   mesma mensagem; o pipeline o pôs no timeout, a auditoria no sandbox; registrado em `passo7_divergencia.csv`),
+   **quando** (depois da primeira rodada na base 3) e **quem** decidiu (Rafael). Não mudam a população da mineração (a
+   da rodada), as regras do passo 4, a lista de imports nem o limiar de 95%. No mesmo commit também mudaram a auditoria
+   e o teste, e o script não mudou.
+2. **Conferência atualizada e rodada no ensaio: ok.** Acrescentei os três sinais com os padrões literais da emenda em
+   `SINAIS_ANTES`. Comando:
+   `conferencia_independente.py --fonte <ensaio>/fonte_base1_v1.parquet --casos … --perfil … --json <rascunho>/conferencia4.json`.
+   - população pela prosa: **17**, as mesmas 17 chaves da rodada (0 só de um lado), 0 excluídos por sinal;
+   - o JSON das medidas saiu **idêntico** ao do primeiro laudo;
+   - nos erros com tipo do ensaio, os sinais novos casam assim: bloco de código 33, falha do LLM 7, timeout de
+     ferramenta 0. Nenhum desses erros entraria no sandbox.
+3. **Teste e script: ok.**
+   - `uv run python -m unittest analysis.tests.test_mineracao_candidata_base3`: 16 testes, 16 passam.
+   - `minerar.py U_sandbox --rodada <ensaio>/rodada --fonte <ensaio>/fonte_base1_v1.parquet --saida <rascunho>/saida_script5`:
+     saída 0; passos 1 e 3 a 9 ok; encontro com 24 medidas e 0 diferentes; `status` `derived-and-checked`;
+     `validar_memoria.py` aprovado; manifesto com 15 arquivos e hashes conferidos; nenhum texto de caso na saída.
+   - As cinco tabelas CSV são iguais byte a byte às da revalidação 2. `passo5_confianca.json`, `passo6_destino.json` e
+     o bloco `memoria` do arquivo final também são iguais.
+
+**Observações (não reprovam):**
+- **(g)** A emenda alinha a definição da auditoria ao pipeline **depois** de ver a divergência. Isso é aceitável: o
+  princípio ("os sinais que o pipeline decide antes") já estava no pré-registro, só a lista estava incompleta, e a
+  emenda está declarada e decidida pelo Rafael. Mesmo assim, na base 3 o encontro desse 1 erro deixa de ser às cegas:
+  a divergência original continua sendo o achado e precisa ficar no `passo7_divergencia.csv`. Não conferi o
+  1 de 3.653 porque a base 3 não está nesta máquina. Também não conferi a ordem de decisão do pipeline, porque não
+  abri o `minerar.py` nem o pipeline.
+- **(h)** A conferência deste validador já tirava esse caso antes da emenda. A minha leitura de "tempo do
+  interpretador" (`[Tt]ime ?out|timed out|execution time`) cobre `TimeoutError` e `excedeu o timeout`. Duas leituras
+  independentes da mesma prosa deram fronteiras diferentes, e a emenda deixa o padrão literal.
+
+**Contagens:** população 17 = 17 · medidas 21, diferenças 0 · encontro 24/24 · testes 16/16 · observações abertas
+(a), (e), (g), (h).
