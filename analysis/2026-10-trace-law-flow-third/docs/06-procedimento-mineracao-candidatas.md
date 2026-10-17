@@ -14,7 +14,8 @@
   motivo numa linha.
 
 Tudo roda da raiz do repositório, no ambiente onde está a base. Para ensaiar com a base 1, ver o §3. Os scripts das skills que o comando chama (`monitorar.py`, `validar_memoria.py`, `varrer_pii.py`) são
-procurados em `.claude/skills/` e, se não estiverem lá, em `.copilot/skills/` (o ambiente com Copilot).
+procurados em `.claude/skills/` e, se não estiverem lá, em `.github/skills/` (o Copilot, no ambiente da base) e em
+`.copilot/skills/`.
 
 ## 1 · O que muda na base 3
 

@@ -29,9 +29,9 @@ import sys
 PIPELINE = Path(__file__).resolve().parents[1]
 ANALISE = PIPELINE.parent
 RAIZ = ANALISE.parents[1]
-# as skills do kit: `.claude/skills/` (Claude Code) ou `.copilot/skills/` (o ambiente com Copilot); a primeira que tiver
-# o script vale
-PASTAS_SKILLS = [RAIZ / ".claude" / "skills", RAIZ / ".copilot" / "skills"]
+# as skills do kit: `.claude/skills/` (Claude Code) ou `.github/skills/` (Copilot, no ambiente da base); `.copilot/skills/`
+# por garantia. A primeira que tiver o script vale
+PASTAS_SKILLS = [RAIZ / ".claude" / "skills", RAIZ / ".github" / "skills", RAIZ / ".copilot" / "skills"]
 AUDITORIA = ANALISE / "audit" / "scripts" / "audit_candidata_base3.py"
 ESQUEMA = RAIZ / "analysis" / "registros" / "esquema-memoria.json"
 sys.path.insert(0, str(PIPELINE))
@@ -55,7 +55,7 @@ def script_da_skill(skill, nome):
         arq = pasta / skill / "scripts" / nome
         if arq.exists():
             return arq
-    raise Parada(f"{nome} não encontrado em {' nem em '.join(f'{p.parent.name}/skills/{skill}/scripts/' for p in PASTAS_SKILLS)}")
+    raise Parada(f"{nome} não encontrado em {', '.join(f'{p.parent.name}/skills/{skill}/scripts/' for p in PASTAS_SKILLS)}")
 
 
 def _rodar(cmd):

@@ -159,15 +159,15 @@ class TestMinerar(unittest.TestCase):
         self.assertEqual(rc, 2)
         self.assertTrue(out.startswith("Ita"))
 
-    def test_skills_em_claude_ou_copilot(self):
+    def test_skills_em_claude_ou_github(self):
         pastas = self.mn.PASTAS_SKILLS
         with tempfile.TemporaryDirectory() as d:
-            alvo = Path(d) / ".copilot" / "skills" / "mineracao-base" / "scripts"
+            alvo = Path(d) / ".github" / "skills" / "mineracao-base" / "scripts"
             alvo.mkdir(parents=True)
-            (alvo / "so_no_copilot.py").write_text("")
-            self.mn.PASTAS_SKILLS = [Path(d) / ".claude" / "skills", Path(d) / ".copilot" / "skills"]
+            (alvo / "so_no_github.py").write_text("")
+            self.mn.PASTAS_SKILLS = [Path(d) / ".claude" / "skills", Path(d) / ".github" / "skills"]
             try:
-                self.assertEqual(self.mn.script_da_skill("mineracao-base", "so_no_copilot.py"), alvo / "so_no_copilot.py")
+                self.assertEqual(self.mn.script_da_skill("mineracao-base", "so_no_github.py"), alvo / "so_no_github.py")
                 with self.assertRaises(self.mn.Parada):
                     self.mn.script_da_skill("mineracao-base", "nao_existe.py")
             finally:
