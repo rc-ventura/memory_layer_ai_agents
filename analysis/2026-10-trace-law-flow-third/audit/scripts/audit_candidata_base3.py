@@ -108,6 +108,9 @@ def auditar(unidade, fonte):
 
 
 def main(argv=None):
+    for fluxo in (sys.stdout, sys.stderr):   # terminal do Windows (cp1252) não recusa acento nem o traço do resumo
+        if hasattr(fluxo, "reconfigure"):
+            fluxo.reconfigure(encoding="utf-8", errors="replace")
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("unidade"); p.add_argument("--fonte", required=True); p.add_argument("--json", required=True)
     a = p.parse_args(argv)

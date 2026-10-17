@@ -48,6 +48,15 @@ class Parada(Exception):
     """Um passo parou a mineração; a mensagem é o motivo, numa linha, sem dado de caso."""
 
 
+def _rodar(cmd):
+    """Roda um script filho e devolve (código de saída, saída). No Windows o filho imprime em cp1252 se ninguém mandar
+    o contrário, e um caminho com acento ("Itaú") quebra a leitura: força UTF-8 no filho e lê sem quebrar."""
+    import os
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}
+    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
+    return r.returncode, (r.stdout or "") + (r.stderr or "")
+
+
 def _sha(path):
     return mo.sha256(path)
 
@@ -161,12 +170,11 @@ class Mineracao:
 
     # ── 2 · monitoramento ──────────────────────────────────────────────────────────────────────────────────
     def passo2(self):
-        r = subprocess.run([sys.executable, str(SKILLS / "mineracao-base" / "scripts" / "monitorar.py"), str(ANALISE)],
-                           capture_output=True, text=True, encoding="utf-8")
-        (self.saida / "passo2_monitoramento.txt").write_text(r.stdout + r.stderr, encoding="utf-8")
-        if r.returncode == 1:
+        rc, out = _rodar([sys.executable, str(SKILLS / "mineracao-base" / "scripts" / "monitorar.py"), str(ANALISE)])
+        (self.saida / "passo2_monitoramento.txt").write_text(out, encoding="utf-8")
+        if rc == 1:
             raise Parada("alerta do monitoramento: a lição volta ao pesquisador (passo2_monitoramento.txt)")
-        if r.returncode == 2:
+        if rc == 2:
             return "não conferido: o monitoramento não tem as tabelas desta base (passo2_monitoramento.txt)"
         return "sem alerta"
 
@@ -216,10 +224,9 @@ class Mineracao:
     def passo7(self):
         mod, _ = self.modulo()
         aud_json = self.saida / "auditoria.json"
-        r = subprocess.run([sys.executable, str(AUDITORIA), self.u, "--fonte", str(self.fonte()),
-                            "--json", str(aud_json)], capture_output=True, text=True, encoding="utf-8")
-        if r.returncode != 0:
-            raise Parada(f"a auditoria não rodou (saída {r.returncode}): {(r.stdout + r.stderr).strip()[-200:]}")
+        rc, out = _rodar([sys.executable, str(AUDITORIA), self.u, "--fonte", str(self.fonte()), "--json", str(aud_json)])
+        if rc != 0:
+            raise Parada(f"a auditoria não rodou (saída {rc}): {out.strip()[-200:]}")
         aud = json.loads(aud_json.read_text(encoding="utf-8"))
         scr = mod.para_encontro(self.tabelas())
         perfil = _ler_json(self.saida / "passo3_generica.json")["perfil"]
@@ -274,11 +281,10 @@ class Mineracao:
         mod, arq = self.modulo()
         rel = self.saida / f"relatorio_{self.u}.md"
         rel.write_text(self.relatorio(), encoding="utf-8")
-        r = subprocess.run([sys.executable, str(SKILLS / "mineracao-base" / "scripts" / "varrer_pii.py"), str(rel),
-                            str(self.saida / f"memoria_{self.u}_{self.manifesto['base']}.json")],
-                           capture_output=True, text=True, encoding="utf-8")
-        (self.saida / "passo9_varredura.txt").write_text(r.stdout, encoding="utf-8")
-        if r.returncode != 0:
+        rc, out = _rodar([sys.executable, str(SKILLS / "mineracao-base" / "scripts" / "varrer_pii.py"), str(rel),
+                          str(self.saida / f"memoria_{self.u}_{self.manifesto['base']}.json")])
+        (self.saida / "passo9_varredura.txt").write_text(out, encoding="utf-8")
+        if rc != 0:
             raise Parada("o varredor achou dado pessoal no relatório ou na memória (passo9_varredura.txt)")
         arquivos = sorted(p for p in Path(self.saida).iterdir() if p.is_file() and p.name != "manifesto_mineracao.json")
         codigo = {Path(p).relative_to(RAIZ).as_posix(): _sha(p) for p in (Path(__file__), arq, AUDITORIA, ESQUEMA)}
@@ -336,6 +342,9 @@ class Mineracao:
 
 
 def main(argv=None):
+    for fluxo in (sys.stdout, sys.stderr):   # terminal do Windows (cp1252) não recusa acento nem o traço do resumo
+        if hasattr(fluxo, "reconfigure"):
+            fluxo.reconfigure(encoding="utf-8", errors="replace")
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("unidade")
     p.add_argument("--rodada", required=True, help="identificador (ou prefixo da pasta observada_…) ou caminho da rodada")

@@ -150,6 +150,12 @@ class TestMinerar(unittest.TestCase):
         with self.assertRaises(self.mn.Parada):
             self.mn.linha_do_funil("U_nao_existe")
 
+    def test_filho_com_saida_fora_do_utf8_nao_quebra(self):
+        # no Windows o filho imprime em cp1252: o "ú" de "Itaú" vira o byte 0xfa (b3, passo 2 na máquina da base)
+        rc, out = self.mn._rodar([sys.executable, "-c", "import sys; sys.stdout.buffer.write(b'Ita\\xfa'); sys.exit(2)"])
+        self.assertEqual(rc, 2)
+        self.assertTrue(out.startswith("Ita"))
+
     def test_rodada_inexistente_para(self):
         with self.assertRaises(self.mn.Parada):
             self.mn.pasta_rodada("nao_existe_0000")
