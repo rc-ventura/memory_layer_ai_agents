@@ -69,7 +69,7 @@ todas as candidatas. O segundo é o mesmo comando da base real.
 
 | Lição | Parte específica | Estágio | Desde | Frequência | Confiança | Situação | Decisão |
 |---|---|---|---|---|---|---|---|
-| `U_sandbox` | `script:mineracao_U_sandbox` | proposta | 16/10/2026 | — (o comando calcula) | cobertura da regra sobre a mensagem (≥ 95%) | proposta | script por decisão do Rafael (16/10, `decisoes.md`) |
+| `U_sandbox` | `script:mineracao_U_sandbox` | proposta | 16/10/2026 (racional: `9640b13`, emenda `aa99b8f`) | — (o comando calcula) | cobertura da regra sobre a mensagem (≥ 95%) | proposta | script por decisão do Rafael (16/10, `decisoes.md`) |
 | `U_tipo_retorno` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | espera o contrato da ferramenta (pedido C) | — |
 | `U_arg_nomeado` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | próxima candidata a script | — |
 | `U_campo_inexistente` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | espera o contrato da ferramenta (pedido C) | — |
