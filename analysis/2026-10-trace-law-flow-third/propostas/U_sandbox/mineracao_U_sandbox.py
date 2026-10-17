@@ -91,7 +91,9 @@ def confianca(t):
 def destino(t):
     L, listas = t["erros_lidos"], t["imports_autorizados"]
     N = L[L.tipo.ne("sem_nome")].sort_values(["exec_id", "agente", "role", "step_pos"])
-    rep = N.duplicated(["exec_id", "role", "tipo", "nome"], keep="first")
+    # racional, passo 6: o mesmo nome na mesma execução e papel (o tipo não entra: `json` sem import e depois
+    # `json` bloqueado é o mesmo nome repetido)
+    rep = N.duplicated(["exec_id", "role", "nome"], keep="first")
     return {"listas_autorizadas_distintas": int(len(listas)),
             "lista_unica_em_todos_papeis_e_meses": bool(len(listas) == 1),
             "erros_que_repetem_o_nome_na_mesma_execucao_e_papel": int(rep.sum()),

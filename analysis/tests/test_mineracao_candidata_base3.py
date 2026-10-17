@@ -83,6 +83,15 @@ class TestRegraDoSandbox(unittest.TestCase):
         self.assertTrue(d["lista_unica_em_todos_papeis_e_meses"])
         self.assertEqual(d["erros_que_repetem_o_nome_na_mesma_execucao_e_papel"], 0)
 
+    def test_repeticao_e_pelo_nome_nao_pelo_tipo(self):
+        msgs = [("PapelA", "2026-01", "x due to: InterpreterError: The variable `json` is not defined."),
+                ("PapelA", "2026-01", "x due to: InterpreterError: Import of json is not allowed.")]
+        casos, mensagens = casos_e_mensagens(msgs)
+        casos["exec_id"] = "e0"   # os dois na mesma execução e papel
+        casos["step_pos"] = [3, 5]
+        d = sb.destino(sb.medir(casos, mensagens))
+        self.assertEqual(d["erros_que_repetem_o_nome_na_mesma_execucao_e_papel"], 1)
+
     def test_memoria_valida_no_esquema(self):
         t = sb.medir(*casos_e_mensagens())
         perfil = {"erros_observaveis": 6, "ocorrencias_condicionais": 6, "execucoes": 6}
