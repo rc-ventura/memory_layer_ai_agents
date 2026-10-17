@@ -29,7 +29,9 @@ import sys
 PIPELINE = Path(__file__).resolve().parents[1]
 ANALISE = PIPELINE.parent
 RAIZ = ANALISE.parents[1]
-SKILLS = RAIZ / ".claude" / "skills"
+# as skills do kit: `.claude/skills/` (Claude Code) ou `.copilot/skills/` (o ambiente com Copilot); a primeira que tiver
+# o script vale
+PASTAS_SKILLS = [RAIZ / ".claude" / "skills", RAIZ / ".copilot" / "skills"]
 AUDITORIA = ANALISE / "audit" / "scripts" / "audit_candidata_base3.py"
 ESQUEMA = RAIZ / "analysis" / "registros" / "esquema-memoria.json"
 sys.path.insert(0, str(PIPELINE))
@@ -46,6 +48,14 @@ TABELAS = ["erros_lidos", "inventario", "inventario_papel", "inventario_mes", "i
 
 class Parada(Exception):
     """Um passo parou a mineração; a mensagem é o motivo, numa linha, sem dado de caso."""
+
+
+def script_da_skill(skill, nome):
+    for pasta in PASTAS_SKILLS:
+        arq = pasta / skill / "scripts" / nome
+        if arq.exists():
+            return arq
+    raise Parada(f"{nome} não encontrado em {' nem em '.join(f'{p.parent.name}/skills/{skill}/scripts/' for p in PASTAS_SKILLS)}")
 
 
 def _rodar(cmd):
@@ -170,7 +180,7 @@ class Mineracao:
 
     # ── 2 · monitoramento ──────────────────────────────────────────────────────────────────────────────────
     def passo2(self):
-        rc, out = _rodar([sys.executable, str(SKILLS / "mineracao-base" / "scripts" / "monitorar.py"), str(ANALISE)])
+        rc, out = _rodar([sys.executable, str(script_da_skill("mineracao-base", "monitorar.py")), str(ANALISE)])
         (self.saida / "passo2_monitoramento.txt").write_text(out, encoding="utf-8")
         if rc == 1:
             raise Parada("alerta do monitoramento: a lição volta ao pesquisador (passo2_monitoramento.txt)")
@@ -300,7 +310,7 @@ class Mineracao:
                "memoria": mem, "origem": origem}
         destino = self.saida / f"memoria_{self.u}_{self.manifesto['base']}.json"
         _json(destino, doc)
-        spec = spec_from_file_location("validar_memoria", SKILLS / "mineracao-candidata" / "scripts" / "validar_memoria.py")
+        spec = spec_from_file_location("validar_memoria", script_da_skill("mineracao-candidata", "validar_memoria.py"))
         vm = module_from_spec(spec)
         spec.loader.exec_module(vm)
         erros, pend, _ = vm.validar(esquema, doc)
@@ -313,7 +323,7 @@ class Mineracao:
         mod, arq = self.modulo()
         rel = self.saida / f"relatorio_{self.u}.md"
         rel.write_text(self.relatorio(), encoding="utf-8")
-        rc, out = _rodar([sys.executable, str(SKILLS / "mineracao-base" / "scripts" / "varrer_pii.py"), str(rel),
+        rc, out = _rodar([sys.executable, str(script_da_skill("mineracao-base", "varrer_pii.py")), str(rel),
                           str(self.saida / f"memoria_{self.u}_{self.manifesto['base']}.json")])
         (self.saida / "passo9_varredura.txt").write_text(out, encoding="utf-8")
         if rc != 0:

@@ -13,7 +13,8 @@
 - **à mão:** os comandos abaixo, um por passo, na ordem. Cada passo lê o que o anterior gravou e para com saída 1 e o
   motivo numa linha.
 
-Tudo roda da raiz do repositório, no ambiente onde está a base. Para ensaiar com a base 1, ver o §3.
+Tudo roda da raiz do repositório, no ambiente onde está a base. Para ensaiar com a base 1, ver o §3. Os scripts das skills que o comando chama (`monitorar.py`, `validar_memoria.py`, `varrer_pii.py`) são
+procurados em `.claude/skills/` e, se não estiverem lá, em `.copilot/skills/` (o ambiente com Copilot).
 
 ## 1 · O que muda na base 3
 
