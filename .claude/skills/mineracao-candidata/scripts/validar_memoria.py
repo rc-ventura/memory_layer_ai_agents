@@ -1,14 +1,18 @@
 """Confere o arquivo final de uma mineração de candidata contra o esquema da memória da análise — e, com --converter,
-transforma o registro que um notebook específico grava no formato desse esquema.
+transforma o registro que um notebook específico (legado) grava no formato desse esquema. Um script
+específico grava o arquivo já no esquema e só usa a conferência.
 
     python validar_memoria.py <esquema-memoria.json> <memoria_<u>_<base>.json>
     python validar_memoria.py <esquema-memoria.json> --converter <registro.json> --unidade <u> --base <BASE_ID>
-                              --parte-especifica notebook:<nome> --comando "<o que reproduz o registro>" --saida <arquivo>
+                              --parte-especifica notebook:<nome>|script:<nome> --comando "<o que reproduz o registro>" --saida <arquivo>
 
 Os campos e a versão vêm do esquema (analysis/registros/esquema-memoria.json), nunca deste script: mudar a estrutura da memória
 é mudar só o esquema. A conferência:
-  - a versão carimbada no arquivo é a do esquema;
+  - a versão carimbada no arquivo é a do esquema ou uma das `versoes_aceitas` dele;
+  - a parte específica começa por um dos prefixos do esquema (notebook: | script: | investigacao:);
   - todo campo obrigatório existe no registro e tem o tipo do esquema;
+  - cada caso de `location.casos` tem os campos do `casos_item` e um localizador completo (exec_id + idx, ou
+    step_ref + fonte_id + rodada_id, numa base sem idx);
   - todo campo do registro tem origem (checado | hipotese | pendente); checado exige o comando que o reproduz;
   - campo não obrigatório do esquema que falta no registro vira PENDÊNCIA (não reprova): é assim que um campo novo do
     esquema aparece na próxima mineração sem mudar código.
@@ -26,20 +30,42 @@ def tipo_ok(valor, tipo):
     return isinstance(valor, TIPOS.get(tipo, object))
 
 
+def conferir_casos(campo, casos, regra):
+    """Cada caso apontado tem os campos obrigatórios e pelo menos um localizador completo do esquema."""
+    if not isinstance(casos, list):
+        return [f"campo `{campo}`: `casos` não é lista"]
+    localizadores = regra.get("localizadores", {})
+    erros = []
+    for i, caso in enumerate(casos):
+        faltam = [c for c in regra.get("obrigatorio", []) if caso.get(c) in (None, "")]
+        if faltam:
+            erros.append(f"campo `{campo}`, caso {i}: sem {', '.join(faltam)}")
+        if localizadores and not any(all(caso.get(c) not in (None, "") for c in cs) for cs in localizadores.values()):
+            erros.append(f"campo `{campo}`, caso {i}: nenhum localizador completo "
+                         f"({' ou '.join(' + '.join(cs) for cs in localizadores.values())})")
+    return erros
+
+
 def validar(esquema, arq):
     erros, pendencias = [], []
-    if arq.get("esquema") != esquema["versao"]:
-        erros.append(f"versão do arquivo {arq.get('esquema')!r} ≠ versão do esquema {esquema['versao']!r}")
+    aceitas = esquema.get("versoes_aceitas") or [esquema["versao"]]
+    if arq.get("esquema") not in aceitas:
+        erros.append(f"versão do arquivo {arq.get('esquema')!r} fora das aceitas pelo esquema {aceitas}")
     mem, origem = arq.get("memoria") or {}, arq.get("origem") or {}
     for chave in ("unidade", "base", "parte_especifica"):
         if not arq.get(chave):
             erros.append(f"cabeçalho sem `{chave}`")
+    prefixos = esquema.get("arquivo", {}).get("parte_especifica_prefixos")
+    if prefixos and arq.get("parte_especifica") and not str(arq["parte_especifica"]).startswith(tuple(prefixos)):
+        erros.append(f"parte específica {arq['parte_especifica']!r} não começa por {' | '.join(prefixos)}")
     for campo, regra in esquema["campos"].items():
         if campo not in mem:
             (erros if regra.get("obrigatorio") else pendencias).append(f"campo `{campo}` ausente")
             continue
         if not tipo_ok(mem[campo], regra["tipo"]):
             erros.append(f"campo `{campo}`: tipo {type(mem[campo]).__name__}, o esquema pede {regra['tipo']}")
+        if "casos_item" in regra and isinstance(mem[campo], dict):
+            erros += conferir_casos(campo, mem[campo].get("casos"), regra["casos_item"])
         o = origem.get(campo)
         if not o or o.get("tipo") not in ("checado", "hipotese", "pendente"):
             erros.append(f"campo `{campo}` sem origem (checado | hipotese | pendente)")

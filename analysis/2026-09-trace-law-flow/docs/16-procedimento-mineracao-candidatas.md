@@ -34,7 +34,7 @@ flowchart TD
     E -- diverge --> X["Para: a divergência é o achado"]:::dec
     E -- igual --> R["Relatório da parte genérica<br/>com evidência por achado"]:::det
     R --> F{"Funil<br/>tabela deste documento"}:::det
-    F -- "notebook:&lt;nome&gt;" --> N["Notebook específico<br/>determinístico"]:::det
+    F -- "script:&lt;nome&gt; (notebook:, legado)" --> N["Script específico<br/>determinístico"]:::det
     F -- "investigação:candidata" --> I1["Leitura aberta, 2 leitores<br/>a lição e a causa em frase livre"]:::llm
     I1 --> GL{"Gate da lista<br/>o pesquisador aprova as categorias"}:::dec
     GL --> I["Leitura fechada, 2 leitores às cegas (≥ 20 casos)<br/>concordância por script · regras contadas"]:::llm
@@ -44,7 +44,7 @@ flowchart TD
     M --> V{"validar_memoria.py"}:::det
     V -- aprovado --> D["Dossiê + arquivo final<br/>lição principal · leitores lado a lado · o resto"]:::det
     D --> PN["Painel valor_da_licao.py<br/>frequência × confiança → situação"]:::det
-    PN --> H{"Gate do pesquisador<br/>a lição · o destino · notebook, monitorar ou investigar"}:::dec
+    PN --> H{"Gate do pesquisador<br/>a lição · o destino · script, monitorar ou investigar"}:::dec
     classDef det fill:#e8f1fb,stroke:#3b6ea5,color:#1b2b3a
     classDef llm fill:#fdf1e3,stroke:#b8742a,color:#3a2a1b
     classDef dec fill:#eaf6ea,stroke:#3f8a3f,color:#1b3a1b
@@ -59,11 +59,11 @@ pesquisador.
 flowchart LR
     S1["1 · Investigação por LLM<br/>toda lição nova começa aqui<br/>regras que funcionaram → regras.json"]:::llm
     S2["2 · Regras contadas<br/>testar_regra.py reconta a cada rodada"]:::det
-    T{"Gatilho<br/>frequência (Pareto ou presença no tempo)<br/>+ confiança (2 leitores, ≥ 20 casos; regras contadas)<br/>+ gate: o Rafael escolhe propor o notebook"}:::dec
-    P["Proposta em propostas/&lt;u&gt;/<br/>racional.md (antes) · notebook rascunho"]:::llm
-    V["Validador, outro agente<br/>2ª implementação a partir do racional<br/>confere notebook × racional × ordem"]:::det
+    T{"Gatilho<br/>frequência (Pareto ou presença no tempo)<br/>+ confiança (2 leitores, ≥ 20 casos; regras contadas)<br/>+ gate: o Rafael escolhe propor o script"}:::dec
+    P["Proposta em propostas/&lt;u&gt;/<br/>racional.md (antes) · script rascunho"]:::llm
+    V["Validador, outro agente<br/>2ª implementação a partir do racional<br/>confere script × racional × ordem"]:::det
     A{"Aprovação do Rafael"}:::dec
-    N["3 · Notebook específico no funil<br/>docs/ + pipeline/ + livro-razão"]:::det
+    N["3 · Script específico no funil<br/>docs/ + pipeline/especificas/ + livro-razão"]:::det
     S1 --> S2 --> T
     T -- não --> S1
     T -- sim --> P --> V
@@ -117,7 +117,7 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 
 ## O funil — a parte específica de cada lição
 
-<!-- funil: a skill mineracao-candidata lê esta tabela. Uma linha por lição; parte específica = notebook:<arquivo em pipeline/> | investigação:<roteiro do kit> -->
+<!-- funil: a skill mineracao-candidata lê esta tabela. Uma linha por lição; parte específica = script:<arquivo em pipeline/especificas/> | notebook:<arquivo em pipeline/> (legado, base 1) | investigação:<roteiro do kit> -->
 
 | Lição | Parte específica | Estágio | Desde | Frequência (base 1, 05/10) | Confiança | Situação | Decisão |
 |---|---|---|---|---|---|---|---|
@@ -152,7 +152,7 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 
   | Frequência | Confiança | Situação | Gate do pesquisador: as opções |
   |---|---|---|---|
-  | sim | confirmada | **pronta para notebook** | propor o notebook (`propor-notebook`) · esperar a próxima partição |
+  | sim | confirmada | **pronta para script** | propor o script (`propor-script`) · esperar a próxima partição |
   | sim | redação em aberto | **lição existe, redação em aberto** | aprovar a lição de um dos leitores · escrever uma lição geral que cubra as duas · investigar mais a fundo (várias causas; dividir a lição) |
   | sim | várias causas | **várias causas: investigar a fundo** | dividir a lição por causa · investigar mais a fundo |
   | sim | padrão não confirmado | **importante e mal entendida** | sem gate: a investigação continua (rever a regra) |
@@ -231,7 +231,7 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 |---|---|---|
 | **1 · Investigação** (toda lição nova começa aqui) | roteiro `candidata` do kit: hipóteses antes de ler, amostra por regra, leitura em duas etapas (aberta → gate da lista → fechada, abaixo), regras contadas. Saem o dossiê, o arquivo final (com campos `hipotese`) e `resultados/mineracao/<u>/regras.json` (as regras que funcionaram: regex ou condição, campo, população, contagens) | `investigador` + `segundo-leitor` |
 | **2 · Regras contadas** | a cada rodada, o `testar_regra.py` reconta as regras do `regras.json`, sem LLM. Os campos que elas sustentam passam a `checado` | a skill |
-| **3 · Notebook específico** | um notebook determinístico, aprovado, no funil | ver a regra de criação |
+| **3 · Script específico** | um script determinístico, aprovado, no funil (os da base 1 são notebooks, legado: livro-razão, Ajuste 20) | ver a regra de criação |
 
 ### A leitura em duas etapas e o gate do pesquisador (decidido com o Rafael em 06/10/2026)
 
@@ -273,14 +273,14 @@ sintoma pode ter várias causas. A investigação pode terminar em uma lição; 
 `scope`); ou em várias lições, e aí a proposta de dividir a unidade é um Ajuste de taxonomia, decidido pelo pesquisador.
 Nas duas primeiras investigações da base 1, as duas unidades mostraram mais de uma causa dentro.
 
-### A regra de criação de um notebook específico
+### A regra de criação de um script específico
 
-O agente **só pode propor** um notebook quando valerem a **frequência** e a **confiança**, ou quando o Rafael
+O agente **só pode propor** um script quando valerem a **frequência** e a **confiança**, ou quando o Rafael
 decidir. Nunca cria e adota sozinho. A **aprovação final é sempre do Rafael**. Regra revista com o Rafael em 05/10/2026,
 sem sorteio: a base 3 é o log inteiro (as bases 1 e 2 são recortes de 1.000 registros), e a base vai receber partições
 novas.
 
-**1 · Frequência: a lição vale um notebook?** (pelo menos um)
+**1 · Frequência: a lição vale um script?** (pelo menos um)
 - **Pareto:** a lição está entre as que, juntas, cobrem 80% das **ocorrências** das candidatas da base. São
   ocorrências, e não erros brutos, porque cascatas inflam os erros.
 - **Presença no tempo:** a lição aparece na maior parte dos meses da base. Não basta a régua da triagem (≥ 3
@@ -289,13 +289,13 @@ novas.
   Na base 1 (05/10), 6 das 10 candidatas têm: as 4 do Pareto (84% das ocorrências) mais 2 pela presença no tempo. A
   `U_nome_inventado` (5 ocorrências, 4 de 11 meses) não tem.
 
-**2 · Confiança: a regra que vai virar notebook está certa?** (todos)
+**2 · Confiança: a regra que vai virar script está certa?** (todos)
 - **Dois leitores às cegas** na leitura fechada, com **pelo menos 20 casos** (ou todos, se a população é menor) e kappa
   ≥ 0,6 nas categorias da lista aprovada (`concordancia.py`).
 - **As regras contadas** contra a leitura (`testar_regra.py`): concordância ≥ 90% e "pega a mais" ≤ 10%, registradas
   no `regras.json`.
 - **O laudo "aprovado" do validador**, uma segunda implementação a partir só do racional (abaixo).
-- **A decisão do gate** registrada como "propor o notebook" (a situação "pronta para notebook" também para no gate).
+- **A decisão do gate** registrada como "propor o script" (a situação "pronta para script" também para no gate).
 - **Limite declarado:** sem sorteio, as regras são escritas e conferidas nos mesmos casos lidos, e a concordância
   tende a sair otimista. Por isso a reconfirmação abaixo.
 
@@ -304,31 +304,31 @@ novas.
 - as regras do `regras.json` são aplicadas **sem mudança** e comparadas com essa leitura;
 - o resultado vai para o `confianca.json` com `--registrar … --local "partição <id>"`.
 
-A partição é dado que ninguém usou para escrever as regras. Ela não bloqueia a criação do notebook, mas vale também para os notebooks já aprovados: se a regra cair
+A partição é dado que ninguém usou para escrever as regras. Ela não bloqueia a criação do script, mas vale também para os scripts (e os notebooks da base 1) já aprovados: se a regra cair
 abaixo dos limiares numa partição nova, a lição volta ao estágio 1 (uma entrada no livro-razão). É também o teste de que
 a lição continua valendo no tempo.
 
 **Ou a decisão do Rafael**, registrada no `decisoes.md`.
 
-**Depois do notebook, o LLM continua, com outro papel.** O notebook automatiza a parte repetitiva (reconhecer, contar,
+**Depois do script, o LLM continua, com outro papel.** O script automatiza a parte repetitiva (reconhecer, contar,
 classificar os casos pela regra). A investigação por LLM passa a fazer três outras coisas:
 - **ler a amostra de cada partição nova**, para a reconfirmação acima;
-- **investigar a sobra que a regra não pega** (os casos "parciais" ou "não lidos" do notebook);
+- **investigar a sobra que a regra não pega** (os casos "parciais" ou "não lidos" do script);
 - **investigar quando a regra cai** numa partição nova: algo mudou (modelo, prompt, a própria lição), e a lição volta ao
   estágio 1 até se entender o quê.
 
 Foi o que aconteceu com a nº2/nº10: o notebook existia, e as análises fundas das ferramentas (§11.9 e §11.10) vieram
 depois.
 
-**Frequência sozinha não basta:** ela diz que a lição vale um notebook, não que a regra está certa. Uma lição com metade
-dos erros e uma regra errada é o pior caso, porque o notebook automatizaria o erro em escala.
+**Frequência sozinha não basta:** ela diz que a lição vale um script, não que a regra está certa. Uma lição com metade
+dos erros e uma regra errada é o pior caso, porque o script automatizaria o erro em escala.
 
 **Por que o agente não cria e adota sozinho:**
 - seria mudança de método sem aprovação;
 - os números ganhariam o selo de "conferido" sem conferência;
 - a regra seria escrita depois de ver os dados (o pré-registro do `06` existe para evitar isso);
 - a regra nasceria de uma base só (Ajuste 7);
-- e voltaria o "um notebook por lição".
+- e voltaria o "um notebook por lição" da base 1, agora como um script por lição.
 
 ### Onde o agente escreve a proposta
 
@@ -338,32 +338,54 @@ Nada vai direto para `docs/` nem para `pipeline/`:
 analysis/<pasta-da-analise>/propostas/<unidade>/
   racional.md                  o racional curto: a lição, as regras do regras.json em prosa, de onde cada uma veio
                                (base, contagens, concordância dos leitores), o critério de frequência que valeu,
-                               o que o notebook mede e o que não mede.
-                               Status "proposta". A data e o hash são registrados ANTES de o notebook rodar
-  mineracao_<unidade>.ipynb    o rascunho: só as regras do racional; determinístico, sem LLM; funções numa célula
-                               própria; saída só de contagens e tabelas; grava o arquivo final no esquema da memória
-                               e a pasta de evidência. Salvo sem saídas
+                               o que o script mede e o que não mede.
+                               Status "proposta". A data e o hash são registrados ANTES de o script rodar
+  mineracao_<unidade>.py       o rascunho: só as regras do racional; determinístico, sem LLM; as regras em funções
+                               que o teste chama; saída só de contagens e tabelas; grava o arquivo final no esquema
+                               da memória e a pasta de evidência
+  test_mineracao_<unidade>.py  o teste do rascunho, com dados sintéticos (nenhum caso real)
   conferencia_independente.py  a segunda implementação, escrita pelo validador
   validacao.md                 o laudo do validador
 ```
 
-**A pasta é versionada**: o racional, o laudo e a conferência não têm dado de caso, e o notebook vai sem saídas.
+**A pasta é versionada**: o racional, o script, o teste, o laudo e a conferência não têm dado de caso.
 
-### O validador (agente `validador-de-notebook` do kit)
+**Como o script roda** (base 3; numa base com rodada e manifesto):
 
-Contexto isolado: ele não participou da investigação nem escreveu o notebook. Ele:
+```bash
+uv run python analysis/<pasta-da-analise>/pipeline/especificas/mineracao_<unidade>.py --rodada <rodada_id>
+```
+
+- **lê a rodada já conferida** pelo código do pipeline (o `ler_artefato` da análise, que recusa arquivo fora do
+  manifesto e abre caminho longo do Windows), nunca a fonte crua de novo;
+- **grava em `resultados/mineracao/<unidade>/`** as tabelas, o arquivo final da memória (aprovado pelo
+  `validar_memoria.py` antes de terminar) e um **manifesto próprio**: o hash do script, o `rodada_id` e o `fonte_id`
+  que ele leu e o hash de cada arquivo gravado;
+- **`--saida <pasta>`** grava em outro lugar (o validador usa uma pasta de rascunho, para não gravar em `resultados/`);
+- **fica fora da lista do hash do código da rodada**: criar ou mudar um script específico não troca o identificador
+  da rodada.
+
+**Por que script e não notebook** (livro-razão, Ajuste 20, 16/10/2026): na base 3 tudo roda por comando, com manifesto
+e hash, e na máquina 2 (Windows) um comando só; um script entra na suíte de testes, e um notebook não; o resultado de
+um notebook não fica em manifesto nenhum; e quem lê a rodada pelo código do pipeline já herda o acesso a caminho longo
+(o "ausente" do `b3 #42`). Os notebooks da base 1 (a nº2/nº10) ficam como estão: o funil e o esquema da memória
+continuam aceitando `notebook:`.
+
+### O validador (agente `validador-de-script` do kit)
+
+Contexto isolado: ele não participou da investigação nem escreveu o script. Ele:
 1. **lê só o `racional.md`** e escreve a segunda implementação dos números principais, no padrão dos
    `audit_recompute*` (`csv` + `json` + `re`, sem importar o pipeline), em `conferencia_independente.py`;
-2. **roda o notebook e a conferência na base** e compara medida por medida;
-3. **confere o notebook contra o racional:** só as regras do racional, nenhuma chamada a LLM, nenhum limiar que não
+2. **roda o script, o teste dele e a conferência na base** e compara medida por medida;
+3. **confere o script contra o racional:** só as regras do racional, nenhuma chamada a LLM, nenhum limiar que não
    esteja no racional, nenhum texto de caso na saída, e o arquivo final aprovado pelo `validar_memoria.py`;
 4. **confere a ordem:** a data e o hash do `racional.md` (e do `regras.json`) são anteriores à primeira rodada do
-   notebook;
+   script;
 5. **escreve o `validacao.md`**: aprovado ou reprovado, item por item, com os comandos. **Ele não corrige nada.**
 
 **A aprovação final é do Rafael**, depois de um laudo "aprovado". Ao aprovar, no mesmo commit:
 - o racional vira `docs/NN-racionais-mineracao-<unidade>.md`;
-- o notebook vai para `pipeline/`;
+- o script vai para `pipeline/especificas/` e o teste para `analysis/tests/`;
 - a conferência vai para `audit/scripts/`;
 - a lição muda de linha no funil;
 - uma entrada vai para o livro-razão.
@@ -372,7 +394,7 @@ Contexto isolado: ele não participou da investigação nem escreveu o notebook.
 
 - Parte genérica: o perfil igual ao da triagem e o encontro com a auditoria igual (acima).
 - Parte específica:
-  - **por notebook:** os números do notebook conferem com a sua conferência independente (para a nº2/nº10, os
+  - **por script** (ou notebook, legado): os números conferem com a sua conferência independente (para a nº2/nº10, os
     `audit_recompute7`/`8`);
   - **por investigação:** a lista aprovada no gate, a concordância entre os leitores medida na leitura fechada
     (`concordancia.py`, com a tabela lado a lado), e regras contadas (`testar_regra.py`) para cada campo marcado

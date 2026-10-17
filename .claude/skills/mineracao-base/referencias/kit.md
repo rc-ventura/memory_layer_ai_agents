@@ -4,7 +4,7 @@
 >
 > **Onde o kit mora:** no próprio `.claude/` do repositório, versionado — as skills em `.claude/skills/mineracao-*/`,
 > os agentes em `.claude/agents/`, e os dois passos que você chama com barra depois de uma mineração
-> (`/investigar`, `/propor-notebook`) também como skills, só de chamada manual. Este documento e a `VERSAO` ficam na skill
+> (`/investigar`, `/propor-script`) também como skills, só de chamada manual. Este documento e a `VERSAO` ficam na skill
 > `mineracao-base`. O Claude Code e o Copilot leem os dois lugares direto: não há cópia nem instalação.
 
 Um pacote de skills, agentes e scripts para rodar as minerações do trace de agentes com o mesmo procedimento
@@ -47,7 +47,7 @@ O relatório é a análise final: quem o lê não pode precisar ir buscar evidê
   visão conferida em `derivados/` e o comando de recorte `drill_down.py caso <exec_id> <role>`.
 
 O `montar_evidencia.py` monta tudo isso por regra fixa e escreve o bloco do relatório. O relatório completo fica no
-ambiente do trace; a versão que sai troca os identificadores por `caso-N`, por script (`versao_para_sair.py`).
+ambiente do trace; o que sai passa pelo `varrer_pii.py` (dado pessoal não sai; o identificador de execução pode).
 Detalhe em `skills/mineracao-base/referencias/evidencia.md`.
 
 ## O que mora onde
@@ -59,7 +59,7 @@ Detalhe em `skills/mineracao-base/referencias/evidencia.md`.
 | **Objeto da rodada** | no argumento da chamada | a pasta da análise, a pergunta do roteiro (`silenciosas S2`) |
 
 O kit não tem nome de base, pasta datada, unidade, ferramenta nem número de nenhuma base. Para conferir:
-`grep -rnE "base ?[123]\b|U_[a-z]|2026-" .claude/skills/{mineracao-*,investigar,propor-notebook} .claude/agents` não deve achar
+`grep -rnE "base ?[123]\b|U_[a-z]|2026-" .claude/skills/{mineracao-*,investigar,propor-script} .claude/agents` não deve achar
 nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita números de propósito.
 
 ## Conteúdo
@@ -70,8 +70,8 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   scripts/conferir_versao.py      o código da análise é o do manifesto? (CRLF, TRACE/BASE_ID e saídas de notebook não contam)
   scripts/montar_evidencia.py     a evidência de um achado: casos por regra fixa, crus, visões, origem e o bloco do relatório
   scripts/amostrar.py             a regra fixa de escolha de casos (usada pela evidência e pela investigação)
-  scripts/versao_para_sair.py     a versão do relatório que sai: identificadores → caso-N (o mapa fica no ambiente)
-  scripts/varrer_pii.py           bloqueia a versão que sai se tiver processo, CPF, CNPJ, e-mail ou identificador de execução
+  scripts/versao_para_sair.py     opcional: identificadores → caso-N (o mapa fica no ambiente)
+  scripts/varrer_pii.py           bloqueia o que vai sair se tiver processo, CPF, CNPJ ou e-mail
   scripts/monitorar.py            o monitoramento (passo 0.5): confere as lições e sinais monitorados da análise e para com alerta
   manifesto.json                  os hashes do código para o qual esta versão do kit foi escrita
 .claude/skills/mineracao-silenciosas/  a mineração das falhas silenciosas (lê as tabelas, passo a passo do procedimento da análise)
@@ -90,8 +90,8 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   roteiros/protocolo.md           P1 a camada do surto (o fim do prompt), P2 o mecanismo de cada caso (catálogo M1–M6)
   roteiros/candidata.md           a parte específica de uma candidata: a lição, a causa, o conserto, o destino → o arquivo final
   scripts/testar_regra.py · concordancia.py
-.claude/agents/                   auditor-independente · investigador · segundo-leitor · validador-de-notebook
-.claude/skills/investigar · propor-notebook
+.claude/agents/                   auditor-independente · investigador · segundo-leitor · validador-de-script
+.claude/skills/investigar · propor-script
                                   os passos de depois: skills só de chamada manual (`disable-model-invocation: true`)
 ```
 
@@ -107,7 +107,7 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   substituído; no Copilot, o texto depois do `/nome` vai junto como contexto — por isso o texto diz "indicada no
   pedido".
 - Se o VS Code de uma máquina for antigo e não achar as skills do `.claude/`, o problema é a versão, não o kit.
-- Para usar em outro repositório, copie `.claude/skills/{mineracao-*,investigar,propor-notebook}` e os
+- Para usar em outro repositório, copie `.claude/skills/{mineracao-*,investigar,propor-script}` e os
   quatro agentes.
 
 ## Usar
@@ -118,7 +118,7 @@ pedindo em texto ("minere o protocolo da base X"). Uma execução dela numa base
 - `/mineracao-protocolo <pasta da análise>`: o mesmo fluxo para o protocolo do harness (auditoria `audit_recompute10`).
 - `/mineracao-candidata <U_...> [<pasta>]`: minera uma candidata a memória e entrega o arquivo final no esquema da memória
   (`analysis/registros/esquema-memoria.json`). O desenho está em `.claude/skills/mineracao-candidata/referencias/fluxo.md`.
-- `/propor-notebook <U_...>`: só quando a lição cumpre a regra de criação do procedimento; escreve em `propostas/` e
+- `/propor-script <U_...>`: só quando a lição cumpre a regra de criação do procedimento; escreve em `propostas/` e
   pede o laudo do validador.
 - `/investigar silenciosas S2 [<pasta>]` ou `/investigar protocolo P2 [<pasta>]`: uma parada até o dossiê de decisão.
 
