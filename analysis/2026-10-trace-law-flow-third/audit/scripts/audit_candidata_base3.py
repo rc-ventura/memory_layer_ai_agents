@@ -25,8 +25,9 @@ COLUNAS = ["cod_idef_exeo", "cod_idef_aget", "papel", "step_pos", "mes_execucao"
 
 # ── U_sandbox (racional: propostas/U_sandbox/racional.md) ──────────────────────────────────────────────────────────
 MODULOS = {"json", "pd", "np", "re", "os", "math", "datetime"}
-# "os sinais que o pipeline decide antes" (racional, passo 1)
-ANTES = ["SyntaxError", "Code parsing failed", "IndentationError", "Could not index", "has no attribute",
+# "os sinais que o pipeline decide antes" (racional, passo 1; os sete primeiros pela emenda 2, de 16/10)
+ANTES = ["regex pattern", "AgentGenerationError", "internally hosted", "Error code: 422", "UnprocessableEntity",
+         "excedeu o timeout", "TimeoutError","SyntaxError", "Code parsing failed", "IndentationError", "Could not index", "has no attribute",
          "JSONDecode", "does not support multiple positional", "object is not an iterator", "Reached max steps",
          "AgentMaxStepsError", "exceeded the maximum execution time"]
 REGRAS_SANDBOX = [  # (tipo, padrão no último trecho) — racional, passo 4, na ordem

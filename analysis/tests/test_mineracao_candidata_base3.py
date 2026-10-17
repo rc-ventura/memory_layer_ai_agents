@@ -118,6 +118,9 @@ class TestAuditoria(unittest.TestCase):
         self.assertTrue(aud.populacao_sandbox("The variable `json` is not defined"))
         self.assertFalse(aud.populacao_sandbox("The variable `resultado` is not defined"))
         self.assertFalse(aud.populacao_sandbox("SyntaxError ... Import of ast is not allowed"))  # o pipeline decide antes
+        # emenda 2: a função proibida junto do timeout de ferramenta é do timeout (o 1 erro da base 3)
+        self.assertFalse(aud.populacao_sandbox("TimeoutError ... Forbidden function evaluation: 'repr' is not"))
+        self.assertFalse(aud.populacao_sandbox("Error in code parsing: regex pattern ... Import of ast is not allowed"))
 
     def test_auditoria_e_script_concordam(self):
         rows = [{"cod_idef_exeo": f"e{i}", "cod_idef_aget": 1, "papel": p, "step_pos": 3, "mes_execucao": m,

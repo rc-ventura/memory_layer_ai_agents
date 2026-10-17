@@ -34,8 +34,17 @@ Na auditoria, sem importar o pipeline: o passo é um erro estruturado (o tipo do
 - `Import of` / `Import from`, `ModuleNotFound` ou `Forbidden` (qualquer outro); ou
 - ``The variable `<nome>` is not defined`` com `<nome>` em `json`, `pd`, `np`, `re`, `os`, `math`, `datetime`;
 
-e não tem nenhum dos sinais que o pipeline decide antes (sintaxe, `Could not index`, `has no attribute`, `JSONDecode`,
-argumento posicional, `object is not an iterator`, limite de passos, tempo do interpretador).
+e não tem nenhum dos sinais que o pipeline decide antes (resposta sem bloco de código — `regex pattern`; falha do LLM —
+`AgentGenerationError`, `internally hosted`, `Error code: 422`, `UnprocessableEntity`; timeout de ferramenta —
+`excedeu o timeout`, `TimeoutError`; sintaxe, `Could not index`, `has no attribute`, `JSONDecode`, argumento
+posicional, `object is not an iterator`, limite de passos, tempo do interpretador).
+
+**Emenda 2, de 16/10, depois da primeira rodada na base 3** (`observada_e3ebc8274dcf108c`): a lista acima não tinha os
+três primeiros sinais (bloco de código, falha do LLM, timeout de ferramenta), que o pipeline decide antes do sandbox
+(o timeout desde o Ajuste 4 do livro-razão). Na base 3, **1 erro de 3.653** tinha a função proibida e o timeout de
+ferramenta na mesma mensagem: o pipeline o pôs no timeout, e a auditoria, no sandbox. O encontro divergiu só por ele
+(`passo7_divergencia.csv`). A emenda corrige a definição da auditoria; a população da mineração (a da rodada), as
+regras do passo 4 e os limiares não mudam. Decisão do Rafael.
 
 ## Passo 4 · A regra específica: o nome recusado de cada erro
 
