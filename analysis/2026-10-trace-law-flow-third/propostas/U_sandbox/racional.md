@@ -90,8 +90,15 @@ A população, a cobertura, o inventário por tipo e nome e as listas autorizada
 | `validation` | cobertura, encontro, listas autorizadas, os números do passo 6; `destino: "em aberto"` até o Rafael decidir | checado / pendente |
 | `impact` | `null` | pendente |
 
-**Nota de 16/10, antes de qualquer rodada na base 3:** o rótulo "não acesse" (o tipo `atributo_dunder`) entrou na
-`correction_guidance` ao escrever o script; o tipo já estava no passo 4, só faltava o rótulo. Nenhum limiar mudou.
+**Emenda de 16/10 (depois do primeiro ensaio na base 1, antes de qualquer rodada na base 3).** Duas mudanças na linha
+`correction_guidance` do passo 8, nenhuma em regra, limiar ou população:
+1. o rótulo "não acesse" (o tipo `atributo_dunder`, que já estava no passo 4);
+2. "com mais de uma lista autorizada, uma por grupo de papéis", que repete o que a linha `scope` já dizia.
+
+**A base de confirmação é a base 3.** A regra foi escrita olhando a base 1 (ver "De onde veio a regra"), então o ensaio
+na base 1 confere o **código** (o script faz o que o racional diz), não a **hipótese** (a lição sai da mensagem). Quem
+confirma a hipótese é a primeira rodada na base 3, depois do commit desta emenda. O hash do pré-registro fica
+registrado no funil do procedimento `06`.
 
 ## O que não mede
 

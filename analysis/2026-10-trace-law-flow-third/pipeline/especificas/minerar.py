@@ -248,8 +248,8 @@ class Mineracao:
         perfil = _ler_json(self.saida / "passo3_generica.json")["perfil"]
         conf = _ler_json(self.saida / "passo5_confianca.json")
         dest = _ler_json(self.saida / "passo6_destino.json")
-        _ler_json(self.saida / "passo7_encontro.json")
-        mem = mod.memoria(perfil, t, conf, dest, self.ids)
+        encontro = _ler_json(self.saida / "passo7_encontro.json")
+        mem = mod.memoria(perfil, t, conf, dest, self.ids, encontro)
         esquema = json.loads(ESQUEMA.read_text(encoding="utf-8"))
         comando = (f"uv run python {Path(__file__).relative_to(RAIZ).as_posix()} {self.u} "
                    f"--rodada {self.ids['rodada_id'][:16]}")
@@ -274,13 +274,13 @@ class Mineracao:
         mod, arq = self.modulo()
         rel = self.saida / f"relatorio_{self.u}.md"
         rel.write_text(self.relatorio(), encoding="utf-8")
-        arquivos = sorted(p for p in Path(self.saida).iterdir() if p.is_file() and p.name != "manifesto_mineracao.json")
         r = subprocess.run([sys.executable, str(SKILLS / "mineracao-base" / "scripts" / "varrer_pii.py"), str(rel),
                             str(self.saida / f"memoria_{self.u}_{self.manifesto['base']}.json")],
                            capture_output=True, text=True, encoding="utf-8")
         (self.saida / "passo9_varredura.txt").write_text(r.stdout, encoding="utf-8")
         if r.returncode != 0:
             raise Parada("o varredor achou dado pessoal no relatório ou na memória (passo9_varredura.txt)")
+        arquivos = sorted(p for p in Path(self.saida).iterdir() if p.is_file() and p.name != "manifesto_mineracao.json")
         codigo = {Path(p).relative_to(RAIZ).as_posix(): _sha(p) for p in (Path(__file__), arq, AUDITORIA, ESQUEMA)}
         _json(self.saida / "manifesto_mineracao.json",
               {"unidade": self.u, **self.ids, "fonte_sha256": self.manifesto.get("fonte_sha256"),

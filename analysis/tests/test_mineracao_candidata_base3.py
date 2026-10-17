@@ -86,13 +86,20 @@ class TestRegraDoSandbox(unittest.TestCase):
     def test_memoria_valida_no_esquema(self):
         t = sb.medir(*casos_e_mensagens())
         perfil = {"erros_observaveis": 6, "ocorrencias_condicionais": 6, "execucoes": 6}
-        mem = sb.memoria(perfil, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f" * 64, "rodada_id": "r" * 64})
+        enc = [{"medida": "populacao.erros", "mineracao": 6, "auditoria": 6, "igual": True}]
+        mem = sb.memoria(perfil, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f" * 64, "rodada_id": "r" * 64}, enc)
         doc = {"esquema": ESQUEMA["versao"], "unidade": "U_sandbox", "base": "base3", "gerado_em": "2026-10-16",
                "parte_especifica": "script:mineracao_U_sandbox", "memoria": mem,
                "origem": {c: {"tipo": "checado", "comando": "x"} for c in mem}}
         self.assertEqual(vm.validar(ESQUEMA, doc)[0], [])
         self.assertIn("Não chame: repr", mem["correction_guidance"])
         self.assertIn("Imports autorizados: json, math, re", mem["correction_guidance"])
+        self.assertEqual(mem["status"], "derived-and-checked")
+        self.assertEqual(mem["validation"]["encontro"]["diferentes"], 0)
+        self.assertEqual(len(mem["validation"]["listas_autorizadas"]), 1)
+        enc[0]["igual"] = False   # o encontro não fecha: o status cai
+        mem = sb.memoria(perfil, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f", "rodada_id": "r"}, enc)
+        self.assertEqual(mem["status"], "parcial")
 
 
 class TestAuditoria(unittest.TestCase):

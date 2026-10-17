@@ -10,7 +10,8 @@ Interface que o `minerar.py` espera de todo script específico:
     confianca(tabelas) -> dict            passo 5: {"medida", "valor", "limiar", "passa", ...}
     destino(tabelas) -> dict              passo 6: os números para a decisão memória × harness
     para_encontro(tabelas) -> dict        passo 7: as medidas no formato da auditoria independente
-    memoria(perfil, tabelas, conf, dest, ids) -> dict   passo 8: os campos do esquema da memória
+    memoria(perfil, tabelas, conf, dest, ids, encontro) -> dict   passo 8: os campos do esquema da memória;
+                                          `encontro` é a lista do passo 7 (medida, mineração, auditoria, igual)
 """
 import re
 
@@ -119,7 +120,7 @@ def _nomes(inv, tipo):
     return ", ".join(inv.loc[inv.tipo.eq(tipo), "nome"])
 
 
-def memoria(perfil, t, conf, dest, ids):
+def memoria(perfil, t, conf, dest, ids, encontro):
     L, inv, listas = t["erros_lidos"], t["inventario"], t["imports_autorizados"]
     primeiros = L.sort_values(["role", "mes", "step_ref"]).drop_duplicates("role").head(10)
     location = {"total_erros": int(perfil["erros_observaveis"]),
@@ -154,7 +155,13 @@ def memoria(perfil, t, conf, dest, ids):
         "occurrences": {"erros": int(perfil["erros_observaveis"]),
                         "ocorrencias": int(perfil["ocorrencias_condicionais"]),
                         "execucoes": int(perfil["execucoes"]), "meses": sorted(L.mes.unique().tolist())},
-        "status": "derived-and-checked",
-        "validation": {"cobertura": conf, "destino_numeros": dest, "destino": "em aberto"},
+        # racional, passo 8: derived-and-checked se a cobertura passa e o encontro fecha
+        "status": "derived-and-checked" if conf["passa"] and encontro and all(e["igual"] for e in encontro) else "parcial",
+        "validation": {"cobertura": conf,
+                       "encontro": {"medidas": len(encontro), "diferentes": sum(not e["igual"] for e in encontro),
+                                    "com_a": "audit/scripts/audit_candidata_base3.py"},
+                       "listas_autorizadas": [{"lista": r.lista_autorizada, "erros": int(r.erros), "papeis": r.papeis,
+                                               "meses": r.meses} for r in listas.itertuples(index=False)],
+                       "destino_numeros": dest, "destino": "em aberto"},
         "impact": None,
     }
