@@ -194,3 +194,18 @@ As medidas continuam iguais, sem nenhuma diferença. Os dois itens reprovados no
 - Medidas comparadas: as mesmas 21; diferenças de número: **0**. Encontro do script: 24 medidas, 0 diferentes.
 - Itens: 1 ok · 2 ok · 3 ok · 4 ok (com a condição da base 3 acima).
 - Observações do primeiro laudo: (c), (d) e (f) fechadas; (a), (b) e (e) continuam abertas, sem efeito nesta base.
+
+---
+
+**Revalidação 2 — 16/10/2026, depois de `1f76600` (só a observação b):** **fechada, e o veredito continua APROVADO.**
+O script (sha256 `39481621…`, o mesmo do manifesto) agora agrupa a repetição do passo 6 por (execução, papel, nome),
+sem o tipo, como diz o racional; o `minerar.py` não mudou neste commit. Comandos e resultados:
+- `uv run python -m unittest analysis.tests.test_mineracao_candidata_base3`: 14 testes, 14 passam. O teste novo cobre
+  um nome repetido com dois tipos.
+- `minerar.py U_sandbox --rodada <ensaio>/rodada --fonte <ensaio>/fonte_base1_v1.parquet --saida <rascunho>/saida_script4`:
+  saída 0, encontro com 24 medidas e 0 diferentes, `status` `derived-and-checked`, `validar_memoria.py` aprovado.
+- Conferência: o JSON é idêntico ao do primeiro laudo.
+- Destino, script × conferência: 2 listas distintas × 2; lista única = não × não; erros que repetem o nome na mesma
+  execução e papel 0 × 0 (17 grupos, 0 com repetição); execuções com repetição 0 × 0. **Diferenças: 0.**
+
+Observações que continuam abertas, sem efeito nesta base: (a) e (e).
