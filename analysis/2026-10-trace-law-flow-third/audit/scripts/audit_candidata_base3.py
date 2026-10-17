@@ -104,6 +104,9 @@ def auditar(unidade, fonte):
         "inventario": {k: {"erros": d["erros"], "execucoes": len(d["execucoes"]), "papeis": len(d["papeis"]),
                            "meses": len(d["meses"])} for k, d in sorted(por_nome.items())},
         "listas_autorizadas": dict(sorted(Counter(e["lista"] for e in erros if e["lista"]).items())),
+        # uma linha por erro, só para o diagnóstico de uma divergência (o encontro não compara este bloco)
+        "linhas": [{"chave": e["chave"], "mes": e["mes"], "tipo": e["tipo"], "nome": e["nome"]}
+                   for e in sorted(erros, key=lambda e: e["chave"])],
     }
 
 

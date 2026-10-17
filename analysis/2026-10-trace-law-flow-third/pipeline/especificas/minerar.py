@@ -245,8 +245,40 @@ class Mineracao:
         _json(self.saida / "passo7_encontro.json", linhas)
         dif = [l["medida"] for l in linhas if not l["igual"]]
         if dif:
+            self.diagnostico(aud, scr)
             raise Parada(f"o encontro diverge em {len(dif)} medida(s) ({', '.join(dif[:4])}): a divergência é o achado")
         return f"{len(linhas)} medidas iguais"
+
+    def diagnostico(self, aud, scr):
+        """Explica uma divergência de população (não a conserta): os erros que só um lado contou, com o que o pipeline
+        fez com cada um (assinatura e sub-unidade pelas regras do base_pipeline, sem o contexto do passo) e o estado
+        da mensagem. Grava passo7_divergencia.csv; o resumo mostra as linhas mais frequentes."""
+        a = {tuple(l["chave"]): l for l in aud.get("linhas", [])}
+        s = {tuple(c) for c in scr["populacao"]["chaves"]}
+        lidos = self.tabelas()["erros_lidos"]
+        tipo_scr = {(str(r.exec_id), str(r.agente), str(r.role), int(r.step_pos)): (r.tipo, r.nome)
+                    for r in lidos.itertuples(index=False)}
+        lados = [("só na auditoria", k) for k in sorted(set(a) - s)] + [("só na mineração", k) for k in sorted(s - set(a))]
+        if not lados:
+            return
+        st = bp.carregar_carga(self.fonte(), self.manifesto.get("extracao") or "v2").steps
+        st = st.assign(_k=list(zip(st.exec_id.astype(str), st.agente.astype(str), st.role.astype(str),
+                                   st.step_pos.astype(int))))
+        msg = dict(zip(st._k, st.err_msg)); est = dict(zip(st._k, st.err_msg_estado))
+        rows = []
+        for lado, k in lados:
+            m = msg.get(k) if isinstance(msg.get(k), str) else ""
+            t, n = (a[k]["tipo"], a[k]["nome"]) if k in a else tipo_scr.get(k, ("?", "?"))
+            rows.append({"lado": lado, "papel": k[2], "tipo": t, "nome": n, "estado_mensagem": est.get(k),
+                         "assinatura_pipeline": bp.classify(m)[1] if m else "sem mensagem",
+                         "submecanismo_pipeline": bp.submecanismo(m) if m else "sem mensagem"})
+        D = pd.DataFrame(rows)
+        G = (D.groupby(["lado", "tipo", "assinatura_pipeline", "submecanismo_pipeline", "estado_mensagem"], dropna=False)
+             .size().rename("erros").reset_index().sort_values("erros", ascending=False))
+        G.to_csv(self.saida / "passo7_divergencia.csv", index=False)
+        D.groupby(["lado", "papel"]).size().rename("erros").reset_index().to_csv(
+            self.saida / "passo7_divergencia_papel.csv", index=False)
+        self.divergencia = G
 
     # ── 8 · arquivo final ──────────────────────────────────────────────────────────────────────────────────
     def passo8(self):
@@ -317,6 +349,14 @@ class Mineracao:
         for n in PASSOS:
             if n in self.registro:
                 print(f"  {n} {PASSOS[n]:<22} {self.registro[n]}")
+        if getattr(self, "divergencia", None) is not None:
+            G = self.divergencia
+            print("\ndivergência do encontro (passo7_divergencia.csv): " + " · ".join(
+                f"{l} {int(n)}" for l, n in G.groupby("lado").erros.sum().items()))
+            print("  lado · tipo · assinatura do pipeline · sub-unidade do pipeline · estado da mensagem · erros")
+            for r in G.head(15).itertuples(index=False):
+                print(f"  {r.lado} · {r.tipo} · {r.assinatura_pipeline} · {r.submecanismo_pipeline} · "
+                      f"{r.estado_mensagem} · {r.erros}")
         try:
             t = self.tabelas()
             print("\ninventário (tipo · nome · erros · execuções · papéis · meses):")

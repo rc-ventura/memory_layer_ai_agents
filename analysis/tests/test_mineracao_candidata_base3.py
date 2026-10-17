@@ -176,6 +176,23 @@ class TestMinerar(unittest.TestCase):
             self.assertTrue((Path(d) / "memoria_U_sandbox_base3.json").exists())
             self.assertTrue(json.loads((Path(d) / "manifesto_mineracao.json").read_text())["artefatos"])
 
+    @unittest.skipUnless((ENSAIO / "rodada" / "manifesto.json").exists(), "sem a rodada de ensaio da base 1")
+    def test_divergencia_e_explicada(self):
+        with tempfile.TemporaryDirectory() as d:
+            m = self.mn.Mineracao("U_sandbox", str(self.ENSAIO / "rodada"), str(self.ENSAIO / "fonte_base1_v1.parquet"), d)
+            from contextlib import redirect_stdout
+            import io
+            with redirect_stdout(io.StringIO()):
+                if m.rodar() and "outro código" in str(m.registro.get(1, "")):
+                    self.skipTest("a rodada de ensaio é de outro código")
+            aud = json.loads((Path(d) / "auditoria.json").read_text(encoding="utf-8"))
+            mod, _ = m.modulo()
+            scr = mod.para_encontro(m.tabelas())
+            aud["linhas"] = aud["linhas"][1:]   # um erro que só a mineração contou
+            m.diagnostico(aud, scr)
+            G = pd.read_csv(Path(d) / "passo7_divergencia.csv")
+            self.assertEqual(G.groupby("lado").erros.sum().to_dict(), {"só na mineração": 1})
+
 
 if __name__ == "__main__":
     unittest.main()
