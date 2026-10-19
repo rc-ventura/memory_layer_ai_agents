@@ -14,7 +14,12 @@ de existência e (2) os dois erros se substituem no tempo, no mesmo papel.
        'outro uso'                  o resto (ex.: `print(dir(obj))`, laço sobre `globals()`);
   B. lado a lado por papel × mês: cada uso da introspecção e o `try/except NameError`;
   C. os formatos mais comuns da linha que falhou em cada uso que não é verificação, com os textos entre aspas trocados
-     por '…' (para ver o que a regra deixou de fora).
+     por '…' (para ver o que a regra deixou de fora);
+  D. o teste da regra (b) do Ajuste 21: a verificação é 'instruída' — o comportamento que a instrução do prompt pede,
+     "se `x` não existe, `x = ferramenta(...)`": o nome verificado (direto, `'x' in globals()` / `globals().get('x')`, ou
+     por função auxiliar, `f('x')` com `x` criado na mesma linha) é atribuído, no código do passo, ao resultado de uma
+     chamada que não é a própria introspecção — ou 'espontânea' (ex.: `x = globals().get('x', padrão)`, leitura com
+     valor padrão). Por papel × mês.
 
 Lê o parquet cru com o pyarrow (não usa o pipeline). Não grava nada. Imprime só contagens, nomes de papel e meses.
 Uso, da raiz, na máquina da base:
@@ -47,6 +52,32 @@ def uso_da_linha(linha):
     return "outro uso"
 
 
+NOMES_DIRETOS = (re.compile(rf"['\"](\w+)['\"]\s+(?:not\s+)?in\s+{INTRO}"),
+                 re.compile(rf"{INTRO}\s*\.get\s*\(\s*['\"](\w+)['\"]"))
+AUXILIAR = re.compile(r"\b\w+\s*\(\s*['\"](\w+)['\"]")
+
+
+def nomes_verificados(linha):
+    """Os nomes cuja existência a linha verifica: direto (`'x' in globals()`, `globals().get('x')`) ou por função
+    auxiliar (`f('x')` na linha, com `x` criado na própria linha: `if not f('x'): x = …` ou `x = f('x', …)`)."""
+    nomes = {m.group(1) for rx in NOMES_DIRETOS for m in rx.finditer(linha)}
+    nomes |= {n for n in (m.group(1) for m in AUXILIAR.finditer(linha)) if re.search(rf"\b{re.escape(n)}\s*=(?!=)", linha)}
+    return nomes
+
+
+def verificacao_instruida(linha, codigo):
+    """'instruída' | 'espontânea' | None (a linha não verifica nome nenhum). Instruída: algum nome verificado é
+    atribuído, no código (ou na própria linha), ao resultado de uma chamada que não é globals/locals/vars."""
+    nomes = nomes_verificados(linha)
+    if not nomes:
+        return None
+    texto = f"{codigo or ''}\n{linha}"
+    for n in nomes:
+        if re.search(rf"\b{re.escape(n)}\s*=\s*(?!(?:globals|locals|vars)\b)[A-Za-z_][\w.]*\s*\(", texto):
+            return "instruída"
+    return "espontânea"
+
+
 def mascarar(linha):
     return re.sub(r"'[^']*'|\"[^\"]*\"", "'…'", " ".join(linha.split()))[:110]
 TRY_NAMEERROR = re.compile(r"except\s+\(?[^)\n:]*\bNameError\b")
@@ -74,9 +105,11 @@ def medir(linhas):
         c = classificar(r.get("error_message"))
         if c:
             m = LINHA_FALHA.search(str(r.get("error_message") or ""))
+            linha = m.group(1) if m else ""
             regs.append({"papel": r["papel"], "mes": r["mes_execucao"], "erro": c[0], "funcao": c[1], "uso": c[2],
-                         "forma": mascarar(m.group(1)) if m and c[0] == "introspecção" else None})
-    R = pd.DataFrame(regs, columns=["papel", "mes", "erro", "funcao", "uso", "forma"])
+                         "forma": mascarar(linha) if c[0] == "introspecção" else None,
+                         "regra_b": verificacao_instruida(linha, r.get("error_code_action")) if c[0] == "introspecção" else None})
+    R = pd.DataFrame(regs, columns=["papel", "mes", "erro", "funcao", "uso", "forma", "regra_b"])
     I = R[R.erro.eq("introspecção")]
     A = I.groupby(["papel", "mes", "funcao", "uso"]).size().rename("erros").reset_index()
     R["coluna"] = R.erro.where(R.erro.ne("introspecção"), "introspecção · " + R.uso.fillna(""))
@@ -84,7 +117,11 @@ def medir(linhas):
     B.columns.name = None
     C = (I[I.uso.ne("verificação de existência")].groupby(["uso", "forma"]).size().rename("erros").reset_index()
          .sort_values(["uso", "erros"], ascending=[True, False]).groupby("uso").head(10))
-    return {"A": A, "B": B, "C": C}
+    D = (I.assign(regra_b=I.regra_b.fillna("não verifica")).groupby(["papel", "mes", "regra_b"]).size().rename("erros")
+         .reset_index())
+    D = D.pivot_table(index=["papel", "mes"], columns="regra_b", values="erros", aggfunc="sum", fill_value=0).reset_index()
+    D.columns.name = None
+    return {"A": A, "B": B, "C": C, "D": D}
 
 
 def main(argv=None):
@@ -94,7 +131,7 @@ def main(argv=None):
     for fluxo in (sys.stdout, sys.stderr):
         if hasattr(fluxo, "reconfigure"):
             fluxo.reconfigure(encoding="utf-8", errors="replace")
-    cols = ["papel", "mes_execucao", "structured_error", "error_type", "error_message"]
+    cols = ["papel", "mes_execucao", "structured_error", "error_type", "error_message", "error_code_action"]
     T = medir(pq.read_table(a.fonte, columns=cols).to_pylist())
     pd.set_option("display.width", 200)
     print("A · erros de introspecção: papel × mês × função × uso da linha que falhou")
@@ -103,6 +140,8 @@ def main(argv=None):
     print(T["B"].to_string(index=False) if len(T["B"]) else "  nenhum")
     print("\nC · os formatos mais comuns da linha que falhou, nos usos que não são verificação (textos entre aspas → '…')")
     print(T["C"].to_string(index=False) if len(T["C"]) else "  nenhum")
+    print("\nD · o teste da regra (b): a verificação guarda a criação da variável por uma chamada (instruída) ou não (espontânea)?")
+    print(T["D"].to_string(index=False) if len(T["D"]) else "  nenhum")
     return 0
 
 

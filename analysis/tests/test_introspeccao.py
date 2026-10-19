@@ -42,6 +42,17 @@ class TestLinha(unittest.TestCase):
         self.assertEqual(b3.uso_da_linha("if globals()['x'] == 1:"), "leitura por nome")
         self.assertEqual(b3.uso_da_linha("print(dir(obj))"), "outro uso")
 
+    def test_regra_b(self):
+        vi = b3.verificacao_instruida
+        # os formatos da base 3 (foto IMG_5898) e da base 1
+        self.assertEqual(vi("if not has_var('peticao_json'): peticao_json = get_peticao_inicial(numero_pasta=p)", ""), "instruída")
+        self.assertEqual(vi("peticao_json_str = ensure('peticao_json_str', lambda: get_peticao_inicial(numero_pasta=p))", ""), "instruída")
+        self.assertEqual(vi("if 'peticao' not in globals():", "if 'peticao' not in globals():\n    peticao = get_doc(x)"), "instruída")
+        self.assertEqual(vi("user_context = globals().get('user_context', 'padrão')", "user_context = globals().get('user_context', 'padrão')"), "espontânea")
+        self.assertEqual(vi("if 'x' not in globals():", "if 'x' not in globals():\n    x = 'padrão'"), "espontânea")
+        self.assertIsNone(vi("globals_dict = globals()", ""))
+        self.assertIsNone(vi("print(dir(obj))", ""))
+
     def test_lado_a_lado(self):
         linhas = [{"papel": "P", "mes_execucao": m, "structured_error": 1, "error_type": "InterpreterError", "error_message": t}
                   for m, t in (("2026-07", VERIF), ("2026-07", VERIF), ("2026-08", TRY), ("2026-08", OUTRO))]
