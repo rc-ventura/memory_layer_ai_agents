@@ -4,6 +4,10 @@ Não importa o pipeline, o script da lição, o `minerar.py` nem a auditoria da 
 `analysis/leitor_trace.py` (abrir o arquivo não é lógica auditada) e o `casos.csv` do perfil da rodada com `csv`.
 Grava as medidas num JSON (contagens, nomes de papel, mês, módulo e função, exec_id e step_ref; nenhum texto de caso).
 
+Revalidação 5 (19/10): a tabela "O arquivo final de cada parte" (complemento da emenda 4): category, scope,
+location, evidence, description, correction_guidance, occurrences e impact de cada memória, com o desempate por
+erros e, no empate, a alfabética.
+
 Revalidação 4 (19/10): a emenda 3 (a introspecção que verifica uma variável sai da população, pela linha que falhou e
 pelo código do passo) e a emenda 4 (uma memória por parte C/B/D/E: os erros, o escopo, o destino, `location`,
 `evidence` e os nomes da `correction_guidance` de cada memória, e o catálogo esperado), lidas só do racional.
@@ -156,6 +160,105 @@ def lista_autorizada(msg):
     return tuple(sorted(nomes))
 
 
+# ------------------------------------------------------------------ revalidação 5: a tabela "O arquivo final de cada parte"
+ROTULO_PARTE = {"C": "módulo usado sem import", "B": "ferramenta importada como módulo",
+                "D": "import fora da lista autorizada", "E": "funções e atributos proibidos"}
+
+
+def por_erros(contagem):
+    """Em toda lista de nomes: por erros, e no empate a alfabética."""
+    return [nm for nm, _ in sorted(contagem.items(), key=lambda x: (-x[1], x[0]))]
+
+
+def lista_do_papel(papel, erros_com_lista):
+    """A lista do papel no mês mais recente em que aparece; empate no mês: a com mais erros, depois a alfabética."""
+    do_papel = [e for e in erros_com_lista if e["papel"] == papel and e["lista"] is not None]
+    if not do_papel:
+        return None, None, 0
+    mes_max = max(e["mes"] for e in do_papel)
+    c = collections.Counter(e["lista"] for e in do_papel if e["mes"] == mes_max)
+    escolhida = sorted(c.items(), key=lambda x: (-x[1], x[0]))[0][0]
+    return list(escolhida), mes_max, len(c)
+
+
+def memoria_da_parte(mid, v, erros, a):
+    pt = mid.split(".")[1]
+    papel = mid.split(".", 2)[2] if pt in ("B", "D") else None
+    rot = ROTULO_PARTE[pt]
+    o_ppm = sorted(v, key=lambda e: (e["papel"], e["mes"], e["step_ref"]))
+    if pt in ("C", "E"):
+        loc, vis = [], set()
+        for e in o_ppm:
+            if e["papel"] not in vis:
+                vis.add(e["papel"])
+                loc.append(e)
+        loc = loc[:10]
+    else:
+        loc = sorted(v, key=lambda e: (e["mes"], e["step_ref"]))[:10]
+    cont_nome = collections.Counter(e["nome"] for e in v)
+    tres = por_erros(cont_nome)[:3]
+    ev = [next(x for x in o_ppm if x["nome"] == nm) for nm in tres]
+    papeis = len({e["papel"] for e in v})
+    desc_nomes = ", ".join(f"{nm} {cont_nome[nm]}" for nm in por_erros(cont_nome))
+    descricao = {k: f"{len(v)} erros em {papeis} {pal}, parte {pt} do inventário do sandbox ({rot}): {desc_nomes}"
+                 for k, pal in (("literal", "papel(éis)"), ("concordancia", "papel" if papeis == 1 else "papéis"))}
+    def nomes(tipos):
+        return por_erros(collections.Counter(e["nome"] for e in v if e["tipo"] in tipos))
+    lista = mes_lista = None
+    n_listas_mes = 0
+    lista_so_parte = None
+    if pt == "C":
+        guia = f"Importe antes de usar: {', '.join(nomes({'modulo_sem_import'}))}."
+    elif pt == "B":
+        guia = ("As ferramentas já estão no escopo como funções: chame-as direto, sem import. "
+                f"Não importe: {', '.join(nomes({'import_bloqueado', 'modulo_ausente'}))}.")
+    elif pt == "D":
+        lista, mes_lista, n_listas_mes = lista_do_papel(papel, erros)
+        lista_so_parte = lista_do_papel(papel, v)[0]
+        pedacos = []
+        if nomes({"import_bloqueado"}):
+            pedacos.append("Não importe: " + ", ".join(nomes({"import_bloqueado"})))
+        if nomes({"modulo_ausente"}):
+            pedacos.append("Não existe no ambiente: " + ", ".join(nomes({"modulo_ausente"})))
+        if lista:
+            pedacos.append("imports autorizados neste papel: " + ", ".join(lista))
+        guia = "; ".join(pedacos) + "."
+    else:
+        pedacos = []
+        if nomes({"funcao_proibida"}):
+            pedacos.append("Não chame: " + ", ".join(nomes({"funcao_proibida"})))
+        if nomes({"atributo_dunder"}):
+            pedacos.append("Não acesse: " + ", ".join(nomes({"atributo_dunder"})))
+        guia = "; ".join(pedacos) + "."
+    grupos = collections.defaultdict(int)
+    for e in v:
+        grupos[(e["exec_id"], e["papel"], e["nome"])] += 1
+    listas_parte = sorted({e["lista"] for e in v if e["lista"] is not None})
+    return {
+        "parte": pt, "rotulo": rot, "papel_escopo": papel,
+        # emenda 4: C e E "global"; B e D "uma memória por papel"
+        "escopo": "global" if pt in ("C", "E") else "papel",
+        "destino": "em aberto" if pt == "E" else "memória",
+        "erros": len(v), "execucoes": len({e["exec_id"] for e in v}), "meses_lista": sorted({e["mes"] for e in v}),
+        "meses": len({e["mes"] for e in v}), "papeis": papeis, "erros_por_tipo": dict(collections.Counter(e["tipo"] for e in v)),
+        "category": f"Inventário do sandbox · {rot} (factual · ambiente)",
+        "scope": {"role": papel, "tool": None},
+        "location": [{"step_ref": e["step_ref"], "role": e["papel"], "mes": e["mes"]} for e in loc],
+        "location_total_erros": len(v),
+        "evidence": [{"step_ref": e["step_ref"], "tipo": e["tipo"], "nome": e["nome"]} for e in ev],
+        "description": descricao,
+        "correction_guidance": guia,
+        "lista_D": {"lista": lista, "mes": mes_lista, "listas_no_mes": n_listas_mes,
+                    "igual_se_so_erros_da_parte": lista_so_parte == lista} if pt == "D" else None,
+        "occurrences": {"erros": len(v), "ocorrencias": len(v), "execucoes": len({e["exec_id"] for e in v}),
+                        "meses": sorted({e["mes"] for e in v})},
+        "listas_autorizadas_da_parte": [list(L) for L in listas_parte],
+        "repeticoes_do_nome_na_parte": sum(n - 1 for n in grupos.values() if n > 1),
+        "impact": None,
+        "chaves": sorted([e["exec_id"], e["step_ref"]] for e in v),
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--fonte", required=True)
@@ -280,40 +383,7 @@ def main():
             partes[mid].append(e)
     memorias = {}
     for mid, v in sorted(partes.items()):
-        pt = mid.split(".")[1]
-        papel = mid.split(".", 2)[2] if pt in ("B", "D") else None
-        o = sorted(v, key=lambda e: (e["papel"], e["mes"], e["step_ref"]))
-        loc, vis = [], set()
-        for e in o:
-            if e["papel"] not in vis:
-                vis.add(e["papel"])
-                loc.append({"exec_id": e["exec_id"], "step_ref": e["step_ref"], "papel": e["papel"]})
-        pt_tipos = collections.Counter(e["tipo"] for e in v)
-        tres_p = [t for t, _ in sorted(pt_tipos.items(), key=lambda x: (-x[1], x[0]))[:3]]
-        ev = []
-        for t in tres_p:
-            e = next(x for x in o if x["tipo"] == t)
-            ev.append({"exec_id": e["exec_id"], "step_ref": e["step_ref"], "tipo": t, "nome": e["nome"]})
-        guia = {}
-        for rot, t in ROTULOS:
-            cc = collections.Counter(e["nome"] for e in v if e["tipo"] == t)
-            if cc:
-                guia[rot] = [nm for nm, _ in sorted(cc.items(), key=lambda x: (-x[1], x[0]))]
-        lista_d = None
-        if pt == "D":
-            # a lista autorizada do papel no mês mais recente (dos erros do papel na população que trazem a lista)
-            do_papel = [e for e in erros if e["papel"] == papel and e["lista"] is not None]
-            if do_papel:
-                mes_max = max(e["mes"] for e in do_papel)
-                ls = sorted({e["lista"] for e in do_papel if e["mes"] == mes_max})
-                lista_d = {"mes": mes_max, "listas_distintas_no_mes": len(ls), "lista": list(ls[-1]) if ls else None}
-        memorias[mid] = {
-            "parte": pt, "papel_escopo": papel, "destino": "em aberto" if pt == "E" else "memória",
-            "erros": len(v), "execucoes": len({e["exec_id"] for e in v}), "meses": len({e["mes"] for e in v}),
-            "papeis": len({e["papel"] for e in v}), "erros_por_tipo": dict(pt_tipos),
-            "location": loc[:10], "evidence": ev, "guidance_nomes": guia, "lista_autorizada_D": lista_d,
-            "chaves": sorted([e["exec_id"], e["step_ref"]] for e in v),
-        }
+        memorias[mid] = memoria_da_parte(mid, v, erros, a)
     sem_parte = sum(1 for e in erros if e["memoria"] is None)
     catalogo_esperado = sorted(m for m, d in memorias.items() if d["destino"] == "memória")
 
