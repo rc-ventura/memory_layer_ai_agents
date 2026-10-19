@@ -134,6 +134,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `globals` 2.347 de 2.352 no `ContestacaoCivel`, `get_document_text` 167 de 167 no `OBFCivel`, `pd` 231 de 233 no
   `JoogleAnalytics`, contra `json` em 10 papéis e 10 meses. O racional ganha as partes e o script monta uma memória por parte
   (nova validação). O destino da parte do `globals` (harness) segue como hipótese → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, a parte E do sandbox vira memória global** (decisão do Rafael, depois da investigação, dossiê §2c): o que
+  sobra depois do Ajuste 23 (depuração com `repr`/`.__name__`, outras funções proibidas, a verificação com valor padrão
+  que a regra (b) deixou no sandbox) é hábito do agente, sem instrução no prompt. A guidance ganha o jeito permitido
+  ("print(type(x))", "str(x)[:n]", "json.loads"); emenda 6 do racional.
 - **19/10, o script do sandbox dividido em partes está aprovado** (decisão do Rafael): a emenda 4 (C, B, D, E; uma
   memória por parte; o catálogo), validada pelo `validador-de-script` na revalidação 5 (110 de 110 medidas iguais) →
   [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md). A primeira rodada na base 3 tem de ser

@@ -124,8 +124,8 @@ class TestRegraDoSandbox(unittest.TestCase):
         self.assertEqual(por_id["U_sandbox.D.PapelB"]["correction_guidance"],
                          "Não importe: ast; imports autorizados neste papel: json, math, re.")
         self.assertEqual(por_id["U_sandbox.D.PapelC"]["correction_guidance"], "Não existe no ambiente: openpyxl.")
-        self.assertEqual(por_id["U_sandbox.E"]["correction_guidance"], "Não chame: repr; Não acesse: __name__.")
-        self.assertEqual(por_id["U_sandbox.E"]["validation"]["destino"], "em aberto")
+        self.assertEqual(por_id["U_sandbox.E"]["correction_guidance"], "Não chame: repr; Não acesse: __name__. " + sb.GUIA_E)
+        self.assertEqual(por_id["U_sandbox.E"]["validation"]["destino"], "memória")
         self.assertEqual(por_id["U_sandbox.C"]["validation"]["destino"], "memória")
         self.assertEqual(por_id["U_sandbox.E"]["location"]["total_erros"], 3)
         self.assertTrue(all(m["status"] == "derived-and-checked" for m in por_id.values()))
@@ -235,7 +235,7 @@ class TestMinerar(unittest.TestCase):
             self.assertTrue((Path(d) / "memoria_U_sandbox.C_base3.json").exists())
             cat = json.loads((Path(d) / "catalogo_U_sandbox_base3.json").read_text(encoding="utf-8"))
             self.assertIn("U_sandbox.C", [e["id"] for e in cat["entradas"]])
-            self.assertTrue(any(f.startswith("U_sandbox.E") for f in cat["fora"]))
+            self.assertIn("U_sandbox.E", [e["id"] for e in cat["entradas"]])   # emenda 6: E é memória
             self.assertTrue(json.loads((Path(d) / "manifesto_mineracao.json").read_text())["artefatos"])
 
     @unittest.skipUnless((ENSAIO / "rodada" / "manifesto.json").exists(), "sem a rodada de ensaio da base 1")

@@ -153,6 +153,11 @@ na base 3):** a emenda 3 passa a valer também quando a função proibida é `ev
 resultado de uma chamada que não é `globals`/`locals`/`vars`/`eval`. Esses erros vão para `U_verificacao_existencia`.
 O `eval(texto)` que converte texto fica na parte E. Regras do passo 4, partes e limiar não mudam.
 
+**Emenda 6, de 19/10 (decisão do Rafael, depois da investigação da parte E, dossiê §2c):** o destino da parte **E**
+passa de "em aberto" a **memória** (global), e a `correction_guidance` dela ganha, depois de "Não chame: …; Não acesse: ….",
+o complemento fixo "Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); para ler JSON, use json.loads."
+(o jeito permitido de fazer o que a depuração e a conversão de texto faziam). Regras, partes e limiar não mudam.
+
 ## O que não mede
 
 - Se o agente se recuperou depois do erro (é o "depois" da parte genérica).

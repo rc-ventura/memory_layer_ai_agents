@@ -38,7 +38,9 @@ TABELAS = ["erros_lidos", "inventario", "inventario_papel", "inventario_mes", "i
 PARTES = {"C": ("módulo usado sem import", "global", "memória"),
           "B": ("ferramenta importada como módulo", "papel", "memória"),
           "D": ("import fora da lista autorizada", "papel", "memória"),
-          "E": ("funções e atributos proibidos", "global", "em aberto")}   # em investigação: vem do prompt? (dossiê, §2c)
+          "E": ("funções e atributos proibidos", "global", "memória")}   # depois da investigação (dossiê §2c; Ajuste 23)
+# o complemento fixo da parte E (racional, emenda 6): o jeito permitido de fazer o que a função barrada fazia
+GUIA_E = "Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); para ler JSON, use json.loads."
 # o import de uma ferramenta: o framework e os nomes que o agente dá às ferramentas (racional, emenda 4)
 FERRAMENTAS = {"smolagents", "mcp", "mcp_client", "tools", "tool_usage", "tool_functions", "python_interpreter"}
 
@@ -188,7 +190,9 @@ def _guia(parte, P, L, papel):
         return "; ".join(g + ([f"imports autorizados neste papel: {lista}"] if lista else [])) + "."
     g = [f"{rot}: {nomes([tp])}" for rot, tp in (("Não chame", "funcao_proibida"), ("Não acesse", "atributo_dunder"))
          if nomes([tp])]
-    return "; ".join(g) + "."
+    return "; ".join(g) + ". " + GUIA_E
+
+
 
 
 def memorias(perfil, t, conf, dest, ids, encontro):
