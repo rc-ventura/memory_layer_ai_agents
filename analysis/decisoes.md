@@ -130,6 +130,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 - **19/10, o script do inventário do sandbox está aprovado** (cobertura 99,86% na base 3, encontro 61/61, validador aprovado):
   sai de `propostas/U_sandbox/` para `pipeline/especificas/mineracao_U_sandbox.py`. A divisão da lição em partes e os destinos
   seguem em aberto → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, a lição do sandbox é dividida por papel e por causa** (decisão do Rafael): a evidência é contada —
+  `globals` 2.347 de 2.352 no `ContestacaoCivel`, `get_document_text` 167 de 167 no `OBFCivel`, `pd` 231 de 233 no
+  `JoogleAnalytics`, contra `json` em 10 papéis e 10 meses. O racional ganha as partes e o script monta uma memória por parte
+  (nova validação). O destino da parte do `globals` (harness) segue como hipótese → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
 - **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
   lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
   passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,
