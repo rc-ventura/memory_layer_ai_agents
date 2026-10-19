@@ -319,6 +319,29 @@ prompts. A base 1 (trace completo) tem o prompt de todos os papéis. Comando:
 **Enquanto a base 2 não responde:** o catálogo fica como está, com `U_sandbox.B.OBFCivel` **em verificação**
 (`b3 #49`).
 
+## 2f · O degrau 2 (conferida) das 14 memórias — o que falta (19/10)
+
+A escada de validação está em [`17-validacao-memorias.md`](../../../2026-09-trace-law-flow/docs/17-validacao-memorias.md).
+As 14 memórias estão no degrau 1 (candidata). O degrau 2, checagem por checagem, com o que já se sabe:
+
+| Memória | 1 · ambiente | 2 · conflito com o prompt | 3 · repete o prompt | 4 · recorrência | 5 · uma causa só |
+|---|---|---|---|---|---|
+| **C** (global) | **falha:** manda importar `pd` também nos papéis sem `pandas` na lista (Consultivo, OBFCivel, OficiosResposta, RespostaOficios, ContestacaoCivel, e outros sem a lista na base 3) | não (o prompt descreve retornos em `pandas`, empurra o `pd`, não contradiz) | não | ok (554 exec, 10 meses) | ok |
+| **E** (global) | a conferir: as alternativas (`print(type(x))`, `str(x)[:n]`, `json.loads`) são permitidas? `json` está nas 6 listas | **falha provável:** "não chame `globals`" × o prompt do ContestacaoCivel que manda verificar a variável | não | ok (461 exec, 9 meses) | **falha:** junta a depuração com a verificação com valor padrão (~134) e o `eval(texto)` |
+| **B.OBFCivel** | **falha provável:** `get_document_text` não é ferramenta declarada (base 1) — `b3 #49`, falta a base 2 | **falha provável:** o prompt manda usar `get_document_text`; a memória diz "chame direto" | não | ok | a conferir: `get_document_text` (167) × `python_interpreter`/`tools`/`mcp` (44) podem ter causas diferentes |
+| **B.RespostaBacen** | a conferir (`python_interpreter`) | a conferir | não | **falha** (1 exec, 1 mês) | ok |
+| **D** (10 por papel) | ok (por construção: só nomes fora da lista, e a lista do papel) | não | **falha:** a lista já está no prompt dos 16 papéis (base 1) | **falha em 5** (AgenteTestemunhas, CalculoCivel, OficiosResposta, RespostaOficios, ContestacaoCivel); ok em 5 | ok |
+
+**Para fechar o degrau 2 do sandbox:**
+1. **o script do degrau 2** (`conferir_memorias.py`, no kit), que roda as cinco checagens sobre o catálogo, as listas e
+   o prompt de cada papel, e grava o resultado; as checagens 1 (ferramentas), 2 e 3 rodam na base 2 (prompt completo);
+2. **a base 2:** rodar o script lá (fecha também o `b3 #49`);
+3. **as correções no script específico** (com revalidação): C com o `pd` só nos papéis que têm `pandas`; E sem a parte
+   de verificação; B conforme o `#49`;
+4. **as decisões do Rafael:** D (repete o prompt — manter, monitorar ou descartar) e as 6 que falham na recorrência
+   (`b3 #48`); o destino da verificação com valor padrão (harness, junto do grupo A, ou memória);
+5. **a mineração de novo** na máquina da base e o catálogo atualizado, com o degrau de cada memória.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

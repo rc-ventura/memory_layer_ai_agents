@@ -123,6 +123,7 @@ investigação do erro crítico (01/10):
 
 | Termo | O que é |
 |---|---|
+| **degrau 1–4 (da validação)** | a escada da candidata à memória validada ([`17`](2026-09-trace-law-flow/docs/17-validacao-memorias.md)): **1 · candidata** (a mineração: o erro existe), **2 · conferida** (cinco checagens determinísticas contra o ambiente e o prompt), **3 · revisada** (leitura de casos com dois leitores e o gate do pesquisador), **4 · validada** (o experimento: injetada, reduz o erro) |
 | **teto de economia** | tokens dos passos com erro das unidades **candidatas** (por papel e no total): o máximo que uma memória poderia economizar, com eficácia de 100% e sem contar o custo dela — **hipótese**, não previsão ([racionais da base 3 §7](2026-10-trace-law-flow-third/docs/01-racionais.md#7--o-teto-de-economia-e-o-teste-de-compensação-da-memória)) |
 | **orçamento de injeção** | o teto dividido pelos passos em que a memória seria injetada: o tamanho máximo da memória, em tokens por passo, para empatar |
 | **linha de base** | a rodada, a fonte e as contagens congeladas (com hash) contra as quais se mede o efeito de uma memória |

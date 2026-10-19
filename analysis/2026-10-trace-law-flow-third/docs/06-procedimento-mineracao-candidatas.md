@@ -55,6 +55,9 @@ uv run python analysis/2026-10-trace-law-flow-third/audit/scripts/audit_candidat
 tabelas principais da lição, só com contagens e nomes (papel, mês, módulo, função). É dele que saem
 o dossiê e as decisões do pesquisador (`07`, "O gate").
 
+**Depois do passo 9:** a memória é uma **candidata** (degrau 1). A validação até memória validada (degraus 2–4) está
+em [`17-validacao-memorias.md`](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md).
+
 ## 3 · Como ensaiar aqui (base 1 pela porta da query)
 
 ```bash

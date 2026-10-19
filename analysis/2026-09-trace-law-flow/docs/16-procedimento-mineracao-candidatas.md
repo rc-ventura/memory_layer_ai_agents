@@ -390,6 +390,12 @@ Contexto isolado: ele não participou da investigação nem escreveu o script. E
 - a lição muda de linha no funil;
 - uma entrada vai para o livro-razão.
 
+## Depois da mineração: a validação
+
+A mineração termina numa **candidata** (degrau 1). O caminho até **memória validada** — conferida contra o ambiente e
+o prompt, revisada por leitura de casos e testada por experimento — está em
+[`17-validacao-memorias.md`](17-validacao-memorias.md).
+
 ## Conferências
 
 - Parte genérica: o perfil igual ao da triagem e o encontro com a auditoria igual (acima).

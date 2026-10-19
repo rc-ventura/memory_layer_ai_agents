@@ -134,6 +134,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `globals` 2.347 de 2.352 no `ContestacaoCivel`, `get_document_text` 167 de 167 no `OBFCivel`, `pd` 231 de 233 no
   `JoogleAnalytics`, contra `json` em 10 papéis e 10 meses. O racional ganha as partes e o script monta uma memória por parte
   (nova validação). O destino da parte do `globals` (harness) segue como hipótese → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, a validação de uma memória tem quatro degraus** (decisão do Rafael): candidata (a mineração) → conferida
+  (cinco checagens determinísticas: ambiente, conflito com o prompt, repete o prompt, recorrência, uma causa só) →
+  revisada (leitura de casos com dois leitores e o gate) → validada (o experimento). Num documento à parte do
+  procedimento → [`17`](2026-09-trace-law-flow/docs/17-validacao-memorias.md); livro-razão, Ajuste 24. As 14 do sandbox estão
+  no degrau 1 (`b3 #50`).
 - **19/10, o piloto do sandbox está fechado** (`b3 #12`): na rodada `aedb9b5db70d6c92` da base 3, 14 memórias (C e E
   globais, B e D por papel) com destino memória e derived-and-checked, registradas no catálogo `registros/memorias.json`
   (transcritas das fotos e conferidas contra o inventário: 43 nomes, 1.396 erros). 6 delas têm 1 a 3 erros; a régua

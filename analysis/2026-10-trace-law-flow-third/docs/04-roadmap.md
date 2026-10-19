@@ -253,6 +253,12 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   etapa da base 3 em si); o `analysis/README.md`, o intake por formato; o `kit.md`, o que o kit pode e não pode na base 3. Regra do
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
+- [ ] **#50** **O degrau 2 (conferida) das 14 memórias do sandbox** ([`17`](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md),
+  dossiê §2f). (1) o script do degrau 2 no kit (`conferir_memorias.py`: coerência com o ambiente, conflito com o prompt,
+  repete o prompt, recorrência, uma causa só); (2) rodá-lo na base 2 (prompt completo; fecha o #49); (3) corrigir o
+  script específico — C com o `pd` só nos papéis com `pandas`, E sem a verificação, B pelo #49 — e revalidar;
+  (4) decisões do Rafael: D (repete o prompt), as 6 que falham na recorrência (#48), o destino da verificação com valor
+  padrão; (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49.
 - [ ] **#49** **A parte B do sandbox (`U_sandbox.B.OBFCivel`, 211 erros) pode ser sinal de harness — em verificação
   (19/10).** O prompt do OBFCivel na base 1 manda usar `get_document_text`, que não está entre as ferramentas
   declaradas; o agente tenta importá-la e o sandbox barra. A memória do catálogo ("chame-as direto, sem import")
