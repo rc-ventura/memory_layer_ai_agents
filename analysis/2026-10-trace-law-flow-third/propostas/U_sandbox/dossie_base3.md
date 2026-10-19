@@ -48,6 +48,16 @@ O resto (as outras combinações pequenas e os 5 sem nome) fecha os 3.653.
   implementado de dois jeitos que o sandbox recusa — `'x' in globals()` em julho e `try: x / except NameError` em agosto.
 - **É hipótese, não achado:** falta mostrar a instrução no prompt de julho (o hash do prompt por mês é o pedido C, `05`;
   ou o `b2 #3`, se o parágrafo já estava no prompt de julho).
+- **Primeira evidência (19/10, base 1, n pequeno):** o prompt de julho/26 do ContestacaoCivel na base 1 (3 execuções) já
+  tem a instrução, **sem dizer como**: "Antes de chamar qualquer tool, VERIFIQUE se a variável de saída correspondente já
+  está preenchida em memória. Se já estiver, PULE a chamada e siga para a próxima etapa." Não menciona `NameError` nem
+  proíbe `globals()`. Uma das 3 execuções cumpre a instrução com `'x' in globals()` (a linha que falhou é uma verificação
+  de existência) e é barrada. Comando: `uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_introspeccao_prompt_base2.py --trace <trace da base 1>`.
+- **Os testes que fecham a hipótese** (rodam na máquina da base):
+  - base 2: `analysis/2026-09-trace-law-flow-second/scripts/contar_introspeccao_prompt_base2.py --trace <trace da base 2>`
+    — papel × mês × versão do trecho do prompt × erros de introspecção e de `try/except`;
+  - base 3: `analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>`
+    — se a linha que falhou é verificação de existência, e o lado a lado com o `try/except` por papel e mês.
 - **Consequência para o destino:** uma memória "não chame `globals`" brigaria com a instrução do próprio prompt. O conserto
   é no prompt (harness), como no `try/except`, e não memória.
 
