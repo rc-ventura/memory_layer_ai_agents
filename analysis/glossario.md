@@ -35,7 +35,8 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 | `U_next_gerador` | `next()` sobre expressão geradora falha no sandbox | um idioma de Python que o ambiente não aceita |
 | `U_estado_perdido` | Após step com erro, o que ele definiria não existe | o agente usa uma variável que o step com erro nunca chegou a criar |
 | `U_nome_inventado` | Nome usado sem ter sido definido | o agente usa um nome (variável ou função) que não existe |
-| `U_verificacao_try_nameerror` | Verificação de existência por try/except NameError | o prompt manda checar se uma variável existe com `except NameError`, e o sandbox levanta outro erro, que o `except` não pega; destino harness (Ajuste 17) |
+| `U_verificacao_existencia` | Verificação de existência de variável (instruída pelo prompt) | o prompt manda checar se uma variável já existe antes de chamar a ferramenta, e o sandbox barra as duas formas: `'x' in globals()` (proibida) e `except NameError` (não pega o erro do sandbox); destino harness. Era `U_verificacao_try_nameerror` (Ajuste 17), renomeada e ampliada à introspecção no Ajuste 21 |
+| `U_verificacao_try_nameerror` | — | nome antigo de `U_verificacao_existencia`, até o Ajuste 21 (19/10/2026); aparece nos documentos de antes |
 | `U_repr_colado` | Não colar retorno impresso de volta no código | o agente copia o print de um retorno para dentro do código em vez de usar a variável |
 | `U_codigo_lento` | Não rodar laço pesado dentro do bloco de código | o tempo do interpretador estoura num laço sem ferramenta |
 | `U_resultado_bruto` | Não entregar o resultado bruto de uma ferramenta na resposta final | o agente põe o retorno inteiro da ferramenta no `final_answer` e estoura o tempo |

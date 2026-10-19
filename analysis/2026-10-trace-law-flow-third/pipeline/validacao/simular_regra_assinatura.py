@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import base_pipeline as bp
 from contar_assinatura_try_nameerror import assinatura, situacao
 
-NOVA = "U_verificacao_try_nameerror (proposta)"
+NOVA = "U_verificacao_existencia (proposta; era U_verificacao_try_nameerror até o Ajuste 21)"
 MIN_EXEC, MIN_MESES = 3, 2
 
 

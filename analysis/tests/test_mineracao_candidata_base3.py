@@ -118,16 +118,27 @@ class TestAuditoria(unittest.TestCase):
         self.assertTrue(aud.populacao_sandbox("The variable `json` is not defined"))
         self.assertFalse(aud.populacao_sandbox("The variable `resultado` is not defined"))
         self.assertFalse(aud.populacao_sandbox("SyntaxError ... Import of ast is not allowed"))  # o pipeline decide antes
+        # emenda 3 (Ajuste 21)
+        m = "x failed at line 'if 'p' not in globals():' due to: InterpreterError: Forbidden function evaluation: 'globals' is not"
+        self.assertFalse(aud.populacao_sandbox(m, "if 'p' not in globals():\n    p = get_doc(n)"))
+        self.assertTrue(aud.populacao_sandbox(m, "if 'p' not in globals():\n    p = 'padrão'"))
         # emenda 2: a função proibida junto do timeout de ferramenta é do timeout (o 1 erro da base 3)
         self.assertFalse(aud.populacao_sandbox("TimeoutError ... Forbidden function evaluation: 'repr' is not"))
         self.assertFalse(aud.populacao_sandbox("Error in code parsing: regex pattern ... Import of ast is not allowed"))
 
     def test_auditoria_e_script_concordam(self):
         rows = [{"cod_idef_exeo": f"e{i}", "cod_idef_aget": 1, "papel": p, "step_pos": 3, "mes_execucao": m,
-                 "structured_error": 1, "error_type": "InterpreterError", "error_message": t}
+                 "structured_error": 1, "error_type": "InterpreterError", "error_message": t, "error_code_action": ""}
                 for i, (p, m, t) in enumerate(MSGS)]
         rows.append({"cod_idef_exeo": "e9", "cod_idef_aget": 1, "papel": "PapelA", "step_pos": 4, "mes_execucao": "2026-01",
-                     "structured_error": 1, "error_type": "KeyError", "error_message": "Could not index x"})
+                     "structured_error": 1, "error_type": "KeyError", "error_message": "Could not index x",
+                     "error_code_action": ""})
+        # emenda 3 (Ajuste 21): verifica e cria a variável por uma chamada → fora do sandbox
+        rows.append({"cod_idef_exeo": "e8", "cod_idef_aget": 1, "papel": "PapelC", "step_pos": 2, "mes_execucao": "2026-07",
+                     "structured_error": 1, "error_type": "InterpreterError",
+                     "error_message": "Code execution failed at line 'if 'p' not in globals():' due to: InterpreterError: "
+                                      "Forbidden function evaluation: 'globals' is not among the explicitly allowed tools",
+                     "error_code_action": "if 'p' not in globals():\n    p = get_doc(n)"})
         with tempfile.TemporaryDirectory() as d:
             f = Path(d) / "fonte.parquet"
             pq.write_table(pa.Table.from_pylist(rows), f)

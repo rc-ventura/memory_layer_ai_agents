@@ -1,4 +1,5 @@
 """Ajuste 17: a assinatura `try/except NameError` na linha que falhou decide antes da posição do passo anterior.
+Ajuste 21: a unidade passa a `U_verificacao_existencia`, que recebe também a introspecção que verifica e cria a variável.
 
 Fixtures sintéticas, nunca IDs ou conteúdo de clientes. As mensagens seguem o formato do interpretador do sandbox
 ("Code execution failed at line '...' due to: InterpreterError: The variable `x` is not defined.").
@@ -35,11 +36,11 @@ class TestMecanismo(unittest.TestCase):
 
     def test_unidade_e_destino(self):
         for pipeline in (BP, RAW1):
-            self.assertEqual(pipeline.SUB2UNI["verificacao_try_nameerror"], "U_verificacao_try_nameerror")
-            self.assertIn("U_verificacao_try_nameerror", pipeline.UNI)
-            self.assertEqual(pipeline.destino_mineracao("U_verificacao_try_nameerror", "base2"), "harness")
-            self.assertEqual(pipeline.destino_mineracao("U_verificacao_try_nameerror", "base3"), "harness")
-            self.assertEqual(pipeline.destino_mineracao("U_verificacao_try_nameerror", "base1"), "em aberto")
+            self.assertEqual(pipeline.SUB2UNI["verificacao_try_nameerror"], "U_verificacao_existencia")
+            self.assertNotIn("U_verificacao_try_nameerror", pipeline.UNI)
+            self.assertIn("U_verificacao_existencia", pipeline.UNI)
+            for base in ("base1", "base2", "base3"):
+                self.assertEqual(pipeline.destino_mineracao("U_verificacao_existencia", base), "harness")
 
 
 class TestObservado(unittest.TestCase):
@@ -50,7 +51,7 @@ class TestObservado(unittest.TestCase):
         r = self.analyze(janela(error_message=ASSINATURA)).EU.iloc[0]
         self.assertEqual(r.submecanismo, "verificacao_try_nameerror")
         self.assertEqual(r.situacao_mecanismo, "observavel")
-        self.assertEqual(r.unidade, "U_verificacao_try_nameerror")
+        self.assertEqual(r.unidade, "U_verificacao_existencia")
 
     def test_primeiro_passo_sem_assinatura_continua_pendente(self):
         self.assertTrue(self.analyze(janela(error_message=COMUM)).EU.unidade.isna().all())
@@ -60,11 +61,48 @@ class TestObservado(unittest.TestCase):
         r = rows_chain()
         r[1]["error_message"] = ASSINATURA
         set_slot(r[0], "next", r[1])
-        self.assertEqual(self.analyze(*r).EU.iloc[1].unidade, "U_verificacao_try_nameerror")
+        self.assertEqual(self.analyze(*r).EU.iloc[1].unidade, "U_verificacao_existencia")
         r = rows_chain()
         r[1]["error_message"] = COMUM
         set_slot(r[0], "next", r[1])
         self.assertEqual(self.analyze(*r).EU.iloc[1].submecanismo, "nome_de_step_que_falhou")
+
+
+def proibida(linha, funcao="globals"):
+    return (f"Code execution failed at line '{linha}' due to: InterpreterError: Forbidden function evaluation: "
+            f"'{funcao}' is not among the explicitly allowed tools or defined/imported in the preceding code")
+
+
+DIRETA = proibida("if 'peticao' not in globals():")
+AUXILIAR = proibida("if not has_var('peticao'): peticao = get_peticao(numero=n)")
+LEITURA_PADRAO = proibida("ctx = globals().get('ctx', 'padrao')")
+OUTRO = proibida("print(dir(obj))", "dir")
+CODIGO_CRIA = "if 'peticao' not in globals():\n    peticao = get_peticao(numero=n)\n"
+CODIGO_PADRAO = "if 'peticao' not in globals():\n    peticao = 'padrao'\n"
+
+
+class TestAjuste21(unittest.TestCase):
+    def test_regra_nas_duas_bases(self):
+        for pipeline in (BP, RAW1):
+            v = pipeline.verificacao_por_introspeccao
+            self.assertTrue(v(DIRETA, CODIGO_CRIA))         # verifica e cria por uma chamada: instruída
+            self.assertTrue(v(AUXILIAR))                     # a função auxiliar, com a criação na própria linha
+            self.assertFalse(v(DIRETA, CODIGO_PADRAO))       # cria com um literal: espontânea
+            self.assertFalse(v(LEITURA_PADRAO, LEITURA_PADRAO))
+            self.assertFalse(v(OUTRO))
+            self.assertEqual(pipeline.submecanismo(DIRETA, verifica_e_cria=True), "verificacao_introspeccao")
+            self.assertEqual(pipeline.submecanismo(DIRETA), "inventario_sandbox")
+            self.assertEqual(pipeline.submecanismo(OUTRO, verifica_e_cria=True), "inventario_sandbox")
+            self.assertEqual(pipeline.SUB2UNI["verificacao_introspeccao"], "U_verificacao_existencia")
+
+    def test_observado(self):
+        def um(msg, code):
+            return BP.analisar_mecanismos_observaveis(state(janela(error_message=msg, error_code_action=code))).EU.iloc[0]
+        r = um(DIRETA, CODIGO_CRIA)
+        self.assertEqual((r.submecanismo, r.unidade), ("verificacao_introspeccao", "U_verificacao_existencia"))
+        self.assertEqual(um(AUXILIAR, "").unidade, "U_verificacao_existencia")
+        self.assertEqual(um(DIRETA, CODIGO_PADRAO).unidade, "U_sandbox")
+        self.assertEqual(um(LEITURA_PADRAO, LEITURA_PADRAO).unidade, "U_sandbox")
 
 
 if __name__ == "__main__":

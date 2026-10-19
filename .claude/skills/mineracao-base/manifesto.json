@@ -2,7 +2,7 @@
   "arquivos": {
     "../leitor_trace.py": "8e55542de12fc208",
     "../base_utils.py": "a6868dad84e0e13b",
-    "pipeline/base_pipeline.py": "45d3e4784e049b3d",
+    "pipeline/base_pipeline.py": "fc579dbba3f7370f",
     "pipeline/checklist.py": "21ceb97dc5f0b958",
     "pipeline/drill_down.py": "de58f361736148b4",
     "pipeline/metadados_steps.py": "cabef757a81311aa",

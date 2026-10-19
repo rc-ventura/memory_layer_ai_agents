@@ -39,6 +39,13 @@ e não tem nenhum dos sinais que o pipeline decide antes (resposta sem bloco de 
 `excedeu o timeout`, `TimeoutError`; sintaxe, `Could not index`, `has no attribute`, `JSONDecode`, argumento
 posicional, `object is not an iterator`, limite de passos, tempo do interpretador).
 
+**Emenda 3, de 19/10 (consequência do Ajuste 21, decidido pelo Rafael):** sai também da população a introspecção que
+verifica uma variável e guarda a criação dela: a função proibida é `globals`, `locals` ou `vars`; a linha que falhou
+verifica um nome — direto (`'x' in globals()`, `'x' not in globals()`, `globals().get('x')`) ou por uma função escrita pelo
+agente que recebe o nome entre aspas (`f('x')`) e, na mesma linha, cria `x`; e esse nome recebe, no código do passo ou na
+própria linha, o resultado de uma chamada de função que não é `globals`/`locals`/`vars` (`x = ferramenta(...)`). Esses
+erros vão para `U_verificacao_existencia` (sinal de harness). Regras do passo 4 e limiares não mudam.
+
 **Emenda 2, de 16/10, depois da primeira rodada na base 3** (`observada_e3ebc8274dcf108c`): a lista acima não tinha os
 três primeiros sinais (bloco de código, falha do LLM, timeout de ferramenta), que o pipeline decide antes do sandbox
 (o timeout desde o Ajuste 4 do livro-razão). Na base 3, **1 erro de 3.653** tinha a função proibida e o timeout de

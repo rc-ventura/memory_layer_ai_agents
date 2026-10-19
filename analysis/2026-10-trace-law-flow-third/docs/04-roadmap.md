@@ -296,9 +296,15 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `U_verificacao_existencia`, destino harness). Evidência: a instrução "verifique se a variável existe" do prompt do
   ContestacaoCivel causa a introspecção barrada (prompt antigo, sem dizer como: 36 de 127 na base 2; 1.527 + 709 na base 3)
   e o `try/except NameError` (prompt novo: 97 de 97 na base 2; 5.667 em ago na base 3). **Aprovado em 19/10** (regra (b),
-  condicionada ao teste; nome novo; nas três bases; monitoramento junto; aviso adiado — `decisoes.md`). **Falta:** o teste
-  da regra (b) na base 3, a implementação, o ensaio, a rodada nova →
+  condicionada ao teste; nome novo; nas três bases; monitoramento junto; aviso adiado — `decisoes.md`). Teste da regra (b)
+  na base 3: 2.218 instruídas no ContestacaoCivel, 0 nos outros papéis; resíduo de 157 aceito (19/10). **Implementado**
+  (livro-razão, Ajuste 21; ensaio na base 1: 1 erro muda). **Falta:** a rodada nova na base 3, o `comparar_rodadas.py`, a
+  replicação na base 2 e a nova mineração do sandbox →
   [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
+- [ ] **#47** **Comparação base 1 × modo observado: 82 erros em "unidade diferente"** (81 de `U_contrato_dict` e 1 de
+  `U_tipo_retorno` caem em `X_causa_nao_identificada` no modo observado). O `03-procedimento-validacao.md` registra 83
+  pendentes e 0 em unidade errada; o resultado atual (já antes do Ajuste 21, conferido em 19/10 com o código de antes) é 82
+  em unidade diferente. Achar desde quando e por quê, e corrigir o procedimento ou o código.
 
 ## Fora de escopo / adiado
 

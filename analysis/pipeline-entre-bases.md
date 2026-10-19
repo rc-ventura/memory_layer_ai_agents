@@ -879,6 +879,62 @@ comando (`executar.py`), com manifesto e hash, numa máquina Windows.
 - **Replicar no ambiente da base 3:** só `git pull`. Nenhuma rodada muda: nenhum arquivo da lista do hash do código
   foi tocado.
 
+### Ajuste 21 — a verificação de existência por introspecção entra na unidade do `try/except` (`U_verificacao_existencia`)
+
+**Gatilho.** A primeira mineração do inventário do sandbox na base 3 (16/10, `b3 #12`): 2.347 dos 2.352 erros de `globals`
+são do ContestacaoCivel, 1.592 em julho e 754 em agosto de 2026 — o mesmo papel e o mesmo período do `try/except NameError`
+do Ajuste 17 (95 em julho, 5.667 em agosto). Hipótese: a mesma instrução do prompt, cumprida de dois jeitos.
+
+**Evidência** (dossiê do sandbox na base 3, "A evidência, achado por achado"; fotos e comandos lá).
+- **Base 1:** o prompt de julho do ContestacaoCivel diz "Antes de chamar qualquer tool, VERIFIQUE se a variável de saída
+  correspondente já está preenchida em memória. Se já estiver, PULE a chamada" — sem dizer como; 1 de 3 execuções verifica
+  com `'x' not in globals()` e é barrada. Nenhum outro papel tem a instrução; a única outra verificação (ConversationAgent,
+  `globals().get('x', padrão)`) é espontânea.
+- **Base 2** (`contar_introspeccao_prompt_base2.py`): só o ContestacaoCivel tem a instrução (224 de 224 execuções) e só ele
+  verifica. Prompt antigo (`4b8c6d76ff`, sem dizer como): 36 de 127 verificam, todos por introspecção, 35 com erro; 91 não
+  verificam, 90 sem erro. Prompt novo (`2802ad7768`, "use `try/except NameError`, não use `globals()`"): 97 de 97 verificam
+  com `try/except`, 97 com erro.
+- **Base 3** (`contar_introspeccao_linha.py`): no ContestacaoCivel, a introspecção como verificação é 3 / 1.527 / 709 (jun,
+  jul, ago) contra o `try/except` 0 / 95 / 5.667. O teste da regra (b): 2.218 verificações instruídas no ContestacaoCivel e
+  **0** nos outros papéis (8 espontâneas, 1 que não verifica); resíduo de 157 no ContestacaoCivel (102 sem a criação
+  reconhecida, 55 sem nome verificado reconhecível), que fica no sandbox.
+- O interpretador barra `globals()` quando ela RODA, inclusive dentro de uma função auxiliar que o agente escreveu
+  (`has_var('x')`, `ensure('x', …)`): a linha que falhou é a da chamada.
+
+**Solução** (decisões do Rafael, 19/10, `decisoes.md`).
+- **Regra (b), determinística, pela linha que falhou e pelo código do passo** (`verificacao_por_introspeccao`, nos dois
+  `base_pipeline.py`): a função proibida é `globals`/`locals`/`vars`, a linha verifica um nome — direto (`'x' in globals()`,
+  `globals().get('x')`) ou por função auxiliar (`f('x')`, com `x` criado na própria linha) — e esse nome é atribuído, no
+  código ou na linha, ao resultado de uma chamada que não é a própria introspecção ("se `x` não existe, `x =
+  ferramenta(...)`", o que a instrução pede). Então o mecanismo é `verificacao_introspeccao`. A leitura com valor padrão e o
+  resto da introspecção ficam em `inventario_sandbox`.
+- **A unidade** `U_verificacao_try_nameerror` passa a **`U_verificacao_existencia`** (os dois mecanismos), destino harness
+  nas três bases (`DESTINO_MINERACAO`). Rótulos novos em `paleta.py` e `genealogia_sankey.py`.
+- **Base 3, modo observado** (`_mecanismo_com_evidencia`): a regra decide pela linha quando a criação está nela; se precisa
+  do código e ele não está inteiro, o erro fica pendente (`verificacao_requer_codigo_integral`).
+- **Base 2:** `analysis/2026-09-trace-law-flow-second/scripts/replicar_ajuste21.py` confere que os três arquivos da base 2
+  são os da base 1 de antes do ajuste (hash do `conferir_versao`) e copia os novos, preservando TRACE e BASE_ID.
+- **Monitoramento:** item `U_verificacao_existencia` em `registros/monitoramento.json`, com os dois sintomas como
+  sub-lições; gatilhos `some`, `cresce` e `sub_muda` (se só um sintoma sumir, o agrupamento está errado).
+- **Kit:** manifesto regenerado, `VERSAO` 0.7.0 → 0.8.0.
+- **A mineração do sandbox:** a emenda 3 do racional (`propostas/U_sandbox/racional.md`) tira da população em prosa a
+  introspecção que verifica e cria a variável; a auditoria independente (`audit_candidata_base3.py`) passa a excluí-la,
+  reescrita da prosa, sem importar o pipeline. O encontro da rodada de ensaio da base 1 pegou a mudança antes da emenda
+  (13 medidas diferentes) e fechou depois (24 iguais).
+
+**Verificação.**
+- **Testes:** `test_verificacao_try_nameerror.py` (unidade renomeada; 2 novos: a regra nas duas bases e no modo observado —
+  direta com criação, auxiliar, criação por literal, leitura com valor padrão, `dir`); `test_introspeccao.py` (os dois
+  testes de evidência). A suíte toda passa.
+- **Base 1:** 1 erro muda de unidade (ContestacaoCivel, jul/26, `verificacao_introspeccao`); `U_sandbox` 17 → 16; total 498.
+  O `comparar_base1.py` dá o mesmo antes e depois (415 na mesma unidade; os 82 em "unidade diferente" já existiam antes do
+  ajuste — `b3 #47`). Notebook da esteira refeito; `monitorar.py` reproduz a linha de base do item novo.
+- **Base 3 (esperado, a conferir na rodada nova):** ≈ 2.218 erros de `U_sandbox` para `U_verificacao_existencia`
+  (≈ 3.653 → ≈ 1.435; ≈ 5.764 → ≈ 7.982); o total de erros e os outros números não mudam.
+- **Replicar no ambiente das bases:** (1) copiar os arquivos do ajuste; (2) base 2: `replicar_ajuste21.py --aplicar` e o
+  notebook da esteira; (3) base 3: `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes
+  e3ebc8274dcf108c --depois <nova>` e `minerar.py U_sandbox --rodada <nova>`.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e

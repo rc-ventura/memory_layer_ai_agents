@@ -20,7 +20,7 @@ import sys
 import pyarrow.parquet as pq
 
 COLUNAS = ["cod_idef_exeo", "cod_idef_aget", "papel", "step_pos", "mes_execucao", "structured_error", "error_type",
-           "error_message"]
+           "error_message", "error_code_action"]
 
 
 # ── U_sandbox (racional: propostas/U_sandbox/racional.md) ──────────────────────────────────────────────────────────
@@ -40,8 +40,28 @@ REGRAS_SANDBOX = [  # (tipo, padrão no último trecho) — racional, passo 4, n
 AUTORIZADOS = re.compile(r"Authorized imports are: \[([^\]]*)\]")
 
 
-def populacao_sandbox(msg):
+# emenda 3 do racional (Ajuste 21): a introspecção que verifica e cria a variável sai da população
+_FALHOU = re.compile(r"failed at line '(.*?)' due to", re.S)
+_INTRO = r"(?:globals|locals|vars)\s*\(\s*\)"
+
+
+def verifica_e_cria(msg, codigo):
+    f = re.search(r"Forbidden function evaluation: '(\w+)'", msg)
+    linha = _FALHOU.search(msg)
+    if not (f and f.group(1) in ("globals", "locals", "vars") and linha):
+        return False
+    linha = linha.group(1)
+    nomes = set(re.findall(rf"['\"](\w+)['\"]\s+(?:not\s+)?in\s+{_INTRO}", linha))
+    nomes |= set(re.findall(rf"{_INTRO}\s*\.get\s*\(\s*['\"](\w+)['\"]", linha))
+    nomes |= {n for n in re.findall(r"\b\w+\s*\(\s*['\"](\w+)['\"]", linha) if re.search(rf"\b{re.escape(n)}\s*=(?!=)", linha)}
+    texto = f"{codigo or ''}\n{linha}"
+    return any(re.search(rf"\b{re.escape(n)}\s*=\s*(?!(?:globals|locals|vars)\b)[A-Za-z_][\w.]*\s*\(", texto) for n in nomes)
+
+
+def populacao_sandbox(msg, codigo=""):
     if any(s in msg for s in ANTES):
+        return False
+    if verifica_e_cria(msg, codigo):
         return False
     v = re.search(r"The variable `(\w+)` is not defined", msg)
     if v and v.group(1) in MODULOS:
@@ -81,7 +101,7 @@ def auditar(unidade, fonte):
         if not (r["structured_error"] == 1 and (r["error_type"] or "").strip()):
             continue
         msg = r["error_message"] or ""
-        if not pop(msg):
+        if not pop(msg, r.get("error_code_action") or ""):
             continue
         tipo, nome = extrair(msg)
         erros.append({"chave": [str(r["cod_idef_exeo"]), str(r["cod_idef_aget"]), str(r["papel"]), int(r["step_pos"])],

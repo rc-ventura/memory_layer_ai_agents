@@ -144,13 +144,11 @@ gravados pela mineração ficam na máquina da base, em `pipeline/resultados/min
   variável criada). Como todo prompt do papel tem a instrução, provavelmente também são instruídos, em formas que a regra
   não pega. Pela regra (b), ficam no sandbox.
 
-### A · Decisão pendente: o Ajuste 21
+### A · O Ajuste 21 (aprovado e implementado em 19/10)
 
-Proposta (não aplicada; espera o Rafael): a introspecção proibida usada para verificar a existência de uma variável —
-direta (`'x' in globals()`, `globals().get('x')`) ou por função auxiliar (a linha chama uma função com o nome de uma
-variável entre aspas e cria essa mesma variável) — sai de `U_sandbox` e entra na unidade do `try/except`, renomeada
-`U_verificacao_existencia` (destino harness). Efeito esperado na base 3: ≈ 2.250–2.380 erros mudam de unidade; o total de
-erros não muda. → `b3 #46`.
+A introspecção que verifica a variável e guarda a criação dela por uma chamada (regra (b)) sai de `U_sandbox` e entra em
+`U_verificacao_existencia` (a antiga `U_verificacao_try_nameerror`), destino harness. Esperado na base 3: ≈ 2.218 erros
+mudam de unidade; o resíduo de 157 do ContestacaoCivel fica no sandbox (aceito). → livro-razão, Ajuste 21; `b3 #46`.
 
 ### B · Uma sub-lição própria: as ferramentas já estão no escopo
 
