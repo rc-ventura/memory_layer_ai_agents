@@ -152,6 +152,12 @@ na base 3):** a emenda 3 passa a valer também quando a função proibida é `ev
 (por uma função escrita pelo agente que recebe o nome entre aspas e, na mesma linha, cria a variável) e o nome recebe o
 resultado de uma chamada que não é `globals`/`locals`/`vars`/`eval`. Esses erros vão para `U_verificacao_existencia`.
 O `eval(texto)` que converte texto fica na parte E. Regras do passo 4, partes e limiar não mudam.
+**Como o código aplica (revalidação 6, para a prosa dizer o mesmo que o código e a auditoria):** (i) "função que recebe
+o nome entre aspas" é qualquer chamada `f('x')` na linha com `x` criado na mesma linha, escrita pelo agente ou não; (ii)
+com `eval`, valem também as formas diretas da emenda 3 (`'x' in globals()`, `globals().get('x')`), se a linha as tiver;
+(iii) a criação por `eval(...)` não conta como "chamada" em nenhum dos casos, nem nos de `globals`/`locals`/`vars`
+(criar a variável lendo-a de novo não é chamar uma ferramenta). Na base 1, 0 erros caem nesses pontos; na base 3, a
+rodada nova os mostra.
 
 **Emenda 6, de 19/10 (decisão do Rafael, depois da investigação da parte E, dossiê §2c):** o destino da parte **E**
 passa de "em aberto" a **memória** (global), e a `correction_guidance` dela ganha, depois de "Não chame: …; Não acesse: ….",

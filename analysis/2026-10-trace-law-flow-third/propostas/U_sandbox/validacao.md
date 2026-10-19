@@ -528,3 +528,76 @@ confirmação, ainda não existe nesta máquina. Ela tem de rodar com um HEAD qu
 - Testes 19/19 · encontro do script 28/28 · lição 14/14 · memórias e catálogo 96/96 · total 110/110 · 0 divergências.
 - Memórias: 4 (C 6, E 7, D.ConversationAgent 2, D.managerAgent 1; B 0), as 4 aprovadas pelo `validar_memoria`
   (esquema 0.3). Catálogo: 3 fechadas, 1 fora (E, destino em aberto). Manifesto: 21/21.
+
+---
+
+# Revalidação 6 (emendas 5 e 6, 19/10)
+
+**Objeto:**
+- o racional com as emendas 5 (`364cbd8`, 2026-10-19T14:32:13−03:00) e 6 (`7b4e4e0`, 14:43:26−03:00; blob `1fd0ac7`);
+- o script `mineracao_U_sandbox.py` (sha256 `9ea1c33b…`, de `7b4e4e0`);
+- o `minerar.py` (`ae17ddcc…`, sem mudança);
+- a auditoria `audit_candidata_base3.py` (`e9ef1180…`, de `364cbd8`);
+- o `base_pipeline.py` da base 3 (`8429c4a3…`);
+- o teste `test_mineracao_candidata_base3.py`.
+
+HEAD `7b4e4e0`. A rodada de ensaio foi refeita: `3e5d9127c1aa1225…`, 2026-10-19T14:31:19−03:00, com a fonte
+`fonte_base1_v1.parquet` (`afaf3e98…`). O validador não corrigiu nada nem fez commit; só a
+`conferencia_independente.py` (que é dele) mudou.
+
+## Veredito: **APROVADO** (falta a aprovação final do Rafael), com uma observação para a base 3
+
+Todas as medidas batem (114/114), e cada mudança do script corresponde a uma regra das emendas 5 e 6. A observação
+(abaixo) é sobre a regra da emenda 5 no pipeline e na auditoria, não sobre o script. Na base 1 ela não aparece (0 casos),
+então não é divergência medida.
+
+| # | Item | Comando | Resultado |
+|---|---|---|---|
+| 1 | Conferência só a partir do racional (emendas 5 e 6) | `uv run python …/propostas/U_sandbox/conferencia_independente.py --fonte <ensaio>/fonte_base1_v1.parquet --casos <ensaio>/rodada/perfis/U_sandbox/casos.csv --perfil <ensaio>/rodada/perfis/U_sandbox/perfil.csv --json <rascunho>/conferencia_rev6_1.json` | ok. Emenda 5: a emenda 3 vale também para `eval`, só pelo braço da função escrita pelo agente (não embutida), que recebe o nome entre aspas e cria a variável na linha, e com a chamada que não é `globals`/`locals`/`vars`/`eval`. Emenda 6: E tem destino memória, e a guidance de E ganha o complemento fixo. Na base 1, o único `eval` fica em E. Resultado: população **16** = rodada 16 (0 só de um lado); a emenda 3 tira 1 erro; cobertura 16/16; partes C 6 · E 7 · D 3 · B 0. Rodada duas vezes, o JSON sai idêntico (`cmp`) |
+| 2a | Teste | `uv run python -m unittest analysis/tests/test_mineracao_candidata_base3.py` | ok: **19/19** |
+| 2b | Script | `uv run python …/pipeline/especificas/minerar.py U_sandbox --rodada <ensaio>/rodada --fonte <ensaio>/fonte_base1_v1.parquet --saida <rascunho>/saida_script` | saída 0. Passos 1 e 3 a 9 ok; o passo 2 diz "não conferido", como antes. Encontro **28/28**; 4 memórias aprovadas no esquema 0.3; catálogo com **4 fechadas, 0 fora** (E entrou). `resultados/` não foi tocado (`stat` antes e depois) |
+| 2c | Comparação medida por medida | `python3 <rascunho>/comparar.py <rascunho>` | lição **14/14**; memórias e catálogo **100/100** (com as 4 entradas de E no catálogo); total **114/114** |
+| 3 | Script contra o racional | `git diff ef36e2c HEAD` do script, do teste, da auditoria e do pipeline; `validar_memoria.py` em cada arquivo; manifesto; busca de texto de caso | ok. O script mudou só no que a emenda 6 manda: E com destino `"memória"` em `PARTES`, e `GUIA_E` igual, caractere por caractere, ao complemento do racional, depois de "…." e de um espaço. `destino_decidido_em` de E: "decisoes.md, 19/10". Sem LLM nem serviço externo (só `re` e `pandas`). Nenhuma constante nova além de `GUIA_E`, que está no racional. Texto de caso: 0 arquivos. Manifesto com os hashes do código, a rodada e a fonte, e **21/21** artefatos conferidos; nada gravado fora dele. `validar_memoria.py` → **aprovado** nos 4 arquivos. Catálogo: só as fechadas, sem `location`/`evidence` |
+| 4 | Ordem | `git log --date=iso-strict` do racional, do script e do `base_pipeline.py`; `gerado_em` dos manifestos | ok: as emendas 5 (14:32:13) e 6 (14:43:26) vêm antes da rodada do script deste validador (14:45:07−03:00). As duas se declaram: a 5 como descritiva, a 6 como decisão do Rafael depois da investigação. A rodada do pipeline (14:31:19) é 54 s anterior ao commit `364cbd8`, mas foi gerada com o mesmo `base_pipeline.py`: o hash `8429c4a3…` do manifesto da rodada é igual ao do HEAD, e o passo 1 do `minerar.py` confere o código |
+
+`<ensaio>` = `analysis/2026-10-trace-law-flow-third/pipeline/resultados/ensaio_base1`; `<rascunho>` = pasta de
+rascunho do validador, no scratchpad, fora do repositório.
+
+## O que mudou nas medidas
+
+- E: `validation.destino` "memória" e `destino_decidido_em` preenchido. Antes, "em aberto" e null.
+- E: a `correction_guidance` agora é "Não chame: repr, dir, eval, globals; Não acesse: `__name__`." mais, depois de um
+  espaço, o complemento fixo da emenda 6. É igual na conferência e no script.
+- O catálogo tem 4 entradas (C, D.ConversationAgent, D.managerAgent, E), todas com campos iguais aos dos arquivos e
+  `sha256_16` conferido.
+- O resto não muda em relação à revalidação 5: população, cobertura, inventário, listas, partes, `location`,
+  `evidence`, `description`, `occurrences`, `status` e `impact`.
+
+## Observação para a base 3 (não medida aqui: 0 casos na base 1)
+
+A emenda 5 diz que, para `eval`, o nome é verificado "por uma função escrita pelo agente". O `base_pipeline.py` e a
+auditoria, iguais entre si, são mais largos que essa prosa em três pontos:
+- (a) aceitam como verificadora qualquer função que receba o nome entre aspas, inclusive uma embutida, como
+  `eval('x')`;
+- (b) para `eval`, aceitam também os braços diretos da emenda 3 (`'x' in globals()`, `globals().get('x')`);
+- (c) também em `globals`/`locals`/`vars`, uma variável que recebe `eval(...)` deixa de contar como criada. A emenda 3
+  só exclui `globals`/`locals`/`vars`.
+
+Como o pipeline e a auditoria fazem igual, o encontro fecha mesmo onde a prosa diria outra coisa. Na base 3 (46 `eval`
+no ContestacaoCivel, segundo o comentário do Ajuste 23), quem rodar deve contar quantos erros caem nesses três pontos.
+Se algum cair, cabe ao Rafael decidir se a prosa da emenda 5 ou o código é o certo.
+
+## Condição da ordem, na base 3 (não é divergência)
+
+A primeira rodada deste script na base 3, a base de confirmação, ainda não existe nesta máquina. Ela tem de rodar com
+um HEAD que contenha `7b4e4e0` e depois de 2026-10-19T14:43:26−03:00, e quem rodar confere a data contra o `git log` do
+racional.
+
+## Contagens da revalidação 6
+
+- Testes 19/19 · encontro do script 28/28 · lição 14/14 · memórias e catálogo 100/100 · total 114/114 · 0 divergências.
+- População 16 = 16 (a emenda 3 tira 1; a emenda 5 não tira nenhum na base 1). Memórias: 4 (C 6, E 7,
+  D.ConversationAgent 2, D.managerAgent 1; B 0), as 4 aprovadas no esquema 0.3. Catálogo: 4 fechadas, 0 fora.
+  Manifesto: 21/21.
+- Itens: 1 ok · 2 ok · 3 ok (1 observação sobre o pipeline e a auditoria, para a base 3) · 4 ok, com a condição da
+  primeira rodada na base 3.

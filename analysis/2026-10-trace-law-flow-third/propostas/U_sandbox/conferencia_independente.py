@@ -4,6 +4,9 @@ Não importa o pipeline, o script da lição, o `minerar.py` nem a auditoria da 
 `analysis/leitor_trace.py` (abrir o arquivo não é lógica auditada) e o `casos.csv` do perfil da rodada com `csv`.
 Grava as medidas num JSON (contagens, nomes de papel, mês, módulo e função, exec_id e step_ref; nenhum texto de caso).
 
+Revalidação 6 (19/10): a emenda 5 (a emenda 3 vale também para `eval`, pela função escrita pelo agente, com a chamada
+fora de globals/locals/vars/eval) e a emenda 6 (E com destino memória e o complemento fixo da guidance de E).
+
 Revalidação 5 (19/10): a tabela "O arquivo final de cada parte" (complemento da emenda 4): category, scope,
 location, evidence, description, correction_guidance, occurrences e impact de cada memória, com o desempate por
 erros e, no empate, a alfabética.
@@ -65,22 +68,36 @@ def nomes_verificados(linha):
     return diretos | por_funcao
 
 
-def recebe_chamada(nome, texto):
-    """`nome = f(...)` com f que não é globals/locals/vars, no texto (código do passo ou linha)."""
+def recebe_chamada(nome, texto, excluidas=INTROSPECCAO):
+    """`nome = f(...)` com f fora de `excluidas` (globals/locals/vars; na emenda 5, também eval), no texto."""
     for f in re.findall(r"(?<![\w.])" + re.escape(nome) + r"\s*=(?!=)[^\n]*?(?<![\w.])([A-Za-z_][\w.]*)\s*\(", texto):
-        if f.split(".")[-1] not in INTROSPECCAO:
+        if f.split(".")[-1] not in excluidas:
             return True
     return False
 
 
+# emenda 5 (19/10, Ajuste 23): a emenda 3 vale também para `eval`, só pelo braço da função escrita pelo agente
+EXCLUIDAS_EVAL = INTROSPECCAO | {"eval"}
+
+
+def nomes_por_funcao_do_agente(linha):
+    """f('x') com f uma função escrita pelo agente (não embutida) e x criado na mesma linha."""
+    criados = set(re.findall(r"(?<![=!<>\w.])([A-Za-z_]\w*)\s*=(?!=)", linha))
+    return {x for f, x in re.findall(r"""(?<![.\w])([A-Za-z_]\w*)\(\s*['"]([A-Za-z_]\w*)['"]\s*\)""", linha)
+            if x in criados and f not in EMBUTIDAS}
+
+
 def verificacao_existencia(msg, codigo):
     m = RE_FFE.search(trecho_final(msg))
-    if not m or m.group(1) not in INTROSPECCAO:
+    if not m or m.group(1) not in INTROSPECCAO | {"eval"}:
         return False
     lm = RE_LINHA.search(msg)
     if not lm:
         return False
     linha = lm.group(1)
+    if m.group(1) == "eval":
+        return any(recebe_chamada(x, codigo or "", EXCLUIDAS_EVAL) or recebe_chamada(x, linha, EXCLUIDAS_EVAL)
+                   for x in nomes_por_funcao_do_agente(linha))
     return any(recebe_chamada(x, codigo or "") or recebe_chamada(x, linha) for x in nomes_verificados(linha))
 
 
@@ -161,6 +178,8 @@ def lista_autorizada(msg):
 
 
 # ------------------------------------------------------------------ revalidação 5: a tabela "O arquivo final de cada parte"
+COMPLEMENTO_E = ("Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); "
+                 "para ler JSON, use json.loads.")
 ROTULO_PARTE = {"C": "módulo usado sem import", "B": "ferramenta importada como módulo",
                 "D": "import fora da lista autorizada", "E": "funções e atributos proibidos"}
 
@@ -230,7 +249,8 @@ def memoria_da_parte(mid, v, erros, a):
             pedacos.append("Não chame: " + ", ".join(nomes({"funcao_proibida"})))
         if nomes({"atributo_dunder"}):
             pedacos.append("Não acesse: " + ", ".join(nomes({"atributo_dunder"})))
-        guia = "; ".join(pedacos) + "."
+        # emenda 6: o complemento fixo depois de "Não chame: …; Não acesse: …."
+        guia = "; ".join(pedacos) + ". " + COMPLEMENTO_E
     grupos = collections.defaultdict(int)
     for e in v:
         grupos[(e["exec_id"], e["papel"], e["nome"])] += 1
@@ -239,7 +259,7 @@ def memoria_da_parte(mid, v, erros, a):
         "parte": pt, "rotulo": rot, "papel_escopo": papel,
         # emenda 4: C e E "global"; B e D "uma memória por papel"
         "escopo": "global" if pt in ("C", "E") else "papel",
-        "destino": "em aberto" if pt == "E" else "memória",
+        "destino": "memória",  # emenda 6: E passa a memória (antes: em aberto)
         "erros": len(v), "execucoes": len({e["exec_id"] for e in v}), "meses_lista": sorted({e["mes"] for e in v}),
         "meses": len({e["mes"] for e in v}), "papeis": papeis, "erros_por_tipo": dict(collections.Counter(e["tipo"] for e in v)),
         "category": f"Inventário do sandbox · {rot} (factual · ambiente)",
