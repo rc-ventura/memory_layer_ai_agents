@@ -134,6 +134,12 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `globals` 2.347 de 2.352 no `ContestacaoCivel`, `get_document_text` 167 de 167 no `OBFCivel`, `pd` 231 de 233 no
   `JoogleAnalytics`, contra `json` em 10 papéis e 10 meses. O racional ganha as partes e o script monta uma memória por parte
   (nova validação). O destino da parte do `globals` (harness) segue como hipótese → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, os destinos das partes do sandbox depois do Ajuste 21 (decisão do Rafael):** C (módulo usado sem import,
+  656) → **memória global**; B (ferramenta importada como módulo, 212, `OBFCivel`) → **memória do papel `OBFCivel`**;
+  D (import fora da lista autorizada, 40) → **memória por papel** (cada papel com a sua lista). A parte E (funções e
+  atributos proibidos, 523, concentrada no `ContestacaoCivel`) **fica em investigação antes de virar memória**: se vem
+  do prompt desse papel, como a verificação de existência, é sinal de harness → testes `contar_proibidas_linha.py`
+  (base 3) e `contar_proibidas_prompt_base2.py` (base 2); [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md), §2c.
 - **19/10, o Ajuste 21 (decisões do Rafael):** (1) a introspecção proibida (`globals`/`locals`/`vars`) usada para
   verificar a existência de uma variável **e que guarda a criação dessa variável por uma chamada** ("se `x` não existe,
   `x = ferramenta(...)`" — o comportamento que a instrução do prompt pede) sai de `U_sandbox` e entra na unidade do

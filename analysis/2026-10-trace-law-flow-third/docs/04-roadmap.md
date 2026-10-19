@@ -259,8 +259,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
     procedimento de mineração com a tabela do funil (o painel e a skill leem `docs/*procedimento-mineracao-candidatas*.md` da
     própria análise, e a base 3 ainda não tem). **Feito em parte (16–19/10):** procedimento `06` e racionais `07`; o
     `minerar.py` rodou os 9 passos na base 3 (cobertura 99,86%, encontro 61/61, memória aprovada no esquema 0.2); script
-    aprovado e em `pipeline/especificas/`; a lição dividida por papel e causa (decisão de 19/10). **Falta:** o Ajuste 21
-    (#46), o racional e o script por parte, a nova validação → [dossiê](../propostas/U_sandbox/dossie_base3.md).
+    aprovado e em `pipeline/especificas/`; a lição dividida por papel e causa (decisão de 19/10). O Ajuste 21 (#46) está
+    feito; os destinos de B, C e D estão decididos (19/10: C memória global, B memória do `OBFCivel`, D memória por papel).
+    **Falta:** a investigação da parte E (523 erros, `contar_proibidas_linha.py` na base 3 e `contar_proibidas_prompt_base2.py`
+    na base 2: vem do prompt do `ContestacaoCivel`?), o racional e o script por parte, a nova validação →
+    [dossiê](../propostas/U_sandbox/dossie_base3.md), §2c.
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do

@@ -167,6 +167,33 @@ A parte "funções proibidas" do dossiê de 16/10 (antes junto da D) é, depois 
 ainda concentrada no ContestacaoCivel (`__name__` 172 de 182, `eval` 46 de 49, `repr` 54 de 98, e o resíduo de `globals`).
 Se ela vem também do prompt desse papel é pergunta aberta — o Ajuste 21 só cobriu a verificação de existência.
 
+## 2c · A parte E em investigação (decisão do Rafael, 19/10)
+
+Os destinos de B, C e D estão decididos (`decisoes.md`, 19/10): **C → memória global**, **B → memória do `OBFCivel`**,
+**D → memória por papel**. A parte E só vira memória depois de responder: **ela também vem do prompt do
+`ContestacaoCivel`?** Se vem, é sinal de harness (como a verificação de existência) e uma memória "não chame `eval`"
+brigaria com o prompt; se é uso espontâneo, é memória.
+
+**O que a base 1 já mostra (19/10, aqui; 3 execuções do `ContestacaoCivel`, poucas para responder):** os 7 erros da
+parte E estão todos **fora** do `ContestacaoCivel` e são espontâneos — `repr` 3 e `dir` 1 dentro de um `print` (depuração),
+`type(x).__name__` 1 (nome do tipo, num `print`), `eval(str(...))` 1 (ler a observação como lista), `globals().get(...)` 1.
+Nenhum prompt desses papéis menciona `__name__`, `type(`, `repr`, `eval` ou `except Exception`. O prompt de julho do
+`ContestacaoCivel` também não menciona nenhum desses; o que ele tem perto disso é a instrução de **acumular as seções com
+falha** ("→ acumule: secoes_geradas (dict), secoes_com_falha (lista)") — uma candidata a origem do `type(e).__name__`, se é
+assim que o agente registra a falha. É hipótese até o teste.
+
+**Os testes (rodar na máquina da base):**
+
+| Base | Script | Responde |
+|---|---|---|
+| 3 | `pipeline/validacao/contar_proibidas_linha.py --fonte <parquet>` | para que o agente usa cada função barrada (nome do tipo da exceção, nome do tipo, depuração, converter texto, função auxiliar…), por grupo `ContestacaoCivel` × outros e mês; se a linha está num bloco `except`; se o código tem a verificação instruída |
+| 2 | `scripts/contar_proibidas_prompt_base2.py --trace <trace>` | se o prompt de cada execução menciona os termos (versão do trecho, por papel); as linhas do prompt do `ContestacaoCivel` com os termos; se o nome barrado está escrito no prompt |
+
+**Como ler:** se, no `ContestacaoCivel`, o uso dominante for "nome do tipo da exceção" dentro de `except` (e a base 2
+mostrar a instrução de registrar falhas), a origem é o prompt → harness, com a lição "registre a falha com `str(e)`, não
+`type(e).__name__`" ao lado; se for depuração ou converter texto, espalhado e sem termo no prompt → memória (global, com
+os nomes do papel). O teste da base 1 com o script da base 2 (mesmo formato) deu 7 erros, os da tabela acima.
+
 ### B · Uma sub-lição própria: as ferramentas já estão no escopo
 
 O `OBFCivel` tenta `import get_document_text` / `from tools import …` em vez de chamar a ferramenta, que já está disponível
