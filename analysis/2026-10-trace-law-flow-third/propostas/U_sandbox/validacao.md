@@ -374,3 +374,122 @@ destino (2 listas, lista única = não, 0 repetições); os erros por parte (C 6
   `validar_memoria` aprova as 4. Catálogo: 3 fechadas, 1 fora.
 - Itens: 1 ok · 2 **4 divergências** · 3 **reprovado** (regras de montagem fora do racional) · 4 B declarada; 7 regras
   novas não declaradas.
+
+---
+
+# Revalidação 5 (19/10)
+
+**Objeto:** o script `pipeline/especificas/mineracao_U_sandbox.py` (sha256 `42f79ff7…c8187a`, o mesmo do manifesto),
+o `minerar.py` (sha256 `ae17ddcc…25f7`), a auditoria `audit/scripts/audit_candidata_base3.py` (`acb36184…`), o teste
+`analysis/tests/test_mineracao_candidata_base3.py` e o racional com a tabela "O arquivo final de cada parte" (blob
+`b6a94a5`, commit `f4037cc`). HEAD `f4037cc`. Rodada de ensaio `bf2d034f248cfd74…`, fonte `fonte_base1_v1.parquet`
+(sha256 `afaf3e98…30717ae` = `fonte_id`). O validador não corrigiu nada nem fez commit; só a
+`conferencia_independente.py` (que é dele) mudou.
+
+## Veredito: **REPROVADO**
+
+As 7 regras que a revalidação 4 achou fora do racional agora estão na tabela da emenda 4, e as 4 diferenças da
+revalidação 4 fecharam. Sobra **1 regra fora do molde**, que dá **4 medidas diferentes**: o script fecha a
+`description` de cada memória com um ponto final. O molde do racional não tem esse ponto. As moldes da
+`correction_guidance` têm o ponto escrito; o da `description` termina em "…". Tirando o ponto, as 4 descrições são
+iguais à da conferência. Pelas regras do validador, não há aprovação com divergência. Para fechar, ou o racional põe o
+ponto no molde ou o script tira o ponto. A escolha é do Rafael.
+
+## Itens
+
+| # | Item | Comando | Resultado |
+|---|---|---|---|
+| 1 | Conferência independente, só do racional (a tabela nova da emenda 4) | `uv run python …/propostas/U_sandbox/conferencia_independente.py --fonte <ensaio>/fonte_base1_v1.parquet --casos <ensaio>/rodada/perfis/U_sandbox/casos.csv --perfil <ensaio>/rodada/perfis/U_sandbox/perfil.csv --json <rascunho>/conferencia_rev5_1.json` | ok. A conferência monta, para cada memória, `category`, `scope`, `location`, `evidence`, `description`, `correction_guidance`, `occurrences`, a parte na `validation` e `impact`, todos tirados da tabela. Nomes por erros, e no empate a ordem alfabética. A lista do papel D vem do mês mais recente; no empate, a com mais erros e depois a alfabética. População **16** = rodada 16; a emenda 3 tira **1** erro. Cobertura 16/16. Partes: C 6 · E 7 · D 3 · B 0. Rodada duas vezes: JSON idêntico (`cmp`) |
+| 2a | Teste | `uv run python -m unittest analysis/tests/test_mineracao_candidata_base3.py` | ok: **19 testes, 19 passam** |
+| 2b | Script | `uv run python …/pipeline/especificas/minerar.py U_sandbox --rodada <ensaio>/rodada --fonte <ensaio>/fonte_base1_v1.parquet --saida <rascunho>/saida_script` | saída 0. Passos 1 e 3 a 9 ok; o passo 2 diz "não conferido", como antes. Encontro: **28 medidas, 28 iguais**. 4 memórias aprovadas no esquema 0.3. Catálogo: 3 fechadas, 1 fora (E, destino em aberto). Varredura limpa. `resultados/ensaio_base1/mineracao_U_sandbox/` não foi tocado (`stat` antes e depois, iguais) |
+| 2c | Comparação medida por medida | `python3 <rascunho>/comparar.py <rascunho>` | lição: **14/14 iguais**. Memórias e catálogo: **92/96 iguais, 4 diferentes** (o ponto final da `description`, abaixo). Total 106/110 |
+| 3 | Script contra o racional | leitura do script; `validar_memoria.py` em cada arquivo; manifesto; busca de texto de caso; imports | **reprovado só pelo ponto final da `description`** (um caractere fixo que não está no molde; é a mesma divergência do item 2). O resto está ok (abaixo) |
+| 4 | Ordem | `git log --date=iso-strict` do racional e do script; `gerado_em` do manifesto do rascunho | ok no que dá para ver. A tabela nova se declara descritiva, e a emenda 3 também. A primeira rodada do script novo na base 3 ainda não existe: fica como **condição** (abaixo) |
+
+`<ensaio>` = `analysis/2026-10-trace-law-flow-third/pipeline/resultados/ensaio_base1`; `<rascunho>` = pasta de
+rascunho do validador, no scratchpad, fora do repositório.
+
+## 2 · As medidas
+
+**A lição (14 medidas, todas iguais).** População; população pela prosa = rodada; nenhum erro só de um lado;
+execuções · papéis · meses (16 · 5 · 7); as 16 linhas por erro; o inventário (10 linhas, na mesma ordem); nome × papel;
+nome × mês; as 2 listas autorizadas (erros, papéis, meses); a cobertura (16/16, passa); o `sem_nome` (vazio); o
+passo 6 (2 listas, lista única = não, 0 repetições); os erros por parte (C 6 · D 3 · E 7); a memória de cada erro (16
+chaves).
+
+**As memórias e o catálogo (96 medidas, 4 diferentes).** Para cada uma das 4 memórias (C, D.ConversationAgent,
+D.managerAgent, E), estas medidas:
+
+| Medida (por memória) | Igual nas 4? |
+|---|---|
+| cabeçalho (`id`, `parte`, `esquema` 0.3); erros · execuções · papéis · meses (`partes.csv`: C 6·6·2·3 · D.Conv 2·2·1·1 · D.mgr 1·1·1·1 · E 7·7·3·6) | sim |
+| `category` (com o rótulo da parte) | sim |
+| `scope` (`role` null em C e E; o papel em D; `tool` null) | sim |
+| `location.total_erros` e os casos: em C e E, o primeiro de cada papel, na ordem (papel, mês, `step_ref`); em D, os 10 primeiros, na ordem (mês, `step_ref`). D.ConversationAgent agora tem 2 = 2 | sim |
+| `location`: `fonte_id` e `rodada_id` em cada caso | sim |
+| `evidence`: o primeiro caso de cada um dos 3 nomes com mais erros (C: datetime, json · E: repr, `__name__`, dir · D: um por nome) | sim |
+| **`description`** | **não, nas 4: o script põe um "." no fim** |
+| `correction_guidance` (E: "Não chame: repr, dir, eval, globals; Não acesse: `__name__`." · C: datetime, json · D com a lista do papel no mês mais recente) | sim |
+| `occurrences` (erros, `ocorrencias` = erros, execuções, a lista dos meses) | sim |
+| `status` derived-and-checked | sim |
+| `validation`: a parte (código, rótulo, escopo "global"/"papel", como a emenda 4 diz); cobertura; o encontro fecha; as listas autorizadas da parte; o passo 6 com as repetições do nome na parte (0); o destino (C, D: memória; E: em aberto); onde foi decidido (C, D: preenchido; E: null) | sim |
+| `impact` null | sim |
+
+Catálogo: os ids (C, D.ConversationAgent, D.managerAgent); nenhuma entrada com `location` ou `evidence`; só as fechadas
+(destino memória e derived-and-checked); `category`, `scope`, `description` e `correction_guidance` iguais às dos
+arquivos; `occurrences` igual; `sha256_16` confere com o arquivo; `rodada_id` e `fonte_id` conferem. **Tudo igual.**
+O catálogo copia a `description` do arquivo, então o ponto final está nele também.
+
+**Uma correção na conferência (é do validador).** Na primeira passada, a conferência esperava o nome do papel no
+`validation.parte.escopo` das D. A emenda 4 dá o escopo de cada parte como "global" (C, E) ou "uma memória por papel"
+(B, D), e o script grava "global"/"papel". Isso segue o racional, então a conferência passou a esperar isso. Não é
+divergência do script.
+
+## 3 · O script contra o racional
+
+| Conferência | Resultado |
+|---|---|
+| As 7 regras que a revalidação 4 achou fora do racional: `location` em B/D; `evidence` por nome; `category` com os 4 rótulos; a frase fixa de B e `modulo_ausente` sob "Não importe"; o desempate da lista do papel; `occurrences` por parte com `ocorrencias` = erros; "imports autorizados neste papel" | **todas declaradas** na tabela da emenda 4, e o código faz o que a tabela diz |
+| O desempate (por erros, empate alfabético) | ok: `_por_erros` na guidance, na `evidence` e na `description`. `_lista_do_papel`: mais erros, depois alfabética (`sort_index` e então ordenação estável por contagem). A docstring diz só "empate: a mais frequente" |
+| **`description`** | **fora do molde:** `… + ".")`. O molde do racional não tem ponto final |
+| A parte de cada erro | ok, a mesma observação da revalidação 4: o script testa o pacote de topo (`nome.split('.')[0]`) também nos nomes `tools`, `tool_usage`, `tool_functions`, `python_interpreter`, e o racional dá esses nomes exatos. Nesta base não muda nada (B = 0) |
+| A lista autorizada | o script a lê do último trecho (depois de `due to:`); o racional diz "quando a mensagem tem". Nesta base dá o mesmo (2 listas, iguais às da conferência) |
+| Sem LLM nem serviço externo | ok: o script importa só `re` e `pandas`. O `subprocess` do `minerar.py` roda só os scripts locais (auditoria e validador). Nenhum `http`, `requests` nem cliente de modelo |
+| Limiar e constantes | ok: `LIMIAR_COBERTURA = 0.95`. `PARTES` (rótulos, escopo, destino) e `FERRAMENTAS` estão no racional. `ESTADOS_INTEGROS = {"sem_corte_sql"}` é a mensagem íntegra do passo 4 |
+| Texto de caso | ok: busca na saída por `due to`, `Code execution`, `InterpreterError`, `Forbidden`, `Traceback`, `at line`, `is not allowed`, `is not defined`, `No module named` → **0 arquivos** |
+| Rodada pelo código do pipeline e manifesto | ok: a rodada e a fonte são lidas por `mo.ler_artefato` e `bp.carregar_carga`. O manifesto traz o hash do `minerar.py`, do script, da auditoria e do esquema (conferem com o disco), o `rodada_id` e o `fonte_id`/`fonte_sha256` (conferem), e **21 artefatos, 21 com o hash conferido**. Nenhum arquivo gravado fica fora dele, só o próprio manifesto |
+| `validar_memoria.py` (esquema 0.3) | ok: `uv run python .claude/skills/mineracao-candidata/scripts/validar_memoria.py analysis/registros/esquema-memoria.json <rascunho>/saida_script/memoria_<id>_base3.json` → **aprovado** nos 4 arquivos |
+| Catálogo | ok: só as 3 memórias com destino memória e derived-and-checked; E (em aberto) fica fora; nenhuma entrada tem `location` nem `evidence` |
+
+## 4 · A ordem
+
+- Racional em vigor: blob `b6a94a5`, commit `f4037cc`, 2026-10-19T13:08:44−03:00. Esse commit traz também a mudança do
+  script (`_por_erros`). A rodada deste validador é de 13:26:38 −03:00 (`gerado_em` do manifesto do rascunho), depois do
+  commit.
+- **Declarado no racional:** a tabela "O arquivo final de cada parte" foi escrita depois do ensaio na base 1 e da
+  rodada `85706f1e` da base 3. É descritiva e não muda população, regras do passo 4 nem limiar. A emenda 3 agora se diz
+  descritiva (escrita depois da primeira mineração na base 3 e do teste da regra (b) nela). A lista de B já estava
+  declarada. Nada do que o script faz fica sem declaração, fora o ponto final da `description`.
+- **Condição, não divergência:** a primeira rodada do script de `f4037cc` na base 3 (a base de confirmação) ainda não
+  existe nesta máquina. Ela tem de rodar com um HEAD que contenha `f4037cc` e depois de 2026-10-19T13:08:44−03:00. Quem
+  rodar confere.
+
+## Divergências, medida por medida
+
+1. `U_sandbox.C` · `description`: conferência "…: datetime 3, json 3" × script "…: datetime 3, json 3**.**"
+2. `U_sandbox.D.ConversationAgent` · `description`: a mesma diferença (o "." no fim).
+3. `U_sandbox.D.managerAgent` · `description`: a mesma diferença.
+4. `U_sandbox.E` · `description`: a mesma diferença.
+
+As quatro vêm de uma regra só: o ponto final que o script acrescenta e o molde não tem. As 3 entradas do catálogo
+carregam a mesma `description` do arquivo.
+
+## Contagens da revalidação 5
+
+- Testes 19/19 · encontro do script 28/28 · medidas da lição 14/14 · memórias e catálogo **92/96 (4 diferentes,
+  uma regra só)** · total 106/110.
+- População 16 = 16 (a emenda 3 tira 1). Memórias: 4 (C 6, E 7, D.ConversationAgent 2, D.managerAgent 1; B 0).
+  `validar_memoria` aprova as 4. Catálogo: 3 fechadas, 1 fora. Manifesto: 21/21 hashes.
+- Das 4 divergências da revalidação 4, as 4 fecharam. Das 7 regras não declaradas, as 7 estão declaradas.
+- Itens: 1 ok · 2 **4 divergências** (o ponto final da `description`) · 3 **reprovado** pelo mesmo ponto, o resto ok
+  · 4 ok, com a condição da primeira rodada na base 3.
