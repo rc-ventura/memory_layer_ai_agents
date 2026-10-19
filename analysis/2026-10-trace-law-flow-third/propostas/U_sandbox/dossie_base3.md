@@ -127,6 +127,23 @@ gravados pela mineração ficam na máquina da base, em `pipeline/resultados/min
 - Consequência para o Ajuste 21: uma regra só pela linha junta a verificação instruída (harness) com a espontânea
   (lição do sandbox).
 
+### A · O teste da regra (b) na base 3 (19/10, foto `IMG_5900`)
+
+`contar_introspeccao_linha.py --fonte <parquet v2>`, parte D — a verificação guarda a criação da variável por uma chamada
+("instruída") ou não ("espontânea")?
+
+| Papel | Instruída | Espontânea | Não verifica |
+|---|---:|---:|---:|
+| ContestacaoCivel (jun/jul/ago) | 2.218 (3 / 1.521 / 694) | 102 (0 / 41 / 61) | 55 (0 / 39 / 16) |
+| os outros 7 papéis | **0** | 8 | 1 |
+
+- **Separa os papéis:** nenhum erro de outro papel cai em "instruída" — a regra não leva verificação espontânea para o
+  harness.
+- **Resíduo no ContestacaoCivel:** 157 erros (6,6%) não saem "instruída" — 102 verificam sem a criação reconhecida na
+  linha ou no código, 55 não têm nome verificado reconhecível (ex.: a função auxiliar com um nome entre aspas diferente da
+  variável criada). Como todo prompt do papel tem a instrução, provavelmente também são instruídos, em formas que a regra
+  não pega. Pela regra (b), ficam no sandbox.
+
 ### A · Decisão pendente: o Ajuste 21
 
 Proposta (não aplicada; espera o Rafael): a introspecção proibida usada para verificar a existência de uma variável —
