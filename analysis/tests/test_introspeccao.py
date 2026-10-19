@@ -33,6 +33,15 @@ class TestLinha(unittest.TestCase):
         self.assertEqual(b3.classificar(TRY), ("try/except NameError", None, None))
         self.assertIsNone(b3.classificar("due to: InterpreterError: Forbidden function evaluation: 'repr' is not"))
 
+    def test_usos(self):
+        self.assertEqual(b3.uso_da_linha("if 'x' not in globals():"), "verificação de existência")
+        self.assertEqual(b3.uso_da_linha("v = globals().get('x')"), "verificação de existência")
+        self.assertEqual(b3.uso_da_linha("globals()['x'] = 1"), "atribuição dinâmica")
+        self.assertEqual(b3.uso_da_linha("globals().update(d)"), "atribuição dinâmica")
+        self.assertEqual(b3.uso_da_linha("y = globals()['x']"), "leitura por nome")
+        self.assertEqual(b3.uso_da_linha("if globals()['x'] == 1:"), "leitura por nome")
+        self.assertEqual(b3.uso_da_linha("print(dir(obj))"), "outro uso")
+
     def test_lado_a_lado(self):
         linhas = [{"papel": "P", "mes_execucao": m, "structured_error": 1, "error_type": "InterpreterError", "error_message": t}
                   for m, t in (("2026-07", VERIF), ("2026-07", VERIF), ("2026-08", TRY), ("2026-08", OUTRO))]
@@ -52,15 +61,23 @@ class TestPrompt(unittest.TestCase):
         self.assertNotEqual(hj, ha)
         self.assertEqual(b2.trecho("nada aqui")[0], "(nenhuma)")
 
+    def test_como_verificou(self):
+        self.assertEqual(b2.como_verificou("if 'x' not in globals():\n    x = f()"), "introspecção (globals/locals/vars)")
+        self.assertEqual(b2.como_verificou("try:\n    x\nexcept NameError:\n    x = f()"), "try/except NameError")
+        self.assertEqual(b2.como_verificou("try:\n    x\nexcept Exception:\n    x = f()"), "try/except de outro tipo")
+        self.assertEqual(b2.como_verificou("x = f()\nprint(x)"), "não verificou")
+
     def test_medir(self):
         S = pd.DataFrame([
             {"exec_id": "e1", "agente": 1, "role": "C", "idx": 0, "mes": "2026-07", "err_type": "InterpreterError", "err_msg": VERIF,
-             "sysprompt": "VERIFIQUE se a variável x já está preenchida em memória"},
+             "sysprompt": "VERIFIQUE se a variável x já está preenchida em memória", "code": "if 'x' in globals(): pass"},
             {"exec_id": "e2", "agente": 1, "role": "C", "idx": 0, "mes": "2026-07", "err_type": None, "err_msg": "",
-             "sysprompt": "VERIFIQUE se a variável x já está preenchida em memória"},
+             "sysprompt": "VERIFIQUE se a variável x já está preenchida em memória", "code": "x = f()"},
         ])
         C = b2.medir(S)["C"]
         self.assertEqual((int(C.execucoes.sum()), int(C.com_introspeccao.sum()), int(C.com_nenhum.sum())), (2, 1, 1))
+        E = b2.medir(S)["E"].set_index("como_verificou")
+        self.assertEqual(int(E.loc["não verificou", "execucoes"]), 1)
 
 
 if __name__ == "__main__":

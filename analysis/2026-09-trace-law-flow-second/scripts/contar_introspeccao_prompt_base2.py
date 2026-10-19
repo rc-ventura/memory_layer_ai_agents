@@ -16,8 +16,10 @@ numa versão do trecho que manda verificar e não proíbe `globals()`, e somem n
      `globals()`? `locals()`? A versão do trecho = hash das linhas do prompt com esses termos (parte do modelo de
      prompt, não do caso);
   C. a tabela do teste: papel × mês × versão do trecho → execuções, com introspecção, com try/except, com nenhum;
-  D. a linha que falhou nos erros de introspecção: verificação de existência (`in globals()`, `globals().get(`,
-     `globals()[`) ou outro uso.
+  D. a linha que falhou nos erros de introspecção: verificação de existência, atribuição dinâmica, leitura por nome ou
+     outro uso (a mesma regra do `contar_introspeccao_linha.py` da base 3);
+  E. como o primeiro passo verificou, por versão do trecho do prompt e com/sem erro: com introspecção, com `try/except
+     NameError`, com `try/except` de outro tipo, ou não verificou (regex no código do passo — uma pista).
 
 Usa o leitor do `contar_primeiro_passo_nome_base2.py` e as funções do pipeline da base 1 (o método é o mesmo nas duas
 bases). Não grava nada. Imprime só contagens, nomes de papel, meses e hashes. Uso, da raiz, na máquina da base 2:
@@ -34,6 +36,8 @@ import pandas as pd
 AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI))
 from contar_primeiro_passo_nome_base2 import assinatura, bp, explodir  # noqa: E402
+sys.path.insert(0, str(AQUI.parents[1] / "2026-10-trace-law-flow-third" / "pipeline" / "validacao"))
+from contar_introspeccao_linha import uso_da_linha, VERIFICA  # noqa: E402  (a mesma regra nas duas bases)
 
 INTROSPECCAO = ("globals", "locals", "vars", "dir")
 RE_PROIBIDA = re.compile(r"Forbidden function evaluation: '(\w+)'")
@@ -43,7 +47,20 @@ TERMOS = {"instrucao_verificar": re.compile(r"(?i)verifi\w*\s+se\s+a\s+vari[aá]
           "NameError": re.compile(r"NameError"), "globals()": re.compile(r"globals\s*\(\s*\)"),
           "locals()": re.compile(r"locals\s*\(\s*\)")}
 LINHA_FALHA = re.compile(r"failed at line '(.*?)' due to", re.S)
-VERIFICA = re.compile(r"\bin\s+(?:globals|locals|vars)\s*\(\s*\)|(?:globals|locals|vars)\s*\(\s*\)\s*(?:\.get\s*\(|\[)")
+TRY_NAMEERROR = re.compile(r"except\s+\(?[^)\n:]*\bNameError\b")
+TRY_OUTRO = re.compile(r"^\s*try\s*:\s*\n\s*[A-Za-z_]\w*\s*\n\s*except\b(?![^\n:]*NameError)", re.M)
+
+
+def como_verificou(code):
+    """Como o código do passo verifica se uma variável existe (regex; uma pista, não uma prova)."""
+    code = str(code or "")
+    if VERIFICA.search(code):
+        return "introspecção (globals/locals/vars)"
+    if TRY_NAMEERROR.search(code):
+        return "try/except NameError"
+    if TRY_OUTRO.search(code):
+        return "try/except de outro tipo"
+    return "não verificou"
 
 
 def introspeccao(msg):
@@ -53,9 +70,9 @@ def introspeccao(msg):
 
 
 def uso_na_linha(msg):
-    """Na linha que falhou: 'verificação de existência' (`'x' in globals()`, `globals().get(`, `globals()[`) ou 'outro uso'."""
+    """O uso da introspecção na linha que falhou (a regra do `contar_introspeccao_linha.py`)."""
     m = LINHA_FALHA.search(str(msg))
-    return "verificação de existência" if m and VERIFICA.search(m.group(1)) else "outro uso"
+    return uso_da_linha(m.group(1)) if m else "outro uso"
 
 
 def trecho(prompt):
@@ -75,10 +92,11 @@ def medir(S):
     A = I.groupby(["role", "mes", "intro"]).size().rename("erros").reset_index()
     ex = S.groupby(["exec_id", "agente", "role"]).agg(mes=("mes", "first"), intro=("intro", lambda s: s.notna().any()),
                                                       tryexc=("tryexc", "any")).reset_index()
-    prim = S[S.idx.eq(0)][["exec_id", "agente", "role", "sysprompt"]]
+    prim = S[S.idx.eq(0)][["exec_id", "agente", "role", "sysprompt", "code"]]
+    prim = prim.assign(como_verificou=prim.code.map(como_verificou))
     prim = prim.assign(**{"versao_trecho": [trecho(p)[0] for p in prim.sysprompt]},
                        **{f"menciona_{t}": [trecho(p)[1][t] for p in prim.sysprompt] for t in TERMOS})
-    ex = ex.merge(prim.drop(columns="sysprompt"), on=["exec_id", "agente", "role"], how="left")
+    ex = ex.merge(prim.drop(columns=["sysprompt", "code"]), on=["exec_id", "agente", "role"], how="left")
     ex["versao_trecho"] = ex.versao_trecho.fillna("(sem primeiro passo)")
     papeis = sorted(set(I.role))
     C = (ex[ex.role.isin(papeis)].groupby(["role", "mes", "versao_trecho"] + [f"menciona_{t}" for t in TERMOS], dropna=False)
@@ -86,7 +104,10 @@ def medir(S):
          .reset_index())
     C["com_nenhum"] = C.execucoes - (C.com_introspeccao + C.com_tryexcept).clip(upper=C.execucoes)
     D = I.assign(uso=I.err_msg.map(uso_na_linha)).groupby(["role", "intro", "uso"]).size().rename("erros").reset_index()
-    return {"A": A, "C": C, "D": D}
+    ex["algum_erro"] = ex.intro | ex.tryexc
+    E = (ex[ex.role.isin(papeis)].groupby(["role", "versao_trecho", "como_verificou", "algum_erro"], dropna=False)
+         .size().rename("execucoes").reset_index())
+    return {"A": A, "C": C, "D": D, "E": E}
 
 
 def main(argv=None):
@@ -107,6 +128,8 @@ def main(argv=None):
           if len(T["C"]) else "  nenhum papel com erro de introspecção")
     print("\nD · a linha que falhou, nos erros de introspecção:")
     print(T["D"].to_string(index=False) if len(T["D"]) else "  nenhum")
+    print("\nE · como o primeiro passo verificou, por versão do trecho (algum_erro = introspecção ou try/except na execução):")
+    print(T["E"].to_string(index=False) if len(T["E"]) else "  nenhum")
     return 0
 
 

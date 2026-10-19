@@ -7,9 +7,14 @@ no prompt de julho, base 1) é cumprida com `'x' in globals()` em julho e com `t
 prompt passou a mandar o `try/except` (§7.9). Se vale, (1) a linha que falhou nos erros de `globals` é uma verificação
 de existência e (2) os dois erros se substituem no tempo, no mesmo papel.
 
-  A. os erros de introspecção por papel × mês × função × uso da linha que falhou ('verificação de existência':
-     `in globals()`, `globals().get(`, `globals()[`; ou 'outro uso');
-  B. lado a lado por papel × mês: introspecção como verificação, introspecção em outro uso, `try/except NameError`.
+  A. os erros de introspecção por papel × mês × função × uso da linha que falhou:
+       'verificação de existência'  `'x' in globals()`, `'x' not in globals()`, `globals().get('x')`;
+       'atribuição dinâmica'        `globals()['x'] = …`, `globals().update(…)` (cria a variável, não verifica);
+       'leitura por nome'           `globals()['x']` sem atribuição (lê a variável pelo nome);
+       'outro uso'                  o resto (ex.: `print(dir(obj))`, laço sobre `globals()`);
+  B. lado a lado por papel × mês: cada uso da introspecção e o `try/except NameError`;
+  C. os formatos mais comuns da linha que falhou em cada uso que não é verificação, com os textos entre aspas trocados
+     por '…' (para ver o que a regra deixou de fora).
 
 Lê o parquet cru com o pyarrow (não usa o pipeline). Não grava nada. Imprime só contagens, nomes de papel e meses.
 Uso, da raiz, na máquina da base:
@@ -25,7 +30,25 @@ import pyarrow.parquet as pq
 INTROSPECCAO = ("globals", "locals", "vars", "dir")
 RE_PROIBIDA = re.compile(r"Forbidden function evaluation: '(\w+)'")
 LINHA_FALHA = re.compile(r"failed at line '(.*?)' due to", re.S)
-VERIFICA = re.compile(r"\bin\s+(?:globals|locals|vars)\s*\(\s*\)|(?:globals|locals|vars)\s*\(\s*\)\s*(?:\.get\s*\(|\[)")
+INTRO = r"(?:globals|locals|vars)\s*\(\s*\)"
+VERIFICA = re.compile(rf"\bin\s+{INTRO}|{INTRO}\s*\.get\s*\(")
+ATRIBUI = re.compile(rf"{INTRO}\s*\[[^\]]*\]\s*=(?!=)|{INTRO}\s*\.update\s*\(")
+LEITURA = re.compile(rf"{INTRO}\s*\[")
+
+
+def uso_da_linha(linha):
+    """O uso da introspecção na linha que falhou (ver o docstring do módulo)."""
+    if VERIFICA.search(linha):
+        return "verificação de existência"
+    if ATRIBUI.search(linha):
+        return "atribuição dinâmica"
+    if LEITURA.search(linha):
+        return "leitura por nome"
+    return "outro uso"
+
+
+def mascarar(linha):
+    return re.sub(r"'[^']*'|\"[^\"]*\"", "'…'", " ".join(linha.split()))[:110]
 TRY_NAMEERROR = re.compile(r"except\s+\(?[^)\n:]*\bNameError\b")
 
 
@@ -36,7 +59,7 @@ def classificar(msg):
     linha = linha.group(1) if linha else ""
     f = RE_PROIBIDA.search(msg)
     if f and f.group(1) in INTROSPECCAO:
-        return "introspecção", f.group(1), ("verificação de existência" if VERIFICA.search(linha) else "outro uso")
+        return "introspecção", f.group(1), uso_da_linha(linha)
     if "is not defined" in msg and TRY_NAMEERROR.search(linha):
         return "try/except NameError", None, None
     return None
@@ -50,14 +73,18 @@ def medir(linhas):
             continue
         c = classificar(r.get("error_message"))
         if c:
-            regs.append({"papel": r["papel"], "mes": r["mes_execucao"], "erro": c[0], "funcao": c[1], "uso": c[2]})
-    R = pd.DataFrame(regs, columns=["papel", "mes", "erro", "funcao", "uso"])
+            m = LINHA_FALHA.search(str(r.get("error_message") or ""))
+            regs.append({"papel": r["papel"], "mes": r["mes_execucao"], "erro": c[0], "funcao": c[1], "uso": c[2],
+                         "forma": mascarar(m.group(1)) if m and c[0] == "introspecção" else None})
+    R = pd.DataFrame(regs, columns=["papel", "mes", "erro", "funcao", "uso", "forma"])
     I = R[R.erro.eq("introspecção")]
     A = I.groupby(["papel", "mes", "funcao", "uso"]).size().rename("erros").reset_index()
     R["coluna"] = R.erro.where(R.erro.ne("introspecção"), "introspecção · " + R.uso.fillna(""))
     B = R.pivot_table(index=["papel", "mes"], columns="coluna", values="erro", aggfunc="size", fill_value=0).reset_index()
     B.columns.name = None
-    return {"A": A, "B": B}
+    C = (I[I.uso.ne("verificação de existência")].groupby(["uso", "forma"]).size().rename("erros").reset_index()
+         .sort_values(["uso", "erros"], ascending=[True, False]).groupby("uso").head(10))
+    return {"A": A, "B": B, "C": C}
 
 
 def main(argv=None):
@@ -72,8 +99,10 @@ def main(argv=None):
     pd.set_option("display.width", 200)
     print("A · erros de introspecção: papel × mês × função × uso da linha que falhou")
     print(T["A"].to_string(index=False) if len(T["A"]) else "  nenhum")
-    print("\nB · lado a lado por papel × mês (introspecção como verificação, em outro uso, e try/except NameError)")
+    print("\nB · lado a lado por papel × mês (cada uso da introspecção e o try/except NameError)")
     print(T["B"].to_string(index=False) if len(T["B"]) else "  nenhum")
+    print("\nC · os formatos mais comuns da linha que falhou, nos usos que não são verificação (textos entre aspas → '…')")
+    print(T["C"].to_string(index=False) if len(T["C"]) else "  nenhum")
     return 0
 
 
