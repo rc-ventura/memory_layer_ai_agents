@@ -8,7 +8,7 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 ---
 
-## 13/10/2026
+## 13/10/2026 - 14/10/2026
 
 **Tipo:** achado — **Sub-atividade:** 2.2 / 2.5 — **Canal:** pessoal
 
@@ -30,7 +30,7 @@ Aplicado como Ajuste 17 (13/10): nova unidade `U_verificacao_try_nameerror` (5.7
 
 **Tags:** base-3, sinal-de-harness, try-except-nameerror, interpretererror, sandbox, nome-inventado, estado-perdido, pendentes, ajuste-17, contestacaocivel, system-prompt, sub-2.2, sub-2.5
 
-## 16/10/2026
+## 15/10/2026 - 16/10/2026
 
 **Tipo:** reunião — **Sub-atividade:** 1.5 / 2.6 — **Canal:** formal-tutor
 
