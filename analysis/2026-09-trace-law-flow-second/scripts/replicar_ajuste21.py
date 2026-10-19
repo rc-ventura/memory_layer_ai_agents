@@ -31,6 +31,8 @@ for _pasta in (".claude", ".github", ".copilot"):   # as skills do kit: Claude C
 from conferir_versao import assinatura  # noqa: E402
 
 # o hash (conferir_versao.assinatura) de cada arquivo da base 1 antes do Ajuste 21 (commit 23461e0..ff6ea58)
+# (hashes do kit 0.8.0; desde o 0.8.1 a assinatura ignora BOM e espaços no fim — este script ficou obsoleto em 19/10: a base 2
+# foi realinhada copiando o pipeline da base 1, ver o livro-razão, Ajuste 21)
 ANTES = {"base_pipeline.py": "45d3e4784e049b3d", "paleta.py": "626d6cf1844058e4", "genealogia_sankey.py": "6b66cdce1d72b8bd"}
 CAMADA_DA_BASE = {"TRACE", "BASE_ID"}
 
