@@ -24,7 +24,10 @@ AQUI = Path(__file__).resolve().parent
 RAIZ = AQUI.parents[2]
 BASE1 = RAIZ / "analysis" / "2026-09-trace-law-flow" / "pipeline"
 BASE2 = AQUI.parent / "pipeline"
-sys.path.insert(0, str(RAIZ / ".claude" / "skills" / "mineracao-base" / "scripts"))
+for _pasta in (".claude", ".github", ".copilot"):   # as skills do kit: Claude Code ou Copilot (.github/skills)
+    if (RAIZ / _pasta / "skills" / "mineracao-base" / "scripts" / "conferir_versao.py").exists():
+        sys.path.insert(0, str(RAIZ / _pasta / "skills" / "mineracao-base" / "scripts"))
+        break
 from conferir_versao import assinatura  # noqa: E402
 
 # o hash (conferir_versao.assinatura) de cada arquivo da base 1 antes do Ajuste 21 (commit 23461e0..ff6ea58)
