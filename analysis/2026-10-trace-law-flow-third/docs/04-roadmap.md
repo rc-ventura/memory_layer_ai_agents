@@ -182,7 +182,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 | 5.1 (#44, **feito**: Ajuste 19) | **Localizador da memória:** o [esquema](../../registros/esquema-memoria.json) (v0.1) pedia `idx` em `location.casos`; a base 3 não tem `idx`. Proposta: aceitar `step_ref` + `fonte_id` + `rodada_id`; esquema v0.2, entrada no livro-razão, `validar_memoria.py` aceitando os dois | sem isso o arquivo final não valida | **aprovado em 16/10** (o arquivo sai inteiro: só hashes) |
 | 5.2 (#17) | **Kit mínimo para a base 3:** o `conferir_versao` reconhece o código da third; a preparação da `mineracao-base` chama `executar.py` e lê a capacidade (a skill de falhas silenciosas para e explica); um `audit_recompute` da base 3, só biblioteca padrão e `leitor_trace`, que recalcula a parte genérica (recorrência, sub-unidades, antes, depois, estabilidade, população) direto do parquet | o método exige a auditoria independente em paralelo: "re-rodar não é verificar" | não (método de 05/10) |
 | 5.3 (#28) | **Primeiro registro:** o monitoramento do `try/except NameError` em [`monitoramento.json`](../../registros/monitoramento.json): linha de base (base 3: 5.764, 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura depois de corrigido o prompt, ou num papel novo), ação | destino já decidido (sinal de harness); o `monitorar.py` lê o arquivo no passo 0 de toda mineração | se o gatilho entra também em % (o denominador já existe) |
-| 5.4 (#12) | **Piloto** `/mineracao-candidata U_sandbox` na máquina 2: parte genérica (o perfil já existe na rodada), auditoria em paralelo, encontro por script; pelo funil, parte específica **determinística**: contar os nomes bloqueados por papel e mês a partir da mensagem | gera o inventário (o `correction_guidance`) e o escopo (papel ou global, com o M2) | aprovar a proposta do notebook específico (procedimento `16`) |
+| 5.4 (#12, fechado 19/10) | **Piloto** `/mineracao-candidata U_sandbox` na máquina 2: parte genérica (o perfil já existe na rodada), auditoria em paralelo, encontro por script; pelo funil, parte específica **determinística**: contar os nomes bloqueados por papel e mês a partir da mensagem | gera o inventário (o `correction_guidance`) e o escopo (papel ou global, com o M2) | aprovar a proposta do notebook específico (procedimento `16`) |
 | 5.5 (#12) | **Saída:** `memoria_U_sandbox_base3.json` validado, relatório e dossiê de decisão; da máquina 2 saem só contagens e nomes de função e módulo | o destino "memória" vira arquivo, com a origem de cada campo (`checado` / `hipótese`) | **sim:** aprovar a memória (o gate do pesquisador) |
 | 5.6 (#39) | **Linha de base da economia:** o registro versionado em `registros/` com o teto por papel e unidade, os passos por papel e os hashes — sai da tabela nova da Etapa 2 | o "antes" do teste de compensação (decidido em 15/10) | o formato do registro |
 | 5.7 (#7) | **Próximas candidatas**, pela ordem de tokens: retorno-string (207 mi; o #35 já aponta a ferramenta e o papel), argumento nomeado, `next()` sobre gerador; as que precisam do contrato da ferramenta esperam o pedido C | — | — |
@@ -253,22 +253,6 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   etapa da base 3 em si); o `analysis/README.md`, o intake por formato; o `kit.md`, o que o kit pode e não pode na base 3. Regra do
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
-- [ ] **#12** **Piloto de mineração de ponta a ponta: inventário do sandbox** (`U_sandbox`: 3.653 erros, 16 papéis). A lição
-    sai da própria mensagem de erro, então fecha só com o parquet. O localizador do arquivo final está decidido (#44,
-    esquema 0.2). A parte específica é um script (Ajuste 20, 16/10). **Antes:** o kit mínimo (#17), e a base 3 precisa de um
-    procedimento de mineração com a tabela do funil (o painel e a skill leem `docs/*procedimento-mineracao-candidatas*.md` da
-    própria análise, e a base 3 ainda não tem). **Feito em parte (16–19/10):** procedimento `06` e racionais `07`; o
-    `minerar.py` rodou os 9 passos na base 3 (cobertura 99,86%, encontro 61/61, memória aprovada no esquema 0.2); script
-    aprovado e em `pipeline/especificas/`; a lição dividida por papel e causa (decisão de 19/10). O Ajuste 21 (#46) está
-    feito; os destinos de B, C e D estão decididos (19/10: C memória global, B memória do `OBFCivel`, D memória por papel).
-    A divisão está no script (emenda 4) e o catálogo das memórias fechadas existe (Ajuste 22, `registros/memorias.json`).
-    Parte E investigada (dossiê §2c); Ajuste 23 implementado. **Rodada `aedb9b5db70d6c92` (19/10): os 9 passos fecham, 75
-    medidas iguais, 14 memórias no esquema 0.3, catálogo com 14 fechadas (dossiê §2d). Falta só registrar as 14 no
-    `registros/memorias.json`.**
-    **Falta (antes):** a investigação da parte E (523 erros, `contar_proibidas_linha.py` na base 3 e `contar_proibidas_prompt_base2.py`
-    na base 2: vem do prompt do `ContestacaoCivel`?), a revalidação do script, a rodada nova e o `minerar.py` na máquina
-    da base, e registrar C, B e D no catálogo →
-    [dossiê](../propostas/U_sandbox/dossie_base3.md), §2c.
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do
@@ -320,6 +304,13 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
+- [x] **#12** **Piloto de mineração de ponta a ponta: inventário do sandbox** — fechado em 19/10. Na base 3, rodada
+    `aedb9b5db70d6c92` (código com os Ajustes 21–23 e as emendas 1–6 do racional): os 9 passos do `minerar.py` fecham —
+    1.401 erros, cobertura 99,6%, 75 medidas iguais à auditoria independente, **14 memórias** no esquema 0.3 (C global
+    656 erros, E global 488, B por papel 2, D por papel 10), todas registradas no catálogo
+    [`registros/memorias.json`](../../registros/memorias.json) (Ajuste 22). No caminho: a introspecção e o `eval` da
+    verificação de existência saíram para o harness (Ajustes 21 e 23), o script foi validado 6 vezes (laudo em
+    `propostas/U_sandbox/validacao.md`) → [dossiê](../propostas/U_sandbox/dossie_base3.md) §2d; `decisoes.md`, 19/10.
 - [x] **#47** **Comparação base 1 × modo observado: 82 erros em "unidade diferente"** (81 de `U_contrato_dict` e 1 de
   `U_tipo_retorno` caem em `X_causa_nao_identificada` no modo observado). O `03-procedimento-validacao.md` registra 83
   pendentes e 0 em unidade errada; o resultado atual (já antes do Ajuste 21, conferido em 19/10 com o código de antes) é 82

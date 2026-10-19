@@ -71,7 +71,7 @@ todas as candidatas. O segundo é o mesmo comando da base real.
 
 | Lição | Parte específica | Estágio | Desde | Frequência | Confiança | Situação | Decisão |
 |---|---|---|---|---|---|---|---|
-| `U_sandbox` | `script:mineracao_U_sandbox` | 3 · script | 16/10/2026 (racional: `9640b13`, emendas `aa99b8f`, `fd93e93`) | — (o comando calcula) | cobertura 99,86% (base 3) | script aprovado (19/10) | dividir em partes: em aberto (dossiê) |
+| `U_sandbox` | `script:mineracao_U_sandbox` | 3 · script | 16/10/2026 (racional: `9640b13`, emendas `aa99b8f`, `fd93e93`) | — (o comando calcula) | cobertura 99,6% (base 3, rodada `aedb9b5d`) | script aprovado (19/10; emendas 4–6) | fechado: 14 memórias por parte no catálogo (`registros/memorias.json`) |
 | `U_tipo_retorno` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | espera o contrato da ferramenta (pedido C) | — |
 | `U_arg_nomeado` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | próxima candidata a script | — |
 | `U_campo_inexistente` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | espera o contrato da ferramenta (pedido C) | — |
