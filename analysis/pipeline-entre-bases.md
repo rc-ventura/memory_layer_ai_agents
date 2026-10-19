@@ -937,8 +937,11 @@ do Ajuste 17 (95 em julho, 5.667 em agosto). Hipótese: a mesma instrução do p
   `dir` que o teste contava e a regra não, a confirmar); o mecanismo novo nas tabelas de mecanismos (21 → 22) e de
   cobertura (7 → 8); as linhas das duas unidades nas triagens e consolidações; 40 linhas do "que vem depois" (a unidade do
   erro seguinte). O veredito do script é "não fecha" porque ele exige números iguais; aqui a mudança é a pedida.
-- **Replicar no ambiente das bases:** (1) copiar os arquivos do ajuste; (2) base 2: `replicar_ajuste21.py --aplicar` e o
-  notebook da esteira; (3) base 3: `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes
+- **Replicar no ambiente das bases:** (1) copiar os arquivos do ajuste; (2) base 2: o `replicar_ajuste21.py` recusou
+  (19/10) — o pipeline da base 2 na máquina dela não era a cópia da base 1 (tinha partes da carga da base 3, já antes deste
+  ajuste). Decisão do Rafael: realinhar — copiar os `.py` e `.ipynb` da base 1 para a base 2, ajustar só TRACE e BASE_ID,
+  conferir com o `conferir_versao.py` e rodar o notebook da esteira; a cópia já traz o Ajuste 21, e o script deixa de ser
+  necessário; (3) base 3: `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes
   e3ebc8274dcf108c --depois <nova>` e `minerar.py U_sandbox --rodada <nova>`.
 
 ## 4. O que os ajustes ensinam sobre o método
