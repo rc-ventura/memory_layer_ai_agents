@@ -121,6 +121,9 @@ gravados pela mineração ficam na máquina da base, em `pipeline/resultados/min
   `user_context = globals().get('…', '…')` — lê a variável com valor padrão. O prompt desse papel não fala em verificar
   variáveis: **a verificação é espontânea** (hábito do agente), não instruída. Na base 3 há ≈ 9 casos assim em outros
   papéis; a parte F do `contar_introspeccao_prompt_base2.py` conta, na base 2, se algum outro papel tem a instrução.
+- **Base 2, parte F (19/10, foto `IMG_5899`):** em todos os papéis, só o ContestacaoCivel tem a instrução no prompt (224
+  de 224 execuções) e só ele verifica (133 no primeiro passo, 134 em algum passo); nenhum outro papel tem a instrução nem
+  verifica. Logo, as ≈ 9 verificações de outros papéis na base 3 são espontâneas, como a do `ConversationAgent` na base 1.
 - Consequência para o Ajuste 21: uma regra só pela linha junta a verificação instruída (harness) com a espontânea
   (lição do sandbox).
 
