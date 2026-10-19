@@ -256,6 +256,45 @@ e `U_sandbox.E` (global, destino em aberto). As fechadas (C, B, D) entram no cat
 a E fica fora até a investigação acima. Ensaio na base 1: 4 memórias, 3 no catálogo. Na base 3: falta a rodada nova
 (o esquema 0.3 entra no hash do código) e a revalidação.
 
+## 2d · O fechamento na base 3: rodada `aedb9b5db70d6c92` (19/10, fotos `IMG_5929`–`IMG_5936`)
+
+Código com os Ajustes 21–23 e as emendas 4–6 (a rodada anterior, `85706f1e`, era do código de antes). O primeiro
+`minerar.py` parou no passo 7 com **35 erros só na auditoria** (`funcao_proibida`): a auditoria da máquina da base ainda era
+a de antes da emenda 5; com a auditoria nova, fechou.
+
+| Passo | Resultado |
+|---|---|
+| 3 · parte genérica | **1.401 erros** · 1.259 execuções · 10 meses · 16 papéis (eram 1.436: o Ajuste 23 tirou **35** `eval`, que caiu de 49 para 14) |
+| 4 · parte específica | script aprovado · 1.401 erros lidos · 43 nomes |
+| 5 · confiança | cobertura **99,6%** (limiar 95%) |
+| 6 · destino | 6 listas autorizadas; 2 erros repetem o nome na mesma execução |
+| 7 · auditoria e encontro | **75 medidas iguais** |
+| 8 · arquivo final | **14 memórias** aprovadas no esquema 0.3 |
+| 9 · saída | 35 arquivos no manifesto · catálogo: **14 fechadas, 0 fora** · varredura limpa |
+
+| Memória | Erros | Execuções | Papéis | Meses |
+|---|---:|---:|---:|---:|
+| `U_sandbox.C` (global) | 656 | 554 | 10 | 10 |
+| `U_sandbox.E` (global) | 488 | 461 | 13 | 9 |
+| `U_sandbox.B.OBFCivel` | 211 | 210 | 1 | 5 |
+| `U_sandbox.B.RespostaBacen` | 1 | 1 | 1 | 1 |
+| `U_sandbox.D.CalculoTrabalhista` | 14 | 13 | 1 | 6 |
+| `U_sandbox.D.OBFCivel` | 5 | 5 | 1 | 3 |
+| `U_sandbox.D.RespostaBacen` | 5 | 5 | 1 | 4 |
+| `U_sandbox.D.JoogleAnalytics` | 4 | 4 | 1 | 3 |
+| `U_sandbox.D.CalculoCivel` | 3 | 3 | 1 | 1 |
+| `U_sandbox.D.Consultivo` | 3 | 3 | 1 | 3 |
+| `U_sandbox.D.ContestacaoCivel` | 3 | 3 | 1 | 1 |
+| `U_sandbox.D.AgenteTestemunhas` | 1 | 1 | 1 | 1 |
+| `U_sandbox.D.OficiosResposta` | 1 | 1 | 1 | 1 |
+| `U_sandbox.D.RespostaOficios` | 1 | 1 | 1 | 1 |
+
+Guidances (do resumo; truncadas na foto): C "Importe antes de usar: json, pd, re, datetime."; B "As ferramentas já estão no
+escopo como funções: chame-as direto, sem import. Não importe: …"; D, por papel, "Não importe: …; imports autorizados
+neste papel: …"; E "Não chame: globals, repr, eval, locals, dir, exec, `__import__`, bytes, open, hash, vars; Não acesse: …"
++ o complemento fixo. **Observação:** 6 das 14 memórias têm 1 a 3 erros (B.RespostaBacen e D em 5 papéis): o catálogo
+as registra como estão; a régua de memória rara (`monitoramento.json`) é o próximo filtro, se o Rafael quiser.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
