@@ -137,7 +137,7 @@ abaixo, a ordem é **por erros, e no empate a alfabética**. Nenhum texto livre:
 | `scope` | `role: null` em C e E; `role: <papel>` em B e D; `tool: null` |
 | `location` | os erros da parte; em C e E, o primeiro de cada papel na ordem (papel, mês, `step_ref`), até 10; em B e D (um papel só), os 10 primeiros na ordem (mês, `step_ref`) |
 | `evidence` | o primeiro caso (papel, mês, `step_ref`) de cada um dos 3 nomes com mais erros na parte |
-| `description` | "<n> erros em <k> papel(éis), parte <P> do inventário do sandbox (<rótulo>): <nome> <erros>, …" |
+| `description` | "<n> erros em <k> papel(éis), parte <P> do inventário do sandbox (<rótulo>): <nome> <erros>, …." (com ponto final, como os moldes da `correction_guidance`; revalidação 5) |
 | `correction_guidance` | C: "Importe antes de usar: <nomes>." · B: "As ferramentas já estão no escopo como funções: chame-as direto, sem import. Não importe: <nomes>." (bloqueado e ausente juntos: uma ferramenta não se importa, exista ou não o módulo) · D: "Não importe: <bloqueados>; Não existe no ambiente: <ausentes>; imports autorizados neste papel: <lista>." (a lista do papel no mês mais recente em que aparece; empate entre listas do mesmo mês: a com mais erros, e então a alfabética) · E: "Não chame: <funções>; Não acesse: <atributos>." — cada pedaço só se tiver nome |
 | `occurrences` | erros, execuções e meses da parte; `ocorrencias` = erros (a ocorrência condicional é da unidade inteira, no perfil da rodada) |
 | `status` | `derived-and-checked` se a cobertura passa e o encontro (com as partes) fecha; senão `parcial` |
