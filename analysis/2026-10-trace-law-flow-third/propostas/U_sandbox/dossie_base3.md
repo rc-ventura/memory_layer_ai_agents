@@ -150,6 +150,23 @@ A introspecção que verifica a variável e guarda a criação dela por uma cham
 `U_verificacao_existencia` (a antiga `U_verificacao_try_nameerror`), destino harness. Esperado na base 3: ≈ 2.218 erros
 mudam de unidade; o resíduo de 157 do ContestacaoCivel fica no sandbox (aceito). → livro-razão, Ajuste 21; `b3 #46`.
 
+## 2b · Depois do Ajuste 21: a mineração na rodada `observada_85706f1e94f88f59` (19/10, fotos `IMG_5905`–`IMG_5907`)
+
+9 passos fechados: **1.436 erros · 1.291 execuções · 10 meses · 16 papéis · 43 nomes**; cobertura **99,7%**; encontro **61
+medidas iguais**; memória aprovada no esquema 0.2; 2 erros repetem o nome na mesma execução; 6 listas de imports autorizados.
+
+| Parte | Nomes (erros) | Erros |
+|---|---|---:|
+| **C · módulo usado sem import** | `json` 415 (10 papéis, 10 meses), `pd` 233 (2 papéis), `re` 5, `datetime` 3 | 656 |
+| **E · funções e atributos proibidos** | `__name__` 182, `globals` 142 (o resíduo da regra (b)), `repr` 98, `eval` 49, `locals` 14, `dir` 9, `exec` 8, `__import__` 5, `bytes` 5, `open` 5, `hash` 2, `vars` 1, `__class__` 1, `__doc__` 1, `__len__` 1 | 523 |
+| **B · ferramenta importada como módulo** | `get_document_text` 167, `python_interpreter` 35, `tools` 4, `tool_usage` 2, `tool_functions` 1, `mcp` 1, `mcp_client.tools` 1, `smolagents` 1 | 212 |
+| **D · import fora da lista autorizada** | `ast` 8, `copy` 7, `typing` 6, `tabulate` 4, `calendar` 2, `numbers` 2, `textwrap` 2, e 9 nomes com 1 erro | 40 |
+| sem nome | — | 5 |
+
+A parte "funções proibidas" do dossiê de 16/10 (antes junto da D) é, depois do ajuste, a maior parte nova: **E**, 523 erros,
+ainda concentrada no ContestacaoCivel (`__name__` 172 de 182, `eval` 46 de 49, `repr` 54 de 98, e o resíduo de `globals`).
+Se ela vem também do prompt desse papel é pergunta aberta — o Ajuste 21 só cobriu a verificação de existência.
+
 ### B · Uma sub-lição própria: as ferramentas já estão no escopo
 
 O `OBFCivel` tenta `import get_document_text` / `from tools import …` em vez de chamar a ferramenta, que já está disponível
