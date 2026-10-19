@@ -253,6 +253,12 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   etapa da base 3 em si); o `analysis/README.md`, o intake por formato; o `kit.md`, o que o kit pode e não pode na base 3. Regra do
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
+- [ ] **#48** **As memórias pequenas do sandbox: decidir a régua de "memória rara" (pendente, 19/10).** Das 14 memórias
+  fechadas do `U_sandbox`, 6 têm de 1 a 3 erros (B.RespostaBacen 1; D.AgenteTestemunhas 1, D.OficiosResposta 1,
+  D.RespostaOficios 1, D.CalculoCivel 3, D.Consultivo 3, D.ontestacaoCivel 3 — e D.JoogleAnalytics 4, D.OBFCivel 5 e
+  D.RespostaBacen 5 ficam logo acima). Estão no catálogo como estão. **Decidir:** aplicar a régua do `monitoramento.json`
+  (pelo menos 3 execuções em 2 meses) para separar o que entra na POC do que só fica monitorado, ou deixá-las todas. Não
+  muda número da rodada; muda quais memórias o experimento injeta (`b3 #39`, o teste de compensação).
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do
