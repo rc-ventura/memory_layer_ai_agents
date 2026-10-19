@@ -61,6 +61,35 @@ O resto (as outras combinações pequenas e os 5 sem nome) fecha os 3.653.
 - **Consequência para o destino:** uma memória "não chame `globals`" brigaria com a instrução do próprio prompt. O conserto
   é no prompt (harness), como no `try/except`, e não memória.
 
+### A · Resultado dos testes (19/10, máquina da base): a hipótese se confirma
+
+**Base 2** (`contar_introspeccao_prompt_base2.py --trace <base 2>`), ContestacaoCivel, primeiro passo de cada execução:
+
+| Versão do trecho do prompt | Diz como verificar? | Como o primeiro passo verificou | Execuções | Com erro |
+|---|---|---|---:|---:|
+| `4b8c6d76ff` (jun–ago): "VERIFIQUE se a variável… PULE a chamada" | não | com `globals`/`locals`/`vars` | 36 | 35 |
+| `4b8c6d76ff` | não | não verificou | 91 | 1 |
+| `2802ad7768` (só ago): a mesma instrução + "não use `globals()`/`locals()`; use `try/except NameError`" | sim | com `try/except NameError` | 97 | 97 |
+
+Os 36 erros de introspecção da base 2 são todos verificação de existência na linha que falhou. Com o prompt antigo, 28% verificaram (todos com introspecção, barrada) e 72% não verificaram (sem erro); com o novo, 100% verificaram como ensinado e 100% falharam. Os 9 erros de `globals` de agosto vêm das 52 execuções de agosto que ainda tinham o prompt antigo.
+
+**Base 3** (`contar_introspeccao_linha.py --fonte <parquet v2>`), a linha que falhou, ContestacaoCivel:
+
+| Mês | Introspecção como verificação de existência | Introspecção em "outro uso" | `try/except NameError` |
+|---|---:|---:|---:|
+| jun/26 | 3 | 0 | 0 |
+| jul/26 | 1.527 | 74 | 95 |
+| ago/26 | 709 | 62 | 5.667 |
+
+Nos outros papéis, 9 verificações soltas. Nenhum erro de atribuição dinâmica (`globals()['x'] = …`) nem de leitura por nome.
+Os formatos mais comuns de "outro uso" são **verificação por função auxiliar** que o agente escreveu e que chama
+`globals()` por dentro: `if not has_var('…'): x = ferramenta(...)`, `x = ensure('…', lambda: ferramenta(...))`,
+`if not exists('…')`, `_has('…')`, `_is_filled('…')`, `is_defined('…')`; e `globals_dict = globals()` (4).
+
+**Conclusão:** a instrução "verifique se a variável existe" do prompt do ContestacaoCivel causa os dois sintomas: introspecção
+(prompt antigo, sem dizer como) e `try/except NameError` (prompt novo, que manda esse jeito). O sandbox barra os dois.
+É um sinal de harness com dois sintomas, não uma lição de memória.
+
 ### B · Uma sub-lição própria: as ferramentas já estão no escopo
 
 O `OBFCivel` tenta `import get_document_text` / `from tools import …` em vez de chamar a ferramenta, que já está disponível
