@@ -211,6 +211,40 @@ São 6 listas de imports autorizados. Ex.: `pandas`/`numpy`/`dateutil` só para 
 `Consultivo`/`OBFCivel` sem `pandas` nem `numpy`; `CalculoCivel` com `openpyxl` e `os`. Uma memória de "imports autorizados"
 precisa ser por papel.
 
+### 2c · O resultado dos testes da parte E (19/10, fotos `IMG_5920`–`IMG_5928`)
+
+**Base 3** (`contar_proibidas_linha.py`): **523 erros** (o esperado), **450 no ContestacaoCivel** (jul–ago/26) e 73 nos
+outros papéis. O uso da linha que falhou, no ContestacaoCivel:
+
+| Nome | Erros | Uso dominante | Forma mais comum (mascarada) |
+|---|---:|---|---|
+| `__name__` | 172 | nome do tipo 157, num `print` (nome do tipo da exceção 10) | `print('…', type(provas_brutas_json).__name__)` |
+| `globals` (resíduo da regra (b)) | 137 | verificação de existência 124, função auxiliar 7 | `if '…' not in globals(): id_processo = '…'`; `missing = [v for v in required_vars if v not in globals()]` |
+| `repr` | 54 | depuração (`print`) 52 | `print('…', repr(peticao_json)[:5000])` |
+| `eval` | 46 | **função auxiliar 40** | `if not _exists('…'): peticao_json = get_peticao_inicial_from_pasta(...)` (também `defined('…')`, `exists('…')`) |
+| `locals` | 10 | verificação de existência 10 | `if '…' not in locals(): analogas_json = '…'` |
+| `dir` 9, `exec` 8, `__import__` 5, `bytes` 5, `hash` 2, `__class__` 1, `vars` 1 | 31 | — | `__import__('…').loads(peticao_json_str)` (o `json` por `__import__`) |
+
+Contexto no código (tabela D): o código do passo tem a verificação instruída (`except NameError` / `in globals()`) em
+**44 de 46** erros de `eval`, 117 de 137 de `globals`, 10 de 10 de `locals`; em 6 de 172 de `__name__` e **0 de 54** de
+`repr`. Nenhuma linha está dentro de um `except`. Nos outros papéis: `repr` 44 (depuração 43, ex.:
+`print(repr(docs_with_obligations[:500]))`), `__name__` 10, `globals` 5, `open` 5, `locals` 4, `eval` 3.
+
+**Base 2** (`contar_proibidas_prompt_base2.py`, trace completo): só **7 erros** da parte E (ContestacaoCivel `repr` 4,
+`__name__` 1, `globals` 1; CalculoTrabalhista `open` 1) — pouco para testar o prompt. **Nenhum prompt menciona** `__name__`,
+`type(`, `repr`, `eval` ou `exec(` (nome escrito no prompt: 0 em todos). Todos os prompts do ContestacaoCivel falam de
+falha (`secoes_com_falha`, 224 de 224); uma versão (`caaf94536d`, 20 execuções) traz a política de erros com
+`except Exception` e `traceback` — e 0 erros da parte E.
+
+**A leitura (hipótese até a decisão):** a parte E tem duas causas no ContestacaoCivel:
+1. **a verificação instruída feita por outro meio** — `eval` dentro de uma função auxiliar que verifica e guarda a criação
+   da variável por uma chamada (`if not _exists('x'): x = ferramenta(...)`, o mesmo comportamento do Ajuste 21, que só
+   olhou `globals`/`locals`/`vars`) e a verificação com valor padrão (`if 'x' not in globals(): x = '…'`, que a regra (b)
+   deixou no sandbox). O corpo da função auxiliar não foi visto (inferência, como no Ajuste 21);
+2. **a inspeção de depuração** — `print(type(x).__name__)` e `print(repr(x))` sobre o retorno das ferramentas,
+   espontânea (nenhum prompt pede; aparece também nos outros papéis) → memória: inspecionar com `print(type(x))` e
+   `print(str(x)[:n])`.
+
 ### 2c · A divisão no script (emenda 4, Ajuste 22, 19/10)
 
 O script passa a montar **uma memória por parte**: `U_sandbox.C` (global), `U_sandbox.B.<papel>`, `U_sandbox.D.<papel>`
