@@ -147,6 +147,12 @@ abaixo, a ordem é **por erros, e no empate a alfabética**. Nenhum texto livre:
 Estas regras foram escritas depois do ensaio na base 1 e da rodada `85706f1e` da base 3: são descritivas (não mudam
 população, regras do passo 4 nem limiar).
 
+**Emenda 5, de 19/10 (consequência do Ajuste 23, decidido pelo Rafael; descritiva, escrita depois dos testes da parte E
+na base 3):** a emenda 3 passa a valer também quando a função proibida é `eval` — a linha que falhou verifica um nome
+(por uma função escrita pelo agente que recebe o nome entre aspas e, na mesma linha, cria a variável) e o nome recebe o
+resultado de uma chamada que não é `globals`/`locals`/`vars`/`eval`. Esses erros vão para `U_verificacao_existencia`.
+O `eval(texto)` que converte texto fica na parte E. Regras do passo 4, partes e limiar não mudam.
+
 ## O que não mede
 
 - Se o agente se recuperou depois do erro (é o "depois" da parte genérica).

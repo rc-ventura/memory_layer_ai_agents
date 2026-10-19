@@ -501,6 +501,11 @@ def verificacao_try_nameerror(m):
 # ContestacaoCivel tem a instrução (224 de 224) e só ele verifica; base 3: 2.218 instruídas no ContestacaoCivel, 0 nos
 # outros papéis (dossiê do sandbox na base 3; pipeline-entre-bases.md, Ajuste 21).
 INTROSPECCAO_VERIFICA = ("globals", "locals", "vars")
+# Ajuste 23 (19/10/2026): a mesma verificação feita por uma função auxiliar com `eval` por dentro
+# (`if not _exists('x'): x = ferramenta(...)`; base 3: 40 de 46 `eval` do ContestacaoCivel, com a definição da função vista
+# no código do passo). A regra é a mesma: verifica um nome e guarda a criação dele por uma chamada; `eval(texto)` para
+# converter texto em objeto (os outros papéis) fica no inventário do sandbox (dossiê do sandbox na base 3, §2c).
+VERIFICA_E_CRIA = INTROSPECCAO_VERIFICA + ("eval",)
 _INTRO = r"(?:globals|locals|vars)\s*\(\s*\)"
 _NOMES_DIRETOS = (re.compile(rf"['\"](\w+)['\"]\s+(?:not\s+)?in\s+{_INTRO}"),
                   re.compile(rf"{_INTRO}\s*\.get\s*\(\s*['\"](\w+)['\"]"))
@@ -520,10 +525,10 @@ def verificacao_por_introspeccao(m, code=""):
     própria introspecção (no código do passo ou na linha que falhou)?"""
     f = re.search(r"Forbidden function evaluation: '(\w+)'", str(m))
     linha = _LINHA_QUE_FALHOU.search(str(m))
-    if not (f and f.group(1) in INTROSPECCAO_VERIFICA and linha):
+    if not (f and f.group(1) in VERIFICA_E_CRIA and linha):
         return False
     texto = f"{code or ''}\n{linha.group(1)}"
-    return any(re.search(rf"\b{re.escape(n)}\s*=\s*(?!(?:globals|locals|vars)\b)[A-Za-z_][\w.]*\s*\(", texto)
+    return any(re.search(rf"\b{re.escape(n)}\s*=\s*(?!(?:globals|locals|vars|eval)\b)[A-Za-z_][\w.]*\s*\(", texto)
                for n in nomes_verificados(linha.group(1)))
 
 
@@ -584,7 +589,7 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
     f = re.search(r"Forbidden function evaluation: '(\w+)'", m)
     if f and not hasattr(builtins, f.group(1)):
         return "nome_nao_definido"
-    if f and f.group(1) in INTROSPECCAO_VERIFICA and verifica_e_cria:   # Ajuste 21
+    if f and f.group(1) in VERIFICA_E_CRIA and verifica_e_cria:   # Ajustes 21 e 23
         return "verificacao_introspeccao"
     if f or "Import of" in m or "Import from" in m or "ModuleNotFound" in m or "Forbidden" in m:
         return "inventario_sandbox"
@@ -738,7 +743,7 @@ def _mecanismo_com_evidencia(r, carga, ctx, incoming, byref):
         return "verificacao_introspeccao", "observavel", "regra_por_mensagem_elegivel"
     linha_falha = _LINHA_QUE_FALHOU.search(m)
     if (preview == "inventario_sandbox" and linha_falha and nomes_verificados(linha_falha.group(1))
-            and re.search(r"Forbidden function evaluation: '(?:globals|locals|vars)'", m)):
+            and re.search(r"Forbidden function evaluation: '(?:globals|locals|vars|eval)'", m)):   # Ajustes 21 e 23
         if not full_code:
             return None, "pendente", "verificacao_requer_codigo_integral"
         sub = "verificacao_introspeccao" if verificacao_por_introspeccao(m, code) else "inventario_sandbox"

@@ -48,14 +48,14 @@ _INTRO = r"(?:globals|locals|vars)\s*\(\s*\)"
 def verifica_e_cria(msg, codigo):
     f = re.search(r"Forbidden function evaluation: '(\w+)'", msg)
     linha = _FALHOU.search(msg)
-    if not (f and f.group(1) in ("globals", "locals", "vars") and linha):
+    if not (f and f.group(1) in ("globals", "locals", "vars", "eval") and linha):   # eval: emenda 5 (Ajuste 23)
         return False
     linha = linha.group(1)
     nomes = set(re.findall(rf"['\"](\w+)['\"]\s+(?:not\s+)?in\s+{_INTRO}", linha))
     nomes |= set(re.findall(rf"{_INTRO}\s*\.get\s*\(\s*['\"](\w+)['\"]", linha))
     nomes |= {n for n in re.findall(r"\b\w+\s*\(\s*['\"](\w+)['\"]", linha) if re.search(rf"\b{re.escape(n)}\s*=(?!=)", linha)}
     texto = f"{codigo or ''}\n{linha}"
-    return any(re.search(rf"\b{re.escape(n)}\s*=\s*(?!(?:globals|locals|vars)\b)[A-Za-z_][\w.]*\s*\(", texto) for n in nomes)
+    return any(re.search(rf"\b{re.escape(n)}\s*=\s*(?!(?:globals|locals|vars|eval)\b)[A-Za-z_][\w.]*\s*\(", texto) for n in nomes)
 
 
 def populacao_sandbox(msg, codigo=""):

@@ -132,7 +132,7 @@
       "tipo": "sinal de harness",
       "decidido_em": "2026-10-19",
       "decisao": "sinal de harness com dois sintomas: o conserto é no prompt (tirar a instrução ou dar um jeito permitido de verificar); monitorar até os DOIS sintomas sumirem juntos — se só um sumir, o agrupamento do Ajuste 21 está errado",
-      "onde_decidido": "decisoes.md (19/10, Ajuste 21); pipeline-entre-bases.md, Ajustes 17 e 21; base 3, propostas/U_sandbox/dossie_base3.md",
+      "onde_decidido": "decisoes.md (19/10, Ajuste 21); pipeline-entre-bases.md, Ajustes 17 e 21; base 3, propostas/U_sandbox/dossie_base3.md; Ajuste 23 (eval por função auxiliar, 19/10)",
       "populacao": "erros_mecanismo.csv",
       "gerar": "o notebook da esteira (analise_trace_esteira_juridica.ipynb)",
       "filtro": [
@@ -145,14 +145,14 @@
         "execucoes": 1,
         "meses": 1,
         "sub": {
-          "introspecção": 1,
-          "try/except NameError": 0
+          "try/except NameError": 0,
+          "introspecção ou eval": 1
         }
       },
       "sub": [
         {
-          "nome": "introspecção",
-          "regex": "Forbidden function evaluation: '(?:globals|locals|vars)'",
+          "nome": "introspecção ou eval",
+          "regex": "Forbidden function evaluation: '(?:globals|locals|vars|eval)'",
           "campo_passo": "error"
         },
         {

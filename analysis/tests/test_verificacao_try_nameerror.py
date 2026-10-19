@@ -105,5 +105,25 @@ class TestAjuste21(unittest.TestCase):
         self.assertEqual(um(LEITURA_PADRAO, LEITURA_PADRAO).unidade, "U_sandbox")
 
 
+EVAL_AUX = proibida("if not _exists('peticao'): peticao = get_peticao(numero=n)", "eval")
+EVAL_TEXTO = proibida("docs = eval(texto)", "eval")
+
+
+class TestAjuste23(unittest.TestCase):
+    def test_eval_por_funcao_auxiliar(self):
+        for pipeline in (BP, RAW1):
+            v = pipeline.verificacao_por_introspeccao
+            self.assertTrue(v(EVAL_AUX))                     # verifica e cria por uma chamada: instruída
+            self.assertFalse(v(EVAL_TEXTO, "docs = eval(texto)"))   # converte texto: fica no sandbox
+            self.assertEqual(pipeline.submecanismo(EVAL_AUX, verifica_e_cria=True), "verificacao_introspeccao")
+            self.assertEqual(pipeline.submecanismo(EVAL_TEXTO, verifica_e_cria=False), "inventario_sandbox")
+
+    def test_observado(self):
+        def um(msg, code):
+            return BP.analisar_mecanismos_observaveis(state(janela(error_message=msg, error_code_action=code))).EU.iloc[0]
+        self.assertEqual(um(EVAL_AUX, "").unidade, "U_verificacao_existencia")
+        self.assertEqual(um(EVAL_TEXTO, "docs = eval(texto)").unidade, "U_sandbox")
+
+
 if __name__ == "__main__":
     unittest.main()

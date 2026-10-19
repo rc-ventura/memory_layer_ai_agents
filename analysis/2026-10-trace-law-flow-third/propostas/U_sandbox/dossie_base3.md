@@ -245,6 +245,10 @@ falha (`secoes_com_falha`, 224 de 224); uma versão (`caaf94536d`, 20 execuçõe
    espontânea (nenhum prompt pede; aparece também nos outros papéis) → memória: inspecionar com `print(type(x))` e
    `print(str(x)[:n])`.
 
+**Decisão do Rafael (19/10): Ajuste 23** — o `eval` da função auxiliar de verificação (o item 1 acima, só a parte do
+`eval`; ≈ 40 erros) vai para `U_verificacao_existencia`. A verificação com valor padrão (`if 'x' not in globals(): x = '…'`)
+segue no sandbox pela regra (b) do Ajuste 21. A confirmar na rodada nova da base 3.
+
 ### 2c · A divisão no script (emenda 4, Ajuste 22, 19/10)
 
 O script passa a montar **uma memória por parte**: `U_sandbox.C` (global), `U_sandbox.B.<papel>`, `U_sandbox.D.<papel>`

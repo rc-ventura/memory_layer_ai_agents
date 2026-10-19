@@ -134,6 +134,12 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `globals` 2.347 de 2.352 no `ContestacaoCivel`, `get_document_text` 167 de 167 no `OBFCivel`, `pd` 231 de 233 no
   `JoogleAnalytics`, contra `json` em 10 papéis e 10 meses. O racional ganha as partes e o script monta uma memória por parte
   (nova validação). O destino da parte do `globals` (harness) segue como hipótese → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, o Ajuste 23 (decisão do Rafael):** o `eval` usado numa função auxiliar que verifica se a variável existe e,
+  se não existe, a cria chamando uma ferramenta (`if not _exists('x'): x = ferramenta(...)`) sai de `U_sandbox` e entra em
+  `U_verificacao_existencia` (harness), pela mesma regra do Ajuste 21. O `eval(texto)` para converter texto em objeto
+  (os 3 dos outros papéis e 6 do ContestacaoCivel) fica no sandbox. Evidência: base 3, 40 de 46 `eval` do ContestacaoCivel
+  com a função auxiliar definida no código do passo; nenhum prompt menciona `eval` (base 2) →
+  [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2c; livro-razão, Ajuste 23.
 - **19/10, o catálogo das memórias fechadas** (decisão do Rafael): `analysis/registros/memorias.json`, uma entrada por
   memória com destino memória e status derived-and-checked (só conteúdo técnico e o hash do arquivo final, sem os
   casos); montado no passo 9 do `minerar.py` e registrado com `catalogar_memoria.py --registrar`. Uma lição pode ter

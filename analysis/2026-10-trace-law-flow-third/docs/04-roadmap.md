@@ -262,7 +262,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
     aprovado e em `pipeline/especificas/`; a lição dividida por papel e causa (decisão de 19/10). O Ajuste 21 (#46) está
     feito; os destinos de B, C e D estão decididos (19/10: C memória global, B memória do `OBFCivel`, D memória por papel).
     A divisão está no script (emenda 4) e o catálogo das memórias fechadas existe (Ajuste 22, `registros/memorias.json`).
-    **Falta:** a investigação da parte E (523 erros, `contar_proibidas_linha.py` na base 3 e `contar_proibidas_prompt_base2.py`
+    Parte E investigada (dossiê §2c); Ajuste 23 (o `eval` da verificação vai para o harness) implementado.
+    **Falta (antes):** a investigação da parte E (523 erros, `contar_proibidas_linha.py` na base 3 e `contar_proibidas_prompt_base2.py`
     na base 2: vem do prompt do `ContestacaoCivel`?), a revalidação do script, a rodada nova e o `minerar.py` na máquina
     da base, e registrar C, B e D no catálogo →
     [dossiê](../propostas/U_sandbox/dossie_base3.md), §2c.
