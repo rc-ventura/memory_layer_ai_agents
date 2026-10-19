@@ -257,7 +257,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
     sai da própria mensagem de erro, então fecha só com o parquet. O localizador do arquivo final está decidido (#44,
     esquema 0.2). A parte específica é um script (Ajuste 20, 16/10). **Antes:** o kit mínimo (#17), e a base 3 precisa de um
     procedimento de mineração com a tabela do funil (o painel e a skill leem `docs/*procedimento-mineracao-candidatas*.md` da
-    própria análise, e a base 3 ainda não tem).
+    própria análise, e a base 3 ainda não tem). **Feito em parte (16–19/10):** procedimento `06` e racionais `07`; o
+    `minerar.py` rodou os 9 passos na base 3 (cobertura 99,86%, encontro 61/61, memória aprovada no esquema 0.2); script
+    aprovado e em `pipeline/especificas/`; a lição dividida por papel e causa (decisão de 19/10). **Falta:** o Ajuste 21
+    (#46), o racional e o script por parte, a nova validação → [dossiê](../propostas/U_sandbox/dossie_base3.md).
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do
@@ -289,6 +292,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
   trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
 - [ ] **#45** **O que sobrou da auditoria dos gráficos (#36, #40) e não é desenho:** (a) **o asterisco do papel × unidade** marca "candidata dentro do papel" (destino), num gráfico de volume — tirar? (proposta de 16/10, a decidir); (b) **OBPCivel × OBFCivel** — papel real ou nome cortado na origem (como "ontestacaoCivel")? Se for corte, entra no mapa de exibição; (c) a genealogia tem "Protocolo do harness" 4.591 e `H_bloco_code` 4.592 — contar por família as arestas que chegam em `harness_bloco_code`; (d) a composição dos erros dos papéis pequenos de taxa alta (AnaliseProcessual 44%, AgenteProcuracoes 25,5%: unidade e pendentes); (e) quantas trajetórias terminam num passo com erro (`recovery_signal = NO_NEXT_ACTION`); (f) a amostra de ≈ 20 casos do campo inexistente na base 1, para as hipóteses da "resposta final alta" (a aprovar). (g) ajustes gerais de forma nos gráficos (o Rafael lista ao rever o relatório da rodada `96958e65`, 16/10). São contagens na máquina 2 ou decisões; nenhuma muda gráfico sem passar pelo Rafael.
+- [ ] **#46** **Ajuste 21 — a introspecção usada para verificar a variável vai para a unidade do `try/except`** (renomeada
+  `U_verificacao_existencia`, destino harness). Evidência: a instrução "verifique se a variável existe" do prompt do
+  ContestacaoCivel causa a introspecção barrada (prompt antigo, sem dizer como: 36 de 127 na base 2; 1.527 + 709 na base 3)
+  e o `try/except NameError` (prompt novo: 97 de 97 na base 2; 5.667 em ago na base 3). **Espera a aprovação do Rafael** →
+  [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
 
 ## Fora de escopo / adiado
 

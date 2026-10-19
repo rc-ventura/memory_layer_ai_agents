@@ -86,9 +86,41 @@ Os formatos mais comuns de "outro uso" são **verificação por função auxilia
 `globals()` por dentro: `if not has_var('…'): x = ferramenta(...)`, `x = ensure('…', lambda: ferramenta(...))`,
 `if not exists('…')`, `_has('…')`, `_is_filled('…')`, `is_defined('…')`; e `globals_dict = globals()` (4).
 
+**Como a função auxiliar falha (inferência, não vista):** o agente define `def has_var(nome): return nome in globals()` e
+depois chama `if not has_var('x'): x = ferramenta(...)`. Definir a função não executa nada; o `globals()` roda quando a
+função é chamada, e o sandbox o barra nesse momento — por isso a mensagem é "Forbidden function evaluation: 'globals'" e a
+linha que falhou é a da chamada, que não tem `globals()` escrito. Só a linha da chamada está nas fotos; a linha do `def`
+não foi vista. Para virar fato: contar, no código do passo com erro (`error_code_action`), as funções definidas com
+`globals()` dentro.
+
 **Conclusão:** a instrução "verifique se a variável existe" do prompt do ContestacaoCivel causa os dois sintomas: introspecção
 (prompt antigo, sem dizer como) e `try/except NameError` (prompt novo, que manda esse jeito). O sandbox barra os dois.
 É um sinal de harness com dois sintomas, não uma lição de memória.
+
+### A · A evidência, achado por achado
+
+| Achado | Fato ou inferência | Fonte | Comando que reproduz |
+|---|---|---|---|
+| O prompt antigo (jul/26) manda verificar sem dizer como; 1 de 3 execuções verifica com `globals()` e é barrada; as 2 que não verificam passam | fato (base 1, n = 3) | o trace da base 1, nesta máquina; trecho do prompt citado acima | `uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_introspeccao_prompt_base2.py --trace <trace da base 1>` (partes C e E) |
+| O prompt novo (ago/26) manda `try/except NameError` e proíbe `globals()`/`locals()` | fato (base 2, leitura de 3 casos) | relatório da base 3, §7.9 | — (leitura de casos, 13/10) |
+| Prompt antigo: 36 de 127 verificam, todos com introspecção, 35 com erro; 91 não verificam, 1 com erro. Prompt novo: 97 de 97 com `try/except`, 97 com erro | fato (base 2) | fotos `IMG_5892`–`IMG_5894` (pasta `introspeccaco`) e `IMG_5896`–`IMG_5897` (pasta `introspeccaco_2`), 19/10 | `contar_introspeccao_prompt_base2.py --trace <base 2>` (partes C, D, E) |
+| Os 36 erros de introspecção da base 2 são verificação de existência | fato (base 2) | as mesmas fotos, parte D | idem |
+| Base 3, ContestacaoCivel: verificação por introspecção 3 / 1.527 / 709 (jun/jul/ago) × `try/except` 0 / 95 / 5.667 | fato (base 3) | foto `IMG_5895` (pasta `introspeccaco`) e `IMG_5898` (pasta `introspeccaco_2`) | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>` (partes A, B) |
+| Os 136 de "outro uso" são, nos formatos mais comuns, verificação por função auxiliar | fato (o formato da linha); o `globals()` dentro da função é inferência | foto `IMG_5898`, parte C | idem (parte C) |
+| A introspecção do ContestacaoCivel concentra-se em jul–ago e é 73% da lição do sandbox | fato (base 3) | fotos `IMG_5874`–`IMG_5891` (pasta `U_sandbox_mineracao`): `inventario_papel.csv`, `inventario_mes.csv` | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/especificas/minerar.py U_sandbox --rodada observada_e3ebc8274dcf108c` |
+| A instrução causa os dois sintomas (sinal de harness com dois sintomas) | conclusão dos fatos acima | — | — |
+| Corrigir o prompt (ou dar um dicionário de estado) faz os dois sumirem juntos | **previsão, a verificar** | — | o monitoramento (`b3 #28`), depois do conserto |
+
+As fotos ficam no iCloud do Rafael (`Analista …/introspeccaco`, `introspeccaco_2`, `U_sandbox_mineracao`); os arquivos
+gravados pela mineração ficam na máquina da base, em `pipeline/resultados/mineracao/U_sandbox/`.
+
+### A · Decisão pendente: o Ajuste 21
+
+Proposta (não aplicada; espera o Rafael): a introspecção proibida usada para verificar a existência de uma variável —
+direta (`'x' in globals()`, `globals().get('x')`) ou por função auxiliar (a linha chama uma função com o nome de uma
+variável entre aspas e cria essa mesma variável) — sai de `U_sandbox` e entra na unidade do `try/except`, renomeada
+`U_verificacao_existencia` (destino harness). Efeito esperado na base 3: ≈ 2.250–2.380 erros mudam de unidade; o total de
+erros não muda. → `b3 #46`.
 
 ### B · Uma sub-lição própria: as ferramentas já estão no escopo
 
