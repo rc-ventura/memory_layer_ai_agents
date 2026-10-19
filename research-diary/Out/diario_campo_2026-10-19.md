@@ -12,39 +12,23 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Tipo:** achado — **Sub-atividade:** 2.2 / 2.5 — **Canal:** pessoal
 
-**Registro objetivo:** Fechei o piloto de mineração da primeira unidade de memória, o inventário do sandbox (`U_sandbox`, base 3). Com apoio de um agente (sem provider definido), o caminho foi: rodar a mineração de ponta a ponta com scripts determinísticos, comparar cada número com uma auditoria independente e investigar a origem dos erros antes de decidir o destino de cada parte. Resultado na rodada `aedb9b5db70d6c92`: 1.401 erros, cobertura de 99,6%, 75 medidas iguais à auditoria e 14 memórias no esquema 0.3 (2 globais e 12 por papel), todas registradas num catálogo novo, versionado.
+**Registro objetivo:** Fechamos o piloto de mineração da unidade do sandbox (base 3). O inventário tinha 3.653 erros de sandbox; ficaram 1.401 no sandbox, e a unidade virou 14 memórias, registradas num catálogo versionado. O que descobrimos:
 
-Os achados, em ordem:
-1. **O sandbox é um inventário com quatro causas diferentes**, não uma lição só: (C) módulo usado sem import, 656 erros; (B) ferramenta importada como se fosse biblioteca, 212, quase tudo num papel; (D) import fora da lista autorizada, 40, com uma lista diferente por papel; (E) funções e atributos proibidos, 488.
-2. **A mesma instrução do prompt do ContestacaoCivel ("verifique se a variável já existe") produz três sintomas**, conforme o que o agente tenta: `globals()` quando o prompt não diz como; `try/except NameError` quando o prompt diz como; e `eval` dentro de uma função auxiliar escrita pelo agente. O sandbox barra os três. Por isso o erro não é uma lição de memória: o conserto é no prompt (harness). Isso moveu 2.217 erros (Ajuste 21) e depois 35 (Ajuste 23) para a unidade da verificação de existência; o sandbox foi de 3.653 para 1.401 erros.
-3. **A parte E mistura duas causas.** Cerca de um terço é a mesma verificação, feita com `eval` ou com valor padrão. O resto é hábito do agente: inspecionar o retorno das ferramentas com `type(x).__name__` e `repr(x)`. Nenhum prompt pede isso, e outros papéis fazem o mesmo; é memória ("use `print(type(x))` e `print(str(x)[:n])`").
-4. **Contrafactual útil:** quando o ContestacaoCivel não verificou nada e escreveu direto, não teve erro. A instrução custa mais do que o erro que ela evita.
+1. **A unidade nasce do sintoma; a lição se define pela causa raiz e pelo conserto.** Achávamos que a unidade do sandbox era só "o agente chama comandos ou bibliotecas proibidos". Isso se confirmou, com adendos: a maior parte dos erros vinha do ContestacaoCivel, e o mesmo sintoma tinha causas diferentes. Dividir a unidade quando ela junta causas é um resultado normal (procedimento da mineração). Na hierarquia: família "Ambiente & sandbox" → assinatura "Função ou import bloqueado pelo sandbox" → unidade "Inventário do sandbox".
+2. **A maior parte dos erros virou sinal de harness (2.252 dos 3.653, cerca de 62%).** O prompt do ContestacaoCivel tem duas versões. A antiga só diz algo genérico, "verifique se a variável existe", sem dizer como; o agente decide sozinho e em geral usa `globals()`. A nova diz para usar `try/except` e não usar `globals()`. Resultado: três sintomas — `globals()`, `try/except` e `eval` dentro de uma função auxiliar escrita pelo agente. Antes, `globals` e `eval` estavam no sandbox e o `try/except` tinha unidade própria; juntamos os três na unidade da **verificação de existência** (a antiga unidade do `try/except`, renomeada). As duas formas, a genérica e a explícita, acabam bloqueadas pelo sandbox (no `try/except`, o erro de variável inexistente sai do alcance do `except`). Por isso o destino é harness: o conserto é no prompt ou no interpretador. Só a verificação saiu para outra unidade; o resto continua no sandbox, dividido em partes.
+3. **O resto é hábito do agente, e vira memória**, porque o prompt não pede nada disso: (C) esquecer o import de `json` ou `pd`, 656 erros; (B) importar uma ferramenta como se fosse biblioteca, 212, quase tudo no OBFCivel; (D) importar fora da lista autorizada, 40; (E) funções e atributos proibidos, 488, sobretudo depuração do tipo `type(x).__name__` e `repr(x)` sobre o retorno das ferramentas. Uma memória injetada poderia mitigar esses erros.
+4. **Memória global e memória por papel.** C e E valem para qualquer papel. B é por papel porque quase todo o erro está num papel só. D é por papel porque cada papel tem a sua lista de imports autorizados: são 6 listas diferentes em 16 papéis, e cada memória D leva a lista do seu papel. O catálogo (`analysis/registros/memorias.json`) registra as 14 memórias.
+5. **Observação:** as execuções do ContestacaoCivel que escrevem direto, sem verificar a variável, terminam sem esse erro.
+6. **Possível contorno:** com `globals` proibido no prompt, o agente pode estar validando a variável com `eval`, que o sandbox também bloqueia.
 
 **Reflexão:**
-- A unidade se define pela causa e pelo conserto, não pelo sintoma. Três sintomas com a mesma causa e o mesmo conserto são uma lição só; um grupo de sintomas com duas causas são duas lições. Foi a lição metodológica do dia.
-- Hipótese (não provada): o `eval` cresceu em agosto, quando o prompt passou a proibir `globals()` e `locals()`. Pode ser o agente contornando o caminho fechado. O corpo da função auxiliar não aparece nos dados, só a chamada, então o uso do `eval` por dentro dela é inferência; vale como no Ajuste 21. Na base 2 a parte E tem só 7 erros, então ela sustenta pouco a conclusão de que nenhum prompt pede essas funções.
-- A divisão em depuração × verificação saiu de regras sobre a linha que falhou. Não li os casos um a um.
-- O que mais protegeu o resultado: a auditoria independente. Quando a máquina da base rodou com uma versão antiga da auditoria, o encontro divergiu em exatamente 35 erros, que são o efeito do Ajuste 23. A divergência apontou a versão desatualizada. Outro sinal: a rodada saiu com o mesmo identificador de antes, o que mostra código antigo, porque o identificador é uma impressão digital do código.
-- O validador do script reprovou duas vezes. Em ambas, o script seguia regras de montagem que o racional não declarava. O racional funciona como contrato; o script não pode saber mais do que ele.
+- A observação 5 é consistente com o prompt induzir o erro, mas não prova: execuções que não verificam podem ser casos mais simples. A evidência mais forte é a troca de versão do prompt.
+- O contorno com `eval` é hipótese. O `eval` já aparecia em julho (15 erros), antes de o prompt proibir `globals`, e foi para 31 em agosto. O uso do `eval` dentro da função auxiliar é inferência: os dados mostram a chamada, não o corpo da função. A base 3 não tem o prompt; o prompt foi visto na base 2 e no de julho da base 1.
+- Só o `eval` que verifica a variável e a cria chamando uma ferramenta foi para o harness. O `eval(texto)`, que converte texto em objeto, continua como memória.
+- Pergunta aberta: umas 134 verificações com valor padrão (`if 'x' not in globals(): x = '…'`) continuam como memória, no grupo E, mas provavelmente têm a mesma causa do prompt.
+- O destino "memória" de C, B e D foi decidido sem ler os prompts desses papéis; só o grupo E foi testado contra prompts, e fracamente (na base 2 ele tem só 7 erros).
+- As 14 memórias foram construídas, não testadas. A redução dos erros só se mede no teste de compensação (`b3 #39`).
 
-**Decisão/próximo passo:** Registrada a pendência `b3 #48`: seis das 14 memórias têm de 1 a 3 erros. Decidir se aplico a régua de "memória rara" (pelo menos 3 execuções em 2 meses) para separar o que entra no experimento do que só fica em monitoramento. Próximo: a segunda unidade de memória e a apresentação de sete slides, que pode usar este piloto no slide 5 (os principais erros, com dossiê) e no slide 6 (do erro à memória).
+**Decisão/próximo passo:** Destinos decididos: a verificação de existência vai para o harness; C e E viram memória global; B e D, memória por papel. Pendência `b3 #48`: seis das 14 memórias têm de 1 a 3 erros; decidir se aplico a régua de "memória rara" antes de usá-las no experimento. Próximo: a segunda unidade de memória e a apresentação de sete slides, com este piloto nos slides 5 e 6.
 
-**Tags:** base-3, sandbox, u-sandbox, mineracao, memoria, harness, verificacao-existencia, contestacaocivel, eval, globals, try-except-nameerror, auditoria-independente, catalogo, ajuste-21, ajuste-22, ajuste-23, sub-2.2, sub-2.5
-
-### 19/10/2026
-
-**Tipo:** decisão — **Sub-atividade:** 2.2 — **Canal:** pessoal
-
-**Registro objetivo:** Decisões tomadas hoje, todas registradas em `analysis/decisoes.md`:
-- **Destino das partes do sandbox:** C vira memória global; B, memória do papel OBFCivel; D, memória por papel; E, memória global, depois de investigada.
-- **Ajuste 21:** a introspecção usada para verificar se a variável existe, e que guarda a criação dela por uma chamada, vai para o harness. A leitura com valor padrão (`globals().get('x', padrão)`) fica no sandbox.
-- **Ajuste 23:** o mesmo vale para o `eval` dentro da função auxiliar de verificação. O `eval(texto)` que converte texto em objeto fica no sandbox. Aprovei o formato estreito depois de ver que os outros papéis usam `eval` só para converter texto.
-- **Ajuste 22:** uma lição pode ter várias memórias, uma por parte (esquema 0.3). As memórias fechadas entram num catálogo versionado (`analysis/registros/memorias.json`), com só conteúdo técnico e o hash do arquivo final. O arquivo completo continua na máquina da base.
-- **Sigilo (opção 1):** o conteúdo técnico pode sair da máquina da base (identificadores, mensagens de erro, nomes de variável, contagens); dado pessoal e conteúdo do cliente não. A varredura continua obrigatória antes de qualquer saída.
-- Aprovei o script do sandbox dividido em partes, depois de o validador independente conferir 114 de 114 medidas.
-
-**Reflexão:** Decidi aos poucos, uma mudança de método por vez, cada uma com a evidência na frente. Isso deu trabalho, mas resolveu a dificuldade que anotei na sexta: voltar a entender por que cada passo foi dado. O livro-razão e o `decisoes.md` agora guardam o porquê.
-
-**Decisão/próximo passo:** Escolher a próxima unidade do funil, pela ordem de tokens, e rodar o mesmo caminho (racional → script → auditoria → validador → catálogo). Montar os slides 5 e 6 com este piloto como exemplo.
-
-**Tags:** base-3, decisoes, sigilo, catalogo, esquema-memoria, ajuste-22, metodo, sub-2.2
+**Tags:** base-3, sandbox, mineracao, memoria, harness, verificacao-existencia, contestacaocivel, eval, globals, try-except-nameerror, catalogo, memoria-por-papel, sub-2.2, sub-2.5
