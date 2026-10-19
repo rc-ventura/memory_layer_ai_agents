@@ -1,20 +1,24 @@
 {
   "titulo": "Esquema do arquivo final de uma mineração de candidata a memória",
-  "versao": "0.2",
+  "versao": "0.3",
   "versoes_aceitas": [
     "0.1",
-    "0.2"
+    "0.2",
+    "0.3"
   ],
   "historico": {
     "0.1": "16/09/2026 — os campos do 06 §9 Passo 8 (base 1: o caso apontado por exec_id + idx).",
-    "0.2": "16/10/2026 — a base 3 não tem idx: o caso pode ser apontado por step_ref + fonte_id + rodada_id (hashes, podem sair do ambiente), e exec_id deixa de ser obrigatório nesse caso; parte_especifica aceita script:<nome>. Um arquivo 0.1 continua válido (versoes_aceitas). Livro-razão, Ajuste 19."
+    "0.2": "16/10/2026 — a base 3 não tem idx: o caso pode ser apontado por step_ref + fonte_id + rodada_id (hashes, podem sair do ambiente), e exec_id deixa de ser obrigatório nesse caso; parte_especifica aceita script:<nome>. Um arquivo 0.1 continua válido (versoes_aceitas). Livro-razão, Ajuste 19.",
+    "0.3": "19/10/2026 — uma lição pode ter várias memórias (uma por parte): o cabeçalho ganha `id` (unidade[.parte[.papel]]) e `parte`, opcionais, e o arquivo passa a memoria_<id>_<BASE_ID>.json. Os campos da memória não mudam; um arquivo 0.1 ou 0.2 continua válido. A memória fechada (destino memória, derived-and-checked) entra no catálogo analysis/registros/memorias.json. Livro-razão, Ajuste 22."
   },
   "situacao": "provisória — a estrutura final da memória ainda não está fechada. Os campos vêm do 06-racionais-mineracao-unidades-n2-n10.md §9 Passo 8, que os tira do TRAIL, do AgentDebug e da produção própria do projeto (comparação em 01-racionais.md §8). Para mudar a estrutura, mude só este arquivo, suba a versao (e, se o arquivo antigo continuar válido, acrescente-a em versoes_aceitas) e registre no livro-razão (pipeline-entre-bases.md): a skill mineracao-candidata e o validar_memoria.py leem daqui.",
   "arquivo": {
-    "caminho": "pipeline/resultados/mineracao/<unidade>/memoria_<unidade>_<BASE_ID>.json",
+    "caminho": "pipeline/resultados/mineracao/<unidade>/memoria_<id>_<BASE_ID>.json (id = a unidade, ou unidade.parte[.papel] quando a lição tem partes)",
     "cabecalho": {
       "esquema": "a versao deste arquivo, carimbada",
       "unidade": "o código da unidade (ex.: U_...)",
+      "id": "opcional (0.3): unidade.parte[.papel], quando a lição tem uma memória por parte; sem ele, o id é a unidade",
+      "parte": "opcional (0.3): o código da parte (ex.: C), ou null",
       "base": "o BASE_ID da análise",
       "gerado_em": "AAAA-MM-DD",
       "parte_especifica": "notebook:<nome> | script:<nome> | investigacao:<roteiro>",

@@ -88,13 +88,30 @@ def autorizados(msg):
     return ", ".join(sorted(x.strip().strip("'\"") for x in a.group(1).split(",") if x.strip()))
 
 
-LICOES = {"U_sandbox": (populacao_sandbox, extrair_sandbox, autorizados)}
+# emenda 4 do racional (19/10): a parte de cada erro. C = módulo usado sem import; E = função proibida ou atributo
+# dunder; B = import (bloqueado ou módulo ausente) de uma ferramenta — o framework (smolagents, mcp, mcp_client), os
+# nomes tools, tool_usage, tool_functions, python_interpreter, ou um nome que começa por get_; D = os outros imports.
+# C e E valem para o ambiente todo; B e D, por papel.
+_FERRAMENTA = re.compile(r"^(?:smolagents|mcp|mcp_client|tools|tool_usage|tool_functions|python_interpreter|get_\w*)$")
+
+
+def parte_sandbox(tipo, nome, papel):
+    if tipo == "modulo_sem_import":
+        return "U_sandbox.C"
+    if tipo in ("funcao_proibida", "atributo_dunder"):
+        return "U_sandbox.E"
+    if tipo in ("import_bloqueado", "modulo_ausente"):
+        return f"U_sandbox.{'B' if _FERRAMENTA.match(nome.split('.')[0]) else 'D'}.{papel}"
+    return None
+
+
+LICOES = {"U_sandbox": (populacao_sandbox, extrair_sandbox, autorizados, parte_sandbox)}
 
 
 def auditar(unidade, fonte):
     if unidade not in LICOES:
         sys.exit(2)
-    pop, extrair, listas = LICOES[unidade]
+    pop, extrair, listas, parte = LICOES[unidade]
     linhas = pq.read_table(fonte, columns=COLUNAS).to_pylist()
     erros = []
     for r in linhas:
@@ -106,7 +123,7 @@ def auditar(unidade, fonte):
         tipo, nome = extrair(msg)
         erros.append({"chave": [str(r["cod_idef_exeo"]), str(r["cod_idef_aget"]), str(r["papel"]), int(r["step_pos"])],
                       "papel": str(r["papel"]), "mes": str(r["mes_execucao"]), "tipo": tipo, "nome": nome,
-                      "lista": listas(msg)})
+                      "lista": listas(msg), "parte": parte(tipo, nome, str(r["papel"]))})
     por_nome = defaultdict(lambda: {"erros": 0, "execucoes": set(), "papeis": set(), "meses": set()})
     for e in erros:
         if e["tipo"] == "sem_nome":
@@ -125,6 +142,7 @@ def auditar(unidade, fonte):
         "inventario": {k: {"erros": d["erros"], "execucoes": len(d["execucoes"]), "papeis": len(d["papeis"]),
                            "meses": len(d["meses"])} for k, d in sorted(por_nome.items())},
         "listas_autorizadas": dict(sorted(Counter(e["lista"] for e in erros if e["lista"]).items())),
+        "partes": dict(sorted(Counter(e["parte"] for e in erros if e["parte"]).items())),
         # uma linha por erro, só para o diagnóstico de uma divergência (o encontro não compara este bloco)
         "linhas": [{"chave": e["chave"], "mes": e["mes"], "tipo": e["tipo"], "nome": e["nome"]}
                    for e in sorted(erros, key=lambda e: e["chave"])],

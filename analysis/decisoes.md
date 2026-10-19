@@ -134,6 +134,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `globals` 2.347 de 2.352 no `ContestacaoCivel`, `get_document_text` 167 de 167 no `OBFCivel`, `pd` 231 de 233 no
   `JoogleAnalytics`, contra `json` em 10 papéis e 10 meses. O racional ganha as partes e o script monta uma memória por parte
   (nova validação). O destino da parte do `globals` (harness) segue como hipótese → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, o catálogo das memórias fechadas** (decisão do Rafael): `analysis/registros/memorias.json`, uma entrada por
+  memória com destino memória e status derived-and-checked (só conteúdo técnico e o hash do arquivo final, sem os
+  casos); montado no passo 9 do `minerar.py` e registrado com `catalogar_memoria.py --registrar`. Uma lição pode ter
+  várias memórias (esquema 0.3) → livro-razão, Ajuste 22.
 - **19/10, os destinos das partes do sandbox depois do Ajuste 21 (decisão do Rafael):** C (módulo usado sem import,
   656) → **memória global**; B (ferramenta importada como módulo, 212, `OBFCivel`) → **memória do papel `OBFCivel`**;
   D (import fora da lista autorizada, 40) → **memória por papel** (cada papel com a sua lista). A parte E (funções e

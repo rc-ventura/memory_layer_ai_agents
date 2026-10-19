@@ -92,23 +92,54 @@ class TestRegraDoSandbox(unittest.TestCase):
         d = sb.destino(sb.medir(casos, mensagens))
         self.assertEqual(d["erros_que_repetem_o_nome_na_mesma_execucao_e_papel"], 1)
 
-    def test_memoria_valida_no_esquema(self):
+    def test_partes(self):
+        self.assertEqual(sb.parte_de("modulo_sem_import", "json"), "C")
+        self.assertEqual(sb.parte_de("funcao_proibida", "repr"), "E")
+        self.assertEqual(sb.parte_de("atributo_dunder", "__name__"), "E")
+        self.assertEqual(sb.parte_de("import_bloqueado", "get_document_text"), "B")
+        self.assertEqual(sb.parte_de("import_bloqueado", "mcp_client.tools"), "B")
+        self.assertEqual(sb.parte_de("modulo_ausente", "python_interpreter"), "B")
+        self.assertEqual(sb.parte_de("import_bloqueado", "ast"), "D")
+        self.assertIsNone(sb.parte_de("sem_nome", "ValueError"))
+        self.assertEqual(sb.memoria_id("B", "OBFCivel"), "U_sandbox.B.OBFCivel")
+        self.assertEqual(sb.memoria_id("C", "OBFCivel"), "U_sandbox.C")
+        P = sb.medir(*casos_e_mensagens())["partes"].set_index("memoria_id").erros.to_dict()
+        self.assertEqual(P, {"U_sandbox.C": 1, "U_sandbox.D.PapelB": 1, "U_sandbox.D.PapelC": 1, "U_sandbox.E": 3})
+
+    def test_memorias_validas_no_esquema(self):
         t = sb.medir(*casos_e_mensagens())
         perfil = {"erros_observaveis": 6, "ocorrencias_condicionais": 6, "execucoes": 6}
         enc = [{"medida": "populacao.erros", "mineracao": 6, "auditoria": 6, "igual": True}]
-        mem = sb.memoria(perfil, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f" * 64, "rodada_id": "r" * 64}, enc)
-        doc = {"esquema": ESQUEMA["versao"], "unidade": "U_sandbox", "base": "base3", "gerado_em": "2026-10-16",
-               "parte_especifica": "script:mineracao_U_sandbox", "memoria": mem,
-               "origem": {c: {"tipo": "checado", "comando": "x"} for c in mem}}
-        self.assertEqual(vm.validar(ESQUEMA, doc)[0], [])
-        self.assertIn("Não chame: repr", mem["correction_guidance"])
-        self.assertIn("Imports autorizados: json, math, re", mem["correction_guidance"])
-        self.assertEqual(mem["status"], "derived-and-checked")
-        self.assertEqual(mem["validation"]["encontro"]["diferentes"], 0)
-        self.assertEqual(len(mem["validation"]["listas_autorizadas"]), 1)
-        enc[0]["igual"] = False   # o encontro não fecha: o status cai
-        mem = sb.memoria(perfil, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f", "rodada_id": "r"}, enc)
-        self.assertEqual(mem["status"], "parcial")
+        lista = sb.memorias(perfil, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f" * 64, "rodada_id": "r" * 64}, enc)
+        por_id = {m["id"]: m["memoria"] for m in lista}
+        self.assertEqual(sorted(por_id), ["U_sandbox.C", "U_sandbox.D.PapelB", "U_sandbox.D.PapelC", "U_sandbox.E"])
+        for item in lista:
+            doc = {"esquema": ESQUEMA["versao"], "unidade": "U_sandbox", "id": item["id"], "parte": item["parte"],
+                   "base": "base3", "gerado_em": "2026-10-19", "parte_especifica": "script:mineracao_U_sandbox",
+                   "memoria": item["memoria"], "origem": {c: {"tipo": "checado", "comando": "x"} for c in item["memoria"]}}
+            self.assertEqual(vm.validar(ESQUEMA, doc)[0], [], item["id"])
+        self.assertEqual(por_id["U_sandbox.C"]["correction_guidance"], "Importe antes de usar: json.")
+        self.assertIsNone(por_id["U_sandbox.C"]["scope"]["role"])
+        self.assertEqual(por_id["U_sandbox.D.PapelB"]["scope"]["role"], "PapelB")
+        self.assertEqual(por_id["U_sandbox.D.PapelB"]["correction_guidance"],
+                         "Não importe: ast; imports autorizados neste papel: json, math, re.")
+        self.assertEqual(por_id["U_sandbox.D.PapelC"]["correction_guidance"], "Não existe no ambiente: openpyxl.")
+        self.assertEqual(por_id["U_sandbox.E"]["correction_guidance"], "Não chame: repr; Não acesse: __name__.")
+        self.assertEqual(por_id["U_sandbox.E"]["validation"]["destino"], "em aberto")
+        self.assertEqual(por_id["U_sandbox.C"]["validation"]["destino"], "memória")
+        self.assertEqual(por_id["U_sandbox.E"]["location"]["total_erros"], 3)
+        self.assertTrue(all(m["status"] == "derived-and-checked" for m in por_id.values()))
+        enc[0]["igual"] = False   # o encontro não fecha: o status cai em todas
+        lista = sb.memorias(perfil, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f", "rodada_id": "r"}, enc)
+        self.assertTrue(all(m["memoria"]["status"] == "parcial" for m in lista))
+
+    def test_ferramenta_por_papel(self):
+        msgs = [("OBFCivel", "2026-07", "x due to: InterpreterError: Import of get_document_text is not allowed."),
+                ("OBFCivel", "2026-07", "x due to: InterpreterError: Import from tools is not allowed.")]
+        t = sb.medir(*casos_e_mensagens(msgs))
+        m = sb.memorias({"erros_observaveis": 2}, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f", "rodada_id": "r"}, [])
+        self.assertEqual([x["id"] for x in m], ["U_sandbox.B.OBFCivel"])
+        self.assertIn("chame-as direto, sem import", m[0]["memoria"]["correction_guidance"])
 
 
 class TestAuditoria(unittest.TestCase):
@@ -144,7 +175,7 @@ class TestAuditoria(unittest.TestCase):
             pq.write_table(pa.Table.from_pylist(rows), f)
             a = aud.auditar("U_sandbox", str(f))
         s = sb.para_encontro(sb.medir(*casos_e_mensagens()))
-        for bloco in ("inventario", "listas_autorizadas"):
+        for bloco in ("inventario", "listas_autorizadas", "partes"):
             self.assertEqual(a[bloco], s[bloco], bloco)
         self.assertEqual(a["populacao"]["chaves"], [["e0", "1", "PapelA", 3], ["e1", "1", "PapelA", 3],
                                                     ["e2", "1", "PapelB", 3], ["e3", "1", "PapelB", 3],
@@ -201,7 +232,10 @@ class TestMinerar(unittest.TestCase):
             if rc and "outro código" in str(m.registro.get(1, "")):
                 self.skipTest("a rodada de ensaio é de outro código: refaça com validacao/rodada_base1.py")
             self.assertEqual(rc, 0, m.registro)
-            self.assertTrue((Path(d) / "memoria_U_sandbox_base3.json").exists())
+            self.assertTrue((Path(d) / "memoria_U_sandbox.C_base3.json").exists())
+            cat = json.loads((Path(d) / "catalogo_U_sandbox_base3.json").read_text(encoding="utf-8"))
+            self.assertIn("U_sandbox.C", [e["id"] for e in cat["entradas"]])
+            self.assertTrue(any(f.startswith("U_sandbox.E") for f in cat["fora"]))
             self.assertTrue(json.loads((Path(d) / "manifesto_mineracao.json").read_text())["artefatos"])
 
     @unittest.skipUnless((ENSAIO / "rodada" / "manifesto.json").exists(), "sem a rodada de ensaio da base 1")

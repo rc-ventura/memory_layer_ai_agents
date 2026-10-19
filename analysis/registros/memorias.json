@@ -1,0 +1,4 @@
+{
+  "o_que_e": "O catálogo das memórias fechadas, em todas as bases: uma entrada por memória com destino \"memória\" (decisão do pesquisador) e status derived-and-checked. Só conteúdo técnico — o que a memória diz (correction_guidance), onde vale (scope), quantos erros, de que rodada — e o hash do arquivo final, que fica na pasta da mineração, na máquina da base (sem os casos). O que tem destino harness fica no monitoramento.json. A entrada é montada pelo passo 9 do minerar.py (catalogo_<unidade>_<base>.json, já varrido) e posta aqui com `.claude/skills/mineracao-candidata/scripts/catalogar_memoria.py --registrar`; `--conferir` confere o catálogo. Decisão de 19/10 (decisoes.md); livro-razão, Ajuste 22.",
+  "itens": []
+}

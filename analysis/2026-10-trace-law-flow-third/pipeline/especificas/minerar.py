@@ -7,7 +7,11 @@ Sem `--passo`, roda de 1 a 9 e para no primeiro problema (saída 1, o motivo num
 aquele passo, lendo o que os anteriores gravaram em `<saida>` (padrão: `pipeline/resultados/mineracao/<unidade>/`).
 
   1 conferir a rodada · 2 monitoramento · 3 parte genérica · 4 parte específica · 5 confiança · 6 destino ·
-  7 auditoria independente e encontro · 8 arquivo final · 9 saída (manifesto, relatório, varredura, resumo)
+  7 auditoria independente e encontro · 8 arquivo final · 9 saída (manifesto, relatório, catálogo, varredura, resumo)
+
+Uma lição pode ter várias memórias (uma por parte, se o script define `memorias`): o passo 8 grava um arquivo final por
+memória, `memoria_<id>_<BASE_ID>.json`, e o passo 9 monta as entradas do catálogo das memórias fechadas
+(`catalogo_<unidade>_<BASE_ID>.json`, para `analysis/registros/memorias.json`; Ajuste 22).
 
 A parte específica é o módulo `mineracao_<unidade>.py` (a interface está no docstring dele), escolhido pela linha da
 lição no funil do procedimento: o aprovado, em `pipeline/especificas/`, ou, antes da aprovação, a proposta em
@@ -142,12 +146,20 @@ class Mineracao:
         spec.loader.exec_module(mod)
         return mod, arq
 
+    def nomes_tabelas(self):
+        return getattr(self.modulo()[0], "TABELAS", TABELAS)
+
     def tabelas(self):
-        faltam = [t for t in TABELAS if not (self.saida / f"{t}.csv").exists()]
+        nomes = self.nomes_tabelas()
+        faltam = [t for t in nomes if not (self.saida / f"{t}.csv").exists()]
         if faltam:
             raise Parada(f"faltam as tabelas da parte específica ({', '.join(faltam)}): rode o passo 4")
         return {t: pd.read_csv(self.saida / f"{t}.csv", dtype={"exec_id": str, "step_ref": str})
-                for t in TABELAS}
+                for t in nomes}
+
+    def arquivos_memoria(self):
+        """Os arquivos finais que o passo 8 gravou (a lista em passo8_memorias.json)."""
+        return [self.saida / n for n in _ler_json(self.saida / "passo8_memorias.json")["arquivos"]]
 
     def fonte(self):
         f = Path(self.fonte_arg) if self.fonte_arg else Path(bp.EXTRACOES[self.manifesto.get("extracao") or "v2"])
@@ -209,7 +221,7 @@ class Mineracao:
             columns={"err_msg": "mensagem", "err_msg_estado": "estado"})
         casos = self.ler(f"perfis/{self.u}/casos.csv")
         t = mod.medir(casos, msgs)
-        for nome in TABELAS:
+        for nome in self.nomes_tabelas():
             t[nome].to_csv(self.saida / f"{nome}.csv", index=False)
         return f"script {self.situacao_script} · {len(t['erros_lidos'])} erros lidos · {len(t['inventario'])} nomes"
 
@@ -241,7 +253,7 @@ class Mineracao:
         scr = mod.para_encontro(self.tabelas())
         perfil = _ler_json(self.saida / "passo3_generica.json")["perfil"]
         linhas = []
-        for bloco in ("populacao", "cobertura", "inventario", "listas_autorizadas"):
+        for bloco in ("populacao", "cobertura", "inventario", "listas_autorizadas", "partes"):
             a, s = aud.get(bloco, {}), scr.get(bloco, {})
             for k in sorted(set(a) | set(s)):
                 if bloco == "cobertura" and k not in s:
@@ -298,36 +310,59 @@ class Mineracao:
         conf = _ler_json(self.saida / "passo5_confianca.json")
         dest = _ler_json(self.saida / "passo6_destino.json")
         encontro = _ler_json(self.saida / "passo7_encontro.json")
-        mem = mod.memoria(perfil, t, conf, dest, self.ids, encontro)
+        if hasattr(mod, "memorias"):
+            lista = mod.memorias(perfil, t, conf, dest, self.ids, encontro)
+        else:   # um script de uma memória só
+            lista = [{"id": self.u, "parte": None, "memoria": mod.memoria(perfil, t, conf, dest, self.ids, encontro)}]
         esquema = json.loads(ESQUEMA.read_text(encoding="utf-8"))
         comando = (f"uv run python {Path(__file__).relative_to(RAIZ).as_posix()} {self.u} "
                    f"--rodada {self.ids['rodada_id'][:16]}")
-        origem = {c: {"tipo": "checado", "comando": comando} for c in mem}
-        origem["impact"] = {"tipo": "pendente", "nota": "null por decisão: pendente do juiz calibrado"}
-        origem["validation"]["nota"] = "destino em aberto até a decisão do pesquisador"
-        doc = {"esquema": esquema["versao"], "unidade": self.u, "base": self.manifesto["base"],
-               "gerado_em": datetime.date.today().isoformat(), "parte_especifica": f"script:{arq.stem}",
-               "memoria": mem, "origem": origem}
-        destino = self.saida / f"memoria_{self.u}_{self.manifesto['base']}.json"
-        _json(destino, doc)
         spec = spec_from_file_location("validar_memoria", script_da_skill("mineracao-candidata", "validar_memoria.py"))
         vm = module_from_spec(spec)
         spec.loader.exec_module(vm)
-        erros, pend, _ = vm.validar(esquema, doc)
-        if erros:
-            raise Parada(f"o validar_memoria reprova ({len(erros)}): {erros[0]}")
-        return f"{destino.name} aprovado no esquema {esquema['versao']}" + (f" · {len(pend)} pendência(s)" if pend else "")
+        base = self.manifesto["base"]
+        for velho in self.saida.glob(f"memoria_{self.u}*_{base}.json"):   # os de uma mineração anterior
+            velho.unlink()
+        gravados, pend = [], 0
+        for item in lista:
+            mem = item["memoria"]
+            origem = {c: {"tipo": "checado", "comando": comando} for c in mem}
+            origem["impact"] = {"tipo": "pendente", "nota": "null por decisão: pendente do juiz calibrado"}
+            origem["validation"]["nota"] = ("destino em aberto até a decisão do pesquisador"
+                                            if mem["validation"].get("destino") == "em aberto"
+                                            else f"destino decidido pelo pesquisador ({mem['validation'].get('destino_decidido_em')})")
+            doc = {"esquema": esquema["versao"], "unidade": self.u, "id": item["id"], "parte": item["parte"],
+                   "base": base, "gerado_em": datetime.date.today().isoformat(),
+                   "parte_especifica": f"script:{arq.stem}", "memoria": mem, "origem": origem}
+            destino = self.saida / f"memoria_{item['id']}_{base}.json"
+            erros, p, _ = vm.validar(esquema, doc)
+            if erros:
+                raise Parada(f"o validar_memoria reprova {destino.name} ({len(erros)}): {erros[0]}")
+            _json(destino, doc)
+            gravados.append(destino.name)
+            pend += len(p)
+        _json(self.saida / "passo8_memorias.json", {"arquivos": gravados})
+        return (f"{len(gravados)} memória(s) aprovada(s) no esquema {esquema['versao']}"
+                + (f" · {pend} pendência(s)" if pend else ""))
 
     # ── 9 · saída ──────────────────────────────────────────────────────────────────────────────────────────
     def passo9(self):
         mod, arq = self.modulo()
         rel = self.saida / f"relatorio_{self.u}.md"
         rel.write_text(self.relatorio(), encoding="utf-8")
-        rc, out = _rodar([sys.executable, str(script_da_skill("mineracao-base", "varrer_pii.py")), str(rel),
-                          str(self.saida / f"memoria_{self.u}_{self.manifesto['base']}.json")])
+        mems = self.arquivos_memoria()
+        cat = self.saida / f"catalogo_{self.u}_{self.manifesto['base']}.json"
+        spec = spec_from_file_location("catalogar_memoria", script_da_skill("mineracao-candidata", "catalogar_memoria.py"))
+        cm = module_from_spec(spec)
+        spec.loader.exec_module(cm)
+        entradas, fora = cm.montar(mems)
+        _json(cat, {"entradas": entradas, "fora": fora})
+        self.catalogo = (entradas, fora)
+        rc, out = _rodar([sys.executable, str(script_da_skill("mineracao-base", "varrer_pii.py")), str(rel), str(cat)]
+                         + [str(m) for m in mems])
         (self.saida / "passo9_varredura.txt").write_text(out, encoding="utf-8")
         if rc != 0:
-            raise Parada("o varredor achou dado pessoal no relatório ou na memória (passo9_varredura.txt)")
+            raise Parada("o varredor achou dado pessoal no relatório, no catálogo ou numa memória (passo9_varredura.txt)")
         arquivos = sorted(p for p in Path(self.saida).iterdir() if p.is_file() and p.name != "manifesto_mineracao.json")
         codigo = {Path(p).relative_to(RAIZ).as_posix(): _sha(p) for p in (Path(__file__), arq, AUDITORIA, ESQUEMA)}
         _json(self.saida / "manifesto_mineracao.json",
@@ -335,7 +370,8 @@ class Mineracao:
                "gerado_em": datetime.datetime.now(datetime.timezone.utc).isoformat(), "codigo": codigo,
                "script_especifico": self.situacao_script,
                "passos": self.registro, "artefatos": {p.name: _sha(p) for p in arquivos}})
-        return f"{len(arquivos)} arquivos no manifesto · varredura limpa"
+        return (f"{len(arquivos)} arquivos no manifesto · catálogo: {len(entradas)} fechada(s), {len(fora)} fora · "
+                "varredura limpa")
 
     def relatorio(self):
         L = [f"# Mineração de `{self.u}` — rodada `{self.ids['rodada_id'][:16]}`", "",
@@ -344,12 +380,17 @@ class Mineracao:
         L += [f"- **{n} · {PASSOS[n]}:** {self.registro.get(n, '—')}" for n in PASSOS if n < 9]
         try:
             t = self.tabelas()
-            for nome in ("inventario", "imports_autorizados"):
-                L += ["", f"## {nome}", "", _markdown(t[nome])]
-            mem = _ler_json(self.saida / f"memoria_{self.u}_{self.manifesto['base']}.json")["memoria"]
-            L += ["", "## A memória proposta", "", f"- **category:** {mem['category']}",
-                  f"- **description:** {mem['description']}", f"- **correction_guidance:** {mem['correction_guidance']}",
-                  f"- **destino:** {mem['validation']['destino']}"]
+            for nome in ("inventario", "imports_autorizados", "partes"):
+                if nome in t:
+                    L += ["", f"## {nome}", "", _markdown(t[nome])]
+            L += ["", "## As memórias", ""]
+            for arqm in self.arquivos_memoria():
+                doc = _ler_json(arqm)
+                mem = doc["memoria"]
+                L += [f"### `{doc.get('id') or doc['unidade']}`", "", f"- **category:** {mem['category']}",
+                      f"- **scope:** {mem['scope']}", f"- **description:** {mem['description']}",
+                      f"- **correction_guidance:** {mem['correction_guidance']}",
+                      f"- **destino:** {mem['validation']['destino']} · **status:** {mem['status']}", ""]
         except Parada:
             pass
         return "\n".join(L) + "\n"
@@ -372,11 +413,23 @@ class Mineracao:
             print("\ninventário (tipo · nome · erros · execuções · papéis · meses):")
             for r in t["inventario"].itertuples(index=False):
                 print(f"  {r.tipo:<18} {r.nome:<22} {r.erros:>6} {r.execucoes:>6} {r.papeis:>4} {r.meses:>4}")
+            if "partes" in t:
+                print("\npartes (memória · erros · execuções · papéis · meses):")
+                for r in t["partes"].itertuples(index=False):
+                    print(f"  {r.memoria_id:<40} {r.erros:>6} {r.execucoes:>6} {r.papeis:>4} {r.meses:>4}")
             print(f"\nimports autorizados: {len(t['imports_autorizados'])} lista(s)")
             for r in t["imports_autorizados"].itertuples(index=False):
                 print(f"  {r.erros:>5} erros · papéis: {r.papeis}\n        [{r.lista_autorizada}]")
         except Parada:
             pass
+        if getattr(self, "catalogo", None):
+            entradas, fora = self.catalogo
+            print(f"\ncatálogo das memórias fechadas (catalogo_{self.u}_{self.manifesto['base']}.json → registros/memorias.json):")
+            for e in entradas:
+                print(f"  {e['id']} · {e['arquivo']['sha256_16']} · {e['occurrences']['erros']} erros · "
+                      f"{e['correction_guidance'][:90]}")
+            for f in fora:
+                print(f"  fora: {f}")
         print("─" * 72)
 
     def rodar(self, so=None):

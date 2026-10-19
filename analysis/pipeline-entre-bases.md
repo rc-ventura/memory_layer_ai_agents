@@ -1578,3 +1578,10 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
 | "checagem E da auditoria nº 6 fora de fase" | corrigida (25/33 em out/2025); A–G com 0 divergências |
 | regra `'DEFAULT'` do motivo: "só base 2" | `b1 b2` — a mesma calculadora devolve `'DEFAULT'` na base 1 (2×, CalculoCivel) |
 | balde invisível "conferido" pela auditoria | era **reexecutado**; conferido de forma independente só desde o `audit_recompute9` |
+
+### Ajuste 22 — uma lição pode ter várias memórias, e as fechadas entram num catálogo (19/10/2026)
+
+- **Gatilho:** o inventário do sandbox tem quatro partes com destinos diferentes (dossiê, §2b–2c), e a memória fechada só existia na pasta da mineração, fora do git, na máquina da base.
+- **Mudança:** esquema 0.3 (cabeçalho com `id` e `parte`, opcionais; um arquivo por memória, `memoria_<id>_<BASE_ID>.json`); o `minerar.py` aceita `memorias(...)` do script específico; o passo 9 monta `catalogo_<u>_<BASE_ID>.json` (varrido) para `analysis/registros/memorias.json` (`catalogar_memoria.py`, kit). Emenda 4 do racional do sandbox; a auditoria conta as partes.
+- **Verificação:** ensaio na base 1 (rodada `bf2d034f`): 9 passos, 28 medidas iguais, 4 memórias (C, D por 2 papéis, E), 3 no catálogo, E fora (destino em aberto); 259 testes.
+- **Replicar na máquina da base:** o esquema entra no hash do código da rodada → rodar `executar.py analisar --perfil U_sandbox` de novo antes do `minerar.py`.

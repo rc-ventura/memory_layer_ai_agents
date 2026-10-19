@@ -116,6 +116,17 @@ na base 1 confere o **código** (o script faz o que o racional diz), não a **hi
 confirma a hipótese é a primeira rodada na base 3, depois do commit desta emenda. O hash do pré-registro fica
 registrado no funil do procedimento `06`.
 
+**Emenda 4, de 19/10 (decisões do Rafael: a lição dividida e os destinos; `decisoes.md`, 19/10).** O passo 8 monta
+**uma memória por parte**, e o encontro (passo 7) compara também os erros de cada parte. A parte de cada erro sai do
+tipo e do nome do passo 4: **C** = `modulo_sem_import` (global, destino memória); **E** = `funcao_proibida` ou
+`atributo_dunder` (global, destino **em aberto**: em investigação, dossiê §2c); **B** = `import_bloqueado` ou
+`modulo_ausente` de uma ferramenta — o framework (`smolagents`, `mcp`, `mcp_client`), os nomes `tools`, `tool_usage`,
+`tool_functions`, `python_interpreter`, ou um nome que começa por `get_` (uma memória por papel, destino memória);
+**D** = os outros imports (uma memória por papel, destino memória, com a lista autorizada do papel no mês mais recente).
+A lista de B foi escrita **olhando a base 3** (rodada `85706f1e`, dossiê §2b): é descritiva, não pré-registrada. Regras
+do passo 4, população e limiar não mudam. A memória fechada (destino memória, derived-and-checked) entra no catálogo
+`analysis/registros/memorias.json` (Ajuste 22). Revalidação pelo `validador-de-script`: pendente.
+
 ## O que não mede
 
 - Se o agente se recuperou depois do erro (é o "depois" da parte genérica).

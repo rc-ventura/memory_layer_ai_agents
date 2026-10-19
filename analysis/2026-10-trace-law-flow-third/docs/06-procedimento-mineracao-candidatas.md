@@ -40,8 +40,8 @@ Os passos gravam em `pipeline/resultados/mineracao/<u>/` (ou em `--saida <pasta>
 | 5 · Confiança | `$M --passo 5` | a cobertura da regra, contra o limiar do racional da lição | abaixo do limiar (tabelas gravadas, arquivo final não) |
 | 6 · Destino | `$M --passo 6` | os números que o racional da lição pede para a decisão memória × harness | — |
 | 7 · Auditoria e encontro | `$M --passo 7` | roda `audit/scripts/audit_candidata_base3.py` e compara medida a medida com os passos 3–5 | qualquer medida diferente (a divergência é o achado) |
-| 8 · Arquivo final | `$M --passo 8` | monta `memoria_<u>_<BASE_ID>.json` e o valida com o `validar_memoria.py` | reprovado |
-| 9 · Saída | `$M --passo 9` | manifesto da mineração, relatório completo (fica), versão que sai (varrida) e o resumo | o varredor acha algo |
+| 8 · Arquivo final | `$M --passo 8` | monta um arquivo final por memória, `memoria_<id>_<BASE_ID>.json` (id = a unidade, ou unidade.parte[.papel]; esquema 0.3), e valida cada um com o `validar_memoria.py` | reprovado |
+| 9 · Saída | `$M --passo 9` | manifesto da mineração, relatório completo (fica), o catálogo das memórias fechadas (`catalogo_<u>_<BASE_ID>.json`, para `analysis/registros/memorias.json` com `catalogar_memoria.py --registrar`; Ajuste 22), varredura e o resumo | o varredor acha algo |
 
 **Todos de uma vez:** `$M` (sem `--passo`) roda de 1 a 9 e para no primeiro problema. É o que a skill chama.
 
