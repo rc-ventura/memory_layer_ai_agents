@@ -84,6 +84,9 @@ o reproduz, ou `hipotese`). O esquema é [`registros/esquema-memoria.json`](../.
 (0.2): na base 3, cada caso é apontado por `exec_id` + `step_ref` + `fonte_id` + `rodada_id`.
 **Por que não o `idx`:** o número do passo na trajetória não existe na base 3 (a extração só traz os passos com erro);
 o `step_ref` aponta o passo, e a fonte e a rodada dizem de onde ele veio (livro-razão, Ajuste 19).
+**Uma lição, várias memórias (esquema 0.3, Ajuste 22):** quando as partes de uma lição têm escopo ou destino diferentes
+("dividir a unidade é resultado normal", `16`), o script define `memorias(...)` e o passo 8 grava um arquivo por parte,
+`memoria_<id>_<BASE_ID>.json`, com `id` = unidade.parte[.papel]. Uma memória só por lição continua valendo (`memoria(...)`).
 **Para se:** o `validar_memoria.py` reprova.
 
 ### 9 · A saída
@@ -91,6 +94,12 @@ o `step_ref` aponta o passo, e a fonte e a rodada dizem de onde ele veio (livro-
 **O que garante:** que cada número pode ser refeito e que nada sigiloso sai. O manifesto da mineração guarda o hash
 dos códigos, da rodada e da fonte lidas e de cada arquivo gravado. O relatório completo (com a evidência) fica no
 ambiente; sai a versão varrida e um resumo só com contagens e nomes.
+**O catálogo (Ajuste 22):** a memória **fechada** (destino memória, decidido pelo pesquisador, e `derived-and-checked`)
+vira uma entrada de `catalogo_<u>_<BASE_ID>.json`, varrida junto com o resto, que vai para
+[`registros/memorias.json`](../../registros/memorias.json) com `catalogar_memoria.py --registrar`. **Por quê:** o
+arquivo final fica na pasta da mineração, fora do git e na máquina da base; o catálogo é o lugar único, versionado,
+onde se vê o que já está fechado, em que base e com que destino — e é o que a POC vai ler para injetar as memórias.
+Só conteúdo técnico e o hash do arquivo final, sem os casos.
 
 ---
 

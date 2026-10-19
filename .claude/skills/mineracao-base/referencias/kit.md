@@ -79,6 +79,7 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
 .claude/skills/mineracao-candidata/  a mineração de uma candidata a memória: parte genérica → funil → parte específica → arquivo final
   scripts/validar_memoria.py      confere o arquivo final contra o esquema da memória da análise (e converte o registro de um notebook)
   scripts/comparar_auditoria.py   o encontro: a parte genérica × a auditoria independente (audit_recompute6)
+  scripts/catalogar_memoria.py    o catálogo das memórias fechadas (analysis/registros/memorias.json): monta a entrada, registra, confere
   scripts/valor_da_licao.py       o painel das lições: frequência (Pareto · presença no tempo), confiança (lida do confianca.json), situação e decisão
   scripts/registrar_decisao.py    registra a decisão do pesquisador num gate (a lista da leitura aberta; a situação do painel)
   referencias/fluxo.md            os diagramas da rodada e do ciclo de vida da parte específica

@@ -261,8 +261,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
     `minerar.py` rodou os 9 passos na base 3 (cobertura 99,86%, encontro 61/61, memória aprovada no esquema 0.2); script
     aprovado e em `pipeline/especificas/`; a lição dividida por papel e causa (decisão de 19/10). O Ajuste 21 (#46) está
     feito; os destinos de B, C e D estão decididos (19/10: C memória global, B memória do `OBFCivel`, D memória por papel).
+    A divisão está no script (emenda 4) e o catálogo das memórias fechadas existe (Ajuste 22, `registros/memorias.json`).
     **Falta:** a investigação da parte E (523 erros, `contar_proibidas_linha.py` na base 3 e `contar_proibidas_prompt_base2.py`
-    na base 2: vem do prompt do `ContestacaoCivel`?), o racional e o script por parte, a nova validação →
+    na base 2: vem do prompt do `ContestacaoCivel`?), a revalidação do script, a rodada nova e o `minerar.py` na máquina
+    da base, e registrar C, B e D no catálogo →
     [dossiê](../propostas/U_sandbox/dossie_base3.md), §2c.
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),

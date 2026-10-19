@@ -35,8 +35,8 @@ racional genérico (`docs/*racionais-mineracao-candidatas*.md`) e o que é da li
 | 5 · Confiança | a cobertura da regra contra o limiar do racional | abaixo do limiar |
 | 6 · Destino | os números que o racional pede para memória × harness | — |
 | 7 · Auditoria e encontro | a segunda implementação, medida a medida | qualquer diferença |
-| 8 · Arquivo final | monta e valida (`validar_memoria.py`) | reprovado |
-| 9 · Saída | manifesto, relatório, versão que sai (varrida) e o resumo | o varredor acha algo |
+| 8 · Arquivo final | monta um arquivo por memória (uma por parte, quando a lição tem partes) e valida cada um (`validar_memoria.py`) | reprovado |
+| 9 · Saída | manifesto, relatório, o catálogo das memórias fechadas (`catalogar_memoria.py`; depois `--registrar` em `analysis/registros/memorias.json`), versão que sai (varrida) e o resumo | o varredor acha algo |
 
 1. **Rodada:** a pedida; se não vier, pergunte (o comando não escolhe a mais recente sozinho).
 2. **Rode, da raiz do repositório,** todos os passos de uma vez:

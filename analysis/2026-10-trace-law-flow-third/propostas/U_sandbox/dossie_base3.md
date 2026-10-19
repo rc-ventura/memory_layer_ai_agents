@@ -211,7 +211,14 @@ São 6 listas de imports autorizados. Ex.: `pandas`/`numpy`/`dateutil` só para 
 `Consultivo`/`OBFCivel` sem `pandas` nem `numpy`; `CalculoCivel` com `openpyxl` e `os`. Uma memória de "imports autorizados"
 precisa ser por papel.
 
-## 3 · A memória que o script montou
+### 2c · A divisão no script (emenda 4, Ajuste 22, 19/10)
+
+O script passa a montar **uma memória por parte**: `U_sandbox.C` (global), `U_sandbox.B.<papel>`, `U_sandbox.D.<papel>`
+e `U_sandbox.E` (global, destino em aberto). As fechadas (C, B, D) entram no catálogo `analysis/registros/memorias.json`;
+a E fica fora até a investigação acima. Ensaio na base 1: 4 memórias, 3 no catálogo. Na base 3: falta a rodada nova
+(o esquema 0.3 entra no hash do código) e a revalidação.
+
+## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
 `__import__`, bytes, open, vars, hash; Não importe: …; Importe antes de usar: …; …; Imports autorizados (papéis …): …"
