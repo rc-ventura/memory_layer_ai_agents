@@ -301,11 +301,6 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (livro-razão, Ajuste 21; ensaio na base 1: 1 erro muda). **Falta:** a rodada nova na base 3, o `comparar_rodadas.py`, a
   replicação na base 2 e a nova mineração do sandbox →
   [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
-- [ ] **#47** **Comparação base 1 × modo observado: 82 erros em "unidade diferente"** (81 de `U_contrato_dict` e 1 de
-  `U_tipo_retorno` caem em `X_causa_nao_identificada` no modo observado). O `03-procedimento-validacao.md` registra 83
-  pendentes e 0 em unidade errada; o resultado atual (já antes do Ajuste 21, conferido em 19/10 com o código de antes) é 82
-  em unidade diferente. Achar desde quando e por quê, e corrigir o procedimento ou o código.
-
 ## Fora de escopo / adiado
 
 - **Aviso a quem cuida do harness** sobre o `try/except NameError` (`transversal #7`): decisão de 14/10 de não fazer agora;
@@ -316,6 +311,15 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
+- [x] **#47** **Comparação base 1 × modo observado: 82 erros em "unidade diferente"** (81 de `U_contrato_dict` e 1 de
+  `U_tipo_retorno` caem em `X_causa_nao_identificada` no modo observado). O `03-procedimento-validacao.md` registra 83
+  pendentes e 0 em unidade errada; o resultado atual (já antes do Ajuste 21, conferido em 19/10 com o código de antes) é 82
+  em unidade diferente. Achar desde quando e por quê, e corrigir o procedimento ou o código.
+  → **Causa: o script de comparação, não o pipeline.** Desde o Ajuste 18 (14/10) a fonte padrão é a extração v2 (sem corte
+  de texto), e o `comparar_base1.py` lia a base 1 pela porta da query (que reproduz o corte da v1) como se fosse v2: as 81
+  mensagens cortadas eram tratadas como inteiras e, sem o trecho que a regra procura, caíam no resíduo. Com
+  `carregar_carga(path, "v1")`: 415 na mesma unidade, 83 pendentes, 0 em unidade diferente — o que o `03` registra.
+  Corrigido em 19/10.
 - [x] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, escrito e ensaiado na
   base 1 em 16/10, saída 0; na máquina 2 parou: a amostra do campo inexistente está fora do manifesto nas duas rodadas —
   pendência na Etapa 2) e a tabela nova contra a triagem e a fonte → a `96958e65…` não muda nenhum número da `609c…`

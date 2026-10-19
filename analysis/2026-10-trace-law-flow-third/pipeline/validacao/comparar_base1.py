@@ -47,7 +47,7 @@ def comparar(nulo_exclui=False):
     with tempfile.TemporaryDirectory() as d:
         path = Path(d) / "base1_formato_v1.parquet"
         v1.to_parquet(path, index=False)
-        A = mo.analisar(bp3.carregar_carga(path))
+        A = mo.analisar(bp3.carregar_carga(path, "v1"))
     out = {"extracao": cont, "classico": {"action_steps": len(B.steps), "erros_estruturados": len(B.E)}}
 
     # cada erro observado ← idx do clássico (exec, papel, idx)
