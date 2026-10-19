@@ -929,8 +929,14 @@ do Ajuste 17 (95 em julho, 5.667 em agosto). Hipótese: a mesma instrução do p
 - **Base 1:** 1 erro muda de unidade (ContestacaoCivel, jul/26, `verificacao_introspeccao`); `U_sandbox` 17 → 16; total 498.
   O `comparar_base1.py` dá o mesmo antes e depois (415 na mesma unidade; os 82 em "unidade diferente" já existiam antes do
   ajuste — `b3 #47`). Notebook da esteira refeito; `monitorar.py` reproduz a linha de base do item novo.
-- **Base 3 (esperado, a conferir na rodada nova):** ≈ 2.218 erros de `U_sandbox` para `U_verificacao_existencia`
-  (≈ 3.653 → ≈ 1.435; ≈ 5.764 → ≈ 7.982); o total de erros e os outros números não mudam.
+- **Base 3 (rodada `observada_85706f1e94f88f59`, 19/10; `comparar_rodadas.py --antes e3ebc8274dcf108c`, fotos
+  `IMG_5901`–`IMG_5904`):** código que mudou: só os 3 arquivos do ajuste; **resumo do manifesto: 29 campos, 0 diferentes**
+  (total de erros 30.141, pendentes 749, tokens 592.858.874, 18 unidades, 10 candidatas); genealogia com 30.141 erros em cada
+  etapa e as 11 famílias com os mesmos erros; 12 artefatos com o mesmo hash. Mudou só o esperado: `U_sandbox` 3.653 → 1.436
+  (**2.217** erros para `U_verificacao_existencia`; o teste da regra (b) contava 2.218 — 1 de diferença, provavelmente um
+  `dir` que o teste contava e a regra não, a confirmar); o mecanismo novo nas tabelas de mecanismos (21 → 22) e de
+  cobertura (7 → 8); as linhas das duas unidades nas triagens e consolidações; 40 linhas do "que vem depois" (a unidade do
+  erro seguinte). O veredito do script é "não fecha" porque ele exige números iguais; aqui a mudança é a pedida.
 - **Replicar no ambiente das bases:** (1) copiar os arquivos do ajuste; (2) base 2: `replicar_ajuste21.py --aplicar` e o
   notebook da esteira; (3) base 3: `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes
   e3ebc8274dcf108c --depois <nova>` e `minerar.py U_sandbox --rodada <nova>`.

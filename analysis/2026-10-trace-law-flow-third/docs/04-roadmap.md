@@ -298,8 +298,9 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   e o `try/except NameError` (prompt novo: 97 de 97 na base 2; 5.667 em ago na base 3). **Aprovado em 19/10** (regra (b),
   condicionada ao teste; nome novo; nas três bases; monitoramento junto; aviso adiado — `decisoes.md`). Teste da regra (b)
   na base 3: 2.218 instruídas no ContestacaoCivel, 0 nos outros papéis; resíduo de 157 aceito (19/10). **Implementado**
-  (livro-razão, Ajuste 21; ensaio na base 1: 1 erro muda). **Falta:** a rodada nova na base 3, o `comparar_rodadas.py`, a
-  replicação na base 2 e a nova mineração do sandbox →
+  (livro-razão, Ajuste 21; ensaio na base 1: 1 erro muda). **Rodada nova na base 3** (`observada_85706f1e94f88f59`):
+  conferida — só a mudança esperada (2.217 erros; resumo do manifesto igual). **Falta:** a replicação na base 2 e a nova
+  mineração do sandbox →
   [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
 ## Fora de escopo / adiado
 
