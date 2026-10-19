@@ -253,6 +253,12 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   etapa da base 3 em si); o `analysis/README.md`, o intake por formato; o `kit.md`, o que o kit pode e não pode na base 3. Regra do
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
+- [ ] **#49** **A parte B do sandbox (`U_sandbox.B.OBFCivel`, 211 erros) pode ser sinal de harness — em verificação
+  (19/10).** O prompt do OBFCivel na base 1 manda usar `get_document_text`, que não está entre as ferramentas
+  declaradas; o agente tenta importá-la e o sandbox barra. A memória do catálogo ("chame-as direto, sem import")
+  mandaria chamar uma função que não existe. **Teste:** `contar_ferramentas_prompt_base2.py --trace <base 2>` na máquina
+  da base 2: por versão do prompt do OBFCivel, `get_document_text` é mencionada e não declarada? Se sim, Ajuste 24
+  (B → harness), decidido pelo Rafael; se não, B fica memória → [dossiê](../propostas/U_sandbox/dossie_base3.md) §2e.
 - [ ] **#48** **As memórias pequenas do sandbox: decidir a régua de "memória rara" (pendente, 19/10).** Das 14 memórias
   fechadas do `U_sandbox`, 6 têm de 1 a 3 erros (B.RespostaBacen 1; D.AgenteTestemunhas 1, D.OficiosResposta 1,
   D.RespostaOficios 1, D.CalculoCivel 3, D.Consultivo 3, D.ontestacaoCivel 3 — e D.JoogleAnalytics 4, D.OBFCivel 5 e

@@ -295,6 +295,30 @@ neste papel: …"; E "Não chame: globals, repr, eval, locals, dir, exec, `__imp
 + o complemento fixo. **Observação:** 6 das 14 memórias têm 1 a 3 erros (B.RespostaBacen e D em 5 papéis): o catálogo
 as registra como estão; a régua de memória rara (`monitoramento.json`) é o próximo filtro, se o Rafael quiser.
 
+## 2e · Os prompts dos papéis de B, C e D (base 1, 19/10, depois do fechamento)
+
+Os destinos de C, B e D (memória) foram decididos sem ler os prompts desses papéis; só a parte E foi testada contra
+prompts. A base 1 (trace completo) tem o prompt de todos os papéis. Comando:
+`uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_ferramentas_prompt_base2.py --trace analysis/2026-09-trace-law-flow/data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz`
+(o mesmo script é o teste na base 2).
+
+- **B — provável sinal de harness.** O prompt do OBFCivel (base 1: 11 execuções, uma versão, abr–ago/26) manda "If you
+  need to read the raw text of a specific document, use `get_document_text` with the document's `cod_hash_arqu_juri`",
+  mas **`get_document_text` não está entre as ferramentas declaradas** (os `def` do prompt: `extract_documents_metadata`,
+  `extract_obf_requests`, `final_answer`, `get_docs_from_filters`, `get_fields_definition`, `get_final_answer_schema`).
+  O agente tenta importá-la e o sandbox barra: na base 3, 167 dos 212 erros de B. Se vale na base 2, o conserto é no
+  prompt (declarar a ferramenta ou tirar a instrução), e a memória atual ("chame-as direto, sem import") **mandaria
+  chamar uma função que não existe**. A base 1 não tem erro de B (0); `python_interpreter` não aparece no prompt.
+- **C — memória, com um empurrão do prompt.** Os 16 papéis têm a lista de imports autorizados, com `json` e `pandas`
+  onde cabe. Mas o retorno de algumas ferramentas é descrito com `pandas` sem falar em import: CalculoTrabalhista ("json
+  que pode ser lido com `pd.read_json(io.StringIO(saida))`", 6 de 8 execuções) e JoogleAnalytics ("o resultado da
+  consulta como pandas DataFrame"), o papel de 231 dos 233 erros de `pd` na base 3.
+- **D — memória de valor incerto.** A lista de imports autorizados já está em **todos** os prompts (16 de 16 papéis):
+  a memória D repete o que o prompt diz e o agente ignora.
+
+**Enquanto a base 2 não responde:** o catálogo fica como está, com `U_sandbox.B.OBFCivel` **em verificação**
+(`b3 #49`).
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
