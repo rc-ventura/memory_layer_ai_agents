@@ -114,6 +114,16 @@ não foi vista. Para virar fato: contar, no código do passo com erro (`error_co
 As fotos ficam no iCloud do Rafael (`Analista …/introspeccaco`, `introspeccaco_2`, `U_sandbox_mineracao`); os arquivos
 gravados pela mineração ficam na máquina da base, em `pipeline/resultados/mineracao/U_sandbox/`.
 
+### A · Fora do ContestacaoCivel: verificação espontânea? (base 1, 19/10)
+
+- Na base 1, **só o prompt do ContestacaoCivel tem a instrução de verificar** (3 de 3 execuções); nenhum dos outros papéis.
+- O único erro de introspecção-verificação fora dele é do `ConversationAgent` (mai/26, segundo passo):
+  `user_context = globals().get('…', '…')` — lê a variável com valor padrão. O prompt desse papel não fala em verificar
+  variáveis: **a verificação é espontânea** (hábito do agente), não instruída. Na base 3 há ≈ 9 casos assim em outros
+  papéis; a parte F do `contar_introspeccao_prompt_base2.py` conta, na base 2, se algum outro papel tem a instrução.
+- Consequência para o Ajuste 21: uma regra só pela linha junta a verificação instruída (harness) com a espontânea
+  (lição do sandbox).
+
 ### A · Decisão pendente: o Ajuste 21
 
 Proposta (não aplicada; espera o Rafael): a introspecção proibida usada para verificar a existência de uma variável —

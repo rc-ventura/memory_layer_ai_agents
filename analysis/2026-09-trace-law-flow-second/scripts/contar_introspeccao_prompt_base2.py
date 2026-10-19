@@ -19,7 +19,10 @@ numa versão do trecho que manda verificar e não proíbe `globals()`, e somem n
   D. a linha que falhou nos erros de introspecção: verificação de existência, atribuição dinâmica, leitura por nome ou
      outro uso (a mesma regra do `contar_introspeccao_linha.py` da base 3);
   E. como o primeiro passo verificou, por versão do trecho do prompt e com/sem erro: com introspecção, com `try/except
-     NameError`, com `try/except` de outro tipo, ou não verificou (regex no código do passo — uma pista).
+     NameError`, com `try/except` de outro tipo, ou não verificou (regex no código do passo — uma pista);
+  F. em TODOS os papéis: quantas execuções têm, no prompt, a instrução de verificar a variável, e quantas verificaram
+     no primeiro passo (com introspecção ou `try/except`). Responde se a verificação fora do ContestacaoCivel é
+     instruída pelo prompt ou espontânea.
 
 Usa o leitor do `contar_primeiro_passo_nome_base2.py` e as funções do pipeline da base 1 (o método é o mesmo nas duas
 bases). Não grava nada. Imprime só contagens, nomes de papel, meses e hashes. Uso, da raiz, na máquina da base 2:
@@ -107,7 +110,14 @@ def medir(S):
     ex["algum_erro"] = ex.intro | ex.tryexc
     E = (ex[ex.role.isin(papeis)].groupby(["role", "versao_trecho", "como_verificou", "algum_erro"], dropna=False)
          .size().rename("execucoes").reset_index())
-    return {"A": A, "C": C, "D": D, "E": E}
+    algum = (S.assign(v=S.code.map(como_verificou).ne("não verificou")).groupby(["exec_id", "agente", "role"]).v.any()
+             .rename("verificou_em_algum_passo").reset_index())
+    todos = prim.assign(verificou=prim.como_verificou.ne("não verificou")).merge(algum, on=["exec_id", "agente", "role"], how="left")
+    F = (todos.groupby("role").agg(execucoes=("exec_id", "size"), prompt_com_instrucao=("menciona_instrucao_verificar", "sum"),
+                                   verificaram_no_primeiro_passo=("verificou", "sum"),
+                                   verificaram_em_algum_passo=("verificou_em_algum_passo", "sum"))
+         .reset_index().query("prompt_com_instrucao > 0 or verificaram_em_algum_passo > 0").sort_values("execucoes", ascending=False))
+    return {"A": A, "C": C, "D": D, "E": E, "F": F}
 
 
 def main(argv=None):
@@ -130,6 +140,8 @@ def main(argv=None):
     print(T["D"].to_string(index=False) if len(T["D"]) else "  nenhum")
     print("\nE · como o primeiro passo verificou, por versão do trecho (algum_erro = introspecção ou try/except na execução):")
     print(T["E"].to_string(index=False) if len(T["E"]) else "  nenhum")
+    print("\nF · todos os papéis: o prompt tem a instrução de verificar? o primeiro passo verificou? (só papéis com algum dos dois)")
+    print(T["F"].to_string(index=False) if len(T["F"]) else "  nenhum")
     return 0
 
 

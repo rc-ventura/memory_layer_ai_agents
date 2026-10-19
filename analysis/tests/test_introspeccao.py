@@ -76,6 +76,8 @@ class TestPrompt(unittest.TestCase):
         ])
         C = b2.medir(S)["C"]
         self.assertEqual((int(C.execucoes.sum()), int(C.com_introspeccao.sum()), int(C.com_nenhum.sum())), (2, 1, 1))
+        F = b2.medir(S)["F"].set_index("role")
+        self.assertEqual((int(F.loc["C", "prompt_com_instrucao"]), int(F.loc["C", "verificaram_no_primeiro_passo"])), (2, 1))
         E = b2.medir(S)["E"].set_index("como_verificou")
         self.assertEqual(int(E.loc["não verificou", "execucoes"]), 1)
 
