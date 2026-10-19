@@ -4,6 +4,10 @@ Não importa o pipeline, o script da lição, o `minerar.py` nem a auditoria da 
 `analysis/leitor_trace.py` (abrir o arquivo não é lógica auditada) e o `casos.csv` do perfil da rodada com `csv`.
 Grava as medidas num JSON (contagens, nomes de papel, mês, módulo e função, exec_id e step_ref; nenhum texto de caso).
 
+Revalidação 4 (19/10): a emenda 3 (a introspecção que verifica uma variável sai da população, pela linha que falhou e
+pelo código do passo) e a emenda 4 (uma memória por parte C/B/D/E: os erros, o escopo, o destino, `location`,
+`evidence` e os nomes da `correction_guidance` de cada memória, e o catálogo esperado), lidas só do racional.
+
     uv run python analysis/2026-10-trace-law-flow-third/propostas/U_sandbox/conferencia_independente.py \
         --fonte <parquet> --casos <rodada>/perfis/U_sandbox/casos.csv --perfil <rodada>/perfis/U_sandbox/perfil.csv \
         --json <arquivo>
@@ -41,6 +45,45 @@ SINAIS_ANTES = {
 }
 
 
+# emenda 3 (19/10, Ajuste 21): sai da população a introspecção que verifica uma variável e guarda a criação dela
+INTROSPECCAO = {"globals", "locals", "vars"}
+RE_LINHA = re.compile(r"at line '(.*)' due to:", re.S)
+
+
+def nomes_verificados(linha):
+    """Os nomes que a linha verifica: direto (in/not in globals(), globals().get) ou por f('x') com x criado na linha."""
+    intro = r"(?:globals|locals|vars)\(\)"
+    diretos = set(re.findall(r"""['"]([A-Za-z_]\w*)['"]\s+(?:not\s+)?in\s+""" + intro, linha))
+    diretos |= set(re.findall(intro + r"""\.get\(\s*['"]([A-Za-z_]\w*)['"]""", linha))
+    criados = set(re.findall(r"(?<![=!<>\w.])([A-Za-z_]\w*)\s*=(?!=)", linha))
+    por_funcao = {x for x in re.findall(r"""(?<![.\w])[A-Za-z_]\w*\(\s*['"]([A-Za-z_]\w*)['"]\s*\)""", linha)
+                  if x in criados}
+    return diretos | por_funcao
+
+
+def recebe_chamada(nome, texto):
+    """`nome = f(...)` com f que não é globals/locals/vars, no texto (código do passo ou linha)."""
+    for f in re.findall(r"(?<![\w.])" + re.escape(nome) + r"\s*=(?!=)[^\n]*?(?<![\w.])([A-Za-z_][\w.]*)\s*\(", texto):
+        if f.split(".")[-1] not in INTROSPECCAO:
+            return True
+    return False
+
+
+def verificacao_existencia(msg, codigo):
+    m = RE_FFE.search(trecho_final(msg))
+    if not m or m.group(1) not in INTROSPECCAO:
+        return False
+    lm = RE_LINHA.search(msg)
+    if not lm:
+        return False
+    linha = lm.group(1)
+    return any(recebe_chamada(x, codigo or "") or recebe_chamada(x, linha) for x in nomes_verificados(linha))
+
+
+def trecho_final(msg):
+    return msg.rsplit("due to:", 1)[-1] if "due to:" in msg else msg
+
+
 def criterio_sandbox(msg):
     """Qual braço do passo 1 a mensagem satisfaz (ou None)."""
     m = RE_FFE.search(msg)
@@ -75,10 +118,6 @@ ROTULOS = [  # a ordem da correction_guidance no racional
 ]
 
 
-def trecho_final(msg):
-    return msg.rsplit("due to:", 1)[-1] if "due to:" in msg else msg
-
-
 def nome_recusado(msg, integro):
     if not integro:
         return "sem_nome", None
@@ -88,6 +127,25 @@ def nome_recusado(msg, integro):
         if m:
             return tipo, m.group(1).strip().rstrip(".,;:").strip("'\"`")
     return "sem_nome", None
+
+
+# emenda 4 (19/10): as partes C/B/D/E
+B_FRAMEWORK = {"smolagents", "mcp", "mcp_client"}
+B_NOMES = {"tools", "tool_usage", "tool_functions", "python_interpreter"}
+
+
+def parte_do_erro(tipo, nome):
+    if tipo == "modulo_sem_import":
+        return "C"
+    if tipo in ("funcao_proibida", "atributo_dunder"):
+        return "E"
+    if tipo in ("import_bloqueado", "modulo_ausente"):
+        n = nome or ""
+        topo = n.split(".")[0]  # leitura deste validador: o framework pelo pacote de topo
+        if topo in B_FRAMEWORK or n in B_NOMES or n.startswith("get_"):
+            return "B"
+        return "D"
+    return None
 
 
 def lista_autorizada(msg):
@@ -114,7 +172,7 @@ def main():
 
     # ---- a população na fonte crua (prosa do passo 1)
     colunas = ["cod_idef_exeo", "cod_idef_aget", "papel", "step_pos", "mes_execucao", "structured_error",
-               "error_type", "error_message"]
+               "error_type", "error_message", "error_code_action"]
     fonte, excluidos_por_sinal, linhas, estruturados = {}, collections.Counter(), 0, 0
     chaves_fonte = collections.Counter()  # (exec, agente, papel, step_pos): a chave precisa do papel
     msgs_rodada = {}
@@ -132,6 +190,8 @@ def main():
         if not braco:
             continue
         sinais = [n for n, rx in SINAIS_ANTES.items() if rx.search(msg)]
+        if not sinais and verificacao_existencia(msg, r["error_code_action"]):
+            sinais = ["verificacao_existencia_emenda3"]
         if sinais:
             for n in sinais:
                 excluidos_por_sinal[n] += 1
@@ -209,6 +269,54 @@ def main():
         nomes_por_tipo[rot] = [nm for nm, _ in sorted(c.items(), key=lambda x: (-x[1], x[0]))]
         nomes_por_tipo[rot + " (contagens)"] = dict(c)
 
+    # ---- emenda 4 (19/10): uma memória por parte; a parte sai do tipo e do nome do passo 4
+    partes = collections.defaultdict(list)
+    for e in erros:
+        pt = parte_do_erro(e["tipo"], e["nome"])
+        e["parte"] = pt
+        mid = f"U_sandbox.{pt}" if pt in ("C", "E") else (f"U_sandbox.{pt}.{e['papel']}" if pt in ("B", "D") else None)
+        e["memoria"] = mid
+        if mid:
+            partes[mid].append(e)
+    memorias = {}
+    for mid, v in sorted(partes.items()):
+        pt = mid.split(".")[1]
+        papel = mid.split(".", 2)[2] if pt in ("B", "D") else None
+        o = sorted(v, key=lambda e: (e["papel"], e["mes"], e["step_ref"]))
+        loc, vis = [], set()
+        for e in o:
+            if e["papel"] not in vis:
+                vis.add(e["papel"])
+                loc.append({"exec_id": e["exec_id"], "step_ref": e["step_ref"], "papel": e["papel"]})
+        pt_tipos = collections.Counter(e["tipo"] for e in v)
+        tres_p = [t for t, _ in sorted(pt_tipos.items(), key=lambda x: (-x[1], x[0]))[:3]]
+        ev = []
+        for t in tres_p:
+            e = next(x for x in o if x["tipo"] == t)
+            ev.append({"exec_id": e["exec_id"], "step_ref": e["step_ref"], "tipo": t, "nome": e["nome"]})
+        guia = {}
+        for rot, t in ROTULOS:
+            cc = collections.Counter(e["nome"] for e in v if e["tipo"] == t)
+            if cc:
+                guia[rot] = [nm for nm, _ in sorted(cc.items(), key=lambda x: (-x[1], x[0]))]
+        lista_d = None
+        if pt == "D":
+            # a lista autorizada do papel no mês mais recente (dos erros do papel na população que trazem a lista)
+            do_papel = [e for e in erros if e["papel"] == papel and e["lista"] is not None]
+            if do_papel:
+                mes_max = max(e["mes"] for e in do_papel)
+                ls = sorted({e["lista"] for e in do_papel if e["mes"] == mes_max})
+                lista_d = {"mes": mes_max, "listas_distintas_no_mes": len(ls), "lista": list(ls[-1]) if ls else None}
+        memorias[mid] = {
+            "parte": pt, "papel_escopo": papel, "destino": "em aberto" if pt == "E" else "memória",
+            "erros": len(v), "execucoes": len({e["exec_id"] for e in v}), "meses": len({e["mes"] for e in v}),
+            "papeis": len({e["papel"] for e in v}), "erros_por_tipo": dict(pt_tipos),
+            "location": loc[:10], "evidence": ev, "guidance_nomes": guia, "lista_autorizada_D": lista_d,
+            "chaves": sorted([e["exec_id"], e["step_ref"]] for e in v),
+        }
+    sem_parte = sum(1 for e in erros if e["memoria"] is None)
+    catalogo_esperado = sorted(m for m, d in memorias.items() if d["destino"] == "memória")
+
     perfil = next(csv.DictReader(open(a.perfil, encoding="utf-8", newline="")))
 
     out = {
@@ -261,6 +369,12 @@ def main():
             "correction_guidance_nomes": nomes_por_tipo,
             "occurrences_perfil": {k: perfil[k] for k in ("erros_observaveis", "ocorrencias_condicionais",
                                                           "execucoes", "meses", "papeis")},
+        },
+        "emenda4_partes": {
+            "erros_por_parte": dict(collections.Counter(e["parte"] for e in erros)),
+            "erros_sem_parte": sem_parte,
+            "memorias": memorias,
+            "catalogo_esperado_se_derived_and_checked": catalogo_esperado,
         },
     }
     os.makedirs(os.path.dirname(os.path.abspath(a.json)), exist_ok=True)

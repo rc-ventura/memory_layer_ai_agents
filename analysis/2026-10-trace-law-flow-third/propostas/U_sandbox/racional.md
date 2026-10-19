@@ -44,7 +44,8 @@ verifica uma variável e guarda a criação dela: a função proibida é `global
 verifica um nome — direto (`'x' in globals()`, `'x' not in globals()`, `globals().get('x')`) ou por uma função escrita pelo
 agente que recebe o nome entre aspas (`f('x')`) e, na mesma linha, cria `x`; e esse nome recebe, no código do passo ou na
 própria linha, o resultado de uma chamada de função que não é `globals`/`locals`/`vars` (`x = ferramenta(...)`). Esses
-erros vão para `U_verificacao_existencia` (sinal de harness). Regras do passo 4 e limiares não mudam.
+erros vão para `U_verificacao_existencia` (sinal de harness). Regras do passo 4 e limiares não mudam. A emenda foi
+escrita depois da primeira mineração na base 3 e do teste da regra (b) nela (dossiê, foto `IMG_5900`): é descritiva.
 
 **Emenda 2, de 16/10, depois da primeira rodada na base 3** (`observada_e3ebc8274dcf108c`): a lista acima não tinha os
 três primeiros sinais (bloco de código, falha do LLM, timeout de ferramenta), que o pipeline decide antes do sandbox
@@ -125,7 +126,26 @@ tipo e do nome do passo 4: **C** = `modulo_sem_import` (global, destino memória
 **D** = os outros imports (uma memória por papel, destino memória, com a lista autorizada do papel no mês mais recente).
 A lista de B foi escrita **olhando a base 3** (rodada `85706f1e`, dossiê §2b): é descritiva, não pré-registrada. Regras
 do passo 4, população e limiar não mudam. A memória fechada (destino memória, derived-and-checked) entra no catálogo
-`analysis/registros/memorias.json` (Ajuste 22). Revalidação pelo `validador-de-script`: pendente.
+`analysis/registros/memorias.json` (Ajuste 22).
+
+**O arquivo final de cada parte (emenda 4, complemento de 19/10, depois da revalidação 4).** Em toda lista de nomes
+abaixo, a ordem é **por erros, e no empate a alfabética**. Nenhum texto livre: as frases são moldes fixos.
+
+| Campo | Como é montado na memória da parte |
+|---|---|
+| `category` | "Inventário do sandbox · <rótulo da parte> (factual · ambiente)", com os rótulos C "módulo usado sem import", B "ferramenta importada como módulo", D "import fora da lista autorizada", E "funções e atributos proibidos" |
+| `scope` | `role: null` em C e E; `role: <papel>` em B e D; `tool: null` |
+| `location` | os erros da parte; em C e E, o primeiro de cada papel na ordem (papel, mês, `step_ref`), até 10; em B e D (um papel só), os 10 primeiros na ordem (mês, `step_ref`) |
+| `evidence` | o primeiro caso (papel, mês, `step_ref`) de cada um dos 3 nomes com mais erros na parte |
+| `description` | "<n> erros em <k> papel(éis), parte <P> do inventário do sandbox (<rótulo>): <nome> <erros>, …" |
+| `correction_guidance` | C: "Importe antes de usar: <nomes>." · B: "As ferramentas já estão no escopo como funções: chame-as direto, sem import. Não importe: <nomes>." (bloqueado e ausente juntos: uma ferramenta não se importa, exista ou não o módulo) · D: "Não importe: <bloqueados>; Não existe no ambiente: <ausentes>; imports autorizados neste papel: <lista>." (a lista do papel no mês mais recente em que aparece; empate entre listas do mesmo mês: a com mais erros, e então a alfabética) · E: "Não chame: <funções>; Não acesse: <atributos>." — cada pedaço só se tiver nome |
+| `occurrences` | erros, execuções e meses da parte; `ocorrencias` = erros (a ocorrência condicional é da unidade inteira, no perfil da rodada) |
+| `status` | `derived-and-checked` se a cobertura passa e o encontro (com as partes) fecha; senão `parcial` |
+| `validation` | a parte (código, rótulo, escopo), cobertura, encontro, as listas autorizadas da parte, os números do passo 6 com os erros que repetem o nome na parte, `destino` (C, B, D: "memória"; E: "em aberto") e onde foi decidido |
+| `impact` | `null` |
+
+Estas regras foram escritas depois do ensaio na base 1 e da rodada `85706f1e` da base 3: são descritivas (não mudam
+população, regras do passo 4 nem limiar).
 
 ## O que não mede
 

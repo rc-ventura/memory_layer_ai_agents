@@ -158,6 +158,12 @@ def para_encontro(t):
     }
 
 
+def _por_erros(nomes):
+    """Os nomes por ordem de erros; no empate, a ordem alfabética (racional, emenda 4)."""
+    c = nomes.value_counts()
+    return sorted(c.index, key=lambda n: (-int(c[n]), str(n)))
+
+
 def _lista_do_papel(L, papel):
     """A lista autorizada do papel: a do mês mais recente em que aparece (empate: a mais frequente)."""
     A = L[L.role.eq(papel) & L.lista_autorizada.notna()]
@@ -169,7 +175,7 @@ def _lista_do_papel(L, papel):
 
 def _guia(parte, P, L, papel):
     """A correction_guidance da parte, montada da tabela, sem texto livre (racional, passo 8, emenda 4)."""
-    nomes = lambda tipos: ", ".join(P[P.tipo.isin(tipos)].nome.value_counts().index)
+    nomes = lambda tipos: ", ".join(_por_erros(P[P.tipo.isin(tipos)].nome))
     if parte == "C":
         return f"Importe antes de usar: {nomes(['modulo_sem_import'])}."
     if parte == "B":
@@ -203,13 +209,13 @@ def memorias(perfil, t, conf, dest, ids, encontro):
                                "fonte_id": ids["fonte_id"], "rodada_id": ids["rodada_id"]}
                               for c in casos.itertuples(index=False)]}
         ev = []
-        for nome in P.nome.value_counts().index[:3]:
+        for nome in _por_erros(P.nome)[:3]:
             c = P[P.nome.eq(nome)].sort_values(["role", "mes", "step_ref"]).iloc[0]
             ev.append({"exec_id": str(c.exec_id), "role": c.role, "mes": c.mes, "step_ref": c.step_ref,
                        "tipo": c.tipo, "nome": c.nome})
         cont = P.nome.value_counts()
         desc = (f"{len(P)} erros em {P.role.nunique()} papel(éis), parte {r.parte} do inventário do sandbox ({rotulo}): "
-                + ", ".join(f"{k} {int(v)}" for k, v in cont.items()) + ".")
+                + ", ".join(f"{k} {int(cont[k])}" for k in _por_erros(P.nome)) + ".")
         rep = P.sort_values(["exec_id", "agente", "role", "step_pos"]).duplicated(["exec_id", "role", "nome"], keep="first")
         A = P[P.lista_autorizada.notna()]
         mem = {
