@@ -493,3 +493,38 @@ carregam a mesma `description` do arquivo.
 - Das 4 divergências da revalidação 4, as 4 fecharam. Das 7 regras não declaradas, as 7 estão declaradas.
 - Itens: 1 ok · 2 **4 divergências** (o ponto final da `description`) · 3 **reprovado** pelo mesmo ponto, o resto ok
   · 4 ok, com a condição da primeira rodada na base 3.
+
+---
+
+# Revalidação 5, conclusão (19/10)
+
+**Objeto:** o racional do commit `ef36e2c` (2026-10-19T13:54:31−03:00). A única mudança é uma linha: o molde da
+`description`, na tabela da emenda 4, ganhou o ponto final. O script, o `minerar.py`, a auditoria, o teste, o esquema e
+o `validar_memoria.py` estão como em `f4037cc` (`git diff f4037cc HEAD` sobre eles: vazio). Os hashes do manifesto
+também batem: `minerar.py` `ae17ddcc…`, script `42f79ff7…`, auditoria `acb36184…`, esquema `9fdd70fe…`. O validador
+não corrigiu nada; só a `conferencia_independente.py` (que é dele) mudou: o molde da `description` agora termina com
+ponto.
+
+## Veredito: **APROVADO** (falta a aprovação final do Rafael)
+
+A divergência que restava, o ponto final da `description`, fechou no racional. Não sobra nenhuma divergência nem
+nenhum item faltando.
+
+| # | Item | Resultado |
+|---|---|---|
+| 1 | Conferência só a partir do racional (`ef36e2c`) | ok: população 16 = 16; cobertura 16/16; partes C 6 · E 7 · D 3 · B 0. Rodada duas vezes, o JSON sai idêntico (`cmp`) |
+| 2a | Teste (`uv run python -m unittest analysis/tests/test_mineracao_candidata_base3.py`) | ok: 19/19 |
+| 2b | Script (`minerar.py U_sandbox --rodada <ensaio>/rodada --fonte <ensaio>/fonte_base1_v1.parquet --saida <rascunho>/saida_script`) | saída 0. Encontro 28/28 iguais; 4 memórias; catálogo com 3 fechadas e 1 fora (E). `resultados/` não foi tocado (`stat` antes e depois) |
+| 2c | Comparação medida por medida (`python3 <rascunho>/comparar.py <rascunho>`) | lição **14/14**; memórias e catálogo **96/96**; total **110/110** |
+| 3 | Script contra o racional | ok: o ponto final está no molde. O resto é como na seção anterior: sem LLM nem serviço externo, limiar 0.95, nenhum texto de caso (0 arquivos), manifesto com 21/21 hashes conferidos, `validar_memoria.py` aprova as 4, catálogo só com as fechadas e sem `location`/`evidence`. As duas observações de antes não mudam nada nesta base: o pacote de topo nos nomes de B (B = 0) e a lista autorizada lida do último trecho |
+| 4 | Ordem | ok no que dá para ver: racional em `ef36e2c` (13:54:31 −03:00), rodada deste validador às 13:55:00 −03:00. A mudança é de forma e está declarada na própria linha ("revalidação 5"). Como a tabela inteira, é descritiva |
+
+**Condição da ordem, na base 3 (não é divergência):** a primeira rodada deste script na base 3, a base de
+confirmação, ainda não existe nesta máquina. Ela tem de rodar com um HEAD que contenha `ef36e2c` e depois de
+2026-10-19T13:54:31−03:00, e quem rodar confere a data contra o `git log` do racional.
+
+## Contagens da conclusão
+
+- Testes 19/19 · encontro do script 28/28 · lição 14/14 · memórias e catálogo 96/96 · total 110/110 · 0 divergências.
+- Memórias: 4 (C 6, E 7, D.ConversationAgent 2, D.managerAgent 1; B 0), as 4 aprovadas pelo `validar_memoria`
+  (esquema 0.3). Catálogo: 3 fechadas, 1 fora (E, destino em aberto). Manifesto: 21/21.

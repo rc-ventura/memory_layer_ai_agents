@@ -200,7 +200,8 @@ def memoria_da_parte(mid, v, erros, a):
     ev = [next(x for x in o_ppm if x["nome"] == nm) for nm in tres]
     papeis = len({e["papel"] for e in v})
     desc_nomes = ", ".join(f"{nm} {cont_nome[nm]}" for nm in por_erros(cont_nome))
-    descricao = {k: f"{len(v)} erros em {papeis} {pal}, parte {pt} do inventário do sandbox ({rot}): {desc_nomes}"
+    # o molde do racional (emenda 4, ef36e2c): termina com ponto final
+    descricao = {k: f"{len(v)} erros em {papeis} {pal}, parte {pt} do inventário do sandbox ({rot}): {desc_nomes}."
                  for k, pal in (("literal", "papel(éis)"), ("concordancia", "papel" if papeis == 1 else "papéis"))}
     def nomes(tipos):
         return por_erros(collections.Counter(e["nome"] for e in v if e["tipo"] in tipos))
