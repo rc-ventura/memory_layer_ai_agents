@@ -134,6 +134,14 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `globals` 2.347 de 2.352 no `ContestacaoCivel`, `get_document_text` 167 de 167 no `OBFCivel`, `pd` 231 de 233 no
   `JoogleAnalytics`, contra `json` em 10 papéis e 10 meses. O racional ganha as partes e o script monta uma memória por parte
   (nova validação). O destino da parte do `globals` (harness) segue como hipótese → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, o Ajuste 21 (decisões do Rafael):** (1) a introspecção proibida (`globals`/`locals`/`vars`) usada para
+  verificar a existência de uma variável **e que guarda a criação dessa variável por uma chamada** ("se `x` não existe,
+  `x = ferramenta(...)`" — o comportamento que a instrução do prompt pede) sai de `U_sandbox` e entra na unidade do
+  `try/except`; a leitura com valor padrão (`globals().get('x', padrão)`, espontânea) fica no sandbox — **regra (b),
+  condicionada a um teste na base 3**; se o teste não separar, vale a regra só pela linha (a), com as exceções
+  registradas; (2) a unidade passa a `U_verificacao_existencia`; (3) o ajuste vale nas três bases; (4) o monitoramento
+  (`b3 #28`) é registrado junto, com os dois sintomas; (5) o aviso à plataforma continua adiado (`transversal #7`) →
+  [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #46.
 - **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
   lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
   passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,

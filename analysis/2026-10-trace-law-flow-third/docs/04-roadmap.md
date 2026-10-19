@@ -295,7 +295,9 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#46** **Ajuste 21 — a introspecção usada para verificar a variável vai para a unidade do `try/except`** (renomeada
   `U_verificacao_existencia`, destino harness). Evidência: a instrução "verifique se a variável existe" do prompt do
   ContestacaoCivel causa a introspecção barrada (prompt antigo, sem dizer como: 36 de 127 na base 2; 1.527 + 709 na base 3)
-  e o `try/except NameError` (prompt novo: 97 de 97 na base 2; 5.667 em ago na base 3). **Espera a aprovação do Rafael** →
+  e o `try/except NameError` (prompt novo: 97 de 97 na base 2; 5.667 em ago na base 3). **Aprovado em 19/10** (regra (b),
+  condicionada ao teste; nome novo; nas três bases; monitoramento junto; aviso adiado — `decisoes.md`). **Falta:** o teste
+  da regra (b) na base 3, a implementação, o ensaio, a rodada nova →
   [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
 
 ## Fora de escopo / adiado
