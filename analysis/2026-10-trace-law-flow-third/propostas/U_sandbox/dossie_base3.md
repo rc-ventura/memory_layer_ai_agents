@@ -520,6 +520,18 @@ da base 1): C passa no ambiente (antes falhava); E passa no conflito (antes falh
 algumas embutidas, como `repr`); o teste no interpretador mostra que essas três funcionam (ajuste futuro do script do
 degrau 2). As D repetem o prompt; a recorrência falha na base 1, que é pequena; a 5 segue "não verificável".
 
+**10 · O esperado da rodada nova da base 3, escrito antes de rodar (20/10; código `cc27360` e o commit da revalidação
+7).** Contra a rodada `aedb9b5db70d6c92`:
+- **`U_ferramenta_nao_declarada` (nova): 167**, todos no OBFCivel (Ajuste 26);
+- **`U_verificacao_existencia`: + 135** (Ajuste 27), vindos do sandbox e dos pendentes por código cortado;
+- **`U_sandbox`: entre 1.099 e 1.234** (1.401 − 167 − a parte dos 135 que estava no sandbox); os pendentes caem o resto;
+- **as outras unidades: iguais** (o total de erros, a genealogia e as famílias não mudam);
+- **partes** (mineração): B.OBFCivel 211 → **44**; **E: 317** (os 488 sem `globals` 142, `locals` 14, `eval` 14, `vars`
+  1); **F: entre 36 e 171** (esses quatro nomes, menos o que o Ajuste 27 tirou do sandbox); C se divide conforme as listas
+  autorizadas da base 3 (6 listas na rodada anterior) — o número da C global e das C por papel sai da rodada;
+- **encontro** com a auditoria: todas as medidas iguais; a observação 1 da revalidação 7 (variantes com espaço) se mede
+  aqui, se o número da verificação não for 135.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
