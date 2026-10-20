@@ -20,6 +20,15 @@ de existência e (2) os dois erros se substituem no tempo, no mesmo papel.
      por função auxiliar, `f('x')` com `x` criado na mesma linha) é atribuído, no código do passo, ao resultado de uma
      chamada que não é a própria introspecção — ou 'espontânea' (ex.: `x = globals().get('x', padrão)`, leitura com
      valor padrão). Por papel × mês.
+  E. a verificação que a regra (b) deixa no sandbox, pela forma (decisão 2 do fechamento do sandbox, 20/10: a
+     verificação com valor padrão vai para o harness — falta saber se a forma separa o ContestacaoCivel dos outros
+     papéis, ou se a regra precisa do papel). Só `globals`/`locals`/`vars` com uso 'verificação de existência' e que não
+     são 'instruída'; por papel e forma (e por mês no papel da instrução):
+       'cria com valor fixo'         o nome verificado recebe, no código ou na linha, algo que não é chamada nem a
+                                     própria introspecção (`if 'x' not in globals(): x = '…'`);
+       'leitura com valor padrão'    o nome recebe a própria introspecção (`x = globals().get('x', padrão)`);
+       'verifica e não cria'         o nome verificado não é atribuído em lugar nenhum;
+       'sem nome entre aspas'        verifica, mas sem um nome literal (`[v for v in obrigatorias if v not in globals()]`).
 
 Lê o parquet cru com o pyarrow (não usa o pipeline). Não grava nada. Imprime só contagens, nomes de papel e meses.
 Uso, da raiz, na máquina da base:
@@ -78,6 +87,32 @@ def verificacao_instruida(linha, codigo):
     return "espontânea"
 
 
+def forma_espontanea(linha, codigo):
+    """A forma da verificação que a regra (b) deixa no sandbox (parte E do docstring), ou None se é 'instruída' ou se a
+    linha não verifica."""
+    if not VERIFICA.search(linha):
+        return None
+    nomes = nomes_verificados(linha)
+    if not nomes:
+        return "sem nome entre aspas"
+    if verificacao_instruida(linha, codigo) == "instruída":
+        return None
+    texto = f"{codigo or ''}\n{linha}"
+    formas = set()
+    for n in nomes:
+        # atribuição como comando (começo de linha, ou depois de `:`/`;`), não argumento nomeado: nem `f(x=x)` na
+        # mesma linha, nem `x=x,` numa chamada de várias linhas (fora de parêntese aberto)
+        for a in re.finditer(rf"(?:^|[:;])\s*{re.escape(n)}\s*=(?!=)\s*(.*)", texto, re.M):
+            antes = texto[:a.start()]
+            if antes.count("(") > antes.count(")"):
+                continue
+            formas.add("leitura com valor padrão" if re.match(rf"{INTRO}", a.group(1)) else "cria com valor fixo")
+    for f in ("cria com valor fixo", "leitura com valor padrão"):
+        if f in formas:
+            return f
+    return "verifica e não cria"
+
+
 def mascarar(linha):
     return re.sub(r"'[^']*'|\"[^\"]*\"", "'…'", " ".join(linha.split()))[:110]
 TRY_NAMEERROR = re.compile(r"except\s+\(?[^)\n:]*\bNameError\b")
@@ -108,8 +143,10 @@ def medir(linhas):
             linha = m.group(1) if m else ""
             regs.append({"papel": r["papel"], "mes": r["mes_execucao"], "erro": c[0], "funcao": c[1], "uso": c[2],
                          "forma": mascarar(linha) if c[0] == "introspecção" else None,
-                         "regra_b": verificacao_instruida(linha, r.get("error_code_action")) if c[0] == "introspecção" else None})
-    R = pd.DataFrame(regs, columns=["papel", "mes", "erro", "funcao", "uso", "forma", "regra_b"])
+                         "regra_b": verificacao_instruida(linha, r.get("error_code_action")) if c[0] == "introspecção" else None,
+                         "forma_e": (forma_espontanea(linha, r.get("error_code_action"))
+                                     if c[0] == "introspecção" and c[1] != "dir" and c[2] == "verificação de existência" else None)})
+    R = pd.DataFrame(regs, columns=["papel", "mes", "erro", "funcao", "uso", "forma", "regra_b", "forma_e"])
     I = R[R.erro.eq("introspecção")]
     A = I.groupby(["papel", "mes", "funcao", "uso"]).size().rename("erros").reset_index()
     R["coluna"] = R.erro.where(R.erro.ne("introspecção"), "introspecção · " + R.uso.fillna(""))
@@ -121,7 +158,12 @@ def medir(linhas):
          .reset_index())
     D = D.pivot_table(index=["papel", "mes"], columns="regra_b", values="erros", aggfunc="sum", fill_value=0).reset_index()
     D.columns.name = None
-    return {"A": A, "B": B, "C": C, "D": D}
+    F = I[I.forma_e.notna()]
+    E = F.pivot_table(index="papel", columns="forma_e", values="erro", aggfunc="size", fill_value=0)
+    E["total"] = E.sum(axis=1)
+    E = E.reset_index(); E.columns.name = None
+    E_mes = F.groupby(["papel", "mes", "funcao", "forma_e"]).size().rename("erros").reset_index()
+    return {"A": A, "B": B, "C": C, "D": D, "E": E, "E_mes": E_mes}
 
 
 def main(argv=None):
@@ -142,6 +184,10 @@ def main(argv=None):
     print(T["C"].to_string(index=False) if len(T["C"]) else "  nenhum")
     print("\nD · o teste da regra (b): a verificação guarda a criação da variável por uma chamada (instruída) ou não (espontânea)?")
     print(T["D"].to_string(index=False) if len(T["D"]) else "  nenhum")
+    print("\nE · a verificação que a regra (b) deixa no sandbox, por papel e forma (decisão 2: a forma separa os papéis?)")
+    print(T["E"].to_string(index=False) if len(T["E"]) else "  nenhum")
+    print("\nE · o mesmo, por papel × mês × função")
+    print(T["E_mes"].to_string(index=False) if len(T["E_mes"]) else "  nenhum")
     return 0
 
 

@@ -255,22 +255,35 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   roadmaps — ver o #20, fechado.)
 - [ ] **#50** **O degrau 2 (conferida) das 14 memórias do sandbox** ([`17`](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md),
   dossiê §2f). (1) ~~o script do degrau 2 no kit~~ **feito em 20/10** (`conferir_memorias.py`, Ajuste 25; com o prompt da
-  base 1 reproduz o §2f → dossiê §2g); **a unidade fecha no degrau 3** para as que vão para injeção (decisão de 20/10); (2) rodá-lo na base 2 (prompt completo; fecha o #49); (3) corrigir o
-  script específico — C com o `pd` só nos papéis com `pandas`, E sem a verificação, B pelo #49 — e revalidar;
-  (4) decisões do Rafael: D (repete o prompt), as 6 que falham na recorrência (#48), o destino da verificação com valor
-  padrão; (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49.
-- [ ] **#49** **A parte B do sandbox (`U_sandbox.B.OBFCivel`, 211 erros) pode ser sinal de harness — em verificação
-  (19/10).** O prompt do OBFCivel na base 1 manda usar `get_document_text`, que não está entre as ferramentas
-  declaradas; o agente tenta importá-la e o sandbox barra. A memória do catálogo ("chame-as direto, sem import")
-  mandaria chamar uma função que não existe. **Teste:** `contar_ferramentas_prompt_base2.py --trace <base 2>` na máquina
-  da base 2: por versão do prompt do OBFCivel, `get_document_text` é mencionada e não declarada? Se sim, Ajuste 26
-  (B → harness), decidido pelo Rafael; se não, B fica memória → [dossiê](../propostas/U_sandbox/dossie_base3.md) §2e.
-- [ ] **#48** **As memórias pequenas do sandbox: decidir a régua de "memória rara" (pendente, 19/10).** Das 14 memórias
-  fechadas do `U_sandbox`, 6 têm de 1 a 3 erros (B.RespostaBacen 1; D.AgenteTestemunhas 1, D.OficiosResposta 1,
-  D.RespostaOficios 1, D.CalculoCivel 3, D.Consultivo 3, D.ontestacaoCivel 3 — e D.JoogleAnalytics 4, D.OBFCivel 5 e
-  D.RespostaBacen 5 ficam logo acima). Estão no catálogo como estão. **Decidir:** aplicar a régua do `monitoramento.json`
-  (pelo menos 3 execuções em 2 meses) para separar o que entra na POC do que só fica monitorado, ou deixá-las todas. Não
-  muda número da rodada; muda quais memórias o experimento injeta (`b3 #39`, o teste de compensação).
+  base 1 reproduz o §2f → dossiê §2g); **a unidade fecha no degrau 3** para as que vão para injeção (decisão de 20/10); (2) ~~rodá-lo na base 2~~ **feito em 20/10** (66 versões, 18 papéis: o mesmo resultado da base 1 → dossiê §2h); (3) o
+  ~~Ajuste 26~~ **escrito em 20/10** (o import de `get_document_text` → `U_ferramenta_nao_declarada`, harness; emenda 7 do
+  racional; base 1 sem mudança; esperado na base 3: 167 saem do sandbox — livro-razão) e corrigir o script específico — C com
+  o `pd` só nos papéis com `pandas`, E sem a verificação, B sem o `get_document_text` e com o texto dos nomes do framework corrigido ("não importe `python_interpreter`…: o seu
+  código já roda no interpretador", não "chame-as direto"; dossiê §2h, 6) — e a verificação com valor padrão
+  do ContestacaoCivel → harness (decidido em 20/10, na mesma rodada do Ajuste 26) — e revalidar;
+  (4) decisões do Rafael: as 6 que falham na recorrência (#48) — 5 delas são D e já têm destino (o destino da verificação
+  com valor padrão: harness, 20/10; as D: monitoradas como *memória de reforço*, não injetadas, 20/10 — no nível da memória:
+  o tipo e o alarme no catálogo, conferidos pelo `catalogar_memoria.py` a cada nova mineração (os dois níveis do
+  monitoramento: `16`, "O monitoramento", 20/10); o experimento de reforço é o EX-8 do blueprint das POCs); (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49.
+- [ ] **#53** **Descobrir, no prompt, as ferramentas citadas e não declaradas (aberto em 20/10).** Hoje o
+  `contar_ferramentas_prompt_base2.py` testa nomes dados (`get_document_text`, `python_interpreter`); a lista do Ajuste 26
+  (`FERRAMENTAS_NAO_DECLARADAS`) só cresce pelo que já errou. Estender o script para listar, por papel e versão do prompt,
+  todo nome que o prompt cita como ferramenta (entre crases ou com parênteses, fora de código de exemplo) e que não está
+  entre os `def` — os candidatos do passo 1 viriam do prompt, não só dos erros. Rodar nas bases 1 e 2 → procedimento
+  `16`, "Uma ferramenta citada e não declarada".
+- [ ] **#52** **O `monitorar.py` (passo 0) ler as tabelas da base 3 (aberto em 20/10).** Hoje ele lê a
+  `erros_mecanismo.csv` das bases 1 e 2; na base 3 o passo 0 fica "não conferido". Ensinar o script do kit a ler as
+  tabelas da base 3 (outro formato: só erros, do parquet), com teste e `VERSAO` nova; vale para toda unidade, não só o
+  sandbox. Decisão do Rafael (20/10): item próprio, fora do fechamento do sandbox (#50) → [`decisoes.md`](../../decisoes.md).
+- [ ] **#51** **Uma memória "como verificar se uma variável existe, no sandbox" (aberto em 20/10, depois do #50).** Ideia do
+  Rafael na decisão 2 do fechamento do sandbox: quando o prompt manda verificar sem dizer como, uma memória pode dizer
+  como — `try/except Exception`, ou `x = None` no primeiro passo e `if x is None` depois; nunca `globals()` nem
+  `except NameError` (o sandbox lança o próprio erro, que esse `except` não pega). Reproduzido no interpretador
+  (`pipeline/validacao/testar_sandbox_try_nameerror.py`, variantes 3, 4 e 8; smolagents 1.26.0, a versão da plataforma
+  não é conhecida). População: toda a `U_verificacao_existencia` (introspecção, valor padrão, `eval` e `try/except`),
+  hoje harness. Minerar pelos quatro degraus como qualquer candidata; se passar, decidir ali se o destino de parte da
+  unidade muda (memória enquanto o prompt não é consertado) — sem reabrir o Ajuste 21 antes disso →
+  [dossiê](../propostas/U_sandbox/dossie_base3.md) §2h.
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do
@@ -322,6 +335,15 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
+- [x] **#48** **As memórias pequenas do sandbox: a régua de memória rara** — fechado em 20/10. Das 6 que falham na
+    recorrência, as 5 de "import fora da lista" ficam monitoradas como *memória de reforço* (repetem o prompt) e a
+    `U_sandbox.B.RespostaBacen` (1 erro) como *memória rara*; nenhuma é injetada; as duas no nível da memória (o
+    catálogo; `16`, "Dois níveis") → [`decisoes.md`](../../decisoes.md) (20/10), dossiê §2h.
+- [x] **#49** **A parte B do sandbox no OBFCivel: o `get_document_text` é sinal de harness** — fechado em 20/10. Na base 2
+    (`contar_ferramentas_prompt_base2.py`, foto `IMG_5968`), as 63 execuções do OBFCivel (abr–ago/26, as 4 versões do
+    prompt, um só conjunto de ferramentas declaradas) citam `get_document_text` e não a declaram; na base 1, 11 de 11.
+    Decisão do Rafael (20/10): harness — o Ajuste 26 entra no #50 (3); o resto da parte B segue memória do OBFCivel →
+    [dossiê](../propostas/U_sandbox/dossie_base3.md) §2h, [`decisoes.md`](../../decisoes.md) (20/10).
 - [x] **#12** **Piloto de mineração de ponta a ponta: inventário do sandbox** — fechado em 19/10. Na base 3, rodada
     `aedb9b5db70d6c92` (código com os Ajustes 21–23 e as emendas 1–6 do racional): os 9 passos do `minerar.py` fecham —
     1.401 erros, cobertura 99,6%, 75 medidas iguais à auditoria independente, **14 memórias** no esquema 0.3 (C global

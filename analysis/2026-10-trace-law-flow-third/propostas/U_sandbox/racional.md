@@ -164,6 +164,16 @@ passa de "em aberto" a **memória** (global), e a `correction_guidance` dela gan
 o complemento fixo "Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); para ler JSON, use json.loads."
 (o jeito permitido de fazer o que a depuração e a conversão de texto faziam). Regras, partes e limiar não mudam.
 
+**Emenda 7, de 20/10 (consequência do Ajuste 26, decidido pelo Rafael; descritiva, escrita depois do teste na base 2,
+dossiê §2h, foto `IMG_5968`):** sai também da população o import de uma ferramenta que o prompt **cita e não declara**:
+no último trecho da mensagem (depois do último `due to:`), o nome de `Import of X is not allowed`, `Import from X is not
+allowed` ou `No module named 'X'`, pela raiz antes do primeiro ponto, está na lista do pipeline das ferramentas citadas e
+não declaradas — hoje só `get_document_text` (o prompt do OBFCivel a cita e não a declara em 63 de 63 execuções na base 2
+e 11 de 11 na base 1). Esses erros vão para `U_ferramenta_nao_declarada` (sinal de harness). A parte **B** fica com os
+nomes do framework (`python_interpreter`, `tools`, `tool_usage`, `tool_functions`, `smolagents`, `mcp`, `mcp_client`) e
+os outros `get_*`. Regras do passo 4, partes e limiar não mudam. Na base 1, 0 erros caem aqui; na base 3, o esperado é
+**167** (todos no OBFCivel): o sandbox 1.401 → 1.234 e a B.OBFCivel 211 → 44.
+
 ## O que não mede
 
 - Se o agente se recuperou depois do erro (é o "depois" da parte genérica).

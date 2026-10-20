@@ -58,6 +58,7 @@ NOME_ERRO = {
     "nome_de_step_que_falhou": "Nome de um step que falhou",
     "verificacao_try_nameerror": "Verificação por try/except NameError",
     "verificacao_introspeccao": "Verificação por globals()/locals()/eval",
+    "ferramenta_nao_declarada": "Import de ferramenta citada e não declarada",
     "repr_colado": "Retorno impresso colado no código",
     "harness_bloco_code": "Resposta sem bloco de código",
     "infra_llm": "Falha do LLM upstream",

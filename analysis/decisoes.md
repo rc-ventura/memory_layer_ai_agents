@@ -184,6 +184,51 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   a guidance, e copiado no catálogo; a lista autorizada de cada papel vem do prompt; a instrução do prompt que induz um
   nome (a verificação de existência) fica no item do `monitoramento.json`; as 14 do sandbox ganham o campo transcrito da
   `description`, marcado, até a próxima mineração → livro-razão, [Ajuste 25](pipeline-entre-bases.md#ajuste-25--o-degrau-2-por-script-e-o-esquema-04-20102026).
+- **20/10, o `get_document_text` do OBFCivel é sinal de harness, não memória** (decisão do Rafael): nas 63 execuções do
+  papel na base 2 (abr–ago/26, as 4 versões do prompt) e nas 11 da base 1, o prompt cita a função e não a declara como
+  ferramenta — o erro vem do prompt, e a memória atual ("chame-as direto") mandaria chamar algo que o prompt não declara
+  (se a função existe no executor não foi testado: na base 1 o agente nunca a chama direto; o teste da chamada direta e
+  da declaração em outros papéis vai à base 2; hipótese do Rafael: a ferramenta mudou de nome e o prompt não). O import
+  de `get_document_text` sai da unidade do sandbox por regra (Ajuste 26, a escrever); o resto da parte B segue memória do
+  OBFCivel → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h; base 3,
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #49 (fechado) e #50.
+- **20/10, a verificação com valor padrão do ContestacaoCivel é sinal de harness** (decisão do Rafael, por coerência com o
+  Ajuste 21): `if 'x' not in globals(): x = '…'` (≈ 124 `globals` + 10 `locals` na base 3, jul–ago/26) é a instrução
+  "verifique se a variável existe" cumprida sem caminho dado — o prompt deixa o como em aberto, o agente tenta e o sandbox
+  barra. Sai do sandbox por regra (extensão da regra (b) do Ajuste 21, só no papel com a instrução; as ≈ 9 verificações
+  espontâneas dos outros papéis ficam), na mesma rodada do Ajuste 26; a memória E deixa `globals`/`locals`/`vars`/`eval`.
+  A causa por erro é inferida (a base 3 não guarda o prompt), como no Ajuste 21. A ideia de uma memória "como verificar no
+  sandbox" fica como candidata própria → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h;
+  base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50 e #51.
+- **20/10, as 10 memórias de "import fora da lista" são monitoradas, não injetadas** (decisão do Rafael): a lista de imports
+  autorizados já está no prompt de todos os papéis (bases 1 e 2) e as 10 falham em "repete o prompt" no degrau 2; são 40
+  erros na base 3 (0,13%), de 1 a 14 por papel. Ficam no inventário do sandbox (os erros não mudam de unidade) e entram no
+  monitoramento num **tipo novo, "memória de reforço (repete o prompt)"**, distinto de *sinal de harness* e de *memória rara*
+  — as 5 que também falham na régua entram neste tipo, não no de memória rara. Injetar o que o prompt já diz testa outra
+  pergunta (o reforço funciona?), documentada como experimento próprio (EX-8 do
+  [blueprint](../pocs/blueprint-m1-pocs-minimos.md), com a literatura) → [glossário](glossario.md) (tipos de
+  monitoramento); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50.
+- **20/10, o monitoramento tem dois níveis** (decisão do Rafael): monitoram-se sempre erros, contados no recorte da
+  **unidade** (a tabela do pipeline; `monitorar.py` e `monitoramento.json`, no passo 0 — os sinais de harness) ou no
+  recorte de uma **memória** (unidade × parte × papel; o resultado da mineração e o catálogo; `catalogar_memoria.py`, no
+  passo 9, compara com a contagem anterior — as memórias raras e as de reforço). O `monitorar.py` não muda: o pipeline não
+  etiqueta a parte, e um item no recorte da memória contaria a unidade inteira ou pararia o passo 0 das outras bases. O
+  alarme de uma memória só dispara quando a unidade dela é minerada de novo → [`16`](2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)
+  ("O monitoramento", "Dois níveis"); [glossário](glossario.md) (tipos de monitoramento).
+- **20/10, a régua de memória rara se aplica; sobra uma** (decisão do Rafael, fecha o `b3 #48`): das 6 memórias do
+  sandbox que falham na recorrência, as 5 de "import fora da lista" já são *memória de reforço* (decisão 3); a
+  `U_sandbox.B.RespostaBacen` (1 erro, jan/26) fica **monitorada como memória rara**, não injetada, no nível da memória
+  (catálogo). Achado no caminho: `python_interpreter` é ferramenta-base do smolagents só para o `ToolCallingAgent` (o
+  `CodeAgent` não a recebe — por isso nunca está no prompt), mas o `CodeAgent` registra cada passo de código como uma
+  chamada de ferramenta `python_interpreter`, que volta ao modelo no histórico ("Calling tools: … 'python_interpreter'
+  …"; `agents.py` e `memory.py`, smolagents 1.26.0). Hipótese: o agente vê o nome no histórico e tenta importá-lo (34 erros
+  no OBFCivel e 1 no RespostaBacen, na base 3). O texto das memórias B com nomes do framework muda no script específico:
+  não "chame-as direto", e sim "não importe `python_interpreter`/`tools`/`smolagents`: o seu código já roda no
+  interpretador" → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h; base 3,
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #48 (fechado) e #50.
+- **20/10, o `monitorar.py` ler a base 3 é item próprio, fora do fechamento do sandbox** (decisão do Rafael): o passo 0
+  segue "não conferido" na base 3 (as tabelas dela têm outro formato); o sandbox fecha com os itens registrados, e a
+  recontagem automática na base 3 vem com o item do kit → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #52.
 - **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
   lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
   passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,

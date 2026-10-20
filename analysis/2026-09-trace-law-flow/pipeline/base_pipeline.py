@@ -281,6 +281,20 @@ INTROSPECCAO_VERIFICA = ("globals", "locals", "vars")
 # no código do passo). A regra é a mesma: verifica um nome e guarda a criação dele por uma chamada; `eval(texto)` para
 # converter texto em objeto (os outros papéis) fica no inventário do sandbox (dossiê do sandbox na base 3, §2c).
 VERIFICA_E_CRIA = INTROSPECCAO_VERIFICA + ("eval",)
+# Ajuste 26 (20/10/2026): o import de uma ferramenta que o prompt CITA e não DECLARA (não está entre os `def` do system
+# prompt). O conserto é no prompt (declarar a ferramenta ou tirar a menção), não uma memória: a memória "as ferramentas
+# já estão no escopo, chame-as direto" mandaria chamar o que o prompt não declara. Pelo nome, porque a base 3 não guarda o
+# prompt: um nome entra aqui só com a evidência de que o prompt o cita sem declarar. get_document_text — o prompt do
+# OBFCivel cita e não declara em 63 de 63 execuções na base 2 e 11 de 11 na base 1 (contar_ferramentas_prompt_base2.py;
+# dossiê do sandbox na base 3, §2h). Os nomes do framework (python_interpreter, tools, smolagents…) ficam no sandbox.
+FERRAMENTAS_NAO_DECLARADAS = ("get_document_text",)
+_IMPORT_BARRADO = re.compile(r"Import (?:of|from) ([\w.]+) is not allowed|No module named '([^']+)'")
+
+
+def ferramenta_nao_declarada(m):
+    """O import barrado (no último trecho da mensagem) é de uma ferramenta citada e não declarada pelo prompt?"""
+    x = _IMPORT_BARRADO.search(str(m).rsplit("due to:", 1)[-1])
+    return bool(x) and (x.group(1) or x.group(2)).split(".")[0] in FERRAMENTAS_NAO_DECLARADAS
 _INTRO = r"(?:globals|locals|vars)\s*\(\s*\)"
 _NOMES_DIRETOS = (re.compile(rf"['\"](\w+)['\"]\s+(?:not\s+)?in\s+{_INTRO}"),
                   re.compile(rf"{_INTRO}\s*\.get\s*\(\s*['\"](\w+)['\"]"))
@@ -366,6 +380,8 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         return "nome_nao_definido"
     if f and f.group(1) in VERIFICA_E_CRIA and verifica_e_cria:   # Ajustes 21 e 23
         return "verificacao_introspeccao"
+    if ferramenta_nao_declarada(m):   # Ajuste 26
+        return "ferramenta_nao_declarada"
     if f or "Import of" in m or "Import from" in m or "ModuleNotFound" in m or "Forbidden" in m:
         return "inventario_sandbox"
     if v and verificacao_try_nameerror(m):
@@ -387,6 +403,7 @@ SUB2UNI = {
     "nome_de_step_que_falhou": "U_estado_perdido",
     "nome_nunca_definido": "U_nome_inventado",
     "verificacao_try_nameerror": "U_verificacao_existencia", "verificacao_introspeccao": "U_verificacao_existencia",
+    "ferramenta_nao_declarada": "U_ferramenta_nao_declarada",
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
@@ -428,6 +445,10 @@ UNI = {
                                  "proibida e `except NameError` não captura o InterpreterError do nome inexistente. Se ela "
                                  "ainda não foi criada, chamar a ferramenta direto. O conserto é no prompt que instrui a "
                                  "verificação (Ajustes 17 e 21)."),
+    "U_ferramenta_nao_declarada": ("Ferramenta citada no prompt e não declarada", FACT,
+                                   "O prompt manda usar uma ferramenta que não está entre as declaradas (os `def` do "
+                                   "prompt), e o agente tenta importá-la. O conserto é no prompt: declarar a ferramenta "
+                                   "ou tirar a menção (Ajuste 26)."),
     "U_repr_colado": ("Não colar retorno impresso de volta no código", ESTR,
                       "Referenciar a variável que guardou o retorno em vez de colar o print dele (truncado ou inteiro) "
                       "dentro do código; se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca "
@@ -550,6 +571,9 @@ DESTINO_MINERACAO = {
     # Ajuste 21 (19/10): a unidade passa a U_verificacao_existencia (try/except e introspecção); base 1 — o prompt de
     # julho do ContestacaoCivel tem a instrução e 1 execução verifica com globals().
     "U_verificacao_existencia": {"destino": "harness", "bases": ("base1", "base2", "base3")},
+    # Ajuste 26 (20/10): bases 1 e 2 — o prompt do OBFCivel cita get_document_text e não a declara (11 de 11 e 63 de 63);
+    # base 3 — o mesmo nome no mesmo papel (167 erros), sem o prompt na base.
+    "U_ferramenta_nao_declarada": {"destino": "harness", "bases": ("base1", "base2", "base3")},
 }
 SINAL_HARNESS = "sinal de harness"
 

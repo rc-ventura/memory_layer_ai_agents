@@ -58,10 +58,22 @@ def verifica_e_cria(msg, codigo):
     return any(re.search(rf"\b{re.escape(n)}\s*=\s*(?!(?:globals|locals|vars|eval)\b)[A-Za-z_][\w.]*\s*\(", texto) for n in nomes)
 
 
+# emenda 7 do racional (Ajuste 26): o import de uma ferramenta que o prompt cita e não declara sai da população
+NAO_DECLARADAS = {"get_document_text"}
+_IMPORT_NOME = re.compile(r"Import (?:of|from) ([\w.]+) is not allowed|No module named '([^']+)'")
+
+
+def citada_nao_declarada(msg):
+    x = _IMPORT_NOME.search(msg.rsplit("due to:", 1)[-1])
+    return bool(x) and (x.group(1) or x.group(2)).split(".")[0] in NAO_DECLARADAS
+
+
 def populacao_sandbox(msg, codigo=""):
     if any(s in msg for s in ANTES):
         return False
     if verifica_e_cria(msg, codigo):
+        return False
+    if citada_nao_declarada(msg):
         return False
     v = re.search(r"The variable `(\w+)` is not defined", msg)
     if v and v.group(1) in MODULOS:

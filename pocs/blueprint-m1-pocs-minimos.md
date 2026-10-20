@@ -123,6 +123,30 @@ Cada experimento: pergunta → desenho → medição → critério. Todos na sui
 - **Medição:** audit trail completo (motivo logado); replay recria o estado pré-commit ruim (Reversible Reconciliation do SSGM).
 - **Critério:** demonstra, num cenário mínimo, a combinação cross-trial × forgetting × gate × rollback que a análise do corpus mostrou como interseção vazia ([`cross-trial-vs-forgetting-gap.md`](../discussion/teoria/cross-trial-vs-forgetting-gap.md)) — é o *núcleo empírico* da contribuição do projeto.
 
+### EX-8 — Memória de reforço: repetir a instrução do prompt como hint (candidato, proposto em 20/10/2026)
+
+- **Origem:** o fechamento do inventário do sandbox na base 3 (decisão 3, [`decisoes.md`](../analysis/decisoes.md), 20/10).
+  As 10 memórias de "import fora da lista" falham no degrau 2 por **repetir o prompt**: a lista de imports autorizados já
+  está nele ("You can use imports in your code, but only from the following list of modules: [...]") e o agente importa
+  fora dela mesmo assim (40 erros na base 3). Não entram na primeira POC; ficam monitoradas como *memória de reforço*.
+- **Pergunta:** repetir, perto do ponto de uso, uma instrução que já está no system prompt reduz o erro que a viola? É
+  outra pergunta que a do EX-2 (uma memória que ensina algo **novo**), por isso fica separada — misturadas, não se sabe de
+  onde veio o efeito.
+- **Hipóteses da literatura (verificação bibliográfica, nenhuma lida —
+  [`reading-queue.md`](../papers/reading-queue.md), itens 46–49):** a instrução longe do ponto de uso perde peso (Liu et
+  al., "Lost in the Middle", 2023: a informação no meio de um contexto longo é menos usada; Li et al., 2024: a instrução do
+  system prompt deriva em poucas rodadas de diálogo); repetir o prompt melhora modelos sem raciocínio (Leviathan et al.,
+  2025); em humanos, a repetição espaçada é a base da retenção (Cepeda et al., 2006) — analogia, não mecanismo.
+- **Desenho:** o mesmo papel e a mesma tarefa, três braços: (A) só o prompt; (B) prompt + a frase da lista repetida como
+  hint curto no ponto de uso (logo antes do passo de código, ou na observação depois de um erro de import); (C) prompt + o
+  hint só depois do primeiro erro. Tarefas que pedem um módulo fora da lista (o erro tem de poder acontecer).
+- **Medição:** erros de "import fora da lista" por execução; tokens a mais do hint; se o hint muda outra coisa (efeito
+  colateral).
+- **Critério:** o reforço vale se B ou C reduz o erro além do acaso **e** o custo do hint fica abaixo do ponto de
+  equilíbrio (glossário da análise, §8). Se não reduz, o resultado também serve: confirma que repetir a instrução não
+  substitui uma memória com conteúdo novo, e as memórias de reforço seguem só monitoradas.
+- **Pré-requisito:** o EX-2 (o efeito de uma memória nova) antes, para ter a linha de comparação.
+
 *Experimentos EX-3 a EX-6 dependem da calibração de parâmetros (θ1, pesos DMF-lite, predicado do filtro, janela por stage/caso). Tratar calibração como **primeira passada documentada**, não como número final: θ calibrado na POC não calibra a produção — é a *prova de que o procedimento de calibração funciona* e de onde a sensibilidade mora (insumo direto do Sub 2.2/3.6).*
 
 ## 6. A matriz pergunta × artefato × entregável

@@ -392,6 +392,96 @@ uv run python .claude/skills/mineracao-candidata/scripts/conferir_memorias.py --
 2. `uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace <base 2> --saida <fora do repo>/prompts_base2.jsonl`, depois `uv run python .github/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora do repo>/prompts_base2.jsonl --saida <fora do repo>/conferencia_base2.json`. Dá o degrau 2 das 14 com o prompt do mesmo período, inclusive a pergunta do `json` no RoteadorCivel. Foto da tabela impressa e do JSON por memória.
 3. A replicação do Ajuste 21 na base 2 (livro-razão, Ajuste 21, "Replicar", item 2). Copiar os `.py` e `.ipynb` da base 1 para a base 2, ajustar só `TRACE` e `BASE_ID`, conferir com o `conferir_versao.py` e rodar o notebook da esteira.
 
+## 2h · A ida à base 2 (20/10, fotos `IMG_5968`–`IMG_5973`)
+
+Os comandos do roteiro do §2g, na máquina da base 2, com o kit 0.10.0 em `.github/skills/`.
+
+**1 · O `get_document_text` no OBFCivel** (`contar_ferramentas_prompt_base2.py`, foto `IMG_5968`). Fato: as **63
+execuções** do OBFCivel (abr–ago/26) têm um só conjunto de ferramentas declaradas (hash `c77d8b11e7`; as 4 versões do
+prompt do item 2 diferem no resto do texto). Em todas, o prompt **cita** `get_document_text` e **não a declara**; não
+cita nem declara `python_interpreter`. As declaradas: `extract_documents_metadata`, `extract_obf_requests`,
+`final_answer`, `get_docs_from_filters`, `get_fields_definition`, `get_final_answer_schema`. Erros da parte B na base 2:
+`get_document_text` 2, `python_interpreter` 1. Com a base 1 (11 de 11), são duas bases e todas as versões: o erro vem do
+prompt. **Decisão do Rafael (20/10): harness** (Ajuste 26, a escrever); o resto da parte B segue memória do OBFCivel.
+**O que não está provado:** que a função não exista no executor — o provado é que o prompt não a declara. Na base 1, o
+OBFCivel nunca chama `get_document_text(...)` direto (0 de 103 passos) e nenhum papel a declara em nenhuma versão (só o
+OBFCivel a cita, abr–ago/26). Hipótese do Rafael (20/10): a ferramenta mudou de nome e o prompt não acompanhou. O teste,
+na base 2: as chamadas diretas e o que aconteceu com elas; se algum papel, em algum mês, declara a função.
+A mesma foto: o retorno descrito como `pandas` aparece só em CalculoTrabalhista (5 de 12 execuções) e JoogleAnalytics
+(10 de 10), papéis com `pandas` autorizado — apoia a decisão 5 do plano (o `pd` só por papel).
+
+**2 · O degrau 2 com o prompt da base 2** (`extrair_prompts_base2.py` e `conferir_memorias.py`, fotos
+`IMG_5969`–`IMG_5971`): 66 versões em 18 papéis (as execuções do ContestacaoCivel somam 224, como no §2e); arquivo de
+prompts `9713536588a9ce17`; régua 3 execuções / 2 meses.
+
+| Memória | 1 · ambiente | 2 · conflito | 3 · repete | 4 · recorrência | 5 · uma causa |
+|---|---|---|---|---|---|
+| C (global) | **falha** | passa | passa | passa | não verificável |
+| E (global) | **falha** | **falha** | parcial | passa | não verificável |
+| B.OBFCivel | **falha** | **falha** | parcial | passa | não verificável |
+| B.RespostaBacen | **falha** | passa | parcial | **falha** | não verificável |
+| D.CalculoTrabalhista, D.Consultivo, D.JoogleAnalytics, D.OBFCivel, D.RespostaBacen | passa | passa | **falha** | passa | não verificável |
+| D.AgenteTestemunhas, D.CalculoCivel, D.RespostaOficios, D.ContestacaoCivel | passa | passa | **falha** | **falha** | não verificável |
+| D.OficiosResposta | não verificável (o papel não está na base 2) | idem | idem | **falha** | não verificável |
+
+O resultado é o da base 1 (§2g); D.AgenteTestemunhas e D.Consultivo, sem prompt na base 1, agora se conferem e repetem o
+prompt como as outras D.
+
+**O `json` na lista autorizada — meia resposta.** Fato: versões do prompt da base 2 têm o mesmo hash das da base 1, logo o
+mesmo texto. O RoteadorCivel `243b65b1a1` (442 execuções na base 2, mai–ago/26) e o OBFCivel `1adb37a681` (23, jul–ago/26)
+são versões que a base 1 já mostrou **sem `json`**. Em aberto: o RoteadorCivel `4e6050c0c7` (140, ago/26) e 21 das 23
+versões do ContestacaoCivel. **Hipótese nova:** a lista que o prompt mostra pode não ser a que o sandbox aplica — na base 3,
+a lista do ContestacaoCivel vem da mensagem de erro do sandbox e tem `json`; na base 1, as versões de jul/26 do prompt do
+mesmo papel não têm. Se divergem, o degrau 2 tem de dizer qual lista vale (hoje a checagem 1 lê a do prompt).
+
+**3 · A replicação do Ajuste 21 na base 2 — parada** (`conferir_versao.py`, foto `IMG_5972`): `PARAR`, 2 arquivos fora
+do manifesto — `mineracao_unidades_n2_n10.ipynb` **falta** e `consolidacao_unidades.ipynb` **difere** (`62b24d261d7e0eeb`,
+esperado `c5cc2467dc2fd6db`); os demais conferem, incluindo `base_pipeline.py` e o notebook da esteira. A tabela de
+mecanismos do notebook (foto `IMG_5973`) dá 479 erros (o total da base 2), verificação de existência 140 (132
+execuções), inventário do sandbox 25 (22) — **a confirmar** que é a saída do notebook da base 2 (o comando na foto aponta
+para a pasta da base 1) e sem o número de antes para dizer o que mudou de unidade.
+
+**4 · A decisão 2: a verificação com valor padrão → harness (20/10).** Evidência: fotos `IMG_5920`–`IMG_5923` (base 3:
+`globals` no ContestacaoCivel 0 até jun/26, 73 em jul, 64 em ago; 124 dos 137 e 10 de 10 `locals` são verificação; nos
+outros papéis, 9) e `IMG_5899` (base 2: só esse papel tem a instrução, 224 de 224). A coluna "código com a verificação
+instruída" (`IMG_5924`, 117 de 137 em `globals`) não conta como prova: procura `in globals()`, que a própria linha tem. A
+instrução não diz como verificar; o sandbox barra os dois jeitos que o agente tenta. No interpretador
+(`pipeline/validacao/testar_sandbox_try_nameerror.py`, smolagents 1.26.0): `globals()` e `except NameError` falham;
+`except Exception`, `except` sem tipo e `x = None` + `if x is None` funcionam. **Decisão do Rafael: harness**, por coerência
+com o Ajuste 21 (o prompt induz o erro ao deixar o como em aberto). A memória "como verificar no sandbox" fica como
+candidata própria (roadmap `#51`).
+
+**5 · As decisões 3 e 4 (20/10).** As 10 memórias D (import fora da lista; 40 erros) ficam monitoradas como *memória de
+reforço* (repetem a lista do prompt), não injetadas; o experimento de reforço é o EX-8 do blueprint das POCs. A
+`U_sandbox.B.RespostaBacen` (1 erro) fica monitorada como *memória rara*. As duas no nível da memória (o catálogo; `16`,
+"Dois níveis").
+
+**6 · O `python_interpreter` vem do framework (20/10).** No código do smolagents 1.26.0: `agents.py` só dá a
+ferramenta-base `python_interpreter` ao `ToolCallingAgent` (o `CodeAgent` não a recebe — o código dele já roda no
+interpretador; por isso ela não está em nenhum prompt, nas bases 1 e 2); mas o `CodeAgent` registra cada passo de código
+como `ToolCall(name="python_interpreter", arguments=<código>)`, e o `memory.py` devolve isso ao modelo no histórico como
+"Calling tools: [{… 'name': 'python_interpreter' …}]". **Hipótese** (o código mostra que o nome aparece; que causa o erro
+não está provado): o agente lê o nome no próprio histórico e tenta importá-lo. Teste barato: se é o histórico, o erro
+nunca está no primeiro passo. Contagens (`import`, parte B): OBFCivel 34 na base 3, 1 na base 2; RespostaBacen 1 na base
+3; base 1, 0. A parte B do OBFCivel (211) fica com duas causas: `get_document_text` 167 (o prompt cita sem declarar →
+harness, decisão 1) e 44 nomes do framework (`python_interpreter` 34, `tools` 4, `tool_usage` 2, `tool_functions`,
+`mcp`, `mcp_client.tools`, `smolagents`, 1 cada) → memória do OBFCivel, com o texto corrigido no script específico ("não
+importe …: o seu código já roda no interpretador", não "chame-as direto").
+
+**7 · A medição para a regra da decisão 2, escrita antes de rodar (20/10).** `contar_introspeccao_linha.py`, parte E
+(nova): a verificação com `globals`/`locals`/`vars` que a regra (b) deixa no sandbox, por papel e forma — *cria com valor
+fixo* (`if 'x' not in globals(): x = '…'`), *leitura com valor padrão* (`x = globals().get('x', padrão)`), *verifica e não
+cria*, *sem nome entre aspas* (`[v for v in obrigatorias if v not in globals()]`). Argumento nomeado não conta como criar
+(`f(x=x)`, nem `x=x,` numa chamada de várias linhas). Base 1: só o ConversationAgent, 1 *leitura com valor padrão*
+(espontânea — fica). **O critério, fixado agora:**
+- se, **fora do ContestacaoCivel**, só há *leitura com valor padrão* (ou nada): a regra é **pela forma** — as outras três
+  formas vão para `U_verificacao_existencia`, a leitura com valor padrão fica no sandbox;
+- se fora do ContestacaoCivel há alguma das outras três formas: a forma não separa; a regra precisa do papel da instrução
+  (só o ContestacaoCivel), ou o Rafael decide levar também esses casos — decisão com os números na mão;
+- o número do ContestacaoCivel (as três formas somadas) é o esperado da rodada nova (≈ 134; o exato sai daqui).
+
+Comando, na máquina da base 3: `uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>` — foto das duas tabelas da parte E.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

@@ -36,6 +36,7 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 | `U_estado_perdido` | Após step com erro, o que ele definiria não existe | o agente usa uma variável que o step com erro nunca chegou a criar |
 | `U_nome_inventado` | Nome usado sem ter sido definido | o agente usa um nome (variável ou função) que não existe |
 | `U_verificacao_existencia` | Verificação de existência de variável (instruída pelo prompt) | o prompt manda checar se uma variável já existe antes de chamar a ferramenta, e o sandbox barra as duas formas: `'x' in globals()` (proibida) e `except NameError` (não pega o erro do sandbox); destino harness. Era `U_verificacao_try_nameerror` (Ajuste 17), renomeada e ampliada à introspecção no Ajuste 21 |
+| `U_ferramenta_nao_declarada` | Ferramenta citada no prompt e não declarada | o prompt manda usar uma ferramenta que não está entre as declaradas (os `def` do prompt), e o agente tenta importá-la; sinal de harness — o conserto é declarar a ferramenta ou tirar a menção (Ajuste 26, 20/10/2026; hoje só `get_document_text`, no OBFCivel) |
 | `U_verificacao_try_nameerror` | — | nome antigo de `U_verificacao_existencia`, até o Ajuste 21 (19/10/2026); aparece nos documentos de antes |
 | `U_repr_colado` | Não colar retorno impresso de volta no código | o agente copia o print de um retorno para dentro do código em vez de usar a variável |
 | `U_codigo_lento` | Não rodar laço pesado dentro do bloco de código | o tempo do interpretador estoura num laço sem ferramenta |
@@ -50,6 +51,13 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 **Decisões da triagem:** *candidata* = passa na régua de recorrência (≥3 execuções e ≥2 meses) e vira memória
 candidata; *sinal de harness* = recorrente, mas quem corrige é o prompt ou a ferramenta, não a memória; *não-memória* =
 plataforma; *fora: sem recorrência* = não passou na régua; *revisar* = resíduo.
+
+**Tipos de monitoramento** (o `tipo` de um item do `registros/monitoramento.json`, no nível da unidade, ou de uma
+memória no catálogo `registros/memorias.json`, no nível da memória — os dois níveis: `16`, "O monitoramento"): *sinal de harness* = espera o conserto da
+plataforma (o alarme que importa é "sumiu"); *memória rara* = espera ficar frequente (o alarme é "passou na régua");
+*memória de reforço (repete o prompt)* = a memória só repetiria o que o prompt já diz e não é injetada (alarmes: "cresceu",
+e, nas bases com prompt, "o prompt deixou de dizer" — aí deixa de ser repetição e vira candidata). Decidido em 20/10/2026
+(`decisoes.md`); o experimento de reforço é o EX-8 do blueprint das POCs.
 
 ## 3 · Os mecanismos do erro de protocolo (M1–M6)
 

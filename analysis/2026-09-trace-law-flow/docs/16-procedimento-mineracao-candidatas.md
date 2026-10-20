@@ -211,6 +211,50 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
   as duas sub-lições contadas pelas regras); o `U_campo_inexistente` com 38 (cresce, 38 ≥ 3 × 10 → alerta); a
   ferramenta concorrente só em dez/2025 (sem alerta).
 
+### Dois níveis: o erro da unidade e o erro da memória (decidido com o Rafael em 20/10/2026)
+
+O que se monitora são sempre **erros**; o que muda é o recorte em que eles são contados.
+
+| Nível | O recorte | Onde a contagem existe | Quando confere | Quem confere | Tipos |
+|---|---|---|---|---|---|
+| **unidade** | todos os erros de uma unidade (ou um filtro sobre as colunas dela) | a tabela do pipeline (`erros_mecanismo.csv`), em toda base | passo 0, antes de minerar | `monitorar.py`, no `monitoramento.json` | sinal de harness; memória rara de uma unidade inteira (a `U_nome_inventado`) |
+| **memória** | os erros de **uma memória**: unidade × parte × papel (ex.: `U_sandbox.D.CalculoTrabalhista`) | o resultado da mineração da unidade e o catálogo (`registros/memorias.json`) | passo 9, ao registrar no catálogo | `catalogar_memoria.py`: compara a contagem nova com a anterior do catálogo e aplica o alarme do tipo | memória rara (alarme: passou na régua); memória de reforço, que repete o prompt (alarme: cresceu) |
+
+- **Por que dois:** o pipeline etiqueta o erro até a unidade e uma assinatura larga ("Função ou import bloqueado pelo
+  sandbox" junta as partes B, D e E); a divisão em partes e papéis só existe depois da mineração. Um item do
+  `monitorar.py` com o recorte de uma memória contaria a unidade inteira, ou pararia o passo 0 das bases que não têm a
+  tabela da mineração.
+- **O custo:** o alarme de uma memória só dispara quando a unidade dela é minerada de novo, não em toda mineração —
+  aceitável para memórias que não são injetadas.
+- **Onde fica o tipo:** no catálogo, na entrada da memória (o tipo e o alarme), não no `monitoramento.json`.
+- **Estado (20/10):** desenho decidido; a comparação no `catalogar_memoria.py` e os tipos no catálogo entram na etapa do
+  monitoramento do fechamento do sandbox (`b3 #50`). O primeiro caso: as 10 memórias D do sandbox (reforço) e a
+  `U_sandbox.B.RespostaBacen` (a decidir).
+
+## Uma ferramenta citada e não declarada: como um nome entra na lista (Ajuste 26, 20/10/2026)
+
+O import de uma ferramenta que o prompt **cita e não declara** (não está entre os `def` do system prompt) é sinal de
+harness: vai para `U_ferramenta_nao_declarada`, não para o inventário do sandbox. O pipeline reconhece pelo **nome**
+(`FERRAMENTAS_NAO_DECLARADAS` nos dois `base_pipeline.py`, e a mesma lista na auditoria do sandbox), porque uma base sem
+prompt (a 3) não deixa ver a causa. Por isso a lista só cresce com evidência de uma base que tem o prompt:
+
+1. **O suspeito aparece.** A mineração do sandbox lista, na parte B (ferramenta importada como módulo), os nomes que o
+   agente tentou importar, com as contagens por papel e mês. Um nome que parece de ferramenta (`get_*`, ou um nome que o
+   agente chama como função) e não é do framework é candidato.
+2. **O teste, numa base com prompt** (1, 2 ou uma nova que traga o prompt): `contar_ferramentas_prompt_base2.py` (pasta
+   da base 2; `--papel`), por papel e versão do prompt — o nome é **citado**? é **declarado**? E em **todos** os papéis:
+   se algum o declara, ele não entra (a regra vale pelo nome, em qualquer papel).
+3. **A decisão do pesquisador**, com essa evidência; o nome entra na lista com a evidência no comentário do código, no
+   livro-razão (um Ajuste) e na emenda do racional do sandbox; a auditoria acompanha.
+
+**Sem prompt para testar** (o papel ou o período só existem numa base sem prompt): o nome **fica no sandbox**, parte B,
+com a nota "a conferir quando houver prompt" no dossiê; pode-se pedir o prompt à plataforma. Nada vai para o harness sem
+o prompt visto.
+
+**Limites:** (i) o passo 1 só pega o que já errou: o script testa um nome dado, não descobre sozinho os nomes citados e
+não declarados (`b3 #53`); (ii) pelo nome, a regra vale em todos os papéis — se um papel passar a declarar a ferramenta,
+o import nesse papel cairia na unidade errada; o passo 2 confere isso a cada nome, e a próxima base com prompt também.
+
 ## O arquivo final — o esquema da memória
 
 - **A estrutura** está em [`../../registros/esquema-memoria.json`](../../registros/esquema-memoria.json): versão 0.1, provisória. Os

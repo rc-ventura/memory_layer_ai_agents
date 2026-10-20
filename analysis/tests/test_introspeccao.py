@@ -53,6 +53,37 @@ class TestLinha(unittest.TestCase):
         self.assertIsNone(vi("globals_dict = globals()", ""))
         self.assertIsNone(vi("print(dir(obj))", ""))
 
+    def test_forma_espontanea(self):
+        fe = b3.forma_espontanea
+        # as formas da base 3 (fotos IMG_5922–IMG_5923, mascaradas) e da base 1
+        self.assertEqual(fe("if 'id_processo' not in globals(): id_processo = 'x'", ""), "cria com valor fixo")
+        self.assertEqual(fe("if 'id_processo' not in globals() or not id_processo: id_processo = 'x'", ""), "cria com valor fixo")
+        self.assertEqual(fe("if 'a' not in locals():", "if 'a' not in locals():\n    a = None"), "cria com valor fixo")
+        self.assertEqual(fe("user_context = globals().get('user_context', 'p')", ""), "leitura com valor padrão")
+        self.assertEqual(fe("missing = [v for v in required_vars if v not in globals()]", ""), "sem nome entre aspas")
+        self.assertEqual(fe("if 'x' in globals():", "if 'x' in globals():\n    print(x)"), "verifica e não cria")
+        # argumento nomeado não é criar a variável
+        self.assertEqual(fe("if 'p' in globals():", "if 'p' in globals():\n    r = f(p=p)"), "verifica e não cria")
+        # nem numa chamada de várias linhas (a forma da base 1, ConversationAgent)
+        self.assertEqual(fe("u = globals().get('u', 'p')", "u = globals().get('u', 'p')\nr = f(\n    u=u,\n)"),
+                         "leitura com valor padrão")
+        # a instruída (regra b) não entra; o que não verifica também não
+        self.assertIsNone(fe("if 'p' not in globals():", "if 'p' not in globals():\n    p = get_doc(n)"))
+        self.assertIsNone(fe("print(globals())", ""))
+
+    def test_parte_e(self):
+        def erro(linha):
+            return (f"Code execution failed at line '{linha}' due to: InterpreterError: Forbidden function evaluation: "
+                    "'globals' is not among the explicitly allowed tools")
+        linhas = [{"papel": p, "mes_execucao": "2026-07", "structured_error": 1, "error_type": "InterpreterError",
+                   "error_message": erro(l), "error_code_action": ""}
+                  for p, l in (("P", "if 'x' not in globals(): x = 'a'"), ("P", "if 'y' not in globals(): y = 1"),
+                               ("Q", "u = globals().get('u', 'p')"), ("Q", "print(globals())"))]
+        E = b3.medir(linhas)["E"].set_index("papel")
+        self.assertEqual(int(E.loc["P", "cria com valor fixo"]), 2)
+        self.assertEqual(int(E.loc["Q", "leitura com valor padrão"]), 1)
+        self.assertEqual(int(E.loc["Q", "total"]), 1)   # o print(globals()) não é verificação
+
     def test_lado_a_lado(self):
         linhas = [{"papel": "P", "mes_execucao": m, "structured_error": 1, "error_type": "InterpreterError", "error_message": t}
                   for m, t in (("2026-07", VERIF), ("2026-07", VERIF), ("2026-08", TRY), ("2026-08", OUTRO))]
