@@ -68,10 +68,22 @@ def citada_nao_declarada(msg):
     return bool(x) and (x.group(1) or x.group(2)).split(".")[0] in NAO_DECLARADAS
 
 
-def populacao_sandbox(msg, codigo=""):
+# emenda 8 do racional (Ajuste 27): no papel cujo prompt manda verificar, toda verificação de existência com
+# globals/locals/vars sai da população (crie a variável ou não)
+PAPEIS_QUE_VERIFICAM = {"ontestacaoCivel"}
+
+
+def verifica_no_papel(msg, papel):
+    f = re.search(r"Forbidden function evaluation: '(\w+)'", msg)
+    linha = _FALHOU.search(msg)
+    return bool(papel in PAPEIS_QUE_VERIFICAM and f and f.group(1) in ("globals", "locals", "vars") and linha
+                and re.search(rf"\bin\s+{_INTRO}|{_INTRO}\s*\.get\s*\(", linha.group(1)))
+
+
+def populacao_sandbox(msg, codigo="", papel=""):
     if any(s in msg for s in ANTES):
         return False
-    if verifica_e_cria(msg, codigo):
+    if verifica_e_cria(msg, codigo) or verifica_no_papel(msg, papel):
         return False
     if citada_nao_declarada(msg):
         return False
@@ -107,9 +119,15 @@ def autorizados(msg):
 _FERRAMENTA = re.compile(r"^(?:smolagents|mcp|mcp_client|tools|tool_usage|tool_functions|python_interpreter|get_\w*)$")
 
 
-def parte_sandbox(tipo, nome, papel):
+# emenda 9 do racional (20/10): C se divide — global se o módulo (pd → pandas, np → numpy) está em todas as listas
+# autorizadas distintas da população, senão uma por papel (U_sandbox.C.<papel>); globals/locals/vars/eval saem de E
+# para F (global)
+def parte_sandbox(tipo, nome, papel, comuns=None):
     if tipo == "modulo_sem_import":
-        return "U_sandbox.C"
+        m = {"pd": "pandas", "np": "numpy"}.get(nome, nome)
+        return "U_sandbox.C" if comuns is None or m in comuns else f"U_sandbox.C.{papel}"
+    if tipo == "funcao_proibida" and nome in ("globals", "locals", "vars", "eval"):
+        return "U_sandbox.F"
     if tipo in ("funcao_proibida", "atributo_dunder"):
         return "U_sandbox.E"
     if tipo in ("import_bloqueado", "modulo_ausente"):
@@ -130,12 +148,17 @@ def auditar(unidade, fonte):
         if not (r["structured_error"] == 1 and (r["error_type"] or "").strip()):
             continue
         msg = r["error_message"] or ""
-        if not pop(msg, r.get("error_code_action") or ""):
+        if not pop(msg, r.get("error_code_action") or "", str(r["papel"])):
             continue
         tipo, nome = extrair(msg)
         erros.append({"chave": [str(r["cod_idef_exeo"]), str(r["cod_idef_aget"]), str(r["papel"]), int(r["step_pos"])],
                       "papel": str(r["papel"]), "mes": str(r["mes_execucao"]), "tipo": tipo, "nome": nome,
-                      "lista": listas(msg), "parte": parte(tipo, nome, str(r["papel"]))})
+                      "lista": listas(msg)})
+    # a parte depende das listas da população inteira (emenda 9): só depois de ler todos os erros
+    vistas = [set(x.strip() for x in l.split(",") if x.strip()) for l in {e["lista"] for e in erros if e["lista"]}]
+    comuns = set.intersection(*vistas) if vistas else None
+    for e in erros:
+        e["parte"] = parte(e["tipo"], e["nome"], e["papel"], comuns)
     por_nome = defaultdict(lambda: {"erros": 0, "execucoes": set(), "papeis": set(), "meses": set()})
     for e in erros:
         if e["tipo"] == "sem_nome":

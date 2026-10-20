@@ -200,6 +200,15 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   A causa por erro é inferida (a base 3 não guarda o prompt), como no Ajuste 21. A ideia de uma memória "como verificar no
   sandbox" fica como candidata própria → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h;
   base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50 e #51.
+  **Complemento (20/10, depois da medição — `contar_introspeccao_linha.py` parte E, fotos `IMG_5976`–`IMG_5978`):** a forma
+  do código não separa o ContestacaoCivel dos outros papéis (fora dele aparecem as mesmas formas), e ele tem as quatro
+  (cria com valor fixo 52, leitura com valor padrão 14, sem nome entre aspas 33, verifica e não cria 36). Decisão do Rafael:
+  **a regra é pelo papel** — toda verificação com `globals`/`locals`/`vars` que a regra (b) deixa no sandbox, **no
+  ContestacaoCivel**, vai para `U_verificacao_existencia` (135 na base 3); os 9 dos outros papéis ficam no sandbox, porque
+  o prompt desses papéis não tem a instrução (base 2, todos os papéis; base 1) — inferência, sem o prompt na base 3; por
+  que esses agentes verificam sem instrução não se sabe ("hábito" seria interpretação). Aceito sem investigar agora porque
+  são 9 erros e não viram memória injetada; a investigação de alguns casos fica no `b3 #54`. A regra é o Ajuste 27
+  ([livro-razão](pipeline-entre-bases.md)), emenda 8 do racional do sandbox.
 - **20/10, as 10 memórias de "import fora da lista" são monitoradas, não injetadas** (decisão do Rafael): a lista de imports
   autorizados já está no prompt de todos os papéis (bases 1 e 2) e as 10 falham em "repete o prompt" no degrau 2; são 40
   erros na base 3 (0,13%), de 1 a 14 por papel. Ficam no inventário do sandbox (os erros não mudam de unidade) e entram no
@@ -208,6 +217,12 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   pergunta (o reforço funciona?), documentada como experimento próprio (EX-8 do
   [blueprint](../pocs/blueprint-m1-pocs-minimos.md), com a literatura) → [glossário](glossario.md) (tipos de
   monitoramento); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50.
+- **20/10, a memória E perde a dica "para ler JSON, use json.loads"** (decisão do Rafael, na etapa 5 do fechamento do
+  sandbox): a E é global, e o `json` não está na lista autorizada de quatro papéis no prompt da base 1 (OBFCivel,
+  RoteadorCivel, managerAgent, ContestacaoCivel) — o degrau 2 do ensaio reprovou a E no ambiente por isso. A dica servia
+  ao `eval(texto)`, que foi para a parte F, e a ≈ 5 `__import__('json').loads` do ContestacaoCivel. Fica "Para inspecionar
+  um valor, use print(type(x)) e print(str(x)[:n])." (testado no interpretador: funciona); pode voltar se o `json` for
+  confirmado em todas as listas → racional do sandbox, emenda 9; dossiê §2h, 9.
 - **20/10, o monitoramento tem dois níveis** (decisão do Rafael): monitoram-se sempre erros, contados no recorte da
   **unidade** (a tabela do pipeline; `monitorar.py` e `monitoramento.json`, no passo 0 — os sinais de harness) ou no
   recorte de uma **memória** (unidade × parte × papel; o resultado da mineração e o catálogo; `catalogar_memoria.py`, no

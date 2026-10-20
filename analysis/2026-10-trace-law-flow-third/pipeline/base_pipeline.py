@@ -207,8 +207,11 @@ def explodir_memoria(df):
                        "tok_out": tu.get("output_tokens") or 0, "tok_tot": tu.get("total_tokens") or 0,
                        "err_type": err.get("type"), "err_msg": str(err.get("message") or ""),
                        **sinais_de_parsing(str(err.get("message") or ""), st.get("code_action"), obs_ant),
-                       "verifica_e_cria": verificacao_por_introspeccao(str(err.get("message") or ""),
-                                                                       st.get("code_action")),
+                       # a verificação que vai para a unidade da verificação: a regra (b) do Ajuste 21, ou o papel
+                       # cujo prompt manda verificar (Ajuste 27)
+                       "verifica_e_cria": (verificacao_por_introspeccao(str(err.get("message") or ""),
+                                                                        st.get("code_action"))
+                                           or verificacao_no_papel_da_instrucao(str(err.get("message") or ""), role)),
                        "chama_ferramenta": chama_ferramenta_declarada(str(err.get("message") or ""),
                                                                       st.get("code_action"), sysp),
                        "final_answer_sem_laco": final_answer_sem_laco(str(err.get("message") or ""),
@@ -546,6 +549,27 @@ def verificacao_por_introspeccao(m, code=""):
                for n in nomes_verificados(linha.group(1)))
 
 
+# Ajuste 27 (20/10/2026): no papel cujo prompt manda verificar se a variável existe, TODA verificação de existência com
+# globals/locals/vars vai para a unidade da verificação — crie a variável ou não, com nome entre aspas ou não. A instrução
+# não diz como verificar, e o agente verifica de quatro formas (base 3, jul–ago/26: cria com valor fixo 52, leitura com
+# valor padrão 14, sem nome entre aspas 33, verifica e não cria 36). A forma não separa esse papel dos outros (9 erros em
+# 7 papéis, com as mesmas formas), então a regra vale pelo papel: um papel só entra aqui com a evidência de que o prompt
+# dele tem a instrução — o ContestacaoCivel (chega ao trace como "ontestacaoCivel"): 224 de 224 execuções na base 2, só
+# ele, em todos os papéis (contar_introspeccao_prompt_base2.py, parte F); base 1, o prompt de julho. Fora dele vale só a
+# regra (b) do Ajuste 21 (dossiê do sandbox na base 3, §2h, 7–8; contar_introspeccao_linha.py, parte E).
+PAPEIS_COM_INSTRUCAO_DE_VERIFICAR = ("ontestacaoCivel",)
+_VERIFICA_EXISTENCIA = re.compile(rf"\bin\s+{_INTRO}|{_INTRO}\s*\.get\s*\(")
+
+
+def verificacao_no_papel_da_instrucao(m, papel):
+    """globals/locals/vars barrada numa linha que verifica a existência de uma variável, num papel cujo prompt manda
+    verificar (PAPEIS_COM_INSTRUCAO_DE_VERIFICAR)?"""
+    f = re.search(r"Forbidden function evaluation: '(\w+)'", str(m))
+    linha = _LINHA_QUE_FALHOU.search(str(m))
+    return bool(papel in PAPEIS_COM_INSTRUCAO_DE_VERIFICAR and f and f.group(1) in INTROSPECCAO_VERIFICA and linha
+                and _VERIFICA_EXISTENCIA.search(linha.group(1)))
+
+
 def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False,
                  fa_sem_laco=False, verifica_e_cria=False):
     if "regex pattern" in m:
@@ -762,6 +786,9 @@ def _mecanismo_com_evidencia(r, carga, ctx, incoming, byref):
     # Ajuste 21: introspecção que verifica um nome — a criação guardada pode estar na linha (decide sozinha) ou no código
     if preview == "inventario_sandbox" and verificacao_por_introspeccao(m):
         return "verificacao_introspeccao", "observavel", "regra_por_mensagem_elegivel"
+    # Ajuste 27: no papel cujo prompt manda verificar, a linha decide sozinha (não precisa do código)
+    if preview == "inventario_sandbox" and verificacao_no_papel_da_instrucao(m, r.get("role")):
+        return "verificacao_introspeccao", "observavel", "regra_por_mensagem_e_papel"
     linha_falha = _LINHA_QUE_FALHOU.search(m)
     if (preview == "inventario_sandbox" and linha_falha and nomes_verificados(linha_falha.group(1))
             and re.search(r"Forbidden function evaluation: '(?:globals|locals|vars|eval)'", m)):   # Ajustes 21 e 23

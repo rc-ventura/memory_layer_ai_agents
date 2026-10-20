@@ -174,6 +174,48 @@ nomes do framework (`python_interpreter`, `tools`, `tool_usage`, `tool_functions
 os outros `get_*`. Regras do passo 4, partes e limiar não mudam. Na base 1, 0 erros caem aqui; na base 3, o esperado é
 **167** (todos no OBFCivel): o sandbox 1.401 → 1.234 e a B.OBFCivel 211 → 44.
 
+**Emenda 8, de 20/10 (consequência do Ajuste 27, decidido pelo Rafael; descritiva, escrita depois da medição na base 3,
+dossiê §2h, 7–8, fotos `IMG_5976`–`IMG_5978`):** sai também da população, **no papel cujo prompt manda verificar se a
+variável existe** (a lista do pipeline; hoje só o ContestacaoCivel, que chega ao trace como `ontestacaoCivel`), toda
+verificação de existência com a função proibida `globals`, `locals` ou `vars`: a linha que falhou tem `in globals()` /
+`in locals()` / `in vars()` ou `globals().get(` (e o mesmo com `locals`/`vars`), crie a variável ou não, com nome entre
+aspas ou não. Esses erros vão para `U_verificacao_existencia`. Nos outros papéis vale só a emenda 3 (verifica e cria por
+uma chamada). `dir` e `eval` não entram aqui (o `eval` segue a emenda 5). Regras do passo 4, partes e limiar não mudam. Na
+base 1, 0 erros caem aqui (o único do papel já sai pela emenda 3); na base 3, o esperado é **135** (jul–ago/26; `globals`
+125, `locals` 10), parte no sandbox e parte hoje pendente por código cortado — o sandbox somado aos pendentes de
+verificação cai 135.
+
+**Emenda 9, de 20/10 (decisões do Rafael no fechamento do sandbox, `decisoes.md` 20/10: 1, 4, 5 e 6; o degrau 2 da
+validação, dossiê §2g–§2h).** O passo 8 muda nas partes C, B e E, ganha a parte **F**, e toda parte grava
+`validation.nomes` (esquema 0.4). Moldes fixos, ordem por erros e no empate a alfabética, como na emenda 4.
+- **C se divide.** O módulo de um `modulo_sem_import` é o nome lido, com os apelidos `pd` → `pandas` e `np` → `numpy`.
+  **C** (global) fica com os módulos que estão em **todas** as listas autorizadas distintas da população (a tabela
+  `imports_autorizados`); sem nenhuma lista vista, todos ficam em C. Os outros vão para **Cp** (rótulo "módulo usado sem
+  import, por papel"; uma memória por papel, id `U_sandbox.C.<papel>`, destino memória). Molde do import: `import <m>`,
+  e com apelido `import <m> as <apelido>`. C: "Importe antes de usar: <imports>." Cp: "Importe antes de usar: <imports>."
+  com os módulos que estão na lista do papel (a do mês mais recente, como em D) ou quando o papel não tem lista vista;
+  e "Não está na lista autorizada deste papel: <módulos>." com os que a lista vista do papel não tem — cada pedaço só se
+  tiver nome, separados por "; ".
+- **B, o texto:** "As ferramentas são só as funções declaradas no prompt: chame-as direto, sem import. Não importe:
+  <nomes>." e, se a parte tem nomes do framework (`smolagents`, `mcp`, `mcp_client`, `tools`, `tool_usage`,
+  `tool_functions`, `python_interpreter`, pela raiz), " <esses nomes>: são do framework, e o seu código já roda no
+  interpretador." (decisão 4: o `python_interpreter` vem do framework; não se afirma mais que a ferramenta existe).
+- **E perde quatro nomes:** `funcao_proibida` com `globals`, `locals`, `vars` ou `eval` vai para a parte **F**
+  (rótulo "introspecção fora da verificação instruída"; global; destino **em aberto** — a memória "como verificar no
+  sandbox", `b3 #51`); molde: "Não chame: <funções>.". E fica com as outras funções proibidas e os atributos dunder,
+  com o molde da emenda 6 (decisão 5: o "não chame `globals`" brigava com o prompt do ContestacaoCivel). O complemento
+  fixo da emenda 6 perde "; para ler JSON, use json.loads" e fica "Para inspecionar um valor, use print(type(x)) e
+  print(str(x)[:n])." (decisão do Rafael, 20/10, depois do degrau 2 no ensaio da base 1: o `json` não está na lista
+  autorizada de quatro papéis no prompt da base 1 — OBFCivel, RoteadorCivel, managerAgent, ContestacaoCivel — e a E é
+  global; a frase servia ao `eval(texto)`, que foi para F, e a ≈ 5 `__import__('json')` do ContestacaoCivel).
+- **`validation.nomes`** (decisão 6): C e Cp — `importar` os módulos que o texto manda importar, `nao_importar` os que
+  não estão na lista do papel; B e D — `nao_importar` os nomes (B pela raiz); E — `nao_usar` as funções e os atributos,
+  `usar` `print`, `type`, `str` (o complemento fixo); F — `nao_usar` as funções. As listas que não se
+  aplicam ficam vazias.
+- **`destino_decidido_em`:** onde cada destino foi decidido (`decisoes.md`, com a data e a decisão).
+População, regras do passo 4 e limiar não mudam. Os números de cada parte saem da rodada nova da base 3; o encontro
+(passo 7) compara as partes novas com a auditoria, que divide C e E pela mesma prosa.
+
 ## O que não mede
 
 - Se o agente se recuperou depois do erro (é o "depois" da parte genérica).

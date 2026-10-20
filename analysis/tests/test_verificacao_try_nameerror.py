@@ -125,5 +125,54 @@ class TestAjuste23(unittest.TestCase):
         self.assertEqual(um(EVAL_TEXTO, "docs = eval(texto)").unidade, "U_sandbox")
 
 
+def proibida(linha, funcao="globals"):
+    return (f"Code execution failed at line '{linha}' due to: InterpreterError: Forbidden function evaluation: "
+            f"'{funcao}' is not among the explicitly allowed tools or defined/imported in the preceding code")
+
+
+PAPEL = "ontestacaoCivel"   # o ContestacaoCivel, como chega ao trace
+VALOR_FIXO = proibida("if 'id_processo' not in globals(): id_processo = 'x'")
+LEITURA = proibida("u = globals().get('u', 'p')")
+SEM_NOME = proibida("missing = [v for v in obrigatorias if v not in globals()]")
+LOCALS = proibida("if 'a' not in locals():", "locals")
+SO_DIR = proibida("print(dir(obj))", "dir")
+NAO_VERIFICA = proibida("print(globals())")
+
+
+class TestAjuste27(unittest.TestCase):
+    def test_pelo_papel(self):
+        for pipeline in (BP, RAW1):
+            v = pipeline.verificacao_no_papel_da_instrucao
+            for msg in (VALOR_FIXO, LEITURA, SEM_NOME, LOCALS):
+                self.assertTrue(v(msg, PAPEL), msg)              # as quatro formas, no papel da instrução
+                self.assertFalse(v(msg, "CalculoTrabalhista"))  # nos outros papéis, não
+            self.assertFalse(v(SO_DIR, PAPEL))                   # dir não verifica existência
+            self.assertFalse(v(NAO_VERIFICA, PAPEL))             # globals() sem verificar
+            self.assertEqual(pipeline.submecanismo(VALOR_FIXO, verifica_e_cria=v(VALOR_FIXO, PAPEL)),
+                             "verificacao_introspeccao")
+            self.assertEqual(pipeline.submecanismo(VALOR_FIXO, verifica_e_cria=v(VALOR_FIXO, "Outro")),
+                             "inventario_sandbox")
+
+    def test_observado(self):
+        def um(msg, papel):
+            return BP.analisar_mecanismos_observaveis(state(janela(error_message=msg, error_code_action="",
+                                                                   papel=papel))).EU.iloc[0]
+        self.assertEqual(um(VALOR_FIXO, PAPEL).unidade, "U_verificacao_existencia")
+        self.assertEqual(um(SEM_NOME, PAPEL).unidade, "U_verificacao_existencia")
+        # fora do papel, sem o código do passo, a regra (b) não decide: pendente (o papel decide sem o código)
+        fora = um(VALOR_FIXO, "CalculoTrabalhista")
+        self.assertEqual(fora.situacao_mecanismo, "pendente")
+        self.assertEqual(um(VALOR_FIXO, PAPEL).situacao_mecanismo, "observavel")
+
+    def test_auditoria(self):
+        from test_mineracao_candidata_base3 import aud
+        self.assertFalse(aud.populacao_sandbox(VALOR_FIXO, "", PAPEL))
+        self.assertFalse(aud.populacao_sandbox(SEM_NOME, "", PAPEL))
+        self.assertTrue(aud.populacao_sandbox(VALOR_FIXO, "", "CalculoTrabalhista"))
+        self.assertTrue(aud.populacao_sandbox(SO_DIR, "", PAPEL))
+        self.assertEqual(set(BP.PAPEIS_COM_INSTRUCAO_DE_VERIFICAR), aud.PAPEIS_QUE_VERIFICAM)
+        self.assertEqual(set(RAW1.PAPEIS_COM_INSTRUCAO_DE_VERIFICAR), aud.PAPEIS_QUE_VERIFICAM)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -257,14 +257,31 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   dossiê §2f). (1) ~~o script do degrau 2 no kit~~ **feito em 20/10** (`conferir_memorias.py`, Ajuste 25; com o prompt da
   base 1 reproduz o §2f → dossiê §2g); **a unidade fecha no degrau 3** para as que vão para injeção (decisão de 20/10); (2) ~~rodá-lo na base 2~~ **feito em 20/10** (66 versões, 18 papéis: o mesmo resultado da base 1 → dossiê §2h); (3) o
   ~~Ajuste 26~~ **escrito em 20/10** (o import de `get_document_text` → `U_ferramenta_nao_declarada`, harness; emenda 7 do
-  racional; base 1 sem mudança; esperado na base 3: 167 saem do sandbox — livro-razão) e corrigir o script específico — C com
+  racional; base 1 sem mudança; esperado na base 3: 167 saem do sandbox — livro-razão) e ~~corrigir o script específico~~ **corrigido em 20/10** (emenda 9; ensaio da base 1: 31 medidas iguais; dossiê §2h, 9) — C com
   o `pd` só nos papéis com `pandas`, E sem a verificação, B sem o `get_document_text` e com o texto dos nomes do framework corrigido ("não importe `python_interpreter`…: o seu
   código já roda no interpretador", não "chame-as direto"; dossiê §2h, 6) — e a verificação com valor padrão
-  do ContestacaoCivel → harness (decidido em 20/10, na mesma rodada do Ajuste 26) — e revalidar;
+  do ContestacaoCivel → harness (decidido em 20/10; ~~a regra~~ **escrita em 20/10**: Ajuste 27, pelo papel, emenda 8;
+  esperado na base 3: 135 passam à verificação) — e revalidar;
   (4) decisões do Rafael: as 6 que falham na recorrência (#48) — 5 delas são D e já têm destino (o destino da verificação
   com valor padrão: harness, 20/10; as D: monitoradas como *memória de reforço*, não injetadas, 20/10 — no nível da memória:
   o tipo e o alarme no catálogo, conferidos pelo `catalogar_memoria.py` a cada nova mineração (os dois níveis do
   monitoramento: `16`, "O monitoramento", 20/10); o experimento de reforço é o EX-8 do blueprint das POCs); (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49.
+- [ ] **#55** **O degrau 2 e as funções embutidas (aberto em 20/10).** O `conferir_memorias.py` (kit) dá "não verificável"
+  na checagem de ambiente a uma memória que só manda usar funções embutidas (`print`, `type`, `str`), porque o sandbox
+  proíbe algumas embutidas (`repr`). A memória E do sandbox caiu nisso no ensaio de 20/10 (dossiê §2h, 9). Saída: o
+  script lê uma lista de embutidas **testadas no interpretador** (`pipeline/validacao/testar_sandbox_try_nameerror.py` e o
+  teste da depuração de 20/10: `print(type(x))` e `print(str(x)[:n])` funcionam; `repr` e `__name__` não) — a lista
+  fora do kit (é da base), passada por argumento ou pelo `monitoramento.json`; mudança no kit, com teste e `VERSAO` nova.
+- [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
+  baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
+  RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos
+  `IMG_5976`–`IMG_5978`) ficam no sandbox porque o prompt desses papéis não tem a instrução de verificar — visto nas bases
+  1 e 2 (todos os papéis), **não** nas execuções da base 3, que não guarda o prompt. Duas perguntas abertas: (1) o prompt
+  dessas execuções tem alguma instrução parecida (as bases podem ter versões diferentes, como no `json`)? (2) por que o
+  agente verifica sem instrução — "hábito" do modelo é interpretação, não achado. Investigar alguns casos pela skill
+  `mineracao-investigacao` (leitura com dois leitores) ou pedir à plataforma o prompt dessas execuções. Baixa prioridade:
+  são 9 erros e não viram memória injetada (a memória E deixa `globals`/`locals`) → dossiê do sandbox §2h, 8;
+  [`decisoes.md`](../../decisoes.md) (20/10).
 - [ ] **#53** **Descobrir, no prompt, as ferramentas citadas e não declaradas (aberto em 20/10).** Hoje o
   `contar_ferramentas_prompt_base2.py` testa nomes dados (`get_document_text`, `python_interpreter`); a lista do Ajuste 26
   (`FERRAMENTAS_NAO_DECLARADAS`) só cresce pelo que já errou. Estender o script para listar, por papel e versão do prompt,

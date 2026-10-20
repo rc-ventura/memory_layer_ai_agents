@@ -118,7 +118,7 @@ class TestRegraDoSandbox(unittest.TestCase):
                    "base": "base3", "gerado_em": "2026-10-19", "parte_especifica": "script:mineracao_U_sandbox",
                    "memoria": item["memoria"], "origem": {c: {"tipo": "checado", "comando": "x"} for c in item["memoria"]}}
             self.assertEqual(vm.validar(ESQUEMA, doc)[0], [], item["id"])
-        self.assertEqual(por_id["U_sandbox.C"]["correction_guidance"], "Importe antes de usar: json.")
+        self.assertEqual(por_id["U_sandbox.C"]["correction_guidance"], "Importe antes de usar: import json.")
         self.assertIsNone(por_id["U_sandbox.C"]["scope"]["role"])
         self.assertEqual(por_id["U_sandbox.D.PapelB"]["scope"]["role"], "PapelB")
         self.assertEqual(por_id["U_sandbox.D.PapelB"]["correction_guidance"],
@@ -140,6 +140,89 @@ class TestRegraDoSandbox(unittest.TestCase):
         m = sb.memorias({"erros_observaveis": 2}, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f", "rodada_id": "r"}, [])
         self.assertEqual([x["id"] for x in m], ["U_sandbox.B.OBFCivel"])
         self.assertIn("chame-as direto, sem import", m[0]["memoria"]["correction_guidance"])
+        # emenda 9: não afirma que a ferramenta existe; o nome do framework é explicado
+        g = m[0]["memoria"]["correction_guidance"]
+        self.assertTrue(g.startswith("As ferramentas são só as funções declaradas no prompt"))
+        self.assertTrue(g.endswith("tools: são do framework, e o seu código já roda no interpretador."))
+        self.assertNotIn("já estão no escopo", g)
+        self.assertEqual(m[0]["memoria"]["validation"]["nomes"]["nao_importar"], ["get_document_text", "tools"])
+
+
+class TestEmenda9(unittest.TestCase):
+    """C global × por papel pelas listas autorizadas vistas; E sem a introspecção, que vai para F; validation.nomes."""
+    AUT_SEM_PANDAS = "Authorized imports are: ['json', 're']"
+    AUT_COM_PANDAS = "Authorized imports are: ['json', 'pandas', 're']"
+    MSGS = [
+        ("PapelA", "2026-01", f"x due to: InterpreterError: Import of ast is not allowed. {AUT_SEM_PANDAS}"),
+        ("PapelP", "2026-01", f"x due to: InterpreterError: Import of os is not allowed. {AUT_COM_PANDAS}"),
+        ("PapelA", "2026-02", "x due to: InterpreterError: The variable `json` is not defined."),
+        ("PapelP", "2026-02", "x due to: InterpreterError: The variable `pd` is not defined."),
+        ("PapelA", "2026-03", "x due to: InterpreterError: The variable `pd` is not defined."),
+        ("PapelQ", "2026-03", "x due to: InterpreterError: The variable `pd` is not defined."),
+        ("PapelA", "2026-03", "x due to: InterpreterError: Forbidden function evaluation: 'globals' is not among"),
+        ("PapelA", "2026-03", "x due to: InterpreterError: Forbidden function evaluation: 'eval' is not among"),
+        ("PapelA", "2026-03", "x due to: InterpreterError: Forbidden function evaluation: 'repr' is not among"),
+    ]
+
+    def memorias(self):
+        t = sb.medir(*casos_e_mensagens(self.MSGS))
+        lista = sb.memorias({}, t, sb.confianca(t), sb.destino(t), {"fonte_id": "f", "rodada_id": "r"}, [])
+        return t, {m["id"]: m["memoria"] for m in lista}
+
+    def test_partes(self):
+        self.assertEqual(sb.parte_de("modulo_sem_import", "pd", {"json", "re"}), "Cp")
+        self.assertEqual(sb.parte_de("modulo_sem_import", "json", {"json", "re"}), "C")
+        self.assertEqual(sb.parte_de("modulo_sem_import", "pd", None), "C")   # nenhuma lista vista
+        self.assertEqual(sb.parte_de("funcao_proibida", "globals"), "F")
+        self.assertEqual(sb.parte_de("funcao_proibida", "eval"), "F")
+        self.assertEqual(sb.parte_de("funcao_proibida", "repr"), "E")
+        self.assertEqual(sb.memoria_id("Cp", "PapelP"), "U_sandbox.C.PapelP")
+        t, _ = self.memorias()
+        P = t["partes"].set_index("memoria_id").erros.to_dict()
+        self.assertEqual(P, {"U_sandbox.C": 1, "U_sandbox.C.PapelA": 1, "U_sandbox.C.PapelP": 1, "U_sandbox.C.PapelQ": 1,
+                             "U_sandbox.D.PapelA": 1, "U_sandbox.D.PapelP": 1, "U_sandbox.E": 1, "U_sandbox.F": 2})
+
+    def test_textos(self):
+        _, m = self.memorias()
+        self.assertEqual(m["U_sandbox.C"]["correction_guidance"], "Importe antes de usar: import json.")
+        self.assertEqual(m["U_sandbox.C.PapelP"]["correction_guidance"], "Importe antes de usar: import pandas as pd.")
+        self.assertEqual(m["U_sandbox.C.PapelA"]["correction_guidance"],
+                         "Não está na lista autorizada deste papel: pandas.")
+        # papel sem lista vista: o texto manda importar (o degrau 2 confere com o prompt)
+        self.assertEqual(m["U_sandbox.C.PapelQ"]["correction_guidance"], "Importe antes de usar: import pandas as pd.")
+        self.assertEqual(m["U_sandbox.E"]["correction_guidance"], "Não chame: repr. " + sb.GUIA_E)
+        self.assertEqual(m["U_sandbox.F"]["correction_guidance"], "Não chame: eval, globals.")
+        self.assertEqual(m["U_sandbox.F"]["validation"]["destino"], "em aberto")
+        self.assertIsNone(m["U_sandbox.F"]["validation"]["destino_decidido_em"])
+        self.assertEqual(m["U_sandbox.C.PapelP"]["scope"]["role"], "PapelP")
+
+    def test_nomes(self):
+        _, m = self.memorias()
+        n = lambda i: m[i]["validation"]["nomes"]
+        self.assertEqual(n("U_sandbox.C")["importar"], ["json"])
+        self.assertEqual(n("U_sandbox.C.PapelP")["importar"], ["pandas"])
+        self.assertEqual(n("U_sandbox.C.PapelA"), {"importar": [], "usar": [], "nao_importar": ["pandas"], "nao_usar": []})
+        self.assertEqual(n("U_sandbox.E"), {"importar": [], "usar": ["print", "type", "str"],
+                                             "nao_importar": [], "nao_usar": ["repr"]})
+        self.assertEqual(n("U_sandbox.F")["nao_usar"], ["eval", "globals"])
+        self.assertEqual(n("U_sandbox.D.PapelA")["nao_importar"], ["ast"])
+        for mem in m.values():   # no esquema 0.4, sem pendência de `validation.nomes`
+            doc = {"esquema": ESQUEMA["versao"], "unidade": "U_sandbox", "base": "base3",
+                   "parte_especifica": "script:mineracao_U_sandbox", "memoria": mem,
+                   "origem": {c: {"tipo": "checado", "comando": "x"} for c in mem}}
+            erros, pend, _ = vm.validar(ESQUEMA, doc)
+            self.assertEqual(erros, [])
+            self.assertNotIn("campo `validation.nomes` ausente", pend)
+
+    def test_auditoria_divide_igual(self):
+        rows = [{"cod_idef_exeo": f"e{i}", "cod_idef_aget": 1, "papel": p, "step_pos": 3, "mes_execucao": mm,
+                 "structured_error": 1, "error_type": "InterpreterError", "error_message": tx, "error_code_action": ""}
+                for i, (p, mm, tx) in enumerate(self.MSGS)]
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "fonte.parquet"
+            pq.write_table(pa.Table.from_pylist(rows), f)
+            a = aud.auditar("U_sandbox", str(f))
+        self.assertEqual(a["partes"], sb.para_encontro(sb.medir(*casos_e_mensagens(self.MSGS)))["partes"])
 
 
 class TestAuditoria(unittest.TestCase):

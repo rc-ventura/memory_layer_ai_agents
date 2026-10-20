@@ -17,6 +17,9 @@ Interface que o `minerar.py` espera de todo script específico:
 
 Emenda 4 do racional (19/10, decisão do Rafael): a lição tem quatro partes, cada uma com escopo e destino próprios
 (`PARTES`); a parte de cada erro sai do tipo e do nome (`parte_de`).
+Emenda 9 (20/10, decisões do Rafael no fechamento do sandbox): C se divide em global (o módulo está em todas as listas
+autorizadas vistas) e por papel (Cp); B perde o "já estão no escopo"; E perde globals/locals/vars/eval, que vão para F
+(em aberto, b3 #51); toda parte grava `validation.nomes` (esquema 0.4).
 """
 import re
 
@@ -38,11 +41,37 @@ TABELAS = ["erros_lidos", "inventario", "inventario_papel", "inventario_mes", "i
 PARTES = {"C": ("módulo usado sem import", "global", "memória"),
           "B": ("ferramenta importada como módulo", "papel", "memória"),
           "D": ("import fora da lista autorizada", "papel", "memória"),
-          "E": ("funções e atributos proibidos", "global", "memória")}   # depois da investigação (dossiê §2c; Ajuste 23)
+          "E": ("funções e atributos proibidos", "global", "memória"),
+          # emenda 9 (20/10): o módulo fora de alguma lista autorizada vira memória do papel; a introspecção que sobra
+          # depois dos Ajustes 21, 23 e 27 sai de E e espera a memória "como verificar no sandbox" (b3 #51)
+          "Cp": ("módulo usado sem import, por papel", "papel", "memória"),
+          "F": ("introspecção fora da verificação instruída", "global", "em aberto")}
+DECIDIDO_EM = {"C": "decisoes.md, 19/10 e 20/10 (decisão 5)", "Cp": "decisoes.md, 20/10 (decisão 5)",
+               "B": "decisoes.md, 19/10 e 20/10 (decisões 1 e 4)", "D": "decisoes.md, 19/10 e 20/10 (decisão 3)",
+               "E": "decisoes.md, 19/10 e 20/10 (decisão 5)"}   # depois da investigação (dossiê §2c; Ajuste 23)
 # o complemento fixo da parte E (racional, emenda 6): o jeito permitido de fazer o que a função barrada fazia
-GUIA_E = "Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); para ler JSON, use json.loads."
+# emenda 9 (20/10): sem "; para ler JSON, use json.loads" — o json não está na lista de todos os papéis, e a E é global
+GUIA_E = "Para inspecionar um valor, use print(type(x)) e print(str(x)[:n])."
 # o import de uma ferramenta: o framework e os nomes que o agente dá às ferramentas (racional, emenda 4)
 FERRAMENTAS = {"smolagents", "mcp", "mcp_client", "tools", "tool_usage", "tool_functions", "python_interpreter"}
+# emenda 9: o módulo de um modulo_sem_import (os apelidos) e as funções que saem de E para F
+APELIDOS = {"pd": "pandas", "np": "numpy"}
+INTROSPECCAO_F = {"globals", "locals", "vars", "eval"}
+
+
+def modulo(nome):
+    """O módulo de um nome usado sem import: `pd` → `pandas`, `np` → `numpy`; os outros são o próprio nome."""
+    return APELIDOS.get(str(nome), str(nome))
+
+
+def _conjunto(lista):
+    return {x.strip() for x in str(lista).split(",") if x.strip()}
+
+
+def listas_comuns(L):
+    """Os módulos que estão em todas as listas autorizadas distintas vistas na população; None se nenhuma foi vista."""
+    ls = [_conjunto(x) for x in L.lista_autorizada.dropna().unique()]
+    return set.intersection(*ls) if ls else None
 
 
 def ultimo_trecho(msg):
@@ -67,10 +96,13 @@ def lista_autorizada(msg):
     return ", ".join(sorted(x.strip().strip("'\"") for x in a.group(1).split(",") if x.strip()))
 
 
-def parte_de(tipo, nome):
-    """A parte da lição (C, B, D, E) pelo tipo e pelo nome; None para o sem_nome."""
+def parte_de(tipo, nome, comuns=None):
+    """A parte da lição (C, Cp, B, D, E, F) pelo tipo e pelo nome; None para o sem_nome. `comuns`: os módulos de todas
+    as listas autorizadas vistas (None: nenhuma vista, e o módulo fica em C)."""
     if tipo == "modulo_sem_import":
-        return "C"
+        return "C" if comuns is None or modulo(nome) in comuns else "Cp"
+    if tipo == "funcao_proibida" and nome in INTROSPECCAO_F:
+        return "F"
     if tipo in ("funcao_proibida", "atributo_dunder"):
         return "E"
     if tipo in ("import_bloqueado", "modulo_ausente"):
@@ -83,7 +115,8 @@ def memoria_id(parte, papel):
     """U_sandbox.C (parte global) ou U_sandbox.B.<papel> (parte por papel); None sem parte."""
     if not isinstance(parte, str):   # None (ou NaN, numa coluna do pandas)
         return None
-    return f"U_sandbox.{parte}" + (f".{papel}" if PARTES[parte][1] == "papel" else "")
+    base = "C" if parte == "Cp" else parte   # a parte C por papel: U_sandbox.C.<papel>
+    return f"U_sandbox.{base}" + (f".{papel}" if PARTES[parte][1] == "papel" else "")
 
 
 def medir(casos, mensagens):
@@ -98,7 +131,8 @@ def medir(casos, mensagens):
                       "lista_autorizada": lista_autorizada(msg) if msg else None})
     L = pd.DataFrame(lidos, columns=["exec_id", "agente", "role", "step_pos", "step_ref", "mes", "tipo", "nome",
                                      "lista_autorizada"])
-    L["parte"] = [parte_de(t, n) for t, n in zip(L.tipo, L.nome)]
+    comuns = listas_comuns(L)
+    L["parte"] = [parte_de(t, n, comuns) for t, n in zip(L.tipo, L.nome)]
     L["memoria_id"] = [memoria_id(p, r) for p, r in zip(L.parte, L.role)]
     N = L[L.tipo.ne("sem_nome")]
     inv = (N.groupby(["tipo", "nome"]).agg(erros=("step_ref", "size"), execucoes=("exec_id", "nunique"),
@@ -175,14 +209,42 @@ def _lista_do_papel(L, papel):
     return ult.lista_autorizada.value_counts().sort_index().sort_values(ascending=False, kind="stable").index[0]
 
 
+def _import(nome):
+    """O molde do import (emenda 9): `import json`; com apelido, `import pandas as pd`."""
+    m = modulo(nome)
+    return f"import {m}" + (f" as {nome}" if m != str(nome) else "")
+
+
+def _sem_repetir(xs):
+    return list(dict.fromkeys(xs))
+
+
+def _modulos_do_papel(L, papel):
+    """(os nomes cujo módulo o texto manda importar, os módulos fora da lista vista do papel) — parte Cp."""
+    lista = _lista_do_papel(L, papel)
+    aut = _conjunto(lista) if lista else None
+    return lambda nomes: ([n for n in nomes if aut is None or modulo(n) in aut],
+                          _sem_repetir(modulo(n) for n in nomes if aut is not None and modulo(n) not in aut))
+
+
 def _guia(parte, P, L, papel):
-    """A correction_guidance da parte, montada da tabela, sem texto livre (racional, passo 8, emenda 4)."""
+    """A correction_guidance da parte, montada da tabela, sem texto livre (racional, passo 8, emendas 4 e 9)."""
     nomes = lambda tipos: ", ".join(_por_erros(P[P.tipo.isin(tipos)].nome))
     if parte == "C":
-        return f"Importe antes de usar: {nomes(['modulo_sem_import'])}."
+        return "Importe antes de usar: " + ", ".join(_import(n) for n in _por_erros(P.nome)) + "."
+    if parte == "Cp":
+        importar, fora = _modulos_do_papel(L, papel)(_por_erros(P.nome))
+        g = ([f"Importe antes de usar: {', '.join(_import(n) for n in importar)}"] if importar else []) + \
+            ([f"Não está na lista autorizada deste papel: {', '.join(fora)}"] if fora else [])
+        return "; ".join(g) + "."
     if parte == "B":
-        return ("As ferramentas já estão no escopo como funções: chame-as direto, sem import. "
-                f"Não importe: {nomes(['import_bloqueado', 'modulo_ausente'])}.")
+        todos = _por_erros(P.nome)
+        fw = [n for n in todos if str(n).split(".")[0] in FERRAMENTAS]
+        return ("As ferramentas são só as funções declaradas no prompt: chame-as direto, sem import. "
+                f"Não importe: {', '.join(todos)}."
+                + (f" {', '.join(fw)}: são do framework, e o seu código já roda no interpretador." if fw else ""))
+    if parte == "F":
+        return f"Não chame: {nomes(['funcao_proibida'])}."
     if parte == "D":
         g = [f"{rot}: {nomes([tp])}" for rot, tp in (("Não importe", "import_bloqueado"),
                                                        ("Não existe no ambiente", "modulo_ausente")) if nomes([tp])]
@@ -193,6 +255,22 @@ def _guia(parte, P, L, papel):
     return "; ".join(g) + ". " + GUIA_E
 
 
+def _nomes(parte, P, L, papel):
+    """`validation.nomes` (esquema 0.4; emenda 9): o que o texto manda importar, usar, não importar e não usar."""
+    vazio = {"importar": [], "usar": [], "nao_importar": [], "nao_usar": []}
+    todos = _por_erros(P.nome)
+    if parte == "C":
+        return {**vazio, "importar": _sem_repetir(modulo(n) for n in todos)}
+    if parte == "Cp":
+        importar, fora = _modulos_do_papel(L, papel)(todos)
+        return {**vazio, "importar": _sem_repetir(modulo(n) for n in importar), "nao_importar": fora}
+    if parte == "B":
+        return {**vazio, "nao_importar": _sem_repetir(str(n).split(".")[0] for n in todos)}
+    if parte == "D":
+        return {**vazio, "nao_importar": todos}
+    if parte == "E":
+        return {**vazio, "usar": ["print", "type", "str"], "nao_usar": todos}
+    return {**vazio, "nao_usar": todos}
 
 
 def memorias(perfil, t, conf, dest, ids, encontro):
@@ -242,7 +320,8 @@ def memorias(perfil, t, conf, dest, ids, encontro):
                                                   sorted(A.lista_autorizada.value_counts().items())],
                            "destino_numeros": {**dest, "erros_que_repetem_o_nome_na_parte": int(rep.sum())},
                            "destino": destino_parte,
-                           "destino_decidido_em": "decisoes.md, 19/10" if destino_parte != "em aberto" else None},
+                           "destino_decidido_em": DECIDIDO_EM.get(r.parte) if destino_parte != "em aberto" else None,
+                           "nomes": _nomes(r.parte, P, L, papel)},
             "impact": None,
         }
         saida.append({"id": r.memoria_id, "parte": r.parte, "memoria": mem})

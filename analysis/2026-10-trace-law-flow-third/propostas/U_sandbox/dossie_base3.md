@@ -482,6 +482,44 @@ cria*, *sem nome entre aspas* (`[v for v in obrigatorias if v not in globals()]`
 
 Comando, na máquina da base 3: `uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>` — foto das duas tabelas da parte E.
 
+**8 · O resultado (20/10, fotos `IMG_5976`–`IMG_5978`).** As partes A–D reproduzem a medição de 19/10 (`IMG_5900`): no
+ContestacaoCivel, instruída 3/1.521/694, espontânea 0/41/61, não verifica 0/39/16 (jun/jul/ago). A parte E:
+
+| Papel | cria com valor fixo | leitura com valor padrão | sem nome entre aspas | verifica e não cria | total |
+|---|---:|---:|---:|---:|---:|
+| ContestacaoCivel (jul–ago/26) | 52 | 14 | 33 | 36 | **135** (`globals` 125, `locals` 10) |
+| CalculoTrabalhista | 1 | 0 | 0 | 1 | 2 |
+| RespostaBacen | 0 | 1 | 0 | 1 | 2 |
+| AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios | 2 | 0 | 1 | 2 | 5 (1 cada) |
+| **outros papéis, somados** | **3** | **1** | **1** | **4** | **9** |
+
+**Pelo critério fixado antes (item 7): a forma não separa** — fora do ContestacaoCivel aparecem as outras três formas (8
+de 9). E o ContestacaoCivel tem as quatro, não só "cria com valor fixo": a instrução não diz como verificar. **Decisão do
+Rafael (20/10): pelo papel** — os 135 do ContestacaoCivel (as quatro formas) vão para `U_verificacao_existencia`; os 9 dos
+outros papéis ficam no sandbox, porque **o prompt desses papéis não tem a instrução** (base 2, `IMG_5899`: em todos os
+papéis, só o ContestacaoCivel tem a instrução, 224 de 224; base 1: o único caso fora dele, ConversationAgent, sem
+instrução). Inferência, não visto erro a erro: a base 3 não guarda o prompt, e as bases podem ter versões diferentes. Por
+que esses agentes verificam sem instrução não se sabe ("hábito" seria interpretação). Os 9 não viram memória injetada (a
+memória E deixa `globals`/`locals`/`vars`/`eval`, decisão 5). **Esperado na rodada nova: 135 saem do sandbox.**
+**O que fica em aberto (roadmap `b3 #54`, baixa prioridade):** confirmar, lendo alguns dos 9 casos ou com o prompt dessas
+execuções pedido à plataforma, que não há instrução parecida, e entender por que o agente verifica sem instrução. Aceito
+sem investigar agora (decisão do Rafael) porque o erro é pequeno e não vira memória injetada.
+
+**9 · A etapa 5: o texto das memórias (emenda 9, 20/10).** O script passa a montar: **C** global só com os módulos de
+todas as listas autorizadas vistas, e **C por papel** (`U_sandbox.C.<papel>`) com o import escrito (`import pandas as
+pd`) ou "Não está na lista autorizada deste papel"; **B** sem o "já estão no escopo" ("As ferramentas são só as funções
+declaradas no prompt…"; os nomes do framework explicados); **E** sem `globals`/`locals`/`vars`/`eval` e sem o "para ler
+JSON, use json.loads"; a parte nova **F** (esses quatro nomes, em aberto, `b3 #51`); `validation.nomes` em todas. A
+auditoria divide pela mesma prosa.
+**Ensaio na base 1** (rodada `6d054fbb12098c5f`, pasta `pipeline/resultados/ensaio_base1_20out/`, fora do git): 9 passos
+fecham, cobertura 100%, **31 medidas iguais**, 7 memórias no esquema 0.4 (C, C.ConversationAgent, C.CalculoTrabalhista,
+D.ConversationAgent, D.managerAgent, E, F). O caso do `json` já aparece: a lista do managerAgent não tem `json`, e o `json`
+sai da C global para as memórias por papel — a regra decide sem caso especial. **Degrau 2 das memórias do ensaio** (prompt
+da base 1): C passa no ambiente (antes falhava); E passa no conflito (antes falhava); E no ambiente sai "não verificável"
+— `print`, `type` e `str` são funções embutidas, e o `conferir_memorias.py` não as dá por permitidas (o sandbox proíbe
+algumas embutidas, como `repr`); o teste no interpretador mostra que essas três funcionam (ajuste futuro do script do
+degrau 2). As D repetem o prompt; a recorrência falha na base 1, que é pequena; a 5 segue "não verificável".
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
