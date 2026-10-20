@@ -67,8 +67,18 @@ resultado diz qual prompt usou.
 ## Onde o degrau fica registrado
 
 O catálogo das memórias (`analysis/registros/memorias.json`) registra cada memória fechada na mineração, isto é, no
-degrau 1. O degrau em que cada uma está, e o resultado das checagens, passam a ser registrados quando o script do
-degrau 2 existir (a estrutura do registro se decide junto com ele).
+degrau 1. O degrau 2 roda por script (Ajuste 25, 20/10/2026):
+
+```
+uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace <trace com prompt> --saida <fora do repo>/prompts.jsonl
+uv run python .claude/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora do repo>/prompts.jsonl --saida <conferencia.json> [--registrar]
+```
+
+O primeiro extrai o prompt de cada papel e versão (o texto fica fora do repositório); o segundo roda as cinco checagens
+sobre o catálogo e, com `--registrar`, grava em cada entrada a `conferencia` (o resultado de cada checagem, o JSONL e a
+régua usados) e o `degrau` (2 só se as cinco passam). Os nomes que cada memória manda usar ou evitar vêm do campo
+`validation.nomes` do arquivo final (esquema 0.4), que o catálogo copia. A instrução do prompt que induz um nome (a
+checagem 2) fica no item do sinal de harness no `monitoramento.json` (`instrucao_prompt`, `nomes_induzidos`).
 
 ## O primeiro caso
 

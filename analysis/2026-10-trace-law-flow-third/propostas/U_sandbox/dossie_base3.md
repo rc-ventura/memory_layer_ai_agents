@@ -342,6 +342,56 @@ As 14 memórias estão no degrau 1 (candidata). O degrau 2, checagem por checage
    (`b3 #48`); o destino da verificação com valor padrão (harness, junto do grupo A, ou memória);
 5. **a mineração de novo** na máquina da base e o catálogo atualizado, com o degrau de cada memória.
 
+## 2g · O degrau 2 por script, com o prompt da base 1 (20/10)
+
+O script do degrau 2 existe (`conferir_memorias.py`, kit; livro-razão, Ajuste 25). Os nomes de cada memória vêm do
+campo `nomes` do catálogo, transcrito da `description` em 20/10 (marcado em `nomes_origem`) até a próxima mineração.
+**É aproximação:** as memórias são da base 3, e o prompt é o da base 1 (870 versões, 16 papéis; a base 1 não tem
+`AgenteTestemunhas` nem `Consultivo`). Comandos:
+
+```
+uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace analysis/2026-09-trace-law-flow/data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz --saida <fora do repo>/prompts_base1.jsonl
+uv run python .claude/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora do repo>/prompts_base1.jsonl --saida <fora do repo>/conferencia_base1.json
+```
+
+| Memória | 1 · ambiente | 2 · conflito | 3 · repete | 4 · recorrência | 5 · uma causa |
+|---|---|---|---|---|---|
+| C (global) | **falha** | passa | passa | passa | não verificável |
+| E (global) | **falha** | **falha** | parcial | passa | não verificável |
+| B.OBFCivel | **falha** | **falha** | parcial | passa | não verificável |
+| B.RespostaBacen | **falha** | passa | parcial | **falha** | não verificável |
+| D.CalculoTrabalhista, D.JoogleAnalytics, D.OBFCivel, D.RespostaBacen | passa | passa | **falha** | passa | não verificável |
+| D.CalculoCivel, D.OficiosResposta, D.RespostaOficios, D.ContestacaoCivel | passa | passa | **falha** | **falha** | não verificável |
+| D.AgenteTestemunhas | não verificável (sem prompt na base 1) | idem | idem | **falha** | não verificável |
+| D.Consultivo | não verificável (sem prompt na base 1) | idem | idem | passa | não verificável |
+
+**O que confere com a tabela do §2f (montada à mão):**
+- **C falha no ambiente:** `pandas` fora da lista em 10 papéis;
+- **B.OBFCivel:** `get_document_text` não é ferramenta declarada, e o prompt a cita (4 de 4 versões);
+- **E falha no conflito só no ContestacaoCivel:** o prompt traz a instrução de verificar a variável, que induz `globals`/`eval`/`locals`;
+- **as D repetem o prompt:** a lista autorizada já está nele;
+- **as 6 raras** falham na recorrência;
+- **a 5** sai não verificável em todas: falta a classificação de uso, que vem com a etapa 5 do plano.
+
+**O que é novo** (fatos sobre o prompt da base 1; para a base 3, hipótese até a base 2):
+- **`json` fora da lista em versões recentes de quatro papéis:**
+
+  | Papel | Versões sem `json` |
+  |---|---|
+  | OBFCivel | 1 de 4 (ago/26, 1 execução) |
+  | RoteadorCivel | 1 de 2, a de mai–ago/26: 28 de 32 execuções (a de dez/25 tem `json`) |
+  | managerAgent | 493 de 493 |
+  | ContestacaoCivel | 2 de 2 (jul/26) |
+
+  O RoteadorCivel é o papel com mais erros de `json` sem import na base 3 (241). Se o `json` também saiu da lista dele lá, a memória "importe `json`" mandaria fazer um import proibido. Isso vale também para o `json.loads` que a memória E sugere. Na base 3, a lista do ContestacaoCivel (vinda da mensagem de erro) **tem** `json`. As bases diferem, e por isso é a base 2, do mesmo período, que responde.
+- **B.RespostaBacen falha no ambiente:** `python_interpreter` não é ferramenta declarada em nenhuma das 7 versões. A memória diz que ela está no escopo. Isso fecha o "a conferir" do §2f.
+- **A 3 de E sai "parcial"** porque os prompts já citam `print` (e `type`, no JoogleAnalytics). Ensinar `print` não é o defeito; o parcial aqui é ruído, não reprovação.
+
+**O roteiro da ida à máquina da base 2** (etapa 2 do plano; um trace, três comandos):
+1. `uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_ferramentas_prompt_base2.py --trace <base 2>`. Pergunta: por versão do prompt do OBFCivel, `get_document_text` é mencionada e não declarada? Fecha o `b3 #49`.
+2. `uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace <base 2> --saida <fora do repo>/prompts_base2.jsonl`, depois `uv run python .github/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora do repo>/prompts_base2.jsonl --saida <fora do repo>/conferencia_base2.json`. Dá o degrau 2 das 14 com o prompt do mesmo período, inclusive a pergunta do `json` no RoteadorCivel. Foto da tabela impressa e do JSON por memória.
+3. A replicação do Ajuste 21 na base 2 (livro-razão, Ajuste 21, "Replicar", item 2). Copiar os `.py` e `.ipynb` da base 1 para a base 2, ajustar só `TRACE` e `BASE_ID`, conferir com o `conferir_versao.py` e rodar o notebook da esteira.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

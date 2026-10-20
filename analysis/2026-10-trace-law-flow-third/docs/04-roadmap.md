@@ -254,8 +254,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
 - [ ] **#50** **O degrau 2 (conferida) das 14 memórias do sandbox** ([`17`](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md),
-  dossiê §2f). (1) o script do degrau 2 no kit (`conferir_memorias.py`: coerência com o ambiente, conflito com o prompt,
-  repete o prompt, recorrência, uma causa só); (2) rodá-lo na base 2 (prompt completo; fecha o #49); (3) corrigir o
+  dossiê §2f). (1) ~~o script do degrau 2 no kit~~ **feito em 20/10** (`conferir_memorias.py`, Ajuste 25; com o prompt da
+  base 1 reproduz o §2f → dossiê §2g); **a unidade fecha no degrau 3** para as que vão para injeção (decisão de 20/10); (2) rodá-lo na base 2 (prompt completo; fecha o #49); (3) corrigir o
   script específico — C com o `pd` só nos papéis com `pandas`, E sem a verificação, B pelo #49 — e revalidar;
   (4) decisões do Rafael: D (repete o prompt), as 6 que falham na recorrência (#48), o destino da verificação com valor
   padrão; (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49.
@@ -263,7 +263,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (19/10).** O prompt do OBFCivel na base 1 manda usar `get_document_text`, que não está entre as ferramentas
   declaradas; o agente tenta importá-la e o sandbox barra. A memória do catálogo ("chame-as direto, sem import")
   mandaria chamar uma função que não existe. **Teste:** `contar_ferramentas_prompt_base2.py --trace <base 2>` na máquina
-  da base 2: por versão do prompt do OBFCivel, `get_document_text` é mencionada e não declarada? Se sim, Ajuste 25
+  da base 2: por versão do prompt do OBFCivel, `get_document_text` é mencionada e não declarada? Se sim, Ajuste 26
   (B → harness), decidido pelo Rafael; se não, B fica memória → [dossiê](../propostas/U_sandbox/dossie_base3.md) §2e.
 - [ ] **#48** **As memórias pequenas do sandbox: decidir a régua de "memória rara" (pendente, 19/10).** Das 14 memórias
   fechadas do `U_sandbox`, 6 têm de 1 a 3 erros (B.RespostaBacen 1; D.AgenteTestemunhas 1, D.OficiosResposta 1,

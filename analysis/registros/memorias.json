@@ -21,6 +21,31 @@
       },
       "description": "211 erros em 1 papel(éis), parte B do inventário do sandbox (ferramenta importada como módulo): get_document_text 167, python_interpreter 34, tools 4, tool_usage 2, mcp 1, mcp_client.tools 1, smolagents 1, tool_functions 1.",
       "correction_guidance": "As ferramentas já estão no escopo como funções: chame-as direto, sem import. Não importe: get_document_text, python_interpreter, tools, tool_usage, mcp, mcp_client.tools, smolagents, tool_functions.",
+      "nomes": {
+        "importar": [],
+        "usar": [
+          "get_document_text",
+          "python_interpreter",
+          "tools",
+          "tool_usage",
+          "mcp",
+          "mcp_client.tools",
+          "smolagents",
+          "tool_functions"
+        ],
+        "nao_importar": [
+          "get_document_text",
+          "python_interpreter",
+          "tools",
+          "tool_usage",
+          "mcp",
+          "mcp_client.tools",
+          "smolagents",
+          "tool_functions"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 211,
         "execucoes": 210,
@@ -60,6 +85,17 @@
       },
       "description": "1 erros em 1 papel(éis), parte B do inventário do sandbox (ferramenta importada como módulo): python_interpreter 1.",
       "correction_guidance": "As ferramentas já estão no escopo como funções: chame-as direto, sem import. Não importe: python_interpreter.",
+      "nomes": {
+        "importar": [],
+        "usar": [
+          "python_interpreter"
+        ],
+        "nao_importar": [
+          "python_interpreter"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 1,
         "execucoes": 1,
@@ -95,6 +131,18 @@
       },
       "description": "656 erros em 10 papel(éis), parte C do inventário do sandbox (módulo usado sem import): json 415, pd 233, re 5, datetime 3.",
       "correction_guidance": "Importe antes de usar: json, pd, re, datetime.",
+      "nomes": {
+        "importar": [
+          "json",
+          "pandas",
+          "re",
+          "datetime"
+        ],
+        "usar": [],
+        "nao_importar": [],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 656,
         "execucoes": 554,
@@ -139,6 +187,15 @@
       },
       "description": "1 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): operator 1.",
       "correction_guidance": "Não importe: operator; imports autorizados neste papel: collections, datetime, itertools, json, math, numpy, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "operator"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 1,
         "execucoes": 1,
@@ -174,6 +231,16 @@
       },
       "description": "3 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): tabulate 2, IPython.display 1.",
       "correction_guidance": "Não importe: tabulate, IPython.display; imports autorizados neste papel: collections, datetime, itertools, json, math, openpyxl, os, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "tabulate",
+          "IPython.display"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 3,
         "execucoes": 3,
@@ -209,6 +276,22 @@
       },
       "description": "14 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): copy 5, numbers 2, tabulate 2, broadcast 1, calendar 1, em 1, pandas.tseries.offsets 1, pprint 1.",
       "correction_guidance": "Não importe: copy, numbers, tabulate, broadcast, calendar, em, pandas.tseries.offsets, pprint; imports autorizados neste papel: collections, datetime, dateutil, dateutil.relativedelta, io, itertools, json, locale, math, numpy, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "copy",
+          "numbers",
+          "tabulate",
+          "broadcast",
+          "calendar",
+          "em",
+          "pandas.tseries.offsets",
+          "pprint"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 14,
         "execucoes": 13,
@@ -249,6 +332,16 @@
       },
       "description": "3 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): textwrap 2, copy 1.",
       "correction_guidance": "Não importe: textwrap, copy; imports autorizados neste papel: collections, datetime, itertools, json, math, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "textwrap",
+          "copy"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 3,
         "execucoes": 3,
@@ -286,6 +379,18 @@
       },
       "description": "4 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): ast 1, base64 1, calendar 1, statsmodels.tsa.statespace.sarimax 1.",
       "correction_guidance": "Não importe: ast, base64, calendar, statsmodels.tsa.statespace.sarimax; imports autorizados neste papel: collections, datetime, dateutil, dateutil.relativedelta, io, itertools, json, locale, math, numpy, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "ast",
+          "base64",
+          "calendar",
+          "statsmodels.tsa.statespace.sarimax"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 4,
         "execucoes": 4,
@@ -323,6 +428,16 @@
       },
       "description": "5 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): ast 3, typing 2.",
       "correction_guidance": "Não importe: ast, typing; imports autorizados neste papel: collections, datetime, itertools, json, math, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "ast",
+          "typing"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 5,
         "execucoes": 5,
@@ -360,6 +475,15 @@
       },
       "description": "1 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): ast 1.",
       "correction_guidance": "Não importe: ast; imports autorizados neste papel: collections, datetime, itertools, json, math, numpy, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "ast"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 1,
         "execucoes": 1,
@@ -395,6 +519,16 @@
       },
       "description": "5 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): typing 4, traceback 1.",
       "correction_guidance": "Não importe: typing, traceback; imports autorizados neste papel: collections, datetime, itertools, json, math, numpy, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "typing",
+          "traceback"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 5,
         "execucoes": 5,
@@ -433,6 +567,15 @@
       },
       "description": "1 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): copy 1.",
       "correction_guidance": "Não importe: copy; imports autorizados neste papel: collections, datetime, itertools, json, math, numpy, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "copy"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 1,
         "execucoes": 1,
@@ -468,6 +611,15 @@
       },
       "description": "3 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): ast 3.",
       "correction_guidance": "Não importe: ast; imports autorizados neste papel: collections, concurrent.futures, datetime, itertools, json, math, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "ast"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 3,
         "execucoes": 3,
@@ -503,6 +655,34 @@
       },
       "description": "488 erros em 13 papel(éis), parte E do inventário do sandbox (funções e atributos proibidos): __name__ 182, globals 142, repr 98, eval 14, locals 14, dir 9, exec 8, __import__ 5, bytes 5, open 5, hash 2, __class__ 1, __doc__ 1, __len__ 1, vars 1.",
       "correction_guidance": "Não chame: globals, repr, eval, locals, dir, exec, __import__, bytes, open, hash, vars; Não acesse: __name__, __class__, __doc__, __len__. Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); para ler JSON, use json.loads.",
+      "nomes": {
+        "importar": [],
+        "usar": [
+          "print",
+          "type",
+          "str",
+          "json.loads"
+        ],
+        "nao_importar": [],
+        "nao_usar": [
+          "__name__",
+          "globals",
+          "repr",
+          "eval",
+          "locals",
+          "dir",
+          "exec",
+          "__import__",
+          "bytes",
+          "open",
+          "hash",
+          "__class__",
+          "__doc__",
+          "__len__",
+          "vars"
+        ]
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 488,
         "execucoes": 461,

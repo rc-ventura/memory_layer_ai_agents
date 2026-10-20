@@ -9,7 +9,8 @@ Uma memória entra no catálogo quando está **fechada**: `validation.destino` =
 `status` = "derived-and-checked". O que tem destino harness vai para o `monitoramento.json`, e o que tem destino em
 aberto fica fora; as duas listas saem no resumo com o motivo. A entrada leva só conteúdo técnico (o que a memória diz,
 onde vale, quantos erros, de que rodada) e o hash do arquivo final, que fica na pasta da mineração, na máquina da base:
-sem `location` nem `evidence` (os casos). Passa pelo `varrer_pii.py` antes de sair (o `minerar.py` faz isso no passo 9).
+sem `location` nem `evidence` (os casos). Desde o esquema 0.4, leva também `validation.nomes` (os nomes que a memória
+manda usar ou evitar), que o `conferir_memorias.py` (degrau 2) confere. Passa pelo `varrer_pii.py` antes de sair (o `minerar.py` faz isso no passo 9).
 
 `--registrar` põe as entradas no catálogo, trocando a que tiver o mesmo (id, base); `--conferir` confere os campos e
 que (id, base) não se repete. Sai com 0 se tudo certo, 1 se não. Só biblioteca padrão.
@@ -52,6 +53,7 @@ def entrada(doc, caminho):
             "destino_decidido_em": val.get("destino_decidido_em"),
             "category": mem.get("category"), "scope": mem.get("scope"), "description": mem.get("description"),
             "correction_guidance": mem.get("correction_guidance"),
+            "nomes": val.get("nomes"),   # esquema 0.4: o que o degrau 2 confere (conferir_memorias.py)
             "occurrences": {"erros": occ.get("erros"), "execucoes": occ.get("execucoes"),
                             "meses": occ.get("meses") or []},
             "arquivo": {"nome": Path(caminho).name, "sha256_16": _sha16(caminho),

@@ -161,6 +161,14 @@
           "campo_passo": "error"
         }
       ],
+      "instrucao_prompt": "(?i)verifi\\w*\\s+se\\s+a\\s+vari[aá]vel|preenchida\\s+em\\s+mem[oó]ria|pule\\s+a\\s+chamada",
+      "nomes_induzidos": [
+        "globals",
+        "locals",
+        "vars",
+        "eval"
+      ],
+      "instrucao_nota": "a instrução do prompt que causa o sinal (regex de contar_introspeccao_prompt_base2.py, TERMOS['instrucao_verificar']) e os nomes que ela induz (Ajustes 21 e 23): o conferir_memorias.py (degrau 2, checagem 2) reprova a memória que proíbe esses nomes num papel cujo prompt traz a instrução. O monitorar.py não lê estes campos.",
       "gatilhos": [
         {
           "tipo": "some"

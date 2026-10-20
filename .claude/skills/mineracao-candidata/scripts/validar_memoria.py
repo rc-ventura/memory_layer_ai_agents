@@ -15,7 +15,8 @@ Os campos e a versão vêm do esquema (analysis/registros/esquema-memoria.json),
     step_ref + fonte_id + rodada_id, numa base sem idx);
   - todo campo do registro tem origem (checado | hipotese | pendente); checado exige o comando que o reproduz;
   - campo não obrigatório do esquema que falta no registro vira PENDÊNCIA (não reprova): é assim que um campo novo do
-    esquema aparece na próxima mineração sem mudar código.
+    esquema aparece na próxima mineração sem mudar código. O mesmo vale para um subcampo recomendado de um campo
+    objeto (`subcampos_recomendados`, ex.: `validation.nomes`).
 Sai com 0 se aprovado, 1 se reprovado. Imprime só nomes de campo e contagens. Só biblioteca padrão.
 """
 
@@ -66,6 +67,9 @@ def validar(esquema, arq):
             erros.append(f"campo `{campo}`: tipo {type(mem[campo]).__name__}, o esquema pede {regra['tipo']}")
         if "casos_item" in regra and isinstance(mem[campo], dict):
             erros += conferir_casos(campo, mem[campo].get("casos"), regra["casos_item"])
+        if isinstance(mem[campo], dict):
+            pendencias += [f"campo `{campo}.{s}` ausente" for s in regra.get("subcampos_recomendados", {})
+                           if s not in mem[campo]]
         o = origem.get(campo)
         if not o or o.get("tipo") not in ("checado", "hipotese", "pendente"):
             erros.append(f"campo `{campo}` sem origem (checado | hipotese | pendente)")

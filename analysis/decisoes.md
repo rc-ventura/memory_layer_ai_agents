@@ -175,6 +175,15 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   registradas; (2) a unidade passa a `U_verificacao_existencia`; (3) o ajuste vale nas três bases; (4) o monitoramento
   (`b3 #28`) é registrado junto, com os dois sintomas; (5) o aviso à plataforma continua adiado (`transversal #7`) →
   [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #46.
+- **20/10, a unidade do sandbox fecha no degrau 3** (decisão do Rafael): as memórias que passam no degrau 2 e vão para
+  injeção passam também pela leitura de casos com dois leitores e o gate (degrau 3, skill `mineracao-investigacao`);
+  só o degrau 4 (o experimento) fica para as POCs → [`17`](2026-09-trace-law-flow/docs/17-validacao-memorias.md); base 3,
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50.
+- **20/10, o degrau 2 lê os nomes de um campo estruturado** (decisão do Rafael): `validation.nomes` no arquivo final
+  (esquema 0.4; `importar`, `usar`, `nao_importar`, `nao_usar`), gravado pelo script específico da mesma tabela que gera
+  a guidance, e copiado no catálogo; a lista autorizada de cada papel vem do prompt; a instrução do prompt que induz um
+  nome (a verificação de existência) fica no item do `monitoramento.json`; as 14 do sandbox ganham o campo transcrito da
+  `description`, marcado, até a próxima mineração → livro-razão, [Ajuste 25](pipeline-entre-bases.md#ajuste-25--o-degrau-2-por-script-e-o-esquema-04-20102026).
 - **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
   lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
   passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,
