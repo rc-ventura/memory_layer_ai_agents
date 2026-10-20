@@ -46,9 +46,15 @@ PARTES = {"C": ("módulo usado sem import", "global", "memória"),
           # depois dos Ajustes 21, 23 e 27 sai de E e espera a memória "como verificar no sandbox" (b3 #51)
           "Cp": ("módulo usado sem import, por papel", "papel", "memória"),
           "F": ("introspecção fora da verificação instruída", "global", "em aberto")}
-DECIDIDO_EM = {"C": "decisoes.md, 19/10 e 20/10 (decisão 5)", "Cp": "decisoes.md, 20/10 (decisão 5)",
-               "B": "decisoes.md, 19/10 e 20/10 (decisões 1 e 4)", "D": "decisoes.md, 19/10 e 20/10 (decisão 3)",
-               "E": "decisoes.md, 19/10 e 20/10 (decisão 5)"}   # depois da investigação (dossiê §2c; Ajuste 23)
+# onde cada destino foi decidido: a data e o título da entrada do decisoes.md (que não numera as entradas)
+_DIVIDE = "20/10, as memórias C e E do sandbox se dividem pelo ambiente"
+DECIDIDO_EM = {"C": f"decisoes.md — 19/10, a lição do sandbox é dividida por papel e por causa; {_DIVIDE}",
+               "Cp": f"decisoes.md — {_DIVIDE}",
+               "B": "decisoes.md — 20/10, o get_document_text do OBFCivel é sinal de harness, não memória; "
+                    "20/10, a régua de memória rara se aplica; sobra uma",
+               "D": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
+               "E": f"decisoes.md — 19/10, a parte E do sandbox vira memória global; {_DIVIDE}; "
+                    "20/10, a memória E perde a dica \"para ler JSON, use json.loads\""}   # depois da investigação (dossiê §2c; Ajuste 23)
 # o complemento fixo da parte E (racional, emenda 6): o jeito permitido de fazer o que a função barrada fazia
 # emenda 9 (20/10): sem "; para ler JSON, use json.loads" — o json não está na lista de todos os papéis, e a E é global
 GUIA_E = "Para inspecionar um valor, use print(type(x)) e print(str(x)[:n])."

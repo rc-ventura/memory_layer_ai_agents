@@ -217,6 +217,20 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   pergunta (o reforço funciona?), documentada como experimento próprio (EX-8 do
   [blueprint](../pocs/blueprint-m1-pocs-minimos.md), com a literatura) → [glossário](glossario.md) (tipos de
   monitoramento); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50.
+- **20/10, o script do sandbox com as emendas 7, 8 e 9 está aprovado** (decisão do Rafael): revalidação 7 do
+  `validador-de-script` aprovada — 189 de 189 medidas iguais no ensaio da base 1, encontro com a auditoria 31/31, 7
+  memórias no esquema 0.4; cada emenda no mesmo commit do código que a aplica (`c832da3`, `cc27360`). Condição: a
+  primeira rodada na base 3 com um HEAD que contenha essas emendas. As três observações do laudo para a base 3: conferir o
+  esperado da emenda 8 (135); a ordem das raízes no `nomes` da B; o `destino_decidido_em` pelo título da entrada (feito)
+  → [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md), "Revalidação 7".
+- **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
+  **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
+  exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
+  papel" onde o módulo não está; (2) **E** — sai do texto `globals`, `locals`, `vars` e `eval` (o "não chame `globals`"
+  brigava com o prompt do ContestacaoCivel: o degrau 2 reprovou a E no conflito, §2g–§2h); os erros desses nomes que
+  sobram no sandbox depois dos Ajustes 21, 23 e 27 vão para uma parte própria, **F**, com destino em aberto — a
+  população da memória "como verificar no sandbox" (`b3 #51`); E fica com a depuração → racional do sandbox, emenda 9;
+  dossiê §2h, 9.
 - **20/10, a memória E perde a dica "para ler JSON, use json.loads"** (decisão do Rafael, na etapa 5 do fechamento do
   sandbox): a E é global, e o `json` não está na lista autorizada de quatro papéis no prompt da base 1 (OBFCivel,
   RoteadorCivel, managerAgent, ContestacaoCivel) — o degrau 2 do ensaio reprovou a E no ambiente por isso. A dica servia

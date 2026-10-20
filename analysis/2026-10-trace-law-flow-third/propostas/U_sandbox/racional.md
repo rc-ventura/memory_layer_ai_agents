@@ -212,7 +212,8 @@ validação, dossiê §2g–§2h).** O passo 8 muda nas partes C, B e E, ganha a
   não estão na lista do papel; B e D — `nao_importar` os nomes (B pela raiz); E — `nao_usar` as funções e os atributos,
   `usar` `print`, `type`, `str` (o complemento fixo); F — `nao_usar` as funções. As listas que não se
   aplicam ficam vazias.
-- **`destino_decidido_em`:** onde cada destino foi decidido (`decisoes.md`, com a data e a decisão).
+- **`destino_decidido_em`:** onde cada destino foi decidido — `decisoes.md`, com a data e o título da entrada (o
+  `decisoes.md` não numera as entradas; observação 3 da revalidação 7).
 População, regras do passo 4 e limiar não mudam. Os números de cada parte saem da rodada nova da base 3; o encontro
 (passo 7) compara as partes novas com a auditoria, que divide C e E pela mesma prosa.
 

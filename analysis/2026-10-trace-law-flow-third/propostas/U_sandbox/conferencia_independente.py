@@ -4,6 +4,12 @@ Não importa o pipeline, o script da lição, o `minerar.py` nem a auditoria da 
 `analysis/leitor_trace.py` (abrir o arquivo não é lógica auditada) e o `casos.csv` do perfil da rodada com `csv`.
 Grava as medidas num JSON (contagens, nomes de papel, mês, módulo e função, exec_id e step_ref; nenhum texto de caso).
 
+Revalidação 7 (20/10): a emenda 7 (o import de uma ferramenta citada e não declarada pelo prompt, hoje só
+`get_document_text`, sai da população), a emenda 8 (no papel cujo prompt manda verificar, hoje só o ContestacaoCivel,
+que chega ao trace como `ontestacaoCivel`, toda verificação de existência com globals/locals/vars sai da população) e a
+emenda 9 (C dividida em global e por papel, B com o texto novo, E sem globals/locals/vars/eval e com o complemento
+curto, a parte F, e `validation.nomes` em todas as partes).
+
 Revalidação 6 (19/10): a emenda 5 (a emenda 3 vale também para `eval`, pela função escrita pelo agente, com a chamada
 fora de globals/locals/vars/eval) e a emenda 6 (E com destino memória e o complemento fixo da guidance de E).
 
@@ -105,6 +111,36 @@ def trecho_final(msg):
     return msg.rsplit("due to:", 1)[-1] if "due to:" in msg else msg
 
 
+# emenda 7 (20/10, Ajuste 26): o import de uma ferramenta que o prompt cita e não declara (hoje só get_document_text)
+CITADAS_NAO_DECLARADAS = {"get_document_text"}
+RE_IMPORT_NOME = [re.compile(r"Import of (\S+?) is not allowed"), re.compile(r"Import from (\S+?) is not allowed"),
+                  re.compile(r"No module named '([^']+)'")]
+
+
+def ferramenta_nao_declarada(msg):
+    t = trecho_final(msg)
+    for rx in RE_IMPORT_NOME:
+        for x in rx.findall(t):
+            if x.strip("'\"`").split(".")[0] in CITADAS_NAO_DECLARADAS:
+                return True
+    return False
+
+
+# emenda 8 (20/10, Ajuste 27): no papel cujo prompt manda verificar, toda verificação com globals/locals/vars
+PAPEIS_QUE_VERIFICAM = {"ContestacaoCivel", "ontestacaoCivel"}  # o racional: chega ao trace como `ontestacaoCivel`
+RE_VERIF_PAPEL = re.compile(r"\bin\s+(?:globals|locals|vars)\(\)|(?<![\w.])(?:globals|locals|vars)\(\)\.get\(")
+
+
+def verificacao_papel_instruido(msg, papel):
+    if papel not in PAPEIS_QUE_VERIFICAM:
+        return False
+    m = RE_FFE.search(trecho_final(msg))
+    if not m or m.group(1) not in INTROSPECCAO:
+        return False
+    lm = RE_LINHA.search(msg)
+    return bool(lm and RE_VERIF_PAPEL.search(lm.group(1)))
+
+
 def criterio_sandbox(msg):
     """Qual braço do passo 1 a mensagem satisfaz (ou None)."""
     m = RE_FFE.search(msg)
@@ -150,14 +186,30 @@ def nome_recusado(msg, integro):
     return "sem_nome", None
 
 
-# emenda 4 (19/10): as partes C/B/D/E
+# emenda 4 (19/10): as partes C/B/D/E; emenda 9 (20/10): C dividida (C global e Cp por papel) e a parte F
 B_FRAMEWORK = {"smolagents", "mcp", "mcp_client"}
 B_NOMES = {"tools", "tool_usage", "tool_functions", "python_interpreter"}
+FRAMEWORK_9 = B_FRAMEWORK | B_NOMES  # emenda 9: os nomes do framework, pela raiz
+APELIDOS = {"pd": "pandas", "np": "numpy"}  # emenda 9: o módulo de um modulo_sem_import
+F_FUNCOES = {"globals", "locals", "vars", "eval"}  # emenda 9: saem de E para F
 
 
-def parte_do_erro(tipo, nome):
+def modulo_de(nome):
+    return APELIDOS.get(nome, nome)
+
+
+def molde_import(nome):
+    m = modulo_de(nome)
+    return f"import {m} as {nome}" if m != nome else f"import {m}"
+
+
+def parte_do_erro(tipo, nome, modulos_c_global=None):
     if tipo == "modulo_sem_import":
-        return "C"
+        if modulos_c_global is None or modulo_de(nome) in modulos_c_global:
+            return "C"
+        return "Cp"
+    if tipo == "funcao_proibida" and nome in F_FUNCOES:
+        return "F"
     if tipo in ("funcao_proibida", "atributo_dunder"):
         return "E"
     if tipo in ("import_bloqueado", "modulo_ausente"):
@@ -178,10 +230,13 @@ def lista_autorizada(msg):
 
 
 # ------------------------------------------------------------------ revalidação 5: a tabela "O arquivo final de cada parte"
-COMPLEMENTO_E = ("Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); "
-                 "para ler JSON, use json.loads.")
-ROTULO_PARTE = {"C": "módulo usado sem import", "B": "ferramenta importada como módulo",
-                "D": "import fora da lista autorizada", "E": "funções e atributos proibidos"}
+# emenda 9: o complemento perde "; para ler JSON, use json.loads"
+COMPLEMENTO_E = "Para inspecionar um valor, use print(type(x)) e print(str(x)[:n])."
+ROTULO_PARTE = {"C": "módulo usado sem import", "Cp": "módulo usado sem import, por papel",
+                "B": "ferramenta importada como módulo", "D": "import fora da lista autorizada",
+                "E": "funções e atributos proibidos", "F": "introspecção fora da verificação instruída"}
+GLOBAIS = ("C", "E", "F")
+DESTINO = {"C": "memória", "Cp": "memória", "B": "memória", "D": "memória", "E": "memória", "F": "em aberto"}
 
 
 def por_erros(contagem):
@@ -201,11 +256,11 @@ def lista_do_papel(papel, erros_com_lista):
 
 
 def memoria_da_parte(mid, v, erros, a):
-    pt = mid.split(".")[1]
-    papel = mid.split(".", 2)[2] if pt in ("B", "D") else None
+    pt = v[0]["parte"]
+    papel = mid.split(".", 2)[2] if pt in ("B", "D", "Cp") else None
     rot = ROTULO_PARTE[pt]
     o_ppm = sorted(v, key=lambda e: (e["papel"], e["mes"], e["step_ref"]))
-    if pt in ("C", "E"):
+    if pt in GLOBAIS:
         loc, vis = [], set()
         for e in o_ppm:
             if e["papel"] not in vis:
@@ -227,11 +282,36 @@ def memoria_da_parte(mid, v, erros, a):
     lista = mes_lista = None
     n_listas_mes = 0
     lista_so_parte = None
+    vnomes = {"importar": [], "nao_importar": [], "nao_usar": [], "usar": []}
+    cont_mod = collections.Counter(modulo_de(e["nome"]) for e in v if e["tipo"] == "modulo_sem_import")
+    apelido_de = {modulo_de(e["nome"]): e["nome"] for e in v if e["tipo"] == "modulo_sem_import"}
     if pt == "C":
-        guia = f"Importe antes de usar: {', '.join(nomes({'modulo_sem_import'}))}."
+        mods = por_erros(cont_mod)
+        guia = "Importe antes de usar: " + ", ".join(molde_import(apelido_de[m]) for m in mods) + "."
+        vnomes["importar"] = mods
+    elif pt == "Cp":
+        lista, mes_lista, n_listas_mes = lista_do_papel(papel, erros)
+        mods = por_erros(cont_mod)
+        sim = [m for m in mods if lista is None or m in lista]
+        nao = [m for m in mods if lista is not None and m not in lista]
+        pedacos = []
+        if sim:
+            pedacos.append("Importe antes de usar: " + ", ".join(molde_import(apelido_de[m]) for m in sim))
+        if nao:
+            pedacos.append("Não está na lista autorizada deste papel: " + ", ".join(nao))
+        guia = "; ".join(pedacos) + "."
+        vnomes["importar"], vnomes["nao_importar"] = sim, nao
     elif pt == "B":
-        guia = ("As ferramentas já estão no escopo como funções: chame-as direto, sem import. "
-                f"Não importe: {', '.join(nomes({'import_bloqueado', 'modulo_ausente'}))}.")
+        todos = nomes({"import_bloqueado", "modulo_ausente"})
+        fw = [nm for nm in todos if nm.split(".")[0] in FRAMEWORK_9]
+        guia = ("As ferramentas são só as funções declaradas no prompt: chame-as direto, sem import. "
+                f"Não importe: {', '.join(todos)}.")
+        if fw:
+            guia += f" {', '.join(fw)}: são do framework, e o seu código já roda no interpretador."
+        vnomes["nao_importar"] = por_erros(collections.Counter(e["nome"].split(".")[0] for e in v))
+    elif pt == "F":
+        guia = "Não chame: " + ", ".join(nomes({"funcao_proibida"})) + "."
+        vnomes["nao_usar"] = nomes({"funcao_proibida"})
     elif pt == "D":
         lista, mes_lista, n_listas_mes = lista_do_papel(papel, erros)
         lista_so_parte = lista_do_papel(papel, v)[0]
@@ -243,6 +323,7 @@ def memoria_da_parte(mid, v, erros, a):
         if lista:
             pedacos.append("imports autorizados neste papel: " + ", ".join(lista))
         guia = "; ".join(pedacos) + "."
+        vnomes["nao_importar"] = por_erros(cont_nome)
     else:
         pedacos = []
         if nomes({"funcao_proibida"}):
@@ -251,15 +332,21 @@ def memoria_da_parte(mid, v, erros, a):
             pedacos.append("Não acesse: " + ", ".join(nomes({"atributo_dunder"})))
         # emenda 6: o complemento fixo depois de "Não chame: …; Não acesse: …."
         guia = "; ".join(pedacos) + ". " + COMPLEMENTO_E
+        # "em toda lista de nomes, a ordem é por erros, e no empate a alfabética": nao_usar é uma lista só
+        vnomes["nao_usar"] = nomes({"funcao_proibida", "atributo_dunder"})
+        vnomes["usar"] = ["print", "type", "str"]
     grupos = collections.defaultdict(int)
     for e in v:
         grupos[(e["exec_id"], e["papel"], e["nome"])] += 1
     listas_parte = sorted({e["lista"] for e in v if e["lista"] is not None})
     return {
         "parte": pt, "rotulo": rot, "papel_escopo": papel,
-        # emenda 4: C e E "global"; B e D "uma memória por papel"
-        "escopo": "global" if pt in ("C", "E") else "papel",
-        "destino": "memória",  # emenda 6: E passa a memória (antes: em aberto)
+        # emenda 4: C e E "global"; B e D "uma memória por papel"; emenda 9: Cp por papel, F global
+        "escopo": "global" if pt in GLOBAIS else "papel",
+        "destino": DESTINO[pt],  # emenda 6: E memória; emenda 9: Cp memória, F em aberto
+        "validation_nomes": vnomes,
+        # "onde cada destino foi decidido": um destino "em aberto" não foi decidido (como E na revalidação 5)
+        "destino_decidido_presente": DESTINO[pt] != "em aberto",
         "erros": len(v), "execucoes": len({e["exec_id"] for e in v}), "meses_lista": sorted({e["mes"] for e in v}),
         "meses": len({e["mes"] for e in v}), "papeis": papeis, "erros_por_tipo": dict(collections.Counter(e["tipo"] for e in v)),
         "category": f"Inventário do sandbox · {rot} (factual · ambiente)",
@@ -271,6 +358,7 @@ def memoria_da_parte(mid, v, erros, a):
         "correction_guidance": guia,
         "lista_D": {"lista": lista, "mes": mes_lista, "listas_no_mes": n_listas_mes,
                     "igual_se_so_erros_da_parte": lista_so_parte == lista} if pt == "D" else None,
+        "lista_Cp": {"lista": lista, "mes": mes_lista, "listas_no_mes": n_listas_mes} if pt == "Cp" else None,
         "occurrences": {"erros": len(v), "ocorrencias": len(v), "execucoes": len({e["exec_id"] for e in v}),
                         "meses": sorted({e["mes"] for e in v})},
         "listas_autorizadas_da_parte": [list(L) for L in listas_parte],
@@ -316,6 +404,10 @@ def main():
         sinais = [n for n, rx in SINAIS_ANTES.items() if rx.search(msg)]
         if not sinais and verificacao_existencia(msg, r["error_code_action"]):
             sinais = ["verificacao_existencia_emenda3"]
+        if not sinais and ferramenta_nao_declarada(msg):
+            sinais = ["ferramenta_nao_declarada_emenda7"]
+        if not sinais and verificacao_papel_instruido(msg, r["papel"]):
+            sinais = ["verificacao_papel_instruido_emenda8"]
         if sinais:
             for n in sinais:
                 excluidos_por_sinal[n] += 1
@@ -394,11 +486,23 @@ def main():
         nomes_por_tipo[rot + " (contagens)"] = dict(c)
 
     # ---- emenda 4 (19/10): uma memória por parte; a parte sai do tipo e do nome do passo 4
+    # emenda 9: C (global) = os módulos que estão em todas as listas autorizadas distintas; sem lista vista, todos
+    if listas:
+        modulos_c_global = set.intersection(*(set(L) for L in listas))
+    else:
+        modulos_c_global = None
     partes = collections.defaultdict(list)
     for e in erros:
-        pt = parte_do_erro(e["tipo"], e["nome"])
+        pt = parte_do_erro(e["tipo"], e["nome"], modulos_c_global)
         e["parte"] = pt
-        mid = f"U_sandbox.{pt}" if pt in ("C", "E") else (f"U_sandbox.{pt}.{e['papel']}" if pt in ("B", "D") else None)
+        if pt in GLOBAIS:
+            mid = f"U_sandbox.{pt}"
+        elif pt == "Cp":
+            mid = f"U_sandbox.C.{e['papel']}"
+        elif pt in ("B", "D"):
+            mid = f"U_sandbox.{pt}.{e['papel']}"
+        else:
+            mid = None
         e["memoria"] = mid
         if mid:
             partes[mid].append(e)
@@ -464,6 +568,7 @@ def main():
         "emenda4_partes": {
             "erros_por_parte": dict(collections.Counter(e["parte"] for e in erros)),
             "erros_sem_parte": sem_parte,
+            "modulos_c_global": sorted(modulos_c_global) if modulos_c_global is not None else None,
             "memorias": memorias,
             "catalogo_esperado_se_derived_and_checked": catalogo_esperado,
         },

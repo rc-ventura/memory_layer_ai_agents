@@ -257,7 +257,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   dossiê §2f). (1) ~~o script do degrau 2 no kit~~ **feito em 20/10** (`conferir_memorias.py`, Ajuste 25; com o prompt da
   base 1 reproduz o §2f → dossiê §2g); **a unidade fecha no degrau 3** para as que vão para injeção (decisão de 20/10); (2) ~~rodá-lo na base 2~~ **feito em 20/10** (66 versões, 18 papéis: o mesmo resultado da base 1 → dossiê §2h); (3) o
   ~~Ajuste 26~~ **escrito em 20/10** (o import de `get_document_text` → `U_ferramenta_nao_declarada`, harness; emenda 7 do
-  racional; base 1 sem mudança; esperado na base 3: 167 saem do sandbox — livro-razão) e ~~corrigir o script específico~~ **corrigido em 20/10** (emenda 9; ensaio da base 1: 31 medidas iguais; dossiê §2h, 9) — C com
+  racional; base 1 sem mudança; esperado na base 3: 167 saem do sandbox — livro-razão) e ~~corrigir o script específico~~ **corrigido em 20/10** (emenda 9; ensaio da base 1: 31 medidas iguais; dossiê §2h, 9; **revalidação 7 aprovada, 189/189, e
+  script aprovado pelo Rafael, 20/10**) — C com
   o `pd` só nos papéis com `pandas`, E sem a verificação, B sem o `get_document_text` e com o texto dos nomes do framework corrigido ("não importe `python_interpreter`…: o seu
   código já roda no interpretador", não "chame-as direto"; dossiê §2h, 6) — e a verificação com valor padrão
   do ContestacaoCivel → harness (decidido em 20/10; ~~a regra~~ **escrita em 20/10**: Ajuste 27, pelo papel, emenda 8;

@@ -601,3 +601,103 @@ racional.
   Manifesto: 21/21.
 - Itens: 1 ok · 2 ok · 3 ok (1 observação sobre o pipeline e a auditoria, para a base 3) · 4 ok, com a condição da
   primeira rodada na base 3.
+
+---
+
+# Revalidação 7 (emendas 7, 8 e 9, 20/10)
+
+**Objeto:**
+- o racional com a emenda 7 (`c832da3`, 2026-10-20T15:55:08−03:00) e as emendas 8 e 9 (`cc27360`, 17:49:51−03:00);
+- o script `mineracao_U_sandbox.py` (sha256 `5902a220…`, de `cc27360`; muda só pela emenda 9);
+- o `minerar.py` (`ae17ddcc…`, sem mudança) e o esquema `esquema-memoria.json` (`3a33f772…`, 0.4);
+- a auditoria `audit_candidata_base3.py` (`5c0b760c…`; a emenda 7 entra em `c832da3`, as 8 e 9 em `cc27360`);
+- os dois `base_pipeline.py`, com os Ajustes 26 e 27 (base 3 `54669540…`, base 1 `db9c8399…`);
+- os testes `test_mineracao_candidata_base3.py`, `test_ferramenta_nao_declarada.py` e `test_verificacao_try_nameerror.py`
+  (classe `TestAjuste27`).
+
+HEAD `cc27360`. Ensaio novo: rodada `6d054fbb12098c5f…`, gerada às 17:51:55−03:00 com o `base_pipeline.py` do HEAD (o
+hash do manifesto da rodada é o mesmo do arquivo), e a fonte `fonte_base1_v1.parquet` (`afaf3e98…`). O validador não
+corrigiu nada nem fez commit. Mudaram só a `conferencia_independente.py`, que é do validador, e este laudo.
+
+## Veredito: **APROVADO** (falta a aprovação final do Rafael), com três observações para a base 3
+
+Todas as medidas batem (189/189), e cada mudança do script corresponde a uma regra da emenda 9. As emendas 7 e 8 não
+tiram nenhum erro na base 1, como o racional diz. As observações (abaixo) tratam de pontos que a base 1 não exercita
+(0 casos); por isso não são divergências medidas.
+
+| # | Item | Comando | Resultado |
+|---|---|---|---|
+| 1 | Conferência só a partir do racional (emendas 7–9) | `uv run python …/propostas/U_sandbox/conferencia_independente.py --fonte <ensaio>/fonte_base1_v1.parquet --casos <ensaio>/rodada/perfis/U_sandbox/casos.csv --perfil <ensaio>/rodada/perfis/U_sandbox/perfil.csv --json <rascunho>/conferencia_rev7_1.json` | ok. **Emenda 7:** sai o import cujo nome (pela raiz, no último trecho) é `get_document_text`. **Emenda 8:** sai, no papel `ontestacaoCivel`, a função proibida `globals`/`locals`/`vars` numa linha com `in globals()`/`in locals()`/`in vars()` ou `<f>().get(`. **Emenda 9:** C global = os módulos (`pd`→`pandas`, `np`→`numpy`) que estão em todas as listas distintas; os outros vão para Cp (`U_sandbox.C.<papel>`). B com o texto novo e o complemento do framework. `globals`/`locals`/`vars`/`eval` passam para F (em aberto). E fica com o complemento curto. Todas as partes ganham `validation.nomes`. Resultado: população **16** = rodada 16 (0 só de um lado); a emenda 3 tira 1, as 7 e 8 tiram 0; cobertura 16/16; partes C 3 · Cp 3 (C.ConversationAgent 2, C.CalculoTrabalhista 1) · D 3 · E 5 · F 2 · B 0. Rodada duas vezes, o JSON sai idêntico (`cmp`) |
+| 2a | Testes | `uv run python -m unittest analysis/tests/test_mineracao_candidata_base3.py` · `…/test_ferramenta_nao_declarada.py` · `…/test_verificacao_try_nameerror.py` · `uv run python -m unittest discover -s analysis/tests` | ok: **21/23 + 2 pulados** · **5/5** · **12/12** (3 da `TestAjuste27`) · suíte **296, OK (2 pulados)**. Os 2 pulados são os de ponta a ponta. Eles leem a pasta fixa `resultados/ensaio_base1`, de outro código. Rodados contra o ensaio novo (`uv run python <rascunho>/rodar_ponta_a_ponta.py`, que só troca a pasta da classe, sem editar o teste): **2/2 ok** |
+| 2b | Script | `uv run python …/pipeline/especificas/minerar.py U_sandbox --rodada <ensaio>/rodada --fonte <ensaio>/fonte_base1_v1.parquet --saida <rascunho>/saida_script` | saída 0. Passos 1 e 3 a 9 ok; o passo 2 diz "não conferido", como antes. Encontro com a auditoria **31/31**, com as 7 partes. **7 memórias** aprovadas no esquema 0.4. Catálogo: **6 fechadas, 1 fora** (F, em aberto). `resultados/` da análise e `registros/memorias.json` não foram tocados (`stat` e `cmp` antes e depois) |
+| 2c | Comparação medida por medida | `python3 <rascunho>/comparar.py <rascunho> <ensaio>/fonte_base1_v1.parquet` | lição **14/14**; memórias e catálogo **175/175**; total **189/189**. A primeira passada deu 187/189. As 2 diferenças eram leituras erradas do validador, corrigidas na conferência (ver "Divergências") |
+| 3 | Script contra o racional | `git diff 7b4e4e0 HEAD` do script, da auditoria, dos dois pipelines e dos testes; `validar_memoria.py analysis/registros/esquema-memoria.json <arquivo>` em cada memória; manifesto; busca de texto de caso | ok. O script muda só no que a emenda 9 manda: `PARTES` ganha Cp (papel, memória) e F (global, em aberto); a parte do erro sai de `listas_comuns` (interseção das listas da população; com nenhuma, tudo em C); o molde do import segue o racional; B tem o texto novo e o complemento do framework pela raiz; F usa "Não chame: …."; `GUIA_E` é igual ao complemento curto; `validation.nomes` sai da mesma tabela da guidance. Não há LLM nem serviço externo (o script importa só `re` e `pandas`). As constantes novas estão no racional: `APELIDOS`, `INTROSPECCAO_F`, os nomes do framework. `DECIDIDO_EM` preenche o campo `destino_decidido_em` que o racional pede; ver a observação 3. Texto de caso: 0 arquivos com trecho das mensagens ou do código dos 16 erros (616 trechos procurados). O manifesto traz os hashes do código (4/4 iguais aos arquivos), da rodada e da fonte, e **24/24** artefatos conferidos; nada fica fora dele. `validar_memoria.py` → **aprovado** nos 7 arquivos. O catálogo tem só as fechadas, sem `location`/`evidence`, com `nomes` igual ao do arquivo (6/6). **A auditoria diz o mesmo que a prosa.** Emenda 7: `NAO_DECLARADAS = {get_document_text}`, pela raiz, no último trecho. Emenda 8: `PAPEIS_QUE_VERIFICAM = {ontestacaoCivel}`, a função proibida em `globals`/`locals`/`vars` e a linha com `in <f>()` ou `<f>().get(`, sem exigir criação nem aspas. Emenda 9: C global pela interseção das listas e `U_sandbox.C.<papel>` para o resto; `globals`/`locals`/`vars`/`eval` em `U_sandbox.F`. Os blocos dos Ajustes 26 e 27 são iguais nos dois `base_pipeline.py`; a base 1 não tem o caminho `_mecanismo_com_evidencia`, que é só da base 3 |
+| 4 | Ordem | `git log --date=iso-strict` do racional, do script, da auditoria, dos pipelines e dos testes; `git show <commit>:<arquivo>` em `14b0652`, `c832da3` e `cc27360`; `gerado_em` dos manifestos | ok. A emenda 7 entra em `c832da3` (15:55:08), no mesmo commit do Ajuste 26 nos dois pipelines, da emenda 7 da auditoria e do `test_ferramenta_nao_declarada.py`. As emendas 8 e 9 entram em `cc27360` (17:49:51), no mesmo commit do Ajuste 27 nos dois pipelines, das emendas 8 e 9 da auditoria, da emenda 9 do script e da `TestAjuste27`. Em `14b0652` não há nenhuma das três. Nenhuma emenda chega depois do código que a aplica. A rodada deste validador (17:51:55) e o script (17:53:44) vêm depois de `cc27360`. As emendas 7 e 8 se declaram descritivas (escritas depois da base 2 e da medição na base 3); a 9 se declara decisão do Rafael |
+
+`<ensaio>` = `analysis/2026-10-trace-law-flow-third/pipeline/resultados/ensaio_base1_revalidacao7`; `<rascunho>` = pasta
+de rascunho do validador, no scratchpad, fora do repositório.
+
+## O que mudou nas medidas (em relação à revalidação 6)
+
+- População, cobertura, inventário, as tabelas nome × papel e nome × mês, as listas autorizadas (2) e os números do
+  passo 6 não mudam. Na base 1, as emendas 7 e 8 tiram 0 erros.
+- De 4 memórias para **7**:
+  - C 6 vira **C 3** (`datetime`) + **C.ConversationAgent 2** + **C.CalculoTrabalhista 1** (as duas com `json`). O
+    `json` não está na lista do managerAgent, então não está em todas as listas e vai para Cp.
+  - E 7 vira **E 5** (`repr`, `dir`, `__name__`) + **F 2** (`eval`, `globals`).
+  - D.ConversationAgent 2 e D.managerAgent 1 não mudam, a não ser por `validation.nomes`.
+- Cp: o papel ConversationAgent tem lista com `json`, e o CalculoTrabalhista não tem lista vista; nos dois o texto é
+  "Importe antes de usar: import json." e não há pedaço "Não está na lista autorizada deste papel".
+- E: a guidance perde "; para ler JSON, use json.loads". F: "Não chame: eval, globals."; destino em aberto, com
+  `destino_decidido_em` nulo e fora do catálogo.
+- `validation.nomes` nas 7 memórias e nas 6 entradas do catálogo. Esquema 0.3 → 0.4.
+- Catálogo: de 4 fechadas para **6 fechadas e 1 fora**. Os números de referência do dossiê (16 erros, 100%, 7 memórias,
+  6 no catálogo, F fora) conferem.
+
+## Divergências, medida por medida
+
+Nenhuma entre o script e o racional. A primeira comparação deu 2 diferenças, as duas por leitura errada do validador.
+Elas foram corrigidas na `conferencia_independente.py`, e a segunda passada deu 189/189:
+1. `U_sandbox.E` · `validation.nomes.nao_usar`: conferência `repr, dir, __name__` (funções e depois atributos) ×
+   script `repr, __name__, dir`. O racional diz "em toda lista de nomes, a ordem é por erros, e no empate a alfabética"
+   (emendas 4 e 9), e `nao_usar` é uma lista só. O script está certo.
+2. `U_sandbox.F` · `destino_decidido_em` presente: o comparador esperava o campo preenchido em todas as partes ×
+   script nulo na F. A F tem destino "em aberto", que não é destino decidido. É a mesma leitura das revalidações 5 e 6,
+   que aceitaram nulo para a E quando ela estava em aberto. O script está certo.
+
+## Observações para a base 3 (não medidas aqui: 0 casos na base 1)
+
+1. **A linha da emenda 8.** O pipeline e a auditoria, iguais entre si, aceitam espaço dentro e em volta dos parênteses
+   (`in globals( )`, `globals() .get (`). A prosa escreve a forma literal. Os dois também leem a função proibida na
+   primeira `Forbidden function evaluation` da mensagem inteira, não no último trecho. A conferência usou a forma
+   literal. Na base 3, quem rodar deve contar os erros que caem só nessas variantes; o esperado da emenda 8 é 135.
+2. **`nao_importar` de B "pela raiz".** O script dá as raízes na ordem da primeira aparição na lista dos nomes crus
+   (por erros). A conferência soma os erros por raiz. Os dois só diferem se dois nomes crus com a mesma raiz mudarem a
+   ordem (ex.: `smolagents` e `smolagents.x`). Na base 1 B = 0. Na base 3 a B.OBFCivel tem 44 erros, todos de nomes do
+   framework.
+3. **Os números das decisões em `destino_decidido_em`.** O script grava "decisão 5" em C, Cp e E, "decisão 3" em D e
+   "decisões 1 e 4" em B. O `decisoes.md` não numera as entradas, e o racional liga a decisão 5 à E (o "não chame
+   `globals`"). A numeração parece ser a do dossiê, §2h. O racional não fixa essa numeração e pede só "com a data e a
+   decisão", então não é divergência. Mas quem ler só o `decisoes.md` não acha "decisão 5". Cabe ao Rafael dizer se o
+   campo deve citar a entrada pelo título. Também a D: a "decisão 3" é a de monitorar, não injetar, e o arquivo segue com
+   destino "memória" e no catálogo. Isso está de acordo com o racional (a emenda 9 não muda D) e com o monitoramento no
+   nível da memória.
+
+## Condição da ordem, na base 3 (não é divergência)
+
+A primeira rodada deste script na base 3, a base de confirmação, ainda não existe nesta máquina: todos os manifestos
+de mineração do `U_sandbox` achados têm a fonte `afaf3e98…`, da base 1. Uma delas,
+`resultados/ensaio_base1_20out/mineracao`, foi gerada às 17:45:45−03:00 com o script deste HEAD (`5902a220…`), 4 min
+antes de `cc27360`. É ensaio na base 1, não confirmação. A rodada da base 3 tem de usar um HEAD que contenha `cc27360`
+e começar depois de 2026-10-20T17:49:51−03:00. Quem rodar confere a data contra o `git log` do racional e os esperados
+das emendas: 167 erros para `U_ferramenta_nao_declarada` (sandbox 1.401 → 1.234, B.OBFCivel 211 → 44) e 135 para
+`U_verificacao_existencia` pela emenda 8.
+
+## Contagens da revalidação 7
+
+- Testes: 21/23 + 2 pulados (2/2 contra o ensaio novo) · 5/5 · 12/12 · suíte 296 OK (2 pulados) · encontro do script
+  31/31 · lição 14/14 · memórias e catálogo 175/175 · total 189/189 · 0 divergências.
+- População 16 = 16 (a emenda 3 tira 1; as emendas 5, 7 e 8 tiram 0 na base 1). Memórias: 7 (C 3, C.ConversationAgent
+  2, C.CalculoTrabalhista 1, D.ConversationAgent 2, D.managerAgent 1, E 5, F 2; B 0), as 7 aprovadas no esquema 0.4.
+  Catálogo: 6 fechadas, 1 fora (F). Manifesto: 24/24 artefatos e 4/4 hashes de código.
+- Itens: 1 ok · 2 ok · 3 ok (3 observações para a base 3) · 4 ok, com a condição da primeira rodada na base 3.

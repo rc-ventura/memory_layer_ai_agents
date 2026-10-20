@@ -74,7 +74,7 @@ todas as candidatas. O segundo é o mesmo comando da base real.
 
 | Lição | Parte específica | Estágio | Desde | Frequência | Confiança | Situação | Decisão |
 |---|---|---|---|---|---|---|---|
-| `U_sandbox` | `script:mineracao_U_sandbox` | 3 · script | 16/10/2026 (racional: `9640b13`, emendas `aa99b8f`, `fd93e93`) | — (o comando calcula) | cobertura 99,6% (base 3, rodada `aedb9b5d`) | script aprovado (19/10; emendas 4–6) | fechado: 14 memórias por parte no catálogo (`registros/memorias.json`) |
+| `U_sandbox` | `script:mineracao_U_sandbox` | 3 · script | 16/10/2026 (racional: `9640b13`, emendas `aa99b8f`, `fd93e93`) | — (o comando calcula) | cobertura 99,6% (base 3, rodada `aedb9b5d`) | script aprovado (19/10, emendas 4–6; 20/10, emendas 7–9, revalidação 7: 189/189) | fechado: 14 memórias por parte no catálogo (`registros/memorias.json`); a minerar de novo na base 3 com as emendas 7–9 (`b3 #50`) |
 | `U_tipo_retorno` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | espera o contrato da ferramenta (pedido C) | — |
 | `U_arg_nomeado` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | próxima candidata a script | — |
 | `U_campo_inexistente` | `investigação:candidata` | 1 · investigação | 16/10/2026 | — | não avaliada | espera o contrato da ferramenta (pedido C) | — |
