@@ -7,8 +7,8 @@ git-ignored.
 derivada com o filtro e, nos achados que viram decisão ou parada, os casos crus (`exec_id`, a pasta `crus/` e o
 recorte). Os blocos de evidência vêm do `montar_evidencia.py`, colados com `cat`, nunca digitados.
 
-O relatório completo fica no ambiente. A versão que sai é feita pelo `versao_para_sair.py` e passa no
-`varrer_pii.py`.
+O relatório completo fica no ambiente. O que sai passa no `varrer_pii.py` (a versão com `caso-N`, do
+`versao_para_sair.py`, é opcional).
 
 O relatório descreve **esta base**. Ele não compara com relatório publicado nem com outra base. A verificação vem de
 duas fontes: o encontro das duas implementações (as tabelas da mineração × a auditoria independente) e as
@@ -57,5 +57,5 @@ Marque cada número com a origem:
 - <comando>: <última linha do erro, sem dado de caso>
 
 ## 6 · Sigilo
-- versão que sai: `<relatório>_saida.md` (`versao_para_sair.py`, <n> identificadores → caso-N) · `varrer_pii.py`: limpo
+- o que sai: `varrer_pii.py`: limpo (e, se usada, a versão `_saida.md` do `versao_para_sair.py`)
 ```

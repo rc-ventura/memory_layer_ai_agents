@@ -7,8 +7,9 @@
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
-[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, fim do dia
-(branch `2026-10-14-base3-roadmap-queries`): correções dos gráficos do #36 e do #40 aplicadas no código.
+[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, noite
+(branch `2026-10-16-base3-comparar-rodadas`): esquema da memória 0.2, o localizador da base 3 (#44, Ajuste 19); a parte específica da mineração vira script (Ajuste 20); **#42 fechado**: na máquina 2 a `96958e65…` não muda
+nenhum número da `609c…` (o arquivo que parecia ausente era um caminho de 260 caracteres que o script não abria).
 **A ordem do que falta** (decisões antes da rodada nova, conferência na máquina 2, gráficos migráveis, pedido ao tutor,
 primeira mineração): a seção [Plano de evolução](#plano-de-evolução-1610-a-ordem-do-que-falta), de 16/10.
 
@@ -37,7 +38,7 @@ conferidas numa rodada de teste (a base 1 pela porta da query da base 3); 183 te
 
 - [x] **0** · Commit das correções de 15/10 → `51a9d15`
 - [x] **1** · Decisões D1–D6 fechadas com o Rafael e aplicadas → #41, `b56204c`
-- [x] **2** · Rodada nova na máquina 2 (`observada_96958e65cb7e615a`), fotos e conferência gráfico a gráfico → #36 e #40 fechados (16/10); a comparação por hash com a `609c…` continua no #42
+- [x] **2** · Rodada nova na máquina 2 (`observada_96958e65cb7e615a`), fotos e conferência gráfico a gráfico → #36 e #40 fechados (16/10); a comparação por hash com a `609c…` fechou no #42 (16/10)
 - [ ] **3** · Gráficos da base 1 que já têm dado: duração por assinatura, global × papel, posição na trajetória → #43
 - [ ] **4** · Pedido ao tutor reescrito e apresentação → #2, #11
 - [ ] **5** · Mineração: localizador da memória → kit mínimo → registro do `try/except` → piloto do inventário do sandbox → #44, #17, #28, #12
@@ -46,8 +47,8 @@ conferidas numa rodada de teste (a base 1 pela porta da query da base 3); 183 te
 lidos pelo Rafael na rodada `96958e65` e ajustados (`9dfb729`, `762527f`; o relatório não quebra mais no Windows com o
 `.md` aberto, `f9cab0c`). Ficam **ajustes gerais de forma**, menores, que o Rafael lista quando rever o relatório
 (#45 g), e as contagens e decisões do #45. **A ordem a seguir:**
-1. **#42** — fechar a etapa 2: o `comparar_rodadas.py` prova por hash que a rodada nova não mudou nenhum número da `609c…`
-   (escrito aqui, um comando na máquina 2);
+1. **#42, feito (16/10):** o `comparar_rodadas.py` corrigido, na máquina 2, saiu com "nenhum número mudou e as
+   conferências fecham" (Etapa 2, passo 2);
 2. **etapa 4 (#2, #11)** — o pedido ao tutor: os gráficos estão prontos e o `05` está desatualizado (descreve o pedido A
    como "a enviar"); é o que destrava os gráficos que ainda faltam dado e é a etapa que depende de outra pessoa, então
    quanto antes sair, antes volta;
@@ -93,12 +94,47 @@ por `figuras_painel.depois_do_erro`; testes: soma = todos os erros e, nas candid
 ### Etapa 2 · Rodada nova na máquina 2 e conferência (#42)
 
 1. `executar.py analisar` (id novo) e `executar.py relatorio --rodada <nova>`.
-2. **A rodada nova não muda nenhum número** (decidido em 15/10): `validacao/comparar_rodadas.py` (a escrever) compara os
-   SHA-256 dos artefatos dos dois `manifesto.json` e lista só o que difere; o esperado: iguais os CSVs de erros, cobertura e
-   triagem; novos só `consolidacao_unidade_papel_tokens.csv` e `consolidacao_depois_unidade.csv`; diferentes a
-   genealogia e os perfis (a tabela `perfil` ganhou a coluna `finalidade`).
-3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte (o
-   gráfico do gasto por papel escreve a diferença máxima na limitação: tem de ser ≈ 0).
+2. **A rodada nova não muda nenhum número** (decidido em 15/10): `validacao/comparar_rodadas.py` (escrito em 16/10)
+   compara os SHA-256 dos artefatos dos dois `manifesto.json`. O que tem o mesmo hash não se abre; um CSV diferente é
+   classificado (só colunas novas, só `rodada_id`, só a ordem das linhas, ou conteúdo diferente, com quantas linhas, nunca
+   quais). Sai com 0 se nada mudou e com 1 e a lista do que não fechou, se não. Na máquina 2, da raiz:
+   ```bash
+   uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/comparar_rodadas.py \
+       --antes 609c947b15295c84 --depois 96958e65cb7e615a
+   ```
+   (a fonte para o gasto por papel é a v2 em `data/`, sozinha; outra, com `--fonte`)
+   **Ensaio na base 1 (16/10):** a mesma fonte pela porta da query, com o código da `609c…` (`16bb4a6`) e o atual.
+   Resultado: resumo 0 de 26 campos diferentes; 81 artefatos com o mesmo hash, inclusive os CSVs de erros, cobertura,
+   triagem e `genealogia_arestas.csv` (a D4 só mudou o desenho). Novos só `consolidacao_unidade_papel_tokens.csv` e
+   `consolidacao_depois_unidade.csv`. Nos perfis, `casos` e `amostra_investigacao` diferem só no `rodada_id`, e o
+   `perfil` ganhou só a coluna `finalidade`. Mudou ainda o `genealogia_observada.png`, como esperado. Saída 0. Na
+   máquina 2 espera-se o mesmo padrão.
+
+   **Na máquina 2 (16/10, foto):** mesma fonte (`908aa005…`, v2), os mesmos 4 arquivos de código mudados e o resumo
+   do manifesto igual (29 campos, nenhum diferente). Mas `perfis/U_campo_inexistente/amostra_investigacao.csv` não tem
+   mais o hash do manifesto **nas duas rodadas**. Como o `conferir` confere todos os hashes no fim da gravação, e as
+   duas passaram, o arquivo mudou ou sumiu depois. Nessa versão o script parava ali, e o resto não foi comparado.
+
+   **Pendência (para fecharmos):**
+   - [x] levar o script de `6909c21` para a máquina 2 e rodar de novo (16/10, foto): o arquivo aparece **ausente nas
+     duas rodadas**, e todo o resto fecha — resumo 29 campos, 0 diferentes; 76 artefatos com o mesmo hash; 2 novos;
+     a genealogia como figura diferente; `casos.csv` (10 unidades) e `amostra_investigacao.csv` (as outras 9) diferem só
+     no `rodada_id`; `perfil.csv` só com a coluna nova `finalidade`; as tabelas novas conferem com o resumo e a fonte.
+   - [x] achar a causa: **o arquivo não sumiu; foi o script que não o achou.** Na máquina 2 o repositório está dentro do
+     OneDrive, e o caminho completo de `perfis/U_campo_inexistente/amostra_investigacao.csv` tem 260 caracteres — o
+     único da rodada que chega ao limite do Windows (`MAX_PATH`; o mais longo depois dele tem 257). A gravação e a
+     conferência usam `mineracao_observada.caminho_io`, que acrescenta o prefixo `\\?\` de caminho longo; o
+     `comparar_rodadas.py` abria o caminho comum, e o `is_file()` voltava falso. As hipóteses de editor, Excel,
+     OneDrive ou política de dados ficam descartadas. Correção: o script passa a abrir a rodada pelo mesmo `caminho_io`
+     (teste novo em `test_comparar_rodadas_base3.py`; 213 testes).
+   - [x] rodar o script corrigido na máquina 2 (16/10, validado pelo Rafael): nenhum arquivo fora do manifesto, a
+     amostra do campo inexistente entre as que diferem só em `rodada_id`, veredito "nenhum número mudou". Nada a restaurar.
+   - [x] (risco registrado aqui) qualquer script novo que leia uma rodada na máquina 2 passa pelo `caminho_io`; um nome de
+     unidade mais longo que `U_campo_inexistente` cruzaria o limite também em `casos.csv`.
+3. A tabela nova somada por unidade = triagem (29.392 erros, 587,7 mi) e por papel = tokens de erro do papel na fonte —
+   o mesmo script confere (o gasto por papel, com a fonte): por unidade = triagem, sem unidade = pendentes, total = resumo, por papel =
+   fonte (diferença máxima 0), e o que vem depois do erro somado = todos os erros. No ensaio da base 1, tudo fechou
+   (498 erros, 13.946.017 tokens, 13 papéis).
 4. Fotos dos 10 gráficos de cada parte, conferidos um a um contra a coluna "Correção" do #36 e do #40; o conferido marca
    `[x]` com a rodada como prova. Depois, o relatório §7 relido e as taxas no §7 (#32).
 
@@ -143,10 +179,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 | Passo | O que fazer | Por quê | Decisão do Rafael |
 |---|---|---|---|
-| 5.1 (#44) | **Localizador da memória:** o [esquema](../../registros/esquema-memoria.json) (v0.1) pede `idx` em `location.casos`; a base 3 não tem `idx`. Proposta: aceitar `step_ref` + `fonte_id` + `rodada_id`; esquema v0.2, entrada no livro-razão, `validar_memoria.py` aceitando os dois | sem isso o arquivo final não valida | **sim:** aprovar o campo |
+| 5.1 (#44, **feito**: Ajuste 19) | **Localizador da memória:** o [esquema](../../registros/esquema-memoria.json) (v0.1) pedia `idx` em `location.casos`; a base 3 não tem `idx`. Proposta: aceitar `step_ref` + `fonte_id` + `rodada_id`; esquema v0.2, entrada no livro-razão, `validar_memoria.py` aceitando os dois | sem isso o arquivo final não valida | **aprovado em 16/10** (o arquivo sai inteiro: só hashes) |
 | 5.2 (#17) | **Kit mínimo para a base 3:** o `conferir_versao` reconhece o código da third; a preparação da `mineracao-base` chama `executar.py` e lê a capacidade (a skill de falhas silenciosas para e explica); um `audit_recompute` da base 3, só biblioteca padrão e `leitor_trace`, que recalcula a parte genérica (recorrência, sub-unidades, antes, depois, estabilidade, população) direto do parquet | o método exige a auditoria independente em paralelo: "re-rodar não é verificar" | não (método de 05/10) |
 | 5.3 (#28) | **Primeiro registro:** o monitoramento do `try/except NameError` em [`monitoramento.json`](../../registros/monitoramento.json): linha de base (base 3: 5.764, 5.667 em agosto e 95 em julho; base 2: 105), gatilho (qualquer erro com a assinatura depois de corrigido o prompt, ou num papel novo), ação | destino já decidido (sinal de harness); o `monitorar.py` lê o arquivo no passo 0 de toda mineração | se o gatilho entra também em % (o denominador já existe) |
-| 5.4 (#12) | **Piloto** `/mineracao-candidata U_sandbox` na máquina 2: parte genérica (o perfil já existe na rodada), auditoria em paralelo, encontro por script; pelo funil, parte específica **determinística**: contar os nomes bloqueados por papel e mês a partir da mensagem | gera o inventário (o `correction_guidance`) e o escopo (papel ou global, com o M2) | aprovar a proposta do notebook específico (procedimento `16`) |
+| 5.4 (#12, fechado 19/10) | **Piloto** `/mineracao-candidata U_sandbox` na máquina 2: parte genérica (o perfil já existe na rodada), auditoria em paralelo, encontro por script; pelo funil, parte específica **determinística**: contar os nomes bloqueados por papel e mês a partir da mensagem | gera o inventário (o `correction_guidance`) e o escopo (papel ou global, com o M2) | aprovar a proposta do notebook específico (procedimento `16`) |
 | 5.5 (#12) | **Saída:** `memoria_U_sandbox_base3.json` validado, relatório e dossiê de decisão; da máquina 2 saem só contagens e nomes de função e módulo | o destino "memória" vira arquivo, com a origem de cada campo (`checado` / `hipótese`) | **sim:** aprovar a memória (o gate do pesquisador) |
 | 5.6 (#39) | **Linha de base da economia:** o registro versionado em `registros/` com o teto por papel e unidade, os passos por papel e os hashes — sai da tabela nova da Etapa 2 | o "antes" do teste de compensação (decidido em 15/10) | o formato do registro |
 | 5.7 (#7) | **Próximas candidatas**, pela ordem de tokens: retorno-string (207 mi; o #35 já aponta a ferramenta e o papel), argumento nomeado, `next()` sobre gerador; as que precisam do contrato da ferramenta esperam o pedido C | — | — |
@@ -217,10 +253,55 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   etapa da base 3 em si); o `analysis/README.md`, o intake por formato; o `kit.md`, o que o kit pode e não pode na base 3. Regra do
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
-- [ ] **#12** **Piloto de mineração de ponta a ponta: inventário do sandbox** (`U_sandbox`: 3.653 erros, 16 papéis). A lição
-    sai da própria mensagem de erro, então fecha só com o parquet. **Antes:** decidir o localizador do arquivo final
-    da memória — o [esquema](../../registros/esquema-memoria.json) pede `idx`, que a base 3 não tem; a proposta é aceitar
-    `step_ref` com a origem e a fonte.
+- [ ] **#50** **O degrau 2 (conferida) das 14 memórias do sandbox** ([`17`](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md),
+  dossiê §2f). (1) ~~o script do degrau 2 no kit~~ **feito em 20/10** (`conferir_memorias.py`, Ajuste 25; com o prompt da
+  base 1 reproduz o §2f → dossiê §2g); **a unidade fecha no degrau 3** para as que vão para injeção (decisão de 20/10); (2) ~~rodá-lo na base 2~~ **feito em 20/10** (66 versões, 18 papéis: o mesmo resultado da base 1 → dossiê §2h); (3) o
+  ~~Ajuste 26~~ **escrito em 20/10** (o import de `get_document_text` → `U_ferramenta_nao_declarada`, harness; emenda 7 do
+  racional; base 1 sem mudança; esperado na base 3: 167 saem do sandbox — livro-razão) e ~~corrigir o script específico~~ **corrigido em 20/10** (emenda 9; ensaio da base 1: 31 medidas iguais; dossiê §2h, 9; **revalidação 7 aprovada, 189/189, e
+  script aprovado pelo Rafael, 20/10**) — C com
+  o `pd` só nos papéis com `pandas`, E sem a verificação, B sem o `get_document_text` e com o texto dos nomes do framework corrigido ("não importe `python_interpreter`…: o seu
+  código já roda no interpretador", não "chame-as direto"; dossiê §2h, 6) — e a verificação com valor padrão
+  do ContestacaoCivel → harness (decidido em 20/10; ~~a regra~~ **escrita em 20/10**: Ajuste 27, pelo papel, emenda 8;
+  esperado na base 3: 135 passam à verificação) — e revalidar;
+  (4) decisões do Rafael: as 6 que falham na recorrência (#48) — 5 delas são D e já têm destino (o destino da verificação
+  com valor padrão: harness, 20/10; as D: monitoradas como *memória de reforço*, não injetadas, 20/10 — no nível da memória:
+  o tipo e o alarme no catálogo, conferidos pelo `catalogar_memoria.py` a cada nova mineração (os dois níveis do
+  monitoramento: `16`, "O monitoramento", 20/10); o experimento de reforço é o EX-8 do blueprint das POCs); (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49.
+- [ ] **#55** **O degrau 2 e as funções embutidas (aberto em 20/10).** O `conferir_memorias.py` (kit) dá "não verificável"
+  na checagem de ambiente a uma memória que só manda usar funções embutidas (`print`, `type`, `str`), porque o sandbox
+  proíbe algumas embutidas (`repr`). A memória E do sandbox caiu nisso no ensaio de 20/10 (dossiê §2h, 9). Saída: o
+  script lê uma lista de embutidas **testadas no interpretador** (`pipeline/validacao/testar_sandbox_try_nameerror.py` e o
+  teste da depuração de 20/10: `print(type(x))` e `print(str(x)[:n])` funcionam; `repr` e `__name__` não) — a lista
+  fora do kit (é da base), passada por argumento ou pelo `monitoramento.json`; mudança no kit, com teste e `VERSAO` nova.
+- [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
+  baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
+  RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos
+  `IMG_5976`–`IMG_5978`) ficam no sandbox porque o prompt desses papéis não tem a instrução de verificar — visto nas bases
+  1 e 2 (todos os papéis), **não** nas execuções da base 3, que não guarda o prompt. Duas perguntas abertas: (1) o prompt
+  dessas execuções tem alguma instrução parecida (as bases podem ter versões diferentes, como no `json`)? (2) por que o
+  agente verifica sem instrução — "hábito" do modelo é interpretação, não achado. Investigar alguns casos pela skill
+  `mineracao-investigacao` (leitura com dois leitores) ou pedir à plataforma o prompt dessas execuções. Baixa prioridade:
+  são 9 erros e não viram memória injetada (a memória E deixa `globals`/`locals`) → dossiê do sandbox §2h, 8;
+  [`decisoes.md`](../../decisoes.md) (20/10).
+- [ ] **#53** **Descobrir, no prompt, as ferramentas citadas e não declaradas (aberto em 20/10).** Hoje o
+  `contar_ferramentas_prompt_base2.py` testa nomes dados (`get_document_text`, `python_interpreter`); a lista do Ajuste 26
+  (`FERRAMENTAS_NAO_DECLARADAS`) só cresce pelo que já errou. Estender o script para listar, por papel e versão do prompt,
+  todo nome que o prompt cita como ferramenta (entre crases ou com parênteses, fora de código de exemplo) e que não está
+  entre os `def` — os candidatos do passo 1 viriam do prompt, não só dos erros. Rodar nas bases 1 e 2 → procedimento
+  `16`, "Uma ferramenta citada e não declarada".
+- [ ] **#52** **O `monitorar.py` (passo 0) ler as tabelas da base 3 (aberto em 20/10).** Hoje ele lê a
+  `erros_mecanismo.csv` das bases 1 e 2; na base 3 o passo 0 fica "não conferido". Ensinar o script do kit a ler as
+  tabelas da base 3 (outro formato: só erros, do parquet), com teste e `VERSAO` nova; vale para toda unidade, não só o
+  sandbox. Decisão do Rafael (20/10): item próprio, fora do fechamento do sandbox (#50) → [`decisoes.md`](../../decisoes.md).
+- [ ] **#51** **Uma memória "como verificar se uma variável existe, no sandbox" (aberto em 20/10, depois do #50).** Ideia do
+  Rafael na decisão 2 do fechamento do sandbox: quando o prompt manda verificar sem dizer como, uma memória pode dizer
+  como — `try/except Exception`, ou `x = None` no primeiro passo e `if x is None` depois; nunca `globals()` nem
+  `except NameError` (o sandbox lança o próprio erro, que esse `except` não pega). Reproduzido no interpretador
+  (`pipeline/validacao/testar_sandbox_try_nameerror.py`, variantes 3, 4 e 8; smolagents 1.26.0, a versão da plataforma
+  não é conhecida). População: toda a `U_verificacao_existencia` (introspecção, valor padrão, `eval` e `try/except`),
+  hoje harness. Minerar pelos quatro degraus como qualquer candidata; se passar, decidir ali se o destino de parte da
+  unidade muda (memória enquanto o prompt não é consertado) — sem reabrir o Ajuste 21 antes disso →
+  [dossiê](../propostas/U_sandbox/dossie_base3.md) §2h.
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do
@@ -249,15 +330,19 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
-- [ ] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, a escrever) e a tabela
-  nova contra a triagem e a fonte → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
 - [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
   trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
-- [ ] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
-  esquema v0.2) — pré-requisito do piloto (#12) → [Etapa 5](#etapa-5--a-hora-da-mineração-o-primeiro-arquivo-de-memória-da-base-3).
-
 - [ ] **#45** **O que sobrou da auditoria dos gráficos (#36, #40) e não é desenho:** (a) **o asterisco do papel × unidade** marca "candidata dentro do papel" (destino), num gráfico de volume — tirar? (proposta de 16/10, a decidir); (b) **OBPCivel × OBFCivel** — papel real ou nome cortado na origem (como "ontestacaoCivel")? Se for corte, entra no mapa de exibição; (c) a genealogia tem "Protocolo do harness" 4.591 e `H_bloco_code` 4.592 — contar por família as arestas que chegam em `harness_bloco_code`; (d) a composição dos erros dos papéis pequenos de taxa alta (AnaliseProcessual 44%, AgenteProcuracoes 25,5%: unidade e pendentes); (e) quantas trajetórias terminam num passo com erro (`recovery_signal = NO_NEXT_ACTION`); (f) a amostra de ≈ 20 casos do campo inexistente na base 1, para as hipóteses da "resposta final alta" (a aprovar). (g) ajustes gerais de forma nos gráficos (o Rafael lista ao rever o relatório da rodada `96958e65`, 16/10). São contagens na máquina 2 ou decisões; nenhuma muda gráfico sem passar pelo Rafael.
-
+- [ ] **#46** **Ajuste 21 — a introspecção usada para verificar a variável vai para a unidade do `try/except`** (renomeada
+  `U_verificacao_existencia`, destino harness). Evidência: a instrução "verifique se a variável existe" do prompt do
+  ContestacaoCivel causa a introspecção barrada (prompt antigo, sem dizer como: 36 de 127 na base 2; 1.527 + 709 na base 3)
+  e o `try/except NameError` (prompt novo: 97 de 97 na base 2; 5.667 em ago na base 3). **Aprovado em 19/10** (regra (b),
+  condicionada ao teste; nome novo; nas três bases; monitoramento junto; aviso adiado — `decisoes.md`). Teste da regra (b)
+  na base 3: 2.218 instruídas no ContestacaoCivel, 0 nos outros papéis; resíduo de 157 aceito (19/10). **Implementado**
+  (livro-razão, Ajuste 21; ensaio na base 1: 1 erro muda). **Rodada nova na base 3** (`observada_85706f1e94f88f59`):
+  conferida — só a mudança esperada (2.217 erros; resumo do manifesto igual). **Falta:** a replicação na base 2 e a nova
+  mineração do sandbox →
+  [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
 ## Fora de escopo / adiado
 
 - **Aviso a quem cuida do harness** sobre o `try/except NameError` (`transversal #7`): decisão de 14/10 de não fazer agora;
@@ -267,6 +352,43 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 ## Fechado
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#48** **As memórias pequenas do sandbox: a régua de memória rara** — fechado em 20/10. Das 6 que falham na
+    recorrência, as 5 de "import fora da lista" ficam monitoradas como *memória de reforço* (repetem o prompt) e a
+    `U_sandbox.B.RespostaBacen` (1 erro) como *memória rara*; nenhuma é injetada; as duas no nível da memória (o
+    catálogo; `16`, "Dois níveis") → [`decisoes.md`](../../decisoes.md) (20/10), dossiê §2h.
+- [x] **#49** **A parte B do sandbox no OBFCivel: o `get_document_text` é sinal de harness** — fechado em 20/10. Na base 2
+    (`contar_ferramentas_prompt_base2.py`, foto `IMG_5968`), as 63 execuções do OBFCivel (abr–ago/26, as 4 versões do
+    prompt, um só conjunto de ferramentas declaradas) citam `get_document_text` e não a declaram; na base 1, 11 de 11.
+    Decisão do Rafael (20/10): harness — o Ajuste 26 entra no #50 (3); o resto da parte B segue memória do OBFCivel →
+    [dossiê](../propostas/U_sandbox/dossie_base3.md) §2h, [`decisoes.md`](../../decisoes.md) (20/10).
+- [x] **#12** **Piloto de mineração de ponta a ponta: inventário do sandbox** — fechado em 19/10. Na base 3, rodada
+    `aedb9b5db70d6c92` (código com os Ajustes 21–23 e as emendas 1–6 do racional): os 9 passos do `minerar.py` fecham —
+    1.401 erros, cobertura 99,6%, 75 medidas iguais à auditoria independente, **14 memórias** no esquema 0.3 (C global
+    656 erros, E global 488, B por papel 2, D por papel 10), todas registradas no catálogo
+    [`registros/memorias.json`](../../registros/memorias.json) (Ajuste 22). No caminho: a introspecção e o `eval` da
+    verificação de existência saíram para o harness (Ajustes 21 e 23), o script foi validado 6 vezes (laudo em
+    `propostas/U_sandbox/validacao.md`) → [dossiê](../propostas/U_sandbox/dossie_base3.md) §2d; `decisoes.md`, 19/10.
+- [x] **#47** **Comparação base 1 × modo observado: 82 erros em "unidade diferente"** (81 de `U_contrato_dict` e 1 de
+  `U_tipo_retorno` caem em `X_causa_nao_identificada` no modo observado). O `03-procedimento-validacao.md` registra 83
+  pendentes e 0 em unidade errada; o resultado atual (já antes do Ajuste 21, conferido em 19/10 com o código de antes) é 82
+  em unidade diferente. Achar desde quando e por quê, e corrigir o procedimento ou o código.
+  → **Causa: o script de comparação, não o pipeline.** Desde o Ajuste 18 (14/10) a fonte padrão é a extração v2 (sem corte
+  de texto), e o `comparar_base1.py` lia a base 1 pela porta da query (que reproduz o corte da v1) como se fosse v2: as 81
+  mensagens cortadas eram tratadas como inteiras e, sem o trecho que a regra procura, caíam no resíduo. Com
+  `carregar_carga(path, "v1")`: 415 na mesma unidade, 83 pendentes, 0 em unidade diferente — o que o `03` registra.
+  Corrigido em 19/10.
+- [x] **#42** **Conferir a rodada nova contra a `609c…`** por hash (`validacao/comparar_rodadas.py`, escrito e ensaiado na
+  base 1 em 16/10, saída 0; na máquina 2 parou: a amostra do campo inexistente está fora do manifesto nas duas rodadas —
+  pendência na Etapa 2) e a tabela nova contra a triagem e a fonte → a `96958e65…` não muda nenhum número da `609c…`
+  (resumo 29 campos iguais; 76 artefatos com o mesmo hash; perfis diferem só no `rodada_id`; as duas tabelas novas
+  conferem com o resumo e a fonte, 21 papéis, diferença 0). O "ausente" era o caminho de 260 caracteres no OneDrive,
+  que o script não abria pelo `caminho_io`: `6909c21`, `08daa7f`; rodado na máquina 2 e validado pelo Rafael em 16/10
+  → [Etapa 2](#etapa-2--rodada-nova-na-máquina-2-e-conferência-42).
+- [x] **#44** **Localizador do arquivo final da memória na base 3** (`step_ref` + fonte + rodada no lugar do `idx`;
+  esquema v0.2) — pré-requisito do piloto (#12) → esquema 0.2 e `validar_memoria.py` aceitando os dois localizadores;
+  aprovado pelo Rafael em 16/10, com o arquivo saindo inteiro da máquina 2 (só hashes, sem `exec_id`); 9 testes novos, 212
+  na suíte → livro-razão, [Ajuste 19](../../pipeline-entre-bases.md#ajuste-19--o-arquivo-final-da-memória-aponta-o-caso-por-hash-na-base-3-esquema-02).
 
 - [x] **#40** **Auditoria dos gráficos da parte 1 do relatório (painel), um por um** (aberta em 15/10; mesma regra do #36: Rafael
   audita, a correção é só registrada aqui e aplicada em lote quando a auditoria fechar). Ordem do painel: cobertura, destinos, frequência × custo,

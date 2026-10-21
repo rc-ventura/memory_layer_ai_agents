@@ -39,7 +39,8 @@ contagens.
 O `<id>` da rodada é o hash de (contrato, base, fonte, código). Mesma fonte e mesmo código dão a mesma pasta — a
 rodada dos números deste relatório é `observada_609c947b15295c84`; a das figuras atuais, `observada_96958e65cb7e615a`
 (16/10: o mesmo método, com as tabelas novas abaixo e as figuras refeitas; que os números são os mesmos se prova por hash
-no roadmap #42). A `609c…` é de 14/10 (a v2, a primeira depois do Ajuste 18; na v1, `observada_3f9c2806cac9cd4d` de 14/10, depois do Ajuste 17, e antes `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). A extração e o corte do texto entram no hash: a mesma fonte lida como v1 e como v2 dá pastas diferentes. Código ou fonte diferentes dão outra pasta; a antiga não é
+no roadmap #42, com `validacao/comparar_rodadas.py --antes <id> --depois <id> [--fonte <parquet>]`: artefato a artefato,
+saída 0 se nenhum número mudou e se as tabelas novas fecham com a triagem, o resumo e a fonte). A `609c…` é de 14/10 (a v2, a primeira depois do Ajuste 18; na v1, `observada_3f9c2806cac9cd4d` de 14/10, depois do Ajuste 17, e antes `observada_b4fcc7711a9ec8a6` de 09/10 e `observada_0d23103afd4fc0f4` de 08/10, com as mesmas contagens entre si). A extração e o corte do texto entram no hash: a mesma fonte lida como v1 e como v2 dá pastas diferentes. Código ou fonte diferentes dão outra pasta; a antiga não é
 sobrescrita. Para gerar também o perfil de uma candidata: `executar.py analisar --perfil <unidade>`; de uma unidade que não é candidata (sinal de harness, harness/infra, resíduo, crítico), para uma investigação: `--perfil-investigacao <unidade>` (a tabela `perfil` marca a `finalidade` como "investigação — não é candidatura"; decisão de 16/10).
 
 | Arquivo da rodada | O que tem |

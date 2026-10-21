@@ -28,8 +28,8 @@ dela.
    interna: uma segunda implementação (a auditoria, em paralelo) e as conferências que valem em qualquer base.
 4. **Não edita o repositório.** Arquivos novos vão só em `pipeline/resultados/` (git-ignored). Sem commit, sem push.
 5. **Sigilo:** [`referencias/sigilo.md`](referencias/sigilo.md). Em resumo, para fora só vão contagens, nomes de
-   papel, ferramenta e unidade, meses, sim/não e categorias fechadas. Nunca identificador de execução, texto de caso,
-   código ou prompt.
+   papel, ferramenta, unidade, módulo e função, meses, hashes, identificador de execução, mensagem de erro, código e
+   prompt. Nunca dado pessoal (nome, CPF, processo) nem conteúdo do cliente (documento, pergunta, resposta).
 6. **Ambiente:** [`referencias/ambiente.md`](referencias/ambiente.md) (`uv run`, notebooks pelo terminal, Windows:
    UTF-8 e o limite de 260 caracteres).
 
@@ -87,13 +87,12 @@ Siga a skill da mineração pedida. Ao terminar:
 
 1. preencha o relatório no esqueleto de [`referencias/relatorio.md`](referencias/relatorio.md), em
    `pipeline/resultados/relatorio_<mineracao>_<BASE_ID>_<AAAA-MM-DD>.md`, com a evidência de cada achado;
-2. gere a versão que sai e varra:
-   `uv run python <esta skill>/scripts/versao_para_sair.py <relatório>`, depois
-   `uv run python <esta skill>/scripts/varrer_pii.py <relatório>_saida.md`. Se o varredor sair com 1, corrija e rode
-   de novo;
+2. varra o que vai sair: `uv run python <esta skill>/scripts/varrer_pii.py <arquivo>`. Se o varredor sair com 1,
+   corrija e rode de novo. A versão com `caso-N` no lugar dos identificadores (`scripts/versao_para_sair.py`) é
+   opcional;
 3. na resposta ao pesquisador, entregue os achados principais, o resultado da verificação (auditoria × tabelas e
    conferências internas), as **paradas** (o que precisa de leitura de caso ou de decisão dele) e o caminho do
-   relatório completo, onde está a evidência. No chat, o sigilo vale: sem identificador.
+   relatório completo, onde está a evidência. No chat, o sigilo vale: sem dado pessoal nem conteúdo do cliente.
 
 ## A versão do kit
 

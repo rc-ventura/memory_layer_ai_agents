@@ -64,6 +64,8 @@ Números gerais: 840 execuções com memória preservada · 5.781 ActionSteps ·
 | **Convenção de chamada de ferramenta** | 35 | 7,0% | Argumento posicional onde só cabe nomeado (12 ferramentas) |
 | **Protocolo do harness** | 33 | 6,6% | Resposta sem bloco de código — **incidente resolvido** (por mecanismo: [`11-relatorio-protocolo-harness.md`](11-relatorio-protocolo-harness.md)) |
 | **Ambiente & sandbox** | 19 | 3,8% | Import não autorizado (11), módulo sem import (6) |
+
+> **Ajuste 21 (19/10/2026):** 1 dos erros de import não autorizado (`'x' in globals()` no ContestacaoCivel, jul/26, verificando a variável antes de chamar a ferramenta, como o prompt instrui) passou do inventário do sandbox para `U_verificacao_existencia` (sinal de harness). A família não muda (o sintoma é o mesmo); muda a unidade: o inventário do sandbox (linha 5 da tabela das candidatas, abaixo) fica com 16 erros. → [livro-razão](../../pipeline-entre-bases.md), Ajuste 21.
 | **Suposição sobre estado** | 8 | 1,6% | Variável de step que falhou |
 | **Infra / LLM upstream** | 7 | 1,4% | `AgentGenerationError` (6) |
 | **Suposição sobre dados** | 2 | 0,4% | Formato/valor inválido |
@@ -374,7 +376,7 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 2 | **Retorno das ferramentas de documento é dict** — `r['result'][0]`, nunca `r[0]` | factual · ambiente | 87 | 96 | 87 | 8 | 1 | 2,99M |
 | 3 | **Retorno pode chegar como string** — checar `str` antes de indexar ou `json.loads` | experiencial · estratégia | 42 | 47 | 36 | 9 | 7 | 2,11M |
 | 4 | **Explicação nunca solta no bloco de código** — ⚠️ 90% dos tokens em out/2025 | experiencial · estratégia | 12 | 33 | 12 | 5 | 3 | 1,39M |
-| 5 | **Inventário do sandbox** — builtins e imports proibidos; `json`/`datetime` explícitos; sem `openpyxl` | factual · ambiente | 17 | 17 | 17 | 8 | 6 | 0,89M |
+| 5 | **Inventário do sandbox** — builtins e imports proibidos; `json`/`datetime` explícitos; sem `openpyxl` | factual · ambiente | 16 | 16 | 16 | 7 | 5 | 0,87M |
 | 6 | **Ferramentas só aceitam argumento nomeado** — `f(arg=v)`, nunca posicional, e só os nomes da assinatura | factual · ambiente | 25 | 36 | 23 | 11 | 7 | 0,39M |
 | 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 8 | 2 | 0,34M |
 | 8 | **Nome usado sem ter sido definido** — `Observation` não é variável | experiencial · estratégia | 5 | 5 | 5 | 4 | 2 | 0,29M |

@@ -27,7 +27,7 @@ from leitor_trace import ler_trace   # analysis/leitor_trace.py — CSV (.csv/.x
 pd.set_option("mode.string_storage", "python")
 
 __all__ = ["TRACE", "ler_trace", "carregar_trace", "explodir_memoria", "classify", "classificar_erros",
-           "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
+           "linha_do_codigo", "PAR_CHAVE_TEXTO", "sinais_de_parsing", "verificacao_por_introspeccao", "linha_rejeitada", "e_texto", "submecanismo", "SUB2UNI", "FACT", "ESTR", "NAO", "SEM",
            "UNI", "montar_unidades", "MIN_EXECS", "MIN_MESES", "triagem", "mascarar", "padrao_residuo",
            "residuo_por_padrao", "REVISAR_PRIORIDADE", "REVISAR_BAIXA", "ALARME_COBERTURA",
            "BASE_ID", "DESTINO_MINERACAO", "SINAL_HARNESS", "destino_mineracao", "CRIT", "INVESTIGAR_CRITICO",
@@ -86,6 +86,11 @@ def explodir_memoria(df):
                        "tok_out": tu.get("output_tokens") or 0, "tok_tot": tu.get("total_tokens") or 0,
                        "err_type": err.get("type"), "err_msg": str(err.get("message") or ""),
                        **sinais_de_parsing(str(err.get("message") or ""), st.get("code_action"), obs_ant),
+                       # a verificação que vai para a unidade da verificação: a regra (b) do Ajuste 21, ou o papel
+                       # cujo prompt manda verificar (Ajuste 27)
+                       "verifica_e_cria": (verificacao_por_introspeccao(str(err.get("message") or ""),
+                                                                        st.get("code_action"))
+                                           or verificacao_no_papel_da_instrucao(str(err.get("message") or ""), role)),
                        "chama_ferramenta": chama_ferramenta_declarada(str(err.get("message") or ""),
                                                                       st.get("code_action"), sysp),
                        "final_answer_sem_laco": final_answer_sem_laco(str(err.get("message") or ""),
@@ -265,8 +270,83 @@ def verificacao_try_nameerror(m):
     return bool(linha) and re.search(r"except\s+\(?[^)\n:]*\bNameError\b", linha.group(1)) is not None
 
 
+# Ajuste 21 (19/10/2026): a verificação de existência por introspecção. A mesma instrução do prompt do ContestacaoCivel
+# ("verifique se a variável de saída já está preenchida; se estiver, pule a chamada") é cumprida com `'x' in globals()`
+# quando o prompt não diz como (versão antiga) e com `try/except NameError` quando diz (versão nova) — o sandbox barra os
+# dois. A introspecção vai para a unidade da verificação só quando GUARDA A CRIAÇÃO da variável por uma chamada ("se `x`
+# não existe, `x = ferramenta(...)`", o comportamento que a instrução pede); a leitura com valor padrão
+# (`globals().get('x', padrão)`, espontânea em papéis sem a instrução) fica no inventário do sandbox. Base 2: só o
+# ContestacaoCivel tem a instrução (224 de 224) e só ele verifica; base 3: 2.218 instruídas no ContestacaoCivel, 0 nos
+# outros papéis (dossiê do sandbox na base 3; pipeline-entre-bases.md, Ajuste 21).
+INTROSPECCAO_VERIFICA = ("globals", "locals", "vars")
+# Ajuste 23 (19/10/2026): a mesma verificação feita por uma função auxiliar com `eval` por dentro
+# (`if not _exists('x'): x = ferramenta(...)`; base 3: 40 de 46 `eval` do ContestacaoCivel, com a definição da função vista
+# no código do passo). A regra é a mesma: verifica um nome e guarda a criação dele por uma chamada; `eval(texto)` para
+# converter texto em objeto (os outros papéis) fica no inventário do sandbox (dossiê do sandbox na base 3, §2c).
+VERIFICA_E_CRIA = INTROSPECCAO_VERIFICA + ("eval",)
+# Ajuste 26 (20/10/2026): o import de uma ferramenta que o prompt CITA e não DECLARA (não está entre os `def` do system
+# prompt). O conserto é no prompt (declarar a ferramenta ou tirar a menção), não uma memória: a memória "as ferramentas
+# já estão no escopo, chame-as direto" mandaria chamar o que o prompt não declara. Pelo nome, porque a base 3 não guarda o
+# prompt: um nome entra aqui só com a evidência de que o prompt o cita sem declarar. get_document_text — o prompt do
+# OBFCivel cita e não declara em 63 de 63 execuções na base 2 e 11 de 11 na base 1 (contar_ferramentas_prompt_base2.py;
+# dossiê do sandbox na base 3, §2h). Os nomes do framework (python_interpreter, tools, smolagents…) ficam no sandbox.
+FERRAMENTAS_NAO_DECLARADAS = ("get_document_text",)
+_IMPORT_BARRADO = re.compile(r"Import (?:of|from) ([\w.]+) is not allowed|No module named '([^']+)'")
+
+
+def ferramenta_nao_declarada(m):
+    """O import barrado (no último trecho da mensagem) é de uma ferramenta citada e não declarada pelo prompt?"""
+    x = _IMPORT_BARRADO.search(str(m).rsplit("due to:", 1)[-1])
+    return bool(x) and (x.group(1) or x.group(2)).split(".")[0] in FERRAMENTAS_NAO_DECLARADAS
+_INTRO = r"(?:globals|locals|vars)\s*\(\s*\)"
+_NOMES_DIRETOS = (re.compile(rf"['\"](\w+)['\"]\s+(?:not\s+)?in\s+{_INTRO}"),
+                  re.compile(rf"{_INTRO}\s*\.get\s*\(\s*['\"](\w+)['\"]"))
+_AUXILIAR = re.compile(r"\b\w+\s*\(\s*['\"](\w+)['\"]")
+
+
+def nomes_verificados(linha):
+    """Os nomes cuja existência a linha verifica: direto (`'x' in globals()`, `globals().get('x')`) ou por função
+    auxiliar que o agente escreveu (`f('x')`, com `x` criado na própria linha: `if not f('x'): x = …`, `x = f('x', …)`)."""
+    nomes = {m.group(1) for rx in _NOMES_DIRETOS for m in rx.finditer(linha)}
+    nomes |= {n for n in (m.group(1) for m in _AUXILIAR.finditer(linha)) if re.search(rf"\b{re.escape(n)}\s*=(?!=)", linha)}
+    return nomes
+
+
+def verificacao_por_introspeccao(m, code=""):
+    """A introspecção proibida (globals/locals/vars) verifica um nome e GUARDA A CRIAÇÃO dele por uma chamada que não é a
+    própria introspecção (no código do passo ou na linha que falhou)?"""
+    f = re.search(r"Forbidden function evaluation: '(\w+)'", str(m))
+    linha = _LINHA_QUE_FALHOU.search(str(m))
+    if not (f and f.group(1) in VERIFICA_E_CRIA and linha):
+        return False
+    texto = f"{code or ''}\n{linha.group(1)}"
+    return any(re.search(rf"\b{re.escape(n)}\s*=\s*(?!(?:globals|locals|vars|eval)\b)[A-Za-z_][\w.]*\s*\(", texto)
+               for n in nomes_verificados(linha.group(1)))
+
+
+# Ajuste 27 (20/10/2026): no papel cujo prompt manda verificar se a variável existe, TODA verificação de existência com
+# globals/locals/vars vai para a unidade da verificação — crie a variável ou não, com nome entre aspas ou não. A instrução
+# não diz como verificar, e o agente verifica de quatro formas (base 3, jul–ago/26: cria com valor fixo 52, leitura com
+# valor padrão 14, sem nome entre aspas 33, verifica e não cria 36). A forma não separa esse papel dos outros (9 erros em
+# 7 papéis, com as mesmas formas), então a regra vale pelo papel: um papel só entra aqui com a evidência de que o prompt
+# dele tem a instrução — o ContestacaoCivel (chega ao trace como "ontestacaoCivel"): 224 de 224 execuções na base 2, só
+# ele, em todos os papéis (contar_introspeccao_prompt_base2.py, parte F); base 1, o prompt de julho. Fora dele vale só a
+# regra (b) do Ajuste 21 (dossiê do sandbox na base 3, §2h, 7–8; contar_introspeccao_linha.py, parte E).
+PAPEIS_COM_INSTRUCAO_DE_VERIFICAR = ("ontestacaoCivel",)
+_VERIFICA_EXISTENCIA = re.compile(rf"\bin\s+{_INTRO}|{_INTRO}\s*\.get\s*\(")
+
+
+def verificacao_no_papel_da_instrucao(m, papel):
+    """globals/locals/vars barrada numa linha que verifica a existência de uma variável, num papel cujo prompt manda
+    verificar (PAPEIS_COM_INSTRUCAO_DE_VERIFICAR)?"""
+    f = re.search(r"Forbidden function evaluation: '(\w+)'", str(m))
+    linha = _LINHA_QUE_FALHOU.search(str(m))
+    return bool(papel in PAPEIS_COM_INSTRUCAO_DE_VERIFICAR and f and f.group(1) in INTROSPECCAO_VERIFICA and linha
+                and _VERIFICA_EXISTENCIA.search(linha.group(1)))
+
+
 def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False,
-                 fa_sem_laco=False):
+                 fa_sem_laco=False, verifica_e_cria=False):
     if "regex pattern" in m:
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
@@ -322,6 +402,10 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
     f = re.search(r"Forbidden function evaluation: '(\w+)'", m)
     if f and not hasattr(builtins, f.group(1)):
         return "nome_nao_definido"
+    if f and f.group(1) in VERIFICA_E_CRIA and verifica_e_cria:   # Ajustes 21 e 23
+        return "verificacao_introspeccao"
+    if ferramenta_nao_declarada(m):   # Ajuste 26
+        return "ferramenta_nao_declarada"
     if f or "Import of" in m or "Import from" in m or "ModuleNotFound" in m or "Forbidden" in m:
         return "inventario_sandbox"
     if v and verificacao_try_nameerror(m):
@@ -342,7 +426,8 @@ SUB2UNI = {
     "next_sobre_gerador": "U_next_gerador",
     "nome_de_step_que_falhou": "U_estado_perdido",
     "nome_nunca_definido": "U_nome_inventado",
-    "verificacao_try_nameerror": "U_verificacao_try_nameerror",
+    "verificacao_try_nameerror": "U_verificacao_existencia", "verificacao_introspeccao": "U_verificacao_existencia",
+    "ferramenta_nao_declarada": "U_ferramenta_nao_declarada",
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
@@ -379,10 +464,15 @@ UNI = {
                          "Se a observação anterior traz exceção, redefinir variáveis e funções auxiliares daquele step antes de usá-las."),
     "U_nome_inventado": ("Nome usado sem ter sido definido", ESTR,
                          "Usar só variáveis e funções definidas no próprio código; 'Observation' é rótulo do harness, não variável."),
-    "U_verificacao_try_nameerror": ("Verificação de existência por try/except NameError", FACT,
-                                    "No sandbox, um nome inexistente levanta InterpreterError, que o except NameError não captura: "
-                                    "para checar se uma variável já existe, usar except Exception; se ela ainda não foi criada, chamar a "
-                                    "ferramenta direto. O conserto é no prompt que instrui o except NameError (Ajuste 17)."),
+    "U_verificacao_existencia": ("Verificação de existência de variável (instruída pelo prompt)", FACT,
+                                 "No sandbox, as duas formas de checar se uma variável já existe falham: `'x' in globals()` é "
+                                 "proibida e `except NameError` não captura o InterpreterError do nome inexistente. Se ela "
+                                 "ainda não foi criada, chamar a ferramenta direto. O conserto é no prompt que instrui a "
+                                 "verificação (Ajustes 17 e 21)."),
+    "U_ferramenta_nao_declarada": ("Ferramenta citada no prompt e não declarada", FACT,
+                                   "O prompt manda usar uma ferramenta que não está entre as declaradas (os `def` do "
+                                   "prompt), e o agente tenta importá-la. O conserto é no prompt: declarar a ferramenta "
+                                   "ou tirar a menção (Ajuste 26)."),
     "U_repr_colado": ("Não colar retorno impresso de volta no código", ESTR,
                       "Referenciar a variável que guardou o retorno em vez de colar o print dele (truncado ou inteiro) "
                       "dentro do código; se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca "
@@ -426,11 +516,12 @@ def montar_unidades(E):
     EU["seguidor"] = EU.groupby(["exec_id", "role"])["idx"].shift().eq(EU["idx"] - 1)
     EU["cascata"] = (~EU["seguidor"]).cumsum()
     col = lambda c, v: EU[c] if c in EU else pd.Series(v, index=EU.index)
-    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl)) for m, l, k, fa, cf, fsl in
+    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl), bool(vc))
+                          for m, l, k, fa, cf, fsl, vc in
                           zip(EU["err_msg"], col("linha_codigo_erro", "").fillna(""),
                               col("chaves_vistas_antes", 0).fillna(0), col("em_final_answer", False).fillna(False),
                               col("chama_ferramenta", False).fillna(False),
-                              col("final_answer_sem_laco", False).fillna(False))]
+                              col("final_answer_sem_laco", False).fillna(False), col("verifica_e_cria", False).fillna(False))]
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
     # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece
@@ -501,7 +592,12 @@ DESTINO_MINERACAO = {
     "U_campo_inexistente": {"destino": "harness", "bases": ("base1", "base2")},
     # Ajuste 17 (13/10): base 2 — causa vista no trace inteiro (3 casos; o prompt instrui o except NameError) e
     # reproduzida no smolagents; base 3 — evidência própria do padrão (a assinatura em 5.764 de 7.178 erros de nome).
-    "U_verificacao_try_nameerror": {"destino": "harness", "bases": ("base2", "base3")},
+    # Ajuste 21 (19/10): a unidade passa a U_verificacao_existencia (try/except e introspecção); base 1 — o prompt de
+    # julho do ContestacaoCivel tem a instrução e 1 execução verifica com globals().
+    "U_verificacao_existencia": {"destino": "harness", "bases": ("base1", "base2", "base3")},
+    # Ajuste 26 (20/10): bases 1 e 2 — o prompt do OBFCivel cita get_document_text e não a declara (11 de 11 e 63 de 63);
+    # base 3 — o mesmo nome no mesmo papel (167 erros), sem o prompt na base.
+    "U_ferramenta_nao_declarada": {"destino": "harness", "bases": ("base1", "base2", "base3")},
 }
 SINAL_HARNESS = "sinal de harness"
 

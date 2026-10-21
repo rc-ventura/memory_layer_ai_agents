@@ -8,7 +8,7 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 ---
 
-## 13/10/2026
+## 13/10/2026 - 14/10/2026
 
 **Tipo:** achado — **Sub-atividade:** 2.2 / 2.5 — **Canal:** pessoal
 
@@ -29,3 +29,22 @@ Aplicado como Ajuste 17 (13/10): nova unidade `U_verificacao_try_nameerror` (5.7
 **Decisão/próximo passo:** O destino desta unidade é o harness (corrigir a instrução do prompt ou o interpretador), não uma lição de memória. O registro de monitoramento ainda não foi escrito e o aviso a quem cuida do harness ficou adiado. Pedir o hash do trecho do prompt no pedido de dados à base 3 para fechar a questão do prompt lá. Fechar os pedidos de dados ao tutor.
 
 **Tags:** base-3, sinal-de-harness, try-except-nameerror, interpretererror, sandbox, nome-inventado, estado-perdido, pendentes, ajuste-17, contestacaocivel, system-prompt, sub-2.2, sub-2.5
+
+## 15/10/2026 - 16/10/2026
+
+**Tipo:** reunião — **Sub-atividade:** 1.5 / 2.6 — **Canal:** formal-tutor
+
+**Registro objetivo:** Fechamos alguns painéis e relatórios da análise da base 3. Alguns gráficos ainda precisam ser ajustados e discutidos. Na sexta tive dificuldade de explicá-los ao tutor, que me pediu uma apresentação amarrada, que dê sentido ao projeto como um todo, e não a explicação de gráficos independentes. Na semana que começa na segunda (19/10) vou primeiro finalizar a mineração de pelo menos duas unidades de memória e depois montar a apresentação. Estrutura de slides pensada:
+1. **Overview do projeto:** o work plan e a introdução do projeto.
+2. **A base de dados:** o schema e o que temos; usamos 3 bases.
+3. **Panorama do sistema:** início dos resultados, com os gráficos que melhor sintetizam o panorama geral e os racionais de cada gráfico. Em aberto: existe algum gráfico novo que deveria ser construído?
+4. **A taxonomia:** as decisões e como foi construída; o que é família, assinatura, mecanismo e lição, e como cada uma é detectada; os gráficos que sintetizam isso, com os racionais; a genealogia construída.
+5. **Os principais erros da taxonomia:** os resultados dentro da unidade, com um dossiê mais detalhado do erro; pode ter tabelas e gráficos novos, porque essa parte ainda não está finalizada.
+6. **Que lições o sistema pode aprender desses erros:** como o erro se transforma numa memória; gráficos do roteamento do erro à memória e os que sintetizam isso.
+7. **Quanto vale mitigar esses erros:** gráficos de orçamento, gasto de tokens, teto, custo e economia.
+
+**Reflexão:** Montar a apresentação me ajuda a investigar o projeto mais a fundo. Muitas decisões se perdem com o tempo e tenho dificuldade de compreender de novo os passos metodológicos que segui; essa pausa vai me ajudar a revisar cada passo.
+
+**Decisão/próximo passo:** Semana de 19/10: finalizar a mineração de pelo menos duas unidades de memória e montar a apresentação na estrutura de 7 slides acima. Levantar quais gráficos existentes servem a cada slide e quais precisam ser construídos.
+
+**Tags:** base-3, tutor, apresentacao, slides, paineis, graficos, taxonomia, genealogia, mineracao, memoria, orcamento, tokens, sub-1.5, sub-2.6

@@ -2,8 +2,8 @@
 
     python varrer_pii.py <relatório> [<outro> ...]
 
-Procura número de processo (CNJ, formatado ou 20 dígitos seguidos), CPF, CNPJ, e-mail e UUID (o formato do
-identificador de execução). Não mascara: bloqueia. Aponta arquivo, linha e o tipo do achado — nunca o trecho, para não
+Procura dado pessoal com padrão fixo: número de processo (CNJ, formatado ou 20 dígitos seguidos), CPF, CNPJ e e-mail.
+O identificador de execução pode sair e não é procurado (`../referencias/sigilo.md`). Não mascara: bloqueia. Aponta arquivo, linha e o tipo do achado — nunca o trecho, para não
 repetir o dado na tela. Sai com 0 se está limpo, 1 se achou algo. Só biblioteca padrão.
 
 Não substitui a leitura: nome de pessoa e texto de documento não têm padrão fixo. A regra do que pode sair está em
@@ -17,7 +17,6 @@ PADROES = {
     "CPF": r"\b\d{3}\.\d{3}\.\d{3}-\d{2}\b",
     "CNPJ": r"\b\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}\b",
     "e-mail": r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b",
-    "identificador de execução (UUID)": r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b",
 }
 
 

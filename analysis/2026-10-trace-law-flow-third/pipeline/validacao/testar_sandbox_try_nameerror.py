@@ -11,6 +11,9 @@ Resultado em 13/10/2026, smolagents 1.26.0 (a versão da plataforma não é conh
   5 'x' in globals() ............ FALHA: globals() é proibida
   6 dicionário de estado injetado OK
   7 chamada direta .............. OK (o que o agente faz no passo seguinte)
+  8 x = None, depois `is None` .. OK (acrescentado em 20/10: um jeito de verificar sem nada proibido; dossiê do sandbox
+                                  §2h, decisão 2). Só evita a busca repetida se o `x = None` ficar no primeiro passo: no
+                                  segundo passo abaixo, o bloco inteiro de novo zera `x` e busca outra vez.
   e, com a variável já criada num passo anterior, o `except NameError` funciona: o erro só acontece quando a variável
   ainda não existe — isto é, no primeiro passo.
 
@@ -30,6 +33,7 @@ VARIANTES = {
     "5 'x' in globals()": "if 'x' not in globals():\n    x = ferramenta()\nprint(x)",
     "6 dicionário de estado injetado": "if 'x' not in estado:\n    estado['x'] = ferramenta()\nprint(estado['x'])",
     "7 chamada direta (o que o agente faz no passo seguinte)": "x = ferramenta()\nprint(x)",
+    "8 x = None, depois is None": "x = None\nif x is None:\n    x = ferramenta()\nprint(x)",
 }
 
 for nome, code in VARIANTES.items():
@@ -44,7 +48,7 @@ for nome, code in VARIANTES.items():
 
 # reentrada: a variável já existe de um passo anterior (o caso para o qual a instrução foi escrita)
 print("\n-- segundo passo, com x já definido no primeiro --")
-for nome in ["1 except NameError (o prompt atual)", "3 except Exception"]:
+for nome in ["1 except NameError (o prompt atual)", "3 except Exception", "8 x = None, depois is None"]:
     ex = LocalPythonExecutor(additional_authorized_imports=[])
     ex.send_tools({"ferramenta": ferramenta, "final_answer": lambda a: a})
     ex("x = 'já existia'")

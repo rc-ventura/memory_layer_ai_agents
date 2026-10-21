@@ -796,6 +796,154 @@ engolia a mensagem e não dizia qual trava tinha disparado.
 - **Replicar no ambiente da base 3:** (1) `git pull`; (2) `executar.py analisar` — rodada nova; a `3f9c…` fica intacta;
   (3) `resumo_rodada.py`; (4) `executar.py conferir`; (5) `painel`.
 
+### Ajuste 19 — o arquivo final da memória aponta o caso por hash na base 3 (esquema 0.2)
+
+**Gatilho.** O piloto de mineração da base 3 (`b3 #12`, o inventário do sandbox) termina num arquivo final da memória
+validado pelo esquema. O esquema 0.1 aponta cada caso de `location.casos` por `exec_id` + `idx` (o ordinal do ActionStep
+no trace da base 1), e a base 3 não tem `idx`: o parquet só traz os passos com erro e a janela até n+2 (`b3 #44`).
+
+**Evidência.** No adaptador (`analysis/adaptador_trace.py`), o modo de janelas marca `idx` como indisponível, e cada passo
+ganha um `step_ref`, o hash de (fonte, execução, agente, papel, posição do passo). O `rodada_id` e o `fonte_id` já são
+hashes registrados no manifesto da rodada. A regra de sigilo (`.claude/skills/mineracao-base/referencias/sigilo.md`)
+deixa sair hashes e proíbe o `exec_id`.
+
+**Solução.**
+- **Esquema** (`analysis/registros/esquema-memoria.json`, 0.1 → 0.2): `location.casos_item` diz o que cada caso
+  precisa ter: `role` e `mes`, mais um localizador completo, `exec_id` + `idx` (bases 1 e 2) **ou** `step_ref` +
+  `fonte_id` + `rodada_id` (base 3, sem `exec_id`). `parte_especifica` aceita também `script:<nome>`. Campo novo
+  `versoes_aceitas` (`0.1`, `0.2`): a 0.2 só alarga, então um arquivo 0.1 continua válido. Campo `historico` com o que
+  mudou em cada versão.
+- **Validador** (`.claude/skills/mineracao-candidata/scripts/validar_memoria.py`): aceita as versões de `versoes_aceitas`,
+  confere o prefixo da parte específica e confere cada caso contra o `casos_item`, tudo lido do esquema.
+- **Decisão do Rafael (16/10):** o arquivo da base 3 sai da máquina 2 inteiro. Como o localizador da base 3 é só de
+  hashes, isso não muda a regra de sigilo.
+- **Fora deste ajuste:** a parte específica como script em vez de notebook (procedimento `16`, skills
+  `propor-notebook` e `validador-de-notebook`). O esquema já aceita o rótulo `script:`; o método muda no Ajuste 20.
+
+**Verificação.**
+- **Testes:** `analysis/tests/test_validar_memoria.py`, 9 novos: o localizador da base 3 sem `exec_id` nem `idx` passa;
+  o da base 1 passa; um arquivo 0.1 passa; versão desconhecida, localizador incompleto (sem cada um dos três hashes, ou
+  `idx` sem `exec_id`), caso sem papel ou mês e prefixo desconhecido reprovam; os arquivos finais da base 1 que estão no
+  repositório passam. A suíte toda: 212 testes, todos passando.
+- **Base 1:** os arquivos finais (`memoria_U_contrato_dict_base1.json`, `memoria_U_campo_inexistente_base1.json`)
+  aprovados pelo validador novo, sem mudança.
+- **Efeito nas rodadas da base 3:** a rodada não lê o esquema, mas ele está na lista do hash do código
+  (`mineracao_observada.versoes_codigo`). Mudar o esquema muda o hash: o próximo `executar.py analisar` gera um
+  identificador novo, e as rodadas já gravadas (`96958e65…`, `609c…`) deixam de ser lidas pelos consumidores
+  (`ler_artefato` recusa código incompatível). Nenhum número muda: o `comparar_rodadas.py` deve mostrar só
+  `registros/esquema-memoria.json` em "código que mudou" e os artefatos com o mesmo hash.
+- **Replicar no ambiente da base 3:** (1) **antes do `git pull`**, fechar a pendência do `b3 #42` no código de
+  `a753c2f` (o `conferir` da `96958e65…` precisa do código com que ela foi gravada); (2) `git pull`; (3)
+  `executar.py analisar` (rodada nova) e `comparar_rodadas.py --antes 96958e65cb7e615a --depois <nova>`, saída esperada
+  0; (4) `executar.py relatorio --rodada <nova>`.
+
+### Ajuste 20 — a parte específica da mineração passa a ser um script, não um notebook
+
+**Gatilho.** O piloto de mineração da base 3 (`b3 #12`, o inventário do sandbox) é o primeiro a ter parte específica
+fora da base 1. O procedimento (`16`) pedia um notebook, rodado com `jupyter nbconvert`, e a base 3 roda tudo por
+comando (`executar.py`), com manifesto e hash, numa máquina Windows.
+
+**Evidência.**
+- O resultado de um notebook não entra em manifesto: o `hash_codigo` da base 3 ignora as saídas de um `.ipynb`, e o
+  notebook da nº2/nº10 grava `resultados/unidades_memoria.json` sem hash de nada.
+- A suíte de testes (`analysis/tests/`, 213 testes antes deste ajuste) não alcança notebook.
+- O "ausente" do `b3 #42` (16/10): um script que abria a rodada sem o código do pipeline não achou um arquivo de 260
+  caracteres no OneDrive da máquina 2. Quem lê pela `ler_artefato` / `caminho_io` não tem esse problema.
+
+**Solução** (aprovada pelo Rafael em 16/10, com a troca dos nomes).
+- **Procedimento `16`:** o estágio 3 do ciclo de vida é o **script específico**, em
+  `<pasta-da-analise>/pipeline/especificas/mineracao_<u>.py`, com o teste em `analysis/tests/`. A seção "Como o script
+  roda" fixa o formato: `--rodada <id>` (e `--saida`), lê a rodada já conferida pelo código do pipeline, grava em
+  `resultados/mineracao/<u>/` as tabelas, o arquivo final validado e um manifesto próprio (hash do script, rodada e fonte
+  lidas, hash de cada arquivo), e fica **fora da lista do hash do código da rodada** (criar ou mudar um script não troca
+  o identificador da rodada). A proposta em `propostas/<u>/` leva o script e o teste, com dados sintéticos.
+- **Skills e agente renomeados:** `propor-notebook` → `propor-script`; `validador-de-notebook` → `validador-de-script`
+  (roda o teste e o script, com `--saida` num rascunho, e confere o manifesto próprio).
+- **Painel** (`valor_da_licao.py`): "pronta para notebook" → "pronta para script", com a opção "propor o script
+  (/propor-script)"; a parte específica `script:` ou `notebook:` dá "confirmada (script)" ou "confirmada (notebook)".
+  O único `decisoes.json` gravado (base 1, `U_nome_inventado`) é de "certa, mas rara: monitorar": nenhuma decisão
+  registrada perde a situação.
+- **O que não muda:** a regra de criação (frequência, confiança, gate, a decisão do Rafael), o validador como segunda
+  implementação a partir do racional, a ordem do pré-registro e o esquema da memória. Os notebooks da base 1 (a
+  nº2/nº10 e a parte genérica `mineracao_generica.ipynb`) ficam como estão: o funil e o esquema aceitam `notebook:`.
+- Também atualizados: a skill `mineracao-candidata` (o funil com `script:`), o `fluxo.md`, o `kit.md`, o
+  `validar_memoria.py` (docstring) e o `CLAUDE.md`.
+
+**Verificação.**
+- **Testes:** `analysis/tests/test_valor_da_licao.py`, 2 novos (as duas partes específicas e o gate novo); 215 na
+  suíte, todos passando.
+- **Base 1:** o painel `valor_da_licao.py analysis/2026-09-trace-law-flow` sai com as mesmas situações de antes
+  (`U_contrato_dict` "notebook", `U_nome_inventado` com a decisão de 06/10).
+- **Nomes antigos:** nenhuma referência ativa a `propor-notebook` ou `validador-de-notebook` fora deste livro-razão e
+  das decisões datadas.
+- **Replicar no ambiente da base 3:** só `git pull`. Nenhuma rodada muda: nenhum arquivo da lista do hash do código
+  foi tocado.
+
+### Ajuste 21 — a verificação de existência por introspecção entra na unidade do `try/except` (`U_verificacao_existencia`)
+
+**Gatilho.** A primeira mineração do inventário do sandbox na base 3 (16/10, `b3 #12`): 2.347 dos 2.352 erros de `globals`
+são do ContestacaoCivel, 1.592 em julho e 754 em agosto de 2026 — o mesmo papel e o mesmo período do `try/except NameError`
+do Ajuste 17 (95 em julho, 5.667 em agosto). Hipótese: a mesma instrução do prompt, cumprida de dois jeitos.
+
+**Evidência** (dossiê do sandbox na base 3, "A evidência, achado por achado"; fotos e comandos lá).
+- **Base 1:** o prompt de julho do ContestacaoCivel diz "Antes de chamar qualquer tool, VERIFIQUE se a variável de saída
+  correspondente já está preenchida em memória. Se já estiver, PULE a chamada" — sem dizer como; 1 de 3 execuções verifica
+  com `'x' not in globals()` e é barrada. Nenhum outro papel tem a instrução; a única outra verificação (ConversationAgent,
+  `globals().get('x', padrão)`) é espontânea.
+- **Base 2** (`contar_introspeccao_prompt_base2.py`): só o ContestacaoCivel tem a instrução (224 de 224 execuções) e só ele
+  verifica. Prompt antigo (`4b8c6d76ff`, sem dizer como): 36 de 127 verificam, todos por introspecção, 35 com erro; 91 não
+  verificam, 90 sem erro. Prompt novo (`2802ad7768`, "use `try/except NameError`, não use `globals()`"): 97 de 97 verificam
+  com `try/except`, 97 com erro.
+- **Base 3** (`contar_introspeccao_linha.py`): no ContestacaoCivel, a introspecção como verificação é 3 / 1.527 / 709 (jun,
+  jul, ago) contra o `try/except` 0 / 95 / 5.667. O teste da regra (b): 2.218 verificações instruídas no ContestacaoCivel e
+  **0** nos outros papéis (8 espontâneas, 1 que não verifica); resíduo de 157 no ContestacaoCivel (102 sem a criação
+  reconhecida, 55 sem nome verificado reconhecível), que fica no sandbox.
+- O interpretador barra `globals()` quando ela RODA, inclusive dentro de uma função auxiliar que o agente escreveu
+  (`has_var('x')`, `ensure('x', …)`): a linha que falhou é a da chamada.
+
+**Solução** (decisões do Rafael, 19/10, `decisoes.md`).
+- **Regra (b), determinística, pela linha que falhou e pelo código do passo** (`verificacao_por_introspeccao`, nos dois
+  `base_pipeline.py`): a função proibida é `globals`/`locals`/`vars`, a linha verifica um nome — direto (`'x' in globals()`,
+  `globals().get('x')`) ou por função auxiliar (`f('x')`, com `x` criado na própria linha) — e esse nome é atribuído, no
+  código ou na linha, ao resultado de uma chamada que não é a própria introspecção ("se `x` não existe, `x =
+  ferramenta(...)`", o que a instrução pede). Então o mecanismo é `verificacao_introspeccao`. A leitura com valor padrão e o
+  resto da introspecção ficam em `inventario_sandbox`.
+- **A unidade** `U_verificacao_try_nameerror` passa a **`U_verificacao_existencia`** (os dois mecanismos), destino harness
+  nas três bases (`DESTINO_MINERACAO`). Rótulos novos em `paleta.py` e `genealogia_sankey.py`.
+- **Base 3, modo observado** (`_mecanismo_com_evidencia`): a regra decide pela linha quando a criação está nela; se precisa
+  do código e ele não está inteiro, o erro fica pendente (`verificacao_requer_codigo_integral`).
+- **Base 2:** `analysis/2026-09-trace-law-flow-second/scripts/replicar_ajuste21.py` confere que os três arquivos da base 2
+  são os da base 1 de antes do ajuste (hash do `conferir_versao`) e copia os novos, preservando TRACE e BASE_ID.
+- **Monitoramento:** item `U_verificacao_existencia` em `registros/monitoramento.json`, com os dois sintomas como
+  sub-lições; gatilhos `some`, `cresce` e `sub_muda` (se só um sintoma sumir, o agrupamento está errado).
+- **Kit:** manifesto regenerado, `VERSAO` 0.7.0 → 0.8.0.
+- **A mineração do sandbox:** a emenda 3 do racional (`propostas/U_sandbox/racional.md`) tira da população em prosa a
+  introspecção que verifica e cria a variável; a auditoria independente (`audit_candidata_base3.py`) passa a excluí-la,
+  reescrita da prosa, sem importar o pipeline. O encontro da rodada de ensaio da base 1 pegou a mudança antes da emenda
+  (13 medidas diferentes) e fechou depois (24 iguais).
+
+**Verificação.**
+- **Testes:** `test_verificacao_try_nameerror.py` (unidade renomeada; 2 novos: a regra nas duas bases e no modo observado —
+  direta com criação, auxiliar, criação por literal, leitura com valor padrão, `dir`); `test_introspeccao.py` (os dois
+  testes de evidência). A suíte toda passa.
+- **Base 1:** 1 erro muda de unidade (ContestacaoCivel, jul/26, `verificacao_introspeccao`); `U_sandbox` 17 → 16; total 498.
+  O `comparar_base1.py` dá o mesmo antes e depois (415 na mesma unidade; os 82 em "unidade diferente" já existiam antes do
+  ajuste — `b3 #47`). Notebook da esteira refeito; `monitorar.py` reproduz a linha de base do item novo.
+- **Base 3 (rodada `observada_85706f1e94f88f59`, 19/10; `comparar_rodadas.py --antes e3ebc8274dcf108c`, fotos
+  `IMG_5901`–`IMG_5904`):** código que mudou: só os 3 arquivos do ajuste; **resumo do manifesto: 29 campos, 0 diferentes**
+  (total de erros 30.141, pendentes 749, tokens 592.858.874, 18 unidades, 10 candidatas); genealogia com 30.141 erros em cada
+  etapa e as 11 famílias com os mesmos erros; 12 artefatos com o mesmo hash. Mudou só o esperado: `U_sandbox` 3.653 → 1.436
+  (**2.217** erros para `U_verificacao_existencia`; o teste da regra (b) contava 2.218 — 1 de diferença, provavelmente um
+  `dir` que o teste contava e a regra não, a confirmar); o mecanismo novo nas tabelas de mecanismos (21 → 22) e de
+  cobertura (7 → 8); as linhas das duas unidades nas triagens e consolidações; 40 linhas do "que vem depois" (a unidade do
+  erro seguinte). O veredito do script é "não fecha" porque ele exige números iguais; aqui a mudança é a pedida.
+- **Replicar no ambiente das bases:** (1) copiar os arquivos do ajuste; (2) base 2: o `replicar_ajuste21.py` recusou
+  (19/10) — o pipeline da base 2 na máquina dela não era a cópia da base 1 (tinha partes da carga da base 3, já antes deste
+  ajuste). Decisão do Rafael: realinhar — copiar os `.py` e `.ipynb` da base 1 para a base 2, ajustar só TRACE e BASE_ID,
+  conferir com o `conferir_versao.py` e rodar o notebook da esteira; a cópia já traz o Ajuste 21, e o script deixa de ser
+  necessário; (3) base 3: `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes
+  e3ebc8274dcf108c --depois <nova>` e `minerar.py U_sandbox --rodada <nova>`.
+
 ## 4. O que os ajustes ensinam sobre o método
 
 1. **Regra que lê a forma da mensagem falha em silêncio quando a forma muda.** O erro de parsing tem dois formatos e
@@ -1430,3 +1578,46 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
 | "checagem E da auditoria nº 6 fora de fase" | corrigida (25/33 em out/2025); A–G com 0 divergências |
 | regra `'DEFAULT'` do motivo: "só base 2" | `b1 b2` — a mesma calculadora devolve `'DEFAULT'` na base 1 (2×, CalculoCivel) |
 | balde invisível "conferido" pela auditoria | era **reexecutado**; conferido de forma independente só desde o `audit_recompute9` |
+
+### Ajuste 22 — uma lição pode ter várias memórias, e as fechadas entram num catálogo (19/10/2026)
+
+- **Gatilho:** o inventário do sandbox tem quatro partes com destinos diferentes (dossiê, §2b–2c), e a memória fechada só existia na pasta da mineração, fora do git, na máquina da base.
+- **Mudança:** esquema 0.3 (cabeçalho com `id` e `parte`, opcionais; um arquivo por memória, `memoria_<id>_<BASE_ID>.json`); o `minerar.py` aceita `memorias(...)` do script específico; o passo 9 monta `catalogo_<u>_<BASE_ID>.json` (varrido) para `analysis/registros/memorias.json` (`catalogar_memoria.py`, kit). Emenda 4 do racional do sandbox; a auditoria conta as partes.
+- **Verificação:** ensaio na base 1 (rodada `bf2d034f`): 9 passos, 28 medidas iguais, 4 memórias (C, D por 2 papéis, E), 3 no catálogo, E fora (destino em aberto); 259 testes.
+- **Replicar na máquina da base:** o esquema entra no hash do código da rodada → rodar `executar.py analisar --perfil U_sandbox` de novo antes do `minerar.py`.
+
+### Ajuste 23 — o `eval` da função auxiliar de verificação entra na verificação de existência (19/10/2026)
+
+- **Gatilho:** os testes da parte E do sandbox na base 3 (`contar_proibidas_linha.py`, fotos `IMG_5920`–`IMG_5928`): dos 46 erros de `eval` do ContestacaoCivel, 40 são uma função auxiliar escrita pelo agente (`if not _exists('x'): x = ferramenta(...)`), com a definição da função e o `eval` dentro vistos no código do passo; o código tem a verificação instruída em 44 de 46. Na base 2, nenhum prompt menciona `eval`: o agente usa `eval` para cumprir a instrução "verifique se a variável existe", como fazia com `globals` (Ajuste 21).
+- **Mudança:** nos dois `base_pipeline.py` (base 1 e base 3), `VERIFICA_E_CRIA = ("globals", "locals", "vars", "eval")` na regra do Ajuste 21 (verifica um nome e guarda a criação dele por uma chamada); na base 3, o ramo observado também aceita `eval`. O rótulo da sub-unidade passa a "Verificação por globals()/locals()/eval". A auditoria do sandbox (`audit_candidata_base3.py`) e o `monitoramento.json` acompanham; emenda 5 do racional.
+- **Verificação:** testes `TestAjuste23` (as duas bases: o `eval` da função auxiliar sai do sandbox; `eval(texto)` fica); 261 testes; manifesto do kit regenerado (VERSAO 0.9.1); ensaio da base 1 refeito (rodada `3e5d9127`), sem mudança na base 1 (o único `eval` dela converte texto). Esperado na base 3: ≈ 40 erros saem do sandbox (1.436 → ≈ 1.396). **Conferido na base 3 (rodada `aedb9b5db70d6c92`, 19/10, fotos `IMG_5929`–`IMG_5936`): 35 saem (`eval` 49 → 14; sandbox 1.436 → 1.401), encontro com a auditoria 75 medidas iguais.**
+- **Replicar na máquina da base:** a base 2 copia o `base_pipeline.py` e o `paleta.py` da base 1 e ajusta só o `TRACE` (e o `BASE_ID`); a base 3 usa o próprio pipeline (git pull). Rodar `executar.py analisar --perfil U_sandbox` de novo.
+
+### Ajuste 24 — a validação de uma memória em quatro degraus (19/10/2026)
+
+- **Gatilho:** as 14 memórias do piloto do sandbox passaram na mineração (degrau 1), mas a releitura mostrou que várias não estavam prontas: a C manda importar `pd` em papéis sem `pandas`; a B manda chamar uma ferramenta que o prompt não declara; a E proíbe o que o prompt do ContestacaoCivel pede; as D repetem o prompt; seis falham na recorrência (dossiê do sandbox, §2e–2f).
+- **Mudança:** um documento à parte do procedimento, [`17-validacao-memorias.md`](2026-09-trace-law-flow/docs/17-validacao-memorias.md): candidata → conferida (cinco checagens determinísticas) → revisada (leitura de casos com dois leitores e o gate) → validada (o experimento, `b3 #39`). O `16` e o `06` apontam para ele; o glossário ganha "degrau".
+- **Verificação:** documental; o primeiro caso é o sandbox (`b3 #50`), e o script do degrau 2 (`conferir_memorias.py`) ainda não existe.
+- **Replicar na máquina da base:** nada por enquanto; o script do degrau 2, quando existir, entra no kit (entrou no Ajuste 25).
+
+### Ajuste 25 — o degrau 2 por script e o esquema 0.4 (20/10/2026)
+
+- **Gatilho:** o degrau 2 da validação (Ajuste 24) só existia como tabela no `17`; o resultado das 14 do sandbox (dossiê, §2f) foi montado à mão. As checagens precisam saber que nomes a memória manda usar ou evitar, e esses nomes só estavam no texto da guidance.
+- **Mudança:** (1) `conferir_memorias.py` no kit (skill `mineracao-candidata`, só biblioteca padrão, sem nome de base): as cinco checagens de cada memória do catálogo contra o prompt de cada papel e versão; grava o resultado e, com `--registrar`, a `conferencia` e o `degrau` no catálogo (2 só se as cinco passam). (2) `extrair_prompts_base2.py` (pasta da base 2; roda nas bases 1 e 2): o prompt de cada papel e versão num JSONL, gravado fora do repositório. (3) Esquema 0.4: `validation.nomes` (`importar`, `usar`, `nao_importar`, `nao_usar`), opcional — falta vira pendência no `validar_memoria.py`; o `catalogar_memoria.py` copia o campo. (4) O item `U_verificacao_existencia` do `monitoramento.json` ganha `instrucao_prompt` (o regex da instrução de verificar, de `contar_introspeccao_prompt_base2.py`) e `nomes_induzidos` (`globals`, `locals`, `vars`, `eval`), que a checagem 2 lê. (5) As 14 entradas do catálogo ganham `nomes`, transcrito da `description` e da guidance (marcado em `nomes_origem`), até a próxima mineração. Decisões do Rafael, 20/10 (`decisoes.md`). Com isso, a mudança da parte B do sandbox para harness (`b3 #49`), se vier, será o Ajuste 26.
+- **Verificação:** `test_conferir_memorias.py` (19 testes: cada checagem passando e falhando, a agregação por versão e por papel, a régua e a instrução lidas do monitoramento, o esquema 0.4 no validador e no catálogo, o extrator); suíte 282 testes, OK (`uv run python -m unittest discover -s analysis/tests`). Rodado sobre as 14 do catálogo com o prompt da base 1 (870 versões, 16 papéis): reproduz o §2f — C falha no ambiente (`pandas` fora da lista em 10 papéis; e, novo, `json` fora da lista em versões do OBFCivel, RoteadorCivel, managerAgent e ContestacaoCivel — a conferir na base 2), B.OBFCivel falha no ambiente e no conflito (o prompt cita `get_document_text`), E falha no conflito no ContestacaoCivel (a instrução de verificar), as D repetem o prompt, as 6 raras falham na recorrência; a 5 sai "não verificável" em todas (falta a classificação de uso) → dossiê do sandbox, §2g.
+- **Replicar na máquina da base:** copiar `conferir_memorias.py`, `catalogar_memoria.py` e `validar_memoria.py` (destino `.github/skills/mineracao-candidata/scripts/` na máquina 2), `extrair_prompts_base2.py`, o esquema e os dois registros; o esquema entra no hash do código da rodada → a próxima rodada da base 3 é nova.
+
+### Ajuste 26 — o import de uma ferramenta citada e não declarada sai do sandbox (20/10/2026)
+
+- **Gatilho:** a parte B do inventário do sandbox no OBFCivel (211 erros na base 3) tem 167 `import get_document_text`. O prompt do OBFCivel manda usar `get_document_text`, mas ela não está entre as ferramentas declaradas (os `def` do prompt): 63 de 63 execuções na base 2 (`contar_ferramentas_prompt_base2.py`, foto `IMG_5968`) e 11 de 11 na base 1. A memória "as ferramentas já estão no escopo, chame-as direto" mandaria chamar o que o prompt não declara (dossiê do sandbox, §2e e §2h; o que não está provado: que a função não exista no executor). Decisão do Rafael, 20/10 (`decisoes.md`): sinal de harness.
+- **Mudança:** nos dois `base_pipeline.py` (base 1 e base 3), `FERRAMENTAS_NAO_DECLARADAS = ("get_document_text",)` e `ferramenta_nao_declarada(m)`: o nome de `Import of/from X is not allowed` ou `No module named 'X'`, no último trecho da mensagem (depois do último `due to:`), pela raiz antes do ponto, está na lista → submecanismo `ferramenta_nao_declarada`, antes do `inventario_sandbox`; unidade nova `U_ferramenta_nao_declarada` ("Ferramenta citada no prompt e não declarada"), destino harness nas três bases (`DESTINO_MINERACAO`); rótulos em `paleta.py` e `genealogia_sankey.py`. Pelo nome, porque a base 3 não guarda o prompt: um nome só entra na lista com a evidência de que o prompt o cita sem declarar (o procedimento de três passos — suspeito na parte B, teste numa base com prompt, decisão — está no `16`, "Uma ferramenta citada e não declarada"; a descoberta pelo prompt é o `b3 #53`). Os nomes do framework (`python_interpreter`, `tools`, `smolagents`…) e os outros `get_*` ficam no sandbox (parte B, com o texto a corrigir no script específico — dossiê §2h, 6). A auditoria do sandbox (`audit_candidata_base3.py`) reescreve a regra da prosa (emenda 7 do racional), sem importar o pipeline.
+- **Verificação:** `test_ferramenta_nao_declarada.py` (5 testes: as duas bases classificam igual — `Import of`, `Import from` e `No module named` de `get_document_text` saem; `python_interpreter`, `get_docs`, `ast` e o nome só na linha de código ficam —; unidade e destino nas três bases; o modo observado da base 3; a auditoria tira da população; a lista da auditoria é a do pipeline); suíte 287 testes, OK. Manifesto do kit regenerado (só o hash do `base_pipeline.py` muda), `VERSAO` 0.10.0 → 0.10.1. **Base 1:** 0 de 498 erros caem na regra (nenhuma mensagem cita `get_document_text`) — nada muda. **Esperado na base 3, escrito antes de rodar:** 167 erros saem do sandbox, todos no OBFCivel (1.401 → 1.234; B.OBFCivel 211 → 44).
+- **Replicar na máquina da base:** junto com a extensão da regra do Ajuste 21 (a verificação com valor padrão, decisão de 20/10), numa rodada só: base 2 — copiar o `base_pipeline.py`, o `paleta.py` e o `genealogia_sankey.py` da base 1, ajustar `TRACE` e `BASE_ID`, `conferir_versao.py` IGUAL; base 3 — `git pull`, `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes aedb9b5db70d6c92 --depois <nova>`, `minerar.py U_sandbox --rodada <nova>`; o kit 0.10.1 em `.github/skills/` na máquina 2.
+
+### Ajuste 27 — no papel cujo prompt manda verificar, toda verificação de existência com `globals` vai para a verificação (20/10/2026)
+
+- **Gatilho:** a decisão 2 do fechamento do sandbox (20/10, `decisoes.md`): a verificação com valor padrão do ContestacaoCivel (`if 'x' not in globals(): x = '…'`), que a regra (b) do Ajuste 21 deixou no sandbox, é a mesma instrução do prompt cumprida sem caminho dado → sinal de harness, por coerência com o Ajuste 21. A medição antes da regra (`contar_introspeccao_linha.py`, parte E, nova; fotos `IMG_5976`–`IMG_5978`; critério escrito antes de rodar, dossiê do sandbox §2h, 7): no ContestacaoCivel (jul–ago/26), 135 verificações que a regra (b) deixa no sandbox, em quatro formas — cria com valor fixo 52, leitura com valor padrão 14, sem nome entre aspas 33, verifica e não cria 36; nos outros papéis, 9, **com as mesmas formas** (3, 1, 1, 4). A forma não separa; a regra vale pelo papel (decisão do Rafael).
+- **Mudança:** nos dois `base_pipeline.py`, `PAPEIS_COM_INSTRUCAO_DE_VERIFICAR = ("ontestacaoCivel",)` (o ContestacaoCivel, como chega ao trace) e `verificacao_no_papel_da_instrucao(m, papel)`: a função proibida é `globals`/`locals`/`vars`, a linha que falhou verifica existência (`in globals()`, `globals().get(`, e o mesmo com `locals`/`vars`) e o papel está na lista → `verificacao_introspeccao` (`U_verificacao_existencia`). No caminho clássico entra no mesmo sinal da regra (b) (`verifica_e_cria`); no observado da base 3, a linha decide sem o código (razão `regra_por_mensagem_e_papel`) — o que hoje fica pendente por código cortado nesse papel passa a decidido. Um papel só entra na lista com a evidência de que o prompt dele tem a instrução (base 2, `contar_introspeccao_prompt_base2.py` parte F: só o ContestacaoCivel, 224 de 224). `dir` e `eval` não entram (o `eval` segue o Ajuste 23). A auditoria do sandbox reescreve a regra da prosa (emenda 8 do racional) e passa a receber o papel.
+- **Verificação:** `TestAjuste27` em `test_verificacao_try_nameerror.py` (3 testes: as quatro formas no papel, nenhuma fora dele, `dir` e `globals()` sem verificar ficam; o observado decide sem o código no papel e deixa pendente fora; a auditoria e a lista igual à do pipeline); a parte E do `contar_introspeccao_linha.py` com testes em `test_introspeccao.py`; suíte 292 testes, OK. Manifesto do kit regenerado, `VERSAO` 0.10.1 → 0.10.2. **Base 1:** 0 de 498 erros mudam (o único erro de verificação do papel já sai pela regra (b)). **Esperado na base 3, escrito antes de rodar:** 135 erros passam a `U_verificacao_existencia` — parte vinda do sandbox, parte dos pendentes por código cortado; o sandbox somado a esses pendentes cai 135. Com o Ajuste 26: sandbox ≈ 1.401 − 167 − (os dos 135 que estavam nele).
+- **O que fica em aberto:** os 9 dos outros papéis ficam no sandbox porque o prompt desses papéis não tem a instrução (bases 1 e 2) — inferência, sem o prompt na base 3; por que verificam sem instrução não se sabe (`b3 #54`).
+- **Replicar na máquina da base:** junto com o Ajuste 26, numa rodada só (a mesma lista de arquivos do Ajuste 26, mais o `contar_introspeccao_linha.py`); kit 0.10.2.

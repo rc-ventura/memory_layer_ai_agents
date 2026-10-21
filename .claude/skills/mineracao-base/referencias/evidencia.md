@@ -44,12 +44,10 @@ relatório nem para a conversa: o script já escreveu certo.
 
 ## Sigilo
 
-- **O relatório completo fica no ambiente onde o trace mora.** Ele tem identificador de execução, e
-  `pipeline/resultados/` é git-ignored.
-- **A versão que sai** (foto, chat, commit, mensagem) é feita por script, nunca à mão:
+- **O relatório completo fica no ambiente onde o trace mora,** em `pipeline/resultados/`, que é git-ignored.
+- **O que sai** (foto, chat, commit, mensagem) passa antes pelo varredor, nunca por máscara feita à mão:
   ```
-  uv run python <skill mineracao-base>/scripts/versao_para_sair.py <relatório>
-  uv run python <skill mineracao-base>/scripts/varrer_pii.py <relatório>_saida.md
+  uv run python <skill mineracao-base>/scripts/varrer_pii.py <arquivo>
   ```
-  O `_saida.md` troca cada identificador por `caso-N`. O `_mapa.csv` (caso-N → `exec_id`) fica no ambiente: é por ele
-  que quem está lá volta da versão que saiu ao trace.
+  O identificador de execução pode sair ([sigilo](sigilo.md)). O `versao_para_sair.py` (opcional) troca cada
+  identificador por `caso-N` e deixa o `_mapa.csv` no ambiente.

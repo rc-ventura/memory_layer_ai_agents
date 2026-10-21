@@ -35,7 +35,9 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 | `U_next_gerador` | `next()` sobre expressão geradora falha no sandbox | um idioma de Python que o ambiente não aceita |
 | `U_estado_perdido` | Após step com erro, o que ele definiria não existe | o agente usa uma variável que o step com erro nunca chegou a criar |
 | `U_nome_inventado` | Nome usado sem ter sido definido | o agente usa um nome (variável ou função) que não existe |
-| `U_verificacao_try_nameerror` | Verificação de existência por try/except NameError | o prompt manda checar se uma variável existe com `except NameError`, e o sandbox levanta outro erro, que o `except` não pega; destino harness (Ajuste 17) |
+| `U_verificacao_existencia` | Verificação de existência de variável (instruída pelo prompt) | o prompt manda checar se uma variável já existe antes de chamar a ferramenta, e o sandbox barra as duas formas: `'x' in globals()` (proibida) e `except NameError` (não pega o erro do sandbox); destino harness. Era `U_verificacao_try_nameerror` (Ajuste 17), renomeada e ampliada à introspecção no Ajuste 21 |
+| `U_ferramenta_nao_declarada` | Ferramenta citada no prompt e não declarada | o prompt manda usar uma ferramenta que não está entre as declaradas (os `def` do prompt), e o agente tenta importá-la; sinal de harness — o conserto é declarar a ferramenta ou tirar a menção (Ajuste 26, 20/10/2026; hoje só `get_document_text`, no OBFCivel) |
+| `U_verificacao_try_nameerror` | — | nome antigo de `U_verificacao_existencia`, até o Ajuste 21 (19/10/2026); aparece nos documentos de antes |
 | `U_repr_colado` | Não colar retorno impresso de volta no código | o agente copia o print de um retorno para dentro do código em vez de usar a variável |
 | `U_codigo_lento` | Não rodar laço pesado dentro do bloco de código | o tempo do interpretador estoura num laço sem ferramenta |
 | `U_resultado_bruto` | Não entregar o resultado bruto de uma ferramenta na resposta final | o agente põe o retorno inteiro da ferramenta no `final_answer` e estoura o tempo |
@@ -49,6 +51,13 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 **Decisões da triagem:** *candidata* = passa na régua de recorrência (≥3 execuções e ≥2 meses) e vira memória
 candidata; *sinal de harness* = recorrente, mas quem corrige é o prompt ou a ferramenta, não a memória; *não-memória* =
 plataforma; *fora: sem recorrência* = não passou na régua; *revisar* = resíduo.
+
+**Tipos de monitoramento** (o `tipo` de um item do `registros/monitoramento.json`, no nível da unidade, ou de uma
+memória no catálogo `registros/memorias.json`, no nível da memória — os dois níveis: `16`, "O monitoramento"): *sinal de harness* = espera o conserto da
+plataforma (o alarme que importa é "sumiu"); *memória rara* = espera ficar frequente (o alarme é "passou na régua");
+*memória de reforço (repete o prompt)* = a memória só repetiria o que o prompt já diz e não é injetada (alarmes: "cresceu",
+e, nas bases com prompt, "o prompt deixou de dizer" — aí deixa de ser repetição e vira candidata). Decidido em 20/10/2026
+(`decisoes.md`); o experimento de reforço é o EX-8 do blueprint das POCs.
 
 ## 3 · Os mecanismos do erro de protocolo (M1–M6)
 
@@ -122,6 +131,7 @@ investigação do erro crítico (01/10):
 
 | Termo | O que é |
 |---|---|
+| **degrau 1–4 (da validação)** | a escada da candidata à memória validada ([`17`](2026-09-trace-law-flow/docs/17-validacao-memorias.md)): **1 · candidata** (a mineração: o erro existe), **2 · conferida** (cinco checagens determinísticas contra o ambiente e o prompt), **3 · revisada** (leitura de casos com dois leitores e o gate do pesquisador), **4 · validada** (o experimento: injetada, reduz o erro) |
 | **teto de economia** | tokens dos passos com erro das unidades **candidatas** (por papel e no total): o máximo que uma memória poderia economizar, com eficácia de 100% e sem contar o custo dela — **hipótese**, não previsão ([racionais da base 3 §7](2026-10-trace-law-flow-third/docs/01-racionais.md#7--o-teto-de-economia-e-o-teste-de-compensação-da-memória)) |
 | **orçamento de injeção** | o teto dividido pelos passos em que a memória seria injetada: o tamanho máximo da memória, em tokens por passo, para empatar |
 | **linha de base** | a rodada, a fonte e as contagens congeladas (com hash) contra as quais se mede o efeito de uma memória |

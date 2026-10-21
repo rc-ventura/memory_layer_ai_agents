@@ -22,7 +22,8 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 - **Leitura por LLM é `[assistido]`** e vale como hipótese; o determinístico é `[conferido]`. Nenhum LLM no caminho da
   classificação.
 - **Da máquina 2 só saem** contagens, nomes de papel, ferramenta e modelo, hashes, sim/não, tamanhos, tokens e motivos
-  mascarados. Nunca texto de caso nem `exec_id`.
+  mascarados. Nunca texto de caso nem `exec_id`. **Revogada em 16/10** pela decisão do sigilo, abaixo (só o dado pessoal
+  e o conteúdo do cliente não saem).
 
 **Organização:**
 - Cada análise com método próprio tem o seu conjunto: notebook + racional + relatório + procedimento (protocolo
@@ -55,7 +56,8 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   determinístico, e o modelo propõe e o script conta · as skills são genéricas → [`kit.md`](../.claude/skills/mineracao-base/referencias/kit.md),
   skill `mineracao-base`. Os Ajustes 14–16 do protocolo → livro-razão.
 - **05/10, notebook específico:** só com frequência **e** confiança, sem sorteio, reconfirmado a cada partição; a
-  aprovação é do Rafael → `16`, `06` §10 peça 6.
+  aprovação é do Rafael → `16`, `06` §10 peça 6. (Desde 16/10 a parte específica nova é script; a regra é a mesma →
+  livro-razão, Ajuste 20.)
 - **06/10, a leitura e o gate:** leitura em duas etapas (aberta → gate da lista → fechada em outros casos, ≥ 20) ·
   "os leitores discordam" não é "não há lição" · o gate do pesquisador · dividir a unidade é resultado normal →
   `06` §10, `16`.
@@ -63,7 +65,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `monitorar.py` no passo 0 de toda mineração). Em monitoramento: `U_nome_inventado`, `U_campo_inexistente`, a
   ferramenta concorrente do `final_answer` → `16` § O monitoramento.
 - **06/10, o kit:** mora no próprio `.claude/`, versionado; cada mineração tem um nome só (`/mineracao-<assunto>`);
-  `investigar` e `propor-notebook` são skills de chamada manual; o Copilot lê o mesmo `.claude/`, sem cópia →
+  `investigar` e `propor-notebook` (renomeada `propor-script` em 16/10, Ajuste 20) são skills de chamada manual; o Copilot lê o mesmo `.claude/`, sem cópia →
   [`kit.md`](../.claude/skills/mineracao-base/referencias/kit.md).
 - **15/10, gráficos de volume e de taxa não separam destino:** nos gráficos de volume, taxa e custo, **erro é erro** — sem
   linha, marcador ou cor por destino (memória, sinal de harness, infra). O destino de cada erro depende da classificação,
@@ -110,5 +112,155 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
     **perfil sob demanda de qualquer unidade** (`--perfil-investigacao`), marcado como "investigação — não é candidatura", para os
     roteiros de protocolo, crítico, resíduo e timeout;
   - **sem índice de Gini** na concentração de custo.
+- **16/10, o arquivo final da memória na base 3 aponta o caso por hash** (esquema 0.2): `step_ref` + `fonte_id` + `rodada_id`
+  no lugar de `idx` (a base 3 não tem `idx`). Assim o arquivo sai inteiro, sem a troca por `caso-N`. O `exec_id` vai junto
+  (decisão seguinte). Os arquivos 0.1 da base 1 continuam
+  válidos → livro-razão, [Ajuste 19](pipeline-entre-bases.md#ajuste-19--o-arquivo-final-da-memória-aponta-o-caso-por-hash-na-base-3-esquema-02); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #44.
+- **16/10, o sigilo protege só o dado pessoal e o conteúdo do cliente** (decisão do Rafael, opção 1 entre "liberar o
+  técnico" e "liberar tudo"): saem o `exec_id`, o `step_ref`, a mensagem de erro, o código do agente, nomes de variável,
+  chamadas de ferramenta e o texto do prompt; não saem nome de pessoa, CPF, CNPJ, número de processo, e-mail, o
+  documento, a pergunta do usuário, a resposta entregue a ele e os valores do caso. O `varrer_pii.py` continua
+  obrigatório antes de algo sair (sem procurar mais o identificador); a troca por `caso-N` fica opcional. Revoga o
+  "nunca texto de caso nem `exec_id`" das regras de trabalho. O arquivo final da memória leva o `exec_id` ao lado do
+  `step_ref` → [sigilo](../.claude/skills/mineracao-base/referencias/sigilo.md).
+- **16/10, o inventário do sandbox ganha script específico por decisão do Rafael** (a porta da regra de criação que
+  dispensa os dois leitores): a lição sai da mensagem de erro, e a confiança é a cobertura da regra, **≥ 95%**, escrita
+  antes de rodar → base 3, [`propostas/U_sandbox/racional.md`](2026-10-trace-law-flow-third/propostas/U_sandbox/racional.md),
+  [`07`](2026-10-trace-law-flow-third/docs/07-racionais-mineracao-candidatas.md).
+- **19/10, o script do inventário do sandbox está aprovado** (cobertura 99,86% na base 3, encontro 61/61, validador aprovado):
+  sai de `propostas/U_sandbox/` para `pipeline/especificas/mineracao_U_sandbox.py`. A divisão da lição em partes e os destinos
+  seguem em aberto → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, a lição do sandbox é dividida por papel e por causa** (decisão do Rafael): a evidência é contada —
+  `globals` 2.347 de 2.352 no `ContestacaoCivel`, `get_document_text` 167 de 167 no `OBFCivel`, `pd` 231 de 233 no
+  `JoogleAnalytics`, contra `json` em 10 papéis e 10 meses. O racional ganha as partes e o script monta uma memória por parte
+  (nova validação). O destino da parte do `globals` (harness) segue como hipótese → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
+- **19/10, a validação de uma memória tem quatro degraus** (decisão do Rafael): candidata (a mineração) → conferida
+  (cinco checagens determinísticas: ambiente, conflito com o prompt, repete o prompt, recorrência, uma causa só) →
+  revisada (leitura de casos com dois leitores e o gate) → validada (o experimento). Num documento à parte do
+  procedimento → [`17`](2026-09-trace-law-flow/docs/17-validacao-memorias.md); livro-razão, Ajuste 24. As 14 do sandbox estão
+  no degrau 1 (`b3 #50`).
+- **19/10, o piloto do sandbox está fechado** (`b3 #12`): na rodada `aedb9b5db70d6c92` da base 3, 14 memórias (C e E
+  globais, B e D por papel) com destino memória e derived-and-checked, registradas no catálogo `registros/memorias.json`
+  (transcritas das fotos e conferidas contra o inventário: 43 nomes, 1.396 erros). 6 delas têm 1 a 3 erros; a régua
+  de memória rara fica para depois, se o Rafael quiser → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2d.
+- **19/10, a parte E do sandbox vira memória global** (decisão do Rafael, depois da investigação, dossiê §2c): o que
+  sobra depois do Ajuste 23 (depuração com `repr`/`.__name__`, outras funções proibidas, a verificação com valor padrão
+  que a regra (b) deixou no sandbox) é hábito do agente, sem instrução no prompt. A guidance ganha o jeito permitido
+  ("print(type(x))", "str(x)[:n]", "json.loads"); emenda 6 do racional.
+- **19/10, o script do sandbox dividido em partes está aprovado** (decisão do Rafael): a emenda 4 (C, B, D, E; uma
+  memória por parte; o catálogo), validada pelo `validador-de-script` na revalidação 5 (110 de 110 medidas iguais) →
+  [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md). A primeira rodada na base 3 tem de ser
+  posterior ao commit `ef36e2c`.
+- **19/10, o Ajuste 23 (decisão do Rafael):** o `eval` usado numa função auxiliar que verifica se a variável existe e,
+  se não existe, a cria chamando uma ferramenta (`if not _exists('x'): x = ferramenta(...)`) sai de `U_sandbox` e entra em
+  `U_verificacao_existencia` (harness), pela mesma regra do Ajuste 21. O `eval(texto)` para converter texto em objeto
+  (os 3 dos outros papéis e 6 do ContestacaoCivel) fica no sandbox. Evidência: base 3, 40 de 46 `eval` do ContestacaoCivel
+  com a função auxiliar definida no código do passo; nenhum prompt menciona `eval` (base 2) →
+  [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2c; livro-razão, Ajuste 23.
+- **19/10, o catálogo das memórias fechadas** (decisão do Rafael): `analysis/registros/memorias.json`, uma entrada por
+  memória com destino memória e status derived-and-checked (só conteúdo técnico e o hash do arquivo final, sem os
+  casos); montado no passo 9 do `minerar.py` e registrado com `catalogar_memoria.py --registrar`. Uma lição pode ter
+  várias memórias (esquema 0.3) → livro-razão, Ajuste 22.
+- **19/10, os destinos das partes do sandbox depois do Ajuste 21 (decisão do Rafael):** C (módulo usado sem import,
+  656) → **memória global**; B (ferramenta importada como módulo, 212, `OBFCivel`) → **memória do papel `OBFCivel`**;
+  D (import fora da lista autorizada, 40) → **memória por papel** (cada papel com a sua lista). A parte E (funções e
+  atributos proibidos, 523, concentrada no `ContestacaoCivel`) **fica em investigação antes de virar memória**: se vem
+  do prompt desse papel, como a verificação de existência, é sinal de harness → testes `contar_proibidas_linha.py`
+  (base 3) e `contar_proibidas_prompt_base2.py` (base 2); [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md), §2c.
+- **19/10, o Ajuste 21 (decisões do Rafael):** (1) a introspecção proibida (`globals`/`locals`/`vars`) usada para
+  verificar a existência de uma variável **e que guarda a criação dessa variável por uma chamada** ("se `x` não existe,
+  `x = ferramenta(...)`" — o comportamento que a instrução do prompt pede) sai de `U_sandbox` e entra na unidade do
+  `try/except`; a leitura com valor padrão (`globals().get('x', padrão)`, espontânea) fica no sandbox — **regra (b),
+  condicionada a um teste na base 3**; se o teste não separar, vale a regra só pela linha (a), com as exceções
+  registradas; (2) a unidade passa a `U_verificacao_existencia`; (3) o ajuste vale nas três bases; (4) o monitoramento
+  (`b3 #28`) é registrado junto, com os dois sintomas; (5) o aviso à plataforma continua adiado (`transversal #7`) →
+  [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #46.
+- **20/10, a unidade do sandbox fecha no degrau 3** (decisão do Rafael): as memórias que passam no degrau 2 e vão para
+  injeção passam também pela leitura de casos com dois leitores e o gate (degrau 3, skill `mineracao-investigacao`);
+  só o degrau 4 (o experimento) fica para as POCs → [`17`](2026-09-trace-law-flow/docs/17-validacao-memorias.md); base 3,
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50.
+- **20/10, o degrau 2 lê os nomes de um campo estruturado** (decisão do Rafael): `validation.nomes` no arquivo final
+  (esquema 0.4; `importar`, `usar`, `nao_importar`, `nao_usar`), gravado pelo script específico da mesma tabela que gera
+  a guidance, e copiado no catálogo; a lista autorizada de cada papel vem do prompt; a instrução do prompt que induz um
+  nome (a verificação de existência) fica no item do `monitoramento.json`; as 14 do sandbox ganham o campo transcrito da
+  `description`, marcado, até a próxima mineração → livro-razão, [Ajuste 25](pipeline-entre-bases.md#ajuste-25--o-degrau-2-por-script-e-o-esquema-04-20102026).
+- **20/10, o `get_document_text` do OBFCivel é sinal de harness, não memória** (decisão do Rafael): nas 63 execuções do
+  papel na base 2 (abr–ago/26, as 4 versões do prompt) e nas 11 da base 1, o prompt cita a função e não a declara como
+  ferramenta — o erro vem do prompt, e a memória atual ("chame-as direto") mandaria chamar algo que o prompt não declara
+  (se a função existe no executor não foi testado: na base 1 o agente nunca a chama direto; o teste da chamada direta e
+  da declaração em outros papéis vai à base 2; hipótese do Rafael: a ferramenta mudou de nome e o prompt não). O import
+  de `get_document_text` sai da unidade do sandbox por regra (Ajuste 26, a escrever); o resto da parte B segue memória do
+  OBFCivel → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h; base 3,
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #49 (fechado) e #50.
+- **20/10, a verificação com valor padrão do ContestacaoCivel é sinal de harness** (decisão do Rafael, por coerência com o
+  Ajuste 21): `if 'x' not in globals(): x = '…'` (≈ 124 `globals` + 10 `locals` na base 3, jul–ago/26) é a instrução
+  "verifique se a variável existe" cumprida sem caminho dado — o prompt deixa o como em aberto, o agente tenta e o sandbox
+  barra. Sai do sandbox por regra (extensão da regra (b) do Ajuste 21, só no papel com a instrução; as ≈ 9 verificações
+  espontâneas dos outros papéis ficam), na mesma rodada do Ajuste 26; a memória E deixa `globals`/`locals`/`vars`/`eval`.
+  A causa por erro é inferida (a base 3 não guarda o prompt), como no Ajuste 21. A ideia de uma memória "como verificar no
+  sandbox" fica como candidata própria → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h;
+  base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50 e #51.
+  **Complemento (20/10, depois da medição — `contar_introspeccao_linha.py` parte E, fotos `IMG_5976`–`IMG_5978`):** a forma
+  do código não separa o ContestacaoCivel dos outros papéis (fora dele aparecem as mesmas formas), e ele tem as quatro
+  (cria com valor fixo 52, leitura com valor padrão 14, sem nome entre aspas 33, verifica e não cria 36). Decisão do Rafael:
+  **a regra é pelo papel** — toda verificação com `globals`/`locals`/`vars` que a regra (b) deixa no sandbox, **no
+  ContestacaoCivel**, vai para `U_verificacao_existencia` (135 na base 3); os 9 dos outros papéis ficam no sandbox, porque
+  o prompt desses papéis não tem a instrução (base 2, todos os papéis; base 1) — inferência, sem o prompt na base 3; por
+  que esses agentes verificam sem instrução não se sabe ("hábito" seria interpretação). Aceito sem investigar agora porque
+  são 9 erros e não viram memória injetada; a investigação de alguns casos fica no `b3 #54`. A regra é o Ajuste 27
+  ([livro-razão](pipeline-entre-bases.md)), emenda 8 do racional do sandbox.
+- **20/10, as 10 memórias de "import fora da lista" são monitoradas, não injetadas** (decisão do Rafael): a lista de imports
+  autorizados já está no prompt de todos os papéis (bases 1 e 2) e as 10 falham em "repete o prompt" no degrau 2; são 40
+  erros na base 3 (0,13%), de 1 a 14 por papel. Ficam no inventário do sandbox (os erros não mudam de unidade) e entram no
+  monitoramento num **tipo novo, "memória de reforço (repete o prompt)"**, distinto de *sinal de harness* e de *memória rara*
+  — as 5 que também falham na régua entram neste tipo, não no de memória rara. Injetar o que o prompt já diz testa outra
+  pergunta (o reforço funciona?), documentada como experimento próprio (EX-8 do
+  [blueprint](../pocs/blueprint-m1-pocs-minimos.md), com a literatura) → [glossário](glossario.md) (tipos de
+  monitoramento); base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50.
+- **20/10, o script do sandbox com as emendas 7, 8 e 9 está aprovado** (decisão do Rafael): revalidação 7 do
+  `validador-de-script` aprovada — 189 de 189 medidas iguais no ensaio da base 1, encontro com a auditoria 31/31, 7
+  memórias no esquema 0.4; cada emenda no mesmo commit do código que a aplica (`c832da3`, `cc27360`). Condição: a
+  primeira rodada na base 3 com um HEAD que contenha essas emendas. As três observações do laudo para a base 3: conferir o
+  esperado da emenda 8 (135); a ordem das raízes no `nomes` da B; o `destino_decidido_em` pelo título da entrada (feito)
+  → [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md), "Revalidação 7".
+- **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
+  **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
+  exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
+  papel" onde o módulo não está; (2) **E** — sai do texto `globals`, `locals`, `vars` e `eval` (o "não chame `globals`"
+  brigava com o prompt do ContestacaoCivel: o degrau 2 reprovou a E no conflito, §2g–§2h); os erros desses nomes que
+  sobram no sandbox depois dos Ajustes 21, 23 e 27 vão para uma parte própria, **F**, com destino em aberto — a
+  população da memória "como verificar no sandbox" (`b3 #51`); E fica com a depuração → racional do sandbox, emenda 9;
+  dossiê §2h, 9.
+- **20/10, a memória E perde a dica "para ler JSON, use json.loads"** (decisão do Rafael, na etapa 5 do fechamento do
+  sandbox): a E é global, e o `json` não está na lista autorizada de quatro papéis no prompt da base 1 (OBFCivel,
+  RoteadorCivel, managerAgent, ContestacaoCivel) — o degrau 2 do ensaio reprovou a E no ambiente por isso. A dica servia
+  ao `eval(texto)`, que foi para a parte F, e a ≈ 5 `__import__('json').loads` do ContestacaoCivel. Fica "Para inspecionar
+  um valor, use print(type(x)) e print(str(x)[:n])." (testado no interpretador: funciona); pode voltar se o `json` for
+  confirmado em todas as listas → racional do sandbox, emenda 9; dossiê §2h, 9.
+- **20/10, o monitoramento tem dois níveis** (decisão do Rafael): monitoram-se sempre erros, contados no recorte da
+  **unidade** (a tabela do pipeline; `monitorar.py` e `monitoramento.json`, no passo 0 — os sinais de harness) ou no
+  recorte de uma **memória** (unidade × parte × papel; o resultado da mineração e o catálogo; `catalogar_memoria.py`, no
+  passo 9, compara com a contagem anterior — as memórias raras e as de reforço). O `monitorar.py` não muda: o pipeline não
+  etiqueta a parte, e um item no recorte da memória contaria a unidade inteira ou pararia o passo 0 das outras bases. O
+  alarme de uma memória só dispara quando a unidade dela é minerada de novo → [`16`](2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)
+  ("O monitoramento", "Dois níveis"); [glossário](glossario.md) (tipos de monitoramento).
+- **20/10, a régua de memória rara se aplica; sobra uma** (decisão do Rafael, fecha o `b3 #48`): das 6 memórias do
+  sandbox que falham na recorrência, as 5 de "import fora da lista" já são *memória de reforço* (decisão 3); a
+  `U_sandbox.B.RespostaBacen` (1 erro, jan/26) fica **monitorada como memória rara**, não injetada, no nível da memória
+  (catálogo). Achado no caminho: `python_interpreter` é ferramenta-base do smolagents só para o `ToolCallingAgent` (o
+  `CodeAgent` não a recebe — por isso nunca está no prompt), mas o `CodeAgent` registra cada passo de código como uma
+  chamada de ferramenta `python_interpreter`, que volta ao modelo no histórico ("Calling tools: … 'python_interpreter'
+  …"; `agents.py` e `memory.py`, smolagents 1.26.0). Hipótese: o agente vê o nome no histórico e tenta importá-lo (34 erros
+  no OBFCivel e 1 no RespostaBacen, na base 3). O texto das memórias B com nomes do framework muda no script específico:
+  não "chame-as direto", e sim "não importe `python_interpreter`/`tools`/`smolagents`: o seu código já roda no
+  interpretador" → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h; base 3,
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #48 (fechado) e #50.
+- **20/10, o `monitorar.py` ler a base 3 é item próprio, fora do fechamento do sandbox** (decisão do Rafael): o passo 0
+  segue "não conferido" na base 3 (as tabelas dela têm outro formato); o sandbox fecha com os itens registrados, e a
+  recontagem automática na base 3 vem com o item do kit → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #52.
+- **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
+  lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
+  passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,
+  [Ajuste 20](pipeline-entre-bases.md#ajuste-20--a-parte-específica-da-mineração-passa-a-ser-um-script-não-um-notebook); `16`, "Como o script roda".
 
 ---

@@ -4,7 +4,8 @@
     python conferir_versao.py <pasta-da-analise> --gerar    # reescreve o manifesto a partir dessa pasta
 
 O hash não depende do ambiente nem da base:
-  - fim de linha normalizado (CRLF -> LF): o mesmo arquivo dá o mesmo hash em qualquer sistema;
+  - o que não é código não conta: marca BOM, fim de linha (CRLF/CR -> LF), espaços no fim das linhas e linhas vazias
+    no fim do arquivo — o que copiar e colar num editor costuma mudar. O mesmo código dá o mesmo hash em qualquer sistema;
   - no `base_pipeline.py`, as atribuições de `TRACE` e `BASE_ID` são mascaradas antes do hash — são a camada da base,
     não do método (achadas pela AST, valem em uma ou várias linhas);
   - num notebook, só o código das células entra (as saídas mudam a cada execução).
@@ -37,9 +38,15 @@ ARQUIVOS = [
 CAMADA_DA_BASE = {"TRACE", "BASE_ID"}
 
 
+def _normalizar(txt):
+    """Tira o que não é código: BOM, CRLF/CR, espaços no fim das linhas, linhas vazias no fim."""
+    txt = txt.lstrip("\ufeff").replace("\r\n", "\n").replace("\r", "\n")
+    return "\n".join(l.rstrip() for l in txt.split("\n")).rstrip("\n")
+
+
 def _texto(caminho):
     with open(caminho, "rb") as fh:
-        return fh.read().decode("utf-8").replace("\r\n", "\n")
+        return _normalizar(fh.read().decode("utf-8-sig"))
 
 
 def _sem_camada_da_base(txt):
@@ -64,7 +71,7 @@ def assinatura(caminho):
         txt = _sem_camada_da_base(txt)
     elif caminho.endswith(".ipynb"):
         txt = _codigo_do_notebook(txt)
-    return hashlib.sha256(txt.encode("utf-8")).hexdigest()[:16]
+    return hashlib.sha256(_normalizar(txt).encode("utf-8")).hexdigest()[:16]
 
 
 def main():
@@ -87,7 +94,7 @@ def main():
         h, e = atual.get(a), esperado.get(a)
         estado = "FALTA" if h is None else ("ok" if h == e else "DIFERE")
         difere += estado != "ok"
-        print(f"  {estado:6}  {h or '-':16}  {a}")
+        print(f"  {estado:6}  {h or '-':16}  {a}" + (f"   (esperado {e})" if estado == "DIFERE" else ""))
     print(f"\nversão do código: {'IGUAL ao manifesto' if not difere else f'{difere} arquivo(s) fora do manifesto — PARAR'}")
     sys.exit(1 if difere else 0)
 

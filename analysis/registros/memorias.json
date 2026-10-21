@@ -1,0 +1,710 @@
+{
+  "o_que_e": "O catálogo das memórias fechadas, em todas as bases: uma entrada por memória com destino \"memória\" (decisão do pesquisador) e status derived-and-checked. Só conteúdo técnico — o que a memória diz (correction_guidance), onde vale (scope), quantos erros, de que rodada — e o hash do arquivo final, que fica na pasta da mineração, na máquina da base (sem os casos). O que tem destino harness fica no monitoramento.json. A entrada é montada pelo passo 9 do minerar.py (catalogo_<unidade>_<base>.json, já varrido) e posta aqui com `.claude/skills/mineracao-candidata/scripts/catalogar_memoria.py --registrar`; `--conferir` confere o catálogo. Decisão de 19/10 (decisoes.md); livro-razão, Ajuste 22.",
+  "itens": [
+    {
+      "id": "U_sandbox.B.OBFCivel",
+      "unidade": "U_sandbox",
+      "parte": "B",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · ferramenta importada como módulo (factual · ambiente)",
+      "scope": {
+        "role": "OBFCivel",
+        "tool": null
+      },
+      "description": "211 erros em 1 papel(éis), parte B do inventário do sandbox (ferramenta importada como módulo): get_document_text 167, python_interpreter 34, tools 4, tool_usage 2, mcp 1, mcp_client.tools 1, smolagents 1, tool_functions 1.",
+      "correction_guidance": "As ferramentas já estão no escopo como funções: chame-as direto, sem import. Não importe: get_document_text, python_interpreter, tools, tool_usage, mcp, mcp_client.tools, smolagents, tool_functions.",
+      "nomes": {
+        "importar": [],
+        "usar": [
+          "get_document_text",
+          "python_interpreter",
+          "tools",
+          "tool_usage",
+          "mcp",
+          "mcp_client.tools",
+          "smolagents",
+          "tool_functions"
+        ],
+        "nao_importar": [
+          "get_document_text",
+          "python_interpreter",
+          "tools",
+          "tool_usage",
+          "mcp",
+          "mcp_client.tools",
+          "smolagents",
+          "tool_functions"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 211,
+        "execucoes": 210,
+        "meses": [
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.B.OBFCivel_base3.json",
+        "sha256_16": "601cb15333d8c4fa",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.B.RespostaBacen",
+      "unidade": "U_sandbox",
+      "parte": "B",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · ferramenta importada como módulo (factual · ambiente)",
+      "scope": {
+        "role": "RespostaBacen",
+        "tool": null
+      },
+      "description": "1 erros em 1 papel(éis), parte B do inventário do sandbox (ferramenta importada como módulo): python_interpreter 1.",
+      "correction_guidance": "As ferramentas já estão no escopo como funções: chame-as direto, sem import. Não importe: python_interpreter.",
+      "nomes": {
+        "importar": [],
+        "usar": [
+          "python_interpreter"
+        ],
+        "nao_importar": [
+          "python_interpreter"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 1,
+        "execucoes": 1,
+        "meses": [
+          "2026-01"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.B.RespostaBacen_base3.json",
+        "sha256_16": "b9c2e2c57716f000",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.C",
+      "unidade": "U_sandbox",
+      "parte": "C",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · módulo usado sem import (factual · ambiente)",
+      "scope": {
+        "role": null,
+        "tool": null
+      },
+      "description": "656 erros em 10 papel(éis), parte C do inventário do sandbox (módulo usado sem import): json 415, pd 233, re 5, datetime 3.",
+      "correction_guidance": "Importe antes de usar: json, pd, re, datetime.",
+      "nomes": {
+        "importar": [
+          "json",
+          "pandas",
+          "re",
+          "datetime"
+        ],
+        "usar": [],
+        "nao_importar": [],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 656,
+        "execucoes": 554,
+        "meses": [
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.C_base3.json",
+        "sha256_16": "170470cce961ae9f",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.AgenteTestemunhas",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "AgenteTestemunhas",
+        "tool": null
+      },
+      "description": "1 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): operator 1.",
+      "correction_guidance": "Não importe: operator; imports autorizados neste papel: collections, datetime, itertools, json, math, numpy, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "operator"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 1,
+        "execucoes": 1,
+        "meses": [
+          "2026-05"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.AgenteTestemunhas_base3.json",
+        "sha256_16": "6b306564ee073492",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.CalculoCivel",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "CalculoCivel",
+        "tool": null
+      },
+      "description": "3 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): tabulate 2, IPython.display 1.",
+      "correction_guidance": "Não importe: tabulate, IPython.display; imports autorizados neste papel: collections, datetime, itertools, json, math, openpyxl, os, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "tabulate",
+          "IPython.display"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 3,
+        "execucoes": 3,
+        "meses": [
+          "2026-02"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.CalculoCivel_base3.json",
+        "sha256_16": "1aa05362c4f71e73",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.CalculoTrabalhista",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "CalculoTrabalhista",
+        "tool": null
+      },
+      "description": "14 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): copy 5, numbers 2, tabulate 2, broadcast 1, calendar 1, em 1, pandas.tseries.offsets 1, pprint 1.",
+      "correction_guidance": "Não importe: copy, numbers, tabulate, broadcast, calendar, em, pandas.tseries.offsets, pprint; imports autorizados neste papel: collections, datetime, dateutil, dateutil.relativedelta, io, itertools, json, locale, math, numpy, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "copy",
+          "numbers",
+          "tabulate",
+          "broadcast",
+          "calendar",
+          "em",
+          "pandas.tseries.offsets",
+          "pprint"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 14,
+        "execucoes": 13,
+        "meses": [
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-05",
+          "2026-07",
+          "2026-08"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.CalculoTrabalhista_base3.json",
+        "sha256_16": "a10eafff346c9aab",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.Consultivo",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "Consultivo",
+        "tool": null
+      },
+      "description": "3 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): textwrap 2, copy 1.",
+      "correction_guidance": "Não importe: textwrap, copy; imports autorizados neste papel: collections, datetime, itertools, json, math, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "textwrap",
+          "copy"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 3,
+        "execucoes": 3,
+        "meses": [
+          "2026-05",
+          "2026-06",
+          "2026-07"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.Consultivo_base3.json",
+        "sha256_16": "41308a4764255314",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.JoogleAnalytics",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "JoogleAnalytics",
+        "tool": null
+      },
+      "description": "4 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): ast 1, base64 1, calendar 1, statsmodels.tsa.statespace.sarimax 1.",
+      "correction_guidance": "Não importe: ast, base64, calendar, statsmodels.tsa.statespace.sarimax; imports autorizados neste papel: collections, datetime, dateutil, dateutil.relativedelta, io, itertools, json, locale, math, numpy, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "ast",
+          "base64",
+          "calendar",
+          "statsmodels.tsa.statespace.sarimax"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 4,
+        "execucoes": 4,
+        "meses": [
+          "2026-03",
+          "2026-05",
+          "2026-07"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.JoogleAnalytics_base3.json",
+        "sha256_16": "98113c065850a83a",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.OBFCivel",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "OBFCivel",
+        "tool": null
+      },
+      "description": "5 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): ast 3, typing 2.",
+      "correction_guidance": "Não importe: ast, typing; imports autorizados neste papel: collections, datetime, itertools, json, math, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "ast",
+          "typing"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 5,
+        "execucoes": 5,
+        "meses": [
+          "2026-03",
+          "2026-05",
+          "2026-08"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.OBFCivel_base3.json",
+        "sha256_16": "7512e7761cc154bb",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.OficiosResposta",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "OficiosResposta",
+        "tool": null
+      },
+      "description": "1 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): ast 1.",
+      "correction_guidance": "Não importe: ast; imports autorizados neste papel: collections, datetime, itertools, json, math, numpy, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "ast"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 1,
+        "execucoes": 1,
+        "meses": [
+          "2025-12"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.OficiosResposta_base3.json",
+        "sha256_16": "834ba085326b9f52",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.RespostaBacen",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "RespostaBacen",
+        "tool": null
+      },
+      "description": "5 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): typing 4, traceback 1.",
+      "correction_guidance": "Não importe: typing, traceback; imports autorizados neste papel: collections, datetime, itertools, json, math, numpy, pandas, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "typing",
+          "traceback"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 5,
+        "execucoes": 5,
+        "meses": [
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.RespostaBacen_base3.json",
+        "sha256_16": "5ddeb414055d8176",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.RespostaOficios",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "RespostaOficios",
+        "tool": null
+      },
+      "description": "1 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): copy 1.",
+      "correction_guidance": "Não importe: copy; imports autorizados neste papel: collections, datetime, itertools, json, math, numpy, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "copy"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 1,
+        "execucoes": 1,
+        "meses": [
+          "2026-03"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.RespostaOficios_base3.json",
+        "sha256_16": "70b95b6e57f20af7",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.D.ontestacaoCivel",
+      "unidade": "U_sandbox",
+      "parte": "D",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
+      "scope": {
+        "role": "ontestacaoCivel",
+        "tool": null
+      },
+      "description": "3 erros em 1 papel(éis), parte D do inventário do sandbox (import fora da lista autorizada): ast 3.",
+      "correction_guidance": "Não importe: ast; imports autorizados neste papel: collections, concurrent.futures, datetime, itertools, json, math, queue, random, re, stat, statistics, time, unicodedata.",
+      "nomes": {
+        "importar": [],
+        "usar": [],
+        "nao_importar": [
+          "ast"
+        ],
+        "nao_usar": []
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 3,
+        "execucoes": 3,
+        "meses": [
+          "2026-08"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.D.ontestacaoCivel_base3.json",
+        "sha256_16": "e3c60774d675b323",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    },
+    {
+      "id": "U_sandbox.E",
+      "unidade": "U_sandbox",
+      "parte": "E",
+      "base": "base3",
+      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-19",
+      "esquema": "0.3",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md, 19/10",
+      "category": "Inventário do sandbox · funções e atributos proibidos (factual · ambiente)",
+      "scope": {
+        "role": null,
+        "tool": null
+      },
+      "description": "488 erros em 13 papel(éis), parte E do inventário do sandbox (funções e atributos proibidos): __name__ 182, globals 142, repr 98, eval 14, locals 14, dir 9, exec 8, __import__ 5, bytes 5, open 5, hash 2, __class__ 1, __doc__ 1, __len__ 1, vars 1.",
+      "correction_guidance": "Não chame: globals, repr, eval, locals, dir, exec, __import__, bytes, open, hash, vars; Não acesse: __name__, __class__, __doc__, __len__. Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); para ler JSON, use json.loads.",
+      "nomes": {
+        "importar": [],
+        "usar": [
+          "print",
+          "type",
+          "str",
+          "json.loads"
+        ],
+        "nao_importar": [],
+        "nao_usar": [
+          "__name__",
+          "globals",
+          "repr",
+          "eval",
+          "locals",
+          "dir",
+          "exec",
+          "__import__",
+          "bytes",
+          "open",
+          "hash",
+          "__class__",
+          "__doc__",
+          "__len__",
+          "vars"
+        ]
+      },
+      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
+      "occurrences": {
+        "erros": 488,
+        "execucoes": 461,
+        "meses": [
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.E_base3.json",
+        "sha256_16": "131a140438716a56",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
+      "registrado_em": "2026-10-19"
+    }
+  ]
+}

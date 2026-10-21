@@ -28,7 +28,7 @@ recebe:
 
 **Regras:**
 - Você não escolhe casos: lê os da amostra, todos, e só eles.
-- Não copie texto de caso, código do agente, prompt ou identificador de execução para a resposta. Só categorias,
+- Não copie dado pessoal nem conteúdo do cliente (documento, pergunta, resposta) para a resposta. Só categorias,
   contagens, a regex e as linhas impressas pelos scripts.
 - Não edite nada fora de `pipeline/resultados/`. Não decida. Devolva as contagens por categoria, as versões da regra
   com as contagens e qual hipótese os números favorecem, com a ressalva de que a leitura é `[assistido]`.

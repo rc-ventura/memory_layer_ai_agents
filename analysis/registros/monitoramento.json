@@ -11,22 +11,57 @@
       "onde_decidido": "resultados/mineracao/U_nome_inventado/decisoes.json; docs/16, tabela do funil",
       "populacao": "erros_mecanismo.csv",
       "gerar": "o notebook da esteira (analise_trace_esteira_juridica.ipynb)",
-      "filtro": ["unidade=U_nome_inventado"],
+      "filtro": [
+        "unidade=U_nome_inventado"
+      ],
       "coluna_mes": "mes",
-      "linha_de_base": {"base": "base1", "erros": 5, "execucoes": 5, "meses": 4,
-                        "sub": {"nome visto só no texto": 3, "função de chamada anterior": 2}},
+      "linha_de_base": {
+        "base": "base1",
+        "erros": 5,
+        "execucoes": 5,
+        "meses": 4,
+        "sub": {
+          "nome visto só no texto": 3,
+          "função de chamada anterior": 2
+        }
+      },
       "sub": [
-        {"nome": "nome visto só no texto", "regex": "The variable `[^`]+` is not defined", "campo_passo": "error"},
-        {"nome": "função de chamada anterior", "regex": "Forbidden function evaluation", "campo_passo": "error"}
+        {
+          "nome": "nome visto só no texto",
+          "regex": "The variable `[^`]+` is not defined",
+          "campo_passo": "error"
+        },
+        {
+          "nome": "função de chamada anterior",
+          "regex": "Forbidden function evaluation",
+          "campo_passo": "error"
+        }
       ],
       "gatilhos": [
-        {"tipo": "regua", "execucoes": 3, "meses": 2},
-        {"tipo": "frequencia"},
-        {"tipo": "cresce", "fator": 3},
-        {"tipo": "sub_muda", "delta": 0.3},
-        {"tipo": "sem_regra", "fracao": 0.2}
+        {
+          "tipo": "regua",
+          "execucoes": 3,
+          "meses": 2
+        },
+        {
+          "tipo": "frequencia"
+        },
+        {
+          "tipo": "cresce",
+          "fator": 3
+        },
+        {
+          "tipo": "sub_muda",
+          "delta": 0.3
+        },
+        {
+          "tipo": "sem_regra",
+          "fracao": 0.2
+        }
       ],
-      "outras_bases": {"base2": "118 erros (b2 #3); a contar na máquina de compliance"}
+      "outras_bases": {
+        "base2": "118 erros (b2 #3); a contar na máquina de compliance"
+      }
     },
     {
       "id": "U_campo_inexistente",
@@ -38,14 +73,28 @@
       "onde_decidido": "pipeline-entre-bases.md, Ajustes 5 e 13",
       "populacao": "erros_mecanismo.csv",
       "gerar": "o notebook da esteira (analise_trace_esteira_juridica.ipynb)",
-      "filtro": ["unidade=U_campo_inexistente"],
-      "coluna_mes": "mes",
-      "linha_de_base": {"base": "base1", "erros": 10, "execucoes": 10, "meses": 6},
-      "gatilhos": [
-        {"tipo": "some"},
-        {"tipo": "cresce", "fator": 3}
+      "filtro": [
+        "unidade=U_campo_inexistente"
       ],
-      "outras_bases": {"base2": "38 erros · 36 execuções (Ajuste 13)"}
+      "coluna_mes": "mes",
+      "linha_de_base": {
+        "base": "base1",
+        "erros": 10,
+        "execucoes": 10,
+        "meses": 6
+      },
+      "gatilhos": [
+        {
+          "tipo": "some"
+        },
+        {
+          "tipo": "cresce",
+          "fator": 3
+        }
+      ],
+      "outras_bases": {
+        "base2": "38 erros · 36 execuções (Ajuste 13)"
+      }
     },
     {
       "id": "ferramenta_concorre_com_final_answer",
@@ -56,13 +105,88 @@
       "onde_decidido": "decisoes.md, Destinos decididos; Ajuste 16",
       "populacao": "evidencia/protocolo/casos.csv",
       "gerar": "uv run python drill_down.py protocolo (de dentro de pipeline/)",
-      "filtro": ["anterior_ferramenta_final=True"],
-      "coluna_mes": "mes",
-      "linha_de_base": {"base": "base1", "erros": 6, "execucoes": 3, "meses": 1},
-      "gatilhos": [
-        {"tipo": "aparece_desde", "mes": "2026-01"}
+      "filtro": [
+        "anterior_ferramenta_final=True"
       ],
-      "outras_bases": {"base2": "dez/2025, com a declaração antiga (decisoes.md, Destinos decididos)"}
+      "coluna_mes": "mes",
+      "linha_de_base": {
+        "base": "base1",
+        "erros": 6,
+        "execucoes": 3,
+        "meses": 1
+      },
+      "gatilhos": [
+        {
+          "tipo": "aparece_desde",
+          "mes": "2026-01"
+        }
+      ],
+      "outras_bases": {
+        "base2": "dez/2025, com a declaração antiga (decisoes.md, Destinos decididos)"
+      }
+    },
+    {
+      "id": "U_verificacao_existencia",
+      "unidade": "U_verificacao_existencia",
+      "o_que": "verificação de existência de variável instruída pelo prompt (ContestacaoCivel): o sandbox barra as duas formas — introspecção (`'x' in globals()`) e `try/except NameError`",
+      "tipo": "sinal de harness",
+      "decidido_em": "2026-10-19",
+      "decisao": "sinal de harness com dois sintomas: o conserto é no prompt (tirar a instrução ou dar um jeito permitido de verificar); monitorar até os DOIS sintomas sumirem juntos — se só um sumir, o agrupamento do Ajuste 21 está errado",
+      "onde_decidido": "decisoes.md (19/10, Ajuste 21); pipeline-entre-bases.md, Ajustes 17 e 21; base 3, propostas/U_sandbox/dossie_base3.md; Ajuste 23 (eval por função auxiliar, 19/10)",
+      "populacao": "erros_mecanismo.csv",
+      "gerar": "o notebook da esteira (analise_trace_esteira_juridica.ipynb)",
+      "filtro": [
+        "unidade=U_verificacao_existencia"
+      ],
+      "coluna_mes": "mes",
+      "linha_de_base": {
+        "base": "base1",
+        "erros": 1,
+        "execucoes": 1,
+        "meses": 1,
+        "sub": {
+          "try/except NameError": 0,
+          "introspecção ou eval": 1
+        }
+      },
+      "sub": [
+        {
+          "nome": "introspecção ou eval",
+          "regex": "Forbidden function evaluation: '(?:globals|locals|vars|eval)'",
+          "campo_passo": "error"
+        },
+        {
+          "nome": "try/except NameError",
+          "regex": "except\\s+\\(?[^)\\n:]*\\bNameError\\b",
+          "campo_passo": "error"
+        }
+      ],
+      "instrucao_prompt": "(?i)verifi\\w*\\s+se\\s+a\\s+vari[aá]vel|preenchida\\s+em\\s+mem[oó]ria|pule\\s+a\\s+chamada",
+      "nomes_induzidos": [
+        "globals",
+        "locals",
+        "vars",
+        "eval"
+      ],
+      "instrucao_nota": "a instrução do prompt que causa o sinal (regex de contar_introspeccao_prompt_base2.py, TERMOS['instrucao_verificar']) e os nomes que ela induz (Ajustes 21 e 23): o conferir_memorias.py (degrau 2, checagem 2) reprova a memória que proíbe esses nomes num papel cujo prompt traz a instrução. O monitorar.py não lê estes campos.",
+      "gatilhos": [
+        {
+          "tipo": "some"
+        },
+        {
+          "tipo": "cresce",
+          "fator": 3
+        },
+        {
+          "tipo": "sub_muda",
+          "delta": 0.3,
+          "min_erros": 10
+        }
+      ],
+      "outras_bases": {
+        "base2": "ContestacaoCivel, primeiro passo: introspecção 36 (prompt antigo, 4b8c6d76ff), try/except 97 (prompt novo, 2802ad7768); contar_introspeccao_prompt_base2.py, 19/10",
+        "base3": "ContestacaoCivel: try/except 5.764 (95 jul, 5.667 ago); introspecção instruída 2.218 (3 jun, 1.521 jul, 694 ago) pelo teste da regra (b), 19/10; a confirmar na rodada nova (b3 #46). O monitorar.py ainda não lê as tabelas da base 3 (b3 #28)"
+      }
     }
   ]
 }
