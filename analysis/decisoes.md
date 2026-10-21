@@ -223,6 +223,13 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   primeira rodada na base 3 com um HEAD que contenha essas emendas. As três observações do laudo para a base 3: conferir o
   esperado da emenda 8 (135); a ordem das raízes no `nomes` da B; o `destino_decidido_em` pelo título da entrada (feito)
   → [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md), "Revalidação 7".
+- **21/10, o gráfico do custo da execução (com × sem erro) mostra valores reais, não razões** (decisão do Rafael, ao
+  tentar ler o gráfico para a apresentação): a versão de 15/10 normalizava as barras (sem erro = 1×), o que escondia os
+  números de que o "4,3×" e o "1,3×" saem e usava duas escalas diferentes; a leitura natural "1,3× = 30% a mais de passos"
+  estava errada — são medianas inteiras, 4 passos contra 3 (um passo a mais). Agora cada painel tem as duas barras em
+  unidades reais (tokens, 43.774 contra 10.074; passos inteiros, 4 contra 3), a razão escrita ao lado da barra, a média e o
+  n de cada grupo; a estatística da barra continua a mediana (a decisão de 15/10 se mantém) → `figuras_taxas.custo_execucao`,
+  teste `test_custo_execucao_em_valores_reais`; falta rodar na máquina da base 3 (`executar.py taxas`).
 - **21/10, o "`json` sem import" do RoteadorCivel é memória, não harness** (decisão do Rafael): na base 3, o import de
   `json` funciona no papel (218 de 241 erros corrigidos no passo seguinte importando; 129 imports rodaram; 0 "Import of
   json is not allowed"), inclusive com o prompt sem `json` na lista; o erro começa em mai/26, quando o `json` sai da lista,

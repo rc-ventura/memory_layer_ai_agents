@@ -187,26 +187,39 @@ def papel_volume(papel, destino):
 
 
 def custo_execucao(execs, custo_papel, destino):
-    """4 · A execução típica com erro × sem erro: k× os tokens e j× os passos (medianas normalizadas)."""
+    """4 · A execução típica com erro × sem erro, em valores reais: tokens e passos (medianas), a razão ao lado."""
     g = execs[execs.actionsteps.gt(0)].assign(com=lambda d: d.erros.gt(0))
-    med = g.groupby("com")[["tokens_total", "actionsteps"]].median()
+    grupos = g.groupby("com")[["tokens_total", "actionsteps"]]
+    med, media = grupos.median(), grupos.mean()
     n = g.com.value_counts()
     if not {True, False} <= set(med.index):
         raise ValueError("custo por execução: falta o grupo com ou sem erro")
     k = med.loc[True] / med.loc[False]
-    fig, axes = plt.subplots(1, 2, figsize=(12, 3.2))
-    for ax, col, rot, unid in [(axes[0], "tokens_total", "tokens por execução", "tokens"),
-                               (axes[1], "actionsteps", "passos por execução", "passos")]:
-        ax.barh(["sem erro", "com erro"], [1, k[col]], color=[BLUE, ORANGE])
+
+    def q(v):   # inteiro quando é inteiro (a mediana de passos costuma ser), senão uma casa
+        return _n(v) if abs(v - round(v)) < 1e-9 else _n(v, 1)
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 3.8))
+    paineis = [(axes[0], "tokens_total", "tokens por execução", lambda v: f"{_n(v)} tokens"),
+               (axes[1], "actionsteps", "passos por execução", lambda v: f"{q(v)} passos")]
+    for ax, col, rot, fmt in paineis:
+        vals = [med.loc[False, col], med.loc[True, col]]
+        ax.barh(["sem erro", "com erro"], vals, color=[BLUE, ORANGE])
         for i, grupo in enumerate([False, True]):
-            v = 1 if not grupo else k[col]
-            ax.text(v, i, f"  {_n(v, 1)}×", va="center", fontsize=10, color=INK2)
-        ax.set_xlim(0, max(k[col], 1) * 2.1)
-        ax.set_xlabel("× a execução típica sem erro")
+            razao = f"{_n(k[col], 1)}× a execução sem erro" if grupo else "execução típica sem erro"
+            ax.text(vals[i], i, f"  {fmt(vals[i])}\n  {razao} · n = {_n(n[grupo])}\n  média: {fmt(media.loc[grupo, col])}",
+                    va="center", fontsize=9, color=INK2, linespacing=1.45)
+        ax.set_xlim(0, max(vals) * 2.3)
         ax.set_title(rot, loc="left", fontsize=10)
+        if col == "tokens_total":
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _n(v / 1e3)))
+            ax.set_xlabel("tokens por execução (em milhares)")
+        else:
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True, nbins=6))
+            ax.set_xlabel("passos (ActionSteps) por execução")
         _limpar(ax)
-    fig.suptitle(f"A execução típica com erro usa {_n(k['tokens_total'], 1)}× os tokens e {_n(k['actionsteps'], 1)}× os "
-                 "passos da típica sem erro", x=0.01, ha="left", fontsize=11)
+    fig.suptitle(f"A execução típica com erro usa {_n(k['tokens_total'], 1)} vezes os tokens e {q(med.loc[True, 'actionsteps'])} "
+                 f"passos, contra {q(med.loc[False, 'actionsteps'])}, da típica sem erro", x=0.01, ha="left", fontsize=11)
     _salvar(fig, destino)
     cp = custo_papel.set_index("papel")
     ok = cp[(cp.n_com_erro >= MIN_N) & (cp.n_sem_erro >= MIN_N)]
@@ -219,16 +232,21 @@ def custo_execucao(execs, custo_papel, destino):
                   f"de tokens vai de {_n(r.iloc[0], 1)}× a {_n(r.iloc[-1], 1)}× (mediana ponderada pelas execuções com "
                   f"erro: {_n(pond, 1)}×); a diferença para os {_n(k['tokens_total'], 1)}× do sistema é a mistura de papéis "
                   "(a execução com erro é mais frequente nos papéis caros). Por papel, em `taxas_custo_por_papel.csv`.")
+    pc, ps = med.loc[True, "actionsteps"], med.loc[False, "actionsteps"]
     return ("Custo de uma execução com erro × sem erro",
             "Quanto mais tokens e mais passos usa uma execução que teve erro?",
-            "Duas barras por painel, normalizadas: a execução sem erro vale 1×. A estatística é a mediana — a execução do "
-            "meio: metade custa menos, metade custa mais (robusta à cauda longa: poucas execuções levam boa parte do "
-            f"gasto). Os valores: com erro, mediana de {_n(med.loc[True, 'tokens_total'])} tokens e "
-            f"{_n(med.loc[True, 'actionsteps'])} passos ({_n(n[True])} execuções); sem erro, {_n(med.loc[False, 'tokens_total'])} "
-            f"tokens e {_n(med.loc[False, 'actionsteps'])} passos ({_n(n[False])} execuções). Execução = execução + agente, "
-            "somando os papéis." + dentro,
+            "Duas barras por painel, nos valores reais (o tamanho da barra é o que a execução gasta; nada normalizado). "
+            "A barra é a mediana — a execução do meio de cada grupo: metade gasta menos, metade gasta mais (robusta à "
+            "cauda longa: poucas execuções levam boa parte do gasto); a média de cada grupo vem escrita abaixo. A razão "
+            "ao lado da barra laranja é a mediana com erro ÷ a mediana sem erro: "
+            f"{_n(k['tokens_total'], 1)}× em tokens ({_n(med.loc[True, 'tokens_total'])} ÷ "
+            f"{_n(med.loc[False, 'tokens_total'])}) e {_n(k['actionsteps'], 1)}× em passos ({q(pc)} ÷ {q(ps)}). Os passos "
+            f"são contados inteiros: a razão dos passos é a de dois números inteiros, e mede uma diferença de {q(pc - ps)} "
+            f"passo(s). n = execuções de cada grupo ({_n(n[True])} com erro, {_n(n[False])} sem). Execução = execução + "
+            "agente, somando os papéis." + dentro,
             "Não é causa: uma execução longa tem mais chance de errar e custa mais de qualquer jeito. Só os passos (o "
-            "planejamento não entra). \"Sem erro\" inclui as execuções só com suspeita. A média e o p90 estão no CSV.")
+            "planejamento não entra). \"Sem erro\" inclui as execuções só com suspeita. A média e o p90 por papel estão "
+            "no CSV.")
 
 
 def concentracao(execs, destino):

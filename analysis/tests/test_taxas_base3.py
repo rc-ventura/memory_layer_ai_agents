@@ -66,6 +66,26 @@ class TestTaxas(unittest.TestCase):
         self.assertIn("ActionSteps", md)
         self.assertIn("3 (11,1%)", md)   # 3 erros em 27 ActionSteps (3×5 + 4×3; a linha sem quantidade fica fora)
 
+    def test_custo_execucao_em_valores_reais(self):
+        """O gráfico do custo mostra a mediana em unidades reais (tokens e passos inteiros), com a razão ao lado."""
+        import execucao.figuras_taxas as ft
+        saida = taxas.gerar(self.rodada, self.cont, self.fonte)
+        md = (saida / "taxas.md").read_text(encoding="utf-8")
+        # com erro: 100 tokens e 5 passos (a mediana); sem erro: 60 tokens e 3 passos
+        self.assertIn("1,7× em tokens (100 ÷ 60) e 1,7× em passos (5 ÷ 3)", md)
+        self.assertIn("diferença de 2 passo(s)", md)
+        self.assertNotIn("× a execução típica sem erro", md)   # o eixo normalizado saiu
+        execs = pd.DataFrame({"tokens_total": [100.0, 100.0, 60.0, 60.0, 60.0], "actionsteps": [5.0, 5.0, 3.0, 3.0, 4.0],
+                              "erros": [1, 2, 0, 0, 0]})
+        cp = pd.DataFrame({"papel": ["Agent"], "n_com_erro": [2], "n_sem_erro": [3], "mediana_tokens_com_erro": [100.0],
+                           "mediana_tokens_sem_erro": [60.0]})
+        titulo, *_ = ft.custo_execucao(execs, cp, Path(self.tmp.name) / "custo.png")
+        self.assertIn("Custo", titulo)
+        self.assertTrue((Path(self.tmp.name) / "custo.png").stat().st_size > 0)
+        execs["erros"] = 0
+        with self.assertRaisesRegex(ValueError, "falta o grupo"):
+            ft.custo_execucao(execs, cp, Path(self.tmp.name) / "custo2.png")
+
     def test_erro_diferente_por_chave_trava(self):
         c = self.cont_df.copy()
         c.loc[0, "qtd_erros_estruturados"] = 2.0
