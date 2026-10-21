@@ -577,6 +577,27 @@ por `mineracao_unidades_n2_n10.ipynb` (falta) e `consolidacao_unidades.ipynb` (d
 copiados. O notebook da esteira, agora da pasta da base 2 (`IMG_5989`–`IMG_5990`): ContestacaoCivel 192 erros, 73% na
 verificação de existência (≈ 140, como em 20/10).
 
+**14 · O teste da hipótese do `json` na base 2 (21/10, foto `IMG_6012`; `contar_modulo_sem_import_base2.py`).** Execuções
+com "`json` sem import" sobre as execuções, pelo prompt da execução ter o `json` na lista ou não:
+
+| Papel | Na lista | Fora da lista |
+|---|---|---|
+| JoogleAnalytics | 3/10 (30%) · 3 erros | — |
+| OBFCivel | 0/40 | 0/23 |
+| RoteadorCivel | — | 3/582 (0,5%) · 3 erros |
+| ContestacaoCivel | 0/21 | 0/203 |
+| **total** | **3/192 (1,6%)** | **3/808 (0,4%)** |
+
+**Pelo critério fixado antes (item 12): a hipótese não vale na base 2** — o erro não é mais frequente onde o prompt não
+lista o `json` (0,4% fora contra 1,6% na lista). Na base 2 o erro é raro em qualquer caso (6 erros). O que fica como fato:
+as listas do prompt e do sandbox divergem (item 12); o que cai: que essa divergência induza o "`json` sem import". Limite: a
+base 2 tem poucos desses erros, e a base 3 (241 no RoteadorCivel) não tem o prompt.
+
+**15 · O catálogo registrado na máquina da base (21/10, fotos `IMG_5992`–`IMG_6011`).** `catalogar_memoria.py --registrar`:
+"registrado: 16 memória(s) no catálogo" — as 14 de antes trocadas pela rodada `99e032ad…` e as 2 novas (C.JoogleAnalytics,
+C.CalculoTrabalhista), todas no esquema 0.4, com `nomes` e `destino_decidido_em` pelo título da entrada. As fotos mostram as
+16 entradas inteiras; a transcrição para o `registros/memorias.json` do repositório é o próximo passo.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
