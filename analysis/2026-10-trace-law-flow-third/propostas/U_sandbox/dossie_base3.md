@@ -532,6 +532,51 @@ degrau 2). As D repetem o prompt; a recorrência falha na base 1, que é pequena
 - **encontro** com a auditoria: todas as medidas iguais; a observação 1 da revalidação 7 (variantes com espaço) se mede
   aqui, se o número da verificação não for 135.
 
+**11 · A rodada nova da base 3 e a mineração (21/10, fotos `IMG_5981`–`IMG_5987`).** Rodada **`99e032ad3a8528d8`**
+(código com os Ajustes 26 e 27; mesma fonte, extração v2). `executar.py analisar --perfil U_sandbox` (`IMG_5981`): 30.141
+erros, 749 pendentes (os mesmos da rodada anterior), 19 unidades (eram 18). `comparar_rodadas.py --antes aedb9b5db70d6c92`
+(`IMG_5982`–`IMG_5984`): código que mudou, os 3 arquivos do pipeline e o esquema; resumo do manifesto, 1 campo diferente
+(`unidades_observaveis` 18 → 19); genealogia com 30.141 erros em cada etapa e as 11 famílias com os mesmos erros; o
+sandbox **1.401 → 1.100** (301 saem: 167 do Ajuste 26 — a B.OBFCivel cai 211 → 44 — e, por diferença, **134** do Ajuste
+27, 1 abaixo dos 135 medidos no parquet cru; os pendentes não mudam, então o 1 não estava pendente — a confirmar na
+tabela de unidades); o veredito "não fecha" é o esperado (o script exige números iguais; aqui a mudança é a pedida).
+`minerar.py U_sandbox --rodada 99e032ad3a8528d8` (`IMG_5985`–`IMG_5987`): os 9 passos fecham — 1.100 erros, 982
+execuções, 10 meses, 16 papéis; cobertura 99,6%; 6 listas autorizadas; **77 medidas iguais** à auditoria; **17 memórias**
+no esquema 0.4; catálogo com 16 fechadas e 1 fora (F, em aberto); varredura limpa.
+
+| Parte | Erros | Esperado (item 10) |
+|---|---:|---|
+| B.OBFCivel | 44 | 44 ✓ |
+| B.RespostaBacen | 1 | — |
+| C (global: "import json, import re, import datetime") | 423 | — |
+| C.JoogleAnalytics, C.CalculoTrabalhista ("import pandas as pd") | 231, 2 | — |
+| D (10 papéis, as mesmas de antes) | 40 | — |
+| E | 317 | 317 ✓ |
+| F (em aberto) | 37 | entre 36 e 171 ✓ |
+
+O `json` ficou na **C global** porque está nas 6 listas autorizadas que a base 3 mostra, e essas listas vêm das
+**mensagens de erro do sandbox** — inclusive a do ContestacaoCivel e a do Consultivo e OBFCivel.
+
+**12 · O `json` no prompt da base 2 (21/10, foto `IMG_5991`; `contar_modulo_na_lista_base2.py`).** 66 versões em 18
+papéis. Sem `json` na lista do **prompt**: **RoteadorCivel, 2 de 2 versões (582 execuções, mai–ago/26)**;
+**ContestacaoCivel, 20 de 23 (203 execuções, jul–ago/26)**; OBFCivel, 1 de 4 (23 execuções, jul–ago/26); os outros 15
+papéis têm `json` em todas as versões. **Fato novo:** a lista do prompt e a do sandbox divergem no mesmo papel e período —
+o ContestacaoCivel e o OBFCivel têm `json` na lista da mensagem de erro da base 3 e não têm na maior parte das versões
+do prompt da base 2. **Hipótese** (não medida): onde o prompt não lista o `json`, o agente não o importa e o usa assim
+mesmo — o "`json` sem import" do RoteadorCivel (o papel com mais desses erros na base 3) seria induzido pelo prompt. O
+teste, na base 2: os erros de `json` sem import por versão do prompt, com e sem `json` na lista —
+`contar_modulo_sem_import_base2.py` (21/10): por papel, as execuções com o erro sobre as execuções, separadas pelo prompt
+da execução ter o `json` na lista ou não. **Critério, fixado antes de rodar:** a hipótese vale se a taxa de execuções com o
+erro "fora da lista" é bem maior que "na lista" no mesmo papel (RoteadorCivel não tem versão "na lista" na base 2: ali a
+comparação é com os outros papéis); se as taxas são parecidas, não vale. Base 1: 3 erros de `json` sem import, todos em
+execuções com `json` na lista (3/812 contra 0/738 fora dela) — pequena demais para decidir.
+
+**13 · A base 2 (21/10, fotos `IMG_5988`–`IMG_5990`).** `conferir_versao.py` (`IMG_5988`): o `base_pipeline.py` da base 2
+**confere** com o manifesto do kit 0.10.2 (`ff1d73224be04c43`: os Ajustes 21, 23, 26 e 27 replicados); ainda **PARAR**
+por `mineracao_unidades_n2_n10.ipynb` (falta) e `consolidacao_unidades.ipynb` (difere) — os dois notebooks não foram
+copiados. O notebook da esteira, agora da pasta da base 2 (`IMG_5989`–`IMG_5990`): ContestacaoCivel 192 erros, 73% na
+verificação de existência (≈ 140, como em 20/10).
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
