@@ -223,6 +223,19 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   primeira rodada na base 3 com um HEAD que contenha essas emendas. As três observações do laudo para a base 3: conferir o
   esperado da emenda 8 (135); a ordem das raízes no `nomes` da B; o `destino_decidido_em` pelo título da entrada (feito)
   → [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md), "Revalidação 7".
+- **21/10, o "`json` sem import" do RoteadorCivel é memória, não harness** (decisão do Rafael): na base 3, o import de
+  `json` funciona no papel (218 de 241 erros corrigidos no passo seguinte importando; 129 imports rodaram; 0 "Import of
+  json is not allowed"), inclusive com o prompt sem `json` na lista; o erro começa em mai/26, quando o `json` sai da lista,
+  mas com volume pequeno antes e queda em ago/26 ainda sem ele — a lista não explica o erro. A C global fica como está. A
+  divergência entre a lista do prompt e a do interpretador fica como fato a avisar à plataforma → dossiê do sandbox §2h,
+  16–17.
+- **21/10, o degrau 2 confere o ambiente pelo que o interpretador aceita, não pela lista do prompt** (achado, a confirmar
+  na base 2): na mesma execução, o prompt não lista o `json` e o `import json` roda (base 1: 11 de 11 passos, em 3 papéis);
+  o prompt anuncia um ambiente que não é o real, e o agente segue o real. A checagem de ambiente do `conferir_memorias.py`
+  passa a ler a lista do interpretador (mensagem "Authorized imports are: [...]") onde ela existe; a do prompt fica para a
+  checagem de conflito. No smolagents, o `CodeAgent` aceita um interpretador pronto (`executor=`), e só o criado por ele
+  recebe a lista do agente (`agents.py`, l. 1515 e 1585, v1.26.0) — o mecanismo da plataforma é hipótese → dossiê do
+  sandbox §2h, 18–19; aviso à plataforma, [transversal](roadmap-transversal.md) #7.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste

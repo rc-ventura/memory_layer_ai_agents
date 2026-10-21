@@ -55,5 +55,25 @@ class TestModuloSemImport(unittest.TestCase):
         self.assertEqual(list(T)[-1], "(total)")
 
 
+_spec3 = spec_from_file_location("contar_import_vs_lista_base2",
+                                 RAIZ / "analysis/2026-09-trace-law-flow-second/scripts/contar_import_vs_lista_base2.py")
+mi = module_from_spec(_spec3)
+_spec3.loader.exec_module(mi)
+
+
+class TestImportVsLista(unittest.TestCase):
+    def test_medir(self):
+        import pandas as pd
+        bar = "x due to: InterpreterError: Import of json is not allowed. Authorized imports are: ['re']"
+        S = pd.DataFrame([  # (exec, papel, idx, prompt, código, erro)
+            ("e1", "A", 0, frase("re"), "import json\nx = 1", ""),
+            ("e2", "A", 0, frase("re"), "import json", bar),
+            ("e3", "A", 0, frase("json", "re"), "import json", ""),
+        ], columns=["exec_id", "role", "idx", "sysprompt", "code", "err_msg"]).assign(agente=1)
+        T = {(r["papel"], r["na_lista"]): r for r in mi.medir(S, "json")}
+        self.assertEqual((T[("A", False)]["rodou"], T[("A", False)]["barrado"]), (1, 1))
+        self.assertEqual(T[("A", True)]["rodou"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()

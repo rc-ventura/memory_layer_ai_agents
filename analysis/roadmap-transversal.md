@@ -48,7 +48,10 @@ o que vai à plataforma. O que é de uma base fica no roadmap dela:
   que executa narração (M6); a ferramenta que devolve falha como texto, e o `'DEFAULT'` da calculadora nas duas bases; o
   passe dict → string JSON entre `puxa_doc_decisao` e `busca_obf`; o prompt que pede um campo com outro nome (Ajuste 13,
   nas duas bases); a troca de modelo sem revalidar (o surto do `b2 #3` e o do RoteadorCivel); credenciais, APIs e bugs
-  dentro das ferramentas; o relatório pronto seguido só de `print`.
+  dentro das ferramentas; o relatório pronto seguido só de `print`; **a lista de imports autorizados do prompt diferente da
+  do interpretador** (21/10: na mesma execução o prompt não lista o `json` e o `import json` roda — RoteadorCivel,
+  ContestacaoCivel, OBFCivel, base 1; o prompt anuncia o ambiente errado; base 3, dossiê do sandbox §2h, 16–19); **o
+  prompt que cita uma ferramenta que não declara** (`get_document_text`, OBFCivel, Ajuste 26).
 
 **Fila ativa:**
 

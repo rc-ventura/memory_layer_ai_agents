@@ -598,6 +598,85 @@ base 2 tem poucos desses erros, e a base 3 (241 no RoteadorCivel) não tem o pro
 C.CalculoTrabalhista), todas no esquema 0.4, com `nomes` e `destino_decidido_em` pelo título da entrada. As fotos mostram as
 16 entradas inteiras; a transcrição para o `registros/memorias.json` do repositório é o próximo passo.
 
+**16 · O `json` no RoteadorCivel: o teste na base 3 (21/10, foto `IMG_6013`; `contar_modulo_sem_import_papel.py`).**
+Pista anterior (base 1, prompt `243b65b1a1`): as ferramentas do papel devolvem "JSON formatado como string" — o agente
+precisa de `json.loads` — e a lista de imports autorizados dessa versão (mai–ago/26) não tem o `json`. Na mesma foto, o
+`conferir_versao` da base 2 dá **IGUAL ao manifesto** (os dois notebooks copiados).
+
+| Mês | Execuções do papel com algum erro | Com "`json` sem import" | Taxa |
+|---|---:|---:|---:|
+| jan/26 | 18 | 0 | 0% |
+| fev/26 | 3 | 0 | 0% |
+| mar/26 | 4 | 0 | 0% |
+| mai/26 | 75 | 3 | 4% |
+| jun/26 | 730 | 71 | 10% |
+| jul/26 | 1.717 | 132 | 8% |
+| ago/26 | 4.126 | 35 | 0,8% |
+
+O sandbox deixa importar `json` no papel: depois do erro, o passo seguinte importa e roda sem erro em **218** de 241 (2
+importam e dão outro erro; 21 não importam); em **129** passos com outro erro o `import json` rodou antes da linha que
+falhou — 20 em jun, 78 em jul, 4 em ago, já com a versão do prompt sem `json` na lista; **0** "Import of json is not
+allowed" no papel e na base inteira.
+
+**A leitura:** (1) a memória "importe `json`" é **segura** no RoteadorCivel — o import funciona; (2) o agente **importa** o
+`json` mesmo com o prompt sem ele na lista (129 passos, a maioria em jun–jul): a lista não o impede, o que enfraquece a
+leitura de harness (o prompt induzindo o erro); (3) o erro começa em mai/26, quando o `json` sai da lista, mas antes há só
+25 execuções com erro (a 8%, o esperado seria ≈ 2) — a coincidência é fraca; e em ago/26, ainda sem `json` na lista, a
+taxa cai para 0,8% — a lista sozinha não explica. (4) Em 9 de cada 10 erros o agente se corrige no passo seguinte
+importando: o custo do erro é um passo a mais. **Conclusão:** o erro é do agente (esquece o `import` num passo e corrige no
+seguinte) — **memória**, a C global como está. A divergência entre a lista do prompt e o sandbox segue como fato, uma
+inconsistência do prompt a avisar à plataforma, não a causa dos 241. **Decisão do Rafael (21/10): memória** — a C global
+como está, inclusive no RoteadorCivel.
+
+**17 · De onde vem a lista (21/10; smolagents 1.26.0 e o prompt da base 1).** No smolagents, o `CodeAgent` monta
+`authorized_imports` = a lista-base do framework (`BASE_BUILTIN_MODULES`: collections, datetime, itertools, math, queue,
+random, re, stat, statistics, time, unicodedata — **sem `json`**) + o que o desenvolvedor passa em
+`additional_authorized_imports`; a **mesma** lista vai para o texto do prompt e para o interpretador (testado: sem `json`
+na lista, `import json` é barrado; com, passa). No prompt da base 1, as versões sem `json` do RoteadorCivel (`243b65b1a1`),
+do ContestacaoCivel (jul/26) e do OBFCivel (`1adb37a681`, ago/26) têm **exatamente a lista-base**; as com `json` têm a
+lista-base + `json`. Ou seja: ter ou não `json` é configuração do desenvolvedor de cada agente. **O que não se explica
+ainda:** na base 3 o interpretador do RoteadorCivel deixa importar `json` (item 16), e o prompt do mesmo papel e período,
+nas bases 1 e 2, mostra a lista sem ele — no smolagents padrão as duas viriam da mesma configuração. Hipóteses (não
+medidas): a plataforma monta o prompt e o interpretador por caminhos diferentes; ou a configuração da base 3 não é a das
+bases 1 e 2 no mesmo período. Pista disponível: a versão do agente (`cod_vers_aget`) está no parquet da base 3 e no trace
+das bases 1 e 2. Quando saiu o `json` da lista do RoteadorCivel: entre a versão de dez/25 (com) e a de mai/26 (sem) — não há
+prompt do papel de jan a abr/26 nas bases 1 e 2 para datar.
+
+**18 · Na mesma execução, o prompt não lista o `json` e o import roda (21/10; base 1,
+`contar_import_vs_lista_base2.py`).** Nas 738 execuções da base 1 cujo prompt não lista o `json`, há 11 passos com `import
+json` — RoteadorCivel 5 (mai–jun/26), ContestacaoCivel 4, OBFCivel 2 — e **os 11 rodam**; 0 "Import of json is not
+allowed" na base. Logo, a divergência acontece **dentro da mesma execução**: a hipótese (a) do item 17 (prompt e
+interpretador montados por caminhos diferentes) se sustenta na base 1; a (b) (configuração diferente da base 3) não é
+necessária. **Como isso é possível no smolagents** (código 1.26.0, `agents.py`): o `CodeAgent` aceita um interpretador
+pronto (`executor=`, "Custom Python code executor") — `self.python_executor = executor or self.create_python_executor()`
+—, e só o interpretador criado pelo próprio agente recebe a lista dele; o prompt é montado a partir de
+`authorized_imports` do agente (e os `prompt_templates` podem ser trocados). Um interpretador passado de fora com `json`
+autorizado, ou trocado depois, dá exatamente o que se vê. Hipótese do mecanismo (não confirmada sem o código da
+plataforma); a documentação pública confirma o bloqueio por padrão e o `additional_authorized_imports`
+([secure code execution](https://huggingface.co/docs/smolagents/main/tutorials/secure_code_execution.md)). A base 2 confirma
+com mais casos (o mesmo comando).
+
+**19 · O insight (21/10): o prompt anuncia um ambiente que não é o real, e o agente segue o real.** A lista de imports
+autorizados que o agente lê no prompt não é a regra que o interpretador aplica (item 18), e o agente importa o `json` assim
+mesmo, com sucesso (item 16) — o "`json` sem import" é esquecimento, não obediência ao prompt. Consequências:
+(1) **no degrau 2**, a checagem de ambiente usa o que o interpretador aceita (a lista da mensagem de erro, "Authorized
+imports are: [...]", e os imports que rodam), não a lista do prompt — com a do prompt, a memória do `json` no RoteadorCivel
+seria reprovada estando certa; (2) **para a plataforma**, a inconsistência entra no aviso (`transversal #7`); (3) **para o
+método**, o texto do prompt não é descrição confiável do ambiente: toda checagem que o usa como tal (ferramentas
+declaradas, listas, formatos de retorno) confere contra o comportamento observado — o `get_document_text` (Ajuste 26) é o
+caso inverso, o prompt citando o que o ambiente não declara.
+
+**As linhas da documentação** (smolagents 1.26.0, `smolagents/agents.py`, docstring e construtor do `CodeAgent`):
+- l. 1513: "additional_authorized_imports (`list[str]`, *optional*): Additional authorized imports for the agent."
+- l. 1515: "executor ([`PythonExecutor`], *optional*): Custom Python code executor. If not provided, a default executor will
+  be created based on `executor_type`."
+- l. 1585: `self.python_executor = executor or self.create_python_executor()` — só o interpretador criado pelo agente
+  (`create_python_executor`, l. 1598–1606: `LocalPythonExecutor(self.additional_authorized_imports, …)`) recebe a lista do
+  agente; o prompt é montado de `self.authorized_imports` (= `BASE_BUILTIN_MODULES` ∪ `additional_authorized_imports`).
+- Documentação pública: imports fora da lista são barrados ("Import of … is not allowed") salvo os acrescentados em
+  `additional_authorized_imports` ([secure code execution](https://huggingface.co/docs/smolagents/main/tutorials/secure_code_execution.md)).
+O mecanismo da plataforma (um interpretador passado de fora, ou o prompt trocado) é hipótese até o código dela.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
