@@ -13,6 +13,7 @@ Uso, da raiz:
 """
 
 import argparse
+import os
 from pathlib import Path
 
 from pptx import Presentation
@@ -20,6 +21,16 @@ from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.util import Emu
 
 TOL = 0.03   # polegadas: abaixo disso, posição e tamanho contam como iguais
+
+def caminho_io(path):
+    """I/O no Windows com caminho longo (> 260 caracteres, comum no OneDrive da máquina da base); o mesmo de
+    pipeline/mineracao_observada.py. Fora do Windows, só o caminho absoluto."""
+    path = Path(os.path.abspath(path))
+    text = str(path)
+    if os.name == "nt" and not text.startswith("\\\\?\\"):
+        text = "\\\\?\\UNC\\" + text[2:] if text.startswith("\\\\") else "\\\\?\\" + text
+    return Path(text)
+
 
 
 def _cor(fmt):
@@ -153,7 +164,7 @@ def main(argv=None):
     p.add_argument("--gerado", type=Path, required=True, help="o .pptx que o gerar_apresentacao.py escreveu")
     p.add_argument("--editado", type=Path, required=True, help="a cópia editada à mão")
     args = p.parse_args(argv)
-    g, e = Presentation(args.gerado), Presentation(args.editado)
+    g, e = Presentation(caminho_io(args.gerado)), Presentation(caminho_io(args.editado))
     gs, es = list(g.slides), list(e.slides)
     saida = [f"gerado: {args.gerado.name} ({len(gs)} slides) · editado: {args.editado.name} ({len(es)} slides)"]
     if (g.slide_width, g.slide_height) != (e.slide_width, e.slide_height):
@@ -171,7 +182,7 @@ def main(argv=None):
     texto = "\n".join(saida)
     print(texto)
     destino = args.editado.with_suffix(".mudancas.txt")
-    destino.write_text(texto + "\n", encoding="utf-8")
+    caminho_io(destino).write_text(texto + "\n", encoding="utf-8")
     print(f"\n(gravado em {destino})")
     return 0
 

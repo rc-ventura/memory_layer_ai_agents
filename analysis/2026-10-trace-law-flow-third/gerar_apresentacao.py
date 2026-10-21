@@ -20,6 +20,7 @@ Uso, da raiz:
 
 import argparse
 import json
+import os
 import re
 from pathlib import Path
 
@@ -36,6 +37,16 @@ ROOT = HERE.parents[1]
 RESULTADOS = HERE / "pipeline" / "resultados"
 ASSETS_BASE1 = ROOT / "analysis/2026-09-trace-law-flow/assets"
 ERROS_V2, PASSOS_V2 = 30_141, 283_925   # totais da fonte v2 (02-relatorio-achados.md §1) que o texto do deck usa
+
+def caminho_io(path):
+    """I/O no Windows com caminho longo (> 260 caracteres, comum no OneDrive da máquina da base); o mesmo de
+    pipeline/mineracao_observada.py. Fora do Windows, só o caminho absoluto."""
+    path = Path(os.path.abspath(path))
+    text = str(path)
+    if os.name == "nt" and not text.startswith("\\\\?\\"):
+        text = "\\\\?\\UNC\\" + text[2:] if text.startswith("\\\\") else "\\\\?\\" + text
+    return Path(text)
+
 
 NAVY = RGBColor(23, 38, 57)
 INK = RGBColor(28, 45, 62)
@@ -863,7 +874,7 @@ def montar(rodada, extra, saida):
     figs = pasta / "figuras"
     figs.mkdir(parents=True, exist_ok=True)
     BUSCA[:] = [p for p in [extra, figs] if p] + (
-        [rodada / "relatorio", rodada / "painel", rodada / "taxas", rodada] if rodada else []) + [ASSETS_BASE1]
+        [rodada / "relatorio", rodada / "painel", rodada / "taxas", rodada] if rodada else []) + [caminho_io(ASSETS_BASE1)]
     if rodada:
         m = json.loads((rodada / "manifesto.json").read_text(encoding="utf-8"))
         CARIMBO = f"rodada {m.get('rodada_id', rodada.name)[:16]} · {str(m.get('gerado_em', ''))[:10]}"
@@ -910,12 +921,14 @@ def main(argv=None):
     p.add_argument("--saida", type=Path, help="o .pptx (padrão: <rodada>/apresentacao/apresentacao-stakeholders.pptx)")
     args = p.parse_args(argv)
     rodada = args.rodada or rodada_padrao()
+    rodada = caminho_io(rodada) if rodada is not None else None
     if rodada is not None and not (rodada / "manifesto.json").is_file():
         raise SystemExit(f"{rodada}: sem manifesto.json — não é uma pasta de rodada.")
     saida = args.saida or ((rodada / "apresentacao") if rodada else (HERE / "apresentacao")) / \
         "apresentacao-stakeholders.pptx"
+    saida = caminho_io(saida)
     saida.parent.mkdir(parents=True, exist_ok=True)
-    total, faltam = montar(rodada, args.figuras, saida)
+    total, faltam = montar(rodada, caminho_io(args.figuras) if args.figuras else None, saida)
     print(f"Apresentação: {saida} ({total} slides)")
     print(f"Figuras: {len(FIGURAS) - len(faltam)} inseridas, {len(faltam)} faltando — lista em {saida.parent / 'figuras.md'}")
     for nome in sorted({f[1] for f in faltam}):
