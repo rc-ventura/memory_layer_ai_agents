@@ -15,6 +15,12 @@
 > recortes de trace (slide 2, anexos F, G, H) e os overviews das bases 2 e 3 (anexo B) entram por `--figuras`, já
 > anonimizados e varridos.
 >
+> **Editar à mão na máquina da base:** edite uma **cópia** do .pptx (rodar o gerador de novo sobrescreve o original) e
+> rode `uv run python analysis/2026-10-trace-law-flow-third/comparar_apresentacao.py --gerado <gerado.pptx> --editado
+> <cópia.pptx>`: a saída lista só o que mudou, com os valores exatos (posição, cor em hex, fonte, texto) — fotografe a
+> saída, e a edição volta para o `gerar_apresentacao.py` e para este esqueleto. Mudança de tema do PowerPoint não
+> alcança o deck (fonte e cor fixas em cada forma): mude direto na forma.
+>
 > **Regra do deck:** nenhum número aparece como economia comprovada; candidata ≠ memória validada; cada figura declara
 > de qual base veio e em que data.
 
