@@ -16,6 +16,8 @@ falta, os avisos) e as figuras desenhadas aqui. Sem rodada (fora da máquina da 
 
 Uso, da raiz:
     uv run python analysis/2026-10-trace-law-flow-third/gerar_apresentacao.py [--rodada <pasta>] [--figuras <pasta>] [--saida <arquivo.pptx>]
+
+--rodada aceita o caminho da pasta, só o nome dela (observada_<id>) ou só o id da rodada (99e032ad3a8528d8…).
 """
 
 import argparse
@@ -921,6 +923,10 @@ def main(argv=None):
     p.add_argument("--saida", type=Path, help="o .pptx (padrão: <rodada>/apresentacao/apresentacao-stakeholders.pptx)")
     args = p.parse_args(argv)
     rodada = args.rodada or rodada_padrao()
+    if rodada is not None and not rodada.exists():
+        # aceita só o nome da pasta (observada_<id>) ou só o id da rodada, procurados em pipeline/resultados/
+        nome = rodada.name if rodada.name.startswith("observada_") else "observada_" + rodada.name[:16]
+        rodada = RESULTADOS / nome
     rodada = caminho_io(rodada) if rodada is not None else None
     if rodada is not None and not (rodada / "manifesto.json").is_file():
         raise SystemExit(f"{rodada}: sem manifesto.json — não é uma pasta de rodada.")
