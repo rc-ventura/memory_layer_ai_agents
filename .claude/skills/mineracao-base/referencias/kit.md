@@ -81,6 +81,7 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   scripts/comparar_auditoria.py   o encontro: a parte genérica × a auditoria independente (audit_recompute6)
   scripts/catalogar_memoria.py    o catálogo das memórias fechadas (analysis/registros/memorias.json): monta a entrada, registra, confere
   scripts/conferir_memorias.py    o degrau 2 da validação: as cinco checagens de cada memória do catálogo contra o prompt de cada papel
+                                  e, com --ambiente/--funcoes, contra o que o interpretador aceita; --decidir registra a decisão do pesquisador
   scripts/valor_da_licao.py       o painel das lições: frequência (Pareto · presença no tempo), confiança (lida do confianca.json), situação e decisão
   scripts/registrar_decisao.py    registra a decisão do pesquisador num gate (a lista da leitura aberta; a situação do painel)
   referencias/fluxo.md            os diagramas da rodada e do ciclo de vida da parte específica

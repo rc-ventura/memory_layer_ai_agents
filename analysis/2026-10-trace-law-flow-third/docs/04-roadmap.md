@@ -266,13 +266,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (4) decisões do Rafael: as 6 que falham na recorrência (#48) — 5 delas são D e já têm destino (o destino da verificação
   com valor padrão: harness, 20/10; as D: monitoradas como *memória de reforço*, não injetadas, 20/10 — no nível da memória:
   o tipo e o alarme no catálogo, conferidos pelo `catalogar_memoria.py` a cada nova mineração (os dois níveis do
-  monitoramento: `16`, "O monitoramento", 20/10); o experimento de reforço é o EX-8 do blueprint das POCs); (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49.
-- [ ] **#55** **O degrau 2 e as funções embutidas (aberto em 20/10).** O `conferir_memorias.py` (kit) dá "não verificável"
-  na checagem de ambiente a uma memória que só manda usar funções embutidas (`print`, `type`, `str`), porque o sandbox
-  proíbe algumas embutidas (`repr`). A memória E do sandbox caiu nisso no ensaio de 20/10 (dossiê §2h, 9). Saída: o
-  script lê uma lista de embutidas **testadas no interpretador** (`pipeline/validacao/testar_sandbox_try_nameerror.py` e o
-  teste da depuração de 20/10: `print(type(x))` e `print(str(x)[:n])` funcionam; `repr` e `__name__` não) — a lista
-  fora do kit (é da base), passada por argumento ou pelo `monitoramento.json`; mudança no kit, com teste e `VERSAO` nova.
+  monitoramento: `16`, "O monitoramento", 20/10); o experimento de reforço é o EX-8 do blueprint das POCs); (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49. **21/10:** o plano do fechamento e as 8 decisões do Rafael (`decisoes.md`); o degrau 2 confere o ambiente pelo
+  interpretador (Ajuste 28, que fecha o #55); medido na base 1 (dossiê §2h, 22) — falta: rodar na base 2 e com o
+  ambiente da base 3, as decisões que o item 22 abriu (a C no managerAgent, a B.OBFCivel), a checagem "uma causa só"
+  de cada memória injetada, `--registrar`, o degrau 3 das 4 injetadas (C, E, C.JoogleAnalytics, B.OBFCivel) e a parte F.
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos
@@ -353,6 +350,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
+- [x] **#55** **O degrau 2 e as funções embutidas** — fechado em 21/10 (Ajuste 28). O `conferir_memorias.py` lê, em
+    `--funcoes`, as funções embutidas testadas uma a uma no interpretador (`pipeline/validacao/testar_sandbox_funcoes.py`
+    → `analysis/registros/funcoes_sandbox.json`; smolagents 1.26.0: 111 funcionam, 40 barradas); a memória E passa na
+    checagem do ambiente com o prompt da base 1 → dossiê do sandbox §2h, 22; [`decisoes.md`](../../decisoes.md) (21/10).
 - [x] **#48** **As memórias pequenas do sandbox: a régua de memória rara** — fechado em 20/10. Das 6 que falham na
     recorrência, as 5 de "import fora da lista" ficam monitoradas como *memória de reforço* (repetem o prompt) e a
     `U_sandbox.B.RespostaBacen` (1 erro) como *memória rara*; nenhuma é injetada; as duas no nível da memória (o

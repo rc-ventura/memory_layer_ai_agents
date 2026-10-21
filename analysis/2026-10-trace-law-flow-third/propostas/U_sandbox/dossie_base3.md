@@ -677,6 +677,73 @@ caso inverso, o prompt citando o que o ambiente não declara.
   `additional_authorized_imports` ([secure code execution](https://huggingface.co/docs/smolagents/main/tutorials/secure_code_execution.md)).
 O mecanismo da plataforma (um interpretador passado de fora, ou o prompt trocado) é hipótese até o código dela.
 
+**20 · A base 2 confirma (21/10, foto `IMG_6014`; `contar_import_vs_lista_base2.py`).** Nas **808** execuções cujo prompt
+não lista o `json`, **520** passos têm `import json`, e **os 520 rodam** — 0 barrados:
+
+| Papel | `json` na lista do prompt | Execuções | Passos com `import json` | Rodou | Barrado |
+|---|---|---:|---:|---:|---:|
+| ContestacaoCivel | não | 203 | 435 | 435 | 0 |
+| RoteadorCivel | não | 582 | 63 | 63 | 0 |
+| OBFCivel | não | 23 | 22 | 22 | 0 |
+| (os 10 grupos com `json` na lista) | sim | 159 | 133 | 133 | 0 |
+
+Com a base 1 (11 de 11), são **531 de 531** imports de `json` que rodam com o prompt dizendo que o `json` não está na
+lista, em 3 papéis e duas bases. **A divergência entre a lista do prompt e a do interpretador é geral nesses papéis, não
+um acaso** — o item 19 vale, e a regra do degrau 2 (o ambiente pela lista do interpretador) fica confirmada.
+
+**21 · O mecanismo do item 18 reproduzido no smolagents (21/10; `pipeline/validacao/testar_sandbox_executor_proprio.py`,
+smolagents 1.26.0).** Um `CodeAgent` com um modelo falso que sempre responde `import json` (nenhuma chamada a LLM, nenhum
+dado de caso), em três montagens:
+
+| Montagem | `json` na lista do prompt | `json` no interpretador | `import json` |
+|---|---|---|---|
+| A · padrão (sem `executor=`) | não | não | barrado ("Import of json is not allowed") |
+| **B · `executor=` com `json`, agente sem** | **não** | **sim** | **roda** |
+| C · o inverso | sim | não | barrado, com o prompt dizendo que pode |
+
+A montagem B dá exatamente o que as bases 1 e 2 mostram (item 20: 531 de 531). O motivo, no código (`agents.py`): o
+prompt é montado de `self.authorized_imports` (l. 1544, 1620–1630) e o interpretador passado em `executor=` é usado como
+está (l. 1585) — o agente não confere se as duas listas batem. **O que isso prova:** que a divergência é possível no
+framework, por configuração. **O que não prova:** que a plataforma a faz assim — um prompt próprio (`prompt_templates` ou
+`instructions`) com a lista escrita à mão deixa a mesma marca no trace; só o código da plataforma (a montagem do agente:
+passa `executor=`? com que lista?) separa as duas. Vai para o aviso à plataforma (`transversal #7`) como pergunta.
+
+**22 · O degrau 2 das 16 memórias da rodada `99e032ad`, antes e depois do Ajuste 28 (21/10; prompt da base 1).** As
+decisões 1 a 8 do fechamento (21/10, `decisoes.md`) mudam o script do degrau 2 (Ajuste 28). Primeiro a medida com o
+script como estava (a etapa 0), depois com o ambiente do interpretador e as funções testadas. Comandos (saídas fora do
+repositório):
+
+```
+uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace analysis/2026-09-trace-law-flow/data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz --saida <fora>/prompts_base1.jsonl
+uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_ambiente_base2.py --trace analysis/2026-09-trace-law-flow/data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz --saida <fora>/ambiente_base1.json
+uv run python .claude/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora>/prompts_base1.jsonl --base base3                                     # etapa 0
+uv run python .claude/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora>/prompts_base1.jsonl --base base3 --ambiente <fora>/ambiente_base1.json --funcoes analysis/registros/funcoes_sandbox.json
+```
+
+| Memória | Ambiente (antes → depois) | Conflito | Repete | Recorrência | Uma causa |
+|---|---|---|---|---|---|
+| C (global) | falha → **falha só no managerAgent** | passa | passa | passa | não verificável |
+| E (global) | não verificável → **passa** | passa | parcial → **decidido** (decisão 5) | passa | não verificável |
+| C.JoogleAnalytics | passa | passa | passa | passa | não verificável |
+| B.OBFCivel | passa | **falha** | **falha** | passa | não verificável |
+| B.RespostaBacen, C.CalculoTrabalhista | passa | passa | falha / passa | **falha** (raras) | não verificável |
+| as 10 D | passa (2 sem prompt na base 1) | passa | **falha** (repetem a lista) | 5 passam, 5 falham | não verificável |
+
+Sem `--ambiente` e `--funcoes`, a saída nova é **idêntica** à da etapa 0 (o JSON das 16 conferido igual). O ambiente da
+base 1 (`extrair_ambiente_base2.py`): só 2 papéis têm a lista na mensagem de erro (ConversationAgent e managerAgent); os
+imports que rodaram aparecem em 13 papéis (o `json` em 12).
+
+**O que é novo:**
+- **A C global e o managerAgent.** No managerAgent, a lista da mensagem do interpretador (abr/26, 1 lista) **não tem
+  `json`**, e nenhum `import json` rodou no papel (os imports que rodaram: `datetime`, `pandas`, `re`). Ali a memória
+  "importe `json`" mandaria um import que o interpretador barra. Fato da base 1; se o managerAgent aparece na base 3 e
+  com que lista, a base 3 responde (o ambiente pela tabela da mineração). **Decisão a trazer.**
+- **B.OBFCivel, conflito:** o script acha `tools` "citado" no prompt das 4 versões. O trecho é prosa: "mandatory fallback
+  tools (actions to take if…)" — a regra de citação aceita espaço entre o nome e o parêntese (`citado()`, o padrão
+  `nome\s*\(`), e "tools (actions" passa por chamada. É falso positivo da regra; corrigir é mudança no kit, a propor.
+- **B.OBFCivel, repete:** os 7 nomes que a memória manda não importar (`python_interpreter`, `tools`, `smolagents`…)
+  já ficam fora da lista do prompt — o mesmo motivo que pôs as D como memória de reforço. **Decisão a trazer.**
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

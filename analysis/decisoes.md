@@ -229,13 +229,27 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   mas com volume pequeno antes e queda em ago/26 ainda sem ele — a lista não explica o erro. A C global fica como está. A
   divergência entre a lista do prompt e a do interpretador fica como fato a avisar à plataforma → dossiê do sandbox §2h,
   16–17.
-- **21/10, o degrau 2 confere o ambiente pelo que o interpretador aceita, não pela lista do prompt** (achado, a confirmar
-  na base 2): na mesma execução, o prompt não lista o `json` e o `import json` roda (base 1: 11 de 11 passos, em 3 papéis);
+- **21/10, o degrau 2 confere o ambiente pelo que o interpretador aceita, não pela lista do prompt** (confirmado na base 2,
+  foto `IMG_6014`: 520 de 520 imports de `json` rodam em 808 execuções cujo prompt não o lista; com a base 1, 531 de 531):
+  na mesma execução, o prompt não lista o `json` e o `import json` roda (base 1: 11 de 11 passos, em 3 papéis);
   o prompt anuncia um ambiente que não é o real, e o agente segue o real. A checagem de ambiente do `conferir_memorias.py`
   passa a ler a lista do interpretador (mensagem "Authorized imports are: [...]") onde ela existe; a do prompt fica para a
   checagem de conflito. No smolagents, o `CodeAgent` aceita um interpretador pronto (`executor=`), e só o criado por ele
-  recebe a lista do agente (`agents.py`, l. 1515 e 1585, v1.26.0) — o mecanismo da plataforma é hipótese → dossiê do
-  sandbox §2h, 18–19; aviso à plataforma, [transversal](roadmap-transversal.md) #7.
+  recebe a lista do agente (`agents.py`, l. 1515 e 1585, v1.26.0; reproduzido com um modelo falso,
+  `testar_sandbox_executor_proprio.py`) — o mecanismo da plataforma é hipótese → dossiê do sandbox §2h, 18–21; feito no
+  Ajuste 28 (as decisões 1–3 abaixo); aviso à plataforma, [transversal](roadmap-transversal.md) #7.
+- **21/10, as 8 decisões do fechamento do sandbox** (decisões do Rafael, uma por vez; plano do fechamento): (1) o que o
+  agente pode importar vem da **mensagem de erro do interpretador e dos imports que rodaram sem erro**; sem nenhum dos dois,
+  do prompt, com aviso; (2) com mais de uma lista no papel, o módulo tem de estar **em todas** (a reprovação mostra a
+  versão e os meses); (3) as funções do Python que uma memória manda usar se conferem por uma **lista testada no
+  interpretador**, na mesma mudança (fecha o `b3 #55`); (4) a checagem "uma causa só" sem a classificação de uso é
+  **decidida pelo pesquisador, memória por memória, com motivo** ("decidido pelo pesquisador", nunca "passa"; a
+  classificação automática vira item do kit); (5) a E fica **liberada da regra da repetição**: o prompt cita `print`, mas
+  não avisa sobre `repr`/`dir`/`exec` — alarme falso (registrada em `registros/decisoes_degrau2.json`); (6) a
+  **C.CalculoTrabalhista é memória rara** (2 erros, 1 mês): guardada, monitorada, não injetada; (7) a **parte F fica para
+  depois**: o sandbox não fecha sem ela, e ela volta quando a maior parte das memórias estiver no degrau 3; (8) o degrau 3
+  lê casos **na base 1** para as memórias que têm casos nela e **na base 2** para as que não têm ou têm pouco → Ajuste 28
+  (1–5); dossiê do sandbox §2h, 22.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
