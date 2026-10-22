@@ -87,6 +87,11 @@ class TestChecagens(unittest.TestCase):
         self.assertFalse(cf.citado("the tools are listed below; copy the result", "tools"))
         self.assertFalse(cf.citado("the tools are listed below; copy the result", "copy"))
         self.assertFalse(cf.citado("x.copy()", "copy"))   # método de outro objeto, não o módulo
+        # Ajuste 28: a prosa em inglês do prompt do OBFCivel (base 1) não é citação
+        self.assertFalse(cf.citado("and mandatory fallback tools (actions to take if missing)", "tools"))
+        self.assertFalse(cf.citado("not in the document or in the returns from tools.", "tools"))
+        self.assertTrue(cf.citado("from tools import get_docs", "tools"))
+        self.assertTrue(cf.citado("from tools.sub import x", "tools"))
 
     def test_repete_lista_autorizada(self):
         self.assertEqual(cf.repete(nomes(nao_importar=["ast", "copy"]), SEM_PANDAS)[0], cf.FALHA)

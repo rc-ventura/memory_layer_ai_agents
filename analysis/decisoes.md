@@ -258,6 +258,16 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   depois**: o sandbox não fecha sem ela, e ela volta quando a maior parte das memórias estiver no degrau 3; (8) o degrau 3
   lê casos **na base 1** para as memórias que têm casos nela e **na base 2** para as que não têm ou têm pouco → Ajuste 28
   (1–5); dossiê do sandbox §2h, 22.
+- **22/10, as 3 questões que o degrau 2 novo abriu no sandbox** (decisões do Rafael, uma por vez): (1) a C global no
+  managerAgent — na base 1 o interpretador do papel mostra uma lista sem `json` e nenhum `import json` rodou — **espera a
+  base 3** (o ambiente pela tabela da mineração): sem lista do papel lá, volta para decisão; lista sem `json`, a regra da
+  mineração (global = módulos em todas as listas) já resolve; lista com `json`, vale a base 3; (2) a regra de citação do
+  degrau 2 **exige a forma do Python** (`nome(` sem espaço, `from nome import`): a prosa do prompt do OBFCivel contava
+  como citação de `tools` (Ajuste 28; só o conflito da B.OBFCivel muda); (3) a **B.OBFCivel é memória de reforço**, como
+  as D: o prompt do OBFCivel já diz que as ferramentas são funções para chamar direto ("these tools are basically Python
+  functions which you can call with code", 4 de 4 versões na base 1) e não libera `tools`/`python_interpreter`/
+  `smolagents` — guardada, monitorada, não injetada. As memórias injetadas (e o degrau 3) ficam três: **C, E e
+  C.JoogleAnalytics** → dossiê do sandbox §2h, 22.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste

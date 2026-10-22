@@ -106,9 +106,10 @@ def declaradas(prompt):
 
 
 def citado(prompt, nome):
-    """O prompt cita o nome em forma de código: `nome`, nome(, import nome, from nome."""
+    """O prompt cita o nome em forma de código: `nome`, nome( (sem espaço), import nome, from nome[.x] import. A prosa
+    em inglês não conta: "fallback tools (actions…)" não é chamada, "the returns from tools." não é import."""
     n = re.escape(nome)
-    return bool(re.search(rf"`{n}`|(?<![\w.]){n}\s*\(|\bimport\s+{n}\b|\bfrom\s+{n}\b", prompt or ""))
+    return bool(re.search(rf"`{n}`|(?<![\w.]){n}\(|\bimport\s+{n}\b|\bfrom\s+{n}(?:\.\w+)*\s+import\b", prompt or ""))
 
 
 def regua(monitoramento):

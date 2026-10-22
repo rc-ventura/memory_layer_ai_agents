@@ -725,11 +725,12 @@ uv run python .claude/skills/mineracao-candidata/scripts/conferir_memorias.py --
 | C (global) | falha → **falha só no managerAgent** | passa | passa | passa | não verificável |
 | E (global) | não verificável → **passa** | passa | parcial → **decidido** (decisão 5) | passa | não verificável |
 | C.JoogleAnalytics | passa | passa | passa | passa | não verificável |
-| B.OBFCivel | passa | **falha** | **falha** | passa | não verificável |
+| B.OBFCivel | passa | falha → **passa** (citação corrigida, abaixo) | **falha** | passa | não verificável |
 | B.RespostaBacen, C.CalculoTrabalhista | passa | passa | falha / passa | **falha** (raras) | não verificável |
 | as 10 D | passa (2 sem prompt na base 1) | passa | **falha** (repetem a lista) | 5 passam, 5 falham | não verificável |
 
-Sem `--ambiente` e `--funcoes`, a saída nova é **idêntica** à da etapa 0 (o JSON das 16 conferido igual). O ambiente da
+Sem `--ambiente` e `--funcoes`, a saída nova era **idêntica** à da etapa 0 (o JSON das 16 conferido igual) antes da
+correção da citação, que muda só o conflito da B.OBFCivel. O ambiente da
 base 1 (`extrair_ambiente_base2.py`): só 2 papéis têm a lista na mensagem de erro (ConversationAgent e managerAgent); os
 imports que rodaram aparecem em 13 papéis (o `json` em 12).
 
@@ -738,11 +739,21 @@ imports que rodaram aparecem em 13 papéis (o `json` em 12).
   `json`**, e nenhum `import json` rodou no papel (os imports que rodaram: `datetime`, `pandas`, `re`). Ali a memória
   "importe `json`" mandaria um import que o interpretador barra. Fato da base 1; se o managerAgent aparece na base 3 e
   com que lista, a base 3 responde (o ambiente pela tabela da mineração). **Decisão a trazer.**
-- **B.OBFCivel, conflito:** o script acha `tools` "citado" no prompt das 4 versões. O trecho é prosa: "mandatory fallback
-  tools (actions to take if…)" — a regra de citação aceita espaço entre o nome e o parêntese (`citado()`, o padrão
-  `nome\s*\(`), e "tools (actions" passa por chamada. É falso positivo da regra; corrigir é mudança no kit, a propor.
+- **B.OBFCivel, conflito — corrigido (decisão do Rafael, 22/10):** o script achava `tools` "citado" no prompt das 4
+  versões, em dois trechos de prosa: "mandatory fallback tools (actions to take if…)" (a regra aceitava espaço entre o
+  nome e o parêntese) e "the returns from tools." (aceitava `from tools` sem o `import`). A regra de citação (`citado()`)
+  passa a exigir a forma do Python — `nome(` sem espaço e `from nome import` (Ajuste 28). Medido antes de mudar, nas 16
+  memórias com o prompt da base 1: **só** o conflito da B.OBFCivel muda, de falha para passa.
 - **B.OBFCivel, repete:** os 7 nomes que a memória manda não importar (`python_interpreter`, `tools`, `smolagents`…)
-  já ficam fora da lista do prompt — o mesmo motivo que pôs as D como memória de reforço. **Decisão a trazer.**
+  já ficam fora da lista do prompt, e o prompt já diz que as ferramentas são funções para chamar direto ("these tools are
+  basically Python functions which you can call with code"; "behaving like regular python functions", 4 de 4 versões).
+  **Decisão do Rafael (22/10): memória de reforço**, como as D — guardada, monitorada, não injetada.
+
+**As decisões (22/10):** a C no managerAgent espera o ambiente da base 3; a citação foi corrigida; a B.OBFCivel é
+reforço. **As memórias que vão para injeção, e para o degrau 3, ficam três: C, E e C.JoogleAnalytics.** As outras 13
+fecham com o tipo: reforço (as 10 D e a B.OBFCivel) ou rara (a B.RespostaBacen e a C.CalculoTrabalhista). O tipo e o
+alarme no catálogo (desenho de 20/10, `16`, "Dois níveis") ainda não estão no `catalogar_memoria.py`: entram no
+fechamento.
 
 ## 3 · A memória que o script montou (antes da emenda 4)
 
