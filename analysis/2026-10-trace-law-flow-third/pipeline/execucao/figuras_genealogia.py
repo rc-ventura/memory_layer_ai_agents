@@ -7,21 +7,16 @@ rodada nova, nenhuma fonte):
 
 - `censo_sintomas`: família e assinatura, em barras — como cada assinatura pertence a uma só família (N:1) não há
   cruzamento, e um Sankey nada diria a mais;
-- `genealogia_decisao`: mecanismo → unidade · destino, no mesmo Sankey da genealogia (as peças de
-  `genealogia_sankey`), pintado pelo destino e não pela família. O desenho mora aqui, e não em `render_png`, porque o
-  `genealogia_sankey.py` entra no hash de código da rodada (`versoes_codigo`): mexer nele deixaria a rodada de 21/10
-  "desatualizada" para a mineração.
+- `genealogia_decisao`: mecanismo → unidade · destino, no mesmo Sankey da genealogia (`genealogia_sankey.render_png`,
+  a partir do mecanismo), pintado pelo destino e não pela família.
 
 Cada função desenha uma figura e devolve (título, pergunta, como ler, limitação), o contrato do `figuras_painel.py`.
 """
-import math
-import os
 import sys
 from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -97,75 +92,6 @@ def _classe_destino(d):
     return PENDENTE   # o erro sem mecanismo por falta de dado ("COMPLEMENTAR evidência")
 
 
-def _fatias(col, comp, ys, ordem, ordem_cat):
-    """O `fatias` do genealogia_sankey, com a ordem das categorias de quem chama (o dele usa a das famílias)."""
-    saida = {}
-    for nome in ordem[col]:
-        y0, _, h = ys[col][nome]
-        cont = comp[col].loc[nome]
-        total, cur, d = cont.sum(), y0, {}
-        for c in ordem_cat + [k for k in cont.index if k not in ordem_cat]:
-            n = int(cont.get(c, 0))
-            if n:
-                d[c] = (cur, cur + n / total * h)
-                cur += n / total * h
-        saida[nome] = d
-    return saida
-
-
-def _sankey_decisao(gs, EU, out_path, paleta, ordem_cat, titulo):
-    """As duas colunas, mecanismo e "decisão · lição": o corpo do `render_png`, com a cor e a ordem pelo destino."""
-    EU = EU.assign(unidade=[f"{d} ({u})" if not str(d).startswith("COMPLEMENTAR") else f"pendente: {d.lower()}"
-                            for u, d in zip(EU["unidade"], EU["destino"])])
-    stages = ["submecanismo", "unidade"]
-    tot, arestas, comp = gs.montar_grafo(EU, stages)
-    ordem = gs.ordenar_colunas(tot, arestas, stages)
-    maior = max(int(v) for col in stages for v in tot[col].values)
-    MIN_H, PAD, PAD_PEQ, ALTURA_ROTULO, NODE_W = 0.16, 0.12, 0.2, 0.25, 0.22
-    scale = 3.4 / maior
-    ys, altura = gs.centralizar(gs.calcular_ys(tot, ordem, MIN_H, PAD, scale, PAD_PEQ, stages))
-    fat = {col: _fatias(col, comp, ys, ordem, ordem_cat) for col in stages}
-    X = {"submecanismo": 0.0, "unidade": 4.9}   # o mecanismo tem rótulo longo
-    fig, ax = plt.subplots(figsize=(23, altura + 1.6))
-    a, b = stages
-    saida = gs.dividir(a, b, arestas[(a, b)], fat[a], ordem)
-    entrada = gs.dividir(b, a, arestas[(a, b)], fat[b], ordem)
-    for (nome_a, nome_b, c), (y0s, y1s) in saida.items():
-        y0t, y1t = entrada[(nome_b, nome_a, c)]
-        ax.add_patch(mpatches.PathPatch(gs.ribbon_path(X[a] + NODE_W, y0s, y1s, X[b], y0t, y1t),
-                                         facecolor=cor(paleta, c), edgecolor="none", alpha=0.42, zorder=1))
-    for col in stages:
-        nomes = ordem[col]
-        centros = [(ys[col][n][0] + ys[col][n][1]) / 2 for n in nomes]
-        for nome, centro, y_rot in zip(nomes, centros, gs.afastar(centros, ALTURA_ROTULO)):
-            for c, (c0, c1) in fat[col][nome].items():
-                ax.add_patch(mpatches.Rectangle((X[col], c0), NODE_W, c1 - c0, facecolor=cor(paleta, c),
-                                                 edgecolor="white", linewidth=0.7, zorder=2))
-            x_rot = X[col] + NODE_W + 0.08
-            if abs(y_rot - centro) > 0.02:   # rótulo afastado do vizinho: um traço o liga ao nó
-                x_rot += 0.25
-                ax.plot([X[col] + NODE_W, x_rot - 0.02], [centro, y_rot], color="#52514e", lw=0.6, zorder=3)
-            ax.text(x_rot, y_rot, gs.rotulo(col, nome, tot), va="center", ha="left", fontsize=8.3, zorder=4,
-                    bbox=dict(boxstyle="round,pad=0.12", facecolor="white", edgecolor="white", linewidth=1.2))
-        ax.text(X[col] + NODE_W / 2, -0.45, "mecanismo" if col == "submecanismo" else "decisão · lição (unidade)",
-                ha="center", va="bottom", fontsize=11, fontweight="bold", color="#333333")
-    ax.set_xlim(-0.2, X["unidade"] + NODE_W + 5.6)
-    ax.set_ylim(-0.7, altura + 0.6)
-    ax.invert_yaxis()
-    ax.axis("off")
-    ax.text(0, altura + 0.25, f"Largura das fitas e altura dos nós = número de erros (não tokens), mas só acima de ≈ "
-            f"{_n(round(0.16 / scale, -1))} erros: um nó menor é desenhado com a altura mínima, para o rótulo caber.",
-            fontsize=9, color="#52514e", va="top")
-    ax.set_title(titulo, fontsize=13, fontweight="bold", pad=14, loc="left")
-    presentes = [c for c in ordem_cat if (EU["cat"] == c).any()]
-    ax.legend(handles=[mpatches.Patch(color=cor(paleta, c), label=c) for c in presentes], loc="upper center",
-              bbox_to_anchor=(0.5, -0.01), ncol=math.ceil(len(presentes) / 2), fontsize=9.5, frameon=False)
-    fig.tight_layout()
-    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
-    fig.savefig(out_path, dpi=170)
-    plt.close(fig)
-
-
 def genealogia_decisao(ar, destino):
     """2 · Da causa à decisão: mecanismo → unidade · destino, pintado pelo destino."""
     import genealogia_sankey as gs
@@ -180,9 +106,9 @@ def genealogia_decisao(ar, destino):
     ordem = [rotulo for _, rotulo, _ in DESTINO]
     total, cand = len(EU), int(EU.cat.eq("candidata a memória").sum())
     n_mec, n_uni = EU.submecanismo.nunique(), EU.unidade.nunique()
-    _sankey_decisao(gs, EU, destino, paleta, ordem,
-                    f"Da causa à decisão: {_n(total)} erros em {n_mec} causas e {n_uni} lições; "
-                    f"{_pct(100 * cand / total, 0)} vai para candidata a memória  ·  cor = destino")
+    gs.render_png(EU, destino, inicio=2, paleta=paleta, ordem_cat=ordem, nomes_cat={},
+                  titulo=f"Da causa à decisão: {_n(total)} erros em {n_mec} causas e {n_uni} lições; "
+                         f"{_pct(100 * cand / total, 0)} vai para candidata a memória  ·  cor = destino")
     return ("A decisão: da causa à lição e ao destino",
             "Que causas formam cada lição, e para onde cada lição vai?",
             "Duas colunas, e cada uma soma todos os erros estruturados: à esquerda a causa (o mecanismo, o que o agente "
