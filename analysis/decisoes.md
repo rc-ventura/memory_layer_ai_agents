@@ -272,6 +272,12 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   "Dois níveis"): rara → alarme quando passa na régua; reforço → alarme quando triplica; a marcação passa de uma mineração
   para a outra. Aplicado nas 13 não injetadas do sandbox — reforço: as 10 D e a B.OBFCivel; rara: a B.RespostaBacen e a
   C.CalculoTrabalhista → Ajuste 29; dossiê do sandbox §2h, 25.
+- **22/10, o degrau 3 do sandbox lê casos de todas as bases, com prioridade para a base 3** (revisão da decisão 8 de
+  21/10, decisão do Rafael): a base 1 tem 6, 5 e 0 casos da C, da E e da C.JoogleAnalytics, e a base 2 parece pequena; a
+  base 3 tem 423, 317 e 231. Na base 3, até 30 casos por memória, cada um com o passo do erro e os vizinhos (n-1, n+1,
+  n+2), sem o prompt, lidos na máquina pela skill de investigação; nas bases 1 e 2, todos os casos que houver, com o trace
+  inteiro (pegam o "importou antes e o nome sumiu" que a janela da base 3 pode não mostrar). Para ler a base 3, a pasta
+  dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste

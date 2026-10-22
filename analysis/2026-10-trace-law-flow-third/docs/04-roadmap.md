@@ -270,8 +270,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   interpretador (Ajuste 28, que fecha o #55); medido na base 1 (dossiê §2h, 22) — falta: rodar na base 2 e com o
   ambiente da base 3 (decide a C no managerAgent), a checagem "uma causa só" de cada memória injetada, `--registrar`,
   ~~o tipo e o alarme das 13 não injetadas no catálogo~~ **feito em 22/10** (Ajuste 29; dossiê §2h, 25), o degrau 3
-  das 3 injetadas (C, E, C.JoogleAnalytics; a base 1 tem 6, 5 e 0 casos: onde ler volta para decisão, §2h, 24) e a
-  parte F.
+  das 3 injetadas (C, E, C.JoogleAnalytics; lidas em todas as bases, prioridade para a base 3 — decisão de 22/10; o
+  `drill_down.py` da base 3 está pronto, §2h, 26) e a parte F.
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos

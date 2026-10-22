@@ -843,6 +843,31 @@ uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_mo
 | rara | B.RespostaBacen | 20/10 | 1 | passa na régua (≥ 3 execuções em ≥ 2 meses) |
 | rara | C.CalculoTrabalhista | 21/10 | 2 | passa na régua |
 
+**26 · O degrau 3: todas as bases, prioridade para a base 3, e o leitor de caso da base 3 (22/10).** **Decisão do Rafael
+(revisão da decisão 8):** ler casos de todas as bases, com prioridade para a base 3 — na base 3, até 30 casos por
+memória, cada um com a janela que a extração guarda (o passo anterior, o do erro e os dois seguintes: código, saída do
+modelo, observações, erro), sem o prompt; nas bases 1 e 2, todos os casos que houver, com o trace inteiro.
+
+**O leitor de caso da base 3** (`pipeline/drill_down.py`, novo; o contrato do kit, como o da base 1):
+`tabela <memoria_id>` grava `resultados/mineracao/U_sandbox/casos_<memoria_id>.csv` (os erros da memória, de
+`erros_lidos.csv`, com `idx` = a posição do passo); `caso <exec_id> <papel> [<idx>]` mostra a janela, campo a campo, com o
+nome da coluna; `evidencia <nome>` grava o cru (a linha inteira da fonte) e a janela de cada caso da amostra. Testado na
+base 1 no formato da base 3 (`fonte_base1_v1.parquet`): a E da base 1 (5 erros) passou pelo `montar_evidencia.py` do kit
+— 5 de 5 crus conferidos — e o primeiro caso já mostra o que a leitura procura (o agente chama `dir(...)` para
+inspecionar um valor e, no passo seguinte, a própria saída do modelo diz que o erro foi usar `dir`). Os arquivos do teste
+foram apagados. `test_drill_down_base3.py` (3 testes); suíte 330, OK.
+
+*Roteiro do degrau 3 na máquina* (da pasta `pipeline/` da base 3; para cada memória `U_sandbox.C`, `U_sandbox.E`,
+`U_sandbox.C.JoogleAnalytics`):
+```
+python drill_down.py tabela U_sandbox.C
+python ../../../.github/skills/mineracao-base/scripts/montar_evidencia.py .. --nome inv_candidata_U_sandbox.C_base3 --de mineracao/U_sandbox/casos_U_sandbox.C.csv --regra semente --n 30 --afirmacao "a causa do erro da memória C é esquecer o import" --reproduzir "drill_down.py tabela U_sandbox.C"
+```
+e, com a amostra pronta, a skill `mineracao-investigacao` com o roteiro `candidata` (leitura aberta → a lista, que volta
+para o Rafael → leitura fechada → concordância). **Ponto a confirmar:** o roteiro `candidata` diz `--por role` com
+`--n 30`, mas o `montar_evidencia.py` aplica o `--n` a cada papel — numa memória global como a C, até 30 por papel
+(a unidade tem 16 papéis; quantos a C tem sai da tabela). O comando acima tira 30 no total; com `--por role`, seria preciso um `--n` menor.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
