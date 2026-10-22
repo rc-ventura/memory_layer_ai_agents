@@ -755,6 +755,38 @@ fecham com o tipo: reforço (as 10 D e a B.OBFCivel) ou rara (a B.RespostaBacen 
 alarme no catálogo (desenho de 20/10, `16`, "Dois níveis") ainda não estão no `catalogar_memoria.py`: entram no
 fechamento.
 
+**23 · O roteiro da ida à máquina das bases 2 e 3 (22/10).** Duas perguntas: (a) o degrau 2 das 16 com o prompt da
+base 2 (mesmo período da base 3) dá o mesmo que com o da base 1 (item 22)? (b) o managerAgent tem lista do interpretador
+na base 3, e ela tem `json`? (a questão 1 de 22/10). Nada é gravado no catálogo (sem `--registrar`).
+
+*Preparar* (da raiz do repositório): `git pull` na branch `2026-10-21-fechamento-u-sandbox` e copiar o
+`.claude/skills/mineracao-candidata/scripts/conferir_memorias.py` e o `.claude/skills/mineracao-base/VERSAO` para os
+mesmos lugares em `.github/skills/` (é dali que o Copilot lê); a `VERSAO` tem de dizer `0.11.0`.
+
+*Base 2* — três comandos; a saída dos dois primeiros fica fora do repositório (`<fora>`):
+```
+uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace <trace da base 2> --saida <fora>/prompts_base2.jsonl
+uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_ambiente_base2.py --trace <trace da base 2> --saida <fora>/ambiente_base2.json
+uv run python .github/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora>/prompts_base2.jsonl --ambiente <fora>/ambiente_base2.json --funcoes analysis/registros/funcoes_sandbox.json --base base3 --saida <fora>/conferencia_base2.json
+```
+Fotos: a tabela que o segundo imprime (papéis, listas, módulos importados) e a tabela do terceiro, com as linhas
+`! … decisão não vale`, se aparecerem (a decisão 5 da E foi registrada com os motivos do prompt da base 1; se o prompt da
+base 2 citar outra função, ela deixa de valer e volta para decisão). Se a C, a E ou a C.JoogleAnalytics falharem em
+alguma checagem, também a foto dos motivos:
+`python -c "import json; d=json.load(open('<fora>/conferencia_base2.json')); [print(m['id'], c, p, x['resultado'], x['motivos']) for m in d['memorias'] if m['id'] in ('U_sandbox.C','U_sandbox.E','U_sandbox.C.JoogleAnalytics') for c, v in m['checagens'].items() if v['resultado'] != 'decidido pelo pesquisador' for p, x in v.get('papeis', {}).items() if x['resultado'] not in ('passa', 'não verificável')]"`
+(só os papéis que não passam; a checagem 5 sai "não verificável" nas três até a decisão de cada uma).
+
+*Base 3* — o ambiente pela tabela da mineração da rodada `99e032ad` (da pasta `pipeline/` da base 3):
+```
+python validacao/ambiente_da_mineracao.py --tabela resultados/mineracao/U_sandbox/imports_autorizados.csv --saida <fora>/ambiente_base3.json
+```
+Foto: a lista de papéis que ele imprime. Se o managerAgent aparecer, também a lista dele:
+`python -c "import json; print(json.load(open('<fora>/ambiente_base3.json'))['papeis'].get('managerAgent'))"`.
+(Não rodar a C só com o ambiente da base 3: os papéis que a tabela não mostra caem no prompt, e o resultado da C
+mistura as duas fontes; para a questão 1 basta a lista do managerAgent.) O que vale para a questão 1 (decidido em 22/10): managerAgent sem lista na base 3 → volta para
+decisão com a base 1 como única evidência; lista sem `json` → a regra da mineração já tira o `json` da global numa
+rodada nova; lista com `json` → vale a base 3.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
