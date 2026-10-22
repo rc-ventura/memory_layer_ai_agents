@@ -206,15 +206,14 @@ def centralizar(ys):  # as colunas são as chaves de ys
     return ys, maior
 
 
-def fatias(col, comp, ys, ordem, ordem_cat=None):
+def fatias(col, comp, ys, ordem):
     """(y0, y1) de cada categoria dentro de cada nó da coluna, na ordem ORDEM_CAT, proporcional à contagem."""
-    ordem_cat = ORDEM_CAT if ordem_cat is None else ordem_cat
     saida = {}
     for nome in ordem[col]:
         y0, _, h = ys[col][nome]
         cont = comp[col].loc[nome]
         total, cur, d = cont.sum(), y0, {}
-        for c in ordem_cat + [k for k in cont.index if k not in ordem_cat]:
+        for c in ORDEM_CAT + [k for k in cont.index if k not in ORDEM_CAT]:
             n = int(cont.get(c, 0))
             if n:
                 d[c] = (cur, cur + n / total * h)
@@ -274,21 +273,14 @@ def afastar(centros, altura):
             return [t + k * altura for t, g in zip(topo, grupos) for k in range(len(g))]
 
 
-def render_png(EU, out_path, titulo=None, juntar_destino=True, inicio=0, paleta=None, ordem_cat=None, nomes_cat=None):
+def render_png(EU, out_path, titulo=None, juntar_destino=True):
     """`juntar_destino` (decisão D4 de 16/10): unidade e destino são 1 para 1 — a figura desenha uma coluna só,
-    "decisão · lição (unidade)"; as arestas gravadas (`montar_grafo` com as 5 colunas) não mudam.
-
-    `inicio`: primeira coluna desenhada (2 = a partir do mecanismo: a figura da decisão, sem o sintoma). `paleta`,
-    `ordem_cat` e `nomes_cat`: a cor, a ordem e o nome curto de cada categoria da coluna `cat` (padrão: a família do
-    erro); a figura da decisão pinta pelo destino."""
-    paleta = COR_ERRO if paleta is None else paleta
-    ordem_cat = ORDEM_CAT if ordem_cat is None else ordem_cat
-    nomes_cat = NOME_CURTO if nomes_cat is None else nomes_cat
-    stages = STAGES[inicio:]
+    "decisão · lição (unidade)"; as arestas gravadas (`montar_grafo` com as 5 colunas) não mudam."""
+    stages = STAGES
     if juntar_destino:
         EU = EU.assign(unidade=[f"{d} ({u})" if not str(d).startswith("COMPLEMENTAR") else f"pendente: {d.lower()}"
                                 for u, d in zip(EU["unidade"], EU["destino"])])
-        stages = stages[:-1]
+        stages = STAGES[:-1]
     pares = list(zip(stages, stages[1:]))
     tot, arestas, comp = montar_grafo(EU, stages)
     ordem = ordenar_colunas(tot, arestas, stages)
@@ -300,7 +292,7 @@ def render_png(EU, out_path, titulo=None, juntar_destino=True, inicio=0, paleta=
     ys = calcular_ys(tot, ordem, MIN_H, PAD, scale, PAD_PEQ, stages)
     ys, altura_dados = centralizar(ys)
 
-    fat = {col: fatias(col, comp, ys, ordem, ordem_cat) for col in stages}
+    fat = {col: fatias(col, comp, ys, ordem) for col in stages}
 
     NODE_W = 0.22
     GAP = {"familia": 3.6, "assinatura": 3.6, "submecanismo": 4.9, "unidade": 3.6}   # o mecanismo tem rótulo longo
@@ -319,7 +311,7 @@ def render_png(EU, out_path, titulo=None, juntar_destino=True, inicio=0, paleta=
         for (nome_a, nome_b, c), (y0s, y1s) in saida.items():
             y0t, y1t = entrada[(nome_b, nome_a, c)]
             path = ribbon_path(X[a] + NODE_W, y0s, y1s, X[b], y0t, y1t)
-            ax.add_patch(mpatches.PathPatch(path, facecolor=cor(paleta, c),
+            ax.add_patch(mpatches.PathPatch(path, facecolor=cor(COR_ERRO, c),
                                              edgecolor="none", alpha=0.42, zorder=1))
 
     for col in stages:
@@ -327,7 +319,7 @@ def render_png(EU, out_path, titulo=None, juntar_destino=True, inicio=0, paleta=
         centros = [(ys[col][n][0] + ys[col][n][1]) / 2 for n in nomes]
         for nome, centro, y_rot in zip(nomes, centros, afastar(centros, ALTURA_ROTULO)):
             for c, (c0, c1) in fat[col][nome].items():   # o nó em fatias, uma por categoria de erro
-                ax.add_patch(mpatches.Rectangle((X[col], c0), NODE_W, c1 - c0, facecolor=cor(paleta, c),
+                ax.add_patch(mpatches.Rectangle((X[col], c0), NODE_W, c1 - c0, facecolor=cor(COR_ERRO, c),
                                                  edgecolor="white", linewidth=0.7, zorder=2))
             x_rot = X[col] + NODE_W + 0.08
             if abs(y_rot - centro) > 0.02:   # rótulo afastado do vizinho: um traço o liga ao nó
@@ -348,8 +340,8 @@ def render_png(EU, out_path, titulo=None, juntar_destino=True, inicio=0, paleta=
     ax.set_title(titulo or f"Genealogia dos {_n(len(EU))} erros: família → assinatura → mecanismo → unidade → destino  ·  "
                  "cor = família do erro (roxo = resíduo, cinza = plataforma, preto = erro crítico)", fontsize=13, fontweight="bold",
                  pad=14, loc="left")
-    presentes = [c for c in ordem_cat if (EU["cat"] == c).any()]
-    ax.legend(handles=[mpatches.Patch(color=cor(paleta, c), label=nomes_cat.get(c, c)) for c in presentes],
+    presentes = [c for c in ORDEM_CAT if (EU["cat"] == c).any()]
+    ax.legend(handles=[mpatches.Patch(color=cor(COR_ERRO, c), label=NOME_CURTO.get(c, c)) for c in presentes],
               loc="upper center", bbox_to_anchor=(0.5, -0.01), ncol=math.ceil(len(presentes) / 2), fontsize=9.5,
               frameon=False)
     fig.tight_layout()
