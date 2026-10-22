@@ -161,7 +161,7 @@ def gerar(pasta, contagens=None, fonte=None):
     graficos = [("taxas_funil.png", lambda d: ft.funil(execs, extra, d)),
                 ("taxas_mes.png", lambda d: ft.taxa_mes(mes, d)),
                 ("taxas_papel.png", lambda d: ft.papel_volume(papel, d)),
-                ("taxas_papel_mes.png", lambda d: ft.papel_mes(pm, d)),
+                ("taxas_papel_mes.png", lambda d: ft.papel_mes(pm, d, execucoes=papel.execucoes)),
                 ("taxas_custo_execucao.png", lambda d: ft.custo_execucao(execs, custo_papel, d)),
                 ("taxas_concentracao.png", lambda d: ft.concentracao(execs, d)),
                 ("taxas_custo_mensal.png", lambda d: ft.custo_mensal(execs, mes, d)),

@@ -187,19 +187,27 @@ def papel_volume(papel, destino):
             "os erros do papel, de qualquer destino.")
 
 
-def papel_mes(pm, destino, topo=10):
+def papel_mes(pm, destino, topo=8, execucoes=None):
     """3b · Erros por papel e mês: a contagem (esquerda) e a taxa do próprio papel (direita) — o papel fixo (roadmap #37).
 
     Cada linha traz, no rótulo, a fatia dos erros e a fatia dos passos do papel: concentrado de verdade é o papel que
-    tem mais erro do que passo. Escala de cor linear (não log), para a cor dizer onde está o erro."""
+    tem mais erro do que passo, e a taxa do período. Entram os `topo` papéis com mais erros e, se `execucoes` (por papel)
+    vier, também os que erram mais de 2× a taxa global em pelo menos MIN_N execuções, mesmo com poucos erros (o que erra
+    muito por passo e roda pouco não pode sumir em "demais"). Escala de cor linear (não log)."""
     d = pm.assign(papel=pm.papel.map(nome_papel))
     er = d.pivot_table(index="papel", columns="mes", values="erros", aggfunc="sum", fill_value=0)
     pa = d.pivot_table(index="papel", columns="mes", values="actionsteps", aggfunc="sum", fill_value=0)
     meses = sorted(er.columns)
     er, pa = er.reindex(columns=meses, fill_value=0), pa.reindex(er.index).reindex(columns=meses, fill_value=0)
     ordem = er.sum(axis=1).sort_values(ascending=False).index.tolist()
-    fica, resto = ordem[:topo], ordem[topo:]
     er_t, pa_t = er.sum().sum(), pa.sum().sum()
+    taxa_p = er.sum(axis=1) / pa.sum(axis=1).where(pa.sum(axis=1).gt(0))
+    alto = []
+    if execucoes is not None:
+        ex = execucoes.rename(index=nome_papel)
+        alto = [n for n in ordem[topo:] if ex.get(n, 0) >= MIN_N and taxa_p[n] > 2 * er_t / pa_t]
+    fica = [n for n in ordem if n in ordem[:topo] or n in alto]
+    resto = [n for n in ordem if n not in fica]
     linhas = er.loc[fica].copy(), pa.loc[fica].copy()
     nomes = list(fica)
     if resto:
@@ -212,9 +220,11 @@ def papel_mes(pm, destino, topo=10):
     taxa = 100 * ce / cp.where(cp.gt(0))
     pouco = (cp < MIN_PASSOS_PAPEL_MES).to_numpy()
     n_l, n_c = ce.shape
-    rotulos = [n if i == n_l - 1 else f"{n}\n{_p(ce.loc[n].sum(), er_t, 0)} dos erros · {_p(cp.loc[n].sum(), pa_t, 0)} dos passos"
+    rotulos = [n if i == n_l - 1 else
+               f"{n}\n{_p(ce.loc[n].sum(), er_t, 0)} dos erros · {_p(cp.loc[n].sum(), pa_t, 0)} dos passos\n"
+               f"taxa no período: {_p(ce.loc[n].sum(), cp.loc[n].sum(), 1)} de {_n(cp.loc[n].sum())} passos"
                for i, n in enumerate(nomes)]
-    fig, axes = plt.subplots(1, 2, figsize=(20, 0.62 * n_l + 3.4), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(20, 0.78 * n_l + 3.4), sharey=True)
     for ax, tab, casas, rot in [(axes[0], ce, 0, "erros (contagem)"),
                                 (axes[1], taxa, 1, "% dos passos do próprio papel no mês")]:
         dados = tab.to_numpy().astype(float)
