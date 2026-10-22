@@ -214,6 +214,11 @@ def gerar(pasta, gasto_total=None):
     if (pasta / "genealogia_observada.png").exists() and "genealogia_observada.png" in m["artefatos"]:
         shutil.copy2(pasta / "genealogia_observada.png", saida / "genealogia_observada.png")
         graficos.append(("genealogia_observada.png", lambda d: fp.genealogia()))
+    if "genealogia_arestas.csv" in m["artefatos"]:   # os dois eixos em figuras separadas (decisão de 22/10)
+        import execucao.figuras_genealogia as fg
+        ar = ler(pasta, m, "genealogia_arestas.csv")
+        graficos += [("sintomas_censo.png", lambda d: fg.censo_sintomas(ar, d)),
+                     ("genealogia_decisao.png", lambda d: fg.genealogia_decisao(ar, d))]
     graficos.append(("unidades_observadas.png", lambda d: fp.tokens_unidade(tri, cob, d)))
     upt = (ler(pasta, m, "consolidacao_unidade_papel_tokens.csv")
            if "consolidacao_unidade_papel_tokens.csv" in m["artefatos"] else None)
