@@ -51,7 +51,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-22",
+        "motivo": "O prompt do OBFCivel já diz que as ferramentas são funções para chamar direto e não libera tools/python_interpreter/smolagents (4 de 4 versões, base 1); como as D (questão 3 de 22/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 44,
+          "execucoes": 43,
+          "meses": 4
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.B.RespostaBacen",
@@ -94,7 +111,25 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "rara",
+        "decidido_em": "2026-10-20",
+        "motivo": "1 erro em 1 mês: não passa na régua de memória rara (decisão 4 do fechamento do sandbox, 20/10; b3 #48)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 1,
+          "execucoes": 1,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "regua",
+            "execucoes": 3,
+            "meses": 2
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.C",
@@ -191,7 +226,25 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "rara",
+        "decidido_em": "2026-10-21",
+        "motivo": "2 erros em 1 mês (jan/26): não passa na régua; mesmo critério da B.RespostaBacen (decisão 6 do fechamento do sandbox, 21/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 2,
+          "execucoes": 2,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "regua",
+            "execucoes": 3,
+            "meses": 2
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.C.JoogleAnalytics",
@@ -282,7 +335,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 1,
+          "execucoes": 1,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.CalculoCivel",
@@ -326,7 +396,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 3,
+          "execucoes": 3,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.CalculoTrabalhista",
@@ -381,7 +468,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 14,
+          "execucoes": 13,
+          "meses": 6
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.Consultivo",
@@ -427,7 +531,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 3,
+          "execucoes": 3,
+          "meses": 3
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.JoogleAnalytics",
@@ -475,7 +596,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 4,
+          "execucoes": 4,
+          "meses": 3
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.OBFCivel",
@@ -521,7 +659,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 5,
+          "execucoes": 5,
+          "meses": 3
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.OficiosResposta",
@@ -564,7 +719,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 1,
+          "execucoes": 1,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.RespostaBacen",
@@ -611,7 +783,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 5,
+          "execucoes": 5,
+          "meses": 4
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.RespostaOficios",
@@ -654,7 +843,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 1,
+          "execucoes": 1,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.D.ontestacaoCivel",
@@ -697,7 +903,24 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 3,
+          "execucoes": 3,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      }
     },
     {
       "id": "U_sandbox.E",

@@ -269,9 +269,9 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   monitoramento: `16`, "O monitoramento", 20/10); o experimento de reforço é o EX-8 do blueprint das POCs); (5) mineração de novo na máquina da base e catálogo com o degrau de cada memória. Inclui o #48 e o #49. **21/10:** o plano do fechamento e as 8 decisões do Rafael (`decisoes.md`); o degrau 2 confere o ambiente pelo
   interpretador (Ajuste 28, que fecha o #55); medido na base 1 (dossiê §2h, 22) — falta: rodar na base 2 e com o
   ambiente da base 3 (decide a C no managerAgent), a checagem "uma causa só" de cada memória injetada, `--registrar`,
-  o tipo e o alarme das 13 não injetadas no catálogo (reforço: as 10 D e a B.OBFCivel; rara: a B.RespostaBacen e a
-  C.CalculoTrabalhista — desenho de 20/10, ainda não implementado no `catalogar_memoria.py`), o degrau 3 das 3
-  injetadas (C, E, C.JoogleAnalytics; decisões de 22/10) e a parte F.
+  ~~o tipo e o alarme das 13 não injetadas no catálogo~~ **feito em 22/10** (Ajuste 29; dossiê §2h, 25), o degrau 3
+  das 3 injetadas (C, E, C.JoogleAnalytics; a base 1 tem 6, 5 e 0 casos: onde ler volta para decisão, §2h, 24) e a
+  parte F.
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos

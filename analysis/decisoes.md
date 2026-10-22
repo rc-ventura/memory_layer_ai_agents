@@ -268,6 +268,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   functions which you can call with code", 4 de 4 versões na base 1) e não libera `tools`/`python_interpreter`/
   `smolagents` — guardada, monitorada, não injetada. As memórias injetadas (e o degrau 3) ficam três: **C, E e
   C.JoogleAnalytics** → dossiê do sandbox §2h, 22.
+- **22/10, a memória não injetada fica marcada e vigiada no catálogo** (aprovado pelo Rafael; o desenho de 20/10 no `16`,
+  "Dois níveis"): rara → alarme quando passa na régua; reforço → alarme quando triplica; a marcação passa de uma mineração
+  para a outra. Aplicado nas 13 não injetadas do sandbox — reforço: as 10 D e a B.OBFCivel; rara: a B.RespostaBacen e a
+  C.CalculoTrabalhista → Ajuste 29; dossiê do sandbox §2h, 25.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste

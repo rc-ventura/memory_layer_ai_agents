@@ -760,8 +760,9 @@ base 2 (mesmo período da base 3) dá o mesmo que com o da base 1 (item 22)? (b)
 na base 3, e ela tem `json`? (a questão 1 de 22/10). Nada é gravado no catálogo (sem `--registrar`).
 
 *Preparar* (da raiz do repositório): `git pull` na branch `2026-10-21-fechamento-u-sandbox` e copiar o
-`.claude/skills/mineracao-candidata/scripts/conferir_memorias.py` e o `.claude/skills/mineracao-base/VERSAO` para os
-mesmos lugares em `.github/skills/` (é dali que o Copilot lê); a `VERSAO` tem de dizer `0.11.0`.
+`.claude/skills/mineracao-candidata/scripts/conferir_memorias.py`, o `catalogar_memoria.py` (Ajuste 29) e o
+`.claude/skills/mineracao-base/VERSAO` para os mesmos lugares em `.github/skills/` (é dali que o Copilot lê); a `VERSAO`
+tem de dizer `0.12.0`.
 
 *Base 2* — três comandos; a saída dos dois primeiros fica fora do repositório (`<fora>`):
 ```
@@ -830,6 +831,17 @@ uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_mo
 ```
 (o segundo também com `--modulo re` e `--modulo datetime`). Fotos: a saída inteira de cada um, e o
 `resultados/mineracao/U_sandbox/inventario.csv` (as linhas `funcao_proibida` e `atributo_dunder`: os erros por nome da E).
+
+**25 · As 13 não injetadas marcadas no catálogo (22/10; Ajuste 29, aprovado pelo Rafael).** `catalogar_memoria.py
+--monitorar` grava em cada uma o tipo, a data e o motivo da decisão, a linha de base (rodada `99e032ad`) e o gatilho; no
+`--registrar` de uma mineração nova, a marcação passa e o alarme é conferido. `--conferir`: catálogo ok, 16 memórias.
+
+| Tipo | Memórias | Decidido em | Linha de base (erros) | Alarme quando |
+|---|---|---|---|---|
+| reforço | as 10 D | 20/10 | 1 a 14 | os erros triplicam |
+| reforço | B.OBFCivel | 22/10 | 44 | os erros triplicam (≥ 132) |
+| rara | B.RespostaBacen | 20/10 | 1 | passa na régua (≥ 3 execuções em ≥ 2 meses) |
+| rara | C.CalculoTrabalhista | 21/10 | 2 | passa na régua |
 
 ## 3 · A memória que o script montou (antes da emenda 4)
 
