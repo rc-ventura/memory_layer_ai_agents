@@ -37,6 +37,16 @@ class TestModuloSemImportPapel(unittest.TestCase):
         self.assertEqual(B["depois: o passo seguinte não importa"], 1)
         self.assertEqual((B["import_rodou_antes_da_falha"], B["import_rodou · 2026-04"]), (1, 1))
 
+    def test_passo_anterior_apelido_e_todos_os_papeis(self):
+        pd_nao_def = NAO_DEF.replace("`json`", "`pd`")
+        L = [{**linha("e1", "2026-05", pd_nao_def), "prev_code_action": "import pandas as pd", "prev_error_type": ""},
+             {**linha("e2", "2026-05", pd_nao_def), "prev_code_action": "import pandas as pd", "prev_error_type": "E"},
+             {**linha("e3", "2026-05", pd_nao_def), "papel": "Q", "prev_code_action": "x = 1"}]
+        _, B = cm.medir(L, "R", "pandas", "pd")
+        self.assertEqual(B["antes: o passo anterior importou e rodou sem erro"], 1)   # o e2 tinha erro no anterior
+        tempo, _ = cm.medir(L, "todos", "pandas", "pd")
+        self.assertEqual(sum(t["erros"] for t in tempo), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

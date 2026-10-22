@@ -12,10 +12,16 @@ o `json` (a de dez/25 tinha). Duas leituras: o prompt induz o erro (sinal de har
   B. o sandbox deixa importar o módulo nesse papel? (1) depois do erro, o passo seguinte importa o módulo — e dá erro ou
      não; (2) algum passo com erro do papel tem `import <módulo>` numa linha antes da que falhou (o import rodou); (3)
      quantos "Import of <módulo> is not allowed" há no papel e na base inteira.
+  C. uma causa só? (acrescentado em 22/10, dossiê §2h, 24) o passo anterior do papel (n-1, a única janela de antes que a
+     base 3 guarda) importou o módulo e rodou sem erro. No interpretador do smolagents um import vale nos passos
+     seguintes (testado em 22/10, 1.26.0): se o import rodou no passo anterior e o nome sumiu, a causa é o estado
+     perdido entre passos, não esquecer o import. É um limite inferior: um import mais antigo que n-1 não se vê.
+`--papel todos` olha todos os papéis; `--nome` é o nome usado sem import quando difere do módulo (`--modulo pandas
+--nome pd`).
 
 Lê o parquet cru com o pyarrow (não usa o pipeline). Não grava nada. Imprime só contagens e meses. Uso, da raiz, na
 máquina da base:
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_modulo_sem_import_papel.py --fonte <parquet> [--papel RoteadorCivel] [--modulo json]
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_modulo_sem_import_papel.py --fonte <parquet> [--papel RoteadorCivel|todos] [--modulo json] [--nome pd]
 """
 import argparse
 from collections import Counter, defaultdict
@@ -26,7 +32,8 @@ import pyarrow.parquet as pq
 
 LINHA_FALHA = re.compile(r"failed at line '(.*?)' due to", re.S)
 COLUNAS = ["cod_idef_exeo", "papel", "mes_execucao", "structured_error", "error_type", "error_message",
-           "error_code_action", "next_code_action", "next_error_type", "next_error_message"]
+           "error_code_action", "next_code_action", "next_error_type", "next_error_message", "prev_code_action",
+           "prev_error_type"]
 
 
 def importa(codigo, modulo):
@@ -46,8 +53,9 @@ def importou_antes_da_falha(codigo, msg, modulo):
     return pos is not None and importa("\n".join(linhas[:pos]), modulo)
 
 
-def medir(linhas, papel, modulo):
-    sem_import = re.compile(rf"The variable `{re.escape(modulo)}` is not defined")
+def medir(linhas, papel, modulo, nome=None):
+    """`papel` "todos": todos os papéis; `nome`: o nome usado sem import (padrão: o módulo)."""
+    sem_import = re.compile(rf"The variable `{re.escape(nome or modulo)}` is not defined")
     barrado = re.compile(rf"Import (?:of|from) {re.escape(modulo)}\b[\w.]* is not allowed")
     A = defaultdict(lambda: {"execucoes_com_erro": set(), "execucoes_com_o_erro": set(), "erros": 0})
     B = Counter()
@@ -56,7 +64,7 @@ def medir(linhas, papel, modulo):
             continue
         msg = str(r.get("error_message") or "")
         B["barrado_na_base"] += bool(barrado.search(msg))
-        if r.get("papel") != papel:
+        if papel != "todos" and r.get("papel") != papel:
             continue
         mes, ex = str(r.get("mes_execucao")), str(r.get("cod_idef_exeo"))
         A[mes]["execucoes_com_erro"].add(ex)
@@ -67,6 +75,8 @@ def medir(linhas, papel, modulo):
         if sem_import.search(msg.rsplit("due to:", 1)[-1]):
             A[mes]["execucoes_com_o_erro"].add(ex)
             A[mes]["erros"] += 1
+            if importa(r.get("prev_code_action"), modulo) and not str(r.get("prev_error_type") or "").strip():
+                B["antes: o passo anterior importou e rodou sem erro"] += 1
             nxt = r.get("next_code_action")
             if not importa(nxt, modulo):
                 B["depois: o passo seguinte não importa"] += 1
@@ -86,11 +96,12 @@ def main(argv=None):
     p.add_argument("--fonte", required=True, help="o parquet da base 3 (a v2, em data/)")
     p.add_argument("--papel", default="RoteadorCivel")
     p.add_argument("--modulo", default="json")
+    p.add_argument("--nome", help="o nome usado sem import, se difere do módulo (pd para pandas)")
     a = p.parse_args(argv)
     for fluxo in (sys.stdout, sys.stderr):
         if hasattr(fluxo, "reconfigure"):
             fluxo.reconfigure(encoding="utf-8", errors="replace")
-    tempo, B = medir(pq.read_table(a.fonte, columns=COLUNAS).to_pylist(), a.papel, a.modulo)
+    tempo, B = medir(pq.read_table(a.fonte, columns=COLUNAS).to_pylist(), a.papel, a.modulo, a.nome)
     print(f"A · `{a.modulo}` sem import no {a.papel}, por mês (denominador: execuções do papel com algum erro)")
     print(f"{'mês':8} {'execuções c/ erro':>17} {'c/ o erro':>10} {'erros':>6}")
     for t in tempo:
@@ -104,6 +115,9 @@ def main(argv=None):
           + (f"  ({meses})" if meses else ""))
     print(f"  {'Import of ' + a.modulo + ' is not allowed — no papel':45} {B['barrado_no_papel']}")
     print(f"  {'Import of ' + a.modulo + ' is not allowed — na base':45} {B['barrado_na_base']}")
+    print(f"\nC · uma causa só? (o erro × o passo anterior do papel)")
+    print(f"  {'antes: o passo anterior importou e rodou sem erro':45} {B['antes: o passo anterior importou e rodou sem erro']}"
+          f" de {sum(t['erros'] for t in tempo)} erros")
     return 0
 
 

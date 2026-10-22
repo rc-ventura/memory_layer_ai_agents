@@ -787,6 +787,50 @@ mistura as duas fontes; para a questão 1 basta a lista do managerAgent.) O que 
 decisão com a base 1 como única evidência; lista sem `json` → a regra da mineração já tira o `json` da global numa
 rodada nova; lista com `json` → vale a base 3.
 
+**24 · Os casos para o degrau 3 e a evidência de "uma causa só" (22/10; base 1, trace inteiro).** Para as 3 memórias
+que vão para injeção, duas perguntas: quantos casos cada base com trace inteiro tem para a leitura do degrau 3 (até 30 por
+memória, decisão 8 de 21/10), e o que os dados dizem sobre a causa (a checagem "uma causa só", decidida pelo pesquisador
+memória por memória, decisão 4). `contar_casos_memoria_base2.py` (novo; bases 1 e 2): a população de cada memória pelos
+nomes dela no catálogo e pelas regras de mensagem do `mineracao_U_sandbox.py` — aproximação da unidade do pipeline.
+
+```
+uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_casos_memoria_base2.py --trace analysis/2026-09-trace-law-flow/data/85cb11b5-b58b-40c4-a2cf-a3e99ac86521.csv.xz --id U_sandbox.C U_sandbox.E U_sandbox.C.JoogleAnalytics U_sandbox.B.OBFCivel
+```
+
+| Memória | Base 3 (mineração) | Base 1: erros · execuções · meses | Por nome (base 1) | Importado antes, sem erro | Passo seguinte (base 1) |
+|---|---:|---|---|---:|---|
+| C | 423 | 6 · 6 · nov/25, mar/26, abr/26 | `json` 3, `datetime` 3 | **0 de 6** | 6 sem erro |
+| E | 317 | 5 · 5 · 5 meses (nov/25–jun/26) | `repr` 3, `__name__` 1, `dir` 1 | — | 4 sem erro, 1 com erro |
+| C.JoogleAnalytics | 231 | **0** | — | — | — |
+| B.OBFCivel (reforço) | 44 | 0 | — | — | — |
+
+**O que isso diz:**
+- **Para o degrau 3, a base 1 não basta:** 6, 5 e 0 casos, longe dos 30. A base 2 também parece pequena (25 erros de sandbox
+  no notebook, item 2h, a confirmar; 6 de `json` sem import, item 14) — a conta exata sai do mesmo script na máquina (roteiro, item 23).
+  O volume está na base 3 (423, 317, 231), que só guarda o passo do erro e os vizinhos (n-1, n+1, n+2), sem o prompt.
+  **A decisão 8 (ler nas bases 1 e 2) precisa ser revista: questão a trazer.**
+- **C, uma causa só — evidência a favor:** na base 1, em **0 de 6** o módulo tinha sido importado antes, sem erro, no mesmo
+  papel e execução, e nos 6 o passo seguinte roda sem erro. No interpretador, um import vale nos passos seguintes
+  (`pipeline/validacao/testar_sandbox_import_persiste.py`, 22/10, smolagents 1.26.0: os três passos rodam): se o import
+  tivesse rodado antes, a causa seria estado perdido, não esquecimento. Na base 3 (item 16): no RoteadorCivel, o passo
+  seguinte importa e roda em 218 de 241. A medida do passo anterior na base 3 entrou no `contar_modulo_sem_import_papel.py`
+  (parte C, nova; `--papel todos`, `--nome pd` para o `pandas`) e sai na máquina (roteiro). Na base 1 no formato da base 3
+  (`fonte_base1_v1.parquet`), o script dá o mesmo: 0 de 3 (`json`) e 0 de 3 (`datetime`).
+- **E, uma causa só — evidência a favor, fraca:** na base 1 os 5 nomes são de inspecionar um valor (`repr`, `__name__`,
+  `dir`). A E da base 3 proíbe também `exec`, `__import__`, `bytes`, `open`, `hash` e três dunder — nomes de outros usos
+  possíveis (executar código, abrir arquivo). A distribuição por nome na base 3 (o `inventario.csv` da mineração) diz se
+  esses pesam; foto no roteiro.
+- **C.JoogleAnalytics:** sem caso na base 1; a evidência vem da base 3 (`--papel JoogleAnalytics --modulo pandas --nome pd`).
+
+*Acréscimo ao roteiro da máquina (item 23), três comandos:*
+```
+uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_casos_memoria_base2.py --trace <trace da base 2>
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_modulo_sem_import_papel.py --fonte <parquet da base 3> --papel todos --modulo json
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_modulo_sem_import_papel.py --fonte <parquet da base 3> --papel JoogleAnalytics --modulo pandas --nome pd
+```
+(o segundo também com `--modulo re` e `--modulo datetime`). Fotos: a saída inteira de cada um, e o
+`resultados/mineracao/U_sandbox/inventario.csv` (as linhas `funcao_proibida` e `atributo_dunder`: os erros por nome da E).
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
