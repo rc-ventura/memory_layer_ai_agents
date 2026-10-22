@@ -59,12 +59,26 @@ class TestTaxas(unittest.TestCase):
         man = json.loads((saida / "manifesto_taxas.json").read_text(encoding="utf-8"))
         self.assertTrue(all(man["verificacoes_juncao"].values()))
         self.assertEqual(man["linhas_sem_contagem"], 1)
-        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 10)
-        textos = [(saida / n).read_text(encoding="utf-8") for n in ["taxas.md", "taxas_por_mes.csv", "taxas_por_papel.csv"]]
+        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 11)
+        textos = [(saida / n).read_text(encoding="utf-8") for n in ["taxas.md", "taxas_por_mes.csv", "taxas_por_papel.csv",
+                                                                  "taxas_por_papel_mes.csv"]]
         self.assertFalse(any("exec-" in t for t in textos))
         md = textos[0]
         self.assertIn("ActionSteps", md)
         self.assertIn("3 (11,1%)", md)   # 3 erros em 27 ActionSteps (3×5 + 4×3; a linha sem quantidade fica fora)
+
+    def test_papel_por_mes_soma_e_desenha(self):
+        """Erros e passos por papel e mês somam o total; o gráfico dá a fatia dos erros e a dos passos de cada papel."""
+        import execucao.figuras_taxas as ft
+        pm = taxas.papel_por_mes(self.cont_df.assign(**{c: pd.to_numeric(self.cont_df[c]) for c in
+                                                        ["qtd_actionsteps", "qtd_erros_estruturados"]}))
+        self.assertEqual(int(pm.erros.sum()), 3)
+        self.assertEqual(int(pm.actionsteps.sum()), 27)   # a linha sem quantidade fica fora
+        with tempfile.TemporaryDirectory() as t:
+            titulo, _, ler, limite = ft.papel_mes(pm, Path(t) / "x.png")
+            self.assertTrue((Path(t) / "x.png").is_file())
+        self.assertIn("dos erros", titulo + ler)
+        self.assertIn("linear", ler)
 
     def test_custo_execucao_em_valores_reais(self):
         """O gráfico do custo mostra a mediana em unidades reais (tokens e passos inteiros), com a razão ao lado."""

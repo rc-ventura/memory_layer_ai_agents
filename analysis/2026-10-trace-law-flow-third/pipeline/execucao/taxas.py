@@ -133,6 +133,16 @@ def tabelas(f, c):
     return execs, mes, papel, total_erro, int(sem.sum()), custo_papel.reset_index(), extra
 
 
+def papel_por_mes(c):
+    """Passos e erros de cada papel em cada mês (o papel fixo, roadmap b3 #37); só contagens, sem chave de execução."""
+    ok = c[~c.qtd_actionsteps.isna()]
+    pm = ok.groupby(["papel", "mes_execucao"]).agg(actionsteps=("qtd_actionsteps", "sum"),
+                                                    erros=("qtd_erros_estruturados", "sum")).reset_index()
+    pm = pm.rename(columns={"mes_execucao": "mes"})
+    pm["taxa"] = pm.erros / pm.actionsteps.where(pm.actionsteps.gt(0))
+    return pm
+
+
 def gerar(pasta, contagens=None, fonte=None):
     import execucao.figuras_taxas as ft
     pasta = Path(pasta)
@@ -143,6 +153,7 @@ def gerar(pasta, contagens=None, fonte=None):
     upm, ppm = opc("consolidacao_unidade_papel_mes.csv"), opc("consolidacao_pendencias_papel_mes.csv")
     upt = opc("consolidacao_unidade_papel_tokens.csv")
     execs, mes, papel, total_erro, sem_contagem, custo_papel, extra = tabelas(f, c)
+    pm = papel_por_mes(c)
     saida = pasta / "taxas"
     saida.mkdir(exist_ok=True)
     from execucao.painel import limpar_saida
@@ -150,6 +161,7 @@ def gerar(pasta, contagens=None, fonte=None):
     graficos = [("taxas_funil.png", lambda d: ft.funil(execs, extra, d)),
                 ("taxas_mes.png", lambda d: ft.taxa_mes(mes, d)),
                 ("taxas_papel.png", lambda d: ft.papel_volume(papel, d)),
+                ("taxas_papel_mes.png", lambda d: ft.papel_mes(pm, d)),
                 ("taxas_custo_execucao.png", lambda d: ft.custo_execucao(execs, custo_papel, d)),
                 ("taxas_concentracao.png", lambda d: ft.concentracao(execs, d)),
                 ("taxas_custo_mensal.png", lambda d: ft.custo_mensal(execs, mes, d)),
@@ -196,9 +208,11 @@ def gerar(pasta, contagens=None, fonte=None):
         md += ["## Gráficos não gerados nesta rodada", ""] + [f"- {x}" for x in pulados] + [""]
     mes.reset_index().to_csv(saida / "taxas_por_mes.csv", index=False)
     papel.reset_index().to_csv(saida / "taxas_por_papel.csv", index=False)
+    pm.to_csv(saida / "taxas_por_papel_mes.csv", index=False)
     custo_papel.to_csv(saida / "taxas_custo_por_papel.csv", index=False)
     (saida / "taxas.md").write_text("\n".join(md), encoding="utf-8")
-    for nome in ["taxas_por_mes.csv", "taxas_por_papel.csv", "taxas_custo_por_papel.csv", "taxas.md"]:
+    for nome in ["taxas_por_mes.csv", "taxas_por_papel.csv", "taxas_por_papel_mes.csv", "taxas_custo_por_papel.csv",
+                 "taxas.md"]:
         artefatos[nome] = _sha256(saida / nome)
     (saida / "manifesto_taxas.json").write_text(json.dumps({
         "rodada": pasta.name, "rodada_id": m.get("rodada_id"), "fonte_sha256": sha_fonte, "contagens_sha256": sha_cont,

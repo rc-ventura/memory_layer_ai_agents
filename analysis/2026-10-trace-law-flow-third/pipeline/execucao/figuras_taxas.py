@@ -24,6 +24,7 @@ from execucao.figuras_painel import (SEM_UNIDADE, _limpar, _milhar, _n, _pct, _s
 
 MIN_N = 20         # abaixo disso, o mês ou o papel aparece em cinza: amostra pequena para uma taxa
 MIN_PASSOS = 1000  # mês do sistema com menos passos: cinza e fora da escala de cor na taxa por unidade e mês (D2, 16/10)
+MIN_PASSOS_PAPEL_MES = 100  # papel com menos passos no mês: cinza e fora da escala de cor na taxa por papel e mês
 MES_PT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
 
 
@@ -184,6 +185,93 @@ def papel_volume(papel, destino):
             f"dobro da taxa global: {lista}.",
             f"Pontos cinza: menos de {MIN_N} execuções do papel. A taxa é a do período inteiro (esconde o mês) e conta todos "
             "os erros do papel, de qualquer destino.")
+
+
+def papel_mes(pm, destino, topo=10):
+    """3b · Erros por papel e mês: a contagem (esquerda) e a taxa do próprio papel (direita) — o papel fixo (roadmap #37).
+
+    Cada linha traz, no rótulo, a fatia dos erros e a fatia dos passos do papel: concentrado de verdade é o papel que
+    tem mais erro do que passo. Escala de cor linear (não log), para a cor dizer onde está o erro."""
+    d = pm.assign(papel=pm.papel.map(nome_papel))
+    er = d.pivot_table(index="papel", columns="mes", values="erros", aggfunc="sum", fill_value=0)
+    pa = d.pivot_table(index="papel", columns="mes", values="actionsteps", aggfunc="sum", fill_value=0)
+    meses = sorted(er.columns)
+    er, pa = er.reindex(columns=meses, fill_value=0), pa.reindex(er.index).reindex(columns=meses, fill_value=0)
+    ordem = er.sum(axis=1).sort_values(ascending=False).index.tolist()
+    fica, resto = ordem[:topo], ordem[topo:]
+    er_t, pa_t = er.sum().sum(), pa.sum().sum()
+    linhas = er.loc[fica].copy(), pa.loc[fica].copy()
+    nomes = list(fica)
+    if resto:
+        linhas[0].loc[f"demais {len(resto)} papéis"] = er.loc[resto].sum()
+        linhas[1].loc[f"demais {len(resto)} papéis"] = pa.loc[resto].sum()
+        nomes.append(f"demais {len(resto)} papéis")
+    ce, cp = linhas
+    ce.loc["todos os papéis"], cp.loc["todos os papéis"] = er.sum(), pa.sum()
+    nomes.append("todos os papéis")
+    taxa = 100 * ce / cp.where(cp.gt(0))
+    pouco = (cp < MIN_PASSOS_PAPEL_MES).to_numpy()
+    n_l, n_c = ce.shape
+    rotulos = [n if i == n_l - 1 else f"{n}\n{_p(ce.loc[n].sum(), er_t, 0)} dos erros · {_p(cp.loc[n].sum(), pa_t, 0)} dos passos"
+               for i, n in enumerate(nomes)]
+    fig, axes = plt.subplots(1, 2, figsize=(20, 0.62 * n_l + 3.4), sharey=True)
+    for ax, tab, casas, rot in [(axes[0], ce, 0, "erros (contagem)"),
+                                (axes[1], taxa, 1, "% dos passos do próprio papel no mês")]:
+        dados = tab.to_numpy().astype(float)
+        cor = dados.copy()
+        cor[-1, :] = np.nan                              # a linha do total não entra na cor
+        if casas:
+            cor[pouco] = np.nan                          # nem os papéis com poucos passos no mês (taxa instável)
+        corpo = cor[~np.isnan(cor)]
+        norm = plt.Normalize(vmin=0, vmax=float(corpo.max())) if len(corpo) and corpo.max() > 0 else None
+        im = ax.imshow(np.where(np.isnan(cor), np.nan, cor), aspect="auto", cmap="Blues", interpolation="nearest",
+                       norm=norm)
+        for i in range(n_l):
+            for j in range(n_c):
+                v = dados[i, j]
+                if np.isnan(v) or (not casas and v <= 0):
+                    continue
+                escuro = not np.isnan(cor[i, j]) and norm is not None and norm(cor[i, j]) > 0.6
+                ax.text(j, i, _n(v, casas), ha="center", va="center", fontsize=8,
+                        color="white" if escuro else (MUTED if (casas and pouco[i, j]) else INK),
+                        fontweight="bold" if i == n_l - 1 else "normal")
+        ax.axhline(n_l - 1.5, color=INK2, lw=0.8)
+        ax.set_xticks(range(n_c), [_mes(m) for m in meses], fontsize=8)
+        ax.set_title(rot, loc="left", fontsize=10)
+        cb = fig.colorbar(im, ax=ax, orientation="horizontal", location="bottom", fraction=0.04, pad=0.08, aspect=60)
+        cb.ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _, c=casas: _n(v, c)))
+        cb.ax.tick_params(labelsize=7)
+        cb.set_label(rot + " (escala linear)", fontsize=8)
+    axes[0].set_yticks(range(n_l), rotulos, fontsize=8)
+    cima = [n for n in fica[:2]]
+    fe = ce.loc[cima].to_numpy().sum() / er_t
+    fp = cp.loc[cima].to_numpy().sum() / pa_t
+    fig.suptitle(f"Erros por papel e mês: {' e '.join(cima)} têm {_pct(100 * fe, 0)} dos erros, em {_pct(100 * fp, 0)} dos "
+                 f"passos. À direita, a taxa de cada papel no mês (sem cor, número cinza: menos de {_n(MIN_PASSOS_PAPEL_MES)} "
+                 "passos do papel no mês)", x=0.01, ha="left", fontsize=11)
+    _salvar(fig, destino)
+    corpo_t = taxa.loc[fica].where(~pd.DataFrame(pouco, index=taxa.index, columns=taxa.columns).loc[fica])
+    if corpo_t.stack().dropna().empty:         # base pequena: nenhuma célula com passos suficientes, vale qualquer uma
+        corpo_t = taxa.loc[fica]
+    p_ex, m_ex = corpo_t.stack().dropna().idxmax()
+    exemplo = (f"{_mes(m_ex)}, {p_ex}: {_n(ce.loc[p_ex, m_ex])} erros ÷ {_n(cp.loc[p_ex, m_ex])} passos do papel = "
+               f"{_n(taxa.loc[p_ex, m_ex], 1)}%")
+    sobre = [n for n in fica if ce.loc[n].sum() / er_t > 1.5 * cp.loc[n].sum() / pa_t]
+    sub = [n for n in fica if ce.loc[n].sum() / er_t < 0.5 * cp.loc[n].sum() / pa_t]
+    return ("Erros e taxa por papel e mês",
+            "Os erros se concentram em poucos papéis e meses porque o papel erra mais por passo, ou só porque roda mais?",
+            "Mesmas linhas e meses nos dois painéis. À esquerda, a contagem de erros por papel e mês; à direita, a taxa do "
+            "próprio papel: erros do papel no mês ÷ passos do papel no mês — o papel fixo, que separa \"o papel errou "
+            "mais\" de \"entrou um papel que erra mais\". Em cada linha, o rótulo traz a fatia dos erros e a fatia dos "
+            "passos: um papel com mais erros do que passos é concentrado de verdade; com menos, só roda muito. A "
+            "régua de cor é linear (não logarítmica) em cada painel: a célula com o dobro da cor tem o dobro do valor. "
+            f"Exemplo: {exemplo}. Onde a contagem sobe e a taxa não, foi volume. Erros muito acima do peso em passos: "
+            f"{', '.join(sobre) or 'nenhum'}; muito abaixo: {', '.join(sub) or 'nenhum'}. A última linha soma todos os papéis "
+            "e, na taxa, é a taxa do sistema no mês (a do gráfico de taxa por mês).",
+            "Conta todos os erros estruturados da rodada (erro é erro, de qualquer destino); o mapa papel × unidade conta só "
+            f"os observáveis, por isso os totais por papel diferem um pouco. Papel com menos de {_n(MIN_PASSOS_PAPEL_MES)} "
+            "passos no mês mostra o número em cinza, sem cor e fora da régua. A taxa por papel mistura prompts: se o prompt "
+            "do papel mudou no meio do período, o gráfico não separa isso do agente. Associação, não causa.")
 
 
 def custo_execucao(execs, custo_papel, destino):

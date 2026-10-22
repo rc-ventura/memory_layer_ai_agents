@@ -230,6 +230,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   unidades reais (tokens, 43.774 contra 10.074; passos inteiros, 4 contra 3), a razão escrita ao lado da barra, a média e o
   n de cada grupo; a estatística da barra continua a mediana (a decisão de 15/10 se mantém) → `figuras_taxas.custo_execucao`,
   teste `test_custo_execucao_em_valores_reais`; falta rodar na máquina da base 3 (`executar.py taxas`).
+- **21/10, entra o gráfico de erros e taxa por papel e mês (`taxas_papel_mes.png`; roadmap b3 #37, o papel fixo)** (Rafael, ao escrever o slide da escala: o gráfico por papel não mostra quanto cada papel erra por mês, e o mapa papel × unidade agrupa por unidade). Duas faixas lado a lado, contagem de erros e taxa do próprio papel no mês (erros ÷ passos do papel naquele mês), com a fatia dos erros e a fatia dos passos no rótulo de cada papel — "concentrado" só vale para o papel com mais erros do que passos. Régua de cor linear, não log. Só código e teste; falta rodar na máquina 2.
 - **21/10, o "`json` sem import" do RoteadorCivel é memória, não harness** (decisão do Rafael): na base 3, o import de
   `json` funciona no papel (218 de 241 erros corrigidos no passo seguinte importando; 129 imports rodaram; 0 "Import of
   json is not allowed"), inclusive com o prompt sem `json` na lista; o erro começa em mai/26, quando o `json` sai da lista,
