@@ -284,6 +284,69 @@ def papel_mes(pm, destino, topo=8, execucoes=None):
             "do papel mudou no meio do período, o gráfico não separa isso do agente. Associação, não causa.")
 
 
+def papel_entrada(pm, destino):
+    """3c · Em que mês cada papel aparece, e quanto pesa nos passos do mês (o mix) — roadmap #37, visão de contagem."""
+    d = pm.assign(papel=pm.papel.map(nome_papel))
+    ex = d.pivot_table(index="papel", columns="mes", values="execucoes", aggfunc="sum", fill_value=0)
+    pa = d.pivot_table(index="papel", columns="mes", values="actionsteps", aggfunc="sum", fill_value=0)
+    meses = sorted(ex.columns)
+    ex, pa = ex.reindex(columns=meses, fill_value=0), pa.reindex(ex.index).reindex(columns=meses, fill_value=0)
+    primeiro = {p: next(m for m in meses if ex.loc[p, m] > 0) for p in ex.index if ex.loc[p].sum() > 0}
+    ordem = sorted(primeiro, key=lambda p: (meses.index(primeiro[p]), -ex.loc[p].sum()))
+    ex, pa = ex.loc[ordem], pa.loc[ordem]
+    parte = 100 * pa / pa.sum().where(pa.sum().gt(0))     # % dos passos do mês: cada coluna soma 100
+    n_l, n_c = ex.shape
+    fig, axes = plt.subplots(1, 2, figsize=(20, 0.5 * n_l + 3.4), sharey=True)
+    for ax, tab, casas, rot, log in [(axes[0], ex, 0, "execuções do papel no mês (contagem)", True),
+                                     (axes[1], parte, 0, "% dos passos do mês (cada coluna soma 100%)", False)]:
+        dados = tab.to_numpy().astype(float)
+        cor = np.where(dados > 0, dados, np.nan)
+        pos = cor[~np.isnan(cor)]
+        norm = (LogNorm(vmin=pos.min(), vmax=pos.max()) if log and len(pos) and pos.max() > pos.min()
+                else plt.Normalize(vmin=0, vmax=float(pos.max())) if len(pos) else None)
+        im = ax.imshow(cor, aspect="auto", cmap="Blues", interpolation="nearest", norm=norm)
+        for i in range(n_l):
+            for j in range(n_c):
+                v = dados[i, j]
+                if np.isnan(v) or v <= 0:
+                    continue
+                txt = "<1" if (not log and v < 0.5) else _n(v, casas)
+                escuro = norm is not None and norm(v) > 0.65
+                ax.text(j, i, txt, ha="center", va="center", fontsize=8, color="white" if escuro else INK)
+        for i, p in enumerate(ordem):                   # o mês em que o papel aparece pela primeira vez
+            ax.add_patch(plt.Rectangle((meses.index(primeiro[p]) - 0.5, i - 0.5), 1, 1, fill=False, edgecolor=ORANGE, lw=2.2))
+        ax.set_xticks(range(n_c), [_mes(m) for m in meses], fontsize=8)
+        ax.set_title(rot, loc="left", fontsize=10)
+        cb = fig.colorbar(im, ax=ax, orientation="horizontal", location="bottom", fraction=0.04, pad=0.08, aspect=60)
+        cb.ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _, c=casas: _n(v, c)))
+        cb.ax.tick_params(labelsize=7)
+        cb.set_label(rot.split(" (")[0] + (" (escala log)" if log else " (escala linear)"), fontsize=8)
+    axes[0].set_yticks(range(n_l), [f"{p}\nprimeira vez em {_mes(primeiro[p])} · {_n(ex.loc[p].sum())} execuções"
+                                   for p in ordem], fontsize=8)
+    desde = [p for p in ordem if primeiro[p] == meses[0]]
+    depois = [p for p in ordem if primeiro[p] != meses[0]]
+    fig.suptitle(f"Quando cada papel aparece: {len(desde)} dos {len(ordem)} papéis já rodam em {_mes(meses[0])}"
+                 + (f"; os outros {len(depois)} entram entre {_mes(primeiro[depois[0]])} e {_mes(primeiro[depois[-1]])}"
+                    if depois else "") + ". Moldura laranja = primeiro mês do papel", x=0.01, ha="left", fontsize=11)
+    _salvar(fig, destino)
+    tot_mes = ex.sum()
+    saltos = tot_mes.pct_change().replace([np.inf, -np.inf], np.nan)
+    m_salto = saltos.idxmax() if saltos.notna().any() else meses[-1]
+    novos = [p for p in depois if primeiro[p] == m_salto]
+    return ("Quando cada papel aparece e o mix do mês",
+            "Em que mês cada papel entra, e o mix de papéis muda de um mês para o outro?",
+            "Uma linha por papel, na ordem do mês em que aparece pela primeira vez (moldura laranja), e os mesmos meses "
+            "nos dois painéis. À esquerda, as execuções do papel no mês (escala log: o 1 aparece, não some ao lado dos "
+            "milhares). À direita, a participação do papel nos passos do mês: cada coluna soma 100%, então a coluna é "
+            "o mix daquele mês e dá para ver o papel entrar e tomar espaço dos outros. Execução = execução + agente, "
+            f"com passos registrados. O maior salto de execuções entre dois meses seguidos foi em {_mes(m_salto)}"
+            + (f" (entram nele: {', '.join(novos)})" if novos else "") + ".",
+            "O primeiro mês é o primeiro com execução na base, não o da entrada em produção: papel que já aparece no "
+            f"primeiro mês da base ({_mes(meses[0])}) pode ser mais antigo, e os meses do começo da base têm poucas "
+            "execuções, então a data de entrada de um papel raro pode estar atrasada. Não traz modelo nem prompt (a base 3 "
+            "não os tem): uma mudança de modelo ou de prompt no mesmo papel não aparece aqui.")
+
+
 def custo_execucao(execs, custo_papel, destino):
     """4 · A execução típica com erro × sem erro, em valores reais: tokens e passos (medianas), a razão ao lado."""
     g = execs[execs.actionsteps.gt(0)].assign(com=lambda d: d.erros.gt(0))

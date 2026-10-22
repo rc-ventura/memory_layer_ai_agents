@@ -59,7 +59,7 @@ class TestTaxas(unittest.TestCase):
         man = json.loads((saida / "manifesto_taxas.json").read_text(encoding="utf-8"))
         self.assertTrue(all(man["verificacoes_juncao"].values()))
         self.assertEqual(man["linhas_sem_contagem"], 1)
-        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 11)
+        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 12)
         textos = [(saida / n).read_text(encoding="utf-8") for n in ["taxas.md", "taxas_por_mes.csv", "taxas_por_papel.csv",
                                                                   "taxas_por_papel_mes.csv"]]
         self.assertFalse(any("exec-" in t for t in textos))
@@ -74,11 +74,24 @@ class TestTaxas(unittest.TestCase):
                                                         ["qtd_actionsteps", "qtd_erros_estruturados"]}))
         self.assertEqual(int(pm.erros.sum()), 3)
         self.assertEqual(int(pm.actionsteps.sum()), 27)   # a linha sem quantidade fica fora
+        self.assertEqual(int(pm.execucoes.sum()), 7)      # 3 com erro + 4 sem erro; a sem quantidade fica fora
         with tempfile.TemporaryDirectory() as t:
             titulo, _, ler, limite = ft.papel_mes(pm, Path(t) / "x.png")
             self.assertTrue((Path(t) / "x.png").is_file())
         self.assertIn("dos erros", titulo + ler)
         self.assertIn("linear", ler)
+
+    def test_papel_entrada_acha_o_primeiro_mes(self):
+        """O primeiro mês de cada papel é o primeiro com execução; a figura diz quantos papéis entram depois."""
+        import execucao.figuras_taxas as ft
+        pm = pd.DataFrame({"papel": ["A", "A", "B", "C"], "mes": ["2026-01", "2026-02", "2026-02", "2026-03"],
+                           "execucoes": [5, 7, 2, 1], "actionsteps": [20, 30, 8, 3], "erros": [1, 2, 0, 0]})
+        with tempfile.TemporaryDirectory() as t:
+            titulo, _, ler, limite = ft.papel_entrada(pm, Path(t) / "x.png")
+            self.assertTrue((Path(t) / "x.png").is_file())
+        self.assertIn("fev/26", ler)           # o maior salto de execuções (5 → 9) é em fevereiro, quando entra o B
+        self.assertIn("B", ler)
+        self.assertIn("não os tem", limite)    # a base 3 não traz modelo nem prompt
 
     def test_custo_execucao_em_valores_reais(self):
         """O gráfico do custo mostra a mediana em unidades reais (tokens e passos inteiros), com a razão ao lado."""

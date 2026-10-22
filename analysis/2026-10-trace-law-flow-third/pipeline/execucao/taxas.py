@@ -136,7 +136,8 @@ def tabelas(f, c):
 def papel_por_mes(c):
     """Passos e erros de cada papel em cada mês (o papel fixo, roadmap b3 #37); só contagens, sem chave de execução."""
     ok = c[~c.qtd_actionsteps.isna()]
-    pm = ok.groupby(["papel", "mes_execucao"]).agg(actionsteps=("qtd_actionsteps", "sum"),
+    pm = ok.groupby(["papel", "mes_execucao"]).agg(execucoes=("cod_idef_exeo", "size"),
+                                                    actionsteps=("qtd_actionsteps", "sum"),
                                                     erros=("qtd_erros_estruturados", "sum")).reset_index()
     pm = pm.rename(columns={"mes_execucao": "mes"})
     pm["taxa"] = pm.erros / pm.actionsteps.where(pm.actionsteps.gt(0))
@@ -162,6 +163,7 @@ def gerar(pasta, contagens=None, fonte=None):
                 ("taxas_mes.png", lambda d: ft.taxa_mes(mes, d)),
                 ("taxas_papel.png", lambda d: ft.papel_volume(papel, d)),
                 ("taxas_papel_mes.png", lambda d: ft.papel_mes(pm, d, execucoes=papel.execucoes)),
+                ("taxas_papel_entrada.png", lambda d: ft.papel_entrada(pm, d)),
                 ("taxas_custo_execucao.png", lambda d: ft.custo_execucao(execs, custo_papel, d)),
                 ("taxas_concentracao.png", lambda d: ft.concentracao(execs, d)),
                 ("taxas_custo_mensal.png", lambda d: ft.custo_mensal(execs, mes, d)),
