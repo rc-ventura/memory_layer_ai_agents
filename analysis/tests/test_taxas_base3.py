@@ -59,12 +59,59 @@ class TestTaxas(unittest.TestCase):
         man = json.loads((saida / "manifesto_taxas.json").read_text(encoding="utf-8"))
         self.assertTrue(all(man["verificacoes_juncao"].values()))
         self.assertEqual(man["linhas_sem_contagem"], 1)
-        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 10)
-        textos = [(saida / n).read_text(encoding="utf-8") for n in ["taxas.md", "taxas_por_mes.csv", "taxas_por_papel.csv"]]
+        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 12)
+        textos = [(saida / n).read_text(encoding="utf-8") for n in ["taxas.md", "taxas_por_mes.csv", "taxas_por_papel.csv",
+                                                                  "taxas_por_papel_mes.csv"]]
         self.assertFalse(any("exec-" in t for t in textos))
         md = textos[0]
         self.assertIn("ActionSteps", md)
         self.assertIn("3 (11,1%)", md)   # 3 erros em 27 ActionSteps (3×5 + 4×3; a linha sem quantidade fica fora)
+
+    def test_papel_por_mes_soma_e_desenha(self):
+        """Erros e passos por papel e mês somam o total; o gráfico dá a fatia dos erros e a dos passos de cada papel."""
+        import execucao.figuras_taxas as ft
+        pm = taxas.papel_por_mes(self.cont_df.assign(**{c: pd.to_numeric(self.cont_df[c]) for c in
+                                                        ["qtd_actionsteps", "qtd_erros_estruturados"]}))
+        self.assertEqual(int(pm.erros.sum()), 3)
+        self.assertEqual(int(pm.actionsteps.sum()), 27)   # a linha sem quantidade fica fora
+        self.assertEqual(int(pm.execucoes.sum()), 7)      # 3 com erro + 4 sem erro; a sem quantidade fica fora
+        with tempfile.TemporaryDirectory() as t:
+            titulo, _, ler, limite = ft.papel_mes(pm, Path(t) / "x.png")
+            self.assertTrue((Path(t) / "x.png").is_file())
+        self.assertIn("dos erros", titulo + ler)
+        self.assertIn("linear", ler)
+
+    def test_papel_entrada_acha_o_primeiro_mes(self):
+        """O primeiro mês de cada papel é o primeiro com execução; a figura diz quantos papéis entram depois."""
+        import execucao.figuras_taxas as ft
+        pm = pd.DataFrame({"papel": ["A", "A", "B", "C"], "mes": ["2026-01", "2026-02", "2026-02", "2026-03"],
+                           "execucoes": [5, 7, 2, 1], "actionsteps": [20, 30, 8, 3], "erros": [1, 2, 0, 0]})
+        with tempfile.TemporaryDirectory() as t:
+            titulo, _, ler, limite = ft.papel_entrada(pm, Path(t) / "x.png")
+            self.assertTrue((Path(t) / "x.png").is_file())
+        self.assertIn("fev/26", ler)           # o maior salto de execuções (5 → 9) é em fevereiro, quando entra o B
+        self.assertIn("B", ler)
+        self.assertIn("não os tem", limite)    # a base 3 não traz modelo nem prompt
+
+    def test_custo_execucao_em_valores_reais(self):
+        """O gráfico do custo mostra a mediana em unidades reais (tokens e passos inteiros), com a razão ao lado."""
+        import execucao.figuras_taxas as ft
+        saida = taxas.gerar(self.rodada, self.cont, self.fonte)
+        md = (saida / "taxas.md").read_text(encoding="utf-8")
+        # com erro: 100 tokens e 5 passos (a mediana); sem erro: 60 tokens e 3 passos
+        self.assertIn("1,7× em tokens (100 ÷ 60) e 1,7× em passos (5 ÷ 3)", md)
+        self.assertIn("diferença de 2 passo(s)", md)
+        self.assertNotIn("× a execução típica sem erro", md)   # o eixo normalizado saiu
+        execs = pd.DataFrame({"tokens_total": [100.0, 100.0, 60.0, 60.0, 60.0], "actionsteps": [5.0, 5.0, 3.0, 3.0, 4.0],
+                              "erros": [1, 2, 0, 0, 0]})
+        cp = pd.DataFrame({"papel": ["Agent"], "n_com_erro": [2], "n_sem_erro": [3], "mediana_tokens_com_erro": [100.0],
+                           "mediana_tokens_sem_erro": [60.0]})
+        titulo, *_ = ft.custo_execucao(execs, cp, Path(self.tmp.name) / "custo.png")
+        self.assertIn("Custo", titulo)
+        self.assertTrue((Path(self.tmp.name) / "custo.png").stat().st_size > 0)
+        execs["erros"] = 0
+        with self.assertRaisesRegex(ValueError, "falta o grupo"):
+            ft.custo_execucao(execs, cp, Path(self.tmp.name) / "custo2.png")
 
     def test_erro_diferente_por_chave_trava(self):
         c = self.cont_df.copy()

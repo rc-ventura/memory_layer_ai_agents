@@ -1,0 +1,33 @@
+{
+  "o_que_e": "As decisões do pesquisador no degrau 2 (conferida) da validação das memórias: numa checagem que o script não fecha, o resultado que o pesquisador aceitou, os motivos que o script dava e o porquê. Gravado por `conferir_memorias.py --decidir`; lido pelo mesmo script, que mostra a checagem como 'decidido pelo pesquisador' enquanto o resultado e os motivos forem os aceitos.",
+  "itens": [
+    {
+      "id": "U_sandbox.E",
+      "base": "base3",
+      "checagem": "3_repete",
+      "sobre": "parcial",
+      "motivos": [
+        "usar print: o prompt já cita",
+        "usar type: o prompt já cita"
+      ],
+      "por": "Rafael",
+      "em": "2026-10-21",
+      "motivo": "O prompt cita print (e type, no JoogleAnalytics), mas não avisa sobre repr, dir, exec: a parte repetida é só o 'use isto no lugar', não o defeito — alarme falso (decisão 5 do fechamento do sandbox, 21/10)",
+      "fonte": {
+        "arquivo": "prompts_base1.jsonl",
+        "sha256_16": "6866742ffe5c2bc5",
+        "papeis": 16,
+        "versoes": 870,
+        "ambiente": {
+          "arquivo": "ambiente_base1.json",
+          "sha256_16": "a71f4fdb15f7fd4d",
+          "papeis": 13
+        },
+        "funcoes": {
+          "arquivo": "funcoes_sandbox.json",
+          "sha256_16": "d685de2d47ec7625"
+        }
+      }
+    }
+  ]
+}

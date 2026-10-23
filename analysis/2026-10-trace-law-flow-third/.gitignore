@@ -12,3 +12,6 @@ pipeline/resultados/validacao_observada_2026-10-07/*
 
 # Dados da base 3 (parquets da fonte e das contagens): já barrados por *.parquet na raiz; aqui a pasta inteira.
 data/
+
+# Saídas da apresentação gerada sem rodada (gerar_apresentacao.py); com rodada, vão para <rodada>/apresentacao/
+apresentacao/

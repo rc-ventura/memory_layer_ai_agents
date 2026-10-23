@@ -227,9 +227,12 @@ O que se monitora são sempre **erros**; o que muda é o recorte em que eles sã
 - **O custo:** o alarme de uma memória só dispara quando a unidade dela é minerada de novo, não em toda mineração —
   aceitável para memórias que não são injetadas.
 - **Onde fica o tipo:** no catálogo, na entrada da memória (o tipo e o alarme), não no `monitoramento.json`.
-- **Estado (20/10):** desenho decidido; a comparação no `catalogar_memoria.py` e os tipos no catálogo entram na etapa do
-  monitoramento do fechamento do sandbox (`b3 #50`). O primeiro caso: as 10 memórias D do sandbox (reforço) e a
-  `U_sandbox.B.RespostaBacen` (a decidir).
+- **Estado (22/10, Ajuste 29):** implementado. `catalogar_memoria.py --monitorar <ids> --tipo rara|reforço --motivo "…"
+  --decidido-em <data>` grava na entrada do catálogo o `monitorada`: o tipo, a decisão, a linha de base (a rodada e a
+  contagem de agora) e os gatilhos, com as regras do `monitorar.py` — rara → `regua` (a do `monitoramento.json`), reforço
+  → `cresce` (fator 3). No `--registrar` de uma mineração nova, o `monitorada` é preservado e um gatilho que dispara sai
+  como `ALARME … — leve ao pesquisador` (registra assim mesmo). O primeiro caso: as 13 memórias não injetadas do sandbox
+  — reforço: as 10 D e a B.OBFCivel; rara: a B.RespostaBacen e a C.CalculoTrabalhista.
 
 ## Uma ferramenta citada e não declarada: como um nome entra na lista (Ajuste 26, 20/10/2026)
 

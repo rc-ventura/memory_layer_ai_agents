@@ -223,6 +223,61 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   primeira rodada na base 3 com um HEAD que contenha essas emendas. As três observações do laudo para a base 3: conferir o
   esperado da emenda 8 (135); a ordem das raízes no `nomes` da B; o `destino_decidido_em` pelo título da entrada (feito)
   → [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md), "Revalidação 7".
+- **21/10, o gráfico do custo da execução (com × sem erro) mostra valores reais, não razões** (decisão do Rafael, ao
+  tentar ler o gráfico para a apresentação): a versão de 15/10 normalizava as barras (sem erro = 1×), o que escondia os
+  números de que o "4,3×" e o "1,3×" saem e usava duas escalas diferentes; a leitura natural "1,3× = 30% a mais de passos"
+  estava errada — são medianas inteiras, 4 passos contra 3 (um passo a mais). Agora cada painel tem as duas barras em
+  unidades reais (tokens, 43.774 contra 10.074; passos inteiros, 4 contra 3), a razão escrita ao lado da barra, a média e o
+  n de cada grupo; a estatística da barra continua a mediana (a decisão de 15/10 se mantém) → `figuras_taxas.custo_execucao`,
+  teste `test_custo_execucao_em_valores_reais`; falta rodar na máquina da base 3 (`executar.py taxas`).
+- **21/10, entra o gráfico de erros e taxa por papel e mês (`taxas_papel_mes.png`; roadmap b3 #37, o papel fixo)** (Rafael, ao escrever o slide da escala: o gráfico por papel não mostra quanto cada papel erra por mês, e o mapa papel × unidade agrupa por unidade). Duas faixas lado a lado, contagem de erros e taxa do próprio papel no mês (erros ÷ passos do papel naquele mês), com a fatia dos erros e a fatia dos passos no rótulo de cada papel — "concentrado" só vale para o papel com mais erros do que passos. Régua de cor linear, não log. Entram também os papéis que erram mais de 2× a taxa global com poucos erros (o AnaliseProcessual não some em "demais"). **Junto, `taxas_papel_entrada.png`:** em que mês cada papel aparece (execuções por papel e mês) e a participação dele nos passos do mês (o mix), com a moldura no primeiro mês — a data de entrada que a taxa mensal não dava. Só código e teste; falta rodar na máquina 2.
+- **21/10, o "`json` sem import" do RoteadorCivel é memória, não harness** (decisão do Rafael): na base 3, o import de
+  `json` funciona no papel (218 de 241 erros corrigidos no passo seguinte importando; 129 imports rodaram; 0 "Import of
+  json is not allowed"), inclusive com o prompt sem `json` na lista; o erro começa em mai/26, quando o `json` sai da lista,
+  mas com volume pequeno antes e queda em ago/26 ainda sem ele — a lista não explica o erro. A C global fica como está. A
+  divergência entre a lista do prompt e a do interpretador fica como fato a avisar à plataforma → dossiê do sandbox §2h,
+  16–17.
+- **21/10, o degrau 2 confere o ambiente pelo que o interpretador aceita, não pela lista do prompt** (confirmado na base 2,
+  foto `IMG_6014`: 520 de 520 imports de `json` rodam em 808 execuções cujo prompt não o lista; com a base 1, 531 de 531):
+  na mesma execução, o prompt não lista o `json` e o `import json` roda (base 1: 11 de 11 passos, em 3 papéis);
+  o prompt anuncia um ambiente que não é o real, e o agente segue o real. A checagem de ambiente do `conferir_memorias.py`
+  passa a ler a lista do interpretador (mensagem "Authorized imports are: [...]") onde ela existe; a do prompt fica para a
+  checagem de conflito. No smolagents, o `CodeAgent` aceita um interpretador pronto (`executor=`), e só o criado por ele
+  recebe a lista do agente (`agents.py`, l. 1515 e 1585, v1.26.0; reproduzido com um modelo falso,
+  `testar_sandbox_executor_proprio.py`) — o mecanismo da plataforma é hipótese → dossiê do sandbox §2h, 18–21; feito no
+  Ajuste 28 (as decisões 1–3 abaixo); aviso à plataforma, [transversal](roadmap-transversal.md) #7.
+- **21/10, as 8 decisões do fechamento do sandbox** (decisões do Rafael, uma por vez; plano do fechamento): (1) o que o
+  agente pode importar vem da **mensagem de erro do interpretador e dos imports que rodaram sem erro**; sem nenhum dos dois,
+  do prompt, com aviso; (2) com mais de uma lista no papel, o módulo tem de estar **em todas** (a reprovação mostra a
+  versão e os meses); (3) as funções do Python que uma memória manda usar se conferem por uma **lista testada no
+  interpretador**, na mesma mudança (fecha o `b3 #55`); (4) a checagem "uma causa só" sem a classificação de uso é
+  **decidida pelo pesquisador, memória por memória, com motivo** ("decidido pelo pesquisador", nunca "passa"; a
+  classificação automática vira item do kit); (5) a E fica **liberada da regra da repetição**: o prompt cita `print`, mas
+  não avisa sobre `repr`/`dir`/`exec` — alarme falso (registrada em `registros/decisoes_degrau2.json`); (6) a
+  **C.CalculoTrabalhista é memória rara** (2 erros, 1 mês): guardada, monitorada, não injetada; (7) a **parte F fica para
+  depois**: o sandbox não fecha sem ela, e ela volta quando a maior parte das memórias estiver no degrau 3; (8) o degrau 3
+  lê casos **na base 1** para as memórias que têm casos nela e **na base 2** para as que não têm ou têm pouco → Ajuste 28
+  (1–5); dossiê do sandbox §2h, 22.
+- **22/10, as 3 questões que o degrau 2 novo abriu no sandbox** (decisões do Rafael, uma por vez): (1) a C global no
+  managerAgent — na base 1 o interpretador do papel mostra uma lista sem `json` e nenhum `import json` rodou — **espera a
+  base 3** (o ambiente pela tabela da mineração): sem lista do papel lá, volta para decisão; lista sem `json`, a regra da
+  mineração (global = módulos em todas as listas) já resolve; lista com `json`, vale a base 3; (2) a regra de citação do
+  degrau 2 **exige a forma do Python** (`nome(` sem espaço, `from nome import`): a prosa do prompt do OBFCivel contava
+  como citação de `tools` (Ajuste 28; só o conflito da B.OBFCivel muda); (3) a **B.OBFCivel é memória de reforço**, como
+  as D: o prompt do OBFCivel já diz que as ferramentas são funções para chamar direto ("these tools are basically Python
+  functions which you can call with code", 4 de 4 versões na base 1) e não libera `tools`/`python_interpreter`/
+  `smolagents` — guardada, monitorada, não injetada. As memórias injetadas (e o degrau 3) ficam três: **C, E e
+  C.JoogleAnalytics** → dossiê do sandbox §2h, 22.
+- **22/10, a memória não injetada fica marcada e vigiada no catálogo** (aprovado pelo Rafael; o desenho de 20/10 no `16`,
+  "Dois níveis"): rara → alarme quando passa na régua; reforço → alarme quando triplica; a marcação passa de uma mineração
+  para a outra. Aplicado nas 13 não injetadas do sandbox — reforço: as 10 D e a B.OBFCivel; rara: a B.RespostaBacen e a
+  C.CalculoTrabalhista → Ajuste 29; dossiê do sandbox §2h, 25.
+- **22/10, o degrau 3 do sandbox lê casos de todas as bases, com prioridade para a base 3** (revisão da decisão 8 de
+  21/10, decisão do Rafael): a base 1 tem 6, 5 e 0 casos da C, da E e da C.JoogleAnalytics, e a base 2 parece pequena; a
+  base 3 tem 423, 317 e 231. Na base 3, até 30 casos por memória, cada um com o passo do erro e os vizinhos (n-1, n+1,
+  n+2), sem o prompt, lidos na máquina pela skill de investigação; nas bases 1 e 2, todos os casos que houver, com o trace
+  inteiro (pegam o "importou antes e o nome sumiu" que a janela da base 3 pode não mostrar). Para ler a base 3, a pasta
+  dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
