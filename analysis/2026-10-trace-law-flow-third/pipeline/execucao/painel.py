@@ -235,6 +235,7 @@ def gerar(pasta, gasto_total=None):
         dep = fp.depois_de_perfis(perfis) if perfis else None
     if dep is not None and len(dep):
         graficos.append(("depois_do_erro.png", lambda d: fp.depois_do_erro(dep, tri, d)))
+        graficos.append(("depois_do_erro_populacao.png", lambda d: fp.depois_populacao(dep, tri, d)))
     else:
         pulados.append("O que vem depois do erro: a rodada não tem `consolidacao_depois_unidade.csv` nem perfis.")
     if "consolidacao_pendencias_papel_mes.csv" in m["artefatos"]:
