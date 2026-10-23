@@ -359,6 +359,14 @@ passos sem erro, sem falhas silenciosas, sem tokens de entrada × saída por uni
 n+2. Cada ausência está no roadmap (#13, #15, #16, #32) ou no [pedido de dados](05-pedido-queries.md). A figura do
 depois do erro não traz a unidade de sinal de harness.
 
+**A recuperação do sistema inteiro (23/10, a rodar na máquina 2):** a tabela acima conta por erro e vê um passo; a
+pergunta "o agente se recupera?" pede a conta por execução. Ela entra na parte 2 do relatório (`executar.py relatorio`):
+cada papel numa execução conta uma vez, do primeiro erro até o fim do papel (um erro só, cascata, recaída, terminou no
+erro, limite de passos), sobre o denominador das contagens, na população e por papel. Dá sem o trace completo porque a
+base 3 tem todos os erros de cada papel e a query traz se o passo seguinte errou; conferido na base 1, onde o trace
+completo dá a resposta (354 de 354 trajetórias iguais). Os números da base 3 entram aqui quando a rodada voltar
+([roadmap](04-roadmap.md) #56).
+
 ### 7.8 · O nome não definido no primeiro passo (contagens de 13/10)
 
 Duas contagens na máquina 2, sobre a mesma rodada, explicam o maior grupo pendente (os 5.818 de "predecessor não

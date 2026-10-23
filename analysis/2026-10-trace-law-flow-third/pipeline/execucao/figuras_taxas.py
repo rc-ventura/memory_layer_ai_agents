@@ -19,6 +19,7 @@ import pandas as pd
 
 import base_pipeline as bp
 from paleta import BASE, BLUE, GRID, INK, INK2, MUTED, ORANGE, RESIDUO
+from execucao.recuperacao import CATEGORIAS, CATEGORIAS_EXEC
 from execucao.figuras_painel import (SEM_UNIDADE, _limpar, _milhar, _n, _pct, _salvar, _tok as tok, papel as nome_papel,
                                      refs_tamanho, rotular, unidade)
 
@@ -766,3 +767,108 @@ def prioridade(papel, upt, tri, destino, cobertura=0.95):
             "mostra a mesma coisa como fatia do gasto de cada papel; este mostra o volume, que é o que decide onde começar.",
             "Tokens do passo com erro, não da recuperação. O teto não desconta o custo de injetar a memória e supõe evitar "
             "todos os erros das candidatas.")
+
+
+_CLARAS = {"#b7e4c7", "#e0dfd8", "#c3c2b7", "#52b788"}   # segmentos em que o % vai em tinta escura
+
+
+def _barra_empilhada(ax, y, partes, total, altura=0.7):
+    """Uma barra 100% em `y`: `partes` = [(n, cor)]; o % escrito no segmento quando cabe (≥ 4%)."""
+    esq = 0.0
+    for n, cr in partes:
+        v = 100 * n / total if total else 0
+        ax.barh(y, v, left=esq, color=cr, edgecolor="white", height=altura)
+        if v >= 4:
+            ax.text(esq + v / 2, y, _pct(v, 0), ha="center", va="center", fontsize=8,
+                    color=INK if cr in _CLARAS else "white")
+        esq += v
+
+
+def recuperacao_populacao(pop, extra, destino):
+    """11 · A recuperação depois do erro, na população: execuções e papéis com erro (censo dos erros da base 3)."""
+    ex, pa = pop[pop.nivel.eq("execuções")].set_index("categoria"), pop[pop.nivel.eq("papéis com erro")].set_index("categoria")
+    n_ex, n_pa = int(ex.total.iloc[0]), int(pa.total.iloc[0])
+    fig, (a1, a2) = plt.subplots(2, 1, figsize=(13, 4.6), gridspec_kw={"hspace": 1.6})
+    for ax, tab, cats, rot in [(a1, ex, CATEGORIAS_EXEC, f"execuções\n{_n(n_ex)}"),
+                               (a2, pa, CATEGORIAS, f"papéis com erro\n{_n(n_pa)}")]:
+        _barra_empilhada(ax, 0, [(tab.n.get(k, 0), c) for k, _, c in cats], tab.total.iloc[0])
+        ax.set_yticks([0], [rot], fontsize=9)
+        ax.set_xlim(0, 100)
+        ax.set_xticks(range(0, 101, 25))
+        ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in cats], labels=[r for _, r, _ in cats],
+                  ncol=2 if len(cats) > 4 else 4, fontsize=8, frameon=False, loc="lower left", bbox_to_anchor=(0, 1.0))
+        _limpar(ax)
+    a2.set_xlabel("% das execuções (em cima) e dos papéis com erro (embaixo)")
+    com_erro = n_ex - int(ex.n.get("sem_erro", 0))
+    verde = sum(int(pa.n.get(k, 0)) for k in ["um_erro", "cascata", "recaida"])
+    de_novo = int(pa.n.get("cascata", 0) + pa.n.get("recaida", 0))
+    nao = int(pa.n.get("terminou_no_erro", 0) + pa.n.get("limite_de_passos", 0))
+    a1.set_title(f"De {_n(n_ex)} execuções, {_p(com_erro, n_ex)} tiveram erro. Dos {_n(n_pa)} papéis que erraram, "
+                 f"{_p(pa.n.get('um_erro', 0), n_pa)} erraram uma vez só, {_p(de_novo, n_pa)} erraram de novo e se "
+                 f"recuperaram, {_p(nao, n_pa)} não se recuperaram", loc="left", fontsize=11, pad=48)
+    _salvar(fig, destino)
+    indet = int(pa.n.get("indeterminado", 0))
+    return ("A recuperação depois do erro: execuções e papéis",
+            "Quando o sistema erra, o agente se recupera, erra de novo ou termina no erro?",
+            "A conta é por trajetória, não por erro: cada papel numa execução conta uma vez, do primeiro erro até o fim do "
+            "papel. Barra de cima: todas as execuções das contagens (o denominador), separadas em sem erro estruturado, "
+            "errou e todo papel seguiu sem erro até o fim, algum papel terminou no erro ou esgotou os passos, e "
+            "indeterminado. Barra de baixo: só os papéis com erro, pelo que aconteceu — um erro só e depois nenhum; uma "
+            "cascata (errou de novo no passo seguinte) e depois nenhum; uma recaída (passou um passo sem erro e errou de "
+            "novo mais adiante) e depois nenhum; o último passo do papel com erro; o limite de passos; e indeterminado "
+            f"(os vizinhos de dois erros não conferem). Seguiram sem erro até o fim (os três verdes): "
+            f"{_p(verde, n_pa)} dos papéis com erro. Dos {_n(extra['erros'])} erros, {_n(extra['erros_em_cascata'])} "
+            "vêm logo depois de outro erro do mesmo papel. Os números por papel e os motivos dos indeterminados estão nas "
+            "tabelas `recuperacao_*.csv`.",
+            "\"Seguiu sem erro até o fim\" é sinal de recuperação, não sucesso: a qualidade da resposta não está na base e "
+            "uma falha silenciosa não é erro estruturado (a suspeita da query pega pouco). A base 3 tem todos os erros de "
+            "cada papel, por isso o \"até o fim\" vale; o número de passos depois do último erro não é medido (a posição "
+            f"de cada passo no papel não está na base). Indeterminados: {_n(indet)} papéis. Sequência entre dois erros não "
+            "prova que um causou o outro.")
+
+
+def recuperacao_papel(por_papel, destino, topo=12):
+    """12 · A mesma recuperação, um papel por barra (os papéis com mais trajetórias com erro; o resto numa barra)."""
+    cats = [k for k, _, _ in CATEGORIAS]
+    p = por_papel.copy()
+    corte = topo if len(p) > topo + 1 else len(p)   # um papel só a mais vai pelo nome, não como "demais 1 papéis"
+    sel, resto = p.head(corte), p.iloc[corte:]
+    linhas = [(nome_papel(r.papel), r) for _, r in sel.iterrows()]
+    if len(resto):
+        soma = resto[cats + ["com_erro", "execucoes"]].sum()
+        linhas.append((f"demais {len(resto)} papéis", soma))
+    fig, ax = plt.subplots(figsize=(14, 0.6 * len(linhas) + 2.4))
+    for y, (nome, r) in enumerate(linhas):
+        _barra_empilhada(ax, y, [(r[k], c) for k, _, c in CATEGORIAS], r.com_erro, altura=0.75)
+        ax.text(101, y, f"{_n(r.com_erro)} de {_n(r.execucoes)} {'execução' if r.execucoes == 1 else 'execuções'} do "
+                f"papel com erro ({_p(r.com_erro, r.execucoes)})",
+                va="center", fontsize=8, color=INK2)
+    ax.set_yticks(range(len(linhas)), [n for n, _ in linhas], fontsize=8.5)
+    for lab, (_, r) in zip(ax.get_yticklabels(), linhas):
+        if r.com_erro < MIN_N:
+            lab.set_color(MUTED)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 100)
+    ax.set_xticks(range(0, 101, 25))
+    ax.set_xlabel("% dos papéis com erro (cada papel numa execução conta uma vez)")
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in CATEGORIAS], labels=[r for _, r, _ in CATEGORIAS],
+              ncol=2, fontsize=8, frameon=False, loc="lower left", bbox_to_anchor=(0, 1.0))
+    _limpar(ax)
+    g = sel[sel.com_erro.ge(MIN_N)] if sel.com_erro.ge(MIN_N).any() else sel
+    de_novo = (g.cascata + g.recaida + g.terminou_no_erro + g.limite_de_passos) / g.com_erro
+    pior, melhor = de_novo.idxmax(), de_novo.idxmin()
+    ax.set_title(f"Quem mais erra de novo ou termina no erro é o {nome_papel(g.papel[pior])} "
+                 f"({_pct(100 * de_novo[pior], 0)} dos papéis com erro); o que menos, o {nome_papel(g.papel[melhor])} "
+                 f"({_pct(100 * de_novo[melhor], 0)})", loc="left", fontsize=11, pad=48)
+    _salvar(fig, destino)
+    return ("A recuperação depois do erro, por papel",
+            "Em que papel o agente se recupera de um erro, e em que papel ele erra de novo ou termina no erro?",
+            f"Uma barra por papel, os {topo} com mais trajetórias com erro (o resto numa barra), cada uma somando 100% dos "
+            "papéis com erro dele, nas mesmas categorias do gráfico anterior. À direita, quantas execuções do papel "
+            "tiveram erro, sobre todas as execuções dele (o denominador das contagens). O título compara os papéis com "
+            f"pelo menos {MIN_N} trajetórias com erro pela soma de cascata, recaída, terminou no erro e limite de passos. "
+            "Muito verde-escuro = o papel erra uma vez e segue; muito verde-claro ou vermelho = o erro desse papel puxa "
+            "outros. Hipótese, não testada: o papel com mais cascata é onde a mensagem de erro menos ajuda o agente a se "
+            "corrigir.",
+            f"Nome em cinza: menos de {MIN_N} trajetórias com erro (porcentagem instável). As mesmas limitações do gráfico "
+            "anterior: sinal de recuperação, não sucesso; só erros estruturados.")

@@ -290,6 +290,20 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   nota: em 77% o passo seguinte dá outro erro — o degrau 3 anota qual); a **E** (inspeção, 92% dos 317; nota: os 8% de outros
   usos são funções barradas, o "não chame" continua certo). Gravadas em `registros/decisoes_degrau2.json` pelo
   `conferir_memorias.py --decidir` → dossiê do sandbox §2h, 27.
+- **23/10, a recuperação depois do erro é contada por trajetória, não por erro, e entra no relatório** (decisão do
+  Rafael, ao pedir um sinal de recuperação do sistema inteiro na base 3, que é censo dos erros): o gráfico "o que vem
+  depois do erro" da parte 1 conta por erro (uma cascata de 5 erros entra 4 vezes como "errou de novo") e só vê o passo
+  seguinte; fica como está, para a pergunta "que erro prende o agente". O novo conta cada papel numa execução uma vez,
+  do primeiro erro até o fim do papel: um erro só, cascata, recaída (os três seguidos de nenhum erro estruturado até o
+  fim), terminou no erro, limite de passos, indeterminado. Dois gráficos na parte 2: a população (execuções, com o
+  denominador das contagens, e papéis com erro) e um por papel. **Por que dá sem o trace completo:** a base 3 tem todos
+  os erros de cada papel (a junção confere chave a chave), e as sequências saem dos vizinhos da query (o seguinte errou ou
+  não), conferidos par a par. **A numeração não serve de posição:** na base 1, o `step_number` difere da posição do
+  ActionStep no papel em 1.749 de 5.781 passos (30,3%) e recomeça em 491 de 1.550 papéis (nova chamada). **Teste com
+  resposta conhecida na base 1:** 354 de 354 trajetórias na mesma categoria pelo trace completo e só pelos erros. Lido
+  das contagens e da fonte, sem rodada nova → `execucao/recuperacao.py`, `figuras_taxas.recuperacao_*`,
+  `validacao/conferir_recuperacao_base1.py`, teste `test_recuperacao_base3`; base 3, roadmap #56; falta rodar na
+  máquina 2.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste

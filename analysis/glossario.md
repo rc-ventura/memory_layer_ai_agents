@@ -17,6 +17,8 @@ dizer.** Todo documento que usa códigos aponta para cá no topo. Código novo e
 | **`REGRAS_INVISIVEL`** | as regras que levam uma falha silenciosa a uma unidade do catálogo, sem nome de ferramenta (`base_pipeline.py`). Hoje, uma: JSON inválido com argumento colado de um retorno impresso → `U_repr_colado`. O que não casa fica sem unidade. |
 | **ocorrência** | uma **cascata × unidade**, nos dois baldes (decisão de 02/10, aplicada no Ajuste 12): erros — ou falhas silenciosas — seguidos do mesmo papel contam uma vez por unidade. |
 | **cascata** | erros consecutivos do mesmo papel na mesma execução. O 1º é o que importa; os seguintes são "seguidores". |
+| **trajetória** | um papel numa execução (execução × agente × papel), do primeiro ao último ActionStep. É a unidade de contagem da recuperação depois do erro na base 3 (23/10, `execucao/recuperacao.py`): cada trajetória com erro conta uma vez — um erro só, cascata, recaída, terminou no erro, limite de passos ou indeterminado. |
+| **recaída** | numa trajetória, o agente erra, passa ao menos um passo sem erro estruturado e erra de novo mais adiante (duas ou mais cascatas no mesmo papel). Diferente da cascata, em que o erro seguinte vem no passo logo depois. |
 
 ## 2 · As unidades de memória (os nomes `U_…`, `H_…`, `X_…`, `C_…`)
 
