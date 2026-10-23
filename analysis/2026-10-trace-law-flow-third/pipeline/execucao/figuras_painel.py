@@ -586,68 +586,6 @@ def depois_do_erro(dep, tri, destino):
             "matriz inteira (unidade → unidade seguinte) está em `consolidacao_depois_unidade.csv`.")
 
 
-def _grupo_decisao(decisao):
-    """O destino (o rótulo da legenda de `DESTINO`) de uma decisão da triagem; o que não está na triagem é pendente."""
-    for chave, rotulo, _ in DESTINO:
-        if str(decisao).startswith(chave):
-            return rotulo
-    return "pendente"
-
-
-def depois_populacao(dep, tri, destino):
-    """10b · O mesmo "depois do erro", mas da população: todos os erros numa barra e, abaixo, um destino por barra."""
-    d = dep.copy()
-    verde = ROTULO_DEPOIS[1][0]
-    d["cat"] = d.depois.where(~(d.depois.eq(verde) & d.proximo_final_observado.astype(str).eq("True")), "final")
-    decisao = tri.set_index("unidade").decisao
-    d["grupo"] = d.unidade.map(lambda u: _grupo_decisao(decisao.get(u)))
-    linhas = [("todos os erros", d)] + [(r, d[d.grupo.eq(r)]) for _, r, _ in DESTINO if d.grupo.eq(r).any()]
-    fig, ax = plt.subplots(figsize=(14, 0.75 * len(linhas) + 2.6))
-    pct = {}
-    for y, (nome, g) in enumerate(linhas):
-        tot = g.erros.sum()
-        cats = g.groupby("cat").erros.sum()
-        pct[nome] = {c: 100 * cats.get(c, 0) / tot for c, _, _ in ROTULO_DEPOIS}
-        esq = 0.0
-        for chave, _, cr in ROTULO_DEPOIS:
-            v = pct[nome][chave]
-            ax.barh(y, v, left=esq, color=cr, edgecolor="white", height=0.78)
-            if v >= 4:
-                ax.text(esq + v / 2, y, f"{_n(v)}%", ha="center", va="center", fontsize=8,
-                        color=INK if cr in ("#74c69d", "#e8a0a0", "#e9c46a", "#d9d9d9") else "white")
-            esq += v
-    ax.set_yticks(range(len(linhas)), [f"{n}\n{_n(g.erros.sum())} {'erro' if g.erros.sum() == 1 else 'erros'}"
-                                       for n, g in linhas], fontsize=8.5)
-    ax.invert_yaxis()
-    ax.axhline(0.5, color=INK2, lw=0.8)
-    ax.set_xlim(0, 100)
-    ax.set_xticks(range(0, 101, 25))
-    ax.set_xlabel("% dos erros, pelo que acontece no passo seguinte")
-    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in ROTULO_DEPOIS],
-              labels=[r for _, r, _ in ROTULO_DEPOIS], ncol=3, fontsize=8, frameon=False,
-              loc="lower left", bbox_to_anchor=(0, 1.0))
-    todos = pct["todos os erros"]
-    sem, fim = todos[ROTULO_DEPOIS[1][0]], todos["final"]
-    erra = todos[ROTULO_DEPOIS[2][0]] + todos[ROTULO_DEPOIS[3][0]]
-    ax.set_title(f"Depois de um erro: o passo seguinte segue sem erro em {_pct(sem + fim, 0)} (resposta final em "
-                 f"{_pct(fim, 0)}) e erra de novo em {_pct(erra, 0)}", loc="left", fontsize=11, pad=42)
-    for lado in ["top", "right"]:
-        ax.spines[lado].set_visible(False)
-    _salvar(fig, destino)
-    return ("O que vem depois do erro, na população e por destino",
-            "Depois de um erro, o sistema segue em frente, entrega a resposta ou erra de novo — e isso muda conforme o destino?",
-            "A primeira barra soma todos os erros estruturados da rodada; as outras separam os erros pelo destino da sua unidade "
-            "(candidata a memória, sinal de harness, harness / infra, resíduo, pendente…). Cada barra soma 100%. Verde-escuro: o "
-            "passo seguinte é a resposta final; verde-claro: é outro passo de trabalho, sem erro; vermelho-escuro e rosa: o passo "
-            f"seguinte também erra (a cascata). Soma da recuperação aparente: {_pct(sem + fim, 1)} dos erros "
-            f"({_pct(fim, 1)} com a resposta final no passo seguinte); novo erro: {_pct(erra, 1)}. A figura por unidade é a "
-            "anterior; esta é a visão do sistema.",
-            "É um **sinal de recuperação, não o sucesso**: \"segue sem erro\" e \"resposta final\" não dizem se a resposta "
-            "está certa, e a janela vai só até dois passos depois do erro (o fim da execução não está no arquivo). Pode haver "
-            "outro problema que não é erro estruturado. A sequência entre dois erros não prova que um causou o outro. A visão "
-            "por papel exigiria o papel na tabela do depois (hoje só há a unidade).")
-
-
 def depois_de_perfis(perfis):
     """Rodadas antigas (sem `consolidacao_depois_unidade.csv`): a mesma tabela, só das candidatas, a partir dos perfis."""
     linhas = [c.assign(unidade=u) for u, c in perfis.items()]
