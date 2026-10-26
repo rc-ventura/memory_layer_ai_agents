@@ -28,6 +28,87 @@
           "sha256_16": "d685de2d47ec7625"
         }
       }
+    },
+    {
+      "id": "U_sandbox.C",
+      "base": "base3",
+      "checagem": "5_uma_causa",
+      "sobre": "não verificável",
+      "motivos": [
+        "a entrada não traz `causas` (a classificação de uso do script específico)"
+      ],
+      "por": "Rafael",
+      "em": "2026-10-26",
+      "motivo": "Uma causa só: esquecer o import. Em 0 de 423 erros o módulo tinha sido importado antes (base 3, passo anterior: json 0/415, re 0/5, datetime 0/3; bases 1 e 2, execução inteira: 0/6 cada); o import nunca é barrado; o prompt não é a causa (base 2: 0,4% onde omite o json, 1,6% onde lista). Decisão 2 de 26/10; o degrau 3 confere de novo (dossiê do sandbox §2h, 27).",
+      "fonte": {
+        "arquivo": "prompts_base1.jsonl",
+        "sha256_16": "6866742ffe5c2bc5",
+        "papeis": 16,
+        "versoes": 870,
+        "ambiente": {
+          "arquivo": "ambiente_base1.json",
+          "sha256_16": "445fbc779e3584ac",
+          "papeis": 13
+        },
+        "funcoes": {
+          "arquivo": "funcoes_sandbox.json",
+          "sha256_16": "d685de2d47ec7625"
+        }
+      }
+    },
+    {
+      "id": "U_sandbox.C.JoogleAnalytics",
+      "base": "base3",
+      "checagem": "5_uma_causa",
+      "sobre": "não verificável",
+      "motivos": [
+        "a entrada não traz `causas` (a classificação de uso do script específico)"
+      ],
+      "por": "Rafael",
+      "em": "2026-10-26",
+      "motivo": "Uma causa só para o erro que a memória cobre: esquecer o import do pandas (0 de 231 importados antes; pandas nunca barrado no papel). Nota: em 177 de 231 (77%) o agente importa e o passo seguinte dá outro erro (base 2: 4 de 6) — o degrau 3 deve anotar qual é esse erro, que pode mudar o valor do bilhete. Decisão 3 de 26/10 (dossiê do sandbox §2h, 27).",
+      "fonte": {
+        "arquivo": "prompts_base1.jsonl",
+        "sha256_16": "6866742ffe5c2bc5",
+        "papeis": 16,
+        "versoes": 870,
+        "ambiente": {
+          "arquivo": "ambiente_base1.json",
+          "sha256_16": "445fbc779e3584ac",
+          "papeis": 13
+        },
+        "funcoes": {
+          "arquivo": "funcoes_sandbox.json",
+          "sha256_16": "d685de2d47ec7625"
+        }
+      }
+    },
+    {
+      "id": "U_sandbox.E",
+      "base": "base3",
+      "checagem": "5_uma_causa",
+      "sobre": "não verificável",
+      "motivos": [
+        "a entrada não traz `causas` (a classificação de uso do script específico)"
+      ],
+      "por": "Rafael",
+      "em": "2026-10-26",
+      "motivo": "Causa principal: inspecionar um valor, 292 de 317 (92%: __name__ 182, repr 98, dir 9, __class__/__doc__/__len__ 3). Nota: 25 (8%) são outros usos (exec 8, __import__ 5, bytes 5, open 5, hash 2), funções barradas para as quais o 'não chame' continua certo; só a alternativa print(type(x)) não se aplica. Decisão 4 de 26/10 (dossiê do sandbox §2h, 27).",
+      "fonte": {
+        "arquivo": "prompts_base1.jsonl",
+        "sha256_16": "6866742ffe5c2bc5",
+        "papeis": 16,
+        "versoes": 870,
+        "ambiente": {
+          "arquivo": "ambiente_base1.json",
+          "sha256_16": "445fbc779e3584ac",
+          "papeis": 13
+        },
+        "funcoes": {
+          "arquivo": "funcoes_sandbox.json",
+          "sha256_16": "d685de2d47ec7625"
+        }
+      }
     }
   ]
 }

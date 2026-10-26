@@ -284,6 +284,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   que se veja e evita o único risco que a evidência aponta. Nos outros papéis a C fica: o interpretador aceita `json` em
   todos os vistos, e o bilhete é um lembrete, com a mesma causa (esquecimento) onde o prompt lista o `json` e onde o omite.
   Para valer, a memória precisa de um alcance "global, exceto papéis" (ajuste a aprovar) → dossiê do sandbox §2h, 27.
+- **26/10, "uma causa só" passa nas três memórias do sandbox que vão para o agente** (decisões do Rafael, uma por vez):
+  a **C** (esquecimento; 0 de 423 importados antes, import nunca barrado); a **C.JoogleAnalytics** (esquecimento, 0 de 231;
+  nota: em 77% o passo seguinte dá outro erro — o degrau 3 anota qual); a **E** (inspeção, 92% dos 317; nota: os 8% de outros
+  usos são funções barradas, o "não chame" continua certo). Gravadas em `registros/decisoes_degrau2.json` pelo
+  `conferir_memorias.py --decidir` → dossiê do sandbox §2h, 27.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste

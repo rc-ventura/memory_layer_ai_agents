@@ -906,10 +906,14 @@ esquecimento nos dois grupos (base 2, item 14: 0,4% onde o prompt omite contra 1
 precisa de um alcance "global, exceto papéis" (hoje só existe global ou de um papel): ajuste no esquema, no
 `conferir_memorias.py` e no script da mineração, com nova mineração na máquina — a propor e aprovar antes de aplicar.
 
-**Em aberto (decisões do Rafael, uma por vez):** (2) "uma causa só" da C — recomendação: passa (H4); (3) da
-C.JoogleAnalytics — recomendação: passa para o primeiro erro, com a leitura do degrau 3 anotando o erro seguinte (H5);
-(4) da E — recomendação: passa, com 92% de inspeção; os 8% de outros usos são funções barradas, para as quais o "não chame"
-continua certo (H6). Depois: a leitura do degrau 3 (os 30 casos de cada uma, dois leitores) na máquina.
+**Decisões 2 a 4 (Rafael, 26/10): "uma causa só" passa nas três**, gravadas por `conferir_memorias.py --decidir`
+(`analysis/registros/decisoes_degrau2.json`, "decidido pelo pesquisador", com o motivo): (2) **C** — esquecimento, 0 de 423
+importados antes (H4); (3) **C.JoogleAnalytics** — esquecimento para o erro que a memória cobre (0 de 231), **com a nota**:
+o degrau 3 anota qual é o erro seguinte (77%), que pode mudar o valor do bilhete (H5); (4) **E** — causa principal
+inspeção (92%), **com a nota**: os 8% de outros usos são funções barradas, para as quais o "não chame" continua certo (H6).
+Conferência com a base 1 depois do registro: C.JoogleAnalytics e E com as cinco checagens em "passa" ou "decidido" (degrau
+2 completo); a C ainda falha no ambiente só pelo managerAgent (o ajuste do alcance, decisão 1, resolve). Falta: o ajuste
+do alcance, o `--registrar` (bases 1 e 2) e a leitura do degrau 3 na máquina.
 
 ## 3 · A memória que o script montou (antes da emenda 4)
 
