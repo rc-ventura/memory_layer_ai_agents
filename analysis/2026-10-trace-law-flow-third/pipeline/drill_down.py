@@ -31,6 +31,9 @@ import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 PIPELINE = Path(__file__).resolve().parent
+sys.path.insert(0, str(PIPELINE))
+from mineracao_observada import caminho_io  # noqa: E402  (o caminho longo do Windows: crus/<exec_id>__<papel>__<idx>.json passa de 260)
+
 RESULTADOS = PIPELINE / "resultados"
 CHAVE = ("cod_idef_exeo", "papel", "step_pos")
 # a janela: (rótulo, [(campo, coluna da fonte)]) — a ordem em que o leitor vê o caso
@@ -89,14 +92,14 @@ def janela(r, maximo=None):
 def tabela(memoria_id, de):
     unidade = memoria_id.split(".")[0]
     origem = RESULTADOS / de
-    with open(origem, encoding="utf-8", newline="") as fh:
+    with open(caminho_io(origem), encoding="utf-8", newline="") as fh:
         sel = [r for r in csv.DictReader(fh) if r.get("memoria_id") == memoria_id]
     if not sel:
         sys.exit(f"nenhum erro de {memoria_id} em {de}")
     destino = RESULTADOS / "mineracao" / unidade / f"casos_{memoria_id}.csv"
-    destino.parent.mkdir(parents=True, exist_ok=True)
+    caminho_io(destino.parent).mkdir(parents=True, exist_ok=True)
     campos = ["exec_id", "agente", "role", "idx", "mes", "memoria_id", "step_ref"]
-    with open(destino, "w", encoding="utf-8", newline="") as fh:
+    with open(caminho_io(destino), "w", encoding="utf-8", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=campos)
         w.writeheader()
         w.writerows({**{c: r.get(c, "") for c in campos}, "idx": r["step_pos"]} for r in sel)
@@ -105,19 +108,19 @@ def tabela(memoria_id, de):
 
 def evidencia(nome, caminho=None):
     pasta = RESULTADOS / "evidencia" / nome
-    with open(pasta / "casos.csv", encoding="utf-8", newline="") as fh:
+    with open(caminho_io(pasta / "casos.csv"), encoding="utf-8", newline="") as fh:
         casos = list(csv.DictReader(fh))
-    (pasta / "crus").mkdir(exist_ok=True)
-    (pasta / "derivados").mkdir(exist_ok=True)
+    caminho_io(pasta / "crus").mkdir(exist_ok=True)
+    caminho_io(pasta / "derivados").mkdir(exist_ok=True)
     ok = 0
     for c in casos:
         rs = linhas(c["exec_id"], c["role"], c.get("idx"), caminho)
         if len(rs) != 1:
             continue
         base = f"{c['exec_id']}__{c['role']}__{c.get('idx')}"
-        (pasta / "crus" / f"{base}.json").write_text(json.dumps(rs[0], ensure_ascii=False, indent=2, default=str),
-                                                    encoding="utf-8")
-        (pasta / "derivados" / f"{base}.md").write_text(janela(rs[0]) + "\n", encoding="utf-8")
+        caminho_io(pasta / "crus" / f"{base}.json").write_text(
+            json.dumps(rs[0], ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+        caminho_io(pasta / "derivados" / f"{base}.md").write_text(janela(rs[0]) + "\n", encoding="utf-8")
         ok += 1
     print(f"crus conferidos: {ok} de {len(casos)} (a linha da fonte achada pela chave exec_id × papel × posição)")
     return 0 if ok == len(casos) else 1

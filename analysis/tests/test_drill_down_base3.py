@@ -71,6 +71,23 @@ class TestDrillDownBase3(unittest.TestCase):
         self.assertEqual(cru["error_code_action"], "print(repr(x))")
         self.assertTrue((pasta / "derivados" / "e1__P__3.md").exists())
 
+    def test_toda_gravacao_passa_pelo_caminho_longo(self):
+        # máquina da base, 26/10: crus/<exec_id>__<papel>__<idx>.json com 288 caracteres → FileNotFoundError no Windows
+        vistos = []
+        original = dd.caminho_io
+        dd.caminho_io = lambda p: (vistos.append(Path(p).name), original(p))[1]
+        try:
+            dd.tabela("U_x.E", "mineracao/U_x/erros_lidos.csv")
+            pasta = self.res / "evidencia" / "t"
+            pasta.mkdir(parents=True)
+            (pasta / "casos.csv").write_text(
+                (self.res / "mineracao" / "U_x" / "casos_U_x.E.csv").read_text(encoding="utf-8"), encoding="utf-8")
+            dd.evidencia("t", self.fonte)
+        finally:
+            dd.caminho_io = original
+        for nome in ("casos_U_x.E.csv", "casos.csv", "crus", "derivados", "e1__P__3.json", "e1__P__3.md"):
+            self.assertIn(nome, vistos)
+
     def test_fonte_pela_variavel_de_ambiente(self):
         os.environ["DRILL_DOWN_FONTE"] = str(self.fonte)
         try:
