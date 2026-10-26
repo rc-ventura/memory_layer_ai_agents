@@ -26,6 +26,9 @@ cm = carregar("catalogar_memoria", KIT / "catalogar_memoria.py")
 vm = carregar("validar_memoria", KIT / "validar_memoria.py")
 sys.path.insert(0, str(RAIZ / "analysis/2026-09-trace-law-flow-second/scripts"))
 ep = carregar("extrair_prompts_base2", RAIZ / "analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py")
+ea = carregar("extrair_ambiente_base2", RAIZ / "analysis/2026-09-trace-law-flow-second/scripts/extrair_ambiente_base2.py")
+am = carregar("ambiente_da_mineracao",
+              RAIZ / "analysis/2026-10-trace-law-flow-third/pipeline/validacao/ambiente_da_mineracao.py")
 
 LISTA = "You can use imports in your code, but only from the following list of modules: {}"
 COM_PANDAS = "def get_docs(p: string) -> object:\n    pass\n" + LISTA.format("['json', 'pandas', 're']")
@@ -84,6 +87,11 @@ class TestChecagens(unittest.TestCase):
         self.assertFalse(cf.citado("the tools are listed below; copy the result", "tools"))
         self.assertFalse(cf.citado("the tools are listed below; copy the result", "copy"))
         self.assertFalse(cf.citado("x.copy()", "copy"))   # método de outro objeto, não o módulo
+        # Ajuste 28: a prosa em inglês do prompt do OBFCivel (base 1) não é citação
+        self.assertFalse(cf.citado("and mandatory fallback tools (actions to take if missing)", "tools"))
+        self.assertFalse(cf.citado("not in the document or in the returns from tools.", "tools"))
+        self.assertTrue(cf.citado("from tools import get_docs", "tools"))
+        self.assertTrue(cf.citado("from tools.sub import x", "tools"))
 
     def test_repete_lista_autorizada(self):
         self.assertEqual(cf.repete(nomes(nao_importar=["ast", "copy"]), SEM_PANDAS)[0], cf.FALHA)
@@ -196,6 +204,159 @@ class TestEsquema04(unittest.TestCase):
         reg = json.loads((RAIZ / "analysis/registros/memorias.json").read_text(encoding="utf-8"))
         for e in reg["itens"]:
             self.assertEqual(set(e["nomes"]), {"importar", "usar", "nao_importar", "nao_usar"}, e["id"])
+
+
+COM_JSON = {"listas": [{"modulos": ["json", "re"], "meses": ["2026-07"], "erros": 2}], "importados": {}}
+FUNCOES = {"funcionam": ["print", "type", "str"], "barradas": ["repr", "dir"]}
+
+
+class TestAmbienteDoInterpretador(unittest.TestCase):
+    """Ajuste 28: a checagem 1 pelo que o interpretador mostrou (--ambiente) e pelas funções testadas (--funcoes)."""
+
+    def test_o_interpretador_vence_o_prompt(self):
+        r, motivos = cf.ambiente(nomes(importar=["json"]), LISTA.format("['re']"), COM_JSON)
+        self.assertEqual(r, cf.PASSA)
+        self.assertIn("a lista veio do interpretador", motivos)
+
+    def test_em_todas_as_listas_do_papel(self):
+        duas = {"listas": COM_JSON["listas"] + [{"modulos": ["re"], "meses": ["2026-05"], "erros": 1}]}
+        r, motivos = cf.ambiente(nomes(importar=["json"]), SEM_PANDAS, duas)
+        self.assertEqual(r, cf.FALHA)
+        self.assertIn("importar json: fora da lista do interpretador: fora de 1 de 2 listas do interpretador (2026-05)",
+                      motivos)
+
+    def test_sem_lista_um_import_que_rodou_basta(self):
+        rodou = {"listas": [], "importados": {"pandas": {"passos": 3, "meses": ["2026-07"]}}}
+        self.assertEqual(cf.ambiente(nomes(importar=["pandas"]), SEM_PANDAS, rodou)[0], cf.PASSA)
+        self.assertEqual(cf.ambiente(nomes(usar=["pandas.read_json"]), SEM_PANDAS, rodou)[0], cf.PASSA)
+
+    def test_papel_fora_do_ambiente_cai_no_prompt(self):
+        r, motivos = cf.ambiente(nomes(importar=["pandas"]), SEM_PANDAS, {})
+        self.assertEqual(r, cf.FALHA)
+        self.assertIn("importar pandas: fora da lista autorizada", motivos)
+        self.assertIn("a lista veio do prompt", motivos)
+
+    def test_proibir_o_que_o_interpretador_aceita(self):
+        r, motivos = cf.ambiente(nomes(nao_importar=["json"]), LISTA.format("['re']"), COM_JSON)
+        self.assertEqual(r, cf.FALHA)
+        self.assertIn("não importar json: o interpretador aceita (numa lista do interpretador)", motivos)
+        self.assertEqual(cf.ambiente(nomes(nao_importar=["ast"]), SEM_PANDAS, COM_JSON)[0], cf.PASSA)
+
+    def test_funcoes_testadas_no_interpretador(self):
+        self.assertEqual(cf.ambiente(nomes(usar=["print", "type", "str"]), SEM_PANDAS, None, FUNCOES)[0], cf.PASSA)
+        r, motivos = cf.ambiente(nomes(usar=["repr"]), SEM_PANDAS, None, FUNCOES)
+        self.assertEqual(r, cf.FALHA)
+        self.assertIn("usar repr: função do Python barrada no interpretador", motivos)
+        self.assertEqual(cf.ambiente(nomes(usar=["len"]), SEM_PANDAS, None, FUNCOES)[0], cf.NV)   # fora da lista
+        self.assertEqual(cf.ambiente(nomes(usar=["print"]), SEM_PANDAS)[0], cf.NV)              # sem --funcoes
+
+    def test_papel_so_no_ambiente(self):
+        amb = {"papeis": {"Q": COM_JSON}}
+        ch = cf.conferir_memoria(entrada(nomes(importar=["json"])), {"P": [versao(SEM_PANDAS)]}, INSTR, RG, amb)
+        self.assertEqual(ch["1_ambiente"]["papeis"]["Q"]["resultado"], cf.PASSA)
+        self.assertEqual(ch["2_conflito"]["papeis"]["Q"]["resultado"], cf.NV)
+        self.assertEqual(ch["1_ambiente"]["papeis"]["P"]["resultado"], cf.PASSA)   # P cai no prompt, que tem json
+
+    def test_papel_excluido_nao_e_conferido(self):
+        # Ajuste 30: o managerAgent excluído da memória global (nao_vale_em) não entra nas checagens
+        e = {**entrada(nomes(importar=["json"])), "nao_vale_em": [{"papel": "M", "decidido_em": "2026-10-26",
+                                                                    "motivo": "m"}]}
+        prompts = {"P": [versao(SEM_PANDAS)], "M": [versao(LISTA.format("['re']"))]}
+        ch = cf.conferir_memoria(e, prompts, INSTR, RG)
+        self.assertEqual(ch["1_ambiente"]["resultado"], cf.PASSA)      # sem a exclusão, M reprovaria
+        self.assertNotIn("M", ch["1_ambiente"]["papeis"])
+        self.assertEqual(ch["1_ambiente"]["excluidos"], ["M"])
+        sem = cf.conferir_memoria(entrada(nomes(importar=["json"])), prompts, INSTR, RG)
+        self.assertEqual(sem["1_ambiente"]["resultado"], cf.FALHA)
+
+    def test_sem_ambiente_nada_muda(self):
+        e = entrada(nomes(importar=["pandas"]), role="P")
+        self.assertEqual(cf.conferir_memoria(e, {"P": [versao(SEM_PANDAS)]}, INSTR, RG)["1_ambiente"]["papeis"]["P"],
+                         {"resultado": cf.FALHA, "versoes": 1, "versoes_que_falham": 1, "execucoes_que_falham": 2,
+                          "motivos": ["importar pandas: fora da lista autorizada"]})
+
+
+class TestDecisaoDoPesquisador(unittest.TestCase):
+    def decisao(self, sobre, motivos):
+        return {"id": "U_x.C", "base": "base3", "checagem": "3_repete", "sobre": sobre, "motivos": motivos,
+                "por": "R", "em": "2026-10-21", "motivo": "ruído"}
+
+    def test_vale_com_o_mesmo_resultado_e_motivos_cobertos(self):
+        ch = {"resultado": cf.PARCIAL, "papeis": {"P": {"resultado": cf.PARCIAL, "motivos": ["usar print: o prompt já cita"]}}}
+        r = cf.aplicar_decisao(ch, self.decisao(cf.PARCIAL, ["usar print: o prompt já cita"]))
+        self.assertEqual((r["resultado"], r["resultado_do_script"]), (cf.DECIDIDO, cf.PARCIAL))
+
+    def test_nao_vale_se_o_resultado_ou_os_motivos_mudam(self):
+        d = self.decisao(cf.PARCIAL, ["usar print: o prompt já cita"])
+        falha = {"resultado": cf.FALHA, "papeis": {"P": {"resultado": cf.FALHA, "motivos": ["usar print: o prompt já cita"]}}}
+        self.assertEqual(cf.aplicar_decisao(falha, d)["resultado"], cf.FALHA)
+        self.assertIn("o script deu 'falha'", cf.aplicar_decisao(falha, d)["decisao_nao_vale"])
+        novo = {"resultado": cf.PARCIAL, "papeis": {"P": {"resultado": cf.PARCIAL, "motivos": ["usar type: o prompt já cita"]}}}
+        self.assertIn("motivos novos: usar type", cf.aplicar_decisao(novo, d)["decisao_nao_vale"])
+
+    def test_decidir_e_o_degrau(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "p.jsonl").write_text(json.dumps(versao(SEM_PANDAS)) + "\n", encoding="utf-8")
+            (d / "mon.json").write_text(json.dumps({"itens": [{"id": "a", "gatilhos": [{"tipo": "regua", "execucoes": 3,
+                                                                                         "meses": 2}]}]}), encoding="utf-8")
+            (d / "reg.json").write_text(json.dumps({"itens": [entrada(nomes(importar=["json"]), role="P")]}),
+                                        encoding="utf-8")
+            base = ["--prompts", str(d / "p.jsonl"), "--registro", str(d / "reg.json"), "--monitoramento",
+                    str(d / "mon.json"), "--decisoes", str(d / "dec.json")]
+            cf.main(base + ["--saida", str(d / "antes.json")])
+            antes = json.loads((d / "antes.json").read_text(encoding="utf-8"))["memorias"][0]
+            self.assertEqual((antes["degrau"], antes["checagens"]["5_uma_causa"]["resultado"]), (1, cf.NV))
+            cf.main(base + ["--decidir", "U_x.C", "5_uma_causa", "--motivo", "a parte tem um mecanismo só", "--por", "R"])
+            dec = json.loads((d / "dec.json").read_text(encoding="utf-8"))["itens"]
+            self.assertEqual((len(dec), dec[0]["sobre"], dec[0]["por"]), (1, cf.NV, "R"))
+            cf.main(base + ["--saida", str(d / "depois.json"), "--registrar"])
+            depois = json.loads((d / "depois.json").read_text(encoding="utf-8"))["memorias"][0]
+            self.assertEqual(depois["checagens"]["5_uma_causa"]["resultado"], cf.DECIDIDO)
+            self.assertEqual(depois["degrau"], 2)
+            self.assertEqual(json.loads((d / "reg.json").read_text(encoding="utf-8"))["itens"][0]["degrau"], 2)
+
+    def test_decidir_o_que_ja_passa_nao_registra(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "p.jsonl").write_text(json.dumps(versao(SEM_PANDAS)) + "\n", encoding="utf-8")
+            (d / "mon.json").write_text(json.dumps({"itens": [{"id": "a", "gatilhos": [{"tipo": "regua"}]}]}),
+                                        encoding="utf-8")
+            (d / "reg.json").write_text(json.dumps({"itens": [entrada(nomes(importar=["json"]), role="P")]}),
+                                        encoding="utf-8")
+            with self.assertRaises(SystemExit):
+                cf.main(["--prompts", str(d / "p.jsonl"), "--registro", str(d / "reg.json"), "--monitoramento",
+                         str(d / "mon.json"), "--decisoes", str(d / "dec.json"), "--decidir", "U_x.C", "1_ambiente",
+                         "--motivo", "x"])
+            self.assertFalse((d / "dec.json").exists())
+
+
+class TestExtrairAmbiente(unittest.TestCase):
+    def test_listas_da_mensagem_e_imports_que_rodaram(self):
+        S = pd.DataFrame([
+            {"role": "P", "mes": "2026-07", "code": "import ast",
+             "err_msg": "Code execution failed due to: InterpreterError: Import of ast is not allowed. "
+                        "Authorized imports are: ['re', 'json']"},
+            {"role": "P", "mes": "2026-08", "code": "import json\nfrom datetime.x import y\nimport a.b as c, d", "err_msg": ""},
+            {"role": "P", "mes": "2026-08", "code": "import pandas as pd", "err_msg": "outro erro"},   # não rodou
+            {"role": "Q", "mes": "2026-08", "code": "x = 1", "err_msg": ""},                         # nada a dizer
+        ])
+        amb = ea.ambiente(S)
+        self.assertEqual(list(amb), ["P"])
+        self.assertEqual(amb["P"]["listas"], [{"modulos": ["json", "re"], "meses": ["2026-07"], "erros": 1}])
+        self.assertEqual(sorted(amb["P"]["importados"]), ["a", "d", "datetime", "json"])
+
+    def test_tabela_da_mineracao(self):
+        linhas = [{"lista_autorizada": "json, re", "erros": "5", "papeis": "P, Q", "meses": "2026-07, 2026-08"}]
+        amb = am.ambiente(linhas)
+        self.assertEqual(sorted(amb), ["P", "Q"])
+        self.assertEqual(amb["Q"]["listas"][0], {"modulos": ["json", "re"], "meses": ["2026-07", "2026-08"], "erros": 5})
+
+    def test_registro_das_funcoes(self):
+        f = json.loads((RAIZ / "analysis/registros/funcoes_sandbox.json").read_text(encoding="utf-8"))
+        self.assertTrue({"print", "type", "str"} <= set(f["funcionam"]))
+        self.assertTrue({"repr", "dir", "exec", "__import__", "bytes", "open", "hash"} <= set(f["barradas"]))
+        self.assertFalse(set(f["funcionam"]) & set(f["barradas"]))
 
 
 class TestExtrairPrompts(unittest.TestCase):

@@ -52,6 +52,12 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 candidata; *sinal de harness* = recorrente, mas quem corrige é o prompt ou a ferramenta, não a memória; *não-memória* =
 plataforma; *fora: sem recorrência* = não passou na régua; *revisar* = resíduo.
 
+**Lista do prompt × lista do interpretador:** *lista do prompt* = os módulos que o system prompt anuncia ("You can use
+imports in your code, but only from the following list of modules: [...]"); *lista do interpretador* = os que o sandbox
+aceita (a da mensagem "Import of X is not allowed. Authorized imports are: [...]", e os imports que rodam). No smolagents
+saem da mesma configuração, mas na plataforma podem divergir (21/10: o `json`); o degrau 2 confere o ambiente pela do
+interpretador.
+
 **Tipos de monitoramento** (o `tipo` de um item do `registros/monitoramento.json`, no nível da unidade, ou de uma
 memória no catálogo `registros/memorias.json`, no nível da memória — os dois níveis: `16`, "O monitoramento"): *sinal de harness* = espera o conserto da
 plataforma (o alarme que importa é "sumiu"); *memória rara* = espera ficar frequente (o alarme é "passou na régua");

@@ -6,51 +6,39 @@
       "unidade": "U_sandbox",
       "parte": "B",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, o get_document_text do OBFCivel é sinal de harness, não memória; 20/10, a régua de memória rara se aplica; sobra uma",
       "category": "Inventário do sandbox · ferramenta importada como módulo (factual · ambiente)",
       "scope": {
         "role": "OBFCivel",
         "tool": null
       },
-      "description": "211 erros em 1 papel(éis), parte B do inventário do sandbox (ferramenta importada como módulo): get_document_text 167, python_interpreter 34, tools 4, tool_usage 2, mcp 1, mcp_client.tools 1, smolagents 1, tool_functions 1.",
-      "correction_guidance": "As ferramentas já estão no escopo como funções: chame-as direto, sem import. Não importe: get_document_text, python_interpreter, tools, tool_usage, mcp, mcp_client.tools, smolagents, tool_functions.",
+      "description": "44 erros em 1 papel(éis), parte B do inventário do sandbox (ferramenta importada como módulo): python_interpreter 34, tools 4, tool_usage 2, mcp 1, mcp_client.tools 1, smolagents 1, tool_functions 1.",
+      "correction_guidance": "As ferramentas são só as funções declaradas no prompt: chame-as direto, sem import. Não importe: python_interpreter, tools, tool_usage, mcp, mcp_client.tools, smolagents, tool_functions. python_interpreter, tools, tool_usage, mcp, mcp_client.tools, smolagents, tool_functions: são do framework, e o seu código já roda no interpretador.",
       "nomes": {
         "importar": [],
-        "usar": [
-          "get_document_text",
-          "python_interpreter",
-          "tools",
-          "tool_usage",
-          "mcp",
-          "mcp_client.tools",
-          "smolagents",
-          "tool_functions"
-        ],
+        "usar": [],
         "nao_importar": [
-          "get_document_text",
           "python_interpreter",
           "tools",
           "tool_usage",
           "mcp",
-          "mcp_client.tools",
+          "mcp_client",
           "smolagents",
           "tool_functions"
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
-        "erros": 211,
-        "execucoes": 210,
+        "erros": 44,
+        "execucoes": 43,
         "meses": [
-          "2026-03",
           "2026-04",
           "2026-05",
           "2026-06",
@@ -59,43 +47,87 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.B.OBFCivel_base3.json",
-        "sha256_16": "601cb15333d8c4fa",
+        "sha256_16": "9502cf9a68e7f201",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-22",
+        "motivo": "O prompt do OBFCivel já diz que as ferramentas são funções para chamar direto e não libera tools/python_interpreter/smolagents (4 de 4 versões, base 1); como as D (questão 3 de 22/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 44,
+          "execucoes": 43,
+          "meses": 4
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.B.RespostaBacen",
       "unidade": "U_sandbox",
       "parte": "B",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, o get_document_text do OBFCivel é sinal de harness, não memória; 20/10, a régua de memória rara se aplica; sobra uma",
       "category": "Inventário do sandbox · ferramenta importada como módulo (factual · ambiente)",
       "scope": {
         "role": "RespostaBacen",
         "tool": null
       },
       "description": "1 erros em 1 papel(éis), parte B do inventário do sandbox (ferramenta importada como módulo): python_interpreter 1.",
-      "correction_guidance": "As ferramentas já estão no escopo como funções: chame-as direto, sem import. Não importe: python_interpreter.",
+      "correction_guidance": "As ferramentas são só as funções declaradas no prompt: chame-as direto, sem import. Não importe: python_interpreter. python_interpreter: são do framework, e o seu código já roda no interpretador.",
       "nomes": {
         "importar": [],
-        "usar": [
-          "python_interpreter"
-        ],
+        "usar": [],
         "nao_importar": [
           "python_interpreter"
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 1,
         "execucoes": 1,
@@ -105,36 +137,83 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.B.RespostaBacen_base3.json",
-        "sha256_16": "b9c2e2c57716f000",
+        "sha256_16": "e737696ad09d9f8a",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "rara",
+        "decidido_em": "2026-10-20",
+        "motivo": "1 erro em 1 mês: não passa na régua de memória rara (decisão 4 do fechamento do sandbox, 20/10; b3 #48)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 1,
+          "execucoes": 1,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "regua",
+            "execucoes": 3,
+            "meses": 2
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "falha",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.C",
       "unidade": "U_sandbox",
       "parte": "C",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 19/10, a lição do sandbox é dividida por papel e por causa; 20/10, as memórias C e E do sandbox se dividem pelo ambiente",
       "category": "Inventário do sandbox · módulo usado sem import (factual · ambiente)",
       "scope": {
         "role": null,
         "tool": null
       },
-      "description": "656 erros em 10 papel(éis), parte C do inventário do sandbox (módulo usado sem import): json 415, pd 233, re 5, datetime 3.",
-      "correction_guidance": "Importe antes de usar: json, pd, re, datetime.",
+      "description": "423 erros em 10 papel(éis), parte C do inventário do sandbox (módulo usado sem import): json 415, re 5, datetime 3.",
+      "correction_guidance": "Importe antes de usar: import json, import re, import datetime.",
       "nomes": {
         "importar": [
           "json",
-          "pandas",
           "re",
           "datetime"
         ],
@@ -142,10 +221,9 @@
         "nao_importar": [],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
-        "erros": 656,
-        "execucoes": 554,
+        "erros": 423,
+        "execucoes": 422,
         "meses": [
           "2025-11",
           "2025-12",
@@ -161,25 +239,231 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.C_base3.json",
-        "sha256_16": "170470cce961ae9f",
+        "sha256_16": "f7d78dede55ce05c",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "nao_vale_em": [
+        {
+          "papel": "managerAgent",
+          "decidido_em": "2026-10-26",
+          "motivo": "Na base 1, a lista do interpretador do managerAgent é a padrão do smolagents, sem json, e nenhum import json rodou ali; a base 3 não tem lista dele e tem 0 erros da C nesse papel. Excluir não perde nada que se veja e evita mandar um import barrado (decisão 1 de 26/10; dossiê do sandbox §2h, 27)."
+        }
+      ],
+      "degrau": 2,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "passa",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "decidido pelo pesquisador"
+        }
+      }
+    },
+    {
+      "id": "U_sandbox.C.CalculoTrabalhista",
+      "unidade": "U_sandbox",
+      "parte": "Cp",
+      "base": "base3",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md — 20/10, as memórias C e E do sandbox se dividem pelo ambiente",
+      "category": "Inventário do sandbox · módulo usado sem import, por papel (factual · ambiente)",
+      "scope": {
+        "role": "CalculoTrabalhista",
+        "tool": null
+      },
+      "description": "2 erros em 1 papel(éis), parte Cp do inventário do sandbox (módulo usado sem import, por papel): pd 2.",
+      "correction_guidance": "Importe antes de usar: import pandas as pd.",
+      "nomes": {
+        "importar": [
+          "pandas"
+        ],
+        "usar": [],
+        "nao_importar": [],
+        "nao_usar": []
+      },
+      "occurrences": {
+        "erros": 2,
+        "execucoes": 2,
+        "meses": [
+          "2026-01"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.C.CalculoTrabalhista_base3.json",
+        "sha256_16": "2252e080906940a9",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "rara",
+        "decidido_em": "2026-10-21",
+        "motivo": "2 erros em 1 mês (jan/26): não passa na régua; mesmo critério da B.RespostaBacen (decisão 6 do fechamento do sandbox, 21/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 2,
+          "execucoes": 2,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "regua",
+            "execucoes": 3,
+            "meses": 2
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "passa",
+          "4_recorrencia": "falha",
+          "5_uma_causa": "não verificável"
+        }
+      }
+    },
+    {
+      "id": "U_sandbox.C.JoogleAnalytics",
+      "unidade": "U_sandbox",
+      "parte": "Cp",
+      "base": "base3",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+      "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
+      "parte_especifica": "script:mineracao_U_sandbox",
+      "destino": "memória",
+      "status": "derived-and-checked",
+      "destino_decidido_em": "decisoes.md — 20/10, as memórias C e E do sandbox se dividem pelo ambiente",
+      "category": "Inventário do sandbox · módulo usado sem import, por papel (factual · ambiente)",
+      "scope": {
+        "role": "JoogleAnalytics",
+        "tool": null
+      },
+      "description": "231 erros em 1 papel(éis), parte Cp do inventário do sandbox (módulo usado sem import, por papel): pd 231.",
+      "correction_guidance": "Importe antes de usar: import pandas as pd.",
+      "nomes": {
+        "importar": [
+          "pandas"
+        ],
+        "usar": [],
+        "nao_importar": [],
+        "nao_usar": []
+      },
+      "occurrences": {
+        "erros": 231,
+        "execucoes": 231,
+        "meses": [
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08"
+        ]
+      },
+      "arquivo": {
+        "nome": "memoria_U_sandbox.C.JoogleAnalytics_base3.json",
+        "sha256_16": "8d87885880e42284",
+        "onde": "na pasta da mineração, na máquina da base"
+      },
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "degrau": 2,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "passa",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "decidido pelo pesquisador"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.AgenteTestemunhas",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "AgenteTestemunhas",
@@ -195,7 +479,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 1,
         "execucoes": 1,
@@ -205,25 +488,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.AgenteTestemunhas_base3.json",
-        "sha256_16": "6b306564ee073492",
+        "sha256_16": "f370bff8537d80a7",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 1,
+          "execucoes": 1,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "não verificável",
+          "2_conflito": "não verificável",
+          "3_repete": "não verificável",
+          "4_recorrencia": "falha",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.CalculoCivel",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "CalculoCivel",
@@ -240,7 +570,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 3,
         "execucoes": 3,
@@ -250,25 +579,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.CalculoCivel_base3.json",
-        "sha256_16": "1aa05362c4f71e73",
+        "sha256_16": "4ff6a74adacb700b",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 3,
+          "execucoes": 3,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "falha",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.CalculoTrabalhista",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "CalculoTrabalhista",
@@ -291,7 +667,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 14,
         "execucoes": 13,
@@ -306,25 +681,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.CalculoTrabalhista_base3.json",
-        "sha256_16": "a10eafff346c9aab",
+        "sha256_16": "6ad9559cfa4da29a",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 14,
+          "execucoes": 13,
+          "meses": 6
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.Consultivo",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "Consultivo",
@@ -341,7 +763,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 3,
         "execucoes": 3,
@@ -353,25 +774,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.Consultivo_base3.json",
-        "sha256_16": "41308a4764255314",
+        "sha256_16": "fc163d3043b5e911",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 3,
+          "execucoes": 3,
+          "meses": 3
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "não verificável",
+          "2_conflito": "não verificável",
+          "3_repete": "não verificável",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.JoogleAnalytics",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "JoogleAnalytics",
@@ -390,7 +858,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 4,
         "execucoes": 4,
@@ -402,25 +869,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.JoogleAnalytics_base3.json",
-        "sha256_16": "98113c065850a83a",
+        "sha256_16": "c1d457b4e9def964",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 4,
+          "execucoes": 4,
+          "meses": 3
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.OBFCivel",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "OBFCivel",
@@ -437,7 +951,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 5,
         "execucoes": 5,
@@ -449,25 +962,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.OBFCivel_base3.json",
-        "sha256_16": "7512e7761cc154bb",
+        "sha256_16": "b362efcecc4b5910",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 5,
+          "execucoes": 5,
+          "meses": 3
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.OficiosResposta",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "OficiosResposta",
@@ -483,7 +1043,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 1,
         "execucoes": 1,
@@ -493,25 +1052,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.OficiosResposta_base3.json",
-        "sha256_16": "834ba085326b9f52",
+        "sha256_16": "8bb1827e368588a5",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 1,
+          "execucoes": 1,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "falha",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.RespostaBacen",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "RespostaBacen",
@@ -528,7 +1134,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 5,
         "execucoes": 5,
@@ -541,25 +1146,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.RespostaBacen_base3.json",
-        "sha256_16": "5ddeb414055d8176",
+        "sha256_16": "78c048d2af30d0df",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 5,
+          "execucoes": 5,
+          "meses": 4
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.RespostaOficios",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "RespostaOficios",
@@ -575,7 +1227,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 1,
         "execucoes": 1,
@@ -585,25 +1236,72 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.RespostaOficios_base3.json",
-        "sha256_16": "70b95b6e57f20af7",
+        "sha256_16": "6abc28e507f1d7bc",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 1,
+          "execucoes": 1,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "falha",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.D.ontestacaoCivel",
       "unidade": "U_sandbox",
       "parte": "D",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 20/10, as 10 memórias de \"import fora da lista\" são monitoradas, não injetadas",
       "category": "Inventário do sandbox · import fora da lista autorizada (factual · ambiente)",
       "scope": {
         "role": "ontestacaoCivel",
@@ -619,7 +1317,6 @@
         ],
         "nao_usar": []
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
         "erros": 3,
         "execucoes": 3,
@@ -629,47 +1326,90 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.D.ontestacaoCivel_base3.json",
-        "sha256_16": "e3c60774d675b323",
+        "sha256_16": "29de5cd5ccb6e1bf",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "monitorada": {
+        "tipo": "reforço",
+        "decidido_em": "2026-10-20",
+        "motivo": "Import fora da lista autorizada: a memória repete a lista do prompt (degrau 2, checagem 3); monitorada como memória de reforço, não injetada; o experimento de reforço é o EX-8 do blueprint das POCs (decisões 3 e 4 do fechamento do sandbox, 20/10)",
+        "linha_de_base": {
+          "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
+          "erros": 3,
+          "execucoes": 3,
+          "meses": 1
+        },
+        "gatilhos": [
+          {
+            "tipo": "cresce",
+            "fator": 3
+          }
+        ]
+      },
+      "degrau": 1,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "falha",
+          "4_recorrencia": "falha",
+          "5_uma_causa": "não verificável"
+        }
+      }
     },
     {
       "id": "U_sandbox.E",
       "unidade": "U_sandbox",
       "parte": "E",
       "base": "base3",
-      "rodada_id": "aedb9b5db70d6c92f7f3a8a05566740d726bc9c3644201a5050541e0ec18da60",
+      "rodada_id": "99e032ad3a8528d8860b6ce974ccee353f1b57dd563df0cd4af92e7dbc5f66c2",
       "fonte_id": "908aa0052e61517a5727e0f2358b7187023ba12dffd11e0fb946e51f0ed86306",
-      "gerado_em": "2026-10-19",
-      "esquema": "0.3",
+      "gerado_em": "2026-10-21",
+      "esquema": "0.4",
       "parte_especifica": "script:mineracao_U_sandbox",
       "destino": "memória",
       "status": "derived-and-checked",
-      "destino_decidido_em": "decisoes.md, 19/10",
+      "destino_decidido_em": "decisoes.md — 19/10, a parte E do sandbox vira memória global; 20/10, as memórias C e E do sandbox se dividem pelo ambiente; 20/10, a memória E perde a dica \"para ler JSON, use json.loads\"",
       "category": "Inventário do sandbox · funções e atributos proibidos (factual · ambiente)",
       "scope": {
         "role": null,
         "tool": null
       },
-      "description": "488 erros em 13 papel(éis), parte E do inventário do sandbox (funções e atributos proibidos): __name__ 182, globals 142, repr 98, eval 14, locals 14, dir 9, exec 8, __import__ 5, bytes 5, open 5, hash 2, __class__ 1, __doc__ 1, __len__ 1, vars 1.",
-      "correction_guidance": "Não chame: globals, repr, eval, locals, dir, exec, __import__, bytes, open, hash, vars; Não acesse: __name__, __class__, __doc__, __len__. Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]); para ler JSON, use json.loads.",
+      "description": "317 erros em 9 papel(éis), parte E do inventário do sandbox (funções e atributos proibidos): __name__ 182, repr 98, dir 9, exec 8, __import__ 5, bytes 5, open 5, hash 2, __class__ 1, __doc__ 1, __len__ 1.",
+      "correction_guidance": "Não chame: repr, dir, exec, __import__, bytes, open, hash; Não acesse: __name__, __class__, __doc__, __len__. Para inspecionar um valor, use print(type(x)) e print(str(x)[:n]).",
       "nomes": {
         "importar": [],
         "usar": [
           "print",
           "type",
-          "str",
-          "json.loads"
+          "str"
         ],
         "nao_importar": [],
         "nao_usar": [
           "__name__",
-          "globals",
           "repr",
-          "eval",
-          "locals",
           "dir",
           "exec",
           "__import__",
@@ -678,14 +1418,12 @@
           "hash",
           "__class__",
           "__doc__",
-          "__len__",
-          "vars"
+          "__len__"
         ]
       },
-      "nomes_origem": "transcrito da description e da correction_guidance em 20/10/2026 (o apelido pd → pandas), antes do esquema 0.4; a próxima mineração grava o campo direto da tabela do script específico",
       "occurrences": {
-        "erros": 488,
-        "execucoes": 461,
+        "erros": 317,
+        "execucoes": 314,
         "meses": [
           "2025-12",
           "2026-01",
@@ -700,11 +1438,41 @@
       },
       "arquivo": {
         "nome": "memoria_U_sandbox.E_base3.json",
-        "sha256_16": "131a140438716a56",
+        "sha256_16": "079f978aaf2d2972",
         "onde": "na pasta da mineração, na máquina da base"
       },
-      "transcricao": "fotos IMG_5956–IMG_5964 (máquina da base, 19/10), conferida contra o inventário e as partes do resumo (IMG_5930–IMG_5936)",
-      "registrado_em": "2026-10-19"
+      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "registrado_em": "2026-10-21",
+      "degrau": 2,
+      "conferencia": {
+        "em": "2026-10-26",
+        "prompts": {
+          "arquivo": "prompts_base1.jsonl",
+          "sha256_16": "6866742ffe5c2bc5",
+          "papeis": 16,
+          "versoes": 870,
+          "ambiente": {
+            "arquivo": "ambiente_base1.json",
+            "sha256_16": "445fbc779e3584ac",
+            "papeis": 13
+          },
+          "funcoes": {
+            "arquivo": "funcoes_sandbox.json",
+            "sha256_16": "d685de2d47ec7625"
+          }
+        },
+        "regua": {
+          "execucoes": 3,
+          "meses": 2
+        },
+        "checagens": {
+          "1_ambiente": "passa",
+          "2_conflito": "passa",
+          "3_repete": "decidido pelo pesquisador",
+          "4_recorrencia": "passa",
+          "5_uma_causa": "decidido pelo pesquisador"
+        }
+      }
     }
   ]
 }

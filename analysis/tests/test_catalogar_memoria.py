@@ -54,8 +54,8 @@ class TestCatalogo(unittest.TestCase):
     def test_registrar_troca_a_mesma_e_confere(self):
         reg = {"o_que_e": "x", "itens": []}
         e1, _ = cm.entrada(doc("U_x.C"), self.gravar("a.json", doc("U_x.C")))
-        reg = cm.registrar(reg, [e1], hoje="2026-10-19")
-        reg = cm.registrar(reg, [{**e1, "description": "nova"}], hoje="2026-10-20")
+        reg, _ = cm.registrar(reg, [e1], hoje="2026-10-19")
+        reg, _ = cm.registrar(reg, [{**e1, "description": "nova"}], hoje="2026-10-20")
         self.assertEqual(len(reg["itens"]), 1)
         self.assertEqual(reg["itens"][0]["description"], "nova")
         self.assertEqual(cm.conferir(reg), [])
@@ -69,6 +69,81 @@ class TestCatalogo(unittest.TestCase):
         self.assertEqual(cm.main(["--registrar", str(cat), "--registro", str(reg)]), 0)
         self.assertEqual(cm.main(["--conferir", "--registro", str(reg)]), 0)
         self.assertEqual([e["id"] for e in json.loads(reg.read_text(encoding="utf-8"))["itens"]], ["U_x.C"])
+
+    def test_monitorada_rara_e_reforco(self):
+        mon = {"itens": [{"id": "a", "gatilhos": [{"tipo": "regua", "execucoes": 3, "meses": 2}]}]}
+        e1, _ = cm.entrada(doc("U_x.C"), self.gravar("a.json", doc("U_x.C")))
+        e2, _ = cm.entrada(doc("U_x.D"), self.gravar("b.json", doc("U_x.D")))
+        reg, _ = cm.registrar({"itens": []}, [e1, e2], hoje="2026-10-20")
+        cm.monitorar(reg, ["U_x.C"], "rara", "2 erros, 1 mês", mon, decidido_em="2026-10-21")
+        cm.monitorar(reg, ["U_x.D"], "reforço", "repete o prompt", mon)
+        m = {e["id"]: e["monitorada"] for e in reg["itens"]}
+        self.assertEqual(m["U_x.C"]["gatilhos"], [{"tipo": "regua", "execucoes": 3, "meses": 2}])
+        self.assertEqual(m["U_x.D"]["gatilhos"], [{"tipo": "cresce", "fator": 3}])
+        self.assertEqual((m["U_x.C"]["linha_de_base"]["erros"], m["U_x.C"]["decidido_em"]), (2, "2026-10-21"))
+        self.assertEqual(cm.conferir(reg), [])
+        # mineração nova: a marcação fica, a conferência do degrau 2 sai, o alarme dispara
+        reg["itens"][0]["degrau"] = 2
+        novo_c = {**e1, "occurrences": {"erros": 5, "execucoes": 4, "meses": ["2026-08", "2026-09"]}}
+        novo_d = {**e2, "occurrences": {"erros": 5, "execucoes": 5, "meses": ["2026-08"]}}
+        reg, alarmes = cm.registrar(reg, [novo_c, novo_d], hoje="2026-11-01")
+        por = {e["id"]: e for e in reg["itens"]}
+        self.assertEqual(por["U_x.C"]["monitorada"]["tipo"], "rara")
+        self.assertNotIn("degrau", por["U_x.C"])
+        self.assertEqual(len(alarmes), 1)
+        self.assertIn("U_x.C (rara): passa na régua", alarmes[0])   # a D: 5 < 3 × 2, não cresceu
+        reg, alarmes = cm.registrar(reg, [{**novo_d, "occurrences": {"erros": 6, "execucoes": 6, "meses": ["2026-08"]}}])
+        self.assertEqual(alarmes, ["U_x.D (reforço): cresceu: 6 erros ≥ 3 × 2"])
+
+    def test_monitorada_malformada_nao_confere(self):
+        e1, _ = cm.entrada(doc("U_x.C"), self.gravar("a.json", doc("U_x.C")))
+        reg, _ = cm.registrar({"itens": []}, [{**e1, "monitorada": {"tipo": "outra"}}])
+        self.assertTrue(any("`monitorada`" in x for x in cm.conferir(reg)))
+
+    def test_cli_monitorar(self):
+        reg = self.gravar("memorias.json", {"o_que_e": "x", "itens": []})
+        mon = self.gravar("mon.json", {"itens": []})
+        cat = self.p / "cat.json"
+        cm.main([str(self.gravar("a.json", doc("U_x.C"))), "--saida", str(cat)])
+        cm.main(["--registrar", str(cat), "--registro", str(reg)])
+        self.assertEqual(cm.main(["--monitorar", "U_x.C", "--tipo", "reforço", "--motivo", "m", "--registro", str(reg),
+                                  "--monitoramento", str(mon)]), 0)
+        self.assertEqual(json.loads(reg.read_text(encoding="utf-8"))["itens"][0]["monitorada"]["tipo"], "reforço")
+        with self.assertRaises(SystemExit):
+            cm.main(["--monitorar", "U_x.Z", "--tipo", "rara", "--motivo", "m", "--registro", str(reg),
+                     "--monitoramento", str(mon)])
+
+    def test_excluir_papel_de_memoria_global(self):
+        # Ajuste 30 (26/10): a memória C do sandbox não vale no managerAgent
+        e1, _ = cm.entrada(doc("U_x.C"), self.gravar("a.json", doc("U_x.C")))
+        reg, _ = cm.registrar({"itens": []}, [e1], hoje="2026-10-20")
+        cm.excluir(reg, "U_x.C", ["managerAgent"], "lista padrão, sem json", decidido_em="2026-10-26")
+        excl = reg["itens"][0]["nao_vale_em"]
+        self.assertEqual(excl, [{"papel": "managerAgent", "decidido_em": "2026-10-26", "motivo": "lista padrão, sem json"}])
+        self.assertEqual(cm.conferir(reg), [])
+        cm.excluir(reg, "U_x.C", ["managerAgent", "P"], "outro motivo")          # troca o item do mesmo papel
+        self.assertEqual(sorted(x["papel"] for x in reg["itens"][0]["nao_vale_em"]), ["P", "managerAgent"])
+        # mineração nova: a exclusão passa, como a marcação de monitorada
+        reg, _ = cm.registrar(reg, [{**e1, "description": "nova"}], hoje="2026-11-01")
+        self.assertEqual(len(reg["itens"][0]["nao_vale_em"]), 2)
+
+    def test_excluir_so_em_memoria_global(self):
+        d = doc("U_x.C.P")
+        d["memoria"]["scope"] = {"role": "P", "tool": None}
+        e1, _ = cm.entrada(d, self.gravar("a.json", d))
+        reg, _ = cm.registrar({"itens": []}, [e1])
+        with self.assertRaises(SystemExit):
+            cm.excluir(reg, "U_x.C.P", ["Q"], "m")
+        reg["itens"][0]["nao_vale_em"] = [{"papel": "Q", "decidido_em": "2026-10-26", "motivo": "m"}]
+        self.assertTrue(any("`nao_vale_em`" in x for x in cm.conferir(reg)))
+
+    def test_cli_excluir(self):
+        reg = self.gravar("memorias.json", {"o_que_e": "x", "itens": []})
+        cat = self.p / "cat.json"
+        cm.main([str(self.gravar("a.json", doc("U_x.C"))), "--saida", str(cat)])
+        cm.main(["--registrar", str(cat), "--registro", str(reg)])
+        self.assertEqual(cm.main(["--excluir", "U_x.C", "managerAgent", "--motivo", "m", "--registro", str(reg)]), 0)
+        self.assertEqual(json.loads(reg.read_text(encoding="utf-8"))["itens"][0]["nao_vale_em"][0]["papel"], "managerAgent")
 
     def test_o_catalogo_do_repositorio_confere(self):
         self.assertEqual(cm.conferir(cm.ler_registro(cm.REGISTRO)), [])

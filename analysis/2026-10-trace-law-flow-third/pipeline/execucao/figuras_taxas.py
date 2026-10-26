@@ -24,6 +24,7 @@ from execucao.figuras_painel import (SEM_UNIDADE, _limpar, _milhar, _n, _pct, _s
 
 MIN_N = 20         # abaixo disso, o mês ou o papel aparece em cinza: amostra pequena para uma taxa
 MIN_PASSOS = 1000  # mês do sistema com menos passos: cinza e fora da escala de cor na taxa por unidade e mês (D2, 16/10)
+MIN_PASSOS_PAPEL_MES = 100  # papel com menos passos no mês: cinza e fora da escala de cor na taxa por papel e mês
 MES_PT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
 
 
@@ -186,27 +187,200 @@ def papel_volume(papel, destino):
             "os erros do papel, de qualquer destino.")
 
 
+def papel_mes(pm, destino, topo=8, execucoes=None):
+    """3b · Erros por papel e mês: a contagem (esquerda) e a taxa do próprio papel (direita) — o papel fixo (roadmap #37).
+
+    Cada linha traz, no rótulo, a fatia dos erros e a fatia dos passos do papel: concentrado de verdade é o papel que
+    tem mais erro do que passo, e a taxa do período. Entram os `topo` papéis com mais erros e, se `execucoes` (por papel)
+    vier, também os que erram mais de 2× a taxa global em pelo menos MIN_N execuções, mesmo com poucos erros (o que erra
+    muito por passo e roda pouco não pode sumir em "demais"). Escala de cor linear (não log)."""
+    d = pm.assign(papel=pm.papel.map(nome_papel))
+    er = d.pivot_table(index="papel", columns="mes", values="erros", aggfunc="sum", fill_value=0)
+    pa = d.pivot_table(index="papel", columns="mes", values="actionsteps", aggfunc="sum", fill_value=0)
+    meses = sorted(er.columns)
+    er, pa = er.reindex(columns=meses, fill_value=0), pa.reindex(er.index).reindex(columns=meses, fill_value=0)
+    ordem = er.sum(axis=1).sort_values(ascending=False).index.tolist()
+    er_t, pa_t = er.sum().sum(), pa.sum().sum()
+    taxa_p = er.sum(axis=1) / pa.sum(axis=1).where(pa.sum(axis=1).gt(0))
+    alto = []
+    if execucoes is not None:
+        ex = execucoes.rename(index=nome_papel)
+        alto = [n for n in ordem[topo:] if ex.get(n, 0) >= MIN_N and taxa_p[n] > 2 * er_t / pa_t]
+    fica = [n for n in ordem if n in ordem[:topo] or n in alto]
+    resto = [n for n in ordem if n not in fica]
+    linhas = er.loc[fica].copy(), pa.loc[fica].copy()
+    nomes = list(fica)
+    if resto:
+        linhas[0].loc[f"demais {len(resto)} papéis"] = er.loc[resto].sum()
+        linhas[1].loc[f"demais {len(resto)} papéis"] = pa.loc[resto].sum()
+        nomes.append(f"demais {len(resto)} papéis")
+    ce, cp = linhas
+    ce.loc["todos os papéis"], cp.loc["todos os papéis"] = er.sum(), pa.sum()
+    nomes.append("todos os papéis")
+    taxa = 100 * ce / cp.where(cp.gt(0))
+    pouco = (cp < MIN_PASSOS_PAPEL_MES).to_numpy()
+    n_l, n_c = ce.shape
+    rotulos = [n if i == n_l - 1 else
+               f"{n}\n{_p(ce.loc[n].sum(), er_t, 0)} dos erros · {_p(cp.loc[n].sum(), pa_t, 0)} dos passos\n"
+               f"taxa no período: {_p(ce.loc[n].sum(), cp.loc[n].sum(), 1)} de {_n(cp.loc[n].sum())} passos"
+               for i, n in enumerate(nomes)]
+    fig, axes = plt.subplots(1, 2, figsize=(20, 0.78 * n_l + 3.4), sharey=True)
+    for ax, tab, casas, rot in [(axes[0], ce, 0, "erros (contagem)"),
+                                (axes[1], taxa, 1, "% dos passos do próprio papel no mês")]:
+        dados = tab.to_numpy().astype(float)
+        cor = dados.copy()
+        cor[-1, :] = np.nan                              # a linha do total não entra na cor
+        if casas:
+            cor[pouco] = np.nan                          # nem os papéis com poucos passos no mês (taxa instável)
+        corpo = cor[~np.isnan(cor)]
+        norm = plt.Normalize(vmin=0, vmax=float(corpo.max())) if len(corpo) and corpo.max() > 0 else None
+        im = ax.imshow(np.where(np.isnan(cor), np.nan, cor), aspect="auto", cmap="Blues", interpolation="nearest",
+                       norm=norm)
+        for i in range(n_l):
+            for j in range(n_c):
+                v = dados[i, j]
+                if np.isnan(v) or (not casas and v <= 0):
+                    continue
+                escuro = not np.isnan(cor[i, j]) and norm is not None and norm(cor[i, j]) > 0.6
+                ax.text(j, i, _n(v, casas), ha="center", va="center", fontsize=8,
+                        color="white" if escuro else (MUTED if (casas and pouco[i, j]) else INK),
+                        fontweight="bold" if i == n_l - 1 else "normal")
+        ax.axhline(n_l - 1.5, color=INK2, lw=0.8)
+        ax.set_xticks(range(n_c), [_mes(m) for m in meses], fontsize=8)
+        ax.set_title(rot, loc="left", fontsize=10)
+        cb = fig.colorbar(im, ax=ax, orientation="horizontal", location="bottom", fraction=0.04, pad=0.08, aspect=60)
+        cb.ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _, c=casas: _n(v, c)))
+        cb.ax.tick_params(labelsize=7)
+        cb.set_label(rot + " (escala linear)", fontsize=8)
+    axes[0].set_yticks(range(n_l), rotulos, fontsize=8)
+    cima = [n for n in fica[:2]]
+    fe = ce.loc[cima].to_numpy().sum() / er_t
+    fp = cp.loc[cima].to_numpy().sum() / pa_t
+    fig.suptitle(f"Erros por papel e mês: {' e '.join(cima)} têm {_pct(100 * fe, 0)} dos erros, em {_pct(100 * fp, 0)} dos "
+                 f"passos. À direita, a taxa de cada papel no mês (sem cor, número cinza: menos de {_n(MIN_PASSOS_PAPEL_MES)} "
+                 "passos do papel no mês)", x=0.01, ha="left", fontsize=11)
+    _salvar(fig, destino)
+    corpo_t = taxa.loc[fica].where(~pd.DataFrame(pouco, index=taxa.index, columns=taxa.columns).loc[fica])
+    if corpo_t.stack().dropna().empty:         # base pequena: nenhuma célula com passos suficientes, vale qualquer uma
+        corpo_t = taxa.loc[fica]
+    p_ex, m_ex = corpo_t.stack().dropna().idxmax()
+    exemplo = (f"{_mes(m_ex)}, {p_ex}: {_n(ce.loc[p_ex, m_ex])} erros ÷ {_n(cp.loc[p_ex, m_ex])} passos do papel = "
+               f"{_n(taxa.loc[p_ex, m_ex], 1)}%")
+    sobre = [n for n in fica if ce.loc[n].sum() / er_t > 1.5 * cp.loc[n].sum() / pa_t]
+    sub = [n for n in fica if ce.loc[n].sum() / er_t < 0.5 * cp.loc[n].sum() / pa_t]
+    return ("Erros e taxa por papel e mês",
+            "Os erros se concentram em poucos papéis e meses porque o papel erra mais por passo, ou só porque roda mais?",
+            "Mesmas linhas e meses nos dois painéis. À esquerda, a contagem de erros por papel e mês; à direita, a taxa do "
+            "próprio papel: erros do papel no mês ÷ passos do papel no mês — o papel fixo, que separa \"o papel errou "
+            "mais\" de \"entrou um papel que erra mais\". Em cada linha, o rótulo traz a fatia dos erros e a fatia dos "
+            "passos: um papel com mais erros do que passos é concentrado de verdade; com menos, só roda muito. A "
+            "régua de cor é linear (não logarítmica) em cada painel: a célula com o dobro da cor tem o dobro do valor. "
+            f"Exemplo: {exemplo}. Onde a contagem sobe e a taxa não, foi volume. Erros muito acima do peso em passos: "
+            f"{', '.join(sobre) or 'nenhum'}; muito abaixo: {', '.join(sub) or 'nenhum'}. A última linha soma todos os papéis "
+            "e, na taxa, é a taxa do sistema no mês (a do gráfico de taxa por mês).",
+            "Conta todos os erros estruturados da rodada (erro é erro, de qualquer destino); o mapa papel × unidade conta só "
+            f"os observáveis, por isso os totais por papel diferem um pouco. Papel com menos de {_n(MIN_PASSOS_PAPEL_MES)} "
+            "passos no mês mostra o número em cinza, sem cor e fora da régua. A taxa por papel mistura prompts: se o prompt "
+            "do papel mudou no meio do período, o gráfico não separa isso do agente. Associação, não causa.")
+
+
+def papel_entrada(pm, destino):
+    """3c · Em que mês cada papel aparece, e quanto pesa nos passos do mês (o mix) — roadmap #37, visão de contagem."""
+    d = pm.assign(papel=pm.papel.map(nome_papel))
+    ex = d.pivot_table(index="papel", columns="mes", values="execucoes", aggfunc="sum", fill_value=0)
+    pa = d.pivot_table(index="papel", columns="mes", values="actionsteps", aggfunc="sum", fill_value=0)
+    meses = sorted(ex.columns)
+    ex, pa = ex.reindex(columns=meses, fill_value=0), pa.reindex(ex.index).reindex(columns=meses, fill_value=0)
+    primeiro = {p: next(m for m in meses if ex.loc[p, m] > 0) for p in ex.index if ex.loc[p].sum() > 0}
+    ordem = sorted(primeiro, key=lambda p: (meses.index(primeiro[p]), -ex.loc[p].sum()))
+    ex, pa = ex.loc[ordem], pa.loc[ordem]
+    parte = 100 * pa / pa.sum().where(pa.sum().gt(0))     # % dos passos do mês: cada coluna soma 100
+    n_l, n_c = ex.shape
+    fig, axes = plt.subplots(1, 2, figsize=(20, 0.5 * n_l + 3.4), sharey=True)
+    for ax, tab, casas, rot, log in [(axes[0], ex, 0, "execuções do papel no mês (contagem)", True),
+                                     (axes[1], parte, 0, "% dos passos do mês (cada coluna soma 100%)", False)]:
+        dados = tab.to_numpy().astype(float)
+        cor = np.where(dados > 0, dados, np.nan)
+        pos = cor[~np.isnan(cor)]
+        norm = (LogNorm(vmin=pos.min(), vmax=pos.max()) if log and len(pos) and pos.max() > pos.min()
+                else plt.Normalize(vmin=0, vmax=float(pos.max())) if len(pos) else None)
+        im = ax.imshow(cor, aspect="auto", cmap="Blues", interpolation="nearest", norm=norm)
+        for i in range(n_l):
+            for j in range(n_c):
+                v = dados[i, j]
+                if np.isnan(v) or v <= 0:
+                    continue
+                txt = "<1" if (not log and v < 0.5) else _n(v, casas)
+                escuro = norm is not None and norm(v) > 0.65
+                ax.text(j, i, txt, ha="center", va="center", fontsize=8, color="white" if escuro else INK)
+        for i, p in enumerate(ordem):                   # o mês em que o papel aparece pela primeira vez
+            ax.add_patch(plt.Rectangle((meses.index(primeiro[p]) - 0.5, i - 0.5), 1, 1, fill=False, edgecolor=ORANGE, lw=2.2))
+        ax.set_xticks(range(n_c), [_mes(m) for m in meses], fontsize=8)
+        ax.set_title(rot, loc="left", fontsize=10)
+        cb = fig.colorbar(im, ax=ax, orientation="horizontal", location="bottom", fraction=0.04, pad=0.08, aspect=60)
+        cb.ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _, c=casas: _n(v, c)))
+        cb.ax.tick_params(labelsize=7)
+        cb.set_label(rot.split(" (")[0] + (" (escala log)" if log else " (escala linear)"), fontsize=8)
+    axes[0].set_yticks(range(n_l), [f"{p}\nprimeira vez em {_mes(primeiro[p])} · {_n(ex.loc[p].sum())} execuções"
+                                   for p in ordem], fontsize=8)
+    desde = [p for p in ordem if primeiro[p] == meses[0]]
+    depois = [p for p in ordem if primeiro[p] != meses[0]]
+    fig.suptitle(f"Quando cada papel aparece: {len(desde)} dos {len(ordem)} papéis já rodam em {_mes(meses[0])}"
+                 + (f"; os outros {len(depois)} entram entre {_mes(primeiro[depois[0]])} e {_mes(primeiro[depois[-1]])}"
+                    if depois else "") + ". Moldura laranja = primeiro mês do papel", x=0.01, ha="left", fontsize=11)
+    _salvar(fig, destino)
+    tot_mes = ex.sum()
+    saltos = tot_mes.pct_change().replace([np.inf, -np.inf], np.nan)
+    m_salto = saltos.idxmax() if saltos.notna().any() else meses[-1]
+    novos = [p for p in depois if primeiro[p] == m_salto]
+    return ("Quando cada papel aparece e o mix do mês",
+            "Em que mês cada papel entra, e o mix de papéis muda de um mês para o outro?",
+            "Uma linha por papel, na ordem do mês em que aparece pela primeira vez (moldura laranja), e os mesmos meses "
+            "nos dois painéis. À esquerda, as execuções do papel no mês (escala log: o 1 aparece, não some ao lado dos "
+            "milhares). À direita, a participação do papel nos passos do mês: cada coluna soma 100%, então a coluna é "
+            "o mix daquele mês e dá para ver o papel entrar e tomar espaço dos outros. Execução = execução + agente, "
+            f"com passos registrados. O maior salto de execuções entre dois meses seguidos foi em {_mes(m_salto)}"
+            + (f" (entram nele: {', '.join(novos)})" if novos else "") + ".",
+            "O primeiro mês é o primeiro com execução na base, não o da entrada em produção: papel que já aparece no "
+            f"primeiro mês da base ({_mes(meses[0])}) pode ser mais antigo, e os meses do começo da base têm poucas "
+            "execuções, então a data de entrada de um papel raro pode estar atrasada. Não traz modelo nem prompt (a base 3 "
+            "não os tem): uma mudança de modelo ou de prompt no mesmo papel não aparece aqui.")
+
+
 def custo_execucao(execs, custo_papel, destino):
-    """4 · A execução típica com erro × sem erro: k× os tokens e j× os passos (medianas normalizadas)."""
+    """4 · A execução típica com erro × sem erro, em valores reais: tokens e passos (medianas), a razão ao lado."""
     g = execs[execs.actionsteps.gt(0)].assign(com=lambda d: d.erros.gt(0))
-    med = g.groupby("com")[["tokens_total", "actionsteps"]].median()
+    grupos = g.groupby("com")[["tokens_total", "actionsteps"]]
+    med, media = grupos.median(), grupos.mean()
     n = g.com.value_counts()
     if not {True, False} <= set(med.index):
         raise ValueError("custo por execução: falta o grupo com ou sem erro")
     k = med.loc[True] / med.loc[False]
-    fig, axes = plt.subplots(1, 2, figsize=(12, 3.2))
-    for ax, col, rot, unid in [(axes[0], "tokens_total", "tokens por execução", "tokens"),
-                               (axes[1], "actionsteps", "passos por execução", "passos")]:
-        ax.barh(["sem erro", "com erro"], [1, k[col]], color=[BLUE, ORANGE])
+
+    def q(v):   # inteiro quando é inteiro (a mediana de passos costuma ser), senão uma casa
+        return _n(v) if abs(v - round(v)) < 1e-9 else _n(v, 1)
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 3.8))
+    paineis = [(axes[0], "tokens_total", "tokens por execução", lambda v: f"{_n(v)} tokens"),
+               (axes[1], "actionsteps", "passos por execução", lambda v: f"{q(v)} passos")]
+    for ax, col, rot, fmt in paineis:
+        vals = [med.loc[False, col], med.loc[True, col]]
+        ax.barh(["sem erro", "com erro"], vals, color=[BLUE, ORANGE])
         for i, grupo in enumerate([False, True]):
-            v = 1 if not grupo else k[col]
-            ax.text(v, i, f"  {_n(v, 1)}×", va="center", fontsize=10, color=INK2)
-        ax.set_xlim(0, max(k[col], 1) * 2.1)
-        ax.set_xlabel("× a execução típica sem erro")
+            razao = f"{_n(k[col], 1)}× a execução sem erro" if grupo else "execução típica sem erro"
+            ax.text(vals[i], i, f"  {fmt(vals[i])}\n  {razao} · n = {_n(n[grupo])}\n  média: {fmt(media.loc[grupo, col])}",
+                    va="center", fontsize=9, color=INK2, linespacing=1.45)
+        ax.set_xlim(0, max(vals) * 2.3)
         ax.set_title(rot, loc="left", fontsize=10)
+        if col == "tokens_total":
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _n(v / 1e3)))
+            ax.set_xlabel("tokens por execução (em milhares)")
+        else:
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True, nbins=6))
+            ax.set_xlabel("passos (ActionSteps) por execução")
         _limpar(ax)
-    fig.suptitle(f"A execução típica com erro usa {_n(k['tokens_total'], 1)}× os tokens e {_n(k['actionsteps'], 1)}× os "
-                 "passos da típica sem erro", x=0.01, ha="left", fontsize=11)
+    fig.suptitle(f"A execução típica com erro usa {_n(k['tokens_total'], 1)} vezes os tokens e {q(med.loc[True, 'actionsteps'])} "
+                 f"passos, contra {q(med.loc[False, 'actionsteps'])}, da típica sem erro", x=0.01, ha="left", fontsize=11)
     _salvar(fig, destino)
     cp = custo_papel.set_index("papel")
     ok = cp[(cp.n_com_erro >= MIN_N) & (cp.n_sem_erro >= MIN_N)]
@@ -219,16 +393,21 @@ def custo_execucao(execs, custo_papel, destino):
                   f"de tokens vai de {_n(r.iloc[0], 1)}× a {_n(r.iloc[-1], 1)}× (mediana ponderada pelas execuções com "
                   f"erro: {_n(pond, 1)}×); a diferença para os {_n(k['tokens_total'], 1)}× do sistema é a mistura de papéis "
                   "(a execução com erro é mais frequente nos papéis caros). Por papel, em `taxas_custo_por_papel.csv`.")
+    pc, ps = med.loc[True, "actionsteps"], med.loc[False, "actionsteps"]
     return ("Custo de uma execução com erro × sem erro",
             "Quanto mais tokens e mais passos usa uma execução que teve erro?",
-            "Duas barras por painel, normalizadas: a execução sem erro vale 1×. A estatística é a mediana — a execução do "
-            "meio: metade custa menos, metade custa mais (robusta à cauda longa: poucas execuções levam boa parte do "
-            f"gasto). Os valores: com erro, mediana de {_n(med.loc[True, 'tokens_total'])} tokens e "
-            f"{_n(med.loc[True, 'actionsteps'])} passos ({_n(n[True])} execuções); sem erro, {_n(med.loc[False, 'tokens_total'])} "
-            f"tokens e {_n(med.loc[False, 'actionsteps'])} passos ({_n(n[False])} execuções). Execução = execução + agente, "
-            "somando os papéis." + dentro,
+            "Duas barras por painel, nos valores reais (o tamanho da barra é o que a execução gasta; nada normalizado). "
+            "A barra é a mediana — a execução do meio de cada grupo: metade gasta menos, metade gasta mais (robusta à "
+            "cauda longa: poucas execuções levam boa parte do gasto); a média de cada grupo vem escrita abaixo. A razão "
+            "ao lado da barra laranja é a mediana com erro ÷ a mediana sem erro: "
+            f"{_n(k['tokens_total'], 1)}× em tokens ({_n(med.loc[True, 'tokens_total'])} ÷ "
+            f"{_n(med.loc[False, 'tokens_total'])}) e {_n(k['actionsteps'], 1)}× em passos ({q(pc)} ÷ {q(ps)}). Os passos "
+            f"são contados inteiros: a razão dos passos é a de dois números inteiros, e mede uma diferença de {q(pc - ps)} "
+            f"passo(s). n = execuções de cada grupo ({_n(n[True])} com erro, {_n(n[False])} sem). Execução = execução + "
+            "agente, somando os papéis." + dentro,
             "Não é causa: uma execução longa tem mais chance de errar e custa mais de qualquer jeito. Só os passos (o "
-            "planejamento não entra). \"Sem erro\" inclui as execuções só com suspeita. A média e o p90 estão no CSV.")
+            "planejamento não entra). \"Sem erro\" inclui as execuções só com suspeita. A média e o p90 por papel estão "
+            "no CSV.")
 
 
 def concentracao(execs, destino):
