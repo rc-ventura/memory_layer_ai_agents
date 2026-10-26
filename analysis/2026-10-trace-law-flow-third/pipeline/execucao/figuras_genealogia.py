@@ -12,8 +12,8 @@ diferentes. Medido nas arestas (`genealogia_arestas.csv`, ensaio da base 1 de 20
 - **mecanismo → unidade só converge**, por construção (o dicionário causa → unidade do `base_pipeline`);
 - **unidade → destino segue reto** (uma decisão por unidade): as duas viram uma coluna, "decisão · lição" (D4, 16/10).
 
-Por isso a genealogia da decisão é assinatura → mecanismo → unidade · destino, pintada pelo destino —
-`genealogia_decisao`. Com `unidade=`, ela recorta uma unidade: como cada causa vai para uma unidade só, pegar a
+Por isso a genealogia da decisão é assinatura → mecanismo → unidade · destino, pintada pela família do erro
+(a cor do censo; o destino está escrito na última coluna) — `genealogia_decisao`. Com `unidade=`, ela recorta uma unidade: como cada causa vai para uma unidade só, pegar a
 unidade puxa exatamente as suas causas e as assinaturas que chegam nelas, e os fluxos somam os erros dela.
 
 Tudo lido só do `genealogia_arestas.csv` da rodada (o hash conferido com o manifesto): nenhuma rodada nova. O desenho
@@ -67,9 +67,10 @@ def _classe_destino(d):
 
 
 def caminhos(ar, unidade=None):
-    """Uma linha por par (assinatura, mecanismo) com a unidade, o destino e os erros. Confere que cada causa vai para
+    """Uma linha por (assinatura, mecanismo, família do erro) com a unidade, o destino e os erros. Confere que cada causa vai para
     uma unidade só (é o que deixa o recorte exato) e, com `unidade`, recorta."""
-    am = _etapa(ar, "assinatura->submecanismo").rename(columns={"origem": "assinatura", "destino": "submecanismo"})
+    am = (ar[ar.etapa.eq("assinatura->submecanismo")].groupby(["origem", "destino", "categoria"], as_index=False).erros.sum()
+          .rename(columns={"origem": "assinatura", "destino": "submecanismo", "categoria": "familia"}))
     mu = _etapa(ar, "submecanismo->unidade")
     dup = mu.groupby("origem").destino.nunique()
     if dup.gt(1).any():
@@ -140,7 +141,7 @@ def censo_sintomas(ar, destino):
 
 def _desenhar(EU, destino, titulo, paleta, ordem_cat):
     """O Sankey de três colunas com as peças do `genealogia_sankey` (posição, fatias, fitas, rótulos sem colisão),
-    pintado pela classe do destino."""
+    pintado pela família do erro (a mesma cor do censo e da genealogia de cinco colunas)."""
     tot, arestas, comp = gs.montar_grafo(EU, STAGES)
     ordem = gs.ordenar_colunas(tot, arestas, STAGES)
     maior = max(int(v) for col in STAGES for v in tot[col].values)
@@ -148,7 +149,7 @@ def _desenhar(EU, destino, titulo, paleta, ordem_cat):
     scale = 3.4 / maior
     ys, altura = gs.centralizar(gs.calcular_ys(tot, ordem, MIN_H, PAD, scale, PAD_PEQ, STAGES))
     fat = {}
-    for col in STAGES:   # as fatias de cada nó na ordem dos destinos (o `fatias` do sankey usa a das famílias)
+    for col in STAGES:   # as fatias de cada nó, na ordem da paleta das famílias
         fat[col] = {}
         for nome in ordem[col]:
             y0, _, h = ys[col][nome]
@@ -200,27 +201,28 @@ def _desenhar(EU, destino, titulo, paleta, ordem_cat):
 
 
 def genealogia_decisao(ar, destino, unidade=None):
-    """2 · Do sintoma à decisão: assinatura → mecanismo → unidade · destino, pintado pelo destino. Com `unidade`, o
-    recorte de uma unidade (o estudo de caso)."""
+    """2 · Do sintoma à decisão: assinatura → mecanismo → unidade · destino, pintado pela família do erro (a cor do
+    censo). Com `unidade`, o recorte de uma unidade (o estudo de caso)."""
     c = caminhos(ar, unidade)
     c["unidade"] = [f"{d} ({u})" if not str(d).startswith("COMPLEMENTAR") else f"pendente: {str(d).lower()}"
                     for u, d in zip(c.unidade, c.destino)]
-    c["cat"] = c.destino.map(_classe_destino)
+    c["classe_destino"] = c.destino.map(_classe_destino)
+    c["cat"] = c.familia
     EU = c.loc[c.index.repeat(c.erros), STAGES + ["cat"]].reset_index(drop=True)
-    paleta = {rotulo: cr for _, rotulo, cr in DESTINO}
-    ordem_cat = [rotulo for _, rotulo, _ in DESTINO]
+    paleta = COR_ERRO
+    ordem_cat = list(COR_ERRO)
     total, n_ass, n_mec = len(EU), EU.assinatura.nunique(), EU.submecanismo.nunique()
     abre = c.groupby("assinatura").submecanismo.nunique().gt(1).sum()
     junta = c.groupby("submecanismo").assinatura.nunique().gt(1).sum()
     if unidade is None:
-        cand = int(EU.cat.eq("candidata a memória").sum())
+        cand = int(c.erros[c.classe_destino.eq("candidata a memória")].sum())
         titulo = (f"Do sintoma à decisão: {_n(total)} erros, {n_ass} assinaturas, {n_mec} causas e "
                   f"{EU.unidade.nunique()} lições; {_pct(100 * cand / total, 0)} vão para candidata a memória  ·  "
-                  "cor = destino")
+                  "cor = família do erro")
     else:
         titulo = (f"{unidade}: {_n(total)} erros, que chegam por {n_ass} "
                   f"{'assinatura' if n_ass == 1 else 'assinaturas'} e {n_mec} {'causa' if n_mec == 1 else 'causas'}  ·  "
-                  f"destino: {EU.cat.iloc[0]}")
+                  f"destino: {c.classe_destino.iloc[0]}  ·  cor = família do erro")
     _desenhar(EU, destino, titulo, paleta, ordem_cat)
     ler = ("Três colunas, e cada uma soma os erros estruturados " + ("de todas as unidades" if unidade is None
                                                                       else f"da unidade {unidade}") +
@@ -230,10 +232,12 @@ def genealogia_decisao(ar, destino, unidade=None):
            (f" ({abre} {'assinatura se abre' if abre == 1 else 'assinaturas se abrem'} em mais de uma causa; {junta} "
             f"{'causa recebe' if junta == 1 else 'causas recebem'} mais de uma assinatura)" if unidade is None else "") +
            "; do mecanismo para a lição as fitas só se juntam (cada causa vai para uma lição só); a lição tem um destino "
-           "só. A largura das fitas e a altura dos nós são o número de erros (não tokens). Cor = destino da triagem: "
-           + SIGNIFICADO_DESTINO + ". A família do sintoma não entra: está no censo de família e assinatura.")
-    limite = ("O destino é o da triagem desta rodada (candidata não é memória aprovada) e muda quando uma investigação "
-              "muda a classificação. Abaixo do limiar escrito na figura o nó tem a altura mínima, para o rótulo caber. "
+           "só. A largura das fitas e a altura dos nós são o número de erros (não tokens). Cor = a família do erro, a mesma "
+           "do censo de família e assinatura: a fita mantém a cor do começo ao fim, então se vê de que família vem o "
+           "que termina em cada decisão (roxo = nenhuma regra reconheceu a causa). O destino está escrito na última "
+           "coluna: " + SIGNIFICADO_DESTINO + ".")
+    limite = ("O destino escrito na última coluna é o da triagem desta rodada (candidata não é memória aprovada) e muda "
+              "quando uma investigação muda a classificação. A cor não diz o destino, só a família do erro. Abaixo do limiar escrito na figura o nó tem a altura mínima, para o rótulo caber. "
               "A figura conta erros; a triagem decide sobre ocorrências (a cascata conta uma vez).")
     if unidade is not None:
         limite += (" O recorte mostra só os erros desta unidade: uma assinatura que também leva a outras unidades "

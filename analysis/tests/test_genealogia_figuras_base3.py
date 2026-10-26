@@ -51,6 +51,14 @@ class TestCaminhos(unittest.TestCase):
         # a assinatura que também vai para outra unidade entra só com a parte que chega aqui
         self.assertEqual(int(s[s.assinatura.eq("Função bloqueada")].erros.sum()), 4)
 
+    def test_a_cor_e_a_familia_do_erro_e_nao_o_destino(self):
+        ar = arestas()
+        ar.loc[ar.etapa.eq("assinatura->submecanismo") & ar.origem.eq("Função bloqueada"), "categoria"] = "Ambiente & sandbox"
+        c = fg.caminhos(ar)
+        self.assertEqual(set(c[c.assinatura.eq("Função bloqueada")].familia), {"Ambiente & sandbox"})
+        self.assertEqual(set(c[~c.assinatura.eq("Função bloqueada")].familia), {"Geração de código"})
+        self.assertEqual(int(c.erros.sum()), 19)   # separar por família não perde nem repete erro
+
     def test_recusa_causa_em_duas_unidades(self):
         ar = pd.concat([arestas(), pd.DataFrame([dict(etapa="submecanismo->unidade", origem="inventario_sandbox",
                                                       destino="U_outra", categoria="x", erros=1)])])

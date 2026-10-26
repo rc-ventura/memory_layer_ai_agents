@@ -313,7 +313,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   (por construção: o dicionário causa → unidade); unidade → destino segue reto (D4 de 16/10, uma coluna só). O erro
   estruturado é o evento que flui pela figura; a assinatura é o rótulo do sintoma dele. **O recorte por unidade**
   (`execucao/figuras_genealogia.py --unidade U_sandbox`, fora do `executar.py` porque ele entra no hash de código) é exato porque cada causa vai para uma unidade só; o script recusa se
-  isso deixar de valer. A versão de 22/10 (decisão = mecanismo → unidade, sem a assinatura) foi revertida → painel,
+  isso deixar de valer. **A cor das duas figuras é a família do erro** (a do censo, 10 cores da paleta, a fita mantém a cor do começo ao fim); o
+  destino fica escrito na última coluna. Pintar pelo destino foi testado e descartado (Rafael, 23/10): no recorte de uma
+  unidade, que tem um destino só, tudo saía de uma cor; a família mostra de que tipo de erro vem o que termina em cada
+  decisão (no `U_sandbox` da base 1, os 16 erros são todos de Ambiente & sandbox). A versão de 22/10 (decisão = mecanismo → unidade, sem a assinatura) foi revertida → painel,
   `execucao/figuras_genealogia.py`, teste `test_genealogia_figuras_base3`; base 3, roadmap #57; falta rodar na máquina 2.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
