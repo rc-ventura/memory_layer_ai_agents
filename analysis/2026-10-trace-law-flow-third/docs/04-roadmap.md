@@ -271,7 +271,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   ambiente da base 3 (decide a C no managerAgent), a checagem "uma causa só" de cada memória injetada, `--registrar`,
   ~~o tipo e o alarme das 13 não injetadas no catálogo~~ **feito em 22/10** (Ajuste 29; dossiê §2h, 25), o degrau 3
   das 3 injetadas (C, E, C.JoogleAnalytics; lidas em todas as bases, prioridade para a base 3 — decisão de 22/10; o
-  `drill_down.py` da base 3 está pronto, §2h, 26) e a parte F.
+  `drill_down.py` da base 3 está pronto, §2h, 26) e a parte F. **26/10:** a ida à máquina (§2h, 27) confirmou o degrau
+  2 das 3 com o prompt da base 2 e sustentou "uma causa só" da C (0 de 423 importados antes), da C.JoogleAnalytics (0 de
+  231; 77% com outro erro em seguida) e da E (92% inspeção); as amostras do degrau 3 estão prontas (30 de 30 nas três).
+  Decidido: a C exclui o managerAgent (o alcance "global, exceto" é ajuste a aprovar). Falta: as decisões de "uma causa
+  só" das 3, o ajuste do alcance, `--registrar` e a leitura do degrau 3.
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos

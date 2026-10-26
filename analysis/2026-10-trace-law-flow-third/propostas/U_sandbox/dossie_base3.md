@@ -868,6 +868,49 @@ para o Rafael → leitura fechada → concordância). **Ponto a confirmar:** o r
 `--n 30`, mas o `montar_evidencia.py` aplica o `--n` a cada papel — numa memória global como a C, até 30 por papel
 (a unidade tem 16 papéis; quantos a C tem sai da tabela). O comando acima tira 30 no total; com `--por role`, seria preciso um `--n` menor.
 
+**27 · A ida à máquina das bases 2 e 3 (26/10, fotos `IMG_6036`–`IMG_6058`): as seis hipóteses.** Os comandos dos
+itens 23, 24 e 26, com o kit 0.12.0 copiado para `.github/skills/` (o `funcoes_sandbox.json` chegou sem a quebra de linha
+final: o hash da foto, `fe65746b8bf693ca`, é o do mesmo conteúdo sem o `\n` — conferido aqui). O `drill_down.py` da base 3
+falhou na primeira gravação (`IMG_6052`: o caminho de um cru passava de 260 caracteres no Windows) e foi corrigido com o
+`caminho_io` do pipeline (commit `4d53a85`). O `uv run` falha na primeira tentativa de cada comando (o `jupyterlab` dentro
+do OneDrive, "Acesso negado") e roda na segunda: não afeta os resultados.
+
+*O contexto.* Das 16 memórias, três vão para o agente — C ("importe `json`, `re`, `datetime`", 423 erros), E ("não chame
+`repr`, `dir`…; use `print(type(x))`", 317) e C.JoogleAnalytics ("importe `pandas as pd`", 231) —, cobrindo 971 dos 1.100
+erros da unidade. Até aqui o degrau 2 delas só tinha rodado com o prompt da base 1 (outro período) e confiando na lista
+do prompt (que não é a do interpretador, itens 18–21). A ida testou seis hipóteses:
+
+| # | A ideia | O resultado | Onde ver | Conclusão |
+|---|---|---|---|---|
+| **H1** | com o prompt da base 2 (mesmo período da base 3) e o ambiente pelo interpretador, as três continuam aprovadas no degrau 2 | C, E e C.JoogleAnalytics passam em ambiente, conflito, repetição e recorrência; a repetição da E sai "decidido" (a decisão 5 vale com o prompt da base 2; nenhuma linha "decisão não vale"); as 13 não injetadas repetem o padrão da base 1 (9 D falham na repetição, a D.OficiosResposta não existe na base 2; as raras falham na recorrência; a B.OBFCivel falha na repetição). Prompt: 66 versões, 18 papéis, sem managerAgent | `IMG_6036`–`6038`, `IMG_6040` | **comprovada** |
+| **H2** | também na base 2, o interpretador aceita o que o prompt não lista | o `json` rodou sem erro em 10 papéis, inclusive RoteadorCivel e ContestacaoCivel (prompt sem `json`); no ContestacaoCivel rodou até `import concurrent`, fora da lista padrão do framework | `IMG_6039` | **comprovada** |
+| **H3** | no managerAgent o `json` é barrado (base 1: a lista do interpretador de abr/26 não tem `json`) | a base 3 não tem lista do managerAgent (10 papéis com lista, ele não está); `--papel managerAgent --modulo json`: 1 execução com algum erro (ago/26), 0 erros de `json`, 0 imports; 0 `json` barrado na base 3 inteira. A lista da base 1 é exatamente a lista padrão do smolagents (`BASE_BUILTIN_MODULES`, sem `json`) | `IMG_6043`, `IMG_6044`, `IMG_6057` | **sem dado na base 3**; a única evidência (base 1) é contra → decisão 1 |
+| **H4** | o erro da C é esquecer o import (não o nome sumir entre passos) | o passo anterior tinha importado: **0 de 415** (`json`), 0 de 5 (`re`), 0 de 3 (`datetime`) — 423, o total da memória; bases 1 e 2 (execução inteira): 0 de 6 cada. Depois do erro, no `json`: importa e roda 326, importa e dá outro erro 61, não importa 28, barrado 0 | `IMG_6044`, `6046`, `6048`, `6041` | **comprovada** (limite: na base 3 só o passo n-1) |
+| **H5** | o mesmo para o `pandas` no JoogleAnalytics | 0 de 231 importados antes; `pandas` nunca barrado no papel (1 barrado na base, em outro papel). **Mas: importa e dá outro erro 177 de 231 (77%)**, importa e roda 54; base 2: passo seguinte com erro 4 de 6 | `IMG_6050`, `6041` | **comprovada para o primeiro erro**; o erro seguinte fica para a leitura do degrau 3 |
+| **H6** | a E cobre uma causa só: inspecionar um valor | nomes na base 3 (`inventario.csv`): `__name__` 182, `repr` 98, `dir` 9, `__class__`/`__doc__`/`__len__` 3 — **292 (92%) inspeção**; `exec` 8, `__import__` 5, `bytes` 5, `open` 5, `hash` 2 — **25 (8%) outros usos** (`exec`, `__import__`, `bytes`, `dir` em 1 papel só); total 317 = E. `globals` 18, `eval` 14, `locals` 4, `vars` 1 = 37 = F. Base 2: `repr` 4, `__name__` 1, `open` 1 | `IMG_6058`, `6041` | **comprovada na maior parte** (o "para quê" de cada nome é o uso típico, não leitura de caso) |
+
+*As amostras do degrau 3 (Parte C do roteiro):* `drill_down.py tabela` → C 423, E 317, C.JoogleAnalytics 231; o
+`montar_evidencia.py` (sem `--por`, `--regra semente --n 30`) tirou **30 no total** de cada uma, **30 de 30 crus
+conferidos** nas três (confirmado pelo Rafael; os casos ficam na máquina). Fecha o "ponto a confirmar" do item 26.
+
+*Como a C trabalha nos papéis (para a decisão 1).* O erro é sempre o mesmo: `json.loads(...)` sem `import json` no passo
+→ "a variável `json` não está definida" → o agente importa no passo seguinte. O bilhete é um **lembrete** ("importe antes
+de usar"), e não reforço: ter o `json` na lista do prompt diz que pode, não que tem de importar antes. Em três papéis o
+prompt omite o `json` e o interpretador aceita (RoteadorCivel, que tem 241 dos 415 erros de `json`; ContestacaoCivel e
+OBFCivel, que quase não erram assim na base 2); ali o bilhete também diz a verdade que o prompt esconde. A causa é
+esquecimento nos dois grupos (base 2, item 14: 0,4% onde o prompt omite contra 1,6% onde lista). O que decide se o bilhete
+é certo num papel é o **interpretador** aceitar o `json` — verdade em todos os papéis vistos, menos no managerAgent.
+
+**Decisão 1 (Rafael, 26/10): a memória C exclui o managerAgent.** Ali o interpretador usa a lista padrão do framework, sem
+`json` (base 1); na base 3 a C não tem erro nesse papel, então excluir não perde nada que se veja. Para valer, a memória
+precisa de um alcance "global, exceto papéis" (hoje só existe global ou de um papel): ajuste no esquema, no
+`conferir_memorias.py` e no script da mineração, com nova mineração na máquina — a propor e aprovar antes de aplicar.
+
+**Em aberto (decisões do Rafael, uma por vez):** (2) "uma causa só" da C — recomendação: passa (H4); (3) da
+C.JoogleAnalytics — recomendação: passa para o primeiro erro, com a leitura do degrau 3 anotando o erro seguinte (H5);
+(4) da E — recomendação: passa, com 92% de inspeção; os 8% de outros usos são funções barradas, para as quais o "não chame"
+continua certo (H6). Depois: a leitura do degrau 3 (os 30 casos de cada uma, dois leitores) na máquina.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
