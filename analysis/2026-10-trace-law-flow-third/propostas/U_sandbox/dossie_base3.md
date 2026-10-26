@@ -925,6 +925,16 @@ U_sandbox.C managerAgent --motivo …` gravou o `nao_vale_em` na entrada da C (`
 excluiu. **Com a base 1, as três memórias que vão para o agente completam o degrau 2** (C, C.JoogleAnalytics e E: as
 cinco checagens em "passa" ou "decidido"). Falta: o `--registrar` (bases 1 e 2) e a leitura do degrau 3.
 
+**29 · O degrau 2 gravado no catálogo (26/10).** `conferir_memorias.py --prompts <base 1> --ambiente <base 1> --funcoes
+analysis/registros/funcoes_sandbox.json --base base3 --registrar` (o prompt e o ambiente da base 1 gerados de novo pelos
+`extrair_prompts_base2.py` e `extrair_ambiente_base2.py`, fora do repositório: 870 versões em 16 papéis; 13 papéis) gravou
+`degrau` e `conferencia` nas 16 entradas: **C, C.JoogleAnalytics e E no degrau 2** (as cinco checagens em "passa" ou
+"decidido"; a C sem o managerAgent); as 13 guardadas (10 D e B.OBFCivel, reforço; B.RespostaBacen e C.CalculoTrabalhista,
+raras) ficam no degrau 1, como esperado — não vão para o agente. **A base 2 confirma** (item 27, `IMG_6040`): as três
+passaram em ambiente, conflito, repetição e recorrência com o prompt do período da base 3; "uma causa só" é decisão do
+pesquisador e não depende do prompt. O catálogo guarda uma conferência por memória: a da base 1, com a da base 2 registrada
+aqui. Próximo: a leitura do degrau 3 na máquina (item 26; amostras prontas, item 27).
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
