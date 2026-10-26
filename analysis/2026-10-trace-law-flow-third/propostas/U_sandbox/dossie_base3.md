@@ -935,6 +935,38 @@ passaram em ambiente, conflito, repetição e recorrência com o prompt do perí
 pesquisador e não depende do prompt. O catálogo guarda uma conferência por memória: a da base 1, com a da base 2 registrada
 aqui. Próximo: a leitura do degrau 3 na máquina (item 26; amostras prontas, item 27).
 
+**30 · O degrau 3 sem cota de IA na máquina (26/10).** A leitura dos dois leitores automáticos roda na máquina da base,
+que está sem cota até 30/10. **Decisão do Rafael (26/10):** não esperar — (1) **regras contadas sobre a população
+inteira** de cada memória (423, 317, 231), que só imprimem números e categorias; (2) **10 casos por memória** (não 30:
+com as regras cobrindo a população, a leitura vira confirmação), **mascarados e trazidos por foto**, lidos aqui; (3) no dia
+30, os dois leitores na máquina, para conferir as regras (a concordância regra × leitores). O texto dos casos não sai: só
+código e mensagens de erro (técnicos, pela regra de sigilo de 16/10), com todo texto entre aspas, comentário e número
+trocado por `<texto>`, `# <comentário>` e `<n>`, sem a saída do modelo nem as observações; e a saída passa pelos padrões do
+`varrer_pii.py` antes de ser impressa.
+
+`pipeline/validacao/degrau3_sandbox.py` (novo): `contar` — **C e C.JoogleAnalytics**: o nome aparece na instrução que
+falhou? o passo seguinte importa? e **o erro que vem depois do import** (a assinatura mascarada, as 12 mais comuns: a
+pergunta aberta da C.JoogleAnalytics, H5); **E**: por nome, onde está a chamada barrada na linha que falhou (dentro de
+`print(...)`, atribuição, condição, `return`). `casos <memória>`: os primeiros 10 da amostra do degrau 3 (já escolhida por
+regra fixa, item 27), compactos. **O teste na base 1 no formato da base 3 pegou dois defeitos antes de sair:** (a) a
+instrução que falhou pode ter várias linhas (nos 3 casos da C da base 1, `datetime` está dentro de um texto longo entre
+aspas triplas) — a regra passou a olhar a instrução inteira; (b) **o mascaramento deixava passar o conteúdo de um texto
+entre aspas triplas que abre e não fecha no trecho** — na saída de teste apareceram uma tabela em markdown e um código de
+documento: corrigido (o código é mascarado inteiro antes de quebrar em linhas; aspas abertas mascaram até o fim) e, como
+proteção a mais, toda linha que ainda pareça texto corrido ou markdown é omitida. Base 1: C — os 3 com o nome na
+instrução, os 3 importam e seguem sem erro; E — os 5 dentro de `print(...)`. `test_degrau3_sandbox.py` (8 testes, entre
+eles os dois buracos do mascaramento e o bloqueio pelo varredor); suíte 343, OK.
+
+*Na máquina* (da raiz; `<parquet3>` = `analysis/2026-10-trace-law-flow-third/data/base_erros_minerados_full_v2.parquet`):
+```
+uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py contar --fonte <parquet3>
+uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py casos U_sandbox.C.JoogleAnalytics --fonte <parquet3>
+uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py casos U_sandbox.E --fonte <parquet3>
+uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py casos U_sandbox.C --fonte <parquet3>
+```
+Fotos: a saída do `contar` inteira; a dos `casos`, tela a tela (cada caso começa com `── caso N`). Se aparecer
+`BLOQUEADO`, nada é impresso: foto da linha e paramos.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

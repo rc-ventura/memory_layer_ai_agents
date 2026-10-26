@@ -303,6 +303,12 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   nota: em 77% o passo seguinte dá outro erro — o degrau 3 anota qual); a **E** (inspeção, 92% dos 317; nota: os 8% de outros
   usos são funções barradas, o "não chame" continua certo). Gravadas em `registros/decisoes_degrau2.json` pelo
   `conferir_memorias.py --decidir` → dossiê do sandbox §2h, 27.
+- **26/10, o degrau 3 do sandbox não espera a cota de IA da máquina** (decisão do Rafael; a cota volta em 30/10): regras
+  contadas sobre a população inteira de cada memória (só números e categorias) e **10 casos por memória** (não 30: a
+  leitura vira confirmação das regras), **mascarados** (código e mensagens de erro, com textos, comentários e números
+  trocados; sem a saída do modelo nem as observações; varredor antes de imprimir) e **trazidos por foto**, lidos aqui; no
+  dia 30, os dois leitores na máquina conferem as regras. Não é exceção à regra de sigilo de 16/10: só sai conteúdo
+  técnico → `pipeline/validacao/degrau3_sandbox.py`; dossiê do sandbox §2h, 30.
 - **23/10, a recuperação depois do erro é contada por trajetória, não por erro, e entra no relatório** (decisão do
   Rafael, ao pedir um sinal de recuperação do sistema inteiro na base 3, que é censo dos erros): o gráfico "o que vem
   depois do erro" da parte 1 conta por erro (uma cascata de 5 erros entra 4 vezes como "errou de novo") e só vê o passo
