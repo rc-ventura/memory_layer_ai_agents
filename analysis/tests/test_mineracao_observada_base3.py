@@ -310,7 +310,7 @@ class TestPainel(unittest.TestCase):
             self.assertIn("U_tipo_retorno", md)
             self.assertNotIn("exec-sintetica", md)
             self.assertTrue((saida / "cobertura.png").is_file())
-            for nome in ["censo_sintomas.png", "genealogia_decisao.png", "unidades_observadas.png", "papel_unidade.png",
+            for nome in ["censo_sintomas.png", "genealogia_decisao.png", "genealogia_decisao_destino.png", "unidades_observadas.png", "papel_unidade.png",
                          "destinos.png", "unidades_destino_tipo.png", "frequencia_custo.png", "concentracao_papel.png"]:
                 self.assertTrue((saida / nome).is_file(), nome)
             # cortados na auditoria da parte 1 (b3 #40): um insight por gráfico; a genealogia de cinco colunas saiu

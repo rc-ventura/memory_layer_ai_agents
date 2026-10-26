@@ -338,7 +338,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#57** **Rodar a genealogia em duas figuras na máquina 2 e ler** (decisão do Rafael, 23/10;
   [`decisoes.md`](../../decisoes.md)). A de cinco colunas juntava duas análises; agora o painel traz o **censo do
   sintoma** (família → assinatura, em barras: é uma árvore) e a **genealogia da decisão** (assinatura → mecanismo →
-  unidade · destino, em Sankey, cor = família do erro, a mesma do censo). `execucao/figuras_genealogia.py --unidade <U_…>` recorta uma unidade para o
+  unidade · destino, em Sankey, em duas figuras: cor = família do erro, a mesma do censo, e cor = destino — 26/10). `execucao/figuras_genealogia.py --unidade <U_…>` recorta uma unidade para o
   estudo de caso (a figura e um `.md` com o "como ler" em `<rodada>/genealogia/`). Tudo do `genealogia_arestas.csv` da
   rodada: sem rodada nova (`execucao/figuras_genealogia.py`, fora do hash de código; de propósito não é comando do
   `executar.py`, que está no hash). **Feito aqui:** ensaio da base 1 de

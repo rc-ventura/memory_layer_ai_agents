@@ -226,7 +226,8 @@ def gerar(pasta, gasto_total=None):
         import execucao.figuras_genealogia as fg
         ar = ler(pasta, m, "genealogia_arestas.csv")
         graficos += [("censo_sintomas.png", lambda d: fg.censo_sintomas(ar, d)),
-                     ("genealogia_decisao.png", lambda d: fg.genealogia_decisao(ar, d))]
+                     ("genealogia_decisao.png", lambda d: fg.genealogia_decisao(ar, d)),
+                     ("genealogia_decisao_destino.png", lambda d: fg.genealogia_decisao(ar, d, cor="destino"))]
     else:
         pulados.append("Genealogia: a rodada não tem `genealogia_arestas.csv`.")
     graficos.append(("unidades_observadas.png", lambda d: fp.tokens_unidade(tri, cob, d)))

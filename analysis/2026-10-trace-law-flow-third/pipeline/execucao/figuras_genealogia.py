@@ -200,17 +200,23 @@ def _desenhar(EU, destino, titulo, paleta, ordem_cat):
     plt.close(fig)
 
 
-def genealogia_decisao(ar, destino, unidade=None):
+def genealogia_decisao(ar, destino, unidade=None, cor="familia"):
     """2 · Do sintoma à decisão: assinatura → mecanismo → unidade · destino, pintado pela família do erro (a cor do
-    censo). Com `unidade`, o recorte de uma unidade (o estudo de caso)."""
+    censo) ou, com `cor="destino"`, pelo destino da triagem (Rafael, 26/10: as duas, cada uma com uma variável só na
+    cor). Com `unidade`, o recorte de uma unidade (o estudo de caso; só pela família: a unidade tem um destino só)."""
+    if cor not in ("familia", "destino") or (cor == "destino" and unidade is not None):
+        raise ValueError("cor é 'familia' ou 'destino', e o recorte por unidade é só pela família")
     c = caminhos(ar, unidade)
     c["unidade"] = [f"{d} ({u})" if not str(d).startswith("COMPLEMENTAR") else f"pendente: {str(d).lower()}"
                     for u, d in zip(c.unidade, c.destino)]
     c["classe_destino"] = c.destino.map(_classe_destino)
-    c["cat"] = c.familia
+    if cor == "familia":
+        c["cat"], paleta, ordem_cat = c.familia, COR_ERRO, list(COR_ERRO)
+    else:
+        c["cat"] = c.classe_destino
+        paleta, ordem_cat = {rotulo: cr for _, rotulo, cr in DESTINO}, [rotulo for _, rotulo, _ in DESTINO]
+    rotulo_cor = "cor = família do erro" if cor == "familia" else "cor = destino"
     EU = c.loc[c.index.repeat(c.erros), STAGES + ["cat"]].reset_index(drop=True)
-    paleta = COR_ERRO
-    ordem_cat = list(COR_ERRO)
     total, n_ass, n_mec = len(EU), EU.assinatura.nunique(), EU.submecanismo.nunique()
     abre = c.groupby("assinatura").submecanismo.nunique().gt(1).sum()
     junta = c.groupby("submecanismo").assinatura.nunique().gt(1).sum()
@@ -218,7 +224,7 @@ def genealogia_decisao(ar, destino, unidade=None):
         cand = int(c.erros[c.classe_destino.eq("candidata a memória")].sum())
         titulo = (f"Do sintoma à decisão: {_n(total)} erros, {n_ass} assinaturas, {n_mec} causas e "
                   f"{EU.unidade.nunique()} lições; {_pct(100 * cand / total, 0)} vão para candidata a memória  ·  "
-                  "cor = família do erro")
+                  + rotulo_cor)
     else:
         titulo = (f"{unidade}: {_n(total)} erros, que chegam por {n_ass} "
                   f"{'assinatura' if n_ass == 1 else 'assinaturas'} e {n_mec} {'causa' if n_mec == 1 else 'causas'}  ·  "
@@ -232,17 +238,22 @@ def genealogia_decisao(ar, destino, unidade=None):
            (f" ({abre} {'assinatura se abre' if abre == 1 else 'assinaturas se abrem'} em mais de uma causa; {junta} "
             f"{'causa recebe' if junta == 1 else 'causas recebem'} mais de uma assinatura)" if unidade is None else "") +
            "; do mecanismo para a lição as fitas só se juntam (cada causa vai para uma lição só); a lição tem um destino "
-           "só. A largura das fitas e a altura dos nós são o número de erros (não tokens). Cor = a família do erro, a mesma "
-           "do censo de família e assinatura: a fita mantém a cor do começo ao fim, então se vê de que família vem o "
-           "que termina em cada decisão (roxo = nenhuma regra reconheceu a causa). O destino está escrito na última "
-           "coluna: " + SIGNIFICADO_DESTINO + ".")
+           "só. A largura das fitas e a altura dos nós são o número de erros (não tokens). " +
+           ("Cor = a família do erro, a mesma do censo de família e assinatura: a fita mantém a cor do começo ao fim, "
+            "então se vê de que família vem o que termina em cada decisão (roxo = nenhuma regra reconheceu a causa). O "
+            "destino está escrito na última coluna: " if cor == "familia" else
+            "Cor = o destino da triagem, a mesma da figura dos destinos: lida da direita para a esquerda, mostra de que "
+            "sintomas e causas vem o que termina em cada decisão; uma assinatura que sai em duas cores se abre em causas "
+            "com decisões diferentes. As cores não são as das famílias (o azul aqui é candidata, não geração de código): ")
+           + SIGNIFICADO_DESTINO + ".")
     limite = ("O destino escrito na última coluna é o da triagem desta rodada (candidata não é memória aprovada) e muda "
-              "quando uma investigação muda a classificação. A cor não diz o destino, só a família do erro. Abaixo do limiar escrito na figura o nó tem a altura mínima, para o rótulo caber. "
+              "quando uma investigação muda a classificação. " + ("A cor não diz o destino, só a família do erro. " if cor == "familia" else "") + "Abaixo do limiar escrito na figura o nó tem a altura mínima, para o rótulo caber. "
               "A figura conta erros; a triagem decide sobre ocorrências (a cascata conta uma vez).")
     if unidade is not None:
         limite += (" O recorte mostra só os erros desta unidade: uma assinatura que também leva a outras unidades "
                    "aparece aqui só com a parte que chega nesta (a figura inteira mostra o resto).")
-    nome = "Do sintoma à decisão" + (f": {unidade}" if unidade else ": assinatura → mecanismo → unidade · destino")
+    nome = "Do sintoma à decisão" + (f": {unidade}" if unidade else ": assinatura → mecanismo → unidade · destino" +
+                                      (", pela família" if cor == "familia" else ", pelo destino"))
     return (nome, "Que mensagens chegam a cada causa, e que causas formam cada lição e o seu destino?" if unidade is None
             else f"Por que mensagens e por que causas os erros chegam a {unidade}?", ler, limite)
 
@@ -259,7 +270,8 @@ def gerar(pasta, unidade=None, saida=None):
     saida.mkdir(parents=True, exist_ok=True)
     figuras = ([(f"genealogia_decisao_{unidade}.png", lambda d: genealogia_decisao(ar, d, unidade))] if unidade else
                [("censo_sintomas.png", lambda d: censo_sintomas(ar, d)),
-                ("genealogia_decisao.png", lambda d: genealogia_decisao(ar, d))])
+                ("genealogia_decisao.png", lambda d: genealogia_decisao(ar, d)),
+                ("genealogia_decisao_destino.png", lambda d: genealogia_decisao(ar, d, cor="destino"))])
     md = [f"# Genealogia — base 3, rodada `{pasta.name}`" + (f", recorte `{unidade}`" if unidade else ""), "",
           f"Gerado por `execucao/figuras_genealogia.py` a partir do `{ARESTAS}` da rodada (hash conferido com o "
           "manifesto). Só contagens.", ""]

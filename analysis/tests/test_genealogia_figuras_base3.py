@@ -86,6 +86,16 @@ class TestFiguras(unittest.TestCase):
             self.assertIn("da unidade U_sandbox", ler)
             self.assertIn("só os erros desta unidade", limite)
 
+    def test_a_mesma_genealogia_pelo_destino(self):
+        with tempfile.TemporaryDirectory() as t:
+            t = Path(t)
+            titulo, _, ler, _ = fg.genealogia_decisao(arestas(), t / "dest.png", cor="destino")
+            self.assertTrue((t / "dest.png").is_file())
+            self.assertIn("pelo destino", titulo)
+            self.assertIn("Cor = o destino da triagem", ler)
+            with self.assertRaises(ValueError):   # o recorte de uma unidade é só pela família (um destino só)
+                fg.genealogia_decisao(arestas(), t / "x.png", "U_sandbox", cor="destino")
+
 
 if __name__ == "__main__":
     unittest.main()
