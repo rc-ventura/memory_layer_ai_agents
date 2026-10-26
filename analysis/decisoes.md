@@ -278,6 +278,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   n+2), sem o prompt, lidos na máquina pela skill de investigação; nas bases 1 e 2, todos os casos que houver, com o trace
   inteiro (pegam o "importou antes e o nome sumiu" que a janela da base 3 pode não mostrar). Para ler a base 3, a pasta
   dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26.
+- **26/10, a cobertura das regras vira duas barras** (decisão do Rafael, ao ver o painel da base 3 na máquina 2, foto
+  IMG_6063): a figura de um motivo por barra confundia (nove barras, a maior com 87% dos erros, e os pendentes espalhados
+  em quatro). Agora: cobertos (a regra tem a evidência para decidir; na base 3, 29.392 de 30.141, 97,5%) e pendentes
+  (falta dado na extração; 749), com os maiores motivos dos pendentes em texto embaixo da barra; a lista inteira continua
+  na tabela do painel. Lido da rodada, sem rodada nova → `execucao/painel.py` (`figura_cobertura`).
 - **26/10, a memória C do sandbox exclui o managerAgent** (decisão do Rafael, depois da ida à máquina de 26/10): na base
   1, a lista do interpretador do managerAgent é a padrão do smolagents, sem `json`, e nenhum `import json` rodou ali; a
   base 3 não tem lista dele e tem 0 erros da C nesse papel (1 execução com algum erro no período). Excluir não perde nada
