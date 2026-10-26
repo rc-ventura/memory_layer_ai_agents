@@ -31,7 +31,8 @@ memória 0.4, `validation.nomes`): `importar`, `usar`, `nao_importar`, `nao_usar
   5 uma causa só  a memória não junta causas diferentes: só verificável se a entrada traz `causas` (a classificação
                   de uso que o script específico grava); sem ela, "não verificável"
 
-Por papel: o da memória (`scope.role`) ou, numa memória global, todos os papéis do JSONL. Um papel sem prompt no
+Por papel: o da memória (`scope.role`) ou, numa memória global, todos os papéis do JSONL, menos os que o pesquisador
+excluiu (`nao_vale_em` da entrada, gravado pelo `catalogar_memoria.py --excluir`; o resultado diz quais). Um papel sem prompt no
 JSONL é "não verificável". Uma checagem falha num papel se falha em alguma versão do prompt dele. Na memória: as
 checagens 1 e 2 falham se falham em algum papel; a 3 é "falha" se todo papel verificável repete, "parcial" se algum.
 O resultado diz qual JSONL usou (nome, hash, papéis, versões): numa base sem prompt, o prompt vem de outra base e é
@@ -289,6 +290,9 @@ def conferir_memoria(e, prompts, instr, rg, amb=None, funcoes=None, decisoes=Non
     amb_papeis = (amb or {}).get("papeis", {})
     papel_da_memoria = (e.get("scope") or {}).get("role")
     papeis = [papel_da_memoria] if papel_da_memoria else sorted(set(prompts) | set(amb_papeis))
+    # os papéis em que o pesquisador decidiu que a memória global não vale (`nao_vale_em`, catalogar_memoria.py)
+    excluidos = sorted({x["papel"] for x in e.get("nao_vale_em") or []})
+    papeis = [p for p in papeis if p not in excluidos]
     out = {}
     for chave, modo in (("1_ambiente", "qualquer"), ("2_conflito", "qualquer"), ("3_repete", "todos")):
         if not nomes:
@@ -307,6 +311,8 @@ def conferir_memoria(e, prompts, instr, rg, amb=None, funcoes=None, decisoes=Non
             else:
                 det[p] = {"resultado": NV, "motivos": ["papel sem prompt no JSONL"]}
         out[chave] = {"resultado": agregar(det, modo), "papeis": det}
+        if excluidos:
+            out[chave]["excluidos"] = excluidos
     occ = e.get("occurrences") or {}
     ex, me = int(occ.get("execucoes") or 0), len(occ.get("meses") or [])
     passa = ex >= rg["execucoes"] and me >= rg["meses"]

@@ -183,7 +183,14 @@
         "onde": "na pasta da mineração, na máquina da base"
       },
       "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
-      "registrado_em": "2026-10-21"
+      "registrado_em": "2026-10-21",
+      "nao_vale_em": [
+        {
+          "papel": "managerAgent",
+          "decidido_em": "2026-10-26",
+          "motivo": "Na base 1, a lista do interpretador do managerAgent é a padrão do smolagents, sem json, e nenhum import json rodou ali; a base 3 não tem lista dele e tem 0 erros da C nesse papel. Excluir não perde nada que se veja e evita mandar um import barrado (decisão 1 de 26/10; dossiê do sandbox §2h, 27)."
+        }
+      ]
     },
     {
       "id": "U_sandbox.C.CalculoTrabalhista",

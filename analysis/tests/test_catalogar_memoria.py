@@ -113,6 +113,38 @@ class TestCatalogo(unittest.TestCase):
             cm.main(["--monitorar", "U_x.Z", "--tipo", "rara", "--motivo", "m", "--registro", str(reg),
                      "--monitoramento", str(mon)])
 
+    def test_excluir_papel_de_memoria_global(self):
+        # Ajuste 30 (26/10): a memória C do sandbox não vale no managerAgent
+        e1, _ = cm.entrada(doc("U_x.C"), self.gravar("a.json", doc("U_x.C")))
+        reg, _ = cm.registrar({"itens": []}, [e1], hoje="2026-10-20")
+        cm.excluir(reg, "U_x.C", ["managerAgent"], "lista padrão, sem json", decidido_em="2026-10-26")
+        excl = reg["itens"][0]["nao_vale_em"]
+        self.assertEqual(excl, [{"papel": "managerAgent", "decidido_em": "2026-10-26", "motivo": "lista padrão, sem json"}])
+        self.assertEqual(cm.conferir(reg), [])
+        cm.excluir(reg, "U_x.C", ["managerAgent", "P"], "outro motivo")          # troca o item do mesmo papel
+        self.assertEqual(sorted(x["papel"] for x in reg["itens"][0]["nao_vale_em"]), ["P", "managerAgent"])
+        # mineração nova: a exclusão passa, como a marcação de monitorada
+        reg, _ = cm.registrar(reg, [{**e1, "description": "nova"}], hoje="2026-11-01")
+        self.assertEqual(len(reg["itens"][0]["nao_vale_em"]), 2)
+
+    def test_excluir_so_em_memoria_global(self):
+        d = doc("U_x.C.P")
+        d["memoria"]["scope"] = {"role": "P", "tool": None}
+        e1, _ = cm.entrada(d, self.gravar("a.json", d))
+        reg, _ = cm.registrar({"itens": []}, [e1])
+        with self.assertRaises(SystemExit):
+            cm.excluir(reg, "U_x.C.P", ["Q"], "m")
+        reg["itens"][0]["nao_vale_em"] = [{"papel": "Q", "decidido_em": "2026-10-26", "motivo": "m"}]
+        self.assertTrue(any("`nao_vale_em`" in x for x in cm.conferir(reg)))
+
+    def test_cli_excluir(self):
+        reg = self.gravar("memorias.json", {"o_que_e": "x", "itens": []})
+        cat = self.p / "cat.json"
+        cm.main([str(self.gravar("a.json", doc("U_x.C"))), "--saida", str(cat)])
+        cm.main(["--registrar", str(cat), "--registro", str(reg)])
+        self.assertEqual(cm.main(["--excluir", "U_x.C", "managerAgent", "--motivo", "m", "--registro", str(reg)]), 0)
+        self.assertEqual(json.loads(reg.read_text(encoding="utf-8"))["itens"][0]["nao_vale_em"][0]["papel"], "managerAgent")
+
     def test_o_catalogo_do_repositorio_confere(self):
         self.assertEqual(cm.conferir(cm.ler_registro(cm.REGISTRO)), [])
 

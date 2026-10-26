@@ -915,6 +915,16 @@ Conferência com a base 1 depois do registro: C.JoogleAnalytics e E com as cinco
 2 completo); a C ainda falha no ambiente só pelo managerAgent (o ajuste do alcance, decisão 1, resolve). Falta: o ajuste
 do alcance, o `--registrar` (bases 1 e 2) e a leitura do degrau 3 na máquina.
 
+**28 · A exclusão do managerAgent no catálogo (26/10; Ajuste 30).** A decisão 1 (item 27) precisava de um alcance
+"global, exceto papéis", que a memória não tinha (só global ou de um papel). Dois jeitos: (A) um campo no esquema e no
+script da mineração — o esquema entra no hash do código da rodada, então exigiria rodada nova e mineração nova na máquina,
+mais emenda no racional e laudo; (B) no catálogo, como as marcações de rara e reforço (Ajuste 29). **Escolhido pelo Rafael:
+B**, porque a exclusão é uma decisão do pesquisador que os dados da base 3 não mostram. `catalogar_memoria.py --excluir
+U_sandbox.C managerAgent --motivo …` gravou o `nao_vale_em` na entrada da C (`--conferir`: catálogo ok, 16 memórias); o
+`--registrar` de uma mineração nova o preserva; o `conferir_memorias.py` não confere a C no managerAgent e diz que o
+excluiu. **Com a base 1, as três memórias que vão para o agente completam o degrau 2** (C, C.JoogleAnalytics e E: as
+cinco checagens em "passa" ou "decidido"). Falta: o `--registrar` (bases 1 e 2) e a leitura do degrau 3.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

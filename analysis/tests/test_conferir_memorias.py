@@ -257,6 +257,18 @@ class TestAmbienteDoInterpretador(unittest.TestCase):
         self.assertEqual(ch["2_conflito"]["papeis"]["Q"]["resultado"], cf.NV)
         self.assertEqual(ch["1_ambiente"]["papeis"]["P"]["resultado"], cf.PASSA)   # P cai no prompt, que tem json
 
+    def test_papel_excluido_nao_e_conferido(self):
+        # Ajuste 30: o managerAgent excluído da memória global (nao_vale_em) não entra nas checagens
+        e = {**entrada(nomes(importar=["json"])), "nao_vale_em": [{"papel": "M", "decidido_em": "2026-10-26",
+                                                                    "motivo": "m"}]}
+        prompts = {"P": [versao(SEM_PANDAS)], "M": [versao(LISTA.format("['re']"))]}
+        ch = cf.conferir_memoria(e, prompts, INSTR, RG)
+        self.assertEqual(ch["1_ambiente"]["resultado"], cf.PASSA)      # sem a exclusão, M reprovaria
+        self.assertNotIn("M", ch["1_ambiente"]["papeis"])
+        self.assertEqual(ch["1_ambiente"]["excluidos"], ["M"])
+        sem = cf.conferir_memoria(entrada(nomes(importar=["json"])), prompts, INSTR, RG)
+        self.assertEqual(sem["1_ambiente"]["resultado"], cf.FALHA)
+
     def test_sem_ambiente_nada_muda(self):
         e = entrada(nomes(importar=["pandas"]), role="P")
         self.assertEqual(cf.conferir_memoria(e, {"P": [versao(SEM_PANDAS)]}, INSTR, RG)["1_ambiente"]["papeis"]["P"],

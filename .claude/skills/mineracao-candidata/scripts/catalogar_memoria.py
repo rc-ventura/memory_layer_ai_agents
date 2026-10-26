@@ -6,6 +6,8 @@ no catálogo e confere o catálogo.
     python catalogar_memoria.py --conferir [--registro <memorias.json>]
     python catalogar_memoria.py --monitorar <id> [<id> ...] --tipo rara|reforço --motivo "<o porquê>" [--base <BASE_ID>]
                                 [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>] [--monitoramento <monitoramento.json>]
+    python catalogar_memoria.py --excluir <id> <papel> [<papel> ...] --motivo "<o porquê>" [--base <BASE_ID>]
+                                [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
 
 Uma memória entra no catálogo quando está **fechada**: `validation.destino` = "memória" (decisão do pesquisador) e
 `status` = "derived-and-checked". O que tem destino harness vai para o `monitoramento.json`, e o que tem destino em
@@ -25,6 +27,12 @@ reforço → `cresce` (erros ≥ 3 × a linha de base). No `--registrar` de uma 
 anterior é preservado, os gatilhos são conferidos contra a linha de base e um que dispara sai como ALARME (registra
 assim mesmo: a contagem nova é o fato; o alarme é para o pesquisador decidir de novo). A conferência do degrau 2
 (`degrau`, `conferencia`) da entrada anterior não passa para a nova: é de outra rodada.
+
+**Memória global com papéis excluídos:** o pesquisador decide que uma memória global não vale num papel (o bilhete
+mandaria fazer o que o ambiente desse papel barra, por evidência que a mineração da base não vê). `--excluir` grava na
+entrada o `nao_vale_em`: um item por papel, com quando e por quê. Só numa memória global (`scope.role` nulo). Como o
+`monitorada`, passa de uma mineração para a outra no `--registrar`; o `conferir_memorias.py` (degrau 2) não confere a
+memória nesses papéis, e um injetor de memórias não a injeta neles.
 """
 import argparse
 import datetime
@@ -37,6 +45,7 @@ RAIZ = Path(__file__).resolve().parents[4]
 REGISTRO = RAIZ / "analysis" / "registros" / "memorias.json"
 MONITORAMENTO = RAIZ / "analysis" / "registros" / "monitoramento.json"
 TIPOS = ("rara", "reforço")
+PRESERVADOS = ("monitorada", "nao_vale_em")   # decisões do pesquisador: passam de uma mineração para a outra
 CAMPOS = ("id", "unidade", "parte", "base", "rodada_id", "fonte_id", "gerado_em", "esquema", "parte_especifica",
           "destino", "status", "category", "scope", "description", "correction_guidance", "occurrences", "arquivo")
 
@@ -96,6 +105,10 @@ def conferir(reg):
         mon = e.get("monitorada")
         if mon and (mon.get("tipo") not in TIPOS or not mon.get("gatilhos") or not (mon.get("linha_de_base") or {}).get("erros")):
             erros.append(f"item {i} ({e.get('id')}): `monitorada` sem tipo ({'/'.join(TIPOS)}), gatilhos ou linha de base")
+        excl = e.get("nao_vale_em")
+        if excl and (any(not (x.get("papel") and x.get("motivo") and x.get("decidido_em")) for x in excl)
+                     or (e.get("scope") or {}).get("role")):
+            erros.append(f"item {i} ({e.get('id')}): `nao_vale_em` sem papel, motivo ou data, ou numa memória que não é global")
         chave = (e.get("id"), e.get("base"))
         if chave in vistos:
             erros.append(f"item {i}: {chave} repetido")
@@ -104,14 +117,18 @@ def conferir(reg):
 
 
 def registrar(reg, entradas, hoje=None):
-    """Põe as entradas no catálogo; preserva o `monitorada` da entrada anterior e devolve os alarmes dos gatilhos."""
+    """Põe as entradas no catálogo; preserva as decisões do pesquisador da entrada anterior (`monitorada`,
+    `nao_vale_em`) e devolve os alarmes dos gatilhos."""
     antes = {(e.get("id"), e.get("base")): e for e in reg.get("itens", [])}
     novas, alarmes = {}, []
     for e in entradas:
         n = {**e, "registrado_em": hoje or datetime.date.today().isoformat()}
-        mon = antes.get((e["id"], e["base"]), {}).get("monitorada")
+        anterior = antes.get((e["id"], e["base"]), {})
+        for campo in PRESERVADOS:
+            if anterior.get(campo):
+                n[campo] = anterior[campo]
+        mon = n.get("monitorada")
         if mon:
-            n["monitorada"] = mon
             alarmes += [f"{e['id']} ({mon['tipo']}): {a}" for a in disparos(mon, n.get("occurrences") or {})]
         novas[(e["id"], e["base"])] = n
     itens = [e for e in reg.get("itens", []) if (e.get("id"), e.get("base")) not in novas] + list(novas.values())
@@ -155,6 +172,20 @@ def monitorar(reg, ids, tipo, motivo, monitoramento, base=None, decidido_em=None
     return alvo
 
 
+def excluir(reg, ident, papeis, motivo, base=None, decidido_em=None):
+    """Marca papéis em que uma memória global não vale (troca o item de um papel já excluído)."""
+    alvo = [e for e in reg.get("itens", []) if e["id"] == ident and (not base or e.get("base") == base)]
+    if len(alvo) != 1:
+        sys.exit(f"{ident}: {len(alvo)} entradas no catálogo (use --base para escolher uma)")
+    e = alvo[0]
+    if (e.get("scope") or {}).get("role"):
+        sys.exit(f"{ident}: vale só no papel {e['scope']['role']}; excluir papéis só faz sentido numa memória global")
+    quando = decidido_em or datetime.date.today().isoformat()
+    itens = [x for x in e.get("nao_vale_em") or [] if x["papel"] not in papeis]
+    e["nao_vale_em"] = itens + [{"papel": p, "decidido_em": quando, "motivo": motivo} for p in papeis]
+    return e
+
+
 def main(argv=None):
     for fluxo in (sys.stdout, sys.stderr):
         if hasattr(fluxo, "reconfigure"):
@@ -167,9 +198,10 @@ def main(argv=None):
     p.add_argument("--registro", default=str(REGISTRO))
     p.add_argument("--monitorar", nargs="+", metavar="ID", help="marca estas memórias como monitoradas (não injetadas)")
     p.add_argument("--tipo", choices=TIPOS, help="com --monitorar: rara ou reforço")
-    p.add_argument("--motivo", help="com --monitorar: o porquê, nas palavras do pesquisador")
-    p.add_argument("--base", help="com --monitorar: a base das entradas")
-    p.add_argument("--decidido-em", help="com --monitorar: a data da decisão (padrão: hoje)")
+    p.add_argument("--excluir", nargs="+", metavar="ID PAPEL", help="a memória global e os papéis em que ela não vale")
+    p.add_argument("--motivo", help="com --monitorar ou --excluir: o porquê, nas palavras do pesquisador")
+    p.add_argument("--base", help="com --monitorar ou --excluir: a base das entradas")
+    p.add_argument("--decidido-em", help="com --monitorar ou --excluir: a data da decisão (padrão: hoje)")
     p.add_argument("--monitoramento", default=str(MONITORAMENTO))
     a = p.parse_args(argv)
     if a.monitorar:
@@ -181,6 +213,14 @@ def main(argv=None):
             m = e["monitorada"]
             print(f"  monitorada  {e['id']} · {m['tipo']} · linha de base {m['linha_de_base']['erros']} erros · "
                   f"gatilhos: {', '.join(g['tipo'] for g in m['gatilhos'])}")
+        Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return 0
+    if a.excluir:
+        if len(a.excluir) < 2 or not a.motivo:
+            p.error("--excluir pede o id da memória, pelo menos um papel e --motivo")
+        reg = ler_registro(a.registro)
+        e = excluir(reg, a.excluir[0], a.excluir[1:], a.motivo, a.base, a.decidido_em)
+        print(f"  não vale em  {e['id']}: {', '.join(x['papel'] for x in e['nao_vale_em'])}")
         Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return 0
     if a.registrar:

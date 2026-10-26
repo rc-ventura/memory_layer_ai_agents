@@ -283,7 +283,8 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   base 3 não tem lista dele e tem 0 erros da C nesse papel (1 execução com algum erro no período). Excluir não perde nada
   que se veja e evita o único risco que a evidência aponta. Nos outros papéis a C fica: o interpretador aceita `json` em
   todos os vistos, e o bilhete é um lembrete, com a mesma causa (esquecimento) onde o prompt lista o `json` e onde o omite.
-  Para valer, a memória precisa de um alcance "global, exceto papéis" (ajuste a aprovar) → dossiê do sandbox §2h, 27.
+  Para valer, a memória precisa de um alcance "global, exceto papéis": feito no catálogo (`nao_vale_em`, Ajuste 30, o
+  jeito B, escolhido pelo Rafael em 26/10 — sem mexer no esquema, para não exigir rodada nova) → dossiê do sandbox §2h, 27–28.
 - **26/10, "uma causa só" passa nas três memórias do sandbox que vão para o agente** (decisões do Rafael, uma por vez):
   a **C** (esquecimento; 0 de 423 importados antes, import nunca barrado); a **C.JoogleAnalytics** (esquecimento, 0 de 231;
   nota: em 77% o passo seguinte dá outro erro — o degrau 3 anota qual); a **E** (inspeção, 92% dos 317; nota: os 8% de outros

@@ -274,9 +274,9 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `drill_down.py` da base 3 está pronto, §2h, 26) e a parte F. **26/10:** a ida à máquina (§2h, 27) confirmou o degrau
   2 das 3 com o prompt da base 2 e sustentou "uma causa só" da C (0 de 423 importados antes), da C.JoogleAnalytics (0 de
   231; 77% com outro erro em seguida) e da E (92% inspeção); as amostras do degrau 3 estão prontas (30 de 30 nas três).
-  Decidido: a C exclui o managerAgent (o alcance "global, exceto" é ajuste a aprovar); "uma causa só" passa nas 3
-  (gravado em `decisoes_degrau2.json`; C.JoogleAnalytics e E completam o degrau 2 com a base 1). Falta: o ajuste do
-  alcance, `--registrar` e a leitura do degrau 3.
+  Decidido: a C exclui o managerAgent (feito no catálogo, `nao_vale_em`, Ajuste 30); "uma causa só" passa nas 3
+  (gravado em `decisoes_degrau2.json`). **As 3 completam o degrau 2 com a base 1** (§2h, 28). Falta: `--registrar` (bases
+  1 e 2) e a leitura do degrau 3.
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos

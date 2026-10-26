@@ -80,7 +80,8 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   scripts/validar_memoria.py      confere o arquivo final contra o esquema da memória da análise (e converte o registro de um notebook)
   scripts/comparar_auditoria.py   o encontro: a parte genérica × a auditoria independente (audit_recompute6)
   scripts/catalogar_memoria.py    o catálogo das memórias fechadas (analysis/registros/memorias.json): monta a entrada, registra, confere;
-                                  --monitorar marca uma memória não injetada (rara ou reforço) e o --registrar confere o alarme dela
+                                  --monitorar marca uma memória não injetada (rara ou reforço) e o --registrar confere o alarme dela;
+                                  --excluir marca os papéis em que uma memória global não vale
   scripts/conferir_memorias.py    o degrau 2 da validação: as cinco checagens de cada memória do catálogo contra o prompt de cada papel
                                   e, com --ambiente/--funcoes, contra o que o interpretador aceita; --decidir registra a decisão do pesquisador
   scripts/valor_da_licao.py       o painel das lições: frequência (Pareto · presença no tempo), confiança (lida do confianca.json), situação e decisão

@@ -94,7 +94,14 @@ que o pesquisador lê como ruído — ele aceita o resultado com o motivo:
 `conferir_memorias.py --prompts … --decidir <id> <checagem> --motivo "…" --por <quem>`. O script grava, em
 `analysis/registros/decisoes_degrau2.json`, o resultado e os motivos daquele momento; depois a checagem sai "decidido
 pelo pesquisador" (nunca "passa"), e só enquanto o script der o mesmo resultado com os mesmos motivos — se mudar, a
-decisão deixa de valer e o resultado diz por quê. Os nomes que cada memória manda usar ou evitar vêm do campo
+decisão deixa de valer e o resultado diz por quê.
+
+**Um papel em que a memória global não vale** (Ajuste 30, 26/10/2026): quando o pesquisador decide que uma memória global
+não deve valer num papel — o bilhete mandaria fazer o que o ambiente desse papel barra, por evidência que a base da
+mineração não vê —, `catalogar_memoria.py --excluir <id> <papel> --motivo "…"` grava na entrada do catálogo o
+`nao_vale_em` (o papel, a data, o porquê). A exclusão passa de uma mineração para a outra; o degrau 2 não confere a
+memória nesse papel (o resultado diz quais foram excluídos), e um injetor de memórias não a injeta nele. O primeiro caso:
+a memória C do sandbox no managerAgent (dossiê do sandbox, §2h, 27–28). Os nomes que cada memória manda usar ou evitar vêm do campo
 `validation.nomes` do arquivo final (esquema 0.4), que o catálogo copia. A instrução do prompt que induz um nome (a
 checagem 2) fica no item do sinal de harness no `monitoramento.json` (`instrucao_prompt`, `nomes_induzidos`).
 
