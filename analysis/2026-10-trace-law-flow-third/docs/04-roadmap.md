@@ -276,7 +276,9 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   231; 77% com outro erro em seguida) e da E (92% inspeção); as amostras do degrau 3 estão prontas (30 de 30 nas três).
   Decidido: a C exclui o managerAgent (feito no catálogo, `nao_vale_em`, Ajuste 30); "uma causa só" passa nas 3
   (gravado em `decisoes_degrau2.json`). **As 3 completam o degrau 2 com a base 1** (§2h, 28), **gravado no catálogo**
-  (`--registrar`, §2h, 29; a base 2 confirma, `IMG_6040`). Falta: a leitura do degrau 3 e a parte F.
+  (`--registrar`, §2h, 29; a base 2 confirma, `IMG_6040`). Degrau 3 sem esperar a cota (§2h, 30): regras contadas +
+  10 casos mascarados por memória, por foto (`degrau3_sandbox.py`); os dois leitores no dia 30. Falta: rodar na máquina,
+  a leitura aqui e a parte F.
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos

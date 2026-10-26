@@ -290,6 +290,12 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   nota: em 77% o passo seguinte dá outro erro — o degrau 3 anota qual); a **E** (inspeção, 92% dos 317; nota: os 8% de outros
   usos são funções barradas, o "não chame" continua certo). Gravadas em `registros/decisoes_degrau2.json` pelo
   `conferir_memorias.py --decidir` → dossiê do sandbox §2h, 27.
+- **26/10, o degrau 3 do sandbox não espera a cota de IA da máquina** (decisão do Rafael; a cota volta em 30/10): regras
+  contadas sobre a população inteira de cada memória (só números e categorias) e **10 casos por memória** (não 30: a
+  leitura vira confirmação das regras), **mascarados** (código e mensagens de erro, com textos, comentários e números
+  trocados; sem a saída do modelo nem as observações; varredor antes de imprimir) e **trazidos por foto**, lidos aqui; no
+  dia 30, os dois leitores na máquina conferem as regras. Não é exceção à regra de sigilo de 16/10: só sai conteúdo
+  técnico → `pipeline/validacao/degrau3_sandbox.py`; dossiê do sandbox §2h, 30.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
