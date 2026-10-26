@@ -11,7 +11,6 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-import shutil
 import sys
 
 import pandas as pd
@@ -211,9 +210,15 @@ def gerar(pasta, gasto_total=None):
     import execucao.figuras_painel as fp
     tpp = ler(pasta, m, "triagem_por_papel.csv")
     graficos, pulados = [], []
-    if (pasta / "genealogia_observada.png").exists() and "genealogia_observada.png" in m["artefatos"]:
-        shutil.copy2(pasta / "genealogia_observada.png", saida / "genealogia_observada.png")
-        graficos.append(("genealogia_observada.png", lambda d: fp.genealogia()))
+    # a genealogia em duas figuras (23/10): o censo do sintoma e a decisão (assinatura → mecanismo → unidade · destino),
+    # do genealogia_arestas.csv; a de cinco colunas da rodada (genealogia_observada.png) fica na rodada, fora do painel
+    if "genealogia_arestas.csv" in m["artefatos"]:
+        import execucao.figuras_genealogia as fg
+        ar = ler(pasta, m, "genealogia_arestas.csv")
+        graficos += [("censo_sintomas.png", lambda d: fg.censo_sintomas(ar, d)),
+                     ("genealogia_decisao.png", lambda d: fg.genealogia_decisao(ar, d))]
+    else:
+        pulados.append("Genealogia: a rodada não tem `genealogia_arestas.csv`.")
     graficos.append(("unidades_observadas.png", lambda d: fp.tokens_unidade(tri, cob, d)))
     upt = (ler(pasta, m, "consolidacao_unidade_papel_tokens.csv")
            if "consolidacao_unidade_papel_tokens.csv" in m["artefatos"] else None)

@@ -112,7 +112,9 @@ Fonte: `<rodada>/triagem_visivel_observada.csv`; régua estrita em `triagem_sens
 nela); por papel em `triagem_por_papel.csv`. Os erros somam 29.392 (os observáveis). Execuções se sobrepõem entre
 unidades: não somar. Figuras da rodada: `<rodada>/unidades_observadas.png` (tokens por unidade),
 `<rodada>/papel_unidade.png` (papel × unidade) e `<rodada>/genealogia_observada.png` (a genealogia completa, com os
-pendentes num caminho próprio).
+pendentes num caminho próprio). A partir de 23/10 o painel troca essa genealogia por duas figuras — o censo do sintoma
+(família → assinatura) e a genealogia da decisão (assinatura → mecanismo → unidade · destino) — e
+`executar.py genealogia --unidade <U_…>` recorta uma unidade ([roadmap](04-roadmap.md) #57).
 
 **Leitura.**
 

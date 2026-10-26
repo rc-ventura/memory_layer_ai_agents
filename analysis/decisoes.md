@@ -304,6 +304,17 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   das contagens e da fonte, sem rodada nova → `execucao/recuperacao.py`, `figuras_taxas.recuperacao_*`,
   `validacao/conferir_recuperacao_base1.py`, teste `test_recuperacao_base3`; base 3, roadmap #56; falta rodar na
   máquina 2.
+- **23/10, a genealogia vira duas figuras, e a da decisão começa na assinatura** (decisão do Rafael): família e
+  assinatura (o sintoma) e mecanismo, unidade e destino (a decisão) são análises diferentes e não ficam numa figura só.
+  **Por que a assinatura entra na decisão e a família não**, medido nas arestas (ensaio da base 1, 20/10): família →
+  assinatura é uma árvore (nenhuma assinatura em duas famílias) e vai para um censo em barras; assinatura → mecanismo
+  diverge e converge (11 de 21 assinaturas se abrem em mais de uma causa, 10 de 21 causas recebem mais de uma assinatura)
+  — é a única passagem com cruzamento, e sem ela o Sankey da decisão seria uma árvore; mecanismo → unidade só converge
+  (por construção: o dicionário causa → unidade); unidade → destino segue reto (D4 de 16/10, uma coluna só). O erro
+  estruturado é o evento que flui pela figura; a assinatura é o rótulo do sintoma dele. **O recorte por unidade**
+  (`executar.py genealogia --unidade U_sandbox`) é exato porque cada causa vai para uma unidade só; o script recusa se
+  isso deixar de valer. A versão de 22/10 (decisão = mecanismo → unidade, sem a assinatura) foi revertida → painel,
+  `execucao/figuras_genealogia.py`, teste `test_genealogia_figuras_base3`; base 3, roadmap #57; falta rodar na máquina 2.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste

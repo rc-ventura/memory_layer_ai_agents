@@ -335,6 +335,18 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (`recuperacao_indeterminados.csv`; esperado poucos — mais de um agente com o mesmo papel e vizinhos que não conferem);
   quantos terminaram no erro e quantos esgotaram os passos (na base 1, zero dos dois); as duas figuras. Depois, os números
   entram no relatório `02` (§7.6).
+- [ ] **#57** **Rodar a genealogia em duas figuras na máquina 2 e ler** (decisão do Rafael, 23/10;
+  [`decisoes.md`](../../decisoes.md)). A de cinco colunas juntava duas análises; agora o painel traz o **censo do
+  sintoma** (família → assinatura, em barras: é uma árvore) e a **genealogia da decisão** (assinatura → mecanismo →
+  unidade · destino, em Sankey, cor = destino). `executar.py genealogia --unidade <U_…>` recorta uma unidade para o
+  estudo de caso (a figura e um `.md` com o "como ler" em `<rodada>/genealogia/`). Tudo do `genealogia_arestas.csv` da
+  rodada: sem rodada nova (`execucao/figuras_genealogia.py`, fora do hash de código). **Feito aqui:** ensaio da base 1 de
+  20/10 — 498 erros, 21 assinaturas, 21 causas, 17 lições; 11 assinaturas se abrem em mais de uma causa, 10 causas
+  recebem mais de uma assinatura; nenhuma causa em duas unidades; o recorte `U_sandbox` soma 16 erros (4 assinaturas,
+  2 causas); `test_genealogia_figuras_base3` (4 testes). **Na máquina 2, da raiz:** `executar.py relatorio --rodada
+  <a rodada atual>` (as duas figuras entram na parte 1) e, para o sandbox, `executar.py genealogia --unidade U_sandbox`.
+  **Conferir ao trazer:** que o script não recusou ("causa em mais de uma unidade" pararia tudo, com o nome da causa); as
+  duas figuras e o recorte.
 - [ ] **#16** **Trilhas paralelas (e5):** as suspeitas da query por padrão × papel × mês (só contagem); o protocolo do harness
     por papel, mês e versão. O que não der na extração vai para o relatório como indisponível.
 - [ ] **#17** **Kit e auditoria independente (Fase 5):** o kit chamando o `executar.py` na preparação; o `conferir_versao`

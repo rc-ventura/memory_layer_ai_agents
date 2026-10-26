@@ -166,20 +166,6 @@ def rotular(ax, xs, ys, textos, raios=None, fontsize=8, cores=None, folga_direit
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-def genealogia():
-    """2 · A genealogia é desenhada na rodada (genealogia_sankey.py); aqui, só o texto da leitura."""
-    return ("Genealogia: família → assinatura → mecanismo → unidade · destino",
-            "Por que caminho cada erro chega ao seu destino — e onde os caminhos se juntam?",
-            "Quatro colunas; cada uma soma todos os erros estruturados. A largura de cada fita e a altura de cada nó são o "
-            "número de erros (não tokens). A cor é a família do erro, carregada de ponta a ponta (legenda embaixo): roxo = "
-            "resíduo (nenhuma regra reconheceu a causa), cinzas = plataforma (harness/infra), preto = erro crítico, "
-            "dourado = evidência insuficiente (pendente). Na coluna do mecanismo, o nome legível vem com o identificador "
-            "entre parênteses. A última coluna junta unidade e destino, que são 1 para 1 (decisão de 16/10): \"decisão · lição "
-            "(unidade)\"; o arquivo de arestas da rodada continua com as cinco colunas.",
-            "Abaixo do limiar escrito na figura, o nó tem a altura mínima (para o rótulo caber) e a espessura deixa de ser "
-            "volume. O destino é o da triagem desta rodada: muda quando uma investigação muda a classificação.")
-
-
 def tokens_unidade(tri, cob, destino):
     """3 · Tokens dos erros por unidade — todas as unidades observáveis, cor por família, sem destino."""
     t = tri[tri.erros_observaveis.gt(0)].sort_values("tokens_n_conhecidos").reset_index(drop=True)
