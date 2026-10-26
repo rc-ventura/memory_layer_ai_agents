@@ -33,7 +33,10 @@ VAI_PARA_O_AGENTE = {"U_sandbox.C", "U_sandbox.E", "U_sandbox.C.JoogleAnalytics"
 
 ROSA = COR_ERRO["Ambiente & sandbox"]          # a cor da família, a mesma da genealogia
 DECISAO = {"vai para o agente": ROSA, "catálogo, monitorada": BASE, "em aberto": "#e8e6df", "—": "white"}
-HACHURA = {"—": "////"}   # "outros" não tem decisão: branco com hachura, para não se confundir com "em aberto"
+HACHURA = {"—": "////"}
+# o nome na legenda (Rafael, 26/10: a decisão fica só na legenda, e a das três injetadas se chama "memória")
+LEGENDA = {"vai para o agente": "memória", "catálogo, monitorada": "catálogo, monitorada", "em aberto": "em aberto",
+           "—": "outros (sem decisão)"}   # "outros" não tem decisão: branco com hachura, para não se confundir com "em aberto"
 
 # (grupo, erros que entram, decisão, regra que põe a memória no grupo)
 GRUPOS = [("esqueceu o import", "json, re, datetime", "vai para o agente", lambda i: i == "U_sandbox.C"),
@@ -97,7 +100,7 @@ def _legenda():
 
 
 def _rotulos_legenda():
-    return [d if d != "—" else "outros (sem decisão)" for d in DECISAO]
+    return [LEGENDA[d] for d in DECISAO]
 
 
 def rosca(linhas, destino):
@@ -121,10 +124,16 @@ def rosca(linhas, destino):
         for a, b in zip(idx, idx[1:]):
             pos[b][2] = min(pos[b][2], pos[a][2] - 0.24)
     for (x, y, y_rot), l in zip(pos, linhas):
-        ax.annotate(f"{l['grupo']} · {_n(l['erros'])} ({100 * l['erros'] / TOTAL:.0f}%)\n{l['entram']} · {l['decisao']}",
-                    xy=(0.81 * x, 0.81 * y), xytext=(1.3 if x >= 0 else -1.3, y_rot),
+        ax.annotate(f"{l['grupo']} · {_n(l['erros'])}\n{l['entram']}",
+                    xy=(1.01 * x, 1.01 * y), xytext=(1.3 if x >= 0 else -1.3, y_rot),
                     ha="left" if x >= 0 else "right", va="center", fontsize=9, color=INK,
                     arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.7, shrinkA=0, shrinkB=0))
+    for f, l in zip(fatias, linhas):   # a porcentagem vai dentro da fatia (Rafael, 26/10), se couber
+        if l["erros"] / TOTAL >= 0.03:
+            ang = math.radians((f.theta2 + f.theta1) / 2)
+            ax.text(0.81 * math.cos(ang), 0.81 * math.sin(ang), f"{100 * l['erros'] / TOTAL:.0f}%", ha="center",
+                    va="center", fontsize=9 if l["erros"] / TOTAL >= 0.1 else 7.5, fontweight="bold",
+                    color="white" if l["decisao"] == "vai para o agente" else INK)
     agente = sum(l["erros"] for l in linhas if l["decisao"] == "vai para o agente")
     ax.text(0, 0.06, _n(TOTAL), ha="center", va="center", fontsize=22, fontweight="bold", color=INK)
     ax.text(0, -0.14, "erros no sandbox", ha="center", va="center", fontsize=10, color=INK2)
