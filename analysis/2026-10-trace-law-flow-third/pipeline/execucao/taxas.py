@@ -6,7 +6,7 @@ Junta três fontes, cada uma conferida antes de qualquer conta:
 - as contagens (`base_contagens.parquet`, o pedido A): uma linha por execução, agente e papel, com o total de
   ActionSteps e de tokens de todas as execuções, com ou sem erro.
 Com a junção conferida, também a recuperação depois do erro por trajetória (`execucao/recuperacao.py`, 23/10): a
-população (execuções e papéis com erro) e um papel por barra.
+população (os papéis com erro) e um papel por barra.
 A junção é uma trava: chave duplicada nas contagens, chave da fonte ausente nelas, erros ou suspeitas diferentes por
 chave, tokens dos erros acima dos do papel, ou somas diferentes das do manifesto — nada é gerado e o motivo sai na
 mensagem. Escreve `<rodada>/taxas/`: `taxas.md`, as figuras `taxas_*.png`, as tabelas e `manifesto_taxas.json` (com os

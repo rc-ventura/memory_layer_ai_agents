@@ -29,12 +29,13 @@ COLUNAS = ["step_pos", "step_number", "error_message", "next_step_number", "next
            "prev_error_type", "execution_has_final_step"]
 LIMITE_DE_PASSOS = ("Reached max steps", "AgentMaxStepsError")   # o mesmo texto do base_pipeline.classify (Ajuste 8)
 
-# (chave, rótulo, cor) — a ordem é a das barras; verdes = seguiu sem erro até o fim, vermelho = terminou no erro
+# (chave, rótulo, cor) — a ordem é a das barras; verdes = seguiu sem erro até o fim, vermelhos = não se recuperou (o
+# limite de passos era preto e se confundia com o verde-escuro: Rafael, 26/10, foto IMG_6066)
 CATEGORIAS = [("um_erro", "um erro, depois sem erro até o fim", "#1b4332"),
               ("cascata", "cascata (errou de novo em seguida), depois sem erro até o fim", "#52b788"),
               ("recaida", "recaída (errou de novo mais adiante), depois sem erro até o fim", "#b7e4c7"),
               ("terminou_no_erro", "terminou no erro (o último passo do papel errou)", "#9d0208"),
-              ("limite_de_passos", "esgotou os passos (limite de passos)", "#0b0b0b"),
+              ("limite_de_passos", "esgotou os passos (limite de passos)", "#e5383b"),
               ("indeterminado", "indeterminado (vizinhos não conferem)", "#e0dfd8")]
 CATEGORIAS_EXEC = [("sem_erro", "sem erro estruturado", "#c3c2b7"),
                    ("recuperou", "errou, e todo papel seguiu sem erro até o fim", "#1b4332"),

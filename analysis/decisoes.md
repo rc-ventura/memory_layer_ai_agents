@@ -278,6 +278,14 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   n+2), sem o prompt, lidos na máquina pela skill de investigação; nas bases 1 e 2, todos os casos que houver, com o trace
   inteiro (pegam o "importou antes e o nome sumiu" que a janela da base 3 pode não mostrar). Para ler a base 3, a pasta
   dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26.
+- **26/10, a recuperação da população fica só com os papéis com erro, e o limite de passos ganha cor própria**
+  (decisão do Rafael, fotos IMG_6065–6066 da base 3): a barra das execuções (28,4% de 71.881 tiveram erro) repetia o
+  funil e saiu; o número de execuções com erro vai para o título. Fica por papel, e não por execução, porque a
+  recuperação acontece no laço de um agente e o gráfico seguinte é por papel; na base 3 quase não muda (20.442 papéis
+  com erro para cerca de 20,4 mil execuções com erro). O limite de passos era preto e se confundia com o verde-escuro
+  de "um erro": agora é vermelho (`#e5383b`), da família de "terminou no erro" — os dois são "não se recuperou"
+  (validador de paleta: daltonismo e visão normal passam). Leitura que não vale: "seguiu sem erro até o fim" não é
+  "entregou a resposta final" → `figuras_taxas.recuperacao_populacao`, `recuperacao.CATEGORIAS`.
 - **26/10, a cobertura das regras vira duas barras** (decisão do Rafael, ao ver o painel da base 3 na máquina 2, foto
   IMG_6063): a figura de um motivo por barra confundia (nove barras, a maior com 87% dos erros, e os pendentes espalhados
   em quatro). Agora: cobertos (a regra tem a evidência para decidir; na base 3, 29.392 de 30.141, 97,5%) e pendentes

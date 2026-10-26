@@ -19,7 +19,7 @@ import pandas as pd
 
 import base_pipeline as bp
 from paleta import BASE, BLUE, GRID, INK, INK2, MUTED, ORANGE, RESIDUO
-from execucao.recuperacao import CATEGORIAS, CATEGORIAS_EXEC
+from execucao.recuperacao import CATEGORIAS
 from execucao.figuras_painel import (SEM_UNIDADE, _limpar, _milhar, _n, _pct, _salvar, _tok as tok, papel as nome_papel,
                                      refs_tamanho, rotular, unidade)
 
@@ -785,35 +785,34 @@ def _barra_empilhada(ax, y, partes, total, altura=0.7):
 
 
 def recuperacao_populacao(pop, extra, destino):
-    """11 · A recuperação depois do erro, na população: execuções e papéis com erro (censo dos erros da base 3)."""
+    """11 · A recuperação depois do erro, na população: os papéis com erro (censo dos erros da base 3). A barra das
+    execuções saiu (Rafael, 26/10, foto IMG_6065): repetia o funil; o número de execuções com erro fica no título."""
     ex, pa = pop[pop.nivel.eq("execuções")].set_index("categoria"), pop[pop.nivel.eq("papéis com erro")].set_index("categoria")
     n_ex, n_pa = int(ex.total.iloc[0]), int(pa.total.iloc[0])
-    fig, (a1, a2) = plt.subplots(2, 1, figsize=(13, 4.6), gridspec_kw={"hspace": 1.6})
-    for ax, tab, cats, rot in [(a1, ex, CATEGORIAS_EXEC, f"execuções\n{_n(n_ex)}"),
-                               (a2, pa, CATEGORIAS, f"papéis com erro\n{_n(n_pa)}")]:
-        _barra_empilhada(ax, 0, [(tab.n.get(k, 0), c) for k, _, c in cats], tab.total.iloc[0])
-        ax.set_yticks([0], [rot], fontsize=9)
-        ax.set_xlim(0, 100)
-        ax.set_xticks(range(0, 101, 25))
-        ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in cats], labels=[r for _, r, _ in cats],
-                  ncol=2 if len(cats) > 4 else 4, fontsize=8, frameon=False, loc="lower left", bbox_to_anchor=(0, 1.0))
-        _limpar(ax)
-    a2.set_xlabel("% das execuções (em cima) e dos papéis com erro (embaixo)")
+    fig, ax = plt.subplots(figsize=(13, 2.9))
+    _barra_empilhada(ax, 0, [(pa.n.get(k, 0), c) for k, _, c in CATEGORIAS], n_pa)
+    ax.set_yticks([0], [f"papéis com erro\n{_n(n_pa)}"], fontsize=9)
+    ax.set_xlim(0, 100)
+    ax.set_xticks(range(0, 101, 25))
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=c) for _, _, c in CATEGORIAS],
+              labels=[r for _, r, _ in CATEGORIAS], ncol=2, fontsize=8, frameon=False, loc="lower left",
+              bbox_to_anchor=(0, 1.0))
+    _limpar(ax)
+    ax.set_xlabel("% dos papéis com erro (cada papel numa execução conta uma vez)")
     com_erro = n_ex - int(ex.n.get("sem_erro", 0))
     verde = sum(int(pa.n.get(k, 0)) for k in ["um_erro", "cascata", "recaida"])
     de_novo = int(pa.n.get("cascata", 0) + pa.n.get("recaida", 0))
     nao = int(pa.n.get("terminou_no_erro", 0) + pa.n.get("limite_de_passos", 0))
-    a1.set_title(f"De {_n(n_ex)} execuções, {_p(com_erro, n_ex)} tiveram erro. Dos {_n(n_pa)} papéis que erraram, "
-                 f"{_p(pa.n.get('um_erro', 0), n_pa)} erraram uma vez só, {_p(de_novo, n_pa)} erraram de novo e se "
-                 f"recuperaram, {_p(nao, n_pa)} não se recuperaram", loc="left", fontsize=11, pad=48)
+    ax.set_title(f"Dos {_n(n_pa)} papéis que erraram (em {_n(com_erro)} execuções), {_p(pa.n.get('um_erro', 0), n_pa)} "
+                 f"erraram uma vez só, {_p(de_novo, n_pa)} erraram de novo e depois seguiram sem erro, {_p(nao, n_pa)} "
+                 "não se recuperaram", loc="left", fontsize=11, pad=48)
     _salvar(fig, destino)
     indet = int(pa.n.get("indeterminado", 0))
-    return ("A recuperação depois do erro: execuções e papéis",
+    return ("A recuperação depois do erro: os papéis com erro",
             "Quando o sistema erra, o agente se recupera, erra de novo ou termina no erro?",
             "A conta é por trajetória, não por erro: cada papel numa execução conta uma vez, do primeiro erro até o fim do "
-            "papel. Barra de cima: todas as execuções das contagens (o denominador), separadas em sem erro estruturado, "
-            "errou e todo papel seguiu sem erro até o fim, algum papel terminou no erro ou esgotou os passos, e "
-            "indeterminado. Barra de baixo: só os papéis com erro, pelo que aconteceu — um erro só e depois nenhum; uma "
+            f"papel. Só os papéis com erro ({_n(n_pa)}, em {_n(com_erro)} das {_n(n_ex)} execuções; a fração das execuções "
+            "com erro está no funil), pelo que aconteceu — um erro só e depois nenhum; uma "
             "cascata (errou de novo no passo seguinte) e depois nenhum; uma recaída (passou um passo sem erro e errou de "
             "novo mais adiante) e depois nenhum; o último passo do papel com erro; o limite de passos; e indeterminado "
             f"(os vizinhos de dois erros não conferem). Seguiram sem erro até o fim (os três verdes): "
