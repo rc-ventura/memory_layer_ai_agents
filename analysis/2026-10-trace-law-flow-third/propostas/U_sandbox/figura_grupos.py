@@ -1,6 +1,6 @@
-"""Os grupos de memória do `U_sandbox` na base 3 (as duas figuras principais do estudo de caso, aprovadas pelo Rafael em
-26/10): (1) a rosca — em que grupo cada erro foi decidido, e o que acontece com o grupo; (2) as barras — erros,
-execuções, papéis e meses de cada grupo.
+"""Os grupos de memória do `U_sandbox` na base 3 (a figura principal do estudo de caso, aprovada pelo Rafael em 26/10):
+a rosca — em que grupo cada erro foi decidido, e o que acontece com o grupo. As barras com erros, execuções, papéis e
+meses por grupo saíram no mesmo dia (diziam o mesmo que a rosca).
 
 Lê o catálogo de memórias (`analysis/registros/memorias.json`, as entradas do `U_sandbox` na rodada atual da base 3).
 Duas partes não estão no catálogo e vêm do dossiê (`dossie_base3.md`, §2h item 11): a parte em aberto (37 erros) e os
@@ -19,7 +19,6 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
 
 AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parents[1] / "pipeline"))
@@ -146,40 +145,9 @@ def rosca(linhas, destino):
     plt.close(fig)
 
 
-def barras(linhas, destino):
-    """2 · Os números de cada grupo: erros (a barra) e, ao lado, execuções, papéis e meses."""
-    fig, ax = plt.subplots(figsize=(13, 0.62 * len(linhas) + 2))
-    for i, l in enumerate(linhas):
-        ax.barh(i, l["erros"], color=DECISAO[l["decisao"]], height=0.6, hatch=HACHURA.get(l["decisao"]),
-                edgecolor=MUTED if l["decisao"] in HACHURA else "none")
-        partes = [f"{_n(l['erros'])} erros"]
-        if l["execucoes"] is not None:
-            partes.append(f"{_n(l['execucoes'])} execuções")
-        if l["papeis"] is not None:
-            partes.append(f"{l['papeis']} {'papel' if l['papeis'] == 1 else 'papéis'}")
-        if l["meses"] is not None:
-            partes.append(f"{l['meses']} {'mês' if l['meses'] == 1 else 'meses'}")
-        ax.text(l["erros"] + 6, i, "  ·  ".join(partes), va="center", fontsize=9, color=INK2)
-    ax.set_yticks(range(len(linhas)), [f"{l['grupo']}\n({l['entram']})" for l in linhas], fontsize=9)
-    ax.invert_yaxis()
-    ax.set_xlim(0, max(l["erros"] for l in linhas) * 1.6)
-    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _n(int(v))))
-    ax.set_xlabel("erros estruturados")
-    for lado in ("top", "right"):
-        ax.spines[lado].set_visible(False)
-    ax.set_title(f"Os números de cada grupo de memória do sandbox ({_n(TOTAL)} erros)", loc="left", fontsize=11,
-                 color=INK)
-    ax.legend(handles=_legenda(), labels=_rotulos_legenda(), loc="lower right", frameon=False, fontsize=9)
-    fig.text(0.01, -0.02, "Execuções: nos grupos com mais de uma memória, a soma das memórias. Sem execuções, papéis e "
-             "meses: a parte em aberto (fora do catálogo) e os erros sem nome.", fontsize=8, color=MUTED)
-    fig.savefig(destino, dpi=160, bbox_inches="tight")
-    plt.close(fig)
-
-
 if __name__ == "__main__":
     L = grupos()
     for l in L:
         print(l)
     rosca(L, AQUI / "grupos_rosca.png")
-    barras(L, AQUI / "grupos_barras.png")
-    print("Figuras:", AQUI / "grupos_rosca.png", AQUI / "grupos_barras.png")
+    print("Figura:", AQUI / "grupos_rosca.png")
