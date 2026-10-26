@@ -114,7 +114,7 @@ unidades: não somar. Figuras da rodada: `<rodada>/unidades_observadas.png` (tok
 `<rodada>/papel_unidade.png` (papel × unidade) e `<rodada>/genealogia_observada.png` (a genealogia completa, com os
 pendentes num caminho próprio). A partir de 23/10 o painel troca essa genealogia por duas figuras — o censo do sintoma
 (família → assinatura) e a genealogia da decisão (assinatura → mecanismo → unidade · destino) — e
-`executar.py genealogia --unidade <U_…>` recorta uma unidade ([roadmap](04-roadmap.md) #57).
+`execucao/figuras_genealogia.py --unidade <U_…>` recorta uma unidade ([roadmap](04-roadmap.md) #57).
 
 **Leitura.**
 

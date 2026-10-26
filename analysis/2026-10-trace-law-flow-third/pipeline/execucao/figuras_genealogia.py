@@ -21,7 +21,9 @@ mora aqui, e não no `genealogia_sankey.py`, porque aquele entra no hash de cód
 Cada função devolve (título, pergunta, como ler, limitação), o contrato do `figuras_painel.py`.
 
 Uso, da raiz (as duas figuras da rodada, ou o recorte de uma unidade):
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py genealogia [--rodada <pasta>] [--unidade U_sandbox]
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/figuras_genealogia.py [--rodada <pasta>] [--unidade U_sandbox]
+Não é um comando do `executar.py` porque ele também entra no hash de código: mexer nele faria a mineração específica
+recusar a rodada atual.
 """
 import argparse
 import math
