@@ -127,6 +127,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   dispensa os dois leitores): a lição sai da mensagem de erro, e a confiança é a cobertura da regra, **≥ 95%**, escrita
   antes de rodar → base 3, [`propostas/U_sandbox/racional.md`](2026-10-trace-law-flow-third/propostas/U_sandbox/racional.md),
   [`07`](2026-10-trace-law-flow-third/docs/07-racionais-mineracao-candidatas.md).
+- **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
+  lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
+  passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,
+  [Ajuste 20](pipeline-entre-bases.md#ajuste-20--a-parte-específica-da-mineração-passa-a-ser-um-script-não-um-notebook); `16`, "Como o script roda".
 - **19/10, o script do inventário do sandbox está aprovado** (cobertura 99,86% na base 3, encontro 61/61, validador aprovado):
   sai de `propostas/U_sandbox/` para `pipeline/especificas/mineracao_U_sandbox.py`. A divisão da lição em partes e os destinos
   seguem em aberto → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
@@ -223,6 +227,41 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   primeira rodada na base 3 com um HEAD que contenha essas emendas. As três observações do laudo para a base 3: conferir o
   esperado da emenda 8 (135); a ordem das raízes no `nomes` da B; o `destino_decidido_em` pelo título da entrada (feito)
   → [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md), "Revalidação 7".
+- **20/10, o monitoramento tem dois níveis** (decisão do Rafael): monitoram-se sempre erros, contados no recorte da
+  **unidade** (a tabela do pipeline; `monitorar.py` e `monitoramento.json`, no passo 0 — os sinais de harness) ou no
+  recorte de uma **memória** (unidade × parte × papel; o resultado da mineração e o catálogo; `catalogar_memoria.py`, no
+  passo 9, compara com a contagem anterior — as memórias raras e as de reforço). O `monitorar.py` não muda: o pipeline não
+  etiqueta a parte, e um item no recorte da memória contaria a unidade inteira ou pararia o passo 0 das outras bases. O
+  alarme de uma memória só dispara quando a unidade dela é minerada de novo → [`16`](2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)
+  ("O monitoramento", "Dois níveis"); [glossário](glossario.md) (tipos de monitoramento).
+- **20/10, a régua de memória rara se aplica; sobra uma** (decisão do Rafael, fecha o `b3 #48`): das 6 memórias do
+  sandbox que falham na recorrência, as 5 de "import fora da lista" já são *memória de reforço* (decisão 3); a
+  `U_sandbox.B.RespostaBacen` (1 erro, jan/26) fica **monitorada como memória rara**, não injetada, no nível da memória
+  (catálogo). Achado no caminho: `python_interpreter` é ferramenta-base do smolagents só para o `ToolCallingAgent` (o
+  `CodeAgent` não a recebe — por isso nunca está no prompt), mas o `CodeAgent` registra cada passo de código como uma
+  chamada de ferramenta `python_interpreter`, que volta ao modelo no histórico ("Calling tools: … 'python_interpreter'
+  …"; `agents.py` e `memory.py`, smolagents 1.26.0). Hipótese: o agente vê o nome no histórico e tenta importá-lo (34 erros
+  no OBFCivel e 1 no RespostaBacen, na base 3). O texto das memórias B com nomes do framework muda no script específico:
+  não "chame-as direto", e sim "não importe `python_interpreter`/`tools`/`smolagents`: o seu código já roda no
+  interpretador" → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h; base 3,
+  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #48 (fechado) e #50.
+- **20/10, o `monitorar.py` ler a base 3 é item próprio, fora do fechamento do sandbox** (decisão do Rafael): o passo 0
+  segue "não conferido" na base 3 (as tabelas dela têm outro formato); o sandbox fecha com os itens registrados, e a
+  recontagem automática na base 3 vem com o item do kit → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #52.
+- **20/10, a memória E perde a dica "para ler JSON, use json.loads"** (decisão do Rafael, na etapa 5 do fechamento do
+  sandbox): a E é global, e o `json` não está na lista autorizada de quatro papéis no prompt da base 1 (OBFCivel,
+  RoteadorCivel, managerAgent, ContestacaoCivel) — o degrau 2 do ensaio reprovou a E no ambiente por isso. A dica servia
+  ao `eval(texto)`, que foi para a parte F, e a ≈ 5 `__import__('json').loads` do ContestacaoCivel. Fica "Para inspecionar
+  um valor, use print(type(x)) e print(str(x)[:n])." (testado no interpretador: funciona); pode voltar se o `json` for
+  confirmado em todas as listas → racional do sandbox, emenda 9; dossiê §2h, 9.
+- **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
+  **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
+  exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
+  papel" onde o módulo não está; (2) **E** — sai do texto `globals`, `locals`, `vars` e `eval` (o "não chame `globals`"
+  brigava com o prompt do ContestacaoCivel: o degrau 2 reprovou a E no conflito, §2g–§2h); os erros desses nomes que
+  sobram no sandbox depois dos Ajustes 21, 23 e 27 vão para uma parte própria, **F**, com destino em aberto — a
+  população da memória "como verificar no sandbox" (`b3 #51`); E fica com a depuração → racional do sandbox, emenda 9;
+  dossiê §2h, 9.
 - **21/10, o gráfico do custo da execução (com × sem erro) mostra valores reais, não razões** (decisão do Rafael, ao
   tentar ler o gráfico para a apresentação): a versão de 15/10 normalizava as barras (sem erro = 1×), o que escondia os
   números de que o "4,3×" e o "1,3×" saem e usava duas escalas diferentes; a leitura natural "1,3× = 30% a mais de passos"
@@ -256,7 +295,8 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   não avisa sobre `repr`/`dir`/`exec` — alarme falso (registrada em `registros/decisoes_degrau2.json`); (6) a
   **C.CalculoTrabalhista é memória rara** (2 erros, 1 mês): guardada, monitorada, não injetada; (7) a **parte F fica para
   depois**: o sandbox não fecha sem ela, e ela volta quando a maior parte das memórias estiver no degrau 3; (8) o degrau 3
-  lê casos **na base 1** para as memórias que têm casos nela e **na base 2** para as que não têm ou têm pouco → Ajuste 28
+  lê casos **na base 1** para as memórias que têm casos nela e **na base 2** para as que não têm ou têm pouco (**a (8) foi
+  revista em 22/10**, abaixo: todas as bases, com prioridade para a base 3) → Ajuste 28
   (1–5); dossiê do sandbox §2h, 22.
 - **22/10, as 3 questões que o degrau 2 novo abriu no sandbox** (decisões do Rafael, uma por vez): (1) a C global no
   managerAgent — na base 1 o interpretador do papel mostra uma lista sem `json` e nenhum `import json` rodou — **espera a
@@ -277,20 +317,34 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   base 3 tem 423, 317 e 231. Na base 3, até 30 casos por memória, cada um com o passo do erro e os vizinhos (n-1, n+1,
   n+2), sem o prompt, lidos na máquina pela skill de investigação; nas bases 1 e 2, todos os casos que houver, com o trace
   inteiro (pegam o "importou antes e o nome sumiu" que a janela da base 3 pode não mostrar). Para ler a base 3, a pasta
-  dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26.
-- **26/10, a recuperação da população fica só com os papéis com erro, e o limite de passos ganha cor própria**
-  (decisão do Rafael, fotos IMG_6065–6066 da base 3): a barra das execuções (28,4% de 71.881 tiveram erro) repetia o
-  funil e saiu; o número de execuções com erro vai para o título. Fica por papel, e não por execução, porque a
-  recuperação acontece no laço de um agente e o gráfico seguinte é por papel; na base 3 quase não muda (20.442 papéis
-  com erro para cerca de 20,4 mil execuções com erro). O limite de passos era preto e se confundia com o verde-escuro
-  de "um erro": agora é vermelho (`#e5383b`), da família de "terminou no erro" — os dois são "não se recuperou"
-  (validador de paleta: daltonismo e visão normal passam). Leitura que não vale: "seguiu sem erro até o fim" não é
-  "entregou a resposta final" → `figuras_taxas.recuperacao_populacao`, `recuperacao.CATEGORIAS`.
-- **26/10, a cobertura das regras vira duas barras** (decisão do Rafael, ao ver o painel da base 3 na máquina 2, foto
-  IMG_6063): a figura de um motivo por barra confundia (nove barras, a maior com 87% dos erros, e os pendentes espalhados
-  em quatro). Agora: cobertos (a regra tem a evidência para decidir; na base 3, 29.392 de 30.141, 97,5%) e pendentes
-  (falta dado na extração; 749), com os maiores motivos dos pendentes em texto embaixo da barra; a lista inteira continua
-  na tabela do painel. Lido da rodada, sem rodada nova → `execucao/painel.py` (`figura_cobertura`).
+  dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26. **Revista em
+  26/10** (abaixo): sem esperar a cota de IA da máquina, 10 casos por memória, mascarados e trazidos por foto.
+- **23/10, a recuperação depois do erro é contada por trajetória, não por erro, e entra no relatório** (decisão do
+  Rafael, ao pedir um sinal de recuperação do sistema inteiro na base 3, que é censo dos erros): o gráfico "o que vem
+  depois do erro" da parte 1 conta por erro (uma cascata de 5 erros entra 4 vezes como "errou de novo") e só vê o passo
+  seguinte; fica como está, para a pergunta "que erro prende o agente". O novo conta cada papel numa execução uma vez,
+  do primeiro erro até o fim do papel: um erro só, cascata, recaída (os três seguidos de nenhum erro estruturado até o
+  fim), terminou no erro, limite de passos, indeterminado. Dois gráficos na parte 2: a população (execuções, com o
+  denominador das contagens, e papéis com erro) e um por papel (a barra das execuções saiu em 26/10, abaixo). **Por que dá sem o trace completo:** a base 3 tem todos
+  os erros de cada papel (a junção confere chave a chave), e as sequências saem dos vizinhos da query (o seguinte errou ou
+  não), conferidos par a par. **A numeração não serve de posição:** na base 1, o `step_number` difere da posição do
+  ActionStep no papel em 1.749 de 5.781 passos (30,3%) e recomeça em 491 de 1.550 papéis (nova chamada). **Teste com
+  resposta conhecida na base 1:** 354 de 354 trajetórias na mesma categoria pelo trace completo e só pelos erros. Lido
+  das contagens e da fonte, sem rodada nova → `execucao/recuperacao.py`, `figuras_taxas.recuperacao_*`,
+  `validacao/conferir_recuperacao_base1.py`, teste `test_recuperacao_base3`; base 3, roadmap #56; rodado na máquina 2
+  em 26/10 (fotos IMG_6065–6066).
+- **23/10, a genealogia vira duas figuras, e a da decisão começa na assinatura** (decisão do Rafael): família e
+  assinatura (o sintoma) e mecanismo, unidade e destino (a decisão) são análises diferentes e não ficam numa figura só.
+  **Por que a assinatura entra na decisão e a família não**, medido nas arestas (ensaio da base 1, 20/10): família →
+  assinatura é uma árvore (nenhuma assinatura em duas famílias) e vai para um censo em barras; assinatura → mecanismo
+  diverge e converge (11 de 21 assinaturas se abrem em mais de uma causa, 10 de 21 causas recebem mais de uma assinatura)
+  — é a única passagem com cruzamento, e sem ela o Sankey da decisão seria uma árvore; mecanismo → unidade só converge
+  (por construção: o dicionário causa → unidade); unidade → destino segue reto (D4 de 16/10, uma coluna só). O erro
+  estruturado é o evento que flui pela figura; a assinatura é o rótulo do sintoma dele. **O recorte por unidade**
+  (`execucao/figuras_genealogia.py --unidade U_sandbox`, fora do `executar.py` porque ele entra no hash de código) é exato porque cada causa vai para uma unidade só; o script recusa se
+  isso deixar de valer. A cor da figura da decisão, nesta versão, era o destino (revista em 26/10, abaixo). A versão de
+  22/10 (decisão = mecanismo → unidade, sem a assinatura) foi revertida → painel, `execucao/figuras_genealogia.py`, teste
+  `test_genealogia_figuras_base3`; base 3, roadmap #57; rodada na máquina 2 em 26/10 (foto IMG_6064, pintada pelo destino).
 - **26/10, a memória C do sandbox exclui o managerAgent** (decisão do Rafael, depois da ida à máquina de 26/10): na base
   1, a lista do interpretador do managerAgent é a padrão do smolagents, sem `json`, e nenhum `import json` rodou ali; a
   base 3 não tem lista dele e tem 0 erros da C nesse papel (1 execução com algum erro no período). Excluir não perde nada
@@ -303,81 +357,33 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   nota: em 77% o passo seguinte dá outro erro — o degrau 3 anota qual); a **E** (inspeção, 92% dos 317; nota: os 8% de outros
   usos são funções barradas, o "não chame" continua certo). Gravadas em `registros/decisoes_degrau2.json` pelo
   `conferir_memorias.py --decidir` → dossiê do sandbox §2h, 27.
+- **26/10, a cobertura das regras vira duas barras** (decisão do Rafael, ao ver o painel da base 3 na máquina 2, foto
+  IMG_6063): a figura de um motivo por barra confundia (nove barras, a maior com 87% dos erros, e os pendentes espalhados
+  em quatro). Agora: cobertos (a regra tem a evidência para decidir; na base 3, 29.392 de 30.141, 97,5%) e pendentes
+  (falta dado na extração; 749), com os maiores motivos dos pendentes em texto embaixo da barra; a lista inteira continua
+  na tabela do painel. Lido da rodada, sem rodada nova → `execucao/painel.py` (`figura_cobertura`).
+- **26/10, a recuperação da população fica só com os papéis com erro, e o limite de passos ganha cor própria**
+  (decisão do Rafael, fotos IMG_6065–6066 da base 3): a barra das execuções (28,4% de 71.881 tiveram erro) repetia o
+  funil e saiu; o número de execuções com erro vai para o título. Fica por papel, e não por execução, porque a
+  recuperação acontece no laço de um agente e o gráfico seguinte é por papel; na base 3 quase não muda (20.442 papéis
+  com erro para cerca de 20,4 mil execuções com erro). O limite de passos era preto e se confundia com o verde-escuro
+  de "um erro": agora é vermelho (`#e5383b`), da família de "terminou no erro" — os dois são "não se recuperou"
+  (validador de paleta: daltonismo e visão normal passam). Leitura que não vale: "seguiu sem erro até o fim" não é
+  "entregou a resposta final" → `figuras_taxas.recuperacao_populacao`, `recuperacao.CATEGORIAS`.
 - **26/10, o degrau 3 do sandbox não espera a cota de IA da máquina** (decisão do Rafael; a cota volta em 30/10): regras
   contadas sobre a população inteira de cada memória (só números e categorias) e **10 casos por memória** (não 30: a
   leitura vira confirmação das regras), **mascarados** (código e mensagens de erro, com textos, comentários e números
   trocados; sem a saída do modelo nem as observações; varredor antes de imprimir) e **trazidos por foto**, lidos aqui; no
   dia 30, os dois leitores na máquina conferem as regras. Não é exceção à regra de sigilo de 16/10: só sai conteúdo
   técnico → `pipeline/validacao/degrau3_sandbox.py`; dossiê do sandbox §2h, 30.
-- **23/10, a recuperação depois do erro é contada por trajetória, não por erro, e entra no relatório** (decisão do
-  Rafael, ao pedir um sinal de recuperação do sistema inteiro na base 3, que é censo dos erros): o gráfico "o que vem
-  depois do erro" da parte 1 conta por erro (uma cascata de 5 erros entra 4 vezes como "errou de novo") e só vê o passo
-  seguinte; fica como está, para a pergunta "que erro prende o agente". O novo conta cada papel numa execução uma vez,
-  do primeiro erro até o fim do papel: um erro só, cascata, recaída (os três seguidos de nenhum erro estruturado até o
-  fim), terminou no erro, limite de passos, indeterminado. Dois gráficos na parte 2: a população (execuções, com o
-  denominador das contagens, e papéis com erro) e um por papel. **Por que dá sem o trace completo:** a base 3 tem todos
-  os erros de cada papel (a junção confere chave a chave), e as sequências saem dos vizinhos da query (o seguinte errou ou
-  não), conferidos par a par. **A numeração não serve de posição:** na base 1, o `step_number` difere da posição do
-  ActionStep no papel em 1.749 de 5.781 passos (30,3%) e recomeça em 491 de 1.550 papéis (nova chamada). **Teste com
-  resposta conhecida na base 1:** 354 de 354 trajetórias na mesma categoria pelo trace completo e só pelos erros. Lido
-  das contagens e da fonte, sem rodada nova → `execucao/recuperacao.py`, `figuras_taxas.recuperacao_*`,
-  `validacao/conferir_recuperacao_base1.py`, teste `test_recuperacao_base3`; base 3, roadmap #56; falta rodar na
-  máquina 2.
-- **23/10, a genealogia vira duas figuras, e a da decisão começa na assinatura** (decisão do Rafael): família e
-  assinatura (o sintoma) e mecanismo, unidade e destino (a decisão) são análises diferentes e não ficam numa figura só.
-  **Por que a assinatura entra na decisão e a família não**, medido nas arestas (ensaio da base 1, 20/10): família →
-  assinatura é uma árvore (nenhuma assinatura em duas famílias) e vai para um censo em barras; assinatura → mecanismo
-  diverge e converge (11 de 21 assinaturas se abrem em mais de uma causa, 10 de 21 causas recebem mais de uma assinatura)
-  — é a única passagem com cruzamento, e sem ela o Sankey da decisão seria uma árvore; mecanismo → unidade só converge
-  (por construção: o dicionário causa → unidade); unidade → destino segue reto (D4 de 16/10, uma coluna só). O erro
-  estruturado é o evento que flui pela figura; a assinatura é o rótulo do sintoma dele. **O recorte por unidade**
-  (`execucao/figuras_genealogia.py --unidade U_sandbox`, fora do `executar.py` porque ele entra no hash de código) é exato porque cada causa vai para uma unidade só; o script recusa se
-  isso deixar de valer. **A cor das duas figuras é a família do erro** (a do censo, 10 cores da paleta, a fita mantém a cor do começo ao fim); o
-  destino fica escrito na última coluna. Pintar pelo destino foi testado e descartado (Rafael, 23/10): no recorte de uma
-  unidade, que tem um destino só, tudo saía de uma cor; a família mostra de que tipo de erro vem o que termina em cada
-  decisão (no `U_sandbox` da base 1, os 16 erros são todos de Ambiente & sandbox). **26/10, também pelo destino** (Rafael):
-  a genealogia inteira sai em duas figuras, a mesma genealogia com cores diferentes — `genealogia_decisao.png` (família)
-  e `genealogia_decisao_destino.png` (destino); cada figura tem uma variável só na cor (as duas paletas reusam o azul e
-  o laranja com sentidos diferentes, por isso nunca na mesma figura). O recorte por unidade é só pela família. A versão de 22/10 (decisão = mecanismo → unidade, sem a assinatura) foi revertida → painel,
-  `execucao/figuras_genealogia.py`, teste `test_genealogia_figuras_base3`; base 3, roadmap #57; falta rodar na máquina 2.
-- **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
-  **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
-  exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
-  papel" onde o módulo não está; (2) **E** — sai do texto `globals`, `locals`, `vars` e `eval` (o "não chame `globals`"
-  brigava com o prompt do ContestacaoCivel: o degrau 2 reprovou a E no conflito, §2g–§2h); os erros desses nomes que
-  sobram no sandbox depois dos Ajustes 21, 23 e 27 vão para uma parte própria, **F**, com destino em aberto — a
-  população da memória "como verificar no sandbox" (`b3 #51`); E fica com a depuração → racional do sandbox, emenda 9;
-  dossiê §2h, 9.
-- **20/10, a memória E perde a dica "para ler JSON, use json.loads"** (decisão do Rafael, na etapa 5 do fechamento do
-  sandbox): a E é global, e o `json` não está na lista autorizada de quatro papéis no prompt da base 1 (OBFCivel,
-  RoteadorCivel, managerAgent, ContestacaoCivel) — o degrau 2 do ensaio reprovou a E no ambiente por isso. A dica servia
-  ao `eval(texto)`, que foi para a parte F, e a ≈ 5 `__import__('json').loads` do ContestacaoCivel. Fica "Para inspecionar
-  um valor, use print(type(x)) e print(str(x)[:n])." (testado no interpretador: funciona); pode voltar se o `json` for
-  confirmado em todas as listas → racional do sandbox, emenda 9; dossiê §2h, 9.
-- **20/10, o monitoramento tem dois níveis** (decisão do Rafael): monitoram-se sempre erros, contados no recorte da
-  **unidade** (a tabela do pipeline; `monitorar.py` e `monitoramento.json`, no passo 0 — os sinais de harness) ou no
-  recorte de uma **memória** (unidade × parte × papel; o resultado da mineração e o catálogo; `catalogar_memoria.py`, no
-  passo 9, compara com a contagem anterior — as memórias raras e as de reforço). O `monitorar.py` não muda: o pipeline não
-  etiqueta a parte, e um item no recorte da memória contaria a unidade inteira ou pararia o passo 0 das outras bases. O
-  alarme de uma memória só dispara quando a unidade dela é minerada de novo → [`16`](2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)
-  ("O monitoramento", "Dois níveis"); [glossário](glossario.md) (tipos de monitoramento).
-- **20/10, a régua de memória rara se aplica; sobra uma** (decisão do Rafael, fecha o `b3 #48`): das 6 memórias do
-  sandbox que falham na recorrência, as 5 de "import fora da lista" já são *memória de reforço* (decisão 3); a
-  `U_sandbox.B.RespostaBacen` (1 erro, jan/26) fica **monitorada como memória rara**, não injetada, no nível da memória
-  (catálogo). Achado no caminho: `python_interpreter` é ferramenta-base do smolagents só para o `ToolCallingAgent` (o
-  `CodeAgent` não a recebe — por isso nunca está no prompt), mas o `CodeAgent` registra cada passo de código como uma
-  chamada de ferramenta `python_interpreter`, que volta ao modelo no histórico ("Calling tools: … 'python_interpreter'
-  …"; `agents.py` e `memory.py`, smolagents 1.26.0). Hipótese: o agente vê o nome no histórico e tenta importá-lo (34 erros
-  no OBFCivel e 1 no RespostaBacen, na base 3). O texto das memórias B com nomes do framework muda no script específico:
-  não "chame-as direto", e sim "não importe `python_interpreter`/`tools`/`smolagents`: o seu código já roda no
-  interpretador" → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h; base 3,
-  [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #48 (fechado) e #50.
-- **20/10, o `monitorar.py` ler a base 3 é item próprio, fora do fechamento do sandbox** (decisão do Rafael): o passo 0
-  segue "não conferido" na base 3 (as tabelas dela têm outro formato); o sandbox fecha com os itens registrados, e a
-  recontagem automática na base 3 vem com o item do kit → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #52.
-- **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
-  lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
-  passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,
-  [Ajuste 20](pipeline-entre-bases.md#ajuste-20--a-parte-específica-da-mineração-passa-a-ser-um-script-não-um-notebook); `16`, "Como o script roda".
+- **26/10, a cor da genealogia da decisão: a família, e também o destino em figura separada** (decisões do Rafael):
+  primeiro, a figura passa a ser pintada pela **família do erro** (a cor do censo, 10 cores da paleta; a fita mantém a cor
+  do começo ao fim), com o destino escrito na última coluna: no recorte de uma unidade, que tem um destino só, a cor do
+  destino deixava tudo de uma cor, e a família mostra de que tipo de erro vem o que termina em cada decisão (no `U_sandbox`
+  da base 1, os 16 erros são todos de Ambiente & sandbox). Depois, a figura inteira sai **também pelo destino**, numa
+  figura separada: `genealogia_decisao.png` (família) e `genealogia_decisao_destino.png` (destino). Cada figura tem uma
+  variável só na cor; as duas paletas reusam o azul e o laranja com sentidos diferentes, por isso nunca na mesma figura.
+  O recorte por unidade é só pela família → `execucao/figuras_genealogia.py`; base 3, roadmap #57; a versão pela família
+  falta rodar na máquina 2.
 
 ---

@@ -6,7 +6,7 @@ Applies to every agent in this repo (Claude Code here, Copilot on the compliance
 - **A branch that is already on `origin` is synced by merge, never by rebase** (`git merge origin/<base>`), so nothing already published is rewritten. Rebase only while the branch exists only locally.
 - **Stacked PR:** a branch created from another branch whose PR is still open opens its own PR against that branch, so the diff shows only its own work, and the base PR merges first. Once the base PR merges, retarget the stacked PR (`gh pr edit <n> --base main`) and merge `origin/main` into the branch.
 - **After a PR merges, it receives nothing more.** New work goes on a new dated branch (created from the updated `main`, or from the merged branch and then synced with `main`) and a new PR. Don't delete a branch at merge time if work will continue from it.
-- **Conflicts in `analysis/decisoes.md`** are almost always two new entries added at the same spot: keep both, the most recent date on top.
+- **Conflicts in `analysis/decisoes.md`** are almost always two new entries added at the same spot: keep both. The list "Decisões de método, por data" runs oldest first, and a new decision goes **at the end of its own date** (the file's rule, line 12) — never at the end of the file nor at the top.
 
 ## Pipeline code hash (base 3)
 
