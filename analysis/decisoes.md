@@ -278,6 +278,19 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   n+2), sem o prompt, lidos na máquina pela skill de investigação; nas bases 1 e 2, todos os casos que houver, com o trace
   inteiro (pegam o "importou antes e o nome sumiu" que a janela da base 3 pode não mostrar). Para ler a base 3, a pasta
   dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26.
+- **26/10, a recuperação da população fica só com os papéis com erro, e o limite de passos ganha cor própria**
+  (decisão do Rafael, fotos IMG_6065–6066 da base 3): a barra das execuções (28,4% de 71.881 tiveram erro) repetia o
+  funil e saiu; o número de execuções com erro vai para o título. Fica por papel, e não por execução, porque a
+  recuperação acontece no laço de um agente e o gráfico seguinte é por papel; na base 3 quase não muda (20.442 papéis
+  com erro para cerca de 20,4 mil execuções com erro). O limite de passos era preto e se confundia com o verde-escuro
+  de "um erro": agora é vermelho (`#e5383b`), da família de "terminou no erro" — os dois são "não se recuperou"
+  (validador de paleta: daltonismo e visão normal passam). Leitura que não vale: "seguiu sem erro até o fim" não é
+  "entregou a resposta final" → `figuras_taxas.recuperacao_populacao`, `recuperacao.CATEGORIAS`.
+- **26/10, a cobertura das regras vira duas barras** (decisão do Rafael, ao ver o painel da base 3 na máquina 2, foto
+  IMG_6063): a figura de um motivo por barra confundia (nove barras, a maior com 87% dos erros, e os pendentes espalhados
+  em quatro). Agora: cobertos (a regra tem a evidência para decidir; na base 3, 29.392 de 30.141, 97,5%) e pendentes
+  (falta dado na extração; 749), com os maiores motivos dos pendentes em texto embaixo da barra; a lista inteira continua
+  na tabela do painel. Lido da rodada, sem rodada nova → `execucao/painel.py` (`figura_cobertura`).
 - **26/10, a memória C do sandbox exclui o managerAgent** (decisão do Rafael, depois da ida à máquina de 26/10): na base
   1, a lista do interpretador do managerAgent é a padrão do smolagents, sem `json`, e nenhum `import json` rodou ali; a
   base 3 não tem lista dele e tem 0 erros da C nesse papel (1 execução com algum erro no período). Excluir não perde nada
@@ -296,6 +309,37 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   trocados; sem a saída do modelo nem as observações; varredor antes de imprimir) e **trazidos por foto**, lidos aqui; no
   dia 30, os dois leitores na máquina conferem as regras. Não é exceção à regra de sigilo de 16/10: só sai conteúdo
   técnico → `pipeline/validacao/degrau3_sandbox.py`; dossiê do sandbox §2h, 30.
+- **23/10, a recuperação depois do erro é contada por trajetória, não por erro, e entra no relatório** (decisão do
+  Rafael, ao pedir um sinal de recuperação do sistema inteiro na base 3, que é censo dos erros): o gráfico "o que vem
+  depois do erro" da parte 1 conta por erro (uma cascata de 5 erros entra 4 vezes como "errou de novo") e só vê o passo
+  seguinte; fica como está, para a pergunta "que erro prende o agente". O novo conta cada papel numa execução uma vez,
+  do primeiro erro até o fim do papel: um erro só, cascata, recaída (os três seguidos de nenhum erro estruturado até o
+  fim), terminou no erro, limite de passos, indeterminado. Dois gráficos na parte 2: a população (execuções, com o
+  denominador das contagens, e papéis com erro) e um por papel. **Por que dá sem o trace completo:** a base 3 tem todos
+  os erros de cada papel (a junção confere chave a chave), e as sequências saem dos vizinhos da query (o seguinte errou ou
+  não), conferidos par a par. **A numeração não serve de posição:** na base 1, o `step_number` difere da posição do
+  ActionStep no papel em 1.749 de 5.781 passos (30,3%) e recomeça em 491 de 1.550 papéis (nova chamada). **Teste com
+  resposta conhecida na base 1:** 354 de 354 trajetórias na mesma categoria pelo trace completo e só pelos erros. Lido
+  das contagens e da fonte, sem rodada nova → `execucao/recuperacao.py`, `figuras_taxas.recuperacao_*`,
+  `validacao/conferir_recuperacao_base1.py`, teste `test_recuperacao_base3`; base 3, roadmap #56; falta rodar na
+  máquina 2.
+- **23/10, a genealogia vira duas figuras, e a da decisão começa na assinatura** (decisão do Rafael): família e
+  assinatura (o sintoma) e mecanismo, unidade e destino (a decisão) são análises diferentes e não ficam numa figura só.
+  **Por que a assinatura entra na decisão e a família não**, medido nas arestas (ensaio da base 1, 20/10): família →
+  assinatura é uma árvore (nenhuma assinatura em duas famílias) e vai para um censo em barras; assinatura → mecanismo
+  diverge e converge (11 de 21 assinaturas se abrem em mais de uma causa, 10 de 21 causas recebem mais de uma assinatura)
+  — é a única passagem com cruzamento, e sem ela o Sankey da decisão seria uma árvore; mecanismo → unidade só converge
+  (por construção: o dicionário causa → unidade); unidade → destino segue reto (D4 de 16/10, uma coluna só). O erro
+  estruturado é o evento que flui pela figura; a assinatura é o rótulo do sintoma dele. **O recorte por unidade**
+  (`execucao/figuras_genealogia.py --unidade U_sandbox`, fora do `executar.py` porque ele entra no hash de código) é exato porque cada causa vai para uma unidade só; o script recusa se
+  isso deixar de valer. **A cor das duas figuras é a família do erro** (a do censo, 10 cores da paleta, a fita mantém a cor do começo ao fim); o
+  destino fica escrito na última coluna. Pintar pelo destino foi testado e descartado (Rafael, 23/10): no recorte de uma
+  unidade, que tem um destino só, tudo saía de uma cor; a família mostra de que tipo de erro vem o que termina em cada
+  decisão (no `U_sandbox` da base 1, os 16 erros são todos de Ambiente & sandbox). **26/10, também pelo destino** (Rafael):
+  a genealogia inteira sai em duas figuras, a mesma genealogia com cores diferentes — `genealogia_decisao.png` (família)
+  e `genealogia_decisao_destino.png` (destino); cada figura tem uma variável só na cor (as duas paletas reusam o azul e
+  o laranja com sentidos diferentes, por isso nunca na mesma figura). O recorte por unidade é só pela família. A versão de 22/10 (decisão = mecanismo → unidade, sem a assinatura) foi revertida → painel,
+  `execucao/figuras_genealogia.py`, teste `test_genealogia_figuras_base3`; base 3, roadmap #57; falta rodar na máquina 2.
 - **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
   **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
   exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste

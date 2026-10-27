@@ -144,7 +144,7 @@ por `figuras_painel.depois_do_erro`; testes: soma = todos os erros e, nas candid
 |---|---|---|---|---|---|
 | M1 | Duração por assinatura (§2.3 da esteira) | `duracoes_assinaturas.csv` da rodada: erros, execuções, tokens, duração conhecida e ausente, medianas por assinatura (`duration_seconds` da v2) | Que erro faz o agente **esperar** mais, não só gastar tokens? | parte 1, depois de frequência × custo | quantas durações faltam por assinatura; insight único: frequência × custo é por unidade e em tokens, este é por assinatura e em segundos |
 | M2 | Global × papel (§14.8 da consolidação) | `consolidacao_global_papel.csv`: papel, unidade, decisão, candidata no sistema, candidata no papel pela régua estrita (5 execuções, 3 meses) | A lição é recorrente no sistema todo mas em nenhum papel isolado (ou o contrário)? Decide o **escopo** da memória (papel ou global) | **tabela** no painel, não gráfico: o asterisco do papel × unidade já mostra a régua por papel | se a régua estrita por papel muda alguma candidata |
-| M3 | Posição do erro na trajetória (§4/8.6) e "quantas trajetórias terminam num erro" (complemento do gráfico de custo com × sem erro) | **hipótese:** o número do passo com erro (`step_number`, v2) ÷ o total de passos do papel (`qtd_actionsteps`, contagens) = posição relativa; `recovery_signal = NO_NEXT_ACTION` marca o erro no último passo | O erro vem no começo (pouco contexto) ou no fim (contexto acumulado)? Testa o custo por contexto acumulado (#13) com a entrada do passo com erro × posição | parte 2 (precisa das contagens) | **na base 1, aqui:** se `step_number` conta só ActionSteps, bate com o `idx` do clássico e o máximo = total de passos do papel; se não, M3 vai para o pedido ao tutor |
+| M3 | Posição do erro na trajetória (§4/8.6) e "quantas trajetórias terminam num erro" (complemento do gráfico de custo com × sem erro) | **hipótese:** o número do passo com erro (`step_number`, v2) ÷ o total de passos do papel (`qtd_actionsteps`, contagens) = posição relativa; `recovery_signal = NO_NEXT_ACTION` marca o erro no último passo | O erro vem no começo (pouco contexto) ou no fim (contexto acumulado)? Testa o custo por contexto acumulado (#13) com a entrada do passo com erro × posição | parte 2 (precisa das contagens) | **na base 1, aqui:** se `step_number` conta só ActionSteps, bate com o `idx` do clássico e o máximo = total de passos do papel; se não, M3 vai para o pedido ao tutor. **Conferido em 23/10 (#56): não serve.** O `step_number` difere da posição do ActionStep no papel em 1.749 de 5.781 passos (30,3%), recomeça em 491 de 1.550 papéis (nova chamada) e o máximo é o total em só 1.059 de 1.550 (`validacao/conferir_recuperacao_base1.py`); o `step_pos` conta todas as classes de step. A posição relativa vai para o pedido ao tutor; "quantas trajetórias terminam num erro" saiu pelos vizinhos, no #56 |
 
 Fica de fora o teste do ToolScan (§2.1): é verificação de código, não gráfico. Continuam sem dado (Etapa 4): sucesso por
 conteúdo (§3.1/8.12), tokens por chamada de ferramenta (§3.3/8.9), propagação completa (§5/8.2), falhas silenciosas (§7).
@@ -323,6 +323,34 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
     unidade por versão do agente ("aparece ou some"), para o critério "ainda relevante". **A versão não serve (14/10,
     #26):** `cod_vers_aget` vale 1 em 85 linhas de erro e 147 de 71.894 nas contagens; "aparece ou some" fica pelo mês
     (a taxa por unidade e mês do #32) até haver o nome do modelo ou o hash do prompt (pedido C).
+    **A recuperação até o fim do papel saiu à parte, no #56 (23/10):** o #15 fica com a janela n+1/n+2, o custo da
+    janela e o "aparece ou some".
+- [ ] **#56** **Rodar a recuperação depois do erro por trajetória na máquina 2 e ler os números** (decisão do Rafael,
+  23/10; [`decisoes.md`](../../decisoes.md)). Cada papel numa execução conta uma vez, do primeiro erro até o fim do papel
+  (um erro só, cascata, recaída, terminou no erro, limite de passos, indeterminado); dois gráficos na parte 2 do relatório
+  (`taxas_recuperacao.png`, a população com o denominador das contagens; `taxas_recuperacao_papel.png`, um por papel) e
+  as tabelas `taxas/recuperacao_*.csv`. **Feito aqui:** `execucao/recuperacao.py`; teste com resposta conhecida na base 1
+  (`validacao/conferir_recuperacao_base1.py`: 354 de 354 trajetórias na mesma categoria pelo trace completo e só pelos
+  erros; 74,3% um erro só, 12,7% cascata, 13,0% recaída, nenhuma terminou no erro); `test_recuperacao_base3` (8 testes).
+  **Na máquina 2, da raiz:** `uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py relatorio --rodada
+  <a rodada atual>` (sem rodada nova: lê a fonte e as contagens). **Conferir ao trazer:** os indeterminados por motivo
+  (`recuperacao_indeterminados.csv`; esperado poucos — mais de um agente com o mesmo papel e vizinhos que não conferem);
+  quantos terminaram no erro e quantos esgotaram os passos (na base 1, zero dos dois); as duas figuras. Depois, os números
+  entram no relatório `02` (§7.6).
+- [ ] **#57** **Rodar a genealogia em duas figuras na máquina 2 e ler** (decisão do Rafael, 23/10;
+  [`decisoes.md`](../../decisoes.md)). A de cinco colunas juntava duas análises; agora o painel traz o **censo do
+  sintoma** (família → assinatura, em barras: é uma árvore) e a **genealogia da decisão** (assinatura → mecanismo →
+  unidade · destino, em Sankey, em duas figuras: cor = família do erro, a mesma do censo, e cor = destino — 26/10). `execucao/figuras_genealogia.py --unidade <U_…>` recorta uma unidade para o
+  estudo de caso (a figura e um `.md` com o "como ler" em `<rodada>/genealogia/`). Tudo do `genealogia_arestas.csv` da
+  rodada: sem rodada nova (`execucao/figuras_genealogia.py`, fora do hash de código; de propósito não é comando do
+  `executar.py`, que está no hash). **Feito aqui:** ensaio da base 1 de
+  20/10 — 498 erros, 21 assinaturas, 21 causas, 17 lições; 11 assinaturas se abrem em mais de uma causa, 10 causas
+  recebem mais de uma assinatura; nenhuma causa em duas unidades; o recorte `U_sandbox` soma 16 erros (4 assinaturas,
+  2 causas); `test_genealogia_figuras_base3` (4 testes). **Na máquina 2, da raiz:** `executar.py relatorio --rodada
+  <a rodada atual>` (as duas figuras entram na parte 1) e, para o sandbox, `execucao/figuras_genealogia.py --rodada
+  <a rodada atual> --unidade U_sandbox`.
+  **Conferir ao trazer:** que o script não recusou ("causa em mais de uma unidade" pararia tudo, com o nome da causa); as
+  duas figuras e o recorte.
 - [ ] **#16** **Trilhas paralelas (e5):** as suspeitas da query por padrão × papel × mês (só contagem); o protocolo do harness
     por papel, mês e versão. O que não der na extração vai para o relatório como indisponível.
 - [ ] **#17** **Kit e auditoria independente (Fase 5):** o kit chamando o `executar.py` na preparação; o `conferir_versao`

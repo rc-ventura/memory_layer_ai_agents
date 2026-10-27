@@ -5,6 +5,8 @@ Junta três fontes, cada uma conferida antes de qualquer conta:
 - a fonte da rodada (a v2): o arquivo tem de ter o SHA-256 que o manifesto registra; dele saem erros e tokens por chave;
 - as contagens (`base_contagens.parquet`, o pedido A): uma linha por execução, agente e papel, com o total de
   ActionSteps e de tokens de todas as execuções, com ou sem erro.
+Com a junção conferida, também a recuperação depois do erro por trajetória (`execucao/recuperacao.py`, 23/10): a
+população (os papéis com erro) e um papel por barra.
 A junção é uma trava: chave duplicada nas contagens, chave da fonte ausente nelas, erros ou suspeitas diferentes por
 chave, tokens dos erros acima dos do papel, ou somas diferentes das do manifesto — nada é gerado e o motivo sai na
 mensagem. Escreve `<rodada>/taxas/`: `taxas.md`, as figuras `taxas_*.png`, as tabelas e `manifesto_taxas.json` (com os
@@ -28,11 +30,12 @@ if str(PIPELINE) not in sys.path:
     sys.path.insert(0, str(PIPELINE))
 
 import base_pipeline as bp
+from execucao import recuperacao
 from execucao.painel import _n, _rodada, _sha256, _tabela, ler
 
 CONTAGENS = PIPELINE.parent / "data" / "base_contagens.parquet"
 CHAVE = ["cod_idef_exeo", "cod_idef_aget", "papel"]
-COLUNAS_FONTE = CHAVE + ["structured_error", "observation_suspect", "total_tokens", "output_tokens"]
+COLUNAS_FONTE = CHAVE + ["structured_error", "observation_suspect", "total_tokens", "output_tokens"] + recuperacao.COLUNAS
 
 
 class TravaTaxas(RuntimeError):
@@ -155,6 +158,7 @@ def gerar(pasta, contagens=None, fonte=None):
     upt = opc("consolidacao_unidade_papel_tokens.csv")
     execs, mes, papel, total_erro, sem_contagem, custo_papel, extra = tabelas(f, c)
     pm = papel_por_mes(c)
+    rec_pop, rec_papel, rec_motivos, rec_extra = recuperacao.tabelas(f, c)
     saida = pasta / "taxas"
     saida.mkdir(exist_ok=True)
     from execucao.painel import limpar_saida
@@ -179,6 +183,8 @@ def gerar(pasta, contagens=None, fonte=None):
         pulados.append("Gasto de cada papel por destino: a rodada não tem `consolidacao_unidade_papel_tokens.csv` "
                        "(tabela de 15/10; rode `executar.py analisar` de novo).")
     graficos.append(("taxas_prioridade.png", lambda d: ft.prioridade(papel, upt, tri, d)))
+    graficos_rec = [("taxas_recuperacao.png", lambda d: ft.recuperacao_populacao(rec_pop, rec_extra, d)),
+                    ("taxas_recuperacao_papel.png", lambda d: ft.recuperacao_papel(rec_papel, d))]
 
     asteps, erros = int(execs.actionsteps.sum()), int(execs.erros.sum())
     tok_tot, tok_err = float(papel.tokens_total.sum()), float(papel.tokens_erro.sum())
@@ -201,24 +207,40 @@ def gerar(pasta, contagens=None, fonte=None):
           "sem separar destino); só o gráfico do gasto de cada papel separa por destino.", "",
           "## Resumo", "", _tabela(resumo, "ld"), "", "# Leituras com denominador", ""]
     artefatos = {}
-    for nome, desenhar in graficos:
-        titulo, pergunta, ler_como, limite = desenhar(saida / nome)
-        artefatos[nome] = _sha256(saida / nome)
-        md += [f"## {titulo}", "", f"**Pergunta:** {pergunta}", "", f"![{titulo}]({nome})", "",
-               f"**Como ler:** {ler_como}", "", f"**Limitação:** {limite}", ""]
+
+    def desenhar_todos(lista):
+        for nome, desenhar in lista:
+            titulo, pergunta, ler_como, limite = desenhar(saida / nome)
+            artefatos[nome] = _sha256(saida / nome)
+            md.extend([f"## {titulo}", "", f"**Pergunta:** {pergunta}", "", f"![{titulo}]({nome})", "",
+                       f"**Como ler:** {ler_como}", "", f"**Limitação:** {limite}", ""])
+    desenhar_todos(graficos)
+    md += ["# A recuperação depois do erro (por execução e por papel)", "",
+           "O gráfico \"o que vem depois do erro\" da parte 1 conta por erro e vê só o passo seguinte; aqui cada papel "
+           "numa execução conta uma vez, do primeiro erro até o fim do papel, sobre o denominador das contagens "
+           "(`execucao/recuperacao.py`). As sequências saem dos vizinhos que a query traz (o passo seguinte errou ou "
+           "não), não da numeração dos passos; cada par de erros vizinhos é conferido, e o que não confere fica "
+           "indeterminado. Conferido com resposta conhecida na base 1 (`validacao/conferir_recuperacao_base1.py`).", ""]
+    desenhar_todos(graficos_rec)
+    if len(rec_motivos):
+        md += ["**Indeterminados, por motivo** (papéis com erro):", "", _tabela(rec_motivos, "ld"), ""]
     if pulados:
         md += ["## Gráficos não gerados nesta rodada", ""] + [f"- {x}" for x in pulados] + [""]
     mes.reset_index().to_csv(saida / "taxas_por_mes.csv", index=False)
     papel.reset_index().to_csv(saida / "taxas_por_papel.csv", index=False)
     pm.to_csv(saida / "taxas_por_papel_mes.csv", index=False)
     custo_papel.to_csv(saida / "taxas_custo_por_papel.csv", index=False)
+    rec_pop.to_csv(saida / "recuperacao_populacao.csv", index=False)
+    rec_papel.to_csv(saida / "recuperacao_por_papel.csv", index=False)
+    rec_motivos.to_csv(saida / "recuperacao_indeterminados.csv", index=False)
     (saida / "taxas.md").write_text("\n".join(md), encoding="utf-8")
     for nome in ["taxas_por_mes.csv", "taxas_por_papel.csv", "taxas_por_papel_mes.csv", "taxas_custo_por_papel.csv",
-                 "taxas.md"]:
+                 "recuperacao_populacao.csv", "recuperacao_por_papel.csv", "recuperacao_indeterminados.csv", "taxas.md"]:
         artefatos[nome] = _sha256(saida / nome)
     (saida / "manifesto_taxas.json").write_text(json.dumps({
         "rodada": pasta.name, "rodada_id": m.get("rodada_id"), "fonte_sha256": sha_fonte, "contagens_sha256": sha_cont,
         "verificacoes_juncao": verif, "linhas_sem_contagem": sem_contagem, "tokens_total_sistema": tok_tot,
+        "recuperacao": rec_extra,
         "artefatos": artefatos, "gerado_em": datetime.now(timezone.utc).isoformat()}, ensure_ascii=False, indent=2),
         encoding="utf-8")
     return saida

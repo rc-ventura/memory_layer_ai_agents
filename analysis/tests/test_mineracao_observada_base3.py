@@ -310,11 +310,12 @@ class TestPainel(unittest.TestCase):
             self.assertIn("U_tipo_retorno", md)
             self.assertNotIn("exec-sintetica", md)
             self.assertTrue((saida / "cobertura.png").is_file())
-            for nome in ["genealogia_observada.png", "unidades_observadas.png", "papel_unidade.png", "destinos.png",
-                         "unidades_destino_tipo.png", "frequencia_custo.png", "concentracao_papel.png"]:
+            for nome in ["censo_sintomas.png", "genealogia_decisao.png", "genealogia_decisao_destino.png", "unidades_observadas.png", "papel_unidade.png",
+                         "destinos.png", "unidades_destino_tipo.png", "frequencia_custo.png", "concentracao_papel.png"]:
                 self.assertTrue((saida / nome).is_file(), nome)
-            # cortados na auditoria da parte 1 (b3 #40): um insight por gráfico
-            for nome in ["papeis_candidatas.png", "linha_do_tempo.png"]:
+            # cortados na auditoria da parte 1 (b3 #40): um insight por gráfico; a genealogia de cinco colunas saiu
+            # do painel em 23/10 (as duas figuras acima a substituem)
+            for nome in ["papeis_candidatas.png", "linha_do_tempo.png", "genealogia_observada.png"]:
                 self.assertFalse((saida / nome).exists(), nome)
             self.assertIn("**Limitação:**", md)
             (dest / "triagem_visivel_observada.csv").write_text("adulterado", encoding="utf-8")

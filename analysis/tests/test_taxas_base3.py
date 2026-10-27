@@ -59,7 +59,7 @@ class TestTaxas(unittest.TestCase):
         man = json.loads((saida / "manifesto_taxas.json").read_text(encoding="utf-8"))
         self.assertTrue(all(man["verificacoes_juncao"].values()))
         self.assertEqual(man["linhas_sem_contagem"], 1)
-        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 12)
+        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 14)   # 12 + os dois da recuperação
         textos = [(saida / n).read_text(encoding="utf-8") for n in ["taxas.md", "taxas_por_mes.csv", "taxas_por_papel.csv",
                                                                   "taxas_por_papel_mes.csv"]]
         self.assertFalse(any("exec-" in t for t in textos))

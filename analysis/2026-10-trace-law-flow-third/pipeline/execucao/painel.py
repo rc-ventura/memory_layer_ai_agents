@@ -11,7 +11,6 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-import shutil
 import sys
 
 import pandas as pd
@@ -103,8 +102,9 @@ def _tabela(df, alinhar):
 
 
 def figura_cobertura(cob, tri, destino):
-    """1 · Cobertura das regras: em quantos erros a regra tem a evidência para decidir (observável) e, desses, quantos
-    caem numa unidade reconhecida (o resto é resíduo); os pendentes, por motivo."""
+    """1 · Cobertura das regras em duas barras (Rafael, 26/10: a de um motivo por barra confundia): cobertos (a regra
+    tem a evidência para decidir) e pendentes (falta dado na extração). Os motivos ficam na tabela do painel; na barra
+    dos pendentes, só os maiores em texto."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -112,21 +112,30 @@ def figura_cobertura(cob, tri, destino):
     from paleta import BLUE, INK2, MUTED
     from execucao.figuras_painel import _pct
     tot_e = float(cob.erros.sum())
-    c = cob.assign(motivo=cob.motivo_evidencia.map(lambda m: MOTIVO.get(m, m))).sort_values("erros")
-    fig, ax = plt.subplots(figsize=(12, max(3.5, 0.45 * len(c) + 2)))
-    ax.barh(c.motivo, c.erros, color=[BLUE if s == "observavel" else MUTED for s in c.situacao_mecanismo])
-    for i, (v, t) in enumerate(zip(c.erros, c.tokens_n_conhecidos)):
-        ax.text(v, i, f" {_n(v)} ({_pct(100 * v / tot_e)}) · {_n(t / 1e6, 1)} mi tokens", va="center", fontsize=8.5,
-                color=INK2)
-    ax.set_xlim(0, c.erros.max() * 1.4)
-    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _n(v)))
-    obs = float(cob.loc[cob.situacao_mecanismo.eq("observavel"), "erros"].sum())
+    eh_obs = cob.situacao_mecanismo.eq("observavel")
+    obs, pend = float(cob.erros[eh_obs].sum()), float(cob.erros[~eh_obs].sum())
+    tok_obs, tok_pend = float(cob.tokens_n_conhecidos[eh_obs].sum()), float(cob.tokens_n_conhecidos[~eh_obs].sum())
     res = float(tri.loc[tri.unidade.str.startswith("X_"), "erros_observaveis"].sum())
-    # sem legenda (Rafael, 16/10: ela só repetia o título); as cores ficam ditas no título
-    fig.suptitle(f"Cobertura das regras: a regra tem a evidência para decidir em {_n(obs)} de {_n(tot_e)} erros "
-                 f"({_pct(100 * obs / tot_e)}, azul); {_n(tot_e - obs)} ficam pendentes por falta de dado (cinza)\n"
-                 f"{_n(obs - res)} ({_pct(100 * (obs - res) / tot_e)}) caem numa unidade reconhecida; {_n(res)} são resíduo "
-                 "(nenhuma regra reconheceu a causa)", x=0.01, ha="left", fontsize=11)
+    barras = [("cobertos\n(a regra tem a evidência para decidir)", obs, tok_obs, BLUE),
+              ("pendentes\n(falta dado na extração)", pend, tok_pend, MUTED)]
+    fig, ax = plt.subplots(figsize=(12, 3.6))
+    for i, (rot, v, t, cr) in enumerate(barras):
+        ax.barh(i, v, color=cr, height=0.55)
+        ax.text(v + tot_e * 0.01, i, f"{_n(v)} ({_pct(100 * v / tot_e)}) · {_n(t / 1e6, 1)} mi tokens", va="center",
+                fontsize=10, color=INK2)
+    p = cob[~eh_obs].sort_values("erros", ascending=False)
+    if len(p):   # os motivos dos pendentes, os maiores, embaixo da barra (a lista inteira está na tabela)
+        motivos = "; ".join(f"{MOTIVO.get(m, m)} {_n(v)}" for m, v in zip(p.motivo_evidencia.head(3), p.erros.head(3)))
+        ax.text(tot_e * 0.01, 1.42, "motivos: " + motivos + ("; …" if len(p) > 3 else ""), va="center", fontsize=8.5,
+                color=INK2)
+    ax.set_yticks(range(len(barras)), [b[0] for b in barras], fontsize=10)
+    ax.set_ylim(1.75, -0.6)
+    ax.set_xlim(0, tot_e * 1.3)
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _n(v)))
+    fig.suptitle(f"Cobertura das regras: {_pct(100 * obs / tot_e)} dos {_n(tot_e)} erros estruturados têm a evidência para "
+                 f"a regra decidir; {_n(pend)} ({_pct(100 * pend / tot_e)}) ficam pendentes\n"
+                 f"Dos cobertos, {_n(obs - res)} caem numa unidade reconhecida e {_n(res)} são resíduo (nenhuma regra "
+                 "reconheceu a causa)", x=0.01, ha="left", fontsize=11)
     ax.set_xlabel("erros estruturados")
     for lado in ["top", "right"]:
         ax.spines[lado].set_visible(False)
@@ -211,9 +220,16 @@ def gerar(pasta, gasto_total=None):
     import execucao.figuras_painel as fp
     tpp = ler(pasta, m, "triagem_por_papel.csv")
     graficos, pulados = [], []
-    if (pasta / "genealogia_observada.png").exists() and "genealogia_observada.png" in m["artefatos"]:
-        shutil.copy2(pasta / "genealogia_observada.png", saida / "genealogia_observada.png")
-        graficos.append(("genealogia_observada.png", lambda d: fp.genealogia()))
+    # a genealogia em duas figuras (23/10): o censo do sintoma e a decisão (assinatura → mecanismo → unidade · destino),
+    # do genealogia_arestas.csv; a de cinco colunas da rodada (genealogia_observada.png) fica na rodada, fora do painel
+    if "genealogia_arestas.csv" in m["artefatos"]:
+        import execucao.figuras_genealogia as fg
+        ar = ler(pasta, m, "genealogia_arestas.csv")
+        graficos += [("censo_sintomas.png", lambda d: fg.censo_sintomas(ar, d)),
+                     ("genealogia_decisao.png", lambda d: fg.genealogia_decisao(ar, d)),
+                     ("genealogia_decisao_destino.png", lambda d: fg.genealogia_decisao(ar, d, cor="destino"))]
+    else:
+        pulados.append("Genealogia: a rodada não tem `genealogia_arestas.csv`.")
     graficos.append(("unidades_observadas.png", lambda d: fp.tokens_unidade(tri, cob, d)))
     upt = (ler(pasta, m, "consolidacao_unidade_papel_tokens.csv")
            if "consolidacao_unidade_papel_tokens.csv" in m["artefatos"] else None)
