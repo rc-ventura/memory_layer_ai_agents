@@ -59,7 +59,7 @@ class TestTaxas(unittest.TestCase):
         man = json.loads((saida / "manifesto_taxas.json").read_text(encoding="utf-8"))
         self.assertTrue(all(man["verificacoes_juncao"].values()))
         self.assertEqual(man["linhas_sem_contagem"], 1)
-        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 14)   # 12 + os dois da recuperação
+        self.assertEqual(len(list(saida.glob("taxas_*.png"))), 15)   # 13 + os dois da recuperação
         textos = [(saida / n).read_text(encoding="utf-8") for n in ["taxas.md", "taxas_por_mes.csv", "taxas_por_papel.csv",
                                                                   "taxas_por_papel_mes.csv"]]
         self.assertFalse(any("exec-" in t for t in textos))
@@ -80,6 +80,22 @@ class TestTaxas(unittest.TestCase):
             self.assertTrue((Path(t) / "x.png").is_file())
         self.assertIn("dos erros", titulo + ler)
         self.assertIn("linear", ler)
+
+    def test_papel_por_execucao_conta_execucoes_com_erro(self):
+        """A taxa por execução: execuções do papel com pelo menos um erro sobre todas as dele (a sem quantidade fica fora)."""
+        import execucao.figuras_taxas as ft
+        c = self.cont_df.assign(**{col: pd.to_numeric(self.cont_df[col]) for col in
+                                   ["qtd_actionsteps", "qtd_erros_estruturados", "tokens_total", "tokens_saida"]})
+        f = pd.read_parquet(self.fonte)
+        f = f.assign(**{col: pd.to_numeric(f[col]) for col in ["structured_error", "total_tokens", "output_tokens"]})
+        _, _, papel, *_ = taxas.tabelas(f, c)
+        self.assertEqual(int(papel.execucoes.sum()), 7)
+        self.assertEqual(int(papel.execucoes_com_erro.sum()), 3)
+        with tempfile.TemporaryDirectory() as t:
+            titulo, _, ler, limite = ft.papel_volume_execucao(papel, Path(t) / "x.png")
+            self.assertTrue((Path(t) / "x.png").is_file())
+        self.assertIn("taxa global", ler)
+        self.assertIn("passos", ler)          # explica que a taxa por execução cresce com os passos por execução
 
     def test_papel_entrada_acha_o_primeiro_mes(self):
         """O primeiro mês de cada papel é o primeiro com execução; a figura diz quantos papéis entram depois."""

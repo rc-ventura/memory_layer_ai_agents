@@ -114,7 +114,9 @@ def tabelas(f, c):
     mes["taxa"] = mes.erros / mes.actionsteps
     com_passo = execs[execs.actionsteps.gt(0)].groupby("mes").tokens_total
     mes["mediana_tokens_execucao"], mes["media_tokens_execucao"] = com_passo.median(), com_passo.mean()
-    papel = ok.groupby("papel").agg(execucoes=("cod_idef_exeo", "size"), actionsteps=("qtd_actionsteps", "sum"),
+    papel = ok.groupby("papel").agg(execucoes=("cod_idef_exeo", "size"),
+                                    execucoes_com_erro=("qtd_erros_estruturados", lambda s: int(s.gt(0).sum())),
+                                    actionsteps=("qtd_actionsteps", "sum"),
                                     erros=("qtd_erros_estruturados", "sum"), tokens_total=("tokens_total", "sum"),
                                     tokens_saida=("tokens_saida", "sum"))
     e = f[f.structured_error.eq(1)]
@@ -166,6 +168,7 @@ def gerar(pasta, contagens=None, fonte=None):
     graficos = [("taxas_funil.png", lambda d: ft.funil(execs, extra, d)),
                 ("taxas_mes.png", lambda d: ft.taxa_mes(mes, d)),
                 ("taxas_papel.png", lambda d: ft.papel_volume(papel, d)),
+                ("taxas_papel_execucao.png", lambda d: ft.papel_volume_execucao(papel, d)),
                 ("taxas_papel_mes.png", lambda d: ft.papel_mes(pm, d, execucoes=papel.execucoes)),
                 ("taxas_papel_entrada.png", lambda d: ft.papel_entrada(pm, d)),
                 ("taxas_custo_execucao.png", lambda d: ft.custo_execucao(execs, custo_papel, d)),
