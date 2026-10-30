@@ -47,10 +47,17 @@ e o prompt de cada papel. Nenhuma lê texto de caso.
 | 2 | **conflito com o prompt** | o prompt do papel não manda o contrário do que a memória diz | a memória proíbe o que o prompt pede (ou o prompt manda usar o que a memória diz que não existe) | a memória "não chame `globals`" no papel cujo prompt manda verificar se a variável existe |
 | 3 | **repete o prompt** | o conteúdo da memória não está já escrito no prompt do papel | o prompt já diz isso e o agente ignora — a memória repetiria a mesma instrução | a lista de imports autorizados já está nos 16 prompts (base 1) |
 | 4 | **recorrência** | a memória passa na régua de memória rara: pelo menos 3 execuções em pelo menos 2 meses | poucos casos: a memória fica monitorada, não injetada | 6 das 14 memórias do piloto |
-| 5 | **uma causa só** | a memória não junta sub-causas com consertos diferentes (por exemplo, o mesmo nome barrado usado para depurar e para verificar) | a parte mistura causas: divide-se antes de injetar | a parte E junta a depuração e a verificação com valor padrão |
+| 5 | **uma causa só** | a memória não junta sub-causas com lições diferentes (por exemplo, o mesmo nome barrado usado para depurar e para verificar) | a parte mistura causas: divide-se antes de injetar | a parte E junta a depuração e a verificação com valor padrão |
 
 **O que cada falha pede:** a 1 e a 5 corrigem o script específico (com nova validação pelo `validador-de-script`); a 2
 costuma mudar o destino para harness; a 3 e a 4 são decisão do pesquisador (manter, monitorar ou descartar).
+
+**A checagem 5 hoje (30/10/2026).** Nenhum script de mineração grava o campo `causas`; por isso o `conferir_memorias.py`
+a devolve "não verificável" e o pesquisador a decide com a evidência (`decisoes_degrau2.json`). O script que minera não
+pode ser também quem prova que a memória tem uma causa só (seria circular): a confirmação independente é a leitura do
+degrau 3, que registra `causa` e `licao` de cada caso. Quando for automatizada, `causas` entra na granularidade da lição da
+memória — a lição é o que a memória carrega, e causas com a mesma lição levam o mesmo rótulo —, e a classificação nasce da
+investigação e é recalculada pela auditoria independente (roadmap da base 3, #59; `decisoes.md`, 30/10).
 
 **Limite:** as checagens 1 (ferramentas), 2 e 3 precisam do prompt; a 1 (módulos e funções do Python) confere pelo
 interpretador onde ele mostra o papel, e cai no prompt onde não mostra. Numa base sem prompt (a base 3), usa-se o prompt

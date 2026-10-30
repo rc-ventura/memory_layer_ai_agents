@@ -145,3 +145,30 @@ investigação do erro crítico (01/10):
 | **linha de base** | a rodada, a fonte e as contagens congeladas (com hash) contra as quais se mede o efeito de uma memória |
 | **ponto de equilíbrio** | tamanho da memória = eficácia × orçamento de injeção; abaixo disso, a memória compensa |
 | **eficácia** | economia medida ÷ teto de economia |
+
+---
+
+## 9 · Pré-destino e destino (29/10/2026)
+
+| Termo | O que é |
+|---|---|
+| **roteamento** | o processo que leva cada erro, por regra, de assinatura → mecanismo → unidade → pré-destino: a "árvore de roteamento" do [doc 09](2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md) |
+| **pré-destino** | o encaminhamento que a triagem dá a uma unidade **antes da investigação**: candidata a memória (com o tipo da lição, factual · ambiente ou experiencial · estratégia), harness / infra (não-memória, por taxonomia), resíduo, crítico ou sem recorrência. É provisório e por regra. Os gráficos de volume (`destinos`, `unidades_destino_tipo` e a genealogia pelo destino) mostram pré-destinos. O **sinal de harness** é um pré-destino híbrido: só aparece quando uma mineração anterior já decidiu "harness" para a unidade naquela base |
+| **destino** | a decisão sobre uma unidade (ou sobre uma parte dela) **depois da investigação**, com evidência: memória catalogada (com o degrau), harness registrado, monitorada ou em aberto. É do pesquisador e vale só na base em que foi decidido (`DESTINO_MINERACAO`, catálogo das memórias; Ajuste 7) |
+| **destino decidido nesta base** | a unidade consta em `DESTINO_MINERACAO` ou no catálogo das memórias para o `BASE_ID` da rodada. Antes disso, o destino é "em aberto" |
+
+No código, a coluna `destino_proposto` da triagem e a coluna "destino" da genealogia guardam o **pré-destino** (a decisão da
+triagem); só `DESTINO_MINERACAO` e o catálogo guardam destino decidido. Os nomes não mudam (os arquivos que os definem
+entram no hash de código da rodada). A decisão e o porquê: [`decisoes.md`](decisoes.md), 29/10; os números do estado
+atual: [racionais da base 3 §8](2026-10-trace-law-flow-third/docs/01-racionais.md#8--pré-destino-e-destino-29102026).
+
+## 10 · Lição (30/10/2026, revista no mesmo dia)
+
+| Termo | O que é |
+|---|---|
+| **lição** | o que o agente deveria fazer diferente: um fato a lembrar ou um hábito a mudar. Tem dois níveis. A **lição da unidade** é a ideia geral proposta na classificação (terceiro campo de `UNI[u]`): uma por unidade, ainda hipótese. A **lição da memória** é a instrução específica de uma parte da unidade, com escopo (global ou por papel) e destino, montada pela mineração a partir da mensagem de erro (`correction_guidance`): uma unidade pode gerar várias, uma por memória. A pergunta da Conferida é se a memória tem **uma lição só** |
+
+"Conserto" não é termo do projeto; vale como palavra comum ("o conserto é na plataforma"). A coluna `conserto` do roteiro
+`candidata` (L3: `corrigiu_a_licao`, `contornou`, `repetiu`, `desistiu`) é outra coisa: o que o agente fez depois do erro.
+Código e esquema não mudam (`correction_guidance` e o `esquema-memoria.json` entram no hash da rodada). O termo vale para
+os textos novos, os slides e as legendas. A decisão e o porquê: [`decisoes.md`](decisoes.md), 30/10.

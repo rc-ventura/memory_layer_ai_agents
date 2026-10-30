@@ -277,8 +277,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   Decidido: a C exclui o managerAgent (feito no catálogo, `nao_vale_em`, Ajuste 30); "uma causa só" passa nas 3
   (gravado em `decisoes_degrau2.json`). **As 3 completam o degrau 2 com a base 1** (§2h, 28), **gravado no catálogo**
   (`--registrar`, §2h, 29; a base 2 confirma, `IMG_6040`). Degrau 3 sem esperar a cota (§2h, 30): regras contadas +
-  10 casos mascarados por memória, por foto (`degrau3_sandbox.py`); os dois leitores no dia 30. Falta: rodar na máquina,
-  a leitura aqui e a parte F.
+  10 casos mascarados por memória, por foto (`degrau3_sandbox.py`); os dois leitores no dia 30. ~~Rodar na máquina e a
+  leitura aqui~~ **feito em 30/10** (§2h, 31; `IMG_6115`–`6138`): a causa se confirma nas três (10 de 10 cada); na
+  C.JoogleAnalytics o erro é esquecer **dois** imports (`pandas` e `json` na mesma linha), o que explica os 77% com outro
+  erro depois — decisão em aberto sobre o texto dela. Falta: essa decisão, os dois leitores (máquina ainda sem cota),
+  gravar o degrau 3 no catálogo (sem comando ainda) e a parte F.
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos
@@ -401,6 +404,14 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   conferida — só a mudança esperada (2.217 erros; resumo do manifesto igual). **Falta:** a replicação na base 2 e a nova
   mineração do sandbox →
   [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
+- [ ] **#59** **Automatizar a checagem "uma causa só" do degrau 2 (aberto em 30/10).** Hoje nenhum script grava `causas`, a
+  checagem sai "não verificável" e o pesquisador a decide com a evidência; a confirmação independente é a leitura do
+  degrau 3. Para automatizar: (1) a regra de classificação de causa nasce da investigação (leitura aberta, segundo leitor,
+  `testar_regra.py`, concordância ≥ 90%), não do minerador; (2) `causas` é registrada na granularidade da lição da memória (a
+  lição é o que a memória carrega; causas com a mesma lição levam o mesmo rótulo), o que mantém o `conferir_memorias.py` como está (falha com
+  mais de uma causa distinta); (3) o script específico grava `causas` e a auditoria independente a recalcula no encontro;
+  (4) se `causas` virar campo do esquema, o `esquema-memoria.json` está na lista do hash e pede rodada nova na máquina da
+  base 3. Decisão do Rafael em `decisoes.md`, 30/10 → [doc 17](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md).
 ## Fora de escopo / adiado
 
 - **Aviso a quem cuida do harness** sobre o `try/except NameError` (`transversal #7`): decisão de 14/10 de não fazer agora;

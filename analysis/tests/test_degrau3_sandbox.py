@@ -56,6 +56,22 @@ class TestRegras(unittest.TestCase):
         self.assertIn("datetime.now", d3.instrucao_que_falhou(msg))
         self.assertEqual(d3.linha_que_falhou(msg), 'r = f"""')
 
+    def test_outros_nomes_sem_import(self):
+        """A linha do JoogleAnalytics usa `pd` e `json`: o `json` sem import conta; importado no passo anterior ou antes
+        da linha que falhou, não; o nome da própria memória não entra."""
+        linha_ja = "df = pd.DataFrame(json.loads(run_query(query=q)))"
+        msg = falha(linha_ja, "The variable `pd` is not defined.")
+        sem = {"error_message": msg, "error_code_action": f"q = 'x'\n{linha_ja}", "prev_code_action": "q = 1"}
+        self.assertEqual(d3.outros_nomes(sem, "pd"), ["json · sem import antes da falha"])
+        anterior = {**sem, "prev_code_action": "import json\nq = 1"}
+        self.assertEqual(d3.outros_nomes(anterior, "pd"), ["json · importado antes"])
+        no_passo = {**sem, "error_code_action": f"import json\n{linha_ja}"}
+        self.assertEqual(d3.outros_nomes(no_passo, "pd"), ["json · importado antes"])
+        depois = {**sem, "error_code_action": f"{linha_ja}\nimport json"}      # depois da linha que falhou: não rodou
+        self.assertEqual(d3.outros_nomes(depois, "pd"), ["json · sem import antes da falha"])
+        so_json = {**sem, "error_message": falha("d = json.loads(t)", "The variable `json` is not defined.")}
+        self.assertEqual(d3.outros_nomes(so_json, "json"), [])
+
     def test_lugar_na_linha(self):
         self.assertEqual(d3.lugar_na_linha("print(repr(x))"), "dentro de print(...)")
         self.assertEqual(d3.lugar_na_linha("t = type(x).__name__"), "numa atribuição")
@@ -101,6 +117,7 @@ class TestContarECasos(unittest.TestCase):
         j = med["U_sandbox.C.JoogleAnalytics"]
         self.assertEqual(j["depois"], {"importa · com erro": 1})
         self.assertEqual(j["uso"], {"o nome aparece na instrução que falhou": 1})
+        self.assertEqual(j["outros_nomes"], {"nenhum outro nome do inventário": 1})
         self.assertEqual(list(j["erro_seguinte"]), ['InterpreterError: KeyError: "<texto>"'])     # o valor do cliente mascarado
         self.assertEqual(med["U_sandbox.E"]["por_nome_e_lugar"], {("repr", "dentro de print(...)"): 1})
 

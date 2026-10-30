@@ -14,7 +14,9 @@ não imprime.
 `contar`, por memória (C, C.JoogleAnalytics, E; a população é o `erros_lidos.csv` da mineração):
   - C e C.JoogleAnalytics: a linha que falhou usa o nome direto (`json.`, `pd.`…) ou não (função auxiliar, linha cortada);
     o passo seguinte importa o módulo? e o erro que vem depois, pela assinatura mascarada (as 12 mais comuns) — a pergunta
-    aberta da C.JoogleAnalytics (77% com outro erro depois do import);
+    aberta da C.JoogleAnalytics (77% com outro erro depois do import); e os **outros nomes** do inventário (`json`, `re`,
+    `datetime`, `pd`) que a instrução que falhou também usa, importados ou não antes da falha (no passo, antes da linha,
+    ou no passo anterior) — a linha do JoogleAnalytics esquece dois imports? (dossiê §2h, 31);
   - E: por nome, onde está a chamada barrada na linha que falhou: dentro de `print(...)`, numa atribuição, numa condição,
     num `return`, outra.
 `casos`: os primeiros `--n` da amostra do degrau 3 (`resultados/evidencia/inv_candidata_<memoria>_base3/casos.csv`, já
@@ -39,7 +41,7 @@ PIPELINE = AQUI.parent
 RAIZ = PIPELINE.parents[2]
 sys.path.insert(0, str(AQUI))
 sys.path.insert(0, str(PIPELINE))
-from contar_modulo_sem_import_papel import LINHA_FALHA, importa  # noqa: E402
+from contar_modulo_sem_import_papel import LINHA_FALHA, importa, importou_antes_da_falha  # noqa: E402
 from mineracao_observada import caminho_io  # noqa: E402
 
 MEMORIAS = ("U_sandbox.C", "U_sandbox.C.JoogleAnalytics", "U_sandbox.E")
@@ -122,6 +124,20 @@ def lugar_na_linha(linha):
     return "outra"
 
 
+def outros_nomes(linha, nome):
+    """Os outros nomes do inventário usados na instrução que falhou, cada um com "sem import antes da falha" ou
+    "importado antes" (no passo, antes da linha que falhou, ou no passo anterior; a base 3 só tem o passo n-1)."""
+    falhou = instrucao_que_falhou(linha["error_message"])
+    saida = []
+    for outro, mod in MODULO.items():
+        if outro == nome or not re.search(rf"\b{re.escape(outro)}\s*[\.\(\[]", falhou):
+            continue
+        antes = (importou_antes_da_falha(linha.get("error_code_action"), linha["error_message"], mod)
+                 or importa(linha.get("prev_code_action"), mod))
+        saida.append(f"{outro} · {'importado antes' if antes else 'sem import antes da falha'}")
+    return saida
+
+
 def ler_populacao(pasta, memorias):
     with open(caminho_io(Path(pasta) / "erros_lidos.csv"), encoding="utf-8", newline="") as fh:
         return [r for r in csv.DictReader(fh) if r.get("memoria_id") in memorias]
@@ -154,7 +170,7 @@ def contar(populacao, fonte):
                 por[(r["nome"], lugar_na_linha(linha_que_falhou(linha["error_message"])))] += 1
             M["por_nome_e_lugar"] = por
         else:
-            uso, depois, sig = Counter(), Counter(), Counter()
+            uso, depois, sig, outros = Counter(), Counter(), Counter(), Counter()
             for r in P:
                 linha = fonte.get(chave(r))
                 if linha is None:
@@ -165,12 +181,14 @@ def contar(populacao, fonte):
                 falhou = instrucao_que_falhou(linha["error_message"])
                 uso["o nome aparece na instrução que falhou" if re.search(rf"\b{re.escape(nome)}\s*[\.\(\[]", falhou)
                     else "o nome não aparece na instrução (função auxiliar?)"] += 1
+                extra = outros_nomes(linha, nome)
+                outros.update(extra or ["nenhum outro nome do inventário"])
                 importou = importa(linha.get("next_code_action"), mod)
                 erro = str(linha.get("next_error_type") or "").strip()
                 depois[("importa" if importou else "não importa") + (" · com erro" if erro else " · sem erro")] += 1
                 if importou and erro:
                     sig[assinatura(linha.get("next_error_message"))] += 1
-            M.update({"uso": uso, "depois": depois, "erro_seguinte": sig})
+            M.update({"uso": uso, "outros_nomes": outros, "depois": depois, "erro_seguinte": sig})
         saida[mem] = M
     return saida
 
@@ -183,7 +201,9 @@ def imprimir_contagens(med):
             for (nome, lugar), k in sorted(M["por_nome_e_lugar"].items(), key=lambda kv: (-kv[1], kv[0])):
                 print(f"   {nome:14} {lugar:28} {k:>6}")
             continue
-        for titulo, c in (("a linha que falhou", M["uso"]), ("o passo seguinte", M["depois"])):
+        for titulo, c in (("a linha que falhou", M["uso"]),
+                          ("outros nomes na instrução que falhou (um erro pode ter mais de um)", M["outros_nomes"]),
+                          ("o passo seguinte", M["depois"])):
             print(f"   {titulo}:")
             for k, v in c.most_common():
                 print(f"     {k:44} {v:>5}")

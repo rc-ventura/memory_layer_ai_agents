@@ -385,5 +385,35 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   variável só na cor; as duas paletas reusam o azul e o laranja com sentidos diferentes, por isso nunca na mesma figura.
   O recorte por unidade é só pela família → `execucao/figuras_genealogia.py`; base 3, roadmap #57; a versão pela família
   falta rodar na máquina 2.
+- **29/10, pré-destino × destino** (decisão do Rafael): o que a triagem entrega antes da investigação (candidata a memória
+  com o tipo da lição, harness / infra, resíduo, crítico, sem recorrência) passa a se chamar **pré-destino**; **destino** é
+  só a decisão depois da investigação, do pesquisador, com evidência. Os gráficos de volume (`destinos`,
+  `unidades_destino_tipo` e a genealogia pelo destino) mostram pré-destino; o rótulo do gráfico é de quem apresenta, e o
+  arquivo e o código não mudam. **Nada muda no pipeline:** o destino já fica "em aberto" até a mineração
+  (`destino_mineracao`), e `base_pipeline.py`, `mineracao_observada.py` e `genealogia_sankey.py` entram no hash da rodada.
+  O sinal de harness segue na triagem como pré-destino híbrido (fora das candidatas, o teto de economia não conta como
+  memória o que já se decidiu ser harness). Na base 3, em 29/10, o destino está decidido para o `U_sandbox` (kit) e para
+  duas unidades de harness com evidência própria; as decisões das bases 1 e 2 são evidência prévia, não herdada
+  (Ajuste 7) → [racionais da base 3 §8](2026-10-trace-law-flow-third/docs/01-racionais.md#8--pré-destino-e-destino-29102026),
+  [glossário §9](glossario.md#9--pré-destino-e-destino-29102026).
+- **30/10, a quinta checagem do degrau 2 (uma causa só) é decisão do pesquisador, confirmada no degrau 3; `causas` na
+  granularidade da lição da memória** (decisão do Rafael): nenhum script de mineração grava o campo `causas`, então a checagem
+  sai "não verificável" e o pesquisador a decide com a evidência registrada em `decisoes_degrau2.json`. Fazer o script que
+  minera gravar as causas seria circular (a checagem só confirmaria que ele concorda consigo mesmo), então a confirmação
+  independente é a leitura do degrau 3, que registra `causa` e `licao` por caso. Quando a checagem for automatizada,
+  **`causas` será registrada na granularidade da lição da memória**: a lição é o que a memória carrega, e a unidade agrupa várias causas
+  com a mesma lição; causas com a mesma lição levam o mesmo rótulo e não reprovam. Assim o `conferir_memorias.py`
+  (que falha com mais de uma causa distinta) fica como está e passa a concordar com o doc 17 (que define a falha por
+  lições diferentes). A regra de classificação nasce da investigação (leitura aberta, segundo leitor, `testar_regra.py`)
+  e a auditoria independente a recalcula no encontro. Se `causas` virar campo do esquema, o `esquema-memoria.json` está na
+  lista do hash da rodada → [doc 17](2026-09-trace-law-flow/docs/17-validacao-memorias.md), base 3, roadmap #59.
+- **30/10, "lição" para a unidade e para a memória; "conserto" sai como termo** (decisão do Rafael; **revista no mesmo dia**:
+  a primeira versão separava "lição" (unidade) de "conserto" (memória)). Os slides do degrau 3 perguntam "que lições aparecem
+  nos erros?" e "o pesquisador aprova a lista de lições?"; um termo só evita que o slide e o dossiê falem de coisas
+  diferentes, e a coluna `conserto` do roteiro `candidata` (L3, o que o agente fez depois do erro) deixa de colidir com um
+  termo do glossário. A **lição da unidade** é a ideia geral; a **lição da memória** é a instrução específica de uma parte,
+  com escopo e destino (`correction_guidance`); a quinta checagem do degrau 2 é "é uma lição só?". **Nada muda no código nem
+  no esquema** (`correction_guidance` e o `esquema-memoria.json` estão no hash da rodada); vale para os textos novos, os
+  slides e as legendas → [glossário §10](glossario.md#10--lição-30102026-revista-no-mesmo-dia).
 
 ---
