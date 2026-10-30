@@ -188,6 +188,71 @@ def papel_volume(papel, destino):
             "os erros do papel, de qualquer destino.")
 
 
+def papel_volume_execucao(papel, destino):
+    """3b · O mesmo volume × taxa, por execução (Rafael, 27/10, foto IMG_6070): em quantas das execuções do papel ele
+    teve pelo menos um erro. Execução do papel = a linha das contagens (execução, agente, papel), a trajetória — o mesmo
+    denominador da coluna à direita da recuperação por papel."""
+    p = papel[papel.execucoes.gt(0)].copy()
+    p.index = [nome_papel(i) for i in p.index]
+    p["taxa_exec"] = p.execucoes_com_erro / p.execucoes
+    fig, ax = plt.subplots(figsize=(12, 6.8))
+    escala = 900 / p.tokens_total.max()
+    tam = (p.tokens_total * escala).clip(lower=15)
+    ax.scatter(p.execucoes, 100 * p.taxa_exec, s=tam, color=[BASE if e < MIN_N else BLUE for e in p.execucoes],
+               alpha=0.75, edgecolor="white", zorder=2)
+    glob = p.execucoes_com_erro.sum() / p.execucoes.sum()
+    ax.axhline(100 * glob, color=MUTED, linestyle=":", linewidth=1)
+    ax.text(0.005, 100 * glob, f" taxa global {_pct(100 * glob)}", fontsize=8, color=MUTED, va="bottom", ha="left",
+            transform=ax.get_yaxis_transform())
+    ax.set_xscale("log")
+    _milhar(ax, "x")
+    ax.set_xlabel("execuções do papel (escala log)")
+    ax.set_ylabel("% das execuções do papel com pelo menos um erro")
+    ax.grid(color=GRID, lw=0.6, zorder=0)
+    ax.set_ylim(0, min(105, 100 * p.taxa_exec.max() * 1.15))
+    grandes = p[p.execucoes.ge(MIN_N)] if p.execucoes.ge(MIN_N).any() else p   # base pequena: todos
+    rot = grandes.sort_values("tokens_total", ascending=False)
+    rotular(ax, rot.execucoes.tolist(), (100 * rot.taxa_exec).tolist(),
+            [f"{i} {_pct(100 * r.taxa_exec)}" for i, r in rot.iterrows()],
+            raios=(np.sqrt(tam[rot.index]) / 2).tolist(), fontsize=7.5)
+    mx = float(p.tokens_total.max())
+    refs = [v for v in [1e9, 1e8, 1e7] if v <= mx] or refs_tamanho(mx)
+    leg = ax.legend(handles=[plt.scatter([], [], s=max(v * escala, 15), color=BLUE, alpha=0.6, edgecolor="white")
+                             for v in refs], labels=[tok(v) for v in refs], title="tamanho = gasto total\ndo papel em tokens",
+                    loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False, fontsize=8, title_fontsize=8,
+                    labelspacing=2.0, borderpad=1)
+    leg._legend_box.sep = 12
+    _limpar(ax)
+    alto, vol = grandes.taxa_exec.idxmax(), grandes.execucoes.idxmax()
+    if alto != vol:
+        titulo = (f"Quem erra em mais execuções não é quem roda mais: {alto} teve erro em "
+                  f"{_pct(100 * grandes.taxa_exec[alto])} de {_n(grandes.execucoes[alto])} execuções; {vol}, em "
+                  f"{_pct(100 * grandes.taxa_exec[vol])} de {_n(grandes.execucoes[vol])}")
+    else:
+        titulo = (f"{alto} roda mais e erra em mais execuções: {_pct(100 * grandes.taxa_exec[alto])} de "
+                  f"{_n(grandes.execucoes[alto])}")
+    ax.set_title(titulo, loc="left", fontsize=11)
+    _salvar(fig, destino)
+    acima = grandes[grandes.taxa_exec > 2 * glob].sort_values("taxa_exec", ascending=False)
+    lista = ", ".join(f"{i} ({_pct(100 * r.taxa_exec)})" for i, r in acima.iterrows()) or "nenhum"
+    comp = ", ".join(f"{i} {_pct(100 * r.taxa_exec)} × {_pct(100 * r.taxa)}"
+                     for i, r in rot.head(4).iterrows() if pd.notna(r.taxa))
+    return ("Papel: volume × taxa, por execução",
+            "Em quantas das vezes que o papel rodou ele teve pelo menos um erro?",
+            "O mesmo desenho do gráfico anterior, contando execuções em vez de passos: à direita, os papéis que rodam em "
+            "mais execuções; acima, os que têm erro em mais delas (pelo menos um erro estruturado na execução do papel, "
+            "não importa quantos). Execução do papel = o papel numa execução (execução, agente, papel), a mesma base da "
+            "coluna à direita da recuperação por papel. O tamanho é o gasto total do papel em tokens. A linha pontilhada "
+            "é a taxa global (execuções de papel com erro sobre todas, ponderada pelo volume), não a do funil, que conta "
+            "execução + agente com todos os papéis juntos. A taxa por execução cresce com o número de passos que o papel "
+            "dá em cada execução: quem dá muitos passos tem mais chance de errar em algum, com a mesma taxa por passo. "
+            f"Por execução × por passo, nos papéis de maior gasto: {comp or 'sem passos'}. Acima do dobro da taxa "
+            f"global: {lista}.",
+            f"Pontos cinza: menos de {MIN_N} execuções do papel. \"Com erro\" não é \"falhou\": a qualidade da resposta "
+            "não está na base, e falha silenciosa não é erro estruturado. As execuções são as que a extração cobre (o "
+            "mesmo recorte da query), não necessariamente todas as do período. Período inteiro (esconde o mês).")
+
+
 def papel_mes(pm, destino, topo=8, execucoes=None):
     """3b · Erros por papel e mês: a contagem (esquerda) e a taxa do próprio papel (direita) — o papel fixo (roadmap #37).
 

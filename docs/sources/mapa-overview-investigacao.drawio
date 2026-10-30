@@ -1,0 +1,192 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="-lX4zbBAsFdMaVD8dR6b" name="Page-1">
+    <mxGraphModel dx="1414" dy="1256" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="mc0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Memória candidata" vertex="1">
+          <mxGeometry height="56" width="150" x="40" y="112" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="swimlane;align=left;spacingLeft=10;startSize=30;fontSize=16;fontStyle=1;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;fontColor=#272B4D;" value="Investigar" vertex="1">
+          <mxGeometry height="484" width="960" x="236" y="49" as="geometry" />
+        </mxCell>
+        <mxCell id="f0" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#FFFFFF;strokeColor=#272B4D;dashed=1;strokeWidth=2;fontColor=#272B4D;" value="Fase 0" vertex="1">
+          <mxGeometry height="56" width="140" x="20" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;" value="1 · Minerada" vertex="1">
+          <mxGeometry height="56" width="140" x="185" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="dest" parent="c4" style="rhombus;whiteSpace=wrap;html=1;fontSize=13;fillColor=#FFFFFF;strokeColor=#B8531F;strokeWidth=2;fontColor=#B5573A;" value="Encaminhamento" vertex="1">
+          <mxGeometry height="84" width="140" x="355" y="68" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;" value="2 · Conferida" vertex="1">
+          <mxGeometry height="56" width="140" x="585" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;" value="3 · Revisada" vertex="1">
+          <mxGeometry height="56" width="140" x="766" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="k00" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=14;fillColor=#272B4D;strokeColor=#272B4D;fontColor=#FFFFFF;" value="script" vertex="1">
+          <mxGeometry height="28" width="140" x="20" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="k10" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=14;fillColor=#272B4D;strokeColor=#272B4D;fontColor=#FFFFFF;" value="script" vertex="1">
+          <mxGeometry height="28" width="140" x="185" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="k11" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=13;fillColor=#272B4D;strokeColor=#272B4D;fontColor=#FFFFFF;" value="script independente" vertex="1">
+          <mxGeometry height="28" width="140" x="185" y="184" as="geometry" />
+        </mxCell>
+        <mxCell id="k12" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=14;fillColor=#60a917;strokeColor=#2D7600;strokeWidth=2;fontColor=#ffffff;" value="pesquisador" vertex="1">
+          <mxGeometry height="28" width="140" x="185" y="227" as="geometry" />
+        </mxCell>
+        <mxCell id="k20" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=14;fillColor=#272B4D;strokeColor=#272B4D;fontColor=#FFFFFF;" value="script" vertex="1">
+          <mxGeometry height="28" width="140" x="585" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="k21" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=14;fillColor=#60a917;strokeColor=#2D7600;strokeWidth=2;fontColor=#ffffff;" value="pesquisador" vertex="1">
+          <mxGeometry height="28" width="140" x="585" y="184" as="geometry" />
+        </mxCell>
+        <mxCell id="k30" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=14;fillColor=#272B4D;strokeColor=#272B4D;fontColor=#FFFFFF;" value="script" vertex="1">
+          <mxGeometry height="28" width="140" x="766" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="k31" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=14;fillColor=#B8531F;strokeColor=#B8531F;fontColor=#FFFFFF;" value="agentes" vertex="1">
+          <mxGeometry height="28" width="140" x="766" y="184" as="geometry" />
+        </mxCell>
+        <mxCell id="k32" parent="c4" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=14;fillColor=#60a917;strokeColor=#2D7600;strokeWidth=2;fontColor=#ffffff;" value="pesquisador" vertex="1">
+          <mxGeometry height="28" width="140" x="768" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Memória minerada" vertex="1">
+          <mxGeometry height="44" width="140" x="185" y="276" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Memória conferida" vertex="1">
+          <mxGeometry height="44" width="140" x="582" y="276" as="geometry" />
+        </mxCell>
+        <mxCell id="m3" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Memória revisada" vertex="1">
+          <mxGeometry height="44" width="140" x="772" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="o1" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Memória monitorada&lt;br&gt;&lt;small&gt;rara ou reforço: não injetada&lt;/small&gt;" vertex="1">
+          <mxGeometry height="64" width="150" x="580" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="c4" source="k21" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;strokeColor=#b85450;strokeWidth=1.5;fontColor=#B20000;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" target="o1" value="repete o prompt ou poucos casos">
+          <mxGeometry relative="1" x="-1" y="67" as="geometry">
+            <mxPoint x="35" y="-10" as="offset" />
+            <Array as="points">
+              <mxPoint x="570" y="201" />
+              <mxPoint x="530" y="201" />
+              <mxPoint x="530" y="382" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tag3" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fontSize=14;fillColor=#FFFFFF;strokeColor=#666666;dashed=1;strokeWidth=2;fontColor=#333333;" value="em andamento:" vertex="1">
+          <mxGeometry height="58" width="160" x="764" y="346" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" edge="1" parent="c4" source="f0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="d1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" edge="1" parent="c4" source="d1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="dest" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" edge="1" parent="c4" source="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="d3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" edge="1" parent="c4" source="dest" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="d2" value="memória&lt;div&gt;catalogada&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" edge="1" parent="c4" source="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;strokeColor=#b85450;strokeWidth=1.5;fontColor=#B20000;exitX=0.5;exitY=0;entryX=0.8;entryY=0;" target="d1" value="ambiente ou mistura">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="52" />
+              <mxPoint x="297" y="52" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r2" edge="1" parent="c4" source="d3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;strokeColor=#b85450;strokeWidth=1.5;fontColor=#B20000;exitX=0.5;exitY=0;entryX=0.3;entryY=0;" target="d1" value="causa diferente da suposta">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="40" />
+              <mxPoint x="227" y="40" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="o2" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Em aberto&lt;br&gt;&lt;small&gt;fora do catálogo&lt;/small&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="121" y="399" as="geometry" />
+        </mxCell>
+        <mxCell id="o3" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Sinal de harness registrado" vertex="1">
+          <mxGeometry height="60" width="160" x="276" y="401" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="c4" source="dest" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="o2" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="420" y="340" />
+              <mxPoint x="275" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="c4" source="dest" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="o3" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="420" y="340" />
+              <mxPoint x="435" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="IBRkixLDZWIKUdZakg0Y-1" parent="c4" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Sinal de harness registrado" vertex="1">
+          <mxGeometry height="60" width="160" x="580" y="421" as="geometry" />
+        </mxCell>
+        <mxCell id="IBRkixLDZWIKUdZakg0Y-2" edge="1" parent="c4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;strokeColor=#b85450;strokeWidth=1.5;fontColor=#B20000;exitX=0;exitY=0.5;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="IBRkixLDZWIKUdZakg0Y-1" value="conflito com o prompt">
+          <mxGeometry relative="1" x="-0.4478" y="4" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="570" y="189" />
+              <mxPoint x="570" y="192" />
+              <mxPoint x="483" y="192" />
+              <mxPoint x="483" y="453" />
+              <mxPoint x="580" y="453" />
+            </Array>
+            <mxPoint x="585" y="189" as="sourcePoint" />
+            <mxPoint x="580" y="373" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="b1" edge="1" parent="1" source="mc0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.22;" target="c4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;" value="4 · Validada" vertex="1">
+          <mxGeometry height="56" width="150" x="1230" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="tag" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fontSize=14;fillColor=#FFFFFF;strokeColor=#666666;dashed=1;strokeWidth=2;fontColor=#333333;" value="ainda não executado" vertex="1">
+          <mxGeometry height="26" width="150" x="1230" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="m4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=18;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;" value="Memória validada" vertex="1">
+          <mxGeometry height="44" width="150" x="1230" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="b5" edge="1" parent="1" source="c4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.2;entryX=0;entryY=0.5;" target="d4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b6" edge="1" parent="1" source="d4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="m4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="CKMjEUJUdyqO0q0TFtwM-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#FFFFFF;strokeColor=#272B4D;dashed=1;strokeWidth=2;fontColor=#272B4D;" value="Fase 0" vertex="1">
+          <mxGeometry height="48" width="165" x="249" y="-254" as="geometry" />
+        </mxCell>
+        <mxCell id="CKMjEUJUdyqO0q0TFtwM-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;" value="1 · Minerada" vertex="1">
+          <mxGeometry height="48" width="158" x="432" y="-254" as="geometry" />
+        </mxCell>
+        <mxCell id="CKMjEUJUdyqO0q0TFtwM-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;" value="2 · Conferida" vertex="1">
+          <mxGeometry height="48" width="169" x="801.5" y="-254" as="geometry" />
+        </mxCell>
+        <mxCell id="CKMjEUJUdyqO0q0TFtwM-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;arcSize=12;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;" value="3 · Revisada" vertex="1">
+          <mxGeometry height="48" width="175" x="980" y="-254" as="geometry" />
+        </mxCell>
+        <mxCell id="q0" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=1.5;fontColor=#272B4D;dashed=1;" value="• É a análise e a base certas?&lt;div&gt;&lt;br&gt;• O código é o mesmo da rodada?&lt;div&gt;&lt;br&gt;• Os arquivos estão íntegros?&lt;div&gt;&lt;br&gt;• A unidade é candidata na triagem?&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Algum erro monitorado mudou?&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="226" width="169" x="245" y="-199" as="geometry" />
+        </mxCell>
+        <mxCell id="q1" parent="1" style="rounded=1;arcSize=11;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=1.5;fontColor=#272B4D;" value="• O erro existe, e qual o tamanho?&lt;div&gt;&lt;br&gt;• Qual é a lição?&lt;div&gt;&lt;br&gt;• A regra cobre o bastante?&lt;/div&gt;&lt;div&gt;&lt;br&gt;• Outro cálculo confirma?&lt;/div&gt;&lt;div&gt;&lt;br&gt;• O arquivo da memória está no formato?&lt;/div&gt;&lt;div&gt;&lt;br&gt;• Sai sem dado do cliente?&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="228" width="178" x="424" y="-201" as="geometry" />
+        </mxCell>
+        <mxCell id="q3" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=1.5;fontColor=#272B4D;" value="• Serve a este ambiente?&lt;div&gt;&lt;br&gt;• O prompt manda o contrário?&lt;/div&gt;&lt;div&gt;&lt;br&gt;• O prompt já diz isso?&lt;/div&gt;&lt;div&gt;&lt;br&gt;• Recorre o bastante?&lt;/div&gt;&lt;div&gt;&lt;br&gt;• A lição cobre todos os erros?&amp;nbsp;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="236" width="169" x="801.5" y="-201" as="geometry" />
+        </mxCell>
+        <mxCell id="q4" parent="1" style="rounded=1;arcSize=6;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=8;fontSize=12;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=1.5;fontColor=#272B4D;" value="• &lt;font&gt;Que lições aparecem nos erros?&lt;/font&gt;&lt;div&gt;&lt;font&gt;&lt;br&gt;• O pesquisador aprova a lista de lições?&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;• Dois leitores, às cegas, concordam? As lições são únicas?&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;• &amp;nbsp;Existe uma regra que acha o padrão e quantas ocorrências ela cobre?&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;• &amp;nbsp;O pesquisador aprova a lição e o destino?&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;font&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="239" width="175" x="980" y="-201" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,148 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="RfZRRzvIkYMwvUVBow8T" name="Page-1">
+    <mxGraphModel dx="1414" dy="822" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=34;" value="Como o erro é descrito?" vertex="1">
+          <mxGeometry height="52" width="700" x="40" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="panel" parent="1" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="300" width="950" x="290" y="112" as="geometry" />
+        </mxCell>
+        <mxCell id="hd" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#6B7280;fontStyle=1;" value="Trace cortado na base 1 · papel ConversationAgent · STEP 2 · ActionStep · 2026-03 · valores do caso omitidos […]" vertex="1">
+          <mxGeometry height="20" width="900" x="304" y="118" as="geometry" />
+        </mxCell>
+        <mxCell id="l_cod" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;fontStyle=1;" value="código" vertex="1">
+          <mxGeometry height="20" width="100" x="304" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="c0" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="doc_list = [" vertex="1">
+          <mxGeometry height="20" width="760" x="306" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="c1" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="    {&quot;hashDocumento&quot;: d[&quot;hashDocumento&quot;], &quot;tipoExtracaoOcr&quot;: d[&quot;tipoExtracaoOcr&quot;]}" vertex="1">
+          <mxGeometry height="20" width="760" x="306" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="    for d in docs_civel[0]" vertex="1">
+          <mxGeometry height="20" width="760" x="306" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="]" vertex="1">
+          <mxGeometry height="20" width="760" x="306" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="l_err" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;fontStyle=1;" value="error" vertex="1">
+          <mxGeometry height="20" width="100" x="304" y="246" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="type: AgentExecutionError" vertex="1">
+          <mxGeometry height="20" width="860" x="306" y="266" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="message: Code execution failed at line &#39;doc_list = [ … for d in docs_civel[0] ]&#39;" vertex="1">
+          <mxGeometry height="20" width="860" x="306" y="286" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="         due to: InterpreterError: Could not index {&#39;result&#39;: […]} with &#39;0&#39;: KeyError: 0" vertex="1">
+          <mxGeometry height="20" width="860" x="306" y="306" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#D32F2F;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="66" width="934" x="298" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#D32F2F;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="22" width="122" x="577" y="306" as="geometry" />
+        </mxCell>
+        <mxCell id="r3a" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#D32F2F;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="22" width="106" x="405" y="198" as="geometry" />
+        </mxCell>
+        <mxCell id="r3b" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#D32F2F;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="22" width="168" x="827" y="306" as="geometry" />
+        </mxCell>
+        <mxCell id="b0" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="1" vertex="1">
+          <mxGeometry height="18" width="18" x="284" y="256" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="2" vertex="1">
+          <mxGeometry height="18" width="18" x="567" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="3" vertex="1">
+          <mxGeometry height="18" width="18" x="517" y="199" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="3" vertex="1">
+          <mxGeometry height="18" width="18" x="817" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="db0" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="1" vertex="1">
+          <mxGeometry height="18" width="18" x="304" y="346" as="geometry" />
+        </mxCell>
+        <mxCell id="dt0" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;" value="erro estruturado: o campo error do ActionStep (o step falhou com exceção)" vertex="1">
+          <mxGeometry height="22" width="900" x="330" y="344" as="geometry" />
+        </mxCell>
+        <mxCell id="db1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="2" vertex="1">
+          <mxGeometry height="18" width="18" x="304" y="368" as="geometry" />
+        </mxCell>
+        <mxCell id="dt1" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;" value="assinatura: o que o Python reclamou. Lê só a mensagem → Falha ao indexar o retorno" vertex="1">
+          <mxGeometry height="22" width="900" x="330" y="366" as="geometry" />
+        </mxCell>
+        <mxCell id="db2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="3" vertex="1">
+          <mxGeometry height="18" width="18" x="304" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="dt2" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;" value="mecanismo: o que o agente fez de errado → indexou o dict por posição. Aqui a regra lê só a mensagem (KeyError: 0)" vertex="1">
+          <mxGeometry height="22" width="900" x="330" y="388" as="geometry" />
+        </mxCell>
+        <mxCell id="k0" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Erro estruturado" vertex="1">
+          <mxGeometry height="48" width="200" x="40" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="kb0" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="1" vertex="1">
+          <mxGeometry height="20" width="20" x="30" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="k1" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Assinatura" vertex="1">
+          <mxGeometry height="48" width="200" x="40" y="192" as="geometry" />
+        </mxCell>
+        <mxCell id="kb1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="2" vertex="1">
+          <mxGeometry height="20" width="20" x="30" y="184" as="geometry" />
+        </mxCell>
+        <mxCell id="k2" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Mecanismo (causa)" vertex="1">
+          <mxGeometry height="48" width="200" x="40" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="kb2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="3" vertex="1">
+          <mxGeometry height="20" width="20" x="30" y="252" as="geometry" />
+        </mxCell>
+        <mxCell id="k3" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Unidade (lição)" vertex="1">
+          <mxGeometry height="48" width="200" x="40" y="452" as="geometry" />
+        </mxCell>
+        <mxCell id="k4" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Triagem" vertex="1">
+          <mxGeometry height="48" width="200" x="40" y="532" as="geometry" />
+        </mxCell>
+        <mxCell id="k5" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Destino pré-investigação" vertex="1">
+          <mxGeometry height="48" width="200" x="40" y="612" as="geometry" />
+        </mxCell>
+        <mxCell id="ka0" edge="1" parent="1" source="k0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ka1" edge="1" parent="1" source="k1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ka2" edge="1" parent="1" source="k2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ka3" edge="1" parent="1" source="k3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ka4" edge="1" parent="1" source="k4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=15;" value="U_contrato_dict&lt;br&gt;&lt;small&gt;Retorno das ferramentas de documento é dict&lt;/small&gt;" vertex="1">
+          <mxGeometry height="60" width="640" x="290" y="446" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=15;" value="candidato&lt;br&gt;&lt;small&gt;87 execuções em 8 meses · régua: ≥ 3 execuções e ≥ 2 meses&lt;/small&gt;" vertex="1">
+          <mxGeometry height="60" width="640" x="290" y="526" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=15;" value="memória&lt;br&gt;&lt;small&gt;decisão do pesquisador&lt;/small&gt;" vertex="1">
+          <mxGeometry height="60" width="640" x="290" y="606" as="geometry" />
+        </mxCell>
+        <mxCell id="kv0" edge="1" parent="1" source="k3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="v1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kv1" edge="1" parent="1" source="k4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="v2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kv2" edge="1" parent="1" source="k5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="v3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

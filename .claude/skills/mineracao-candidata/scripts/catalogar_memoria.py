@@ -8,6 +8,8 @@ no catálogo e confere o catálogo.
                                 [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>] [--monitoramento <monitoramento.json>]
     python catalogar_memoria.py --excluir <id> <papel> [<papel> ...] --motivo "<o porquê>" [--base <BASE_ID>]
                                 [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
+    python catalogar_memoria.py --junto-com <id> <outro_id> [...] --motivo "<o porquê>" [--base <BASE_ID>]
+                                [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
 
 Uma memória entra no catálogo quando está **fechada**: `validation.destino` = "memória" (decisão do pesquisador) e
 `status` = "derived-and-checked". O que tem destino harness vai para o `monitoramento.json`, e o que tem destino em
@@ -33,6 +35,12 @@ mandaria fazer o que o ambiente desse papel barra, por evidência que a mineraç
 entrada o `nao_vale_em`: um item por papel, com quando e por quê. Só numa memória global (`scope.role` nulo). Como o
 `monitorada`, passa de uma mineração para a outra no `--registrar`; o `conferir_memorias.py` (degrau 2) não confere a
 memória nesses papéis, e um injetor de memórias não a injeta neles.
+
+**Memória que só vale junto com outra:** o pesquisador decide que o bilhete de uma memória só está completo junto com o
+de outra (o erro é uma linha com dois problemas, e cada memória cobre um). `--junto-com` grava na entrada o
+`vale_junto_com`: um item por memória, com quando e por quê. Passa de uma mineração para a outra no `--registrar`. O
+`--conferir` e o `--registrar` avisam (`ALARME`, sem recusar) quando a outra memória deixa de chegar aonde esta vale:
+some do catálogo, fica monitorada (não injetada), passa a valer só noutro papel ou é excluída do papel desta.
 """
 import argparse
 import datetime
@@ -45,7 +53,7 @@ RAIZ = Path(__file__).resolve().parents[4]
 REGISTRO = RAIZ / "analysis" / "registros" / "memorias.json"
 MONITORAMENTO = RAIZ / "analysis" / "registros" / "monitoramento.json"
 TIPOS = ("rara", "reforço")
-PRESERVADOS = ("monitorada", "nao_vale_em")   # decisões do pesquisador: passam de uma mineração para a outra
+PRESERVADOS = ("monitorada", "nao_vale_em", "vale_junto_com")   # decisões do pesquisador: passam de uma mineração para a outra
 CAMPOS = ("id", "unidade", "parte", "base", "rodada_id", "fonte_id", "gerado_em", "esquema", "parte_especifica",
           "destino", "status", "category", "scope", "description", "correction_guidance", "occurrences", "arquivo")
 
@@ -109,11 +117,42 @@ def conferir(reg):
         if excl and (any(not (x.get("papel") and x.get("motivo") and x.get("decidido_em")) for x in excl)
                      or (e.get("scope") or {}).get("role")):
             erros.append(f"item {i} ({e.get('id')}): `nao_vale_em` sem papel, motivo ou data, ou numa memória que não é global")
+        junto = e.get("vale_junto_com")
+        if junto and any(not (x.get("id") and x.get("motivo") and x.get("decidido_em")) or x.get("id") == e.get("id")
+                         for x in junto):
+            erros.append(f"item {i} ({e.get('id')}): `vale_junto_com` sem id, motivo ou data, ou apontando para si mesma")
         chave = (e.get("id"), e.get("base"))
         if chave in vistos:
             erros.append(f"item {i}: {chave} repetido")
         vistos.add(chave)
     return erros
+
+
+def chega(outra, e):
+    """A outra memória chega aonde `e` vale? (injetada, e no papel de `e` — ou em todos os papéis de `e`, se `e` é
+    global). Devolve None se chega, o motivo se não."""
+    if outra.get("monitorada"):
+        return f"está monitorada ({outra['monitorada'].get('tipo')}), não vai para o agente"
+    papel, papel_outra = (e.get("scope") or {}).get("role"), (outra.get("scope") or {}).get("role")
+    if papel_outra and papel_outra != papel:
+        return f"vale só no papel {papel_outra}"
+    fora = {x["papel"] for x in outra.get("nao_vale_em") or []} - {x["papel"] for x in e.get("nao_vale_em") or []}
+    if papel in fora or (not papel and fora):
+        return f"não vale em {', '.join(sorted({papel} if papel else fora))}"
+    return None
+
+
+def dependencias(reg):
+    """Os alarmes das memórias que só valem junto com outra que deixou de chegar aonde elas valem."""
+    por = {(e.get("id"), e.get("base")): e for e in reg.get("itens", [])}
+    alarmes = []
+    for e in reg.get("itens", []):
+        for x in e.get("vale_junto_com") or []:
+            outra = por.get((x.get("id"), e.get("base")))
+            motivo = "não está no catálogo nesta base" if outra is None else chega(outra, e)
+            if motivo:
+                alarmes.append(f"{e['id']} só vale junto com {x.get('id')}, que {motivo}")
+    return alarmes
 
 
 def registrar(reg, entradas, hoje=None):
@@ -133,7 +172,7 @@ def registrar(reg, entradas, hoje=None):
         novas[(e["id"], e["base"])] = n
     itens = [e for e in reg.get("itens", []) if (e.get("id"), e.get("base")) not in novas] + list(novas.values())
     reg["itens"] = sorted(itens, key=lambda e: (str(e.get("unidade")), str(e.get("id")), str(e.get("base"))))
-    return reg, alarmes
+    return reg, alarmes + dependencias(reg)
 
 
 def gatilhos(tipo, monitoramento):
@@ -186,6 +225,22 @@ def excluir(reg, ident, papeis, motivo, base=None, decidido_em=None):
     return e
 
 
+def junto_com(reg, ident, outras, motivo, base=None, decidido_em=None):
+    """Marca as memórias sem as quais esta não está completa (troca o item de uma já marcada)."""
+    alvo = [e for e in reg.get("itens", []) if e["id"] == ident and (not base or e.get("base") == base)]
+    if len(alvo) != 1:
+        sys.exit(f"{ident}: {len(alvo)} entradas no catálogo (use --base para escolher uma)")
+    e = alvo[0]
+    ids = {x["id"] for x in reg.get("itens", []) if x.get("base") == e.get("base")}
+    faltam = [o for o in outras if o not in ids or o == ident]
+    if faltam:
+        sys.exit(f"{ident}: {', '.join(faltam)} não está no catálogo na base {e.get('base')} (ou é a própria memória)")
+    quando = decidido_em or datetime.date.today().isoformat()
+    itens = [x for x in e.get("vale_junto_com") or [] if x["id"] not in outras]
+    e["vale_junto_com"] = itens + [{"id": o, "decidido_em": quando, "motivo": motivo} for o in outras]
+    return e
+
+
 def main(argv=None):
     for fluxo in (sys.stdout, sys.stderr):
         if hasattr(fluxo, "reconfigure"):
@@ -199,9 +254,11 @@ def main(argv=None):
     p.add_argument("--monitorar", nargs="+", metavar="ID", help="marca estas memórias como monitoradas (não injetadas)")
     p.add_argument("--tipo", choices=TIPOS, help="com --monitorar: rara ou reforço")
     p.add_argument("--excluir", nargs="+", metavar="ID PAPEL", help="a memória global e os papéis em que ela não vale")
-    p.add_argument("--motivo", help="com --monitorar ou --excluir: o porquê, nas palavras do pesquisador")
-    p.add_argument("--base", help="com --monitorar ou --excluir: a base das entradas")
-    p.add_argument("--decidido-em", help="com --monitorar ou --excluir: a data da decisão (padrão: hoje)")
+    p.add_argument("--junto-com", nargs="+", metavar="ID OUTRO_ID",
+                   help="a memória e as memórias sem as quais o bilhete dela não está completo")
+    p.add_argument("--motivo", help="com --monitorar, --excluir ou --junto-com: o porquê, nas palavras do pesquisador")
+    p.add_argument("--base", help="com --monitorar, --excluir ou --junto-com: a base das entradas")
+    p.add_argument("--decidido-em", help="com --monitorar, --excluir ou --junto-com: a data da decisão (padrão: hoje)")
     p.add_argument("--monitoramento", default=str(MONITORAMENTO))
     a = p.parse_args(argv)
     if a.monitorar:
@@ -223,6 +280,16 @@ def main(argv=None):
         print(f"  não vale em  {e['id']}: {', '.join(x['papel'] for x in e['nao_vale_em'])}")
         Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return 0
+    if a.junto_com:
+        if len(a.junto_com) < 2 or not a.motivo:
+            p.error("--junto-com pede o id da memória, pelo menos uma outra memória e --motivo")
+        reg = ler_registro(a.registro)
+        e = junto_com(reg, a.junto_com[0], a.junto_com[1:], a.motivo, a.base, a.decidido_em)
+        print(f"  vale junto com  {e['id']}: {', '.join(x['id'] for x in e['vale_junto_com'])}")
+        for x in dependencias(reg):
+            print(f"  ALARME  {x} — leve ao pesquisador")
+        Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return 0
     if a.registrar:
         reg, alarmes = registrar(ler_registro(a.registro),
                                  json.loads(Path(a.registrar).read_text(encoding="utf-8"))["entradas"])
@@ -236,8 +303,11 @@ def main(argv=None):
             print(f"  ALARME  {x} — leve ao pesquisador")
         return 0
     if a.conferir:
-        erros = conferir(ler_registro(a.registro))
-        print("\n".join(erros) if erros else f"catálogo ok: {len(ler_registro(a.registro).get('itens', []))} memória(s)")
+        reg = ler_registro(a.registro)
+        erros = conferir(reg)
+        print("\n".join(erros) if erros else f"catálogo ok: {len(reg.get('itens', []))} memória(s)")
+        for x in dependencias(reg):
+            print(f"  ALARME  {x} — leve ao pesquisador")
         return 1 if erros else 0
     entradas, fora = montar(a.memorias)
     if a.saida:

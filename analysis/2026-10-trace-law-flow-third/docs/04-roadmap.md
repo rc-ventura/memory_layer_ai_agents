@@ -163,7 +163,7 @@ conferência no recebimento.
 | 1 | **Novo — tabela leve de todos os passos** | "Uma linha por ActionStep de todas as execuções do mesmo recorte, **sem nenhum texto**: execução, agente, papel, número do passo, se teve erro estruturado, tokens de entrada e saída, duração, nomes das ferramentas chamadas, se é a resposta final" | A base 3 só tem os passos com erro e a janela até n+2; o resto da trajetória é invisível. Só números e nomes: sem risco de sigilo; ~284 mil linhas | posição e propagação completas (§4, §5), recuperação além de n+2 e o custo da cascata (#15), tokens por chamada de ferramenta (§3.3/8.9), entrada × posição do passo (#13) |
 | 2 | **C — nome do modelo e hash do system prompt** | "Em cada execução, o nome do modelo e um hash do system prompt de cada papel" | A versão do agente quase não varia (1 em 85 linhas de erro): não se separa erro do modelo de erro do prompt, nem se diz se uma unidade "aparece ou some" | os 514 do primeiro passo (#29); o critério "ainda relevante"; o antes × depois do prompt do `try/except` |
 | 3 | **B — o que sobrou dos pendentes** (234 erros) | (i) os nomes das ferramentas declaradas no prompt de cada papel (papel × versão × ferramenta) — 215 timeouts; (ii) quantos pares `"chave": "texto"` nas observações anteriores do papel — 15 de histórico; (iii) o número da chamada antes do passo — 5 de numeração | a v2 já tirou 1.055 da pendência; estes três dependem de dado fora da janela | 0,8% dos erros saem da pendência; a regra do timeout separa código lento, tempo do interpretador e resultado bruto |
-| 4 | **C — ajustes na extração** | (i) no filtro de tamanho, texto ausente = comprimento 0 (hoje exclui a execução); (ii) "Error calling tool" nas observações como sinal próprio; (iii) todas as ferramentas do passo, não só a primeira | (i) 15 execuções sem resposta gravada podem estar sendo cortadas; (ii) a regra de suspeita pega 0 de 119 falhas silenciosas na base 1; (iii) na base 1 a primeira ferramenta é sempre o interpretador | o balde das falhas silenciosas; a ferramenta que de fato falhou (antes de pedir (iii), medir no `tool_calls` inteiro da v2) |
+| 4 | **C — ajustes na extração** | (i) no filtro de tamanho, texto ausente = comprimento 0 (hoje exclui a execução; #58); (ii) "Error calling tool" nas observações como sinal próprio; (iii) todas as ferramentas do passo, não só a primeira | (i) 15 execuções sem resposta gravada podem estar sendo cortadas; (ii) a regra de suspeita pega 0 de 119 falhas silenciosas na base 1; (iii) na base 1 a primeira ferramenta é sempre o interpretador | o balde das falhas silenciosas; a ferramenta que de fato falhou (antes de pedir (iii), medir no `tool_calls` inteiro da v2) |
 
 **Sai do pedido:** o agente na partição (uma execução tem um agente só) e a mensagem cortada e a linha rejeitada
 (resolvidas pela v2). **Não pedir ainda:** o sucesso por conteúdo (exige a resposta final, texto sensível), até decidir
@@ -196,7 +196,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   os nomes das ferramentas declaradas no prompt (o código inteiro já veio). Os 514 do primeiro passo dependem do nome
   do modelo (#29). **C** (ajustes na extração): o agente na partição
   **sai** (uma execução tem um agente só); ficam "Error calling tool", o nome do modelo e o hash do system prompt — mais
-  importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero; "todas as
+  importantes agora que `cod_vers_aget` quase não varia — e o texto ausente como comprimento zero (#58); "todas as
   ferramentas do passo" é para medir antes no `tool_calls` inteiro da v2. **Falta:** reescrever B e C no `05`
   (que ainda descreve A como "a enviar") e levar ao tutor (#11).
 - [ ] **#32** **Taxas e relatório único (pedido A integrado)** — **código pronto (14/10), falta rodar na base 3:**
@@ -277,8 +277,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   Decidido: a C exclui o managerAgent (feito no catálogo, `nao_vale_em`, Ajuste 30); "uma causa só" passa nas 3
   (gravado em `decisoes_degrau2.json`). **As 3 completam o degrau 2 com a base 1** (§2h, 28), **gravado no catálogo**
   (`--registrar`, §2h, 29; a base 2 confirma, `IMG_6040`). Degrau 3 sem esperar a cota (§2h, 30): regras contadas +
-  10 casos mascarados por memória, por foto (`degrau3_sandbox.py`); os dois leitores no dia 30. Falta: rodar na máquina,
-  a leitura aqui e a parte F.
+  10 casos mascarados por memória, por foto (`degrau3_sandbox.py`); os dois leitores no dia 30. ~~Rodar na máquina e a
+  leitura aqui~~ **feito em 30/10** (§2h, 31; `IMG_6115`–`6138`): a causa se confirma nas três (10 de 10 cada); na
+  C.JoogleAnalytics o erro é esquecer **dois** imports (`pandas` e `json` na mesma linha), o que explica os 77% com outro
+  erro depois — decisão em aberto sobre o texto dela. Falta: essa decisão, os dois leitores (máquina ainda sem cota),
+  gravar o degrau 3 no catálogo (sem comando ainda) e a parte F.
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos
@@ -351,6 +354,30 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   <a rodada atual> --unidade U_sandbox`.
   **Conferir ao trazer:** que o script não recusou ("causa em mais de uma unidade" pararia tudo, com o nome da causa); as
   duas figuras e o recorte.
+- [ ] **#58** **O filtro de tamanho da query pode ter tirado da base 3 as execuções sem resposta final: viés de seleção
+  (aberto em 28/10; hipótese, não fato).** **O que é:** a query `ICTI_crossmemory_query_mineracao_erros` tem um filtro de
+  tamanho que soma o comprimento de três textos da execução. No SQL, `length(NULL)` é NULL e a soma vira NULL; a execução
+  com um dos textos ausente (por exemplo, sem resposta final gravada) não passa no filtro e sai da base. **O que a v2
+  resolveu e o que não:** a v2 (Ajuste 18) tirou o **corte de 20.000 caracteres da mensagem de erro** (limitação 1 do
+  [`03`](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas); 1.009 erros). Ela **não mudou quais execuções
+  entram**: são as mesmas 31.421 linhas e as mesmas 20.986 chaves da v1 (`validacao/conferir_contagens.py`). São dois
+  limites diferentes (o do texto de cada mensagem e o das execuções que entram), e só o primeiro acabou. As contagens do
+  pedido A foram pedidas com "o mesmo recorte", então a seleção, se existe, vale também para o denominador.
+  **Evidência (indireta):** (1) o comportamento do SQL com NULL; (2) o teste na base 1 (`validacao/porta_query_v1.py`): se
+  o texto vazio virasse NULL, sobrariam 100 de 1.000 execuções ([`03`](03-procedimento-validacao.md), limitação 7);
+  (3) na base 3, 20.971 de 20.986 execuções com erro (99,9%) têm resposta final gravada, contra 34 de 318 (10,7%) na base
+  1. **O que não prova:** sem a tabela de origem (e sem acesso ao Athena) não dá para saber se a extração cortou as sem
+  resposta; período e recorte diferentes entre as bases também explicariam parte da diferença.
+  **O que fica exposto se for verdade:** o que depende de como a execução termina, porque as que morrem sem resposta
+  seriam as cortadas. A recuperação depois do erro (#56: só 0,1% termina no erro) e o "termina no erro / limite de
+  passos" podem estar otimistas; as taxas (#32) valem para as execuções que a extração cobre, não para todas. As
+  classificações dos erros (famílias, mecanismos, unidades) não dependem disso.
+  **Como fechar:** no pedido ao tutor (Etapa 4, linha 4; #2, C): (a) tratar texto ausente como comprimento zero
+  (`COALESCE(length(...), 0)`) e entregar a diferença; (b) informar quantas execuções do banco, no mesmo período e
+  recorte, têm a resposta final vazia ou NULL. Se o número for muito maior que as 15 sem resposta da base 3, o viés
+  existe: a rodada, as taxas e a recuperação são refeitas na extração nova. **Enquanto isso:** todo número de desfecho
+  (termina no erro, tem resposta final, taxa por execução) leva a ressalva "execuções que a extração cobre". Já
+  aparece como ponto de atenção no relatório mensal de outubro (`docs/reports/relatorio-mensal-2026-10.md`).
 - [ ] **#16** **Trilhas paralelas (e5):** as suspeitas da query por padrão × papel × mês (só contagem); o protocolo do harness
     por papel, mês e versão. O que não der na extração vai para o relatório como indisponível.
 - [ ] **#17** **Kit e auditoria independente (Fase 5):** o kit chamando o `executar.py` na preparação; o `conferir_versao`
@@ -377,6 +404,14 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   conferida — só a mudança esperada (2.217 erros; resumo do manifesto igual). **Falta:** a replicação na base 2 e a nova
   mineração do sandbox →
   [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
+- [ ] **#59** **Automatizar a checagem "uma causa só" do degrau 2 (aberto em 30/10).** Hoje nenhum script grava `causas`, a
+  checagem sai "não verificável" e o pesquisador a decide com a evidência; a confirmação independente é a leitura do
+  degrau 3. Para automatizar: (1) a regra de classificação de causa nasce da investigação (leitura aberta, segundo leitor,
+  `testar_regra.py`, concordância ≥ 90%), não do minerador; (2) `causas` é registrada na granularidade da lição da memória (a
+  lição é o que a memória carrega; causas com a mesma lição levam o mesmo rótulo), o que mantém o `conferir_memorias.py` como está (falha com
+  mais de uma causa distinta); (3) o script específico grava `causas` e a auditoria independente a recalcula no encontro;
+  (4) se `causas` virar campo do esquema, o `esquema-memoria.json` está na lista do hash e pede rodada nova na máquina da
+  base 3. Decisão do Rafael em `decisoes.md`, 30/10 → [doc 17](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md).
 ## Fora de escopo / adiado
 
 - **Aviso a quem cuida do harness** sobre o `try/except NameError` (`transversal #7`): decisão de 14/10 de não fazer agora;

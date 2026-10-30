@@ -967,6 +967,64 @@ uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.
 Fotos: a saída do `contar` inteira; a dos `casos`, tela a tela (cada caso começa com `── caso N`). Se aparecer
 `BLOQUEADO`, nada é impresso: foto da linha e paramos.
 
+**31 · O degrau 3 na máquina: as regras contadas e os 30 casos lidos aqui (30/10, fotos `IMG_6115`–`IMG_6138`).** Os
+quatro comandos do item 30, rodada `99e032ad3a8528d8`, mineração de 21/10. As três populações batem com a mineração e
+com a fonte (423 · 231 · 317 "achados na fonte"); os três `casos` saíram com "varredor limpo", sem `BLOQUEADO`. Os dois
+leitores automáticos não rodaram: a máquina continua sem cota ("Quota reached" nas fotos).
+
+*As regras sobre a população inteira* (`contar`, `IMG_6115`–`6117`):
+
+| Memória | O nome na instrução que falhou | O passo seguinte | O erro depois do import |
+|---|---:|---|---|
+| C (423) | 423 de 423 | importa e segue sem erro **333**, importa e erra 61, não importa e segue 22, não importa e erra 7 | `run_query` com argumento posicional 33, `JSONDecodeError` 25, outros 3 (1 cada) |
+| C.JoogleAnalytics (231) | 231 de 231 | importa e erra **177**, importa e segue 54 | **`json` não definido 99**, `run_query` com argumento posicional 53, `JSONDecodeError` 12, `TypeError` "o objeto JSON deve ser str…, não module" 7, outros 6 |
+| E (317) | — | — | (por nome e lugar) **dentro de `print(...)` 222 (70%)** — `__name__` 155, `repr` 65, `__len__` e `dir` 1 cada; numa condição 23; numa atribuição 28; "outra" 44 |
+
+A E por nome soma o mesmo do item 27 (H6): `__name__` 182, `repr` 98, `dir` 9, `exec` 8, `__import__`, `bytes` e
+`open` 5 cada, `hash` 2, `__class__`, `__doc__` e `__len__` 1 cada = 317.
+
+*Os 10 casos de cada memória* (`casos`, amostra do item 27, os 10 primeiros):
+
+| Memória | A causa nos 10 | O que o agente fez no passo seguinte |
+|---|---|---|
+| C | 10 de 10 esqueceram o import: o nome é usado direto na instrução e nenhum passo anterior importou (`json` 9 — 5 no RoteadorCivel dentro de `json.dumps(...)` passado a uma ferramenta, 3 no JoogleAnalytics com o `pandas` já importado, 1 no CadastroTrabalhista; `re` 1, no OBFCivel) | importa e segue sem erro 7; importa e esbarra em `run_query` com argumento posicional 2 (casos 5 e 10, JoogleAnalytics); 1 não importa: reescreve a chamada sem `json` e esbarra em `busca_obf` com argumento posicional (caso 8) |
+| C.JoogleAnalytics | 10 de 10 a mesma linha, `pd.DataFrame(json.loads(run_query(...)))`, sem importar **nem `pandas` nem `json`**; o erro é o `pd` porque ele vem primeiro na linha | importa só o `pandas` e cai no `json` não definido **5** (casos 2, 4, 6, 7, 8); importa os dois e esbarra em `run_query(query)` posicional 3 (casos 1, 3, 5); importa os dois e segue sem erro 2 (casos 9 e 10, os dois com `run_query(query=...)`) |
+| E | 10 de 10 inspeção de um valor para ver o tipo ou o conteúdo: `type(x).__name__` 5, `repr(x)` 5; 7 no ContestacaoCivel, 2 no OBFCivel, 1 no AgenteEstruturador (7 dentro de `print`, 3 dentro de um `try`) | **10 de 10 seguem sem erro**: tiram a chamada (`print(x)` no lugar de `print(repr(x))`) ou trocam por `str`/`isinstance` |
+
+*O que isso diz da causa que cada memória supõe:*
+- **C — confirmada.** Esquecer o import é a causa nos 10 casos, e a regra a sustenta na população (423 de 423 com o
+  nome na instrução; 0 de 423 importados antes, item 27). O erro depois do import é quase todo de outra lição: o
+  argumento posicional numa ferramenta (`U_arg_nomeado`) — não é falha do bilhete.
+- **C.JoogleAnalytics — confirmada, com um achado novo: o erro é esquecer *dois* imports.** Nos 10 casos a linha que
+  falhou usa `pd` e `json`, e nenhum dos dois foi importado. Isso explica a pergunta aberta do item 27 (H5, 77% com outro
+  erro depois do import): o maior grupo, `json` não definido (99 de 177), é o segundo import esquecido; o segundo grupo
+  (53) é o argumento posicional, outra lição. Consequência: **sozinho, o bilhete "import pandas as pd" resolve só o
+  primeiro de dois erros**. No JoogleAnalytics ele chega junto com o da C (global, que só exclui o managerAgent, item 28),
+  e os dois juntos cobrem a linha. Falta contar na população quantas das 231 linhas usam `json.` sem import no passo
+  (a regra do `contar` hoje só olha o nome da memória) → decisão abaixo.
+- **E — confirmada.** A causa é inspecionar um valor nos 10 casos, e a regra mostra 70% dentro de `print(...)` na
+  população. O agente se corrige sozinho no passo seguinte nos 10 casos: o valor do bilhete é poupar esse passo.
+
+*Limites da leitura.* (1) São 10 casos por memória, lidos por um leitor só (Claude), sobre o código mascarado; a
+concordância com os dois leitores automáticos fica para quando a máquina tiver cota. (2) A regra "onde está a chamada" da
+E põe na categoria "outra" as chamadas dentro de um bloco `try`: o interpretador aponta a linha do `try:`, não a da
+chamada (3 dos 10 casos) — parte dos 44 de "outra" é isso. (3) Os 7 `TypeError` "não module" do JoogleAnalytics não
+aparecem nos 10 casos; o mecanismo não foi visto.
+
+**Decisão em aberto (para o Rafael):** o texto da C.JoogleAnalytics passa a dizer os dois imports (`import pandas as pd`
+e `import json`), ou fica como está e o catálogo registra que ela só vale junto com a C? Antes de decidir, a contagem
+proposta: na população de 231, quantas linhas usam `json.` sem `import json` no passo (uma regra a mais no `contar`).
+
+*A regra a mais (30/10, aprovada pelo Rafael):* `contar` ganha o bloco "outros nomes na instrução que falhou": para cada
+erro da C e da C.JoogleAnalytics, os outros nomes do inventário (`json`, `re`, `datetime`, `pd`) que a instrução usa,
+com "sem import antes da falha" ou "importado antes" (no passo antes da linha que falhou, ou no passo anterior — a base 3
+só tem o n-1). Os blocos que já existiam não mudam. Teste novo em `test_degrau3_sandbox.py` (9 testes; suíte 359, OK);
+base 1 no formato da base 3: C 3 e E 5, iguais ao item 30, nenhum outro nome. **Esperado na base 3, escrito antes de
+rodar:** na C.JoogleAnalytics, "json · sem import antes da falha" perto de 231 — pelo menos 99 (os que caem no `json`
+depois de importar só o `pandas`) e 10 de 10 nos casos lidos; na C, poucos "pd" (nos 10 casos da C, o `pandas` já
+estava importado). Se der perto de 231, a escolha (a) — o bilhete diz os dois imports — tem base; se der bem menos, a
+linha dos 10 casos não é a regra.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

@@ -47,6 +47,8 @@ git merge-base --is-ancestor HEAD origin/main && echo "merged"
 
 If merged, don't force-push over it — `git stash push -u`, `git checkout -B <branch> origin/main`, `git stash pop`, then commit and push normally.
 
+The rest of the branch and PR workflow (sync by merge, not rebase, once a branch is on `origin`; stacked PRs and retargeting to `main`; a merged PR receives nothing more; `decisoes.md` conflicts) and the base-3 pipeline code-hash rule (what not to touch so the current rodada stays valid) live in [`AGENTS.md`](AGENTS.md), so Copilot on the compliance-side machine reads them too.
+
 <!-- OPENWIKI:START -->
 
 ## OpenWiki
