@@ -11,7 +11,7 @@ não imprime.
     python degrau3_sandbox.py contar --fonte <parquet v2> [--mineracao <pasta da mineração do sandbox>]
     python degrau3_sandbox.py casos <memoria_id> --fonte <parquet v2> [--n 10] [--amostra <casos.csv>]
 
-`contar`, por memória (C, C.JoogleAnalytics, E; a população é o `erros_lidos.csv` da mineração):
+`contar`, por memória (C, C.JoogleAnalytics, E, F; a população é o `erros_lidos.csv` da mineração):
   - C e C.JoogleAnalytics: a linha que falhou usa o nome direto (`json.`, `pd.`…) ou não (função auxiliar, linha cortada);
     o passo seguinte importa o módulo? e o erro que vem depois, pela assinatura mascarada (as 12 mais comuns) — a pergunta
     aberta da C.JoogleAnalytics (77% com outro erro depois do import); e os **outros nomes** do inventário (`json`, `re`,
@@ -19,6 +19,10 @@ não imprime.
     ou no passo anterior) — a linha do JoogleAnalytics esquece dois imports? (dossiê §2h, 31);
   - E: por nome, onde está a chamada barrada na linha que falhou: dentro de `print(...)`, numa atribuição, numa condição,
     num `return`, outra.
+  - F (a parte em aberto: `globals`, `eval`, `locals`, `vars`; dossiê §2h, 32): por nome, o uso na instrução que
+    falhou — verificação de existência (`'x' in globals()`), leitura com valor padrão (`globals().get(...)`), `eval` de
+    `eval(...)`, o nome não aparece (função auxiliar?), outro; por papel; e o passo seguinte (com ou sem erro, e se volta a
+    chamar o nome).
 `casos`: os primeiros `--n` da amostra do degrau 3 (`resultados/evidencia/inv_candidata_<memoria>_base3/casos.csv`, já
 escolhida por regra fixa), em forma compacta: a mensagem de erro, a linha que falhou e as vizinhas no código do passo, o
 passo anterior e o seguinte (importou? que erro?).
@@ -44,7 +48,8 @@ sys.path.insert(0, str(PIPELINE))
 from contar_modulo_sem_import_papel import LINHA_FALHA, importa, importou_antes_da_falha  # noqa: E402
 from mineracao_observada import caminho_io  # noqa: E402
 
-MEMORIAS = ("U_sandbox.C", "U_sandbox.C.JoogleAnalytics", "U_sandbox.E")
+MEMORIAS = ("U_sandbox.C", "U_sandbox.C.JoogleAnalytics", "U_sandbox.E", "U_sandbox.F")
+DE_IMPORT = ("U_sandbox.C", "U_sandbox.C.JoogleAnalytics")   # as memórias de import (as outras: nomes barrados)
 MODULO = {"json": "json", "re": "re", "datetime": "datetime", "pd": "pandas"}   # o nome usado → o módulo do import
 COLUNAS = ["cod_idef_exeo", "cod_idef_aget", "papel", "step_pos", "mes_execucao", "error_message", "error_code_action",
            "prev_code_action", "prev_error_type", "next_code_action", "next_error_type", "next_error_message"]
@@ -138,6 +143,20 @@ def outros_nomes(linha, nome):
     return saida
 
 
+def uso_introspeccao(instrucao, nome):
+    """Para a F: o que a instrução que falhou faz com o nome barrado."""
+    n = re.escape(nome)
+    if not re.search(rf"\b{n}\s*\(", instrucao):
+        return "o nome não aparece na instrução (função auxiliar?)"
+    if nome == "eval":
+        return "eval(...)"
+    if re.search(rf"\bin\s+{n}\s*\(\s*\)", instrucao):
+        return "verificação de existência (in)"
+    if re.search(rf"\b{n}\s*\(\s*\)\s*\.get\s*\(", instrucao):
+        return "leitura com valor padrão (.get)"
+    return "outro uso"
+
+
 def ler_populacao(pasta, memorias):
     with open(caminho_io(Path(pasta) / "erros_lidos.csv"), encoding="utf-8", newline="") as fh:
         return [r for r in csv.DictReader(fh) if r.get("memoria_id") in memorias]
@@ -160,7 +179,20 @@ def contar(populacao, fonte):
     for mem in MEMORIAS:
         P = [r for r in populacao if r["memoria_id"] == mem]
         M = {"erros": len(P), "achados_na_fonte": 0}
-        if mem == "U_sandbox.E":
+        if mem == "U_sandbox.F":
+            uso, papel, depois = Counter(), Counter(), Counter()
+            for r in P:
+                linha = fonte.get(chave(r))
+                if linha is None:
+                    continue
+                M["achados_na_fonte"] += 1
+                uso[(r["nome"], uso_introspeccao(instrucao_que_falhou(linha["error_message"]), r["nome"]))] += 1
+                papel[r["role"]] += 1
+                erro = str(linha.get("next_error_type") or "").strip()
+                volta = re.search(rf"\b{re.escape(r['nome'])}\s*\(", str(linha.get("next_code_action") or ""))
+                depois[("com erro" if erro else "sem erro") + (" · volta a chamar o nome" if volta else "")] += 1
+            M.update({"por_nome_e_uso": uso, "por_papel": papel, "depois": depois})
+        elif mem == "U_sandbox.E":
             por = Counter()
             for r in P:
                 linha = fonte.get(chave(r))
@@ -200,6 +232,15 @@ def imprimir_contagens(med):
             print(f"   {'nome':14} {'onde, na linha que falhou':28} {'erros':>6}")
             for (nome, lugar), k in sorted(M["por_nome_e_lugar"].items(), key=lambda kv: (-kv[1], kv[0])):
                 print(f"   {nome:14} {lugar:28} {k:>6}")
+            continue
+        if "por_nome_e_uso" in M:
+            print(f"   {'nome':10} {'o uso na instrução que falhou':52} {'erros':>6}")
+            for (nome, uso), k in sorted(M["por_nome_e_uso"].items(), key=lambda kv: (-kv[1], kv[0])):
+                print(f"   {nome:10} {uso:52} {k:>6}")
+            for titulo, c in (("por papel", M["por_papel"]), ("o passo seguinte", M["depois"])):
+                print(f"   {titulo}:")
+                for k, v in c.most_common():
+                    print(f"     {k:44} {v:>5}")
             continue
         for titulo, c in (("a linha que falhou", M["uso"]),
                           ("outros nomes na instrução que falhou (um erro pode ter mais de um)", M["outros_nomes"]),
@@ -245,7 +286,7 @@ def casos(mem, amostra, fonte, n, populacao):
             blocos.append(f"── caso {i}: não achado na fonte")
             continue
         nome = nomes.get(chave(r), "")
-        blocos.append(bloco_caso(i, r, linha, MODULO.get(nome, nome) if mem != "U_sandbox.E" else ""))
+        blocos.append(bloco_caso(i, r, linha, MODULO.get(nome, nome) if mem in DE_IMPORT else ""))
     return "\n".join(blocos)
 
 

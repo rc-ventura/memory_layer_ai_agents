@@ -72,6 +72,14 @@ class TestRegras(unittest.TestCase):
         so_json = {**sem, "error_message": falha("d = json.loads(t)", "The variable `json` is not defined.")}
         self.assertEqual(d3.outros_nomes(so_json, "json"), [])
 
+    def test_uso_introspeccao_da_f(self):
+        self.assertEqual(d3.uso_introspeccao("if 'x' not in globals():", "globals"), "verificação de existência (in)")
+        self.assertEqual(d3.uso_introspeccao("u = globals().get('u', None)", "globals"), "leitura com valor padrão (.get)")
+        self.assertEqual(d3.uso_introspeccao("lista = eval(obs)", "eval"), "eval(...)")
+        self.assertEqual(d3.uso_introspeccao("if not has_var('x'):", "globals"),
+                         "o nome não aparece na instrução (função auxiliar?)")
+        self.assertEqual(d3.uso_introspeccao("print(vars(obj))", "vars"), "outro uso")
+
     def test_lugar_na_linha(self):
         self.assertEqual(d3.lugar_na_linha("print(repr(x))"), "dentro de print(...)")
         self.assertEqual(d3.lugar_na_linha("t = type(x).__name__"), "numa atribuição")
@@ -95,6 +103,12 @@ class TestContarECasos(unittest.TestCase):
              "error_message": falha("print(repr(x))", "Forbidden function evaluation: 'repr' is not among the allowed"),
              "error_code_action": "x = g('Fulano de Tal')\nprint(repr(x))", "prev_code_action": "", "prev_error_type": "",
              "next_code_action": "print(type(x))", "next_error_type": "", "next_error_message": ""},
+            # F: verificação de existência com globals → o passo seguinte volta a chamar e erra
+            {"cod_idef_exeo": "e3", "cod_idef_aget": 1, "papel": "Q", "step_pos": 4, "mes_execucao": "2026-07",
+             "error_message": falha("if 'x' not in globals():", "Forbidden function evaluation: 'globals' is not among"),
+             "error_code_action": "if 'x' not in globals():\n    x = f()", "prev_code_action": "", "prev_error_type": "",
+             "next_code_action": "x = globals().get('x')", "next_error_type": "E",
+             "next_error_message": falha("x = globals().get('x')", "Forbidden function evaluation: 'globals'")},
         ]
         self.fonte = self.p / "fonte.parquet"
         pq.write_table(pa.Table.from_pylist(linhas), self.fonte)
@@ -107,6 +121,8 @@ class TestContarECasos(unittest.TestCase):
                         "tipo": "modulo_sem_import", "nome": "pd", "memoria_id": "U_sandbox.C.JoogleAnalytics"})
             w.writerow({"exec_id": "e2", "agente": 1, "role": "P", "step_pos": 3, "mes": "2026-06",
                         "tipo": "funcao_proibida", "nome": "repr", "memoria_id": "U_sandbox.E"})
+            w.writerow({"exec_id": "e3", "agente": 1, "role": "Q", "step_pos": 4, "mes": "2026-07",
+                        "tipo": "funcao_proibida", "nome": "globals", "memoria_id": "U_sandbox.F"})
 
     def tearDown(self):
         self.d.cleanup()
@@ -120,6 +136,9 @@ class TestContarECasos(unittest.TestCase):
         self.assertEqual(j["outros_nomes"], {"nenhum outro nome do inventário": 1})
         self.assertEqual(list(j["erro_seguinte"]), ['InterpreterError: KeyError: "<texto>"'])     # o valor do cliente mascarado
         self.assertEqual(med["U_sandbox.E"]["por_nome_e_lugar"], {("repr", "dentro de print(...)"): 1})
+        f = med["U_sandbox.F"]
+        self.assertEqual(f["por_nome_e_uso"], {("globals", "verificação de existência (in)"): 1})
+        self.assertEqual((f["por_papel"], f["depois"]), ({"Q": 1}, {"com erro · volta a chamar o nome": 1}))
 
     def test_casos_mascarados_e_bloqueio(self):
         amostra = self.p / "casos.csv"
