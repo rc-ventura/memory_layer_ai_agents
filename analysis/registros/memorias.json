@@ -449,7 +449,14 @@
           "4_recorrencia": "passa",
           "5_uma_causa": "decidido pelo pesquisador"
         }
-      }
+      },
+      "vale_junto_com": [
+        {
+          "id": "U_sandbox.C",
+          "decidido_em": "2026-10-30",
+          "motivo": "No JoogleAnalytics a linha que falha usa pandas e json sem importar nenhum dos dois: o json aparece na instrução que falhou em 231 de 231 erros, sem import no passo nem no anterior em 225; nos 10 casos lidos, 5 importam só o pandas e caem no json não definido (99 na população). O bilhete 'import pandas as pd' corrige só o primeiro erro; o segundo é o da memória C, que vale no papel. O texto fica como está e as duas vão juntas (decisão de 30/10; dossiê do sandbox §2h, 31)."
+        }
+      ]
     },
     {
       "id": "U_sandbox.D.AgenteTestemunhas",

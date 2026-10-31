@@ -108,7 +108,14 @@ não deve valer num papel — o bilhete mandaria fazer o que o ambiente desse pa
 mineração não vê —, `catalogar_memoria.py --excluir <id> <papel> --motivo "…"` grava na entrada do catálogo o
 `nao_vale_em` (o papel, a data, o porquê). A exclusão passa de uma mineração para a outra; o degrau 2 não confere a
 memória nesse papel (o resultado diz quais foram excluídos), e um injetor de memórias não a injeta nele. O primeiro caso:
-a memória C do sandbox no managerAgent (dossiê do sandbox, §2h, 27–28). Os nomes que cada memória manda usar ou evitar vêm do campo
+a memória C do sandbox no managerAgent (dossiê do sandbox, §2h, 27–28).
+
+**Uma memória que só vale junto com outra** (Ajuste 31, 30/10/2026): quando o erro é uma linha com dois problemas e cada
+memória cobre um, o pesquisador pode deixar o texto de cada uma como está e escrever a dependência:
+`catalogar_memoria.py --junto-com <id> <outro_id> --motivo "…"` grava o `vale_junto_com` na entrada. Passa de uma
+mineração para a outra, e o catálogo avisa (`ALARME`) se a outra deixar de chegar aonde esta vale — sumir, ficar
+monitorada, ser excluída do papel. O primeiro caso: a C.JoogleAnalytics do sandbox (o `pandas`) só vale junto com a C
+(o `json`), porque a linha que falha no JoogleAnalytics esquece os dois imports (dossiê do sandbox, §2h, 31). Os nomes que cada memória manda usar ou evitar vêm do campo
 `validation.nomes` do arquivo final (esquema 0.4), que o catálogo copia. A instrução do prompt que induz um nome (a
 checagem 2) fica no item do sinal de harness no `monitoramento.json` (`instrucao_prompt`, `nomes_induzidos`).
 

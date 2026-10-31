@@ -280,8 +280,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   10 casos mascarados por memória, por foto (`degrau3_sandbox.py`); os dois leitores no dia 30. ~~Rodar na máquina e a
   leitura aqui~~ **feito em 30/10** (§2h, 31; `IMG_6115`–`6138`): a causa se confirma nas três (10 de 10 cada); na
   C.JoogleAnalytics o erro é esquecer **dois** imports (`pandas` e `json` na mesma linha), o que explica os 77% com outro
-  erro depois — decisão em aberto sobre o texto dela. Falta: essa decisão, os dois leitores (máquina ainda sem cota),
-  gravar o degrau 3 no catálogo (sem comando ainda) e a parte F.
+  erro depois (`json` na linha em 231 de 231); ~~a decisão sobre o texto dela~~ **decidido em 30/10: fica como está e
+  só vale junto com a C** (`vale_junto_com` no catálogo, Ajuste 31). Falta: os dois leitores (máquina ainda sem cota),
+  gravar o degrau 3 no catálogo (sem comando ainda) e a parte F — **reaberta em 30/10** (§2h, 32: 37 erros; `contar` e
+  `casos` da F no `degrau3_sandbox.py`; falta rodar na máquina e ler).
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos

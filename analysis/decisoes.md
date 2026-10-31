@@ -415,5 +415,12 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   com escopo e destino (`correction_guidance`); a quinta checagem do degrau 2 é "é uma lição só?". **Nada muda no código nem
   no esquema** (`correction_guidance` e o `esquema-memoria.json` estão no hash da rodada); vale para os textos novos, os
   slides e as legendas → [glossário §10](glossario.md#10--lição-30102026-revista-no-mesmo-dia).
+- **30/10, a memória C.JoogleAnalytics do sandbox só vale junto com a C** (decisão do Rafael, a escolha B, depois do
+  degrau 3 na máquina, fotos IMG_6115–6141): no JoogleAnalytics a linha que falha usa `pandas` e `json` sem importar nenhum
+  dos dois (`json` na instrução em 231 de 231; sem import no passo nem no anterior em 225; 99 caem no `json` depois de
+  importar só o `pandas`). O bilhete "import pandas as pd" corrige só o primeiro erro, e o segundo é o da C, que vale no
+  papel. O texto fica como está (a escolha A, os dois imports no bilhete, pediria mineração nova para repetir o que a C já
+  diz); a dependência fica escrita no catálogo (`vale_junto_com`, Ajuste 31), que avisa se a C deixar de chegar ao papel →
+  dossiê do sandbox §2h, 31.
 
 ---

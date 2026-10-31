@@ -1025,6 +1025,50 @@ depois de importar só o `pandas`) e 10 de 10 nos casos lidos; na C, poucos "pd"
 estava importado). Se der perto de 231, a escolha (a) — o bilhete diz os dois imports — tem base; se der bem menos, a
 linha dos 10 casos não é a regra.
 
+*O resultado (30/10, fotos `IMG_6139`–`IMG_6141`; os blocos de antes saíram iguais aos de `IMG_6115`–`6117`):*
+
+| Memória | Outros nomes na instrução que falhou |
+|---|---|
+| C.JoogleAnalytics (231) | **`json` sem import antes da falha 225**, `json` importado antes 6 — a linha usa `json` em **231 de 231** |
+| C (423) | nenhum outro nome 318; `pd` sem import antes da falha 100, `pd` importado antes 5 |
+
+- **C.JoogleAnalytics — o esperado se confirma.** Toda linha da memória usa `json` também; em 225 (97%) nem o passo
+  (antes da linha) nem o anterior importaram. O piso confirmado são os 99 que, depois de importar o `pandas`, caem no
+  `json` não definido. Entre 99 e 225 a regra não decide sozinha, pelo limite abaixo.
+- **O limite que a C mostra:** "sem import antes da falha" quer dizer "nem no passo, nem no n-1" — a base 3 não guarda o
+  n-2 em diante. Na C, 100 linhas usam `pd` sem import no passo nem no n-1, mas o erro foi o `json`, não o `pd`.
+  Hipótese (não verificada): o `pandas` foi importado num passo mais antigo e continua no estado do interpretador, ou o
+  `json` vem antes do `pd` na instrução. Por isso o 225 é teto, e o 99 é piso.
+- **Para a decisão:** nos dois sentidos, o erro do JoogleAnalytics é a mesma linha com dois nomes. O bilhete do `pandas`
+  sozinho corrige o primeiro; o segundo é coberto pelo bilhete da C (global, exceto o managerAgent), que chega junto no
+  JoogleAnalytics.
+
+**Decisão (Rafael, 30/10): a escolha B.** O texto da C.JoogleAnalytics fica como está ("import pandas as pd") e o
+catálogo registra que ela só vale junto com a C: `catalogar_memoria.py --junto-com U_sandbox.C.JoogleAnalytics
+U_sandbox.C --base base3` gravou o `vale_junto_com` (Ajuste 31); `--conferir`: catálogo ok, 16 memórias, nenhum alarme.
+Se a C deixar de chegar ao JoogleAnalytics (excluída do papel, monitorada, fora do catálogo), o `--conferir` e o
+`--registrar` de uma mineração nova avisam → [`decisoes.md`](../../../decisoes.md) (30/10).
+
+**32 · A parte F volta (30/10, pedido do Rafael).** A decisão 7 de 21/10 deixou a F para quando a maior parte das
+memórias estivesse no degrau 3; as três que vão para o agente estão lá (item 31; faltam só os dois leitores). A F é o que
+sobrou no sandbox de `globals`, `eval`, `locals` e `vars` depois dos Ajustes 21 e 27 — **37 erros** na rodada
+`99e032ad3a8528d8` (`globals` 18, `eval` 14, `locals` 4, `vars` 1; item 27, H6), destino em aberto; o texto que o script
+monta é só "Não chame: …". O que se sabe: 9 são verificações de variável fora do ContestacaoCivel, em 7 papéis cujo
+prompt (bases 1 e 2) não manda verificar (`b3 #54`); o resto não foi lido.
+
+*O mesmo caminho do degrau 3 sem cota (item 30):* `degrau3_sandbox.py` ganhou a F — `contar`: por nome, o uso na
+instrução que falhou (verificação de existência `'x' in globals()`, leitura com valor padrão `globals().get(...)`,
+`eval(...)`, o nome não aparece — função auxiliar?, outro uso), por papel, e o passo seguinte (com ou sem erro, e se
+volta a chamar o nome); `casos U_sandbox.F`: 10 casos mascarados, como os outros. Teste novo (10 testes; suíte 363, OK);
+base 1 no formato da base 3: F 2 erros (ConversationAgent) — `globals().get(...)` 1 e `eval(...)` 1 (dentro de uma
+lista em várias linhas), os dois seguem sem erro no passo seguinte; casos mascarados, varredor limpo.
+
+*Escrito antes de rodar na base 3:* por nome, 18 / 14 / 4 / 1 (o item 27). As 9 verificações do `#54` aparecem fora do
+ContestacaoCivel, quase todas como verificação de existência ou leitura com valor padrão. Do resto não há expectativa:
+é a pergunta. **O que decide o destino:** se a F for quase toda verificação de existência, ela é a mesma lição do `#51`
+("como verificar se uma variável existe, no sandbox") e vai para lá; se for quase toda `eval(...)`, é outra lição (ler um
+texto como dado), e o bilhete precisa dizer o que usar no lugar; se for misturada, divide-se como a C e a E.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
