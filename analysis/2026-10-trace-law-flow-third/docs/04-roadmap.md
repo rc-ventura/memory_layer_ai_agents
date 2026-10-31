@@ -282,8 +282,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   C.JoogleAnalytics o erro é esquecer **dois** imports (`pandas` e `json` na mesma linha), o que explica os 77% com outro
   erro depois (`json` na linha em 231 de 231); ~~a decisão sobre o texto dela~~ **decidido em 30/10: fica como está e
   só vale junto com a C** (`vale_junto_com` no catálogo, Ajuste 31). Falta: os dois leitores (máquina ainda sem cota),
-  gravar o degrau 3 no catálogo (sem comando ainda) e a parte F — **reaberta em 30/10** (§2h, 32: 37 erros; `contar` e
-  `casos` da F no `degrau3_sandbox.py`; falta rodar na máquina e ler).
+  gravar o degrau 3 no catálogo (sem comando ainda). ~~A parte F~~ **fechada em 31/10: vai inteira para o #51** (§2h, 32:
+  37 erros, na maior parte verificação de existência; decisão do Rafael, `decisoes.md`).
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
   RespostaBacen 2, AgenteTestemunhas, AnaliseProcessual, JoogleAnalytics, RecursoCivel, RespostaOficios, 1 cada; fotos
@@ -312,7 +312,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   não é conhecida). População: toda a `U_verificacao_existencia` (introspecção, valor padrão, `eval` e `try/except`),
   hoje harness. Minerar pelos quatro degraus como qualquer candidata; se passar, decidir ali se o destino de parte da
   unidade muda (memória enquanto o prompt não é consertado) — sem reabrir o Ajuste 21 antes disso →
-  [dossiê](../propostas/U_sandbox/dossie_base3.md) §2h.
+  [dossiê](../propostas/U_sandbox/dossie_base3.md) §2h. **31/10:** a parte F do sandbox (37 erros de `globals`, `eval`,
+  `locals`, `vars`) entra aqui (§2h, 32). **Nota:** a memória contrasta com o prompt novo do ContestacaoCivel (ago/26: manda
+  `try/except NameError`), então ali a parte deve sair harness; a memória vale para os papéis sem a instrução (na F, 12
+  erros em 9 papéis, a passar na régua).
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do

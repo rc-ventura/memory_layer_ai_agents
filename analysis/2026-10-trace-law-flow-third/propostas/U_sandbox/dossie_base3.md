@@ -1069,6 +1069,63 @@ ContestacaoCivel, quase todas como verificação de existência ou leitura com v
 ("como verificar se uma variável existe, no sandbox") e vai para lá; se for quase toda `eval(...)`, é outra lição (ler um
 texto como dado), e o bilhete precisa dizer o que usar no lugar; se for misturada, divide-se como a C e a E.
 
+*O resultado (30/10, fotos `IMG_6142`–`IMG_6151`; os blocos da C, C.JoogleAnalytics e E saíram iguais aos de antes):*
+37 erros, 37 achados na fonte; por nome 18 / 14 / 4 / 1, como esperado; casos com "varredor limpo".
+
+| Nome | O uso na instrução que falhou (regra) |
+|---|---|
+| `eval` (14) | `eval(...)` 9; o nome não aparece (função auxiliar?) 5 |
+| `globals` (18) | o nome não aparece 7; outro uso 6; verificação de existência (`in`) 3; leitura com valor padrão (`.get`) 2 |
+| `locals` (4) | verificação de existência (`in`) 4 |
+| `vars` (1) | outro uso 1 |
+
+Por papel: **ContestacaoCivel 25**; fora dele 12 em 9 papéis (CalculoTrabalhista, JoogleAnalytics e RespostaBacen 2
+cada; RespostaOficios, RecursoCivel, OficiosResposta, RoteadorCivel, AgenteTestemunhas e AnaliseProcessual 1 cada) —
+as 9 do `#54` e mais 3. O passo seguinte: sem erro 26, com erro 10, com erro e volta a chamar o nome 1.
+
+*Os 10 casos lidos aqui:*
+
+| # | Papel | O que a linha faz | Leitura |
+|---|---|---|---|
+| 1 | AnaliseProcessual | `[k for k in globals().keys() if k in (...)]` — lista quais variáveis de uma lista de nomes existem | verificação de existência |
+| 2 | ContestacaoCivel | `for v in [...]` com `eval` dentro e, no código em volta, `except NameError: exec("…", globals())` | verificação de existência (pelo `eval` do nome) |
+| 3 | ContestacaoCivel | `_state = globals().setdefault("…", {})` | cria se não existe (guardar estado entre passos) |
+| 4 | ContestacaoCivel | `globals_dict = globals()` | não se vê para quê |
+| 5 | ContestacaoCivel | `g = globals()` | não se vê para quê |
+| 6 | JoogleAnalytics | `locals` dentro de uma lista em várias linhas | não se vê (a linha mostrada é a primeira) |
+| 7 | CalculoTrabalhista | `round(a) if "a" in locals() else round(b)` | verificação de existência |
+| 8 | ContestacaoCivel | `if not step_guard(n, "…")`, com `return … (var_name in globals() and globals()[var_name] is not None)` | verificação de existência por função auxiliar (o "PULE a chamada") |
+| 9 | OficiosResposta | `lista_dicts = eval(blocos[0])`, um bloco tirado do texto com `re.findall` | **`eval` de um texto** (ler texto como dado) |
+| 10 | RespostaBacen | `has_assunto = "assunto" in globals() and bool(assunto)` | verificação de existência |
+
+Em 10: **verificação de existência 5** (1, 2, 7, 8, 10) e cria-se-não-existe 1 (3); `eval` de um texto 1 (9); não se vê
+3 (4, 5, 6). O passo seguinte segue sem erro em 9 (o 1 dá tempo esgotado).
+
+*O que isso diz.* (1) A F é, na maior parte, a mesma lição do `#51` — verificar se uma variável existe, com um nome que o
+sandbox barra; o `eval` de texto aparece uma vez em 10. (2) **Limite da regra:** a categoria "`eval(...)`" mistura o
+`eval` de um nome para verificar (caso 2) com o de um texto (caso 9), e "outro uso" junta listar, `setdefault` e
+`g = globals()`; quantos dos 14 `eval` são de texto a regra não diz. (3) **Os 25 do ContestacaoCivel** são o papel cujo
+prompt manda verificar (base 2: 224 de 224 versões); nos casos lidos, a forma é a da instrução (`except NameError`,
+"PULE a chamada") escrita de jeitos que a regra (b) do Ajuste 21 não reconhece (`g = globals()`, `setdefault`, função
+auxiliar, `eval` do nome). Hipótese, não verificada na população: são o mesmo sinal de harness da
+`U_verificacao_existencia`. (4) O agente se corrige sozinho em 26 de 37.
+
+*O contraste com o prompt do ContestacaoCivel (pergunta do Rafael, 31/10).* Uma memória do `#51` ("use `try/except
+Exception` ou `x = None` + `if x is None`; nunca `globals()` nem `except NameError`") não contrasta com a versão antiga do
+prompt (`4b8c6d76ff`, jun–ago: manda verificar sem dizer como — a memória completa), mas **contrasta com a nova**
+(`2802ad7768`, só ago: manda `try/except NameError`, o jeito que o sandbox não captura; base 2: 97 de 97 erros com o prompt
+novo; base 3: os 5.762 da `U_verificacao_try_nameerror`). Ali o conserto é o prompt, e a checagem de conflito do degrau 2
+reprovaria a memória, como reprovou a E com o `globals` (§2f). Nos outros papéis o prompt não manda verificar (bases 1 e
+2): sem contraste.
+
+**Decisão (Rafael, 31/10): a escolha (a) — a F vai inteira para o `#51`.** O sandbox fecha a F como "movida para o
+`#51`", sem regra nova nem rodada nova; o `#51` minera a verificação de existência inteira (a unidade de hoje e a F) e
+decide lá o destino. **Nota para o `#51`:** pelo contraste acima, a parte do ContestacaoCivel deve sair como harness (o
+prompt novo manda o jeito errado); a memória vale para os papéis sem a instrução — na F, os 12 de fora do ContestacaoCivel,
+que ainda precisam passar na régua de recorrência. As alternativas recusadas: dividir a F agora (os 25 do ContestacaoCivel
+→ harness pediria um ajuste na regra (b) e rodada nova para uma decisão que o `#51` toma com a unidade inteira) e manter a
+F como "Não chame: …" (contrasta com o prompt e não diz como verificar) → [`decisoes.md`](../../../decisoes.md) (31/10).
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

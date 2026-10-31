@@ -422,5 +422,12 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   papel. O texto fica como está (a escolha A, os dois imports no bilhete, pediria mineração nova para repetir o que a C já
   diz); a dependência fica escrita no catálogo (`vale_junto_com`, Ajuste 31), que avisa se a C deixar de chegar ao papel →
   dossiê do sandbox §2h, 31.
+- **31/10, a parte F do sandbox vai inteira para o `b3 #51`** (decisão do Rafael, a escolha (a), depois da contagem e da
+  leitura de 10 casos na máquina, fotos IMG_6142–6151): os 37 erros (`globals` 18, `eval` 14, `locals` 4, `vars` 1; 25 no
+  ContestacaoCivel) são, na maior parte, a mesma lição do `#51` — verificar se uma variável existe com um nome que o
+  sandbox barra (5 de 10 casos; 1 `eval` de texto; 3 sem ver para quê). O sandbox fecha a F como movida, sem regra nem
+  rodada nova. **Nota para o `#51`:** uma memória "use `except Exception`, nunca `except NameError`" contrasta com o prompt
+  novo do ContestacaoCivel (ago/26, base 2: manda `try/except NameError`), então ali a parte deve sair harness; nos papéis
+  sem a instrução não há contraste → dossiê do sandbox §2h, 32.
 
 ---
