@@ -5,10 +5,7 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="i2" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=34;fontColor=#B5573A;" value="O que fazer com 30 mil erros?" vertex="1">
-          <mxGeometry height="52" width="1100" x="40" y="40" as="geometry" />
-        </mxCell>
-        <mxCell id="i3" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=18;fontColor=#4A5560;" value="Lidos um a um, eles não dizem o que corrigir nem quem deve corrigir." vertex="1">
-          <mxGeometry height="30" width="1100" x="40" y="96" as="geometry" />
+          <mxGeometry height="52" width="1100" x="40" y="67" as="geometry" />
         </mxCell>
         <mxCell id="i4" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=18;" value="30 mil erros" vertex="1">
           <mxGeometry height="120" width="170" x="40" y="250" as="geometry" />
