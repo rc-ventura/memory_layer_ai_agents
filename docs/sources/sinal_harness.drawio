@@ -1,0 +1,130 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="sinal-de-harness" name="Page-1">
+    <mxGraphModel dx="1236" dy="896" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="s2" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=34;fontColor=#B5573A;" value="O que é sinal de harness?" vertex="1">
+          <mxGeometry height="52" width="1200" x="40" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Um erro recorrente do agente cuja correção está no prompt ou na ferramenta, não na memória.&lt;/b&gt;" vertex="1">
+          <mxGeometry height="28" width="1200" x="40" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FDF3E7;strokeColor=#B5573A;strokeWidth=2;dashed=1;" value="" vertex="1">
+          <mxGeometry height="110" width="735" x="505" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#B5573A;" value="&lt;b&gt;Investigação&lt;/b&gt;" vertex="1">
+          <mxGeometry height="22" width="200" x="515" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Erro" vertex="1">
+          <mxGeometry height="66" width="100" x="40" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="s7" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Unidade" vertex="1">
+          <mxGeometry height="66" width="110" x="170" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="s8" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Triagem&lt;br&gt;&lt;small&gt;≥ 3 execuções e ≥ 2 meses&lt;/small&gt;" vertex="1">
+          <mxGeometry height="66" width="165" x="310" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="s9" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=13;fontStyle=1;" value="O prompt ou a ferramenta&lt;br&gt;induz o erro?" vertex="1">
+          <mxGeometry height="88" width="290" x="560" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="s10" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" value="Destino: sinal de harness" vertex="1">
+          <mxGeometry height="42" width="262" x="960" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="s11" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Destino: memória" vertex="1">
+          <mxGeometry height="42" width="262" x="960" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="s12" edge="1" parent="1" source="s6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s13" edge="1" parent="1" source="s7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s8" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s14" edge="1" parent="1" source="s8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s9" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s15" edge="1" parent="1" source="s9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#C0582A;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#C0582A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s10" value="sim">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s16" edge="1" parent="1" source="s9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="s11" value="não">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s17" parent="1" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="400" width="590" x="40" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="s18" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#B5573A;" value="&lt;b&gt;Exemplo 1 · o prompt declara o retorno errado&lt;/b&gt; (base 1)" vertex="1">
+          <mxGeometry height="26" width="566" x="52" y="232" as="geometry" />
+        </mxCell>
+        <mxCell id="s19" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="O prompt diz que validar_quebra_sigilo devolve:" vertex="1">
+          <mxGeometry height="20" width="566" x="52" y="262" as="geometry" />
+        </mxCell>
+        <mxCell id="s20" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="{&quot;quebra_sigilo&quot;: &quot;SIM&quot; ou &quot;NÃO&quot;, &quot;motivo&quot;: &quot;justificativa&quot;}" vertex="1">
+          <mxGeometry height="22" width="566" x="52" y="282" as="geometry" />
+        </mxCell>
+        <mxCell id="s21" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="A ferramenta devolve:" vertex="1">
+          <mxGeometry height="20" width="566" x="52" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="s22" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="{vazamento_sigilo: str, justificativa: str}" vertex="1">
+          <mxGeometry height="22" width="566" x="52" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="s23" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="O agente pede a chave que o prompt declarou, e o erro é:" vertex="1">
+          <mxGeometry height="20" width="566" x="52" y="358" as="geometry" />
+        </mxCell>
+        <mxCell id="s24" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="Could not index {…} with &#39;quebra_sigilo&#39;: KeyError: &#39;quebra_sigilo&#39;" vertex="1">
+          <mxGeometry height="22" width="566" x="52" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="s25" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=13;" value="Entrou como&lt;br&gt;&lt;b&gt;campo inexistente&lt;/b&gt;&lt;br&gt;candidata" vertex="1">
+          <mxGeometry height="92" width="170" x="52" y="416" as="geometry" />
+        </mxCell>
+        <mxCell id="s26" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=13;" value="&lt;b&gt;7 de 7&lt;/b&gt; erros pedem a chave declarada no prompt.&lt;br&gt;O agente não tem como acertar: o prompt está errado." vertex="1">
+          <mxGeometry height="92" width="368" x="250" y="416" as="geometry" />
+        </mxCell>
+        <mxCell id="s27" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" value="Sinal de harness&lt;br&gt;&lt;small&gt;conserto: corrigir o contrato da ferramenta no prompt&lt;/small&gt;" vertex="1">
+          <mxGeometry height="88" width="566" x="52" y="524" as="geometry" />
+        </mxCell>
+        <mxCell id="s28" parent="1" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="400" width="590" x="650" y="226" as="geometry" />
+        </mxCell>
+        <mxCell id="s29" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#B5573A;" value="&lt;b&gt;Exemplo 2 · o prompt manda o que o sandbox não suporta&lt;/b&gt; (bases 2 e 3)" vertex="1">
+          <mxGeometry height="26" width="566" x="662" y="232" as="geometry" />
+        </mxCell>
+        <mxCell id="s30" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="O prompt manda (paráfrase da base 2):" vertex="1">
+          <mxGeometry height="20" width="566" x="662" y="262" as="geometry" />
+        </mxCell>
+        <mxCell id="s31" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="para checar se a variável existe, use try/except NameError" vertex="1">
+          <mxGeometry height="22" width="566" x="662" y="282" as="geometry" />
+        </mxCell>
+        <mxCell id="s32" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="O agente obedece:" vertex="1">
+          <mxGeometry height="20" width="566" x="662" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="s33" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="try: x   except NameError: x = ferramenta(…)" vertex="1">
+          <mxGeometry height="22" width="566" x="662" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="s34" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="E o sandbox levanta outro erro, que esse except não pega:" vertex="1">
+          <mxGeometry height="20" width="566" x="662" y="358" as="geometry" />
+        </mxCell>
+        <mxCell id="s35" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="InterpreterError: The variable `x` is not defined" vertex="1">
+          <mxGeometry height="22" width="566" x="662" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="s36" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=13;" value="Estava em&lt;br&gt;pendentes &lt;b&gt;5.304&lt;/b&gt;&lt;br&gt;estado perdido &lt;b&gt;334&lt;/b&gt;&lt;br&gt;nome inventado &lt;b&gt;126&lt;/b&gt;" vertex="1">
+          <mxGeometry height="92" width="170" x="662" y="416" as="geometry" />
+        </mxCell>
+        <mxCell id="s37" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=13;" value="A regra olhava a posição do passo e não via o padrão. Lendo os casos, os 5.764 erros foram para uma &lt;b&gt;unidade própria&lt;/b&gt;: verificação de existência." vertex="1">
+          <mxGeometry height="92" width="368" x="860" y="416" as="geometry" />
+        </mxCell>
+        <mxCell id="s38" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" value="Sinal de harness&lt;br&gt;&lt;small&gt;conserto: ajustar a instrução do prompt&lt;/small&gt;" vertex="1">
+          <mxGeometry height="88" width="566" x="662" y="524" as="geometry" />
+        </mxCell>
+        <mxCell id="s39" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#B5573A;" value="→" vertex="1">
+          <mxGeometry height="24" width="18" x="226" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="s40" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#B5573A;" value="→" vertex="1">
+          <mxGeometry height="24" width="18" x="836" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="s41" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=12;fontColor=#4A5560;" value="Exemplo 1: base 1, RespostaBacen. Exemplo 2: contagens da base 3 (rodada de 14/10); na base 1, 0 de 10 erros de nome têm esse padrão. Código do exemplo 2 simplificado." vertex="1">
+          <mxGeometry height="24" width="1200" x="40" y="632" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
