@@ -8,8 +8,12 @@ caso inteiro (o pensamento do agente e as observações), o que a foto não most
 
 **O que muda em relação ao roteiro `candidata`** (skill `mineracao-investigacao`): **sem a leitura aberta.** Ela serve para
 montar a lista de lições quando a lição ainda não é conhecida; aqui a lição de cada memória já está fixada (degraus 1 e 2)
-e a pergunta é só se a causa é essa. A lista vai pronta abaixo e **precisa da aprovação do Rafael antes de rodar**. Os
+e a pergunta é só se a causa é essa. A lista vai pronta abaixo e foi **aprovada pelo Rafael em 03/11, sem ajuste**. Os
 dois leitores leem os 30 casos de cada memória (a leitura fechada pede pelo menos 20).
+
+**Ajustes depois da primeira memória (03/11; dossiê §2h, 33).** Use `uv run --no-sync` nos comandos abaixo, porque o `uv run`
+estava mudando pacotes do ambiente a cada execução. Feche as abas `leitura_*` antes de abrir o segundo leitor. Registre o
+modelo de cada leitor e use a mesma dupla nas três memórias.
 
 ## As hipóteses, escritas antes de ler
 

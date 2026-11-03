@@ -1,0 +1,112 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="destinos" name="Page-1">
+    <mxGraphModel dx="1414" dy="822" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="d2" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=34;fontColor=#B5573A;" value="Para onde vão os erros?" vertex="1">
+          <mxGeometry height="52" width="1200" x="40" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=16;fontColor=#1B1E38;" value="&lt;b&gt;Metade dos erros é candidata a lição do agente. Quase toda a outra metade se corrige no prompt, na ferramenta ou na plataforma.&lt;/b&gt;" vertex="1">
+          <mxGeometry height="28" width="1200" x="40" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Erros&lt;/b&gt;&lt;br&gt;30.141" vertex="1">
+          <mxGeometry height="70" width="145" x="40" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="d5" parent="1" style="html=1;whiteSpace=wrap;fillColor=#272B4D;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=20;fontStyle=1;" value="49%" vertex="1">
+          <mxGeometry height="70" width="514" x="190" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="d6" parent="1" style="html=1;whiteSpace=wrap;fillColor=#C0582A;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=20;fontStyle=1;" value="28%" vertex="1">
+          <mxGeometry height="70" width="290" x="704" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="d7" parent="1" style="html=1;whiteSpace=wrap;fillColor=#6B6F85;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=20;fontStyle=1;" value="19%" vertex="1">
+          <mxGeometry height="70" width="199" x="994" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="d8" parent="1" style="html=1;whiteSpace=wrap;fillColor=#D9DBE8;strokeColor=#FFFFFF;fontColor=#1B1E38;fontSize=20;fontStyle=1;" value="" vertex="1">
+          <mxGeometry height="70" width="47" x="1193" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="d9" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Tokens&lt;/b&gt;&lt;br&gt;592,9 mi" vertex="1">
+          <mxGeometry height="70" width="145" x="40" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="d10" parent="1" style="html=1;whiteSpace=wrap;fillColor=#272B4D;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=20;fontStyle=1;" value="57%" vertex="1">
+          <mxGeometry height="70" width="600" x="190" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="d11" parent="1" style="html=1;whiteSpace=wrap;fillColor=#C0582A;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=20;fontStyle=1;" value="27%" vertex="1">
+          <mxGeometry height="70" width="284" x="790" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="d12" parent="1" style="html=1;whiteSpace=wrap;fillColor=#6B6F85;strokeColor=#FFFFFF;fontColor=#FFFFFF;fontSize=20;fontStyle=1;" value="11%" vertex="1">
+          <mxGeometry height="70" width="113" x="1074" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="d13" parent="1" style="html=1;whiteSpace=wrap;fillColor=#D9DBE8;strokeColor=#FFFFFF;fontColor=#1B1E38;fontSize=20;fontStyle=1;" value="" vertex="1">
+          <mxGeometry height="70" width="53" x="1187" y="216" as="geometry" />
+        </mxCell>
+        <mxCell id="d14" parent="1" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="150" width="290" x="40" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="d15" parent="1" style="html=1;fillColor=#272B4D;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="10" width="290" x="40" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="d16" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Candidata a memória&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="266" x="52" y="322" as="geometry" />
+        </mxCell>
+        <mxCell id="d17" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#272B4D;fontStyle=1;" value="14.755 erros · 339,0 mi" vertex="1">
+          <mxGeometry height="28" width="266" x="52" y="352" as="geometry" />
+        </mxCell>
+        <mxCell id="d18" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="Quem corrige: a lição do agente, se a investigação confirmar" vertex="1">
+          <mxGeometry height="66" width="266" x="52" y="382" as="geometry" />
+        </mxCell>
+        <mxCell id="d19" parent="1" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="150" width="290" x="345" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="d20" parent="1" style="html=1;fillColor=#C0582A;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="10" width="290" x="345" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="d21" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Sinal de harness&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="266" x="357" y="322" as="geometry" />
+        </mxCell>
+        <mxCell id="d22" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#272B4D;fontStyle=1;" value="8.317 erros · 160,0 mi" vertex="1">
+          <mxGeometry height="28" width="266" x="357" y="352" as="geometry" />
+        </mxCell>
+        <mxCell id="d23" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="Quem corrige: o prompt ou a ferramenta" vertex="1">
+          <mxGeometry height="66" width="266" x="357" y="382" as="geometry" />
+        </mxCell>
+        <mxCell id="d24" parent="1" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="150" width="290" x="650" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="d25" parent="1" style="html=1;fillColor=#6B6F85;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="10" width="290" x="650" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="d26" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Harness/infra&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="266" x="662" y="322" as="geometry" />
+        </mxCell>
+        <mxCell id="d27" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#272B4D;fontStyle=1;" value="5.728 erros · 64,2 mi" vertex="1">
+          <mxGeometry height="28" width="266" x="662" y="352" as="geometry" />
+        </mxCell>
+        <mxCell id="d28" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="Quem corrige: a plataforma" vertex="1">
+          <mxGeometry height="66" width="266" x="662" y="382" as="geometry" />
+        </mxCell>
+        <mxCell id="d29" parent="1" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="150" width="290" x="955" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="d30" parent="1" style="html=1;fillColor=#D9DBE8;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="10" width="290" x="955" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="d31" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Os demais&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="266" x="967" y="322" as="geometry" />
+        </mxCell>
+        <mxCell id="d32" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#272B4D;fontStyle=1;" value="1.341 erros · 29,6 mi" vertex="1">
+          <mxGeometry height="28" width="266" x="967" y="352" as="geometry" />
+        </mxCell>
+        <mxCell id="d33" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="Pendente 749 · resíduo 565 · crítico 25 · sem recorrência 2" vertex="1">
+          <mxGeometry height="66" width="266" x="967" y="382" as="geometry" />
+        </mxCell>
+        <mxCell id="d34" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=16;" value="Quase todo o sinal de harness é uma coisa só: a &lt;b&gt;verificação de existência&lt;/b&gt;, com 8.150 dos 8.317 erros e 156,1 mi de tokens." vertex="1">
+          <mxGeometry height="64" width="1200" x="40" y="478" as="geometry" />
+        </mxCell>
+        <mxCell id="d35" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=12;fontColor=#4A5560;" value="Base 3, rodada 99e032ad. Candidata ainda não é memória: é o que passou na régua de recorrência; o destino final sai da investigação." vertex="1">
+          <mxGeometry height="24" width="1200" x="40" y="552" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

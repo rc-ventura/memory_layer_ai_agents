@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="dec" name="O que decidimos">
+    <mxGraphModel dx="1414" dy="822" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="dec2" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=34;fontColor=#B5573A;" value="O que decidimos agora?" vertex="1">
+          <mxGeometry height="52" width="1200" x="40" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="dec3" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Corrigir o que é nosso, focar onde o erro se concentra e validar antes de implantar.&lt;/b&gt;" vertex="1">
+          <mxGeometry height="28" width="1200" x="40" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="dec4" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="352" width="730" x="40" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="dec5" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=16;fontStyle=1;fillColor=#B5573A;strokeColor=#B5573A;fontColor=#FFFFFF;" value="1" vertex="1">
+          <mxGeometry height="36" width="36" x="54" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="dec6" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Corrigir o nosso prompt&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="656" x="102" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="dec7" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="70% do sandbox era nosso; é o ajuste mais barato" vertex="1">
+          <mxGeometry height="28" width="656" x="102" y="162" as="geometry" />
+        </mxCell>
+        <mxCell id="dec8" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=16;fontStyle=1;fillColor=#B5573A;strokeColor=#B5573A;fontColor=#FFFFFF;" value="2" vertex="1">
+          <mxGeometry height="36" width="36" x="54" y="209" as="geometry" />
+        </mxCell>
+        <mxCell id="dec9" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Focar em quatro papéis&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="656" x="102" y="201" as="geometry" />
+        </mxCell>
+        <mxCell id="dec10" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="ContestacaoCivel primeiro; depois RespostaBacen, JoogleAnalytics e CalculoTrabalhista" vertex="1">
+          <mxGeometry height="28" width="656" x="102" y="229" as="geometry" />
+        </mxCell>
+        <mxCell id="dec11" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=16;fontStyle=1;fillColor=#B5573A;strokeColor=#B5573A;fontColor=#FFFFFF;" value="3" vertex="1">
+          <mxGeometry height="36" width="36" x="54" y="276" as="geometry" />
+        </mxCell>
+        <mxCell id="dec12" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Levar as memórias das principais unidades até o degrau 3&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="656" x="102" y="268" as="geometry" />
+        </mxCell>
+        <mxCell id="dec13" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="e entrar no degrau 4 onde houver evidência" vertex="1">
+          <mxGeometry height="28" width="656" x="102" y="296" as="geometry" />
+        </mxCell>
+        <mxCell id="dec14" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=16;fontStyle=1;fillColor=#B5573A;strokeColor=#B5573A;fontColor=#FFFFFF;" value="4" vertex="1">
+          <mxGeometry height="36" width="36" x="54" y="343" as="geometry" />
+        </mxCell>
+        <mxCell id="dec15" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Fechar o resíduo&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="656" x="102" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="dec16" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="565 erros, 1,9% do total" vertex="1">
+          <mxGeometry height="28" width="656" x="102" y="363" as="geometry" />
+        </mxCell>
+        <mxCell id="dec17" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=16;fontStyle=1;fillColor=#B5573A;strokeColor=#B5573A;fontColor=#FFFFFF;" value="5" vertex="1">
+          <mxGeometry height="36" width="36" x="54" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="dec18" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Investigar as falhas silenciosas&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="656" x="102" y="402" as="geometry" />
+        </mxCell>
+        <mxCell id="dec19" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="o erro visível é o piso" vertex="1">
+          <mxGeometry height="28" width="656" x="102" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="dec20" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#B5573A;" value="&lt;b&gt;O que atacar agora, e por quê&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="450" x="790" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="dec21" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=19;" value="&lt;b&gt;Papel: ContestacaoCivel&lt;/b&gt;&lt;br&gt;&lt;font style=&#x27;font-size:15px&#x27;&gt;39,9% dos passos com erro, contra 10,6% do sistema&lt;/font&gt;" vertex="1">
+          <mxGeometry height="150" width="450" x="790" y="156" as="geometry" />
+        </mxCell>
+        <mxCell id="dec22" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=19;" value="&lt;b&gt;Unidade: retorno pode chegar como string&lt;/b&gt;&lt;br&gt;&lt;font style=&#x27;font-size:15px&#x27;&gt;207 mi de tokens; 38,9 mil por erro, contra 20,0 mil de média&lt;/font&gt;" vertex="1">
+          <mxGeometry height="150" width="450" x="790" y="324" as="geometry" />
+        </mxCell>
+        <mxCell id="dec23" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=18;" value="O que 30 mil erros nos ensinaram: &lt;b&gt;uma parte é nossa, a outra se concentra, e o que é lição tem um caminho de validação.&lt;/b&gt;" vertex="1">
+          <mxGeometry height="74" width="1200" x="40" y="492" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

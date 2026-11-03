@@ -1126,6 +1126,48 @@ que ainda precisam passar na régua de recorrência. As alternativas recusadas: 
 → harness pediria um ajuste na regra (b) e rodada nova para uma decisão que o `#51` toma com a unidade inteira) e manter a
 F como "Não chame: …" (contrasta com o prompt e não diz como verificar) → [`decisoes.md`](../../../decisoes.md) (31/10).
 
+**33 · Os dois leitores na máquina: a memória C (03/11, fotos `IMG_6156`, `IMG_6165`–`IMG_6168`).** O roteiro é o
+[`degrau3_leitores.md`](degrau3_leitores.md), com a lista de categorias aprovada por Rafael sem ajuste (03/11). Dois chats
+separados do Copilot leram a mesma amostra de 30 casos (`inv_candidata_U_sandbox.C_base3/casos.csv`), e o
+`concordancia.py` comparou os dois CSVs. Os modelos usados ainda não foram informados.
+
+| Coluna | Primeiro leitor | Segundo leitor | Concordância |
+|---|---|---|---|
+| `causa` | `esqueceu_import` 30 | `esqueceu_import` 30 | 30 de 30 |
+| `conserto` | `corrigiu_a_licao` 27, `contornou` 3 | `corrigiu_a_licao` 27, `contornou` 3 | 28 de 30 (kappa 0,63) |
+
+Nenhum caso ficou como `outra` ou `indeterminado`. As duas discordâncias são em `conserto`, uma em cada sentido, ambas no
+RoteadorCivel (`idx` 3): `26b3b23a…` (primeiro `contornou`, segundo `corrigiu_a_licao`) e `f0325594…` (o contrário). Os CSVs
+ficam na máquina: `pipeline/resultados/leitura_degrau3_U_sandbox.C_base3.csv` e `leitura2_degrau3_U_sandbox.C_base3.csv`.
+
+*O que isso diz.* A causa suposta pela memória se confirma nos 30 casos e bate com as regras contadas na população: 0 de
+423 importados antes (item 27). O `conserto` também é coerente com a população: 394 de 423 (93%) importam depois do erro
+(333 + 61, item 31), e os leitores dão `corrigiu_a_licao` em 27 de 30 (90%). É coerência, não prova: as categorias não são
+idênticas às da regra, e a amostra não é proporcional aos módulos.
+
+*Os limites.*
+- **O kappa de 1,00 na `causa` não é evidência:** o script devolve 1,0 quando há uma categoria só; o número que vale é 30
+  de 30.
+- **`datetime` ficou fora da amostra:** pela `licao_livre` do primeiro leitor, são `json` 27 e `re` 3 (a do segundo é
+  genérica). Na população são `json` 415, `re` 5 e `datetime` 3, com 0 importados antes nos três (item 27). O `datetime`
+  do texto da memória continua sustentado só pela regra, o que fica para o gate.
+- **Frase repetida:** o segundo leitor escreveu a mesma `licao_livre` nos 30 casos. O `onde_no_cru` dele varia (cita o erro
+  do passo seguinte em 8), o que sugere leitura caso a caso, mas a foto não prova.
+- **Pensamento do agente:** o primeiro leitor não cita `error_model_output` em nenhum caso, e o segundo cita nos 30. O campo
+  é o que cada leitor declarou como fonte; o `drill_down.py caso` mostra os dois passos inteiros.
+- **Às cegas:** as frases, o formato e as duas discordâncias sugerem leituras independentes, mas não há como provar que o
+  segundo chat não recebeu o CSV do primeiro como contexto. Nas próximas memórias, as abas `leitura_*` ficam fechadas.
+
+*O ambiente da máquina.* Cada `uv run` removeu 8 pacotes e instalou 4, com avisos de `RECORD` ausente, e uma execução falhou
+com "Acesso negado" antes de repetir com sucesso. A causa não foi investigada. Os números acima não dependem disso: o
+`concordancia.py` usa só a biblioteca padrão. Nas próximas memórias, os comandos usam `uv run --no-sync`.
+
+*O sigilo.* As fotos `IMG_6165` e `IMG_6166` mostram os CSVs, que o roteiro pedia para deixar na máquina. Lidas aqui, trazem
+só `exec_id`, papel, categorias, nomes de campo e frases gerais, tudo em "Pode sair" do `sigilo.md`.
+
+**Estado:** a leitura da C está feita. Ela só chega ao degrau 3 com o gate do pesquisador (o texto e o destino) e a gravação
+no catálogo, que ainda não tem comando. Faltam os leitores da C.JoogleAnalytics e da E.
+
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,

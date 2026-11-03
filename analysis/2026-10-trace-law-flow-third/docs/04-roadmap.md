@@ -189,6 +189,18 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 ## Backlog — em ordem de valor
 
+- [ ] **#60** **URGENTE: alinhar a lição da unidade `U_contrato_dict` no pipeline à lição da memória** (decisão do Rafael,
+  03/11; levantado pelo tutor na causa "dict iterado como lista"). O `UNI` do `base_pipeline.py` diz "acessar
+  `r['result'][0]` e iterar a lista interna; nunca `r[0]`, nunca iterar o dict"; o "nunca" mira só o erro de faltar a
+  chave. Lidos os 7 casos da causa na base 1: nos 7 o agente já usa `result` e escreve `['result'][0][0]`, um nível a
+  mais, e em 6 esse é o erro seguinte ao `docs[0][0]`. A `correction_guidance` da memória só afirma o caminho certo
+  (`03-procedimento-validacao.md` da base 1) e não avisa desse nível a mais. **Redação (a dos slides, decisão do Rafael,
+  03/11):** "Ferramentas de documento retornam `{'result': [[...]]}`: use `r['result'][0]`, que é a lista de documentos;
+  `r['result'][0][0]` é um documento só." A mesma redação vai para a `correction_guidance` da memória. Não muda contagem,
+  causa, unidade nem destino, e A e B continuam na mesma unidade. **Custo:** o `base_pipeline.py` entra no hash de
+  código, então a mudança pede rodada nova na máquina da base 3 antes de minerar de novo; alinhar também o da base 1 e
+  registrar o ajuste em [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).
+
 - [ ] **#2** **Fechar os pedidos de dados** ([`05`](05-pedido-queries.md)): **A** (denominadores) **chegou e foi conferido**
   (#26: junção exata chave a chave) — sai do pedido; falta integrá-lo ao pipeline (#32). **B** (complemento dos
   pendentes): **a parte do corte saiu** — na rodada da v2 (#31) os 1.009 de mensagem cortada e os 46 de linha
@@ -281,8 +293,9 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   leitura aqui~~ **feito em 30/10** (§2h, 31; `IMG_6115`–`6138`): a causa se confirma nas três (10 de 10 cada); na
   C.JoogleAnalytics o erro é esquecer **dois** imports (`pandas` e `json` na mesma linha), o que explica os 77% com outro
   erro depois (`json` na linha em 231 de 231); ~~a decisão sobre o texto dela~~ **decidido em 30/10: fica como está e
-  só vale junto com a C** (`vale_junto_com` no catálogo, Ajuste 31). Falta: os dois leitores (máquina ainda sem cota),
-  gravar o degrau 3 no catálogo (sem comando ainda). ~~A parte F~~ **fechada em 31/10: vai inteira para o #51** (§2h, 32:
+  só vale junto com a C** (`vale_junto_com` no catálogo, Ajuste 31). **03/11:** lista de categorias aprovada; os dois leitores da C
+  fechados (§2h, 33: `causa` 30 de 30, `conserto` 28 de 30). Falta: os dois leitores da C.JoogleAnalytics e da E, o gate do
+  pesquisador nas três (o texto e o destino), gravar o degrau 3 no catálogo (sem comando ainda). ~~A parte F~~ **fechada em 31/10: vai inteira para o #51** (§2h, 32:
   37 erros, na maior parte verificação de existência; decisão do Rafael, `decisoes.md`).
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,

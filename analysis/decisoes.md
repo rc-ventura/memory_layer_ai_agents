@@ -429,5 +429,8 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   rodada nova. **Nota para o `#51`:** uma memória "use `except Exception`, nunca `except NameError`" contrasta com o prompt
   novo do ContestacaoCivel (ago/26, base 2: manda `try/except NameError`), então ali a parte deve sair harness; nos papéis
   sem a instrução não há contraste → dossiê do sandbox §2h, 32.
+- **03/11, a lista de categorias dos dois leitores do degrau 3 do sandbox é aprovada sem ajuste** (decisão do Rafael): `causa`,
+  `tambem_json` (só na C.JoogleAnalytics), `conserto` e `licao_livre`, como estão no roteiro → `propostas/U_sandbox/degrau3_leitores.md`
+  da base 3; dossiê do sandbox §2h, 33.
 
 ---
