@@ -1,0 +1,49 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="intro-30-mil-erros" name="Page-1">
+    <mxGraphModel dx="1220" dy="885" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="i2" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=34;fontColor=#B5573A;" value="O que fazer com 30 mil erros?" vertex="1">
+          <mxGeometry height="52" width="1100" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="i3" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=18;fontColor=#4A5560;" value="Lidos um a um, eles não dizem o que corrigir nem quem deve corrigir." vertex="1">
+          <mxGeometry height="30" width="1100" x="40" y="96" as="geometry" />
+        </mxCell>
+        <mxCell id="i4" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=18;" value="30 mil erros" vertex="1">
+          <mxGeometry height="120" width="170" x="40" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="i5" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=18;" value="Analisamos os traces" vertex="1">
+          <mxGeometry height="120" width="170" x="242" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="i6" edge="1" parent="1" source="i4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="i5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="i7" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=18;" value="Encontramos padrões" vertex="1">
+          <mxGeometry height="120" width="170" x="444" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="i8" edge="1" parent="1" source="i5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="i7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="i9" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=18;" value="Criamos categorias" vertex="1">
+          <mxGeometry height="120" width="170" x="646" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="i10" edge="1" parent="1" source="i7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="i9" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="i11" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=18;" value="Agrupamos os erros" vertex="1">
+          <mxGeometry height="120" width="170" x="848" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="i12" edge="1" parent="1" source="i9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="i11" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="i13" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=18;fontStyle=1;" value="Definimos os responsáveis" vertex="1">
+          <mxGeometry height="120" width="170" x="1050" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="i14" edge="1" parent="1" source="i11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="i13" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
