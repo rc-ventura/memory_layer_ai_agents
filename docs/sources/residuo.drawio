@@ -1,35 +1,32 @@
 <mxfile host="app.diagrams.net">
   <diagram id="residuo" name="Page-1">
-    <mxGraphModel dx="1236" dy="896" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+    <mxGraphModel dx="1267" dy="1296" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="r2" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=34;fontColor=#B5573A;" value="O que é resíduo?" vertex="1">
-          <mxGeometry height="52" width="1200" x="40" y="26" as="geometry" />
-        </mxCell>
-        <mxCell id="r3" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;O erro que nenhuma regra explicou: é trabalho para a taxonomia, não lição para o agente.&lt;/b&gt;" vertex="1">
-          <mxGeometry height="28" width="1200" x="40" y="78" as="geometry" />
+          <mxGeometry height="52" width="1200" x="40" y="-6" as="geometry" />
         </mxCell>
         <mxCell id="r4" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FDF3E7;strokeColor=#B5573A;strokeWidth=2;dashed=1;" value="" vertex="1">
-          <mxGeometry height="110" width="840" x="400" y="132" as="geometry" />
+          <mxGeometry height="110" width="840" x="400" y="102" as="geometry" />
         </mxCell>
         <mxCell id="r5" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#B5573A;" value="&lt;b&gt;Na própria classificação&lt;/b&gt;" vertex="1">
-          <mxGeometry height="22" width="400" x="410" y="134" as="geometry" />
+          <mxGeometry height="22" width="400" x="410" y="104" as="geometry" />
         </mxCell>
         <mxCell id="r6" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Erro" vertex="1">
-          <mxGeometry height="66" width="120" x="40" y="154" as="geometry" />
+          <mxGeometry height="66" width="120" x="40" y="124" as="geometry" />
         </mxCell>
         <mxCell id="r7" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Assinatura" vertex="1">
-          <mxGeometry height="66" width="150" x="210" y="154" as="geometry" />
+          <mxGeometry height="66" width="150" x="210" y="124" as="geometry" />
         </mxCell>
         <mxCell id="r8" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=13;fontStyle=1;" value="Alguma regra&lt;br&gt;explica o erro?" vertex="1">
-          <mxGeometry height="84" width="300" x="470" y="154" as="geometry" />
+          <mxGeometry height="84" width="300" x="470" y="124" as="geometry" />
         </mxCell>
         <mxCell id="r9" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" value="Destino: resíduo" vertex="1">
-          <mxGeometry height="42" width="322" x="900" y="144" as="geometry" />
+          <mxGeometry height="42" width="322" x="900" y="114" as="geometry" />
         </mxCell>
         <mxCell id="r10" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Segue para a unidade" vertex="1">
-          <mxGeometry height="42" width="322" x="900" y="194" as="geometry" />
+          <mxGeometry height="42" width="322" x="900" y="164" as="geometry" />
         </mxCell>
         <mxCell id="r11" edge="1" parent="1" source="r6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="r7" value="">
           <mxGeometry relative="1" as="geometry" />
@@ -92,19 +89,19 @@
           <mxGeometry height="24" width="18" x="836" y="398" as="geometry" />
         </mxCell>
         <mxCell id="r31" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#B5573A;" value="&lt;b&gt;Não confundir&lt;/b&gt;" vertex="1">
-          <mxGeometry height="62" width="130" x="40" y="568" as="geometry" />
+          <mxGeometry height="62" width="130" x="40" y="585" as="geometry" />
         </mxCell>
         <mxCell id="r32" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;fontColor=#1B1E38;fontSize=14;" value="&lt;b&gt;Pendente (749 erros):&lt;/b&gt; a regra existe, faltou o dado na extração." vertex="1">
-          <mxGeometry height="62" width="525" x="170" y="568" as="geometry" />
+          <mxGeometry height="62" width="525" x="170" y="585" as="geometry" />
         </mxCell>
         <mxCell id="r33" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;fontColor=#1B1E38;fontSize=14;" value="&lt;b&gt;Sem recorrência:&lt;/b&gt; a unidade existe, mas não passou na régua (U_contrato_dict na base 3, com 2 erros)." vertex="1">
-          <mxGeometry height="62" width="525" x="715" y="568" as="geometry" />
+          <mxGeometry height="62" width="525" x="715" y="585" as="geometry" />
         </mxCell>
         <mxCell id="r34" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=16;fontColor=#272B4D;" value="&lt;b&gt;Na base 3, o resíduo é de 565 erros: 1,9% do total, abaixo do alarme de 5%.&lt;/b&gt;" vertex="1">
-          <mxGeometry height="28" width="1200" x="40" y="638" as="geometry" />
+          <mxGeometry height="28" width="1200" x="40" y="697" as="geometry" />
         </mxCell>
         <mxCell id="r35" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=12;fontColor=#4A5560;" value="Mensagens reais da base 1; contagens da base 3 (rodada de 14/10)." vertex="1">
-          <mxGeometry height="24" width="1200" x="40" y="666" as="geometry" />
+          <mxGeometry height="24" width="1200" x="40" y="725" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
