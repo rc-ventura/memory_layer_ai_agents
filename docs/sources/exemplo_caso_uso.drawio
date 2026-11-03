@@ -1,0 +1,130 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="anexo-prompt-sandbox" name="Page-1">
+    <mxGraphModel dx="1251" dy="885" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="a2" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=34;fontColor=#B5573A;" value="Um erro, do prompt ao sandbox" vertex="1">
+          <mxGeometry height="52" width="1200" x="40" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;O agente fez o que o prompt pediu, e o sandbox não permite.&lt;/b&gt;" vertex="1">
+          <mxGeometry height="28" width="1200" x="40" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="170" width="370" x="40" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=13;fontStyle=1;fillColor=#B5573A;strokeColor=#B5573A;fontColor=#FFFFFF;" value="1" vertex="1">
+          <mxGeometry height="26" width="26" x="52" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="a6" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;O prompt manda&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="310" x="84" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="a7" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;fontStyle=2;" value="Antes de chamar qualquer tool, VERIFIQUE se a variável de saída correspondente já está preenchida em memória. Se já estiver, PULE a chamada." vertex="1">
+          <mxGeometry height="112" width="342" x="54" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="a8" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="170" width="370" x="455" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="a9" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=13;fontStyle=1;fillColor=#B5573A;strokeColor=#B5573A;fontColor=#FFFFFF;" value="2" vertex="1">
+          <mxGeometry height="26" width="26" x="467" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="a10" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;O agente obedece&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="310" x="499" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="a11" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="if &amp;quot;peticao_json_str&amp;quot; not in globals():&lt;br&gt;&amp;nbsp;&amp;nbsp;peticao_json_str = get_peticao_inicial_from_pasta(…)" vertex="1">
+          <mxGeometry height="112" width="342" x="469" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="a12" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="170" width="370" x="870" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="a13" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=13;fontStyle=1;fillColor=#B5573A;strokeColor=#B5573A;fontColor=#FFFFFF;" value="3" vertex="1">
+          <mxGeometry height="26" width="26" x="882" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="a14" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;O sandbox barra&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="310" x="914" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="a15" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="InterpreterError: Forbidden function evaluation: &#39;globals&#39; is not among the explicitly allowed tools" vertex="1">
+          <mxGeometry height="112" width="342" x="884" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="a16" edge="1" parent="1" source="a4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="a8" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a17" edge="1" parent="1" source="a8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="a12" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a18" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="198" width="1200" x="40" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="a19" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=16;fontColor=#B5573A;" value="&lt;b&gt;O prompt muda, e o erro muda junto&lt;/b&gt;" vertex="1">
+          <mxGeometry height="28" width="1000" x="56" y="316" as="geometry" />
+        </mxCell>
+        <mxCell id="a20" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=13;fontColor=#4A5560;fontStyle=1;" value="Execuções" vertex="1">
+          <mxGeometry height="24" width="120" x="610" y="342" as="geometry" />
+        </mxCell>
+        <mxCell id="a21" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=13;fontColor=#4A5560;fontStyle=1;" value="Com erro" vertex="1">
+          <mxGeometry height="24" width="110" x="730" y="342" as="geometry" />
+        </mxCell>
+        <mxCell id="a22" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#1B1E38;" value="&lt;b&gt;Prompt antigo: não diz como&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="300" x="56" y="368" as="geometry" />
+        </mxCell>
+        <mxCell id="a23" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="verificou com globals" vertex="1">
+          <mxGeometry height="36" width="240" x="350" y="368" as="geometry" />
+        </mxCell>
+        <mxCell id="a24" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=18;fontColor=#272B4D;" value="&lt;b&gt;36&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="120" x="610" y="368" as="geometry" />
+        </mxCell>
+        <mxCell id="a25" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=18;fontColor=#D32F2F;" value="&lt;b&gt;35&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="110" x="730" y="368" as="geometry" />
+        </mxCell>
+        <mxCell id="a26" parent="1" style="html=1;fillColor=#D9DBE8;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="126" x="870" y="374" as="geometry" />
+        </mxCell>
+        <mxCell id="a27" parent="1" style="html=1;fillColor=#D32F2F;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="123" x="870" y="374" as="geometry" />
+        </mxCell>
+        <mxCell id="a28" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#1B1E38;" value="&lt;b&gt;Prompt antigo: não diz como&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="300" x="56" y="412" as="geometry" />
+        </mxCell>
+        <mxCell id="a29" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="não verificou" vertex="1">
+          <mxGeometry height="36" width="240" x="350" y="412" as="geometry" />
+        </mxCell>
+        <mxCell id="a30" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=18;fontColor=#272B4D;" value="&lt;b&gt;91&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="120" x="610" y="412" as="geometry" />
+        </mxCell>
+        <mxCell id="a31" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=18;fontColor=#272B4D;" value="&lt;b&gt;1&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="110" x="730" y="412" as="geometry" />
+        </mxCell>
+        <mxCell id="a32" parent="1" style="html=1;fillColor=#D9DBE8;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="319" x="870" y="418" as="geometry" />
+        </mxCell>
+        <mxCell id="a33" parent="1" style="html=1;fillColor=#D32F2F;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="4" x="870" y="418" as="geometry" />
+        </mxCell>
+        <mxCell id="a34" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#1B1E38;" value="&lt;b&gt;Prompt novo: manda try/except&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="300" x="56" y="456" as="geometry" />
+        </mxCell>
+        <mxCell id="a35" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="verificou como ensinado" vertex="1">
+          <mxGeometry height="36" width="240" x="350" y="456" as="geometry" />
+        </mxCell>
+        <mxCell id="a36" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=18;fontColor=#272B4D;" value="&lt;b&gt;97&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="120" x="610" y="456" as="geometry" />
+        </mxCell>
+        <mxCell id="a37" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=18;fontColor=#D32F2F;" value="&lt;b&gt;97&lt;/b&gt;" vertex="1">
+          <mxGeometry height="36" width="110" x="730" y="456" as="geometry" />
+        </mxCell>
+        <mxCell id="a38" parent="1" style="html=1;fillColor=#D9DBE8;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="340" x="870" y="462" as="geometry" />
+        </mxCell>
+        <mxCell id="a39" parent="1" style="html=1;fillColor=#D32F2F;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="340" x="870" y="462" as="geometry" />
+        </mxCell>
+        <mxCell id="a40" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=17;" value="Conserto: &lt;b&gt;ajustar o prompt&lt;/b&gt;. Uma memória ensinaria o agente a desobedecer a instrução." vertex="1">
+          <mxGeometry height="52" width="1200" x="40" y="522" as="geometry" />
+        </mxCell>
+        <mxCell id="a41" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=12;fontColor=#4A5560;" value="Prompt, código e erro reais: base 1, ContestacaoCivel, jul/26. Comparação: amostra da base 2, ContestacaoCivel, primeiro passo de cada execução." vertex="1">
+          <mxGeometry height="24" width="1200" x="40" y="582" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
