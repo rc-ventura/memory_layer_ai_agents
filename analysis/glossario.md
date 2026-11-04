@@ -123,14 +123,14 @@ investigação do erro crítico (01/10):
 | **roadmap #N** | o item N do backlog numerado da análise (`2026-09-trace-law-flow/docs/04-roadmap.md`) |
 | **Ajuste N** | a N-ésima mudança de regra do método, registrada no livro-razão (`pipeline-entre-bases.md` §3) |
 
-## 7 · Bases, máquinas e o grau de certeza
+## 7 · Bases, ambientes e o grau de certeza
 
 | Termo | O que é |
 |---|---|
 | **base 1** / **base 2** / **base 3** | três extrações independentes de 1.000 execuções da esteira (base 1: out/2025–ago/2026; base 2: lote de ago/2026) |
-| **máquina 2** | a máquina de compliance onde a base 2 está; de lá só saem contagens e nomes, nunca texto de caso nem `exec_id` |
+| **ambiente da base** | o ambiente de compliance onde a base 2 está; de lá só saem contagens e nomes, nunca texto de caso nem `exec_id` |
 | **[conferido]** | verificado de forma determinística (contagem, AST, regex reproduzida) |
-| **[assistido]** | leitura feita por LLM na máquina 2 — entra como hipótese, nunca como fato |
+| **[assistido]** | leitura feita por LLM no ambiente da base — entra como hipótese, nunca como fato |
 | **teto** | contagem que inclui tudo o que *pode* ser o fenômeno; o número real é menor ou igual |
 
 ---

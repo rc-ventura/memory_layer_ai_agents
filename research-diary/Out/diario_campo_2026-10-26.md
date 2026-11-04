@@ -12,7 +12,7 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 
 **Tipo:** achado — **Sub-atividade:** 2.2 / 2.5 — **Canal:** pessoal
 
-**Registro objetivo:** Ida à máquina das bases 2 e 3 (fotos `IMG_6036`–`IMG_6058`) para o degrau 2 (conferida) das três memórias do sandbox que vão para o agente:
+**Registro objetivo:** Ida ao ambiente das bases 2 e 3 para o degrau 2 (conferida) das três memórias do sandbox que vão para o agente:
 - **C** — "importe antes de usar: `import json`, `import re`, `import datetime`" (global; 423 erros);
 - **C.JoogleAnalytics** — "importe antes de usar: `import pandas as pd`" (só nesse papel; 231 erros);
 - **E** — "não chame `repr`, `dir`, `exec`…; não acesse `__name__`…; para inspecionar um valor, use `print(type(x))` e `print(str(x)[:n])`" (global; 317 erros).
@@ -28,7 +28,7 @@ Até aqui o degrau 2 delas só tinha rodado com o prompt da base 1, que é de ou
 | H5 | O mesmo para o `pandas` no JoogleAnalytics | 0 de 231 importados antes; **mas em 177 de 231 (77%) o passo seguinte importa e dá outro erro** | comprovada para o primeiro erro; o erro seguinte fica para o degrau 3 |
 | H6 | A E cobre uma causa só: inspecionar um valor | `__name__` 182, `repr` 98, `dir` 9 e atributos 3 = 292 (92%) de inspeção; `exec`, `__import__`, `bytes`, `open`, `hash` = 25 (8%) de outros usos | comprovada na maior parte |
 
-As amostras de 30 casos por memória para o degrau 3 ficaram prontas na máquina (`drill_down.py tabela` e `montar_evidencia.py --regra semente --n 30`; 30 de 30 crus conferidos nas três).
+As amostras de 30 casos por memória para o degrau 3 ficaram prontas no ambiente (`drill_down.py tabela` e `montar_evidencia.py --regra semente --n 30`; 30 de 30 crus conferidos nas três).
 
 **Reflexão:**
 - O bilhete da C é um **lembrete** ("importe antes de usar"), não reforço do prompt. Ter o `json` na lista do prompt diz que pode, não que tem de importar antes.
@@ -43,10 +43,10 @@ As amostras de 30 casos por memória para o degrau 3 ficaram prontas na máquina
   - a C.JoogleAnalytics passa com a nota de que o degrau 3 tem de ver qual é o erro seguinte;
   - a E passa com a nota de que os 8% de outros usos também são funções barradas, para as quais o "não chame" continua certo.
 - Com isso, as três completam o degrau 2, gravado no catálogo (`--registrar`).
-- **O degrau 3 sem esperar a cota de IA da máquina**, que só voltaria em 30/10:
+- **O degrau 3 sem esperar a cota de IA do ambiente**, que só voltaria em 30/10:
   - (1) regras contadas sobre a população inteira de cada memória, que só imprimem números e categorias;
-  - (2) 10 casos por memória, mascarados e trazidos por foto. No mascaramento, todo texto entre aspas, comentário e número vira `<texto>`, `# <comentário>` e `<n>`. Só saem o código e as mensagens de erro, sem a saída do modelo nem as observações, e a saída passa pelo varredor de dado pessoal antes de ser impressa;
-  - (3) os dois leitores automáticos na máquina, quando houver cota.
+  - (2) 10 casos por memória, mascarados e transcritos. No mascaramento, todo texto entre aspas, comentário e número vira `<texto>`, `# <comentário>` e `<n>`. Só saem o código e as mensagens de erro, sem a saída do modelo nem as observações, e a saída passa pelo varredor de dado pessoal antes de ser impressa;
+  - (3) os dois leitores automáticos no ambiente, quando houver cota.
 - Um agente (sem provider definido) escreveu o script (`pipeline/validacao/degrau3_sandbox.py`). O teste na base 1, no formato da base 3, pegou dois defeitos antes de qualquer coisa sair:
   - a instrução que falhou pode ter várias linhas;
   - um texto entre aspas triplas que abre e não fecha no trecho deixava passar o conteúdo (apareceram uma tabela em markdown e um código de documento).
@@ -58,7 +58,7 @@ As amostras de 30 casos por memória para o degrau 3 ficaram prontas na máquina
 
 **Tipo:** implementação — **Sub-atividade:** 2.2 / 3.6 — **Canal:** pessoal
 
-**Registro objetivo:** Ajustes nas figuras da base 3, depois de ver o painel e o relatório na máquina 2 por foto (`IMG_6063`–`IMG_6066`).
+**Registro objetivo:** Ajustes nas figuras da base 3, depois de ver o painel e o relatório no ambiente da base.
 
 1. **A genealogia virou duas figuras.** A genealogia de cinco colunas juntava duas análises diferentes:
    - **o censo do sintoma** (família → assinatura), que é uma árvore e virou barras;
@@ -70,7 +70,7 @@ As amostras de 30 casos por memória para o degrau 3 ficaram prontas na máquina
 2. **A cobertura das regras virou duas barras.** A figura de um motivo por barra confundia: eram nove barras, a maior com 87%. Agora há só cobertos (a regra tem evidência para decidir: 29.392 de 30.141, 97,5%) e pendentes (falta dado na extração: 749). Os maiores motivos dos pendentes ficam em texto embaixo, e a lista inteira continua na tabela do painel.
 3. **A recuperação da população ficou só com os papéis com erro.** A barra das execuções repetia o funil (28,4% de 71.881 execuções tiveram erro) e saiu; o número foi para o título. O limite de passos era preto e se confundia com o verde-escuro de "um erro"; passou a vermelho, da família de "terminou no erro".
 4. **O estudo de caso do sandbox ganhou figuras:** dos 3.653 erros de 16/10 aos 1.100 de agora, degrau por degrau, e os 1.100 por grupo de memória (rosca e barras). Saem lidas do catálogo, e o script confere que os grupos fecham em 1.100.
-5. **O fluxo de branches e PRs foi para o `AGENTS.md`**, para o Copilot da máquina 2 ler também:
+5. **O fluxo de branches e PRs foi para o `AGENTS.md`**, para o Copilot do ambiente da base ler também:
    - sincronizar por merge, nunca por rebase, depois que a branch está no `origin`;
    - PR empilhada contra a branch de base;
    - PR mergeada não recebe mais nada.
@@ -132,7 +132,7 @@ Também registrei o #58 no roadmap (o que a v2 resolveu e o que não, a evidênc
 **Tipo:** decisão — **Sub-atividade:** 2.2 / 2.6 — **Canal:** pessoal
 
 **Registro objetivo:**
-- **Diagramas da apresentação ao tutor, em draw.io** (fonte e imagem em `docs/sources/`): anatomia do trace; o erro estruturado; como o erro é descrito; por que classificar o erro; como os erros viram lição; o degrau 4; o mapa geral da investigação.
+- **Diagramas da apresentação ao tutor, em draw.io** (fonte em `docs/sources/draw.io/`): anatomia do trace; o erro estruturado; como o erro é descrito; por que classificar o erro; como os erros viram lição; o degrau 4; o mapa geral da investigação.
 - **Duas decisões de método e vocabulário:**
   1. **A quinta checagem do degrau 2 ("uma causa só") é decisão do pesquisador, confirmada no degrau 3.** Nenhum script de mineração grava o campo `causas`, então a checagem sai "não verificável" e eu decido com a evidência registrada. Fazer o script que minera gravar as causas seria circular: a checagem só confirmaria que ele concorda consigo mesmo. A confirmação independente é a leitura do degrau 3, que registra causa e lição por caso. Quando a checagem for automatizada, as causas serão registradas na granularidade da lição da memória: causas com a mesma lição levam o mesmo rótulo e não reprovam. Assim o `conferir_memorias.py`, que falha com mais de uma causa distinta, passa a concordar com o doc 17, que define a falha por lições diferentes (roadmap `#59`).
   2. **"Lição" é o termo, nos dois níveis.** A lição é o que o agente deveria fazer diferente: um fato a lembrar ou um hábito a mudar.
@@ -147,7 +147,7 @@ Também registrei o #58 no roadmap (o que a v2 resolveu e o que não, a evidênc
 
 **Tipo:** achado — **Sub-atividade:** 2.2 / 2.5 — **Canal:** pessoal
 
-**Registro objetivo:** Rodei na máquina 2 o degrau 3 sem cota de IA para as três memórias que vão para o agente: as regras contadas na população inteira e os 10 primeiros casos da amostra de cada uma, mascarados e trazidos por foto (`IMG_6115`–`IMG_6138`). As populações bateram (423, 231 e 317 erros), o varredor saiu limpo e nada foi bloqueado. A leitura dos 30 casos foi feita por um agente (sem provider definido), não por mim.
+**Registro objetivo:** Rodei no ambiente da base o degrau 3 sem cota de IA para as três memórias que vão para o agente: as regras contadas na população inteira e os 10 primeiros casos da amostra de cada uma, mascarados e transcritos. As populações bateram (423, 231 e 317 erros), o varredor saiu limpo e nada foi bloqueado. A leitura dos 30 casos foi feita por um agente (sem provider definido), não por mim.
 
 *As regras na população:*
 
@@ -162,7 +162,7 @@ Também registrei o #58 no roadmap (o que a v2 resolveu e o que não, a evidênc
 - **E:** 10 de 10 inspecionam um valor, com `type(x).__name__` 5 e `repr(x)` 5. São 7 no ContestacaoCivel, 2 no OBFCivel e 1 no AgenteEstruturador. Os 10 se corrigem sozinhos no passo seguinte: tiram a chamada ou a trocam por `str` ou `isinstance`.
 - **C.JoogleAnalytics:** a mesma linha nos 10 casos, `pd.DataFrame(json.loads(run_query(...)))`, sem importar **nem `pandas` nem `json`**. O erro é o do `pd` porque ele vem primeiro na linha. No passo seguinte, 5 importam só o `pandas` e caem no `json` não definido; 3 importam os dois e esbarram no argumento posicional (os três usam `run_query(query)`); 2 importam os dois e seguem sem erro (os dois usam `run_query(query=...)`).
 
-*A contagem que fechou a dúvida* (fotos `IMG_6139`–`IMG_6141`): pedi uma regra a mais, os outros nomes do inventário usados na instrução que falhou. Na C.JoogleAnalytics, o `json` está na linha em **231 de 231** erros: sem import no passo nem no anterior em 225, importado antes em 6.
+*A contagem que fechou a dúvida*: pedi uma regra a mais, os outros nomes do inventário usados na instrução que falhou. Na C.JoogleAnalytics, o `json` está na linha em **231 de 231** erros: sem import no passo nem no anterior em 225, importado antes em 6.
 
 **Reflexão:**
 - As três causas se confirmam. O erro que vem depois do import é quase todo de **outra lição**, a ferramenta chamada com argumento posicional (`U_arg_nomeado`); não é falha do bilhete.
@@ -183,7 +183,7 @@ Também registrei o #58 no roadmap (o que a v2 resolveu e o que não, a evidênc
 
 **Tipo:** decisão — **Sub-atividade:** 2.2 / 2.5 — **Canal:** pessoal
 
-**Registro objetivo:** Reabri e fechei a parte F do sandbox, que tinha ficado para depois em 21/10 ("volta quando a maior parte das memórias estiver no degrau 3"). A F é o que sobrou no sandbox de `globals`, `eval`, `locals` e `vars` depois dos Ajustes 21 e 27: 37 erros (`globals` 18, `eval` 14, `locals` 4, `vars` 1), com destino em aberto. O texto que o script montava era só "Não chame: …". Rodei na máquina 2 a contagem e 10 casos mascarados (fotos `IMG_6142`–`IMG_6151`); a leitura dos casos foi feita por um agente (sem provider definido).
+**Registro objetivo:** Reabri e fechei a parte F do sandbox, que tinha ficado para depois em 21/10 ("volta quando a maior parte das memórias estiver no degrau 3"). A F é o que sobrou no sandbox de `globals`, `eval`, `locals` e `vars` depois dos Ajustes 21 e 27: 37 erros (`globals` 18, `eval` 14, `locals` 4, `vars` 1), com destino em aberto. O texto que o script montava era só "Não chame: …". Rodei no ambiente da base a contagem e 10 casos mascarados; a leitura dos casos foi feita por um agente (sem provider definido).
 
 *A contagem:*
 - **Por nome e uso:**
@@ -219,7 +219,7 @@ Também tirei do repositório o esqueleto e os scripts que geravam a apresentaç
 - Recusei:
   - dividir a F agora: os 25 do ContestacaoCivel iriam para harness, o que pediria um ajuste de regra e rodada nova para uma decisão que o `#51` toma com a unidade inteira;
   - manter a F como "Não chame: …": contrasta com o prompt e não diz como verificar.
-- **Os dois leitores ficam na máquina, na segunda (02/11), quando a cota volta.** Ler daqui perderia a saída do modelo e as observações, que ficam na máquina pela regra de sigilo. Para estas três memórias a perda seria pequena, porque a causa aparece no código, mas o caso inteiro é o certo para o degrau 3.
+- **Os dois leitores ficam no ambiente, na segunda (02/11), quando a cota volta.** Ler daqui perderia a saída do modelo e as observações, que ficam no ambiente pela regra de sigilo. Para estas três memórias a perda seria pequena, porque a causa aparece no código, mas o caso inteiro é o certo para o degrau 3.
 - O roteiro está em `propostas/U_sandbox/degrau3_leitores.md`: as hipóteses escritas antes de ler, a lista de categorias a aprovar (`causa`, `tambem_json`, `conserto`, `licao_livre`), a leitura fechada direto (a lição já está fixada nos degraus 1 e 2), os textos para o Copilot (o segundo leitor num chat novo, às cegas) e os comandos de concordância.
 - Depois disso, falta gravar o degrau 3 no catálogo (ainda sem comando), e o sandbox fecha.
 

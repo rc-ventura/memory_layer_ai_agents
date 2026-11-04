@@ -1,4 +1,4 @@
-"""Replica o Ajuste 21 no pipeline da base 2 (a pasta `pipeline/` desta análise, que só existe na máquina da base 2).
+"""Replica o Ajuste 21 no pipeline da base 2 (a pasta `pipeline/` desta análise, que só existe no ambiente da base 2).
 
 O pipeline da base 2 é uma cópia do da base 1 (`2026-09-trace-law-flow/pipeline/`) com outro TRACE e BASE_ID; o kit de
 mineração confere isso (`conferir_versao.py`). O Ajuste 21 (livro-razão `pipeline-entre-bases.md`) muda três arquivos:
@@ -10,7 +10,7 @@ mineração confere isso (`conferir_versao.py`). O Ajuste 21 (livro-razão `pipe
   3. se não, copia o arquivo da base 1 (já com o ajuste) e põe de volta as linhas de TRACE e BASE_ID da base 2.
 
 Por padrão só mostra o que faria. Uso, de dentro de `analysis/2026-09-trace-law-flow-second/scripts`, depois de copiar
-para a máquina da base 2 os três arquivos novos da base 1:
+para o ambiente da base 2 os três arquivos novos da base 1:
     uv run replicar_ajuste21.py            # mostra
     uv run replicar_ajuste21.py --aplicar  # grava
 Depois: `conferir_versao.py analysis/2026-09-trace-law-flow-second` tem de dar IGUAL ao manifesto do kit novo.

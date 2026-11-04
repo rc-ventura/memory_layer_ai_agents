@@ -55,7 +55,7 @@ class TestCompararRodadas(unittest.TestCase):
         return falhas, out.getvalue()
 
     def test_pasta_usa_o_caminho_longo_do_pipeline(self):
-        # Na máquina 2 (OneDrive), perfis/U_campo_inexistente/amostra_investigacao.csv tem 260 caracteres e, sem o
+        # No ambiente da base (OneDrive), perfis/U_campo_inexistente/amostra_investigacao.csv tem 260 caracteres e, sem o
         # prefixo \\?\ do Windows, parecia ausente. A pasta da rodada passa pelo mesmo caminho_io da gravação.
         self.assertIs(cr.caminho_io, mo.caminho_io)
         vistos = []

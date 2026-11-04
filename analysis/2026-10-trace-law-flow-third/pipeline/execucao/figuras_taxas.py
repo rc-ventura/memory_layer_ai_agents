@@ -189,7 +189,7 @@ def papel_volume(papel, destino):
 
 
 def papel_volume_execucao(papel, destino):
-    """3b · O mesmo volume × taxa, por execução (Rafael, 27/10, foto IMG_6070): em quantas das execuções do papel ele
+    """3b · O mesmo volume × taxa, por execução (Rafael, 27/10): em quantas das execuções do papel ele
     teve pelo menos um erro. Execução do papel = a linha das contagens (execução, agente, papel), a trajetória — o mesmo
     denominador da coluna à direita da recuperação por papel."""
     p = papel[papel.execucoes.gt(0)].copy()
@@ -851,7 +851,7 @@ def _barra_empilhada(ax, y, partes, total, altura=0.7):
 
 def recuperacao_populacao(pop, extra, destino):
     """11 · A recuperação depois do erro, na população: os papéis com erro (censo dos erros da base 3). A barra das
-    execuções saiu (Rafael, 26/10, foto IMG_6065): repetia o funil; o número de execuções com erro fica no título."""
+    execuções saiu (Rafael, 26/10): repetia o funil; o número de execuções com erro fica no título."""
     ex, pa = pop[pop.nivel.eq("execuções")].set_index("categoria"), pop[pop.nivel.eq("papéis com erro")].set_index("categoria")
     n_ex, n_pa = int(ex.total.iloc[0]), int(pa.total.iloc[0])
     fig, ax = plt.subplots(figsize=(13, 2.9))

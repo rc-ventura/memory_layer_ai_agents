@@ -14,7 +14,7 @@ no catálogo e confere o catálogo.
 Uma memória entra no catálogo quando está **fechada**: `validation.destino` = "memória" (decisão do pesquisador) e
 `status` = "derived-and-checked". O que tem destino harness vai para o `monitoramento.json`, e o que tem destino em
 aberto fica fora; as duas listas saem no resumo com o motivo. A entrada leva só conteúdo técnico (o que a memória diz,
-onde vale, quantos erros, de que rodada) e o hash do arquivo final, que fica na pasta da mineração, na máquina da base:
+onde vale, quantos erros, de que rodada) e o hash do arquivo final, que fica na pasta da mineração, no ambiente da base:
 sem `location` nem `evidence` (os casos). Desde o esquema 0.4, leva também `validation.nomes` (os nomes que a memória
 manda usar ou evitar), que o `conferir_memorias.py` (degrau 2) confere. Passa pelo `varrer_pii.py` antes de sair (o `minerar.py` faz isso no passo 9).
 
@@ -87,7 +87,7 @@ def entrada(doc, caminho):
             "occurrences": {"erros": occ.get("erros"), "execucoes": occ.get("execucoes"),
                             "meses": occ.get("meses") or []},
             "arquivo": {"nome": Path(caminho).name, "sha256_16": _sha16(caminho),
-                        "onde": "na pasta da mineração, na máquina da base"}}, None
+                        "onde": "na pasta da mineração, no ambiente da base"}}, None
 
 
 def montar(caminhos):

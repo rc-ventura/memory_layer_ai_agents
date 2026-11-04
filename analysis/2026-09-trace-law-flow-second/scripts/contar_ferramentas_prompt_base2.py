@@ -15,7 +15,7 @@ existe).
      descrito no retorno de uma ferramenta.
 
 Usa o leitor do `contar_primeiro_passo_nome_base2.py`. Não grava nada. Imprime só contagens, nomes de papel, meses,
-hashes e nomes de ferramenta. Uso, da raiz, na máquina da base 2:
+hashes e nomes de ferramenta. Uso, da raiz, no ambiente da base 2:
     uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_ferramentas_prompt_base2.py --trace <trace da base 2>
 """
 import argparse

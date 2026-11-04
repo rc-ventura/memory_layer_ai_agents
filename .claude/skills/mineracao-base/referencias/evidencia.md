@@ -45,7 +45,7 @@ relatório nem para a conversa: o script já escreveu certo.
 ## Sigilo
 
 - **O relatório completo fica no ambiente onde o trace mora,** em `pipeline/resultados/`, que é git-ignored.
-- **O que sai** (foto, chat, commit, mensagem) passa antes pelo varredor, nunca por máscara feita à mão:
+- **O que sai** (chat, commit, mensagem) passa antes pelo varredor, nunca por máscara feita à mão:
   ```
   uv run python <skill mineracao-base>/scripts/varrer_pii.py <arquivo>
   ```

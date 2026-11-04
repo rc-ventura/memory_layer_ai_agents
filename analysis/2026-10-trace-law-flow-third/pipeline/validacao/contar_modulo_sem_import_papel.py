@@ -19,8 +19,7 @@ o `json` (a de dez/25 tinha). Duas leituras: o prompt induz o erro (sinal de har
 `--papel todos` olha todos os papéis; `--nome` é o nome usado sem import quando difere do módulo (`--modulo pandas
 --nome pd`).
 
-Lê o parquet cru com o pyarrow (não usa o pipeline). Não grava nada. Imprime só contagens e meses. Uso, da raiz, na
-máquina da base:
+Lê o parquet cru com o pyarrow (não usa o pipeline). Não grava nada. Imprime só contagens e meses. Uso, da raiz, no ambiente da base:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_modulo_sem_import_papel.py --fonte <parquet> [--papel RoteadorCivel|todos] [--modulo json] [--nome pd]
 """
 import argparse

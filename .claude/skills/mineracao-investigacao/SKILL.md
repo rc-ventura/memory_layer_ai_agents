@@ -54,7 +54,7 @@ contagem, marcada `[assistido]`, e vale como hipótese.
    siga-o: primeiro a leitura aberta, em frase livre, pelos dois leitores; depois as frases lado a lado
    (`concordancia.py --lado-a-lado`), a lista proposta e **a parada para o pesquisador aprovar a lista**; só então a
    leitura fechada. Grave `resultados/leitura_<decisao>_<BASE_ID>.csv` com
-   `exec_id, role, idx` (ou a coluna de idx do roteiro), uma coluna por eixo ou categoria e `onde_no_cru` (o campo do
+   `exec_id, role, idx` (ou a coluna de idx do roteiro), uma coluna por eixo ou categoria e `onde_no_trace` (o campo do
    step lido). Não copie texto de caso para a leitura nem para a conversa.
 5. **Segundo leitor.** Faça a amostra da amostra
    (`<skill mineracao-base>/scripts/amostrar.py resultados/evidencia/inv_<decisao>_<BASE_ID>/casos.csv --regra semente --n <k> --saida resultados/amostra2_<decisao>_<BASE_ID>.csv`,

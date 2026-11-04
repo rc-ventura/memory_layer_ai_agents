@@ -1,8 +1,8 @@
-"""Base 3: o degrau 3 das memórias do sandbox sem cota de IA na máquina — contagens por regra e casos mascarados.
+"""Base 3: o degrau 3 das memórias do sandbox sem cota de IA no ambiente — contagens por regra e casos mascarados.
 
-O degrau 3 (revisada: a causa é a que a memória supõe?) seria lido por dois leitores automáticos na máquina da base. Sem
+O degrau 3 (revisada: a causa é a que a memória supõe?) seria lido por dois leitores automáticos no ambiente da base. Sem
 cota lá (até 30/10), o Rafael decidiu em 26/10 (dossiê do sandbox §2h, 30): (1) as **regras contadas** sobre a população
-inteira de cada memória, que só imprimem números e categorias; (2) **10 casos por memória**, mascarados, fotografados e
+inteira de cada memória, que só imprimem números e categorias; (2) **10 casos por memória**, mascarados, transcritos e
 lidos aqui — só o código e as mensagens de erro (técnicos, podem sair pela regra de sigilo de 16/10), com todo texto entre
 aspas, todo comentário e todo número trocados por `<texto>`, `# <comentário>` e `<n>`; sem a saída do modelo nem as
 observações (conteúdo de cliente). A saída passa pelos padrões do `varrer_pii.py` antes de ser impressa: se achar algo,
@@ -27,7 +27,7 @@ não imprime.
 escolhida por regra fixa), em forma compacta: a mensagem de erro, a linha que falhou e as vizinhas no código do passo, o
 passo anterior e o seguinte (importou? que erro?).
 
-Uso, da raiz, na máquina da base:
+Uso, da raiz, no ambiente da base:
     uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py contar --fonte analysis/2026-10-trace-law-flow-third/data/base_erros_minerados_full_v2.parquet
 """
 import argparse
@@ -63,7 +63,7 @@ TEXTO_CORRIDO = re.compile(r"(?:\b[^\W\d_]{2,}\b[ ,;:]+){6,}|^\s*(?:\||\*\*|-{3,
 
 
 def _padroes_pii():
-    """Os padrões do varredor do kit (`.claude/skills/` ou `.github/skills/`, na máquina da base)."""
+    """Os padrões do varredor do kit (`.claude/skills/` ou `.github/skills/`, no ambiente da base)."""
     for pasta in (".claude", ".github", ".copilot"):
         arq = RAIZ / pasta / "skills" / "mineracao-base" / "scripts" / "varrer_pii.py"
         if arq.exists():

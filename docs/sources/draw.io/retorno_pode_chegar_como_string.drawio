@@ -315,10 +315,10 @@
         <mxCell id="f414" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" value="Tempo limite do interpretador" vertex="1">
           <mxGeometry height="34" width="262" x="462" y="315" as="geometry" />
         </mxCell>
-        <mxCell id="f415" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=20;fontStyle=1;" value="Sem caso na base 1.&lt;br&gt;Trazer um exemplo mascarado da máquina da base." vertex="1">
+        <mxCell id="f415" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=20;fontStyle=1;" value="Sem caso na base 1.&lt;br&gt;Trazer um exemplo mascarado do ambiente da base." vertex="1">
           <mxGeometry height="186" width="1200" x="40" y="361" as="geometry" />
         </mxCell>
-        <mxCell id="f416" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Não há caso na base 1; o exemplo real precisa vir da máquina da base.&lt;/b&gt;" vertex="1">
+        <mxCell id="f416" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Não há caso na base 1; o exemplo real precisa vir do ambiente da base.&lt;/b&gt;" vertex="1">
           <mxGeometry height="44" width="1200" x="40" y="553" as="geometry" />
         </mxCell>
       </root>

@@ -185,7 +185,7 @@ As medidas continuam iguais, sem nenhuma diferença. Os dois itens reprovados no
 - **O hash do pré-registro** está no funil do `06` (`2233be7`): "racional: `9640b13`, emenda `aa99b8f`". O racional
   aponta para lá. **Fechado.**
 - O ensaio foi refeito às 21:01:09 (`gerado_em` 00:01:09Z), **depois** do commit `aa99b8f`.
-- **Condição para a base 3:** a primeira rodada do script na base 3, na máquina 2, ainda não existe. Ela precisa rodar
+- **Condição para a base 3:** a primeira rodada do script na base 3, no ambiente da base, ainda não existe. Ela precisa rodar
   com um HEAD que contenha `aa99b8f`, e a data dela precisa ser posterior a 16/10/2026 21:01:03 (−03:00). Daqui não dá
   para conferir; quem rodar confere com o `git log`.
 
@@ -247,7 +247,7 @@ saídas dele são as mesmas.
   princípio ("os sinais que o pipeline decide antes") já estava no pré-registro, só a lista estava incompleta, e a
   emenda está declarada e decidida pelo Rafael. Mesmo assim, na base 3 o encontro desse 1 erro deixa de ser às cegas:
   a divergência original continua sendo o achado e precisa ficar no `passo7_divergencia.csv`. Não conferi o
-  1 de 3.653 porque a base 3 não está nesta máquina. Também não conferi a ordem de decisão do pipeline, porque não
+  1 de 3.653 porque a base 3 não está neste ambiente. Também não conferi a ordem de decisão do pipeline, porque não
   abri o `minerar.py` nem o pipeline.
 - **(h)** A conferência deste validador já tirava esse caso antes da emenda. A minha leitura de "tempo do
   interpretador" (`[Tt]ime ?out|timed out|execution time`) cobre `TimeoutError` e `excedeu o timeout`. Duas leituras
@@ -343,7 +343,7 @@ destino (2 listas, lista única = não, 0 repetições); os erros por parte (C 6
   manifesto é de 11:00:42 −03:00 e tem o script **antigo** (`39481621…`), anterior à emenda 4. O ensaio do script com
   as partes, que o commit cita ("ensaio base 1 ok"), não ficou gravado, então não dá para datar. A rodada deste
   validador é de 13:03 −03:00, depois do commit.
-- **Base 3 (a base de confirmação):** a primeira rodada do script com as partes ainda não está nesta máquina. Ela tem de
+- **Base 3 (a base de confirmação):** a primeira rodada do script com as partes ainda não está neste ambiente. Ela tem de
   rodar com um HEAD que contenha `c36641c` e ser posterior a 19/10 12:52:50 −03:00. Quem rodar confere.
 - **Declarado no racional:** a lista de B foi escrita olhando a base 3 (rodada `85706f1e`, dossiê §2b) e é descritiva,
   não pré-registrada. Está declarada, então não reprova.
@@ -471,7 +471,7 @@ divergência do script.
   descritiva (escrita depois da primeira mineração na base 3 e do teste da regra (b) nela). A lista de B já estava
   declarada. Nada do que o script faz fica sem declaração, fora o ponto final da `description`.
 - **Condição, não divergência:** a primeira rodada do script de `f4037cc` na base 3 (a base de confirmação) ainda não
-  existe nesta máquina. Ela tem de rodar com um HEAD que contenha `f4037cc` e depois de 2026-10-19T13:08:44−03:00. Quem
+  existe neste ambiente. Ela tem de rodar com um HEAD que contenha `f4037cc` e depois de 2026-10-19T13:08:44−03:00. Quem
   rodar confere.
 
 ## Divergências, medida por medida
@@ -520,7 +520,7 @@ nenhum item faltando.
 | 4 | Ordem | ok no que dá para ver: racional em `ef36e2c` (13:54:31 −03:00), rodada deste validador às 13:55:00 −03:00. A mudança é de forma e está declarada na própria linha ("revalidação 5"). Como a tabela inteira, é descritiva |
 
 **Condição da ordem, na base 3 (não é divergência):** a primeira rodada deste script na base 3, a base de
-confirmação, ainda não existe nesta máquina. Ela tem de rodar com um HEAD que contenha `ef36e2c` e depois de
+confirmação, ainda não existe neste ambiente. Ela tem de rodar com um HEAD que contenha `ef36e2c` e depois de
 2026-10-19T13:54:31−03:00, e quem rodar confere a data contra o `git log` do racional.
 
 ## Contagens da conclusão
@@ -589,7 +589,7 @@ Se algum cair, cabe ao Rafael decidir se a prosa da emenda 5 ou o código é o c
 
 ## Condição da ordem, na base 3 (não é divergência)
 
-A primeira rodada deste script na base 3, a base de confirmação, ainda não existe nesta máquina. Ela tem de rodar com
+A primeira rodada deste script na base 3, a base de confirmação, ainda não existe neste ambiente. Ela tem de rodar com
 um HEAD que contenha `7b4e4e0` e depois de 2026-10-19T14:43:26−03:00, e quem rodar confere a data contra o `git log` do
 racional.
 
@@ -685,7 +685,7 @@ Elas foram corrigidas na `conferencia_independente.py`, e a segunda passada deu 
 
 ## Condição da ordem, na base 3 (não é divergência)
 
-A primeira rodada deste script na base 3, a base de confirmação, ainda não existe nesta máquina: todos os manifestos
+A primeira rodada deste script na base 3, a base de confirmação, ainda não existe neste ambiente: todos os manifestos
 de mineração do `U_sandbox` achados têm a fonte `afaf3e98…`, da base 1. Uma delas,
 `resultados/ensaio_base1_20out/mineracao`, foi gerada às 17:45:45−03:00 com o script deste HEAD (`5902a220…`), 4 min
 antes de `cc27360`. É ensaio na base 1, não confirmação. A rodada da base 3 tem de usar um HEAD que contenha `cc27360`

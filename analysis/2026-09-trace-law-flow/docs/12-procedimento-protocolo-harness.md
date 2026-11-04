@@ -11,15 +11,15 @@ esta família. O **porquê** de cada passo e o **catálogo de mecanismos** (M1�
 **Regra de ouro (do 03):** nenhum número agregado sem um caso concreto que o sustente — e nenhuma leitura de caso antes
 de conhecer a camada (modo, modelo, contrato).
 
-## 0 · Pré-condições e o que sai da máquina
+## 0 · Pré-condições e o que sai do ambiente
 
 - Rodar de dentro da pasta `pipeline/` da base (`2026-09-trace-law-flow` ou `-second`), com o
-  `resultados/erros_mecanismo.csv` já gerado pelo notebook. Na máquina 2, `uv run` na frente de cada comando.
-- **Sai da máquina de compliance:** contagens, meses, nomes de papel, ferramenta e modelo, hashes de versão, sim/não,
+  `resultados/erros_mecanismo.csv` já gerado pelo notebook. No ambiente da base, `uv run` na frente de cada comando.
+- **Sai do ambiente de compliance:** contagens, meses, nomes de papel, ferramenta e modelo, hashes de versão, sim/não,
   tamanhos e tokens. As saídas de `protocolo`, `protocolo` [7]/[8] e `metadados_steps.py` são só isso — podem ser
-  fotografadas.
+  transcritas.
 - **Não sai:** texto de caso, código do agente, nome de cliente, número de processo, `exec_id`. Os arquivos
-  `resultados/evidencia/protocolo/erro_*.txt`, `prompt_*.txt` e `casos.csv` têm o caso em claro: **ler na máquina**.
+  `resultados/evidencia/protocolo/erro_*.txt`, `prompt_*.txt` e `casos.csv` têm o caso em claro: **ler no ambiente**.
   `resultados/` é git-ignored.
 
 ## Passo 1 — Contar: é incidente ou fundo?

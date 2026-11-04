@@ -30,7 +30,7 @@ casos com exec_id, o cru e o recorte>
 | … | … | … | #1, #4, … |
 | indeterminado | … | — | … |
 - leitura caso a caso: `pipeline/resultados/leitura_<decisao>_<BASE_ID>.csv` (com `exec_id`, o campo lido e
-  `onde_no_cru`)
+  `onde_no_trace`)
 
 ## 6 · Segundo leitor  [conferido]
 - <K2> casos relidos às cegas · <a linha do concordancia.py> · discordâncias: <pares e contagens, com o # dos casos>

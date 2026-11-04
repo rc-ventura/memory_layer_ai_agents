@@ -1,5 +1,5 @@
 {
-  "o_que_e": "O catálogo das memórias fechadas, em todas as bases: uma entrada por memória com destino \"memória\" (decisão do pesquisador) e status derived-and-checked. Só conteúdo técnico — o que a memória diz (correction_guidance), onde vale (scope), quantos erros, de que rodada — e o hash do arquivo final, que fica na pasta da mineração, na máquina da base (sem os casos). O que tem destino harness fica no monitoramento.json. A entrada é montada pelo passo 9 do minerar.py (catalogo_<unidade>_<base>.json, já varrido) e posta aqui com `.claude/skills/mineracao-candidata/scripts/catalogar_memoria.py --registrar`; `--conferir` confere o catálogo. Decisão de 19/10 (decisoes.md); livro-razão, Ajuste 22.",
+  "o_que_e": "O catálogo das memórias fechadas, em todas as bases: uma entrada por memória com destino \"memória\" (decisão do pesquisador) e status derived-and-checked. Só conteúdo técnico — o que a memória diz (correction_guidance), onde vale (scope), quantos erros, de que rodada — e o hash do arquivo final, que fica na pasta da mineração, no ambiente da base (sem os casos). O que tem destino harness fica no monitoramento.json. A entrada é montada pelo passo 9 do minerar.py (catalogo_<unidade>_<base>.json, já varrido) e posta aqui com `.claude/skills/mineracao-candidata/scripts/catalogar_memoria.py --registrar`; `--conferir` confere o catálogo. Decisão de 19/10 (decisoes.md); livro-razão, Ajuste 22.",
   "itens": [
     {
       "id": "U_sandbox.B.OBFCivel",
@@ -48,9 +48,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.B.OBFCivel_base3.json",
         "sha256_16": "9502cf9a68e7f201",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -138,9 +138,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.B.RespostaBacen_base3.json",
         "sha256_16": "e737696ad09d9f8a",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "rara",
@@ -240,9 +240,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.C_base3.json",
         "sha256_16": "f7d78dede55ce05c",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "nao_vale_em": [
         {
@@ -320,9 +320,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.C.CalculoTrabalhista_base3.json",
         "sha256_16": "2252e080906940a9",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "rara",
@@ -416,9 +416,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.C.JoogleAnalytics_base3.json",
         "sha256_16": "8d87885880e42284",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "degrau": 2,
       "conferencia": {
@@ -496,9 +496,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.AgenteTestemunhas_base3.json",
         "sha256_16": "f370bff8537d80a7",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -587,9 +587,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.CalculoCivel_base3.json",
         "sha256_16": "4ff6a74adacb700b",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -689,9 +689,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.CalculoTrabalhista_base3.json",
         "sha256_16": "6ad9559cfa4da29a",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -782,9 +782,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.Consultivo_base3.json",
         "sha256_16": "fc163d3043b5e911",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -877,9 +877,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.JoogleAnalytics_base3.json",
         "sha256_16": "c1d457b4e9def964",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -970,9 +970,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.OBFCivel_base3.json",
         "sha256_16": "b362efcecc4b5910",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -1060,9 +1060,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.OficiosResposta_base3.json",
         "sha256_16": "8bb1827e368588a5",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -1154,9 +1154,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.RespostaBacen_base3.json",
         "sha256_16": "78c048d2af30d0df",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -1244,9 +1244,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.RespostaOficios_base3.json",
         "sha256_16": "6abc28e507f1d7bc",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -1334,9 +1334,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.D.ontestacaoCivel_base3.json",
         "sha256_16": "29de5cd5ccb6e1bf",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "monitorada": {
         "tipo": "reforço",
@@ -1446,9 +1446,9 @@
       "arquivo": {
         "nome": "memoria_U_sandbox.E_base3.json",
         "sha256_16": "079f978aaf2d2972",
-        "onde": "na pasta da mineração, na máquina da base"
+        "onde": "na pasta da mineração, no ambiente da base"
       },
-      "transcricao": "fotos IMG_5992–IMG_6011 (máquina da base, 21/10), conferida contra o inventário e as partes do resumo (IMG_5985–IMG_5987)",
+      "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
       "degrau": 2,
       "conferencia": {

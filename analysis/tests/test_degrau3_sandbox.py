@@ -1,5 +1,5 @@
 """degrau3_sandbox.py (base 3): as regras contadas do degrau 3 e os casos mascarados (dossiê do sandbox §2h, 30).
-Sintético. O mascaramento é o que decide o que sai da máquina da base: os testes cobrem os buracos já vistos."""
+Sintético. O mascaramento é o que decide o que sai do ambiente da base: os testes cobrem os buracos já vistos."""
 import csv
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path

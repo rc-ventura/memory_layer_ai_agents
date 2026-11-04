@@ -112,7 +112,7 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   com `disable-model-invocation: true`, só rodam quando chamadas. O argumento: no Claude, o `$ARGUMENTS` é
   substituído; no Copilot, o texto depois do `/nome` vai junto como contexto — por isso o texto diz "indicada no
   pedido".
-- Se o VS Code de uma máquina for antigo e não achar as skills do `.claude/`, o problema é a versão, não o kit.
+- Se o VS Code de um ambiente for antigo e não achar as skills do `.claude/`, o problema é a versão, não o kit.
 - Para usar em outro repositório, copie `.claude/skills/{mineracao-*,investigar,propor-script}` e os
   quatro agentes.
 

@@ -11,7 +11,7 @@ Este script aplica a proposta SÓ na tabela em memória e confere:
   4. o que a régua da triagem (≥ 3 execuções e ≥ 2 meses) diz das unidades afetadas, antes e depois.
 
 **Histórico:** a proposta virou o Ajuste 17 (13/10). Com o código de depois do ajuste, o "antes" já traz a unidade
-nova e nada muda; os números da simulação (máquina 2, foto IMG_5721) são do código do commit `9fd032b`.
+nova e nada muda; os números da simulação (ambiente da base) são do código do commit `9fd032b`.
 
 Imprime só contagens e nomes de unidade, papel e mês. Uso, da raiz:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/simular_regra_assinatura.py [--fonte <parquet>]

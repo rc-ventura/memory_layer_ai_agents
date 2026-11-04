@@ -4,8 +4,8 @@
 > [`06`](../../docs/06-procedimento-mineracao-candidatas.md); porquê: [`07`](../../docs/07-racionais-mineracao-candidatas.md).
 
 **Rodada:** `observada_e3ebc8274dcf108c` (fonte `908aa005…`, extração v2) · **Mineração:** `minerar.py`, 9 passos, 16/10/2026,
-máquina da base · **Evidência:** `pipeline/resultados/mineracao/U_sandbox/` na máquina da base (`memoria_U_sandbox_base3.json`,
-`inventario.csv`, `inventario_papel.csv`, `inventario_mes.csv`, `manifesto_mineracao.json`), lida por fotos em 19/10/2026.
+ambiente da base · **Evidência:** `pipeline/resultados/mineracao/U_sandbox/` no ambiente da base (`memoria_U_sandbox_base3.json`,
+`inventario.csv`, `inventario_papel.csv`, `inventario_mes.csv`, `manifesto_mineracao.json`), transcrita em 19/10/2026.
 
 ## 1 · A mineração fechou
 
@@ -53,7 +53,7 @@ O resto (as outras combinações pequenas e os 5 sem nome) fecha os 3.653.
   está preenchida em memória. Se já estiver, PULE a chamada e siga para a próxima etapa." Não menciona `NameError` nem
   proíbe `globals()`. Uma das 3 execuções cumpre a instrução com `'x' in globals()` (a linha que falhou é uma verificação
   de existência) e é barrada. Comando: `uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_introspeccao_prompt_base2.py --trace <trace da base 1>`.
-- **Os testes que fecham a hipótese** (rodam na máquina da base):
+- **Os testes que fecham a hipótese** (rodam no ambiente da base):
   - base 2: `analysis/2026-09-trace-law-flow-second/scripts/contar_introspeccao_prompt_base2.py --trace <trace da base 2>`
     — papel × mês × versão do trecho do prompt × erros de introspecção e de `try/except`;
   - base 3: `analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>`
@@ -61,7 +61,7 @@ O resto (as outras combinações pequenas e os 5 sem nome) fecha os 3.653.
 - **Consequência para o destino:** uma memória "não chame `globals`" brigaria com a instrução do próprio prompt. O conserto
   é no prompt (harness), como no `try/except`, e não memória.
 
-### A · Resultado dos testes (19/10, máquina da base): a hipótese se confirma
+### A · Resultado dos testes (19/10, ambiente da base): a hipótese se confirma
 
 **Base 2** (`contar_introspeccao_prompt_base2.py --trace <base 2>`), ContestacaoCivel, primeiro passo de cada execução:
 
@@ -89,7 +89,7 @@ Os formatos mais comuns de "outro uso" são **verificação por função auxilia
 **Como a função auxiliar falha (inferência, não vista):** o agente define `def has_var(nome): return nome in globals()` e
 depois chama `if not has_var('x'): x = ferramenta(...)`. Definir a função não executa nada; o `globals()` roda quando a
 função é chamada, e o sandbox o barra nesse momento — por isso a mensagem é "Forbidden function evaluation: 'globals'" e a
-linha que falhou é a da chamada, que não tem `globals()` escrito. Só a linha da chamada está nas fotos; a linha do `def`
+linha que falhou é a da chamada, que não tem `globals()` escrito. Só a linha da chamada está na saída; a linha do `def`
 não foi vista. Para virar fato: contar, no código do passo com erro (`error_code_action`), as funções definidas com
 `globals()` dentro.
 
@@ -101,18 +101,18 @@ não foi vista. Para virar fato: contar, no código do passo com erro (`error_co
 
 | Achado | Fato ou inferência | Fonte | Comando que reproduz |
 |---|---|---|---|
-| O prompt antigo (jul/26) manda verificar sem dizer como; 1 de 3 execuções verifica com `globals()` e é barrada; as 2 que não verificam passam | fato (base 1, n = 3) | o trace da base 1, nesta máquina; trecho do prompt citado acima | `uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_introspeccao_prompt_base2.py --trace <trace da base 1>` (partes C e E) |
+| O prompt antigo (jul/26) manda verificar sem dizer como; 1 de 3 execuções verifica com `globals()` e é barrada; as 2 que não verificam passam | fato (base 1, n = 3) | o trace da base 1, neste ambiente; trecho do prompt citado acima | `uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_introspeccao_prompt_base2.py --trace <trace da base 1>` (partes C e E) |
 | O prompt novo (ago/26) manda `try/except NameError` e proíbe `globals()`/`locals()` | fato (base 2, leitura de 3 casos) | relatório da base 3, §7.9 | — (leitura de casos, 13/10) |
-| Prompt antigo: 36 de 127 verificam, todos com introspecção, 35 com erro; 91 não verificam, 1 com erro. Prompt novo: 97 de 97 com `try/except`, 97 com erro | fato (base 2) | fotos `IMG_5892`–`IMG_5894` (pasta `introspeccaco`) e `IMG_5896`–`IMG_5897` (pasta `introspeccaco_2`), 19/10 | `contar_introspeccao_prompt_base2.py --trace <base 2>` (partes C, D, E) |
-| Os 36 erros de introspecção da base 2 são verificação de existência | fato (base 2) | as mesmas fotos, parte D | idem |
-| Base 3, ContestacaoCivel: verificação por introspecção 3 / 1.527 / 709 (jun/jul/ago) × `try/except` 0 / 95 / 5.667 | fato (base 3) | foto `IMG_5895` (pasta `introspeccaco`) e `IMG_5898` (pasta `introspeccaco_2`) | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>` (partes A, B) |
-| Os 136 de "outro uso" são, nos formatos mais comuns, verificação por função auxiliar | fato (o formato da linha); o `globals()` dentro da função é inferência | foto `IMG_5898`, parte C | idem (parte C) |
-| A introspecção do ContestacaoCivel concentra-se em jul–ago e é 73% da lição do sandbox | fato (base 3) | fotos `IMG_5874`–`IMG_5891` (pasta `U_sandbox_mineracao`): `inventario_papel.csv`, `inventario_mes.csv` | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/especificas/minerar.py U_sandbox --rodada observada_e3ebc8274dcf108c` |
+| Prompt antigo: 36 de 127 verificam, todos com introspecção, 35 com erro; 91 não verificam, 1 com erro. Prompt novo: 97 de 97 com `try/except`, 97 com erro | fato (base 2) | saída, 19/10 | `contar_introspeccao_prompt_base2.py --trace <base 2>` (partes C, D, E) |
+| Os 36 erros de introspecção da base 2 são verificação de existência | fato (base 2) | a mesma saída, parte D | idem |
+| Base 3, ContestacaoCivel: verificação por introspecção 3 / 1.527 / 709 (jun/jul/ago) × `try/except` 0 / 95 / 5.667 | fato (base 3) | saída | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>` (partes A, B) |
+| Os 136 de "outro uso" são, nos formatos mais comuns, verificação por função auxiliar | fato (o formato da linha); o `globals()` dentro da função é inferência | saída, parte C | idem (parte C) |
+| A introspecção do ContestacaoCivel concentra-se em jul–ago e é 73% da lição do sandbox | fato (base 3) | saída: `inventario_papel.csv`, `inventario_mes.csv` | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/especificas/minerar.py U_sandbox --rodada observada_e3ebc8274dcf108c` |
 | A instrução causa os dois sintomas (sinal de harness com dois sintomas) | conclusão dos fatos acima | — | — |
 | Corrigir o prompt (ou dar um dicionário de estado) faz os dois sumirem juntos | **previsão, a verificar** | — | o monitoramento (`b3 #28`), depois do conserto |
 
-As fotos ficam no iCloud do Rafael (`Analista …/introspeccaco`, `introspeccaco_2`, `U_sandbox_mineracao`); os arquivos
-gravados pela mineração ficam na máquina da base, em `pipeline/resultados/mineracao/U_sandbox/`.
+Os arquivos
+gravados pela mineração ficam no ambiente da base, em `pipeline/resultados/mineracao/U_sandbox/`.
 
 ### A · Fora do ContestacaoCivel: verificação espontânea? (base 1, 19/10)
 
@@ -121,13 +121,13 @@ gravados pela mineração ficam na máquina da base, em `pipeline/resultados/min
   `user_context = globals().get('…', '…')` — lê a variável com valor padrão. O prompt desse papel não fala em verificar
   variáveis: **a verificação é espontânea** (hábito do agente), não instruída. Na base 3 há ≈ 9 casos assim em outros
   papéis; a parte F do `contar_introspeccao_prompt_base2.py` conta, na base 2, se algum outro papel tem a instrução.
-- **Base 2, parte F (19/10, foto `IMG_5899`):** em todos os papéis, só o ContestacaoCivel tem a instrução no prompt (224
+- **Base 2, parte F (19/10):** em todos os papéis, só o ContestacaoCivel tem a instrução no prompt (224
   de 224 execuções) e só ele verifica (133 no primeiro passo, 134 em algum passo); nenhum outro papel tem a instrução nem
   verifica. Logo, as ≈ 9 verificações de outros papéis na base 3 são espontâneas, como a do `ConversationAgent` na base 1.
 - Consequência para o Ajuste 21: uma regra só pela linha junta a verificação instruída (harness) com a espontânea
   (lição do sandbox).
 
-### A · O teste da regra (b) na base 3 (19/10, foto `IMG_5900`)
+### A · O teste da regra (b) na base 3 (19/10)
 
 `contar_introspeccao_linha.py --fonte <parquet v2>`, parte D — a verificação guarda a criação da variável por uma chamada
 ("instruída") ou não ("espontânea")?
@@ -150,7 +150,7 @@ A introspecção que verifica a variável e guarda a criação dela por uma cham
 `U_verificacao_existencia` (a antiga `U_verificacao_try_nameerror`), destino harness. Esperado na base 3: ≈ 2.218 erros
 mudam de unidade; o resíduo de 157 do ContestacaoCivel fica no sandbox (aceito). → livro-razão, Ajuste 21; `b3 #46`.
 
-## 2b · Depois do Ajuste 21: a mineração na rodada `observada_85706f1e94f88f59` (19/10, fotos `IMG_5905`–`IMG_5907`)
+## 2b · Depois do Ajuste 21: a mineração na rodada `observada_85706f1e94f88f59` (19/10)
 
 9 passos fechados: **1.436 erros · 1.291 execuções · 10 meses · 16 papéis · 43 nomes**; cobertura **99,7%**; encontro **61
 medidas iguais**; memória aprovada no esquema 0.2; 2 erros repetem o nome na mesma execução; 6 listas de imports autorizados.
@@ -182,7 +182,7 @@ Nenhum prompt desses papéis menciona `__name__`, `type(`, `repr`, `eval` ou `ex
 falha** ("→ acumule: secoes_geradas (dict), secoes_com_falha (lista)") — uma candidata a origem do `type(e).__name__`, se é
 assim que o agente registra a falha. É hipótese até o teste.
 
-**Os testes (rodar na máquina da base):**
+**Os testes (rodar no ambiente da base):**
 
 | Base | Script | Responde |
 |---|---|---|
@@ -211,7 +211,7 @@ São 6 listas de imports autorizados. Ex.: `pandas`/`numpy`/`dateutil` só para 
 `Consultivo`/`OBFCivel` sem `pandas` nem `numpy`; `CalculoCivel` com `openpyxl` e `os`. Uma memória de "imports autorizados"
 precisa ser por papel.
 
-### 2c · O resultado dos testes da parte E (19/10, fotos `IMG_5920`–`IMG_5928`)
+### 2c · O resultado dos testes da parte E (19/10)
 
 **Base 3** (`contar_proibidas_linha.py`): **523 erros** (o esperado), **450 no ContestacaoCivel** (jul–ago/26) e 73 nos
 outros papéis. O uso da linha que falhou, no ContestacaoCivel:
@@ -256,10 +256,10 @@ e `U_sandbox.E` (global, destino em aberto). As fechadas (C, B, D) entram no cat
 a E fica fora até a investigação acima. Ensaio na base 1: 4 memórias, 3 no catálogo. Na base 3: falta a rodada nova
 (o esquema 0.3 entra no hash do código) e a revalidação.
 
-## 2d · O fechamento na base 3: rodada `aedb9b5db70d6c92` (19/10, fotos `IMG_5929`–`IMG_5936`)
+## 2d · O fechamento na base 3: rodada `aedb9b5db70d6c92` (19/10)
 
 Código com os Ajustes 21–23 e as emendas 4–6 (a rodada anterior, `85706f1e`, era do código de antes). O primeiro
-`minerar.py` parou no passo 7 com **35 erros só na auditoria** (`funcao_proibida`): a auditoria da máquina da base ainda era
+`minerar.py` parou no passo 7 com **35 erros só na auditoria** (`funcao_proibida`): a auditoria do ambiente da base ainda era
 a de antes da emenda 5; com a auditoria nova, fechou.
 
 | Passo | Resultado |
@@ -289,7 +289,7 @@ a de antes da emenda 5; com a auditoria nova, fechou.
 | `U_sandbox.D.OficiosResposta` | 1 | 1 | 1 | 1 |
 | `U_sandbox.D.RespostaOficios` | 1 | 1 | 1 | 1 |
 
-Guidances (do resumo; truncadas na foto): C "Importe antes de usar: json, pd, re, datetime."; B "As ferramentas já estão no
+Guidances (do resumo; truncadas na saída): C "Importe antes de usar: json, pd, re, datetime."; B "As ferramentas já estão no
 escopo como funções: chame-as direto, sem import. Não importe: …"; D, por papel, "Não importe: …; imports autorizados
 neste papel: …"; E "Não chame: globals, repr, eval, locals, dir, exec, `__import__`, bytes, open, hash, vars; Não acesse: …"
 + o complemento fixo. **Observação:** 6 das 14 memórias têm 1 a 3 erros (B.RespostaBacen e D em 5 papéis): o catálogo
@@ -340,7 +340,7 @@ As 14 memórias estão no degrau 1 (candidata). O degrau 2, checagem por checage
    de verificação; B conforme o `#49`;
 4. **as decisões do Rafael:** D (repete o prompt — manter, monitorar ou descartar) e as 6 que falham na recorrência
    (`b3 #48`); o destino da verificação com valor padrão (harness, junto do grupo A, ou memória);
-5. **a mineração de novo** na máquina da base e o catálogo atualizado, com o degrau de cada memória.
+5. **a mineração de novo** no ambiente da base e o catálogo atualizado, com o degrau de cada memória.
 
 ## 2g · O degrau 2 por script, com o prompt da base 1 (20/10)
 
@@ -387,16 +387,16 @@ uv run python .claude/skills/mineracao-candidata/scripts/conferir_memorias.py --
 - **B.RespostaBacen falha no ambiente:** `python_interpreter` não é ferramenta declarada em nenhuma das 7 versões. A memória diz que ela está no escopo. Isso fecha o "a conferir" do §2f.
 - **A 3 de E sai "parcial"** porque os prompts já citam `print` (e `type`, no JoogleAnalytics). Ensinar `print` não é o defeito; o parcial aqui é ruído, não reprovação.
 
-**O roteiro da ida à máquina da base 2** (etapa 2 do plano; um trace, três comandos):
+**O roteiro da ida ao ambiente da base 2** (etapa 2 do plano; um trace, três comandos):
 1. `uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_ferramentas_prompt_base2.py --trace <base 2>`. Pergunta: por versão do prompt do OBFCivel, `get_document_text` é mencionada e não declarada? Fecha o `b3 #49`.
-2. `uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace <base 2> --saida <fora do repo>/prompts_base2.jsonl`, depois `uv run python .github/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora do repo>/prompts_base2.jsonl --saida <fora do repo>/conferencia_base2.json`. Dá o degrau 2 das 14 com o prompt do mesmo período, inclusive a pergunta do `json` no RoteadorCivel. Foto da tabela impressa e do JSON por memória.
+2. `uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace <base 2> --saida <fora do repo>/prompts_base2.jsonl`, depois `uv run python .github/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora do repo>/prompts_base2.jsonl --saida <fora do repo>/conferencia_base2.json`. Dá o degrau 2 das 14 com o prompt do mesmo período, inclusive a pergunta do `json` no RoteadorCivel. Trazer a tabela impressa e o JSON por memória.
 3. A replicação do Ajuste 21 na base 2 (livro-razão, Ajuste 21, "Replicar", item 2). Copiar os `.py` e `.ipynb` da base 1 para a base 2, ajustar só `TRACE` e `BASE_ID`, conferir com o `conferir_versao.py` e rodar o notebook da esteira.
 
-## 2h · A ida à base 2 (20/10, fotos `IMG_5968`–`IMG_5973`)
+## 2h · A ida à base 2 (20/10)
 
-Os comandos do roteiro do §2g, na máquina da base 2, com o kit 0.10.0 em `.github/skills/`.
+Os comandos do roteiro do §2g, no ambiente da base 2, com o kit 0.10.0 em `.github/skills/`.
 
-**1 · O `get_document_text` no OBFCivel** (`contar_ferramentas_prompt_base2.py`, foto `IMG_5968`). Fato: as **63
+**1 · O `get_document_text` no OBFCivel** (`contar_ferramentas_prompt_base2.py`). Fato: as **63
 execuções** do OBFCivel (abr–ago/26) têm um só conjunto de ferramentas declaradas (hash `c77d8b11e7`; as 4 versões do
 prompt do item 2 diferem no resto do texto). Em todas, o prompt **cita** `get_document_text` e **não a declara**; não
 cita nem declara `python_interpreter`. As declaradas: `extract_documents_metadata`, `extract_obf_requests`,
@@ -407,11 +407,10 @@ prompt. **Decisão do Rafael (20/10): harness** (Ajuste 26, a escrever); o resto
 OBFCivel nunca chama `get_document_text(...)` direto (0 de 103 passos) e nenhum papel a declara em nenhuma versão (só o
 OBFCivel a cita, abr–ago/26). Hipótese do Rafael (20/10): a ferramenta mudou de nome e o prompt não acompanhou. O teste,
 na base 2: as chamadas diretas e o que aconteceu com elas; se algum papel, em algum mês, declara a função.
-A mesma foto: o retorno descrito como `pandas` aparece só em CalculoTrabalhista (5 de 12 execuções) e JoogleAnalytics
+Na mesma saída, o retorno descrito como `pandas` aparece só em CalculoTrabalhista (5 de 12 execuções) e JoogleAnalytics
 (10 de 10), papéis com `pandas` autorizado — apoia a decisão 5 do plano (o `pd` só por papel).
 
-**2 · O degrau 2 com o prompt da base 2** (`extrair_prompts_base2.py` e `conferir_memorias.py`, fotos
-`IMG_5969`–`IMG_5971`): 66 versões em 18 papéis (as execuções do ContestacaoCivel somam 224, como no §2e); arquivo de
+**2 · O degrau 2 com o prompt da base 2** (`extrair_prompts_base2.py` e `conferir_memorias.py`): 66 versões em 18 papéis (as execuções do ContestacaoCivel somam 224, como no §2e); arquivo de
 prompts `9713536588a9ce17`; régua 3 execuções / 2 meses.
 
 | Memória | 1 · ambiente | 2 · conflito | 3 · repete | 4 · recorrência | 5 · uma causa |
@@ -434,17 +433,17 @@ versões do ContestacaoCivel. **Hipótese nova:** a lista que o prompt mostra po
 a lista do ContestacaoCivel vem da mensagem de erro do sandbox e tem `json`; na base 1, as versões de jul/26 do prompt do
 mesmo papel não têm. Se divergem, o degrau 2 tem de dizer qual lista vale (hoje a checagem 1 lê a do prompt).
 
-**3 · A replicação do Ajuste 21 na base 2 — parada** (`conferir_versao.py`, foto `IMG_5972`): `PARAR`, 2 arquivos fora
+**3 · A replicação do Ajuste 21 na base 2 — parada** (`conferir_versao.py`): `PARAR`, 2 arquivos fora
 do manifesto — `mineracao_unidades_n2_n10.ipynb` **falta** e `consolidacao_unidades.ipynb` **difere** (`62b24d261d7e0eeb`,
 esperado `c5cc2467dc2fd6db`); os demais conferem, incluindo `base_pipeline.py` e o notebook da esteira. A tabela de
-mecanismos do notebook (foto `IMG_5973`) dá 479 erros (o total da base 2), verificação de existência 140 (132
-execuções), inventário do sandbox 25 (22) — **a confirmar** que é a saída do notebook da base 2 (o comando na foto aponta
+mecanismos do notebook dá 479 erros (o total da base 2), verificação de existência 140 (132
+execuções), inventário do sandbox 25 (22) — **a confirmar** que é a saída do notebook da base 2 (o comando na saída aponta
 para a pasta da base 1) e sem o número de antes para dizer o que mudou de unidade.
 
-**4 · A decisão 2: a verificação com valor padrão → harness (20/10).** Evidência: fotos `IMG_5920`–`IMG_5923` (base 3:
+**4 · A decisão 2: a verificação com valor padrão → harness (20/10).** Evidência: a contagem da base 3 (
 `globals` no ContestacaoCivel 0 até jun/26, 73 em jul, 64 em ago; 124 dos 137 e 10 de 10 `locals` são verificação; nos
-outros papéis, 9) e `IMG_5899` (base 2: só esse papel tem a instrução, 224 de 224). A coluna "código com a verificação
-instruída" (`IMG_5924`, 117 de 137 em `globals`) não conta como prova: procura `in globals()`, que a própria linha tem. A
+outros papéis, 9) e a da base 2 (só esse papel tem a instrução, 224 de 224). A coluna "código com a verificação
+instruída" (117 de 137 em `globals`) não conta como prova: procura `in globals()`, que a própria linha tem. A
 instrução não diz como verificar; o sandbox barra os dois jeitos que o agente tenta. No interpretador
 (`pipeline/validacao/testar_sandbox_try_nameerror.py`, smolagents 1.26.0): `globals()` e `except NameError` falham;
 `except Exception`, `except` sem tipo e `x = None` + `if x is None` funcionam. **Decisão do Rafael: harness**, por coerência
@@ -480,9 +479,9 @@ cria*, *sem nome entre aspas* (`[v for v in obrigatorias if v not in globals()]`
   (só o ContestacaoCivel), ou o Rafael decide levar também esses casos — decisão com os números na mão;
 - o número do ContestacaoCivel (as três formas somadas) é o esperado da rodada nova (≈ 134; o exato sai daqui).
 
-Comando, na máquina da base 3: `uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>` — foto das duas tabelas da parte E.
+Comando, no ambiente da base 3: `uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet v2>` — trazer as duas tabelas da parte E.
 
-**8 · O resultado (20/10, fotos `IMG_5976`–`IMG_5978`).** As partes A–D reproduzem a medição de 19/10 (`IMG_5900`): no
+**8 · O resultado (20/10).** As partes A–D reproduzem a medição de 19/10: no
 ContestacaoCivel, instruída 3/1.521/694, espontânea 0/41/61, não verifica 0/39/16 (jun/jul/ago). A parte E:
 
 | Papel | cria com valor fixo | leitura com valor padrão | sem nome entre aspas | verifica e não cria | total |
@@ -496,7 +495,7 @@ ContestacaoCivel, instruída 3/1.521/694, espontânea 0/41/61, não verifica 0/3
 **Pelo critério fixado antes (item 7): a forma não separa** — fora do ContestacaoCivel aparecem as outras três formas (8
 de 9). E o ContestacaoCivel tem as quatro, não só "cria com valor fixo": a instrução não diz como verificar. **Decisão do
 Rafael (20/10): pelo papel** — os 135 do ContestacaoCivel (as quatro formas) vão para `U_verificacao_existencia`; os 9 dos
-outros papéis ficam no sandbox, porque **o prompt desses papéis não tem a instrução** (base 2, `IMG_5899`: em todos os
+outros papéis ficam no sandbox, porque **o prompt desses papéis não tem a instrução** (base 2: em todos os
 papéis, só o ContestacaoCivel tem a instrução, 224 de 224; base 1: o único caso fora dele, ConversationAgent, sem
 instrução). Inferência, não visto erro a erro: a base 3 não guarda o prompt, e as bases podem ter versões diferentes. Por
 que esses agentes verificam sem instrução não se sabe ("hábito" seria interpretação). Os 9 não viram memória injetada (a
@@ -532,15 +531,14 @@ degrau 2). As D repetem o prompt; a recorrência falha na base 1, que é pequena
 - **encontro** com a auditoria: todas as medidas iguais; a observação 1 da revalidação 7 (variantes com espaço) se mede
   aqui, se o número da verificação não for 135.
 
-**11 · A rodada nova da base 3 e a mineração (21/10, fotos `IMG_5981`–`IMG_5987`).** Rodada **`99e032ad3a8528d8`**
-(código com os Ajustes 26 e 27; mesma fonte, extração v2). `executar.py analisar --perfil U_sandbox` (`IMG_5981`): 30.141
-erros, 749 pendentes (os mesmos da rodada anterior), 19 unidades (eram 18). `comparar_rodadas.py --antes aedb9b5db70d6c92`
-(`IMG_5982`–`IMG_5984`): código que mudou, os 3 arquivos do pipeline e o esquema; resumo do manifesto, 1 campo diferente
+**11 · A rodada nova da base 3 e a mineração (21/10).** Rodada **`99e032ad3a8528d8`**
+(código com os Ajustes 26 e 27; mesma fonte, extração v2). `executar.py analisar --perfil U_sandbox`: 30.141
+erros, 749 pendentes (os mesmos da rodada anterior), 19 unidades (eram 18). `comparar_rodadas.py --antes aedb9b5db70d6c92`: código que mudou, os 3 arquivos do pipeline e o esquema; resumo do manifesto, 1 campo diferente
 (`unidades_observaveis` 18 → 19); genealogia com 30.141 erros em cada etapa e as 11 famílias com os mesmos erros; o
 sandbox **1.401 → 1.100** (301 saem: 167 do Ajuste 26 — a B.OBFCivel cai 211 → 44 — e, por diferença, **134** do Ajuste
 27, 1 abaixo dos 135 medidos no parquet cru; os pendentes não mudam, então o 1 não estava pendente — a confirmar na
 tabela de unidades); o veredito "não fecha" é o esperado (o script exige números iguais; aqui a mudança é a pedida).
-`minerar.py U_sandbox --rodada 99e032ad3a8528d8` (`IMG_5985`–`IMG_5987`): os 9 passos fecham — 1.100 erros, 982
+`minerar.py U_sandbox --rodada 99e032ad3a8528d8`: os 9 passos fecham — 1.100 erros, 982
 execuções, 10 meses, 16 papéis; cobertura 99,6%; 6 listas autorizadas; **77 medidas iguais** à auditoria; **17 memórias**
 no esquema 0.4; catálogo com 16 fechadas e 1 fora (F, em aberto); varredura limpa.
 
@@ -557,7 +555,7 @@ no esquema 0.4; catálogo com 16 fechadas e 1 fora (F, em aberto); varredura lim
 O `json` ficou na **C global** porque está nas 6 listas autorizadas que a base 3 mostra, e essas listas vêm das
 **mensagens de erro do sandbox** — inclusive a do ContestacaoCivel e a do Consultivo e OBFCivel.
 
-**12 · O `json` no prompt da base 2 (21/10, foto `IMG_5991`; `contar_modulo_na_lista_base2.py`).** 66 versões em 18
+**12 · O `json` no prompt da base 2 (21/10; `contar_modulo_na_lista_base2.py`).** 66 versões em 18
 papéis. Sem `json` na lista do **prompt**: **RoteadorCivel, 2 de 2 versões (582 execuções, mai–ago/26)**;
 **ContestacaoCivel, 20 de 23 (203 execuções, jul–ago/26)**; OBFCivel, 1 de 4 (23 execuções, jul–ago/26); os outros 15
 papéis têm `json` em todas as versões. **Fato novo:** a lista do prompt e a do sandbox divergem no mesmo papel e período —
@@ -571,13 +569,13 @@ erro "fora da lista" é bem maior que "na lista" no mesmo papel (RoteadorCivel n
 comparação é com os outros papéis); se as taxas são parecidas, não vale. Base 1: 3 erros de `json` sem import, todos em
 execuções com `json` na lista (3/812 contra 0/738 fora dela) — pequena demais para decidir.
 
-**13 · A base 2 (21/10, fotos `IMG_5988`–`IMG_5990`).** `conferir_versao.py` (`IMG_5988`): o `base_pipeline.py` da base 2
+**13 · A base 2 (21/10).** `conferir_versao.py`: o `base_pipeline.py` da base 2
 **confere** com o manifesto do kit 0.10.2 (`ff1d73224be04c43`: os Ajustes 21, 23, 26 e 27 replicados); ainda **PARAR**
 por `mineracao_unidades_n2_n10.ipynb` (falta) e `consolidacao_unidades.ipynb` (difere) — os dois notebooks não foram
-copiados. O notebook da esteira, agora da pasta da base 2 (`IMG_5989`–`IMG_5990`): ContestacaoCivel 192 erros, 73% na
+copiados. O notebook da esteira, agora da pasta da base 2: ContestacaoCivel 192 erros, 73% na
 verificação de existência (≈ 140, como em 20/10).
 
-**14 · O teste da hipótese do `json` na base 2 (21/10, foto `IMG_6012`; `contar_modulo_sem_import_base2.py`).** Execuções
+**14 · O teste da hipótese do `json` na base 2 (21/10; `contar_modulo_sem_import_base2.py`).** Execuções
 com "`json` sem import" sobre as execuções, pelo prompt da execução ter o `json` na lista ou não:
 
 | Papel | Na lista | Fora da lista |
@@ -593,14 +591,14 @@ lista o `json` (0,4% fora contra 1,6% na lista). Na base 2 o erro é raro em qua
 as listas do prompt e do sandbox divergem (item 12); o que cai: que essa divergência induza o "`json` sem import". Limite: a
 base 2 tem poucos desses erros, e a base 3 (241 no RoteadorCivel) não tem o prompt.
 
-**15 · O catálogo registrado na máquina da base (21/10, fotos `IMG_5992`–`IMG_6011`).** `catalogar_memoria.py --registrar`:
+**15 · O catálogo registrado no ambiente da base (21/10).** `catalogar_memoria.py --registrar`:
 "registrado: 16 memória(s) no catálogo" — as 14 de antes trocadas pela rodada `99e032ad…` e as 2 novas (C.JoogleAnalytics,
-C.CalculoTrabalhista), todas no esquema 0.4, com `nomes` e `destino_decidido_em` pelo título da entrada. As fotos mostram as
+C.CalculoTrabalhista), todas no esquema 0.4, com `nomes` e `destino_decidido_em` pelo título da entrada. As saídas mostram as
 16 entradas inteiras; a transcrição para o `registros/memorias.json` do repositório é o próximo passo.
 
-**16 · O `json` no RoteadorCivel: o teste na base 3 (21/10, foto `IMG_6013`; `contar_modulo_sem_import_papel.py`).**
+**16 · O `json` no RoteadorCivel: o teste na base 3 (21/10; `contar_modulo_sem_import_papel.py`).**
 Pista anterior (base 1, prompt `243b65b1a1`): as ferramentas do papel devolvem "JSON formatado como string" — o agente
-precisa de `json.loads` — e a lista de imports autorizados dessa versão (mai–ago/26) não tem o `json`. Na mesma foto, o
+precisa de `json.loads` — e a lista de imports autorizados dessa versão (mai–ago/26) não tem o `json`. Na mesma saída, o
 `conferir_versao` da base 2 dá **IGUAL ao manifesto** (os dois notebooks copiados).
 
 | Mês | Execuções do papel com algum erro | Com "`json` sem import" | Taxa |
@@ -677,7 +675,7 @@ caso inverso, o prompt citando o que o ambiente não declara.
   `additional_authorized_imports` ([secure code execution](https://huggingface.co/docs/smolagents/main/tutorials/secure_code_execution.md)).
 O mecanismo da plataforma (um interpretador passado de fora, ou o prompt trocado) é hipótese até o código dela.
 
-**20 · A base 2 confirma (21/10, foto `IMG_6014`; `contar_import_vs_lista_base2.py`).** Nas **808** execuções cujo prompt
+**20 · A base 2 confirma (21/10; `contar_import_vs_lista_base2.py`).** Nas **808** execuções cujo prompt
 não lista o `json`, **520** passos têm `import json`, e **os 520 rodam** — 0 barrados:
 
 | Papel | `json` na lista do prompt | Execuções | Passos com `import json` | Rodou | Barrado |
@@ -755,7 +753,7 @@ fecham com o tipo: reforço (as 10 D e a B.OBFCivel) ou rara (a B.RespostaBacen 
 alarme no catálogo (desenho de 20/10, `16`, "Dois níveis") ainda não estão no `catalogar_memoria.py`: entram no
 fechamento.
 
-**23 · O roteiro da ida à máquina das bases 2 e 3 (22/10).** Duas perguntas: (a) o degrau 2 das 16 com o prompt da
+**23 · O roteiro da ida ao ambiente das bases 2 e 3 (22/10).** Duas perguntas: (a) o degrau 2 das 16 com o prompt da
 base 2 (mesmo período da base 3) dá o mesmo que com o da base 1 (item 22)? (b) o managerAgent tem lista do interpretador
 na base 3, e ela tem `json`? (a questão 1 de 22/10). Nada é gravado no catálogo (sem `--registrar`).
 
@@ -770,10 +768,10 @@ uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_bas
 uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_ambiente_base2.py --trace <trace da base 2> --saida <fora>/ambiente_base2.json
 uv run python .github/skills/mineracao-candidata/scripts/conferir_memorias.py --prompts <fora>/prompts_base2.jsonl --ambiente <fora>/ambiente_base2.json --funcoes analysis/registros/funcoes_sandbox.json --base base3 --saida <fora>/conferencia_base2.json
 ```
-Fotos: a tabela que o segundo imprime (papéis, listas, módulos importados) e a tabela do terceiro, com as linhas
+Trazer: a tabela que o segundo imprime (papéis, listas, módulos importados) e a tabela do terceiro, com as linhas
 `! … decisão não vale`, se aparecerem (a decisão 5 da E foi registrada com os motivos do prompt da base 1; se o prompt da
 base 2 citar outra função, ela deixa de valer e volta para decisão). Se a C, a E ou a C.JoogleAnalytics falharem em
-alguma checagem, também a foto dos motivos:
+alguma checagem, também os motivos:
 `python -c "import json; d=json.load(open('<fora>/conferencia_base2.json')); [print(m['id'], c, p, x['resultado'], x['motivos']) for m in d['memorias'] if m['id'] in ('U_sandbox.C','U_sandbox.E','U_sandbox.C.JoogleAnalytics') for c, v in m['checagens'].items() if v['resultado'] != 'decidido pelo pesquisador' for p, x in v.get('papeis', {}).items() if x['resultado'] not in ('passa', 'não verificável')]"`
 (só os papéis que não passam; a checagem 5 sai "não verificável" nas três até a decisão de cada uma).
 
@@ -781,7 +779,7 @@ alguma checagem, também a foto dos motivos:
 ```
 python validacao/ambiente_da_mineracao.py --tabela resultados/mineracao/U_sandbox/imports_autorizados.csv --saida <fora>/ambiente_base3.json
 ```
-Foto: a lista de papéis que ele imprime. Se o managerAgent aparecer, também a lista dele:
+Trazer: a lista de papéis que ele imprime. Se o managerAgent aparecer, também a lista dele:
 `python -c "import json; print(json.load(open('<fora>/ambiente_base3.json'))['papeis'].get('managerAgent'))"`.
 (Não rodar a C só com o ambiente da base 3: os papéis que a tabela não mostra caem no prompt, e o resultado da C
 mistura as duas fontes; para a questão 1 basta a lista do managerAgent.) O que vale para a questão 1 (decidido em 22/10): managerAgent sem lista na base 3 → volta para
@@ -807,7 +805,7 @@ uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_casos_memori
 
 **O que isso diz:**
 - **Para o degrau 3, a base 1 não basta:** 6, 5 e 0 casos, longe dos 30. A base 2 também parece pequena (25 erros de sandbox
-  no notebook, item 2h, a confirmar; 6 de `json` sem import, item 14) — a conta exata sai do mesmo script na máquina (roteiro, item 23).
+  no notebook, item 2h, a confirmar; 6 de `json` sem import, item 14) — a conta exata sai do mesmo script no ambiente (roteiro, item 23).
   O volume está na base 3 (423, 317, 231), que só guarda o passo do erro e os vizinhos (n-1, n+1, n+2), sem o prompt.
   **A decisão 8 (ler nas bases 1 e 2) precisa ser revista: questão a trazer.**
 - **C, uma causa só — evidência a favor:** na base 1, em **0 de 6** o módulo tinha sido importado antes, sem erro, no mesmo
@@ -815,21 +813,21 @@ uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_casos_memori
   (`pipeline/validacao/testar_sandbox_import_persiste.py`, 22/10, smolagents 1.26.0: os três passos rodam): se o import
   tivesse rodado antes, a causa seria estado perdido, não esquecimento. Na base 3 (item 16): no RoteadorCivel, o passo
   seguinte importa e roda em 218 de 241. A medida do passo anterior na base 3 entrou no `contar_modulo_sem_import_papel.py`
-  (parte C, nova; `--papel todos`, `--nome pd` para o `pandas`) e sai na máquina (roteiro). Na base 1 no formato da base 3
+  (parte C, nova; `--papel todos`, `--nome pd` para o `pandas`) e sai no ambiente (roteiro). Na base 1 no formato da base 3
   (`fonte_base1_v1.parquet`), o script dá o mesmo: 0 de 3 (`json`) e 0 de 3 (`datetime`).
 - **E, uma causa só — evidência a favor, fraca:** na base 1 os 5 nomes são de inspecionar um valor (`repr`, `__name__`,
   `dir`). A E da base 3 proíbe também `exec`, `__import__`, `bytes`, `open`, `hash` e três dunder — nomes de outros usos
   possíveis (executar código, abrir arquivo). A distribuição por nome na base 3 (o `inventario.csv` da mineração) diz se
-  esses pesam; foto no roteiro.
+  esses pesam; está no roteiro.
 - **C.JoogleAnalytics:** sem caso na base 1; a evidência vem da base 3 (`--papel JoogleAnalytics --modulo pandas --nome pd`).
 
-*Acréscimo ao roteiro da máquina (item 23), três comandos:*
+*Acréscimo ao roteiro do ambiente (item 23), três comandos:*
 ```
 uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_casos_memoria_base2.py --trace <trace da base 2>
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_modulo_sem_import_papel.py --fonte <parquet da base 3> --papel todos --modulo json
 uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_modulo_sem_import_papel.py --fonte <parquet da base 3> --papel JoogleAnalytics --modulo pandas --nome pd
 ```
-(o segundo também com `--modulo re` e `--modulo datetime`). Fotos: a saída inteira de cada um, e o
+(o segundo também com `--modulo re` e `--modulo datetime`). Trazer: a saída inteira de cada um, e o
 `resultados/mineracao/U_sandbox/inventario.csv` (as linhas `funcao_proibida` e `atributo_dunder`: os erros por nome da E).
 
 **25 · As 13 não injetadas marcadas no catálogo (22/10; Ajuste 29, aprovado pelo Rafael).** `catalogar_memoria.py
@@ -857,7 +855,7 @@ base 1 no formato da base 3 (`fonte_base1_v1.parquet`): a E da base 1 (5 erros) 
 inspecionar um valor e, no passo seguinte, a própria saída do modelo diz que o erro foi usar `dir`). Os arquivos do teste
 foram apagados. `test_drill_down_base3.py` (3 testes); suíte 330, OK.
 
-*Roteiro do degrau 3 na máquina* (da pasta `pipeline/` da base 3; para cada memória `U_sandbox.C`, `U_sandbox.E`,
+*Roteiro do degrau 3 no ambiente* (da pasta `pipeline/` da base 3; para cada memória `U_sandbox.C`, `U_sandbox.E`,
 `U_sandbox.C.JoogleAnalytics`):
 ```
 python drill_down.py tabela U_sandbox.C
@@ -868,10 +866,10 @@ para o Rafael → leitura fechada → concordância). **Ponto a confirmar:** o r
 `--n 30`, mas o `montar_evidencia.py` aplica o `--n` a cada papel — numa memória global como a C, até 30 por papel
 (a unidade tem 16 papéis; quantos a C tem sai da tabela). O comando acima tira 30 no total; com `--por role`, seria preciso um `--n` menor.
 
-**27 · A ida à máquina das bases 2 e 3 (26/10, fotos `IMG_6036`–`IMG_6058`): as seis hipóteses.** Os comandos dos
+**27 · A ida ao ambiente das bases 2 e 3 (26/10): as seis hipóteses.** Os comandos dos
 itens 23, 24 e 26, com o kit 0.12.0 copiado para `.github/skills/` (o `funcoes_sandbox.json` chegou sem a quebra de linha
-final: o hash da foto, `fe65746b8bf693ca`, é o do mesmo conteúdo sem o `\n` — conferido aqui). O `drill_down.py` da base 3
-falhou na primeira gravação (`IMG_6052`: o caminho de um cru passava de 260 caracteres no Windows) e foi corrigido com o
+final: o hash transcrito, `fe65746b8bf693ca`, é o do mesmo conteúdo sem o `\n` — conferido aqui). O `drill_down.py` da base 3
+falhou na primeira gravação (o caminho de um cru passava de 260 caracteres no Windows) e foi corrigido com o
 `caminho_io` do pipeline (commit `4d53a85`). O `uv run` falha na primeira tentativa de cada comando (o `jupyterlab` dentro
 do OneDrive, "Acesso negado") e roda na segunda: não afeta os resultados.
 
@@ -882,16 +880,16 @@ do prompt (que não é a do interpretador, itens 18–21). A ida testou seis hip
 
 | # | A ideia | O resultado | Onde ver | Conclusão |
 |---|---|---|---|---|
-| **H1** | com o prompt da base 2 (mesmo período da base 3) e o ambiente pelo interpretador, as três continuam aprovadas no degrau 2 | C, E e C.JoogleAnalytics passam em ambiente, conflito, repetição e recorrência; a repetição da E sai "decidido" (a decisão 5 vale com o prompt da base 2; nenhuma linha "decisão não vale"); as 13 não injetadas repetem o padrão da base 1 (9 D falham na repetição, a D.OficiosResposta não existe na base 2; as raras falham na recorrência; a B.OBFCivel falha na repetição). Prompt: 66 versões, 18 papéis, sem managerAgent | `IMG_6036`–`6038`, `IMG_6040` | **comprovada** |
-| **H2** | também na base 2, o interpretador aceita o que o prompt não lista | o `json` rodou sem erro em 10 papéis, inclusive RoteadorCivel e ContestacaoCivel (prompt sem `json`); no ContestacaoCivel rodou até `import concurrent`, fora da lista padrão do framework | `IMG_6039` | **comprovada** |
-| **H3** | no managerAgent o `json` é barrado (base 1: a lista do interpretador de abr/26 não tem `json`) | a base 3 não tem lista do managerAgent (10 papéis com lista, ele não está); `--papel managerAgent --modulo json`: 1 execução com algum erro (ago/26), 0 erros de `json`, 0 imports; 0 `json` barrado na base 3 inteira. A lista da base 1 é exatamente a lista padrão do smolagents (`BASE_BUILTIN_MODULES`, sem `json`) | `IMG_6043`, `IMG_6044`, `IMG_6057` | **sem dado na base 3**; a única evidência (base 1) é contra → decisão 1 |
-| **H4** | o erro da C é esquecer o import (não o nome sumir entre passos) | o passo anterior tinha importado: **0 de 415** (`json`), 0 de 5 (`re`), 0 de 3 (`datetime`) — 423, o total da memória; bases 1 e 2 (execução inteira): 0 de 6 cada. Depois do erro, no `json`: importa e roda 326, importa e dá outro erro 61, não importa 28, barrado 0 | `IMG_6044`, `6046`, `6048`, `6041` | **comprovada** (limite: na base 3 só o passo n-1) |
-| **H5** | o mesmo para o `pandas` no JoogleAnalytics | 0 de 231 importados antes; `pandas` nunca barrado no papel (1 barrado na base, em outro papel). **Mas: importa e dá outro erro 177 de 231 (77%)**, importa e roda 54; base 2: passo seguinte com erro 4 de 6 | `IMG_6050`, `6041` | **comprovada para o primeiro erro**; o erro seguinte fica para a leitura do degrau 3 |
-| **H6** | a E cobre uma causa só: inspecionar um valor | nomes na base 3 (`inventario.csv`): `__name__` 182, `repr` 98, `dir` 9, `__class__`/`__doc__`/`__len__` 3 — **292 (92%) inspeção**; `exec` 8, `__import__` 5, `bytes` 5, `open` 5, `hash` 2 — **25 (8%) outros usos** (`exec`, `__import__`, `bytes`, `dir` em 1 papel só); total 317 = E. `globals` 18, `eval` 14, `locals` 4, `vars` 1 = 37 = F. Base 2: `repr` 4, `__name__` 1, `open` 1 | `IMG_6058`, `6041` | **comprovada na maior parte** (o "para quê" de cada nome é o uso típico, não leitura de caso) |
+| **H1** | com o prompt da base 2 (mesmo período da base 3) e o ambiente pelo interpretador, as três continuam aprovadas no degrau 2 | C, E e C.JoogleAnalytics passam em ambiente, conflito, repetição e recorrência; a repetição da E sai "decidido" (a decisão 5 vale com o prompt da base 2; nenhuma linha "decisão não vale"); as 13 não injetadas repetem o padrão da base 1 (9 D falham na repetição, a D.OficiosResposta não existe na base 2; as raras falham na recorrência; a B.OBFCivel falha na repetição). Prompt: 66 versões, 18 papéis, sem managerAgent | saída de 26/10 | **comprovada** |
+| **H2** | também na base 2, o interpretador aceita o que o prompt não lista | o `json` rodou sem erro em 10 papéis, inclusive RoteadorCivel e ContestacaoCivel (prompt sem `json`); no ContestacaoCivel rodou até `import concurrent`, fora da lista padrão do framework | saída de 26/10 | **comprovada** |
+| **H3** | no managerAgent o `json` é barrado (base 1: a lista do interpretador de abr/26 não tem `json`) | a base 3 não tem lista do managerAgent (10 papéis com lista, ele não está); `--papel managerAgent --modulo json`: 1 execução com algum erro (ago/26), 0 erros de `json`, 0 imports; 0 `json` barrado na base 3 inteira. A lista da base 1 é exatamente a lista padrão do smolagents (`BASE_BUILTIN_MODULES`, sem `json`) | saída de 26/10 | **sem dado na base 3**; a única evidência (base 1) é contra → decisão 1 |
+| **H4** | o erro da C é esquecer o import (não o nome sumir entre passos) | o passo anterior tinha importado: **0 de 415** (`json`), 0 de 5 (`re`), 0 de 3 (`datetime`) — 423, o total da memória; bases 1 e 2 (execução inteira): 0 de 6 cada. Depois do erro, no `json`: importa e roda 326, importa e dá outro erro 61, não importa 28, barrado 0 | saída de 26/10 | **comprovada** (limite: na base 3 só o passo n-1) |
+| **H5** | o mesmo para o `pandas` no JoogleAnalytics | 0 de 231 importados antes; `pandas` nunca barrado no papel (1 barrado na base, em outro papel). **Mas: importa e dá outro erro 177 de 231 (77%)**, importa e roda 54; base 2: passo seguinte com erro 4 de 6 | saída de 26/10 | **comprovada para o primeiro erro**; o erro seguinte fica para a leitura do degrau 3 |
+| **H6** | a E cobre uma causa só: inspecionar um valor | nomes na base 3 (`inventario.csv`): `__name__` 182, `repr` 98, `dir` 9, `__class__`/`__doc__`/`__len__` 3 — **292 (92%) inspeção**; `exec` 8, `__import__` 5, `bytes` 5, `open` 5, `hash` 2 — **25 (8%) outros usos** (`exec`, `__import__`, `bytes`, `dir` em 1 papel só); total 317 = E. `globals` 18, `eval` 14, `locals` 4, `vars` 1 = 37 = F. Base 2: `repr` 4, `__name__` 1, `open` 1 | saída de 26/10 | **comprovada na maior parte** (o "para quê" de cada nome é o uso típico, não leitura de caso) |
 
 *As amostras do degrau 3 (Parte C do roteiro):* `drill_down.py tabela` → C 423, E 317, C.JoogleAnalytics 231; o
 `montar_evidencia.py` (sem `--por`, `--regra semente --n 30`) tirou **30 no total** de cada uma, **30 de 30 crus
-conferidos** nas três (confirmado pelo Rafael; os casos ficam na máquina). Fecha o "ponto a confirmar" do item 26.
+conferidos** nas três (confirmado pelo Rafael; os casos ficam no ambiente). Fecha o "ponto a confirmar" do item 26.
 
 *Como a C trabalha nos papéis (para a decisão 1).* O erro é sempre o mesmo: `json.loads(...)` sem `import json` no passo
 → "a variável `json` não está definida" → o agente importa no passo seguinte. O bilhete é um **lembrete** ("importe antes
@@ -904,7 +902,7 @@ esquecimento nos dois grupos (base 2, item 14: 0,4% onde o prompt omite contra 1
 **Decisão 1 (Rafael, 26/10): a memória C exclui o managerAgent.** Ali o interpretador usa a lista padrão do framework, sem
 `json` (base 1); na base 3 a C não tem erro nesse papel, então excluir não perde nada que se veja. Para valer, a memória
 precisa de um alcance "global, exceto papéis" (hoje só existe global ou de um papel): ajuste no esquema, no
-`conferir_memorias.py` e no script da mineração, com nova mineração na máquina — a propor e aprovar antes de aplicar.
+`conferir_memorias.py` e no script da mineração, com nova mineração no ambiente — a propor e aprovar antes de aplicar.
 
 **Decisões 2 a 4 (Rafael, 26/10): "uma causa só" passa nas três**, gravadas por `conferir_memorias.py --decidir`
 (`analysis/registros/decisoes_degrau2.json`, "decidido pelo pesquisador", com o motivo): (2) **C** — esquecimento, 0 de 423
@@ -913,11 +911,11 @@ o degrau 3 anota qual é o erro seguinte (77%), que pode mudar o valor do bilhet
 inspeção (92%), **com a nota**: os 8% de outros usos são funções barradas, para as quais o "não chame" continua certo (H6).
 Conferência com a base 1 depois do registro: C.JoogleAnalytics e E com as cinco checagens em "passa" ou "decidido" (degrau
 2 completo); a C ainda falha no ambiente só pelo managerAgent (o ajuste do alcance, decisão 1, resolve). Falta: o ajuste
-do alcance, o `--registrar` (bases 1 e 2) e a leitura do degrau 3 na máquina.
+do alcance, o `--registrar` (bases 1 e 2) e a leitura do degrau 3 no ambiente.
 
 **28 · A exclusão do managerAgent no catálogo (26/10; Ajuste 30).** A decisão 1 (item 27) precisava de um alcance
 "global, exceto papéis", que a memória não tinha (só global ou de um papel). Dois jeitos: (A) um campo no esquema e no
-script da mineração — o esquema entra no hash do código da rodada, então exigiria rodada nova e mineração nova na máquina,
+script da mineração — o esquema entra no hash do código da rodada, então exigiria rodada nova e mineração nova no ambiente,
 mais emenda no racional e laudo; (B) no catálogo, como as marcações de rara e reforço (Ajuste 29). **Escolhido pelo Rafael:
 B**, porque a exclusão é uma decisão do pesquisador que os dados da base 3 não mostram. `catalogar_memoria.py --excluir
 U_sandbox.C managerAgent --motivo …` gravou o `nao_vale_em` na entrada da C (`--conferir`: catálogo ok, 16 memórias); o
@@ -930,16 +928,16 @@ analysis/registros/funcoes_sandbox.json --base base3 --registrar` (o prompt e o 
 `extrair_prompts_base2.py` e `extrair_ambiente_base2.py`, fora do repositório: 870 versões em 16 papéis; 13 papéis) gravou
 `degrau` e `conferencia` nas 16 entradas: **C, C.JoogleAnalytics e E no degrau 2** (as cinco checagens em "passa" ou
 "decidido"; a C sem o managerAgent); as 13 guardadas (10 D e B.OBFCivel, reforço; B.RespostaBacen e C.CalculoTrabalhista,
-raras) ficam no degrau 1, como esperado — não vão para o agente. **A base 2 confirma** (item 27, `IMG_6040`): as três
+raras) ficam no degrau 1, como esperado — não vão para o agente. **A base 2 confirma** (item 27): as três
 passaram em ambiente, conflito, repetição e recorrência com o prompt do período da base 3; "uma causa só" é decisão do
 pesquisador e não depende do prompt. O catálogo guarda uma conferência por memória: a da base 1, com a da base 2 registrada
-aqui. Próximo: a leitura do degrau 3 na máquina (item 26; amostras prontas, item 27).
+aqui. Próximo: a leitura do degrau 3 no ambiente (item 26; amostras prontas, item 27).
 
-**30 · O degrau 3 sem cota de IA na máquina (26/10).** A leitura dos dois leitores automáticos roda na máquina da base,
+**30 · O degrau 3 sem cota de IA no ambiente (26/10).** A leitura dos dois leitores automáticos roda no ambiente da base,
 que está sem cota até 30/10. **Decisão do Rafael (26/10):** não esperar — (1) **regras contadas sobre a população
 inteira** de cada memória (423, 317, 231), que só imprimem números e categorias; (2) **10 casos por memória** (não 30:
-com as regras cobrindo a população, a leitura vira confirmação), **mascarados e trazidos por foto**, lidos aqui; (3) no dia
-30, os dois leitores na máquina, para conferir as regras (a concordância regra × leitores). O texto dos casos não sai: só
+com as regras cobrindo a população, a leitura vira confirmação), **mascarados e transcritos**, lidos aqui; (3) no dia
+30, os dois leitores no ambiente, para conferir as regras (a concordância regra × leitores). O texto dos casos não sai: só
 código e mensagens de erro (técnicos, pela regra de sigilo de 16/10), com todo texto entre aspas, comentário e número
 trocado por `<texto>`, `# <comentário>` e `<n>`, sem a saída do modelo nem as observações; e a saída passa pelos padrões do
 `varrer_pii.py` antes de ser impressa.
@@ -957,22 +955,22 @@ proteção a mais, toda linha que ainda pareça texto corrido ou markdown é omi
 instrução, os 3 importam e seguem sem erro; E — os 5 dentro de `print(...)`. `test_degrau3_sandbox.py` (8 testes, entre
 eles os dois buracos do mascaramento e o bloqueio pelo varredor); suíte 343, OK.
 
-*Na máquina* (da raiz; `<parquet3>` = `analysis/2026-10-trace-law-flow-third/data/base_erros_minerados_full_v2.parquet`):
+*No ambiente* (da raiz; `<parquet3>` = `analysis/2026-10-trace-law-flow-third/data/base_erros_minerados_full_v2.parquet`):
 ```
 uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py contar --fonte <parquet3>
 uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py casos U_sandbox.C.JoogleAnalytics --fonte <parquet3>
 uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py casos U_sandbox.E --fonte <parquet3>
 uv run analysis/2026-10-trace-law-flow-third/pipeline/validacao/degrau3_sandbox.py casos U_sandbox.C --fonte <parquet3>
 ```
-Fotos: a saída do `contar` inteira; a dos `casos`, tela a tela (cada caso começa com `── caso N`). Se aparecer
-`BLOQUEADO`, nada é impresso: foto da linha e paramos.
+Trazer: a saída do `contar` inteira; a dos `casos`, tela a tela (cada caso começa com `── caso N`). Se aparecer
+`BLOQUEADO`, nada é impresso: trazer a linha e parar.
 
-**31 · O degrau 3 na máquina: as regras contadas e os 30 casos lidos aqui (30/10, fotos `IMG_6115`–`IMG_6138`).** Os
+**31 · O degrau 3 no ambiente: as regras contadas e os 30 casos lidos aqui (30/10).** Os
 quatro comandos do item 30, rodada `99e032ad3a8528d8`, mineração de 21/10. As três populações batem com a mineração e
 com a fonte (423 · 231 · 317 "achados na fonte"); os três `casos` saíram com "varredor limpo", sem `BLOQUEADO`. Os dois
-leitores automáticos não rodaram: a máquina continua sem cota ("Quota reached" nas fotos).
+leitores automáticos não rodaram: o ambiente continua sem cota ("Quota reached" na saída).
 
-*As regras sobre a população inteira* (`contar`, `IMG_6115`–`6117`):
+*As regras sobre a população inteira* (`contar`):
 
 | Memória | O nome na instrução que falhou | O passo seguinte | O erro depois do import |
 |---|---:|---|---|
@@ -1006,7 +1004,7 @@ A E por nome soma o mesmo do item 27 (H6): `__name__` 182, `repr` 98, `dir` 9, `
   população. O agente se corrige sozinho no passo seguinte nos 10 casos: o valor do bilhete é poupar esse passo.
 
 *Limites da leitura.* (1) São 10 casos por memória, lidos por um leitor só (Claude), sobre o código mascarado; a
-concordância com os dois leitores automáticos fica para quando a máquina tiver cota. (2) A regra "onde está a chamada" da
+concordância com os dois leitores automáticos fica para quando o ambiente tiver cota. (2) A regra "onde está a chamada" da
 E põe na categoria "outra" as chamadas dentro de um bloco `try`: o interpretador aponta a linha do `try:`, não a da
 chamada (3 dos 10 casos) — parte dos 44 de "outra" é isso. (3) Os 7 `TypeError` "não module" do JoogleAnalytics não
 aparecem nos 10 casos; o mecanismo não foi visto.
@@ -1025,7 +1023,7 @@ depois de importar só o `pandas`) e 10 de 10 nos casos lidos; na C, poucos "pd"
 estava importado). Se der perto de 231, a escolha (a) — o bilhete diz os dois imports — tem base; se der bem menos, a
 linha dos 10 casos não é a regra.
 
-*O resultado (30/10, fotos `IMG_6139`–`IMG_6141`; os blocos de antes saíram iguais aos de `IMG_6115`–`6117`):*
+*O resultado (30/10; os blocos de antes saíram iguais aos do `contar` anterior):*
 
 | Memória | Outros nomes na instrução que falhou |
 |---|---|
@@ -1069,7 +1067,7 @@ ContestacaoCivel, quase todas como verificação de existência ou leitura com v
 ("como verificar se uma variável existe, no sandbox") e vai para lá; se for quase toda `eval(...)`, é outra lição (ler um
 texto como dado), e o bilhete precisa dizer o que usar no lugar; se for misturada, divide-se como a C e a E.
 
-*O resultado (30/10, fotos `IMG_6142`–`IMG_6151`; os blocos da C, C.JoogleAnalytics e E saíram iguais aos de antes):*
+*O resultado (30/10; os blocos da C, C.JoogleAnalytics e E saíram iguais aos de antes):*
 37 erros, 37 achados na fonte; por nome 18 / 14 / 4 / 1, como esperado; casos com "varredor limpo".
 
 | Nome | O uso na instrução que falhou (regra) |
@@ -1126,10 +1124,10 @@ que ainda precisam passar na régua de recorrência. As alternativas recusadas: 
 → harness pediria um ajuste na regra (b) e rodada nova para uma decisão que o `#51` toma com a unidade inteira) e manter a
 F como "Não chame: …" (contrasta com o prompt e não diz como verificar) → [`decisoes.md`](../../../decisoes.md) (31/10).
 
-**33 · Os dois leitores na máquina: a memória C (03/11, fotos `IMG_6156`, `IMG_6165`–`IMG_6168`).** O roteiro é o
+**33 · Os dois leitores no ambiente: a memória C (03/11).** O roteiro é o
 [`degrau3_leitores.md`](degrau3_leitores.md), com a lista de categorias aprovada por Rafael sem ajuste (03/11). Dois chats
 separados do Copilot leram a mesma amostra de 30 casos (`inv_candidata_U_sandbox.C_base3/casos.csv`), e o
-`concordancia.py` comparou os dois CSVs. Os modelos usados ainda não foram informados.
+`concordancia.py` comparou os dois CSVs. Modelos: primeiro leitor `6.1 luna`, segundo leitor `5.3 codex` (informados por Rafael em 04/11).
 
 | Coluna | Primeiro leitor | Segundo leitor | Concordância |
 |---|---|---|---|
@@ -1138,7 +1136,7 @@ separados do Copilot leram a mesma amostra de 30 casos (`inv_candidata_U_sandbox
 
 Nenhum caso ficou como `outra` ou `indeterminado`. As duas discordâncias são em `conserto`, uma em cada sentido, ambas no
 RoteadorCivel (`idx` 3): `26b3b23a…` (primeiro `contornou`, segundo `corrigiu_a_licao`) e `f0325594…` (o contrário). Os CSVs
-ficam na máquina: `pipeline/resultados/leitura_degrau3_U_sandbox.C_base3.csv` e `leitura2_degrau3_U_sandbox.C_base3.csv`.
+ficam no ambiente: `pipeline/resultados/leitura_degrau3_U_sandbox.C_base3.csv` e `leitura2_degrau3_U_sandbox.C_base3.csv`.
 
 *O que isso diz.* A causa suposta pela memória se confirma nos 30 casos e bate com as regras contadas na população: 0 de
 423 importados antes (item 27). O `conserto` também é coerente com a população: 394 de 423 (93%) importam depois do erro
@@ -1151,22 +1149,146 @@ idênticas às da regra, e a amostra não é proporcional aos módulos.
 - **`datetime` ficou fora da amostra:** pela `licao_livre` do primeiro leitor, são `json` 27 e `re` 3 (a do segundo é
   genérica). Na população são `json` 415, `re` 5 e `datetime` 3, com 0 importados antes nos três (item 27). O `datetime`
   do texto da memória continua sustentado só pela regra, o que fica para o gate.
-- **Frase repetida:** o segundo leitor escreveu a mesma `licao_livre` nos 30 casos. O `onde_no_cru` dele varia (cita o erro
-  do passo seguinte em 8), o que sugere leitura caso a caso, mas a foto não prova.
+- **Frase repetida:** o segundo leitor escreveu a mesma `licao_livre` nos 30 casos. O `onde_no_trace` dele varia (cita o erro
+  do passo seguinte em 8), o que sugere leitura caso a caso, mas isso não prova.
 - **Pensamento do agente:** o primeiro leitor não cita `error_model_output` em nenhum caso, e o segundo cita nos 30. O campo
   é o que cada leitor declarou como fonte; o `drill_down.py caso` mostra os dois passos inteiros.
 - **Às cegas:** as frases, o formato e as duas discordâncias sugerem leituras independentes, mas não há como provar que o
   segundo chat não recebeu o CSV do primeiro como contexto. Nas próximas memórias, as abas `leitura_*` ficam fechadas.
 
-*O ambiente da máquina.* Cada `uv run` removeu 8 pacotes e instalou 4, com avisos de `RECORD` ausente, e uma execução falhou
+*O ambiente do ambiente.* Cada `uv run` removeu 8 pacotes e instalou 4, com avisos de `RECORD` ausente, e uma execução falhou
 com "Acesso negado" antes de repetir com sucesso. A causa não foi investigada. Os números acima não dependem disso: o
 `concordancia.py` usa só a biblioteca padrão. Nas próximas memórias, os comandos usam `uv run --no-sync`.
 
-*O sigilo.* As fotos `IMG_6165` e `IMG_6166` mostram os CSVs, que o roteiro pedia para deixar na máquina. Lidas aqui, trazem
+*O sigilo.* Os CSVs, que o roteiro pedia para deixar no ambiente, também vieram. Lidos aqui, trazem
 só `exec_id`, papel, categorias, nomes de campo e frases gerais, tudo em "Pode sair" do `sigilo.md`.
 
 **Estado:** a leitura da C está feita. Ela só chega ao degrau 3 com o gate do pesquisador (o texto e o destino) e a gravação
 no catálogo, que ainda não tem comando. Faltam os leitores da C.JoogleAnalytics e da E.
+
+**34 · Os dois leitores no ambiente: a memória C.JoogleAnalytics (04/11).** Mesmo roteiro do
+item 33, com a amostra `inv_candidata_U_sandbox.C.JoogleAnalytics_base3/casos.csv` (30 casos) e `uv run --no-sync`, que não
+mexeu mais nos pacotes. Modelos: primeiro leitor `6.1 luna`, segundo leitor `5.3 codex` (informados por Rafael em 04/11).
+
+| Coluna | Primeiro leitor | Segundo leitor | Concordância |
+|---|---|---|---|
+| `causa` | `esqueceu_import` 30 | `esqueceu_import` 30 | 30 de 30 |
+| `tambem_json` | `sim` 29, `nao` 1 | `sim` 29, `nao` 1 | 30 de 30 |
+| `conserto` | `corrigiu_a_licao` 16, `repetiu` 14 | `corrigiu_a_licao` 15, `repetiu` 15 | 29 de 30 (kappa 0,93) |
+
+Nenhum caso ficou como `outra` ou `indeterminado`. A discordância é `b93fa636…` (primeiro `corrigiu_a_licao`, segundo
+`repetiu`); o `nao` dos dois é o mesmo caso, `d88ba51f…`. Os CSVs ficam no ambiente:
+`pipeline/resultados/leitura_degrau3_U_sandbox.C.JoogleAnalytics_base3.csv` e `leitura2_degrau3_…`.
+
+*O que isso diz.* A causa se confirma nos 30 casos e, com ela, os dois imports esquecidos do item 31. `tambem_json` dá `sim`
+em 97% (29 de 30), a mesma proporção da regra: 225 de 231 com `json` sem import antes da falha. As frases dos dois leitores
+falam de imports ou bibliotecas no plural, o que é coerente com a decisão de 30/10 de a memória só valer junto com a C.
+
+*Os limites.*
+- **O kappa de 1,00 não informa nada na `causa`** (uma categoria só) e, na `tambem_json`, se apoia num único `nao`.
+- **O caso `nao`:** é compatível com os 6 de 231 em que o `json` foi importado antes, mas isso não foi conferido no caso.
+- **O que `repetiu` quer dizer aqui é hipótese:** 14 ou 15 de 30 (47–50%) é perto dos 99 de 231 (43%) que importam só o
+  `pandas` e caem no `json` não definido. Dois casos apontam nessa direção: `dec0d4a6…` e `789b3ae5…` estão nas duas
+  amostras, com `repetiu` aqui no `idx` 4 e, na amostra da C, `esqueceu_import` no `idx` 5. Se valer para os demais, o agente
+  corrigiu o `pandas` e esqueceu o outro import, não repetiu o mesmo erro. Os outros não foram conferidos.
+- **Frase repetida:** cada leitor escreveu a mesma `licao_livre` nos 30 casos, como o segundo leitor no item 33.
+
+*O sigilo.* O `onde_no_trace` do primeiro leitor aponta para arquivos `tmp/jc_drill/NN_<exec_id>.txt`, em vez de nomes de campo:
+ele gravou em disco o recorte de cada caso, que pode ter conteúdo do cliente. Em `tmp/` nada é ignorado pelo git (conferido
+nesta cópia, para `tmp/` na raiz, na pasta da análise e em `pipeline/`). A pasta precisa ser apagada no ambiente, sem entrar em
+commit; o `drill_down.py caso` refaz qualquer recorte. Rafael confirmou em 04/11 que apagou o `tmp`.
+
+**Estado:** a leitura da C.JoogleAnalytics está feita; como a C, ela espera o gate do pesquisador e a gravação no catálogo.
+Falta a leitura da E.
+
+**35 · Os dois leitores no ambiente: a memória E (04/11).** Mesmo roteiro, com a amostra
+`inv_candidata_U_sandbox.E_base3/casos.csv` (30 casos: ContestacaoCivel 24, OBFCivel 4, AgenteEstruturador 1,
+JoogleAnalytics 1). Modelos: primeiro leitor `6.1 luna`, segundo leitor `5.3 codex` (informados por Rafael em 04/11).
+
+| Coluna | Primeiro leitor | Segundo leitor | Concordância (script) |
+|---|---|---|---|
+| `causa` | `inspecionar_valor` 26, `outra` 4 | `inspecionar_valor` 28, `outra` 2 | 26 de 30 (kappa 0,30) |
+| `conserto` | `corrigiu_a_licao` 20, `contornou` 6, `repetiu` 4 | `corrigiu_a_licao` 16, `contornou` 12, `repetiu` 2 | 22 de 30 (kappa 0,52) |
+
+Das 4 discordâncias da `causa`, **2 são só rótulos livres escritos de outro jeito**: `d728441e…` (`outra:abertura_de_arquivo`
+× `outra:abrir_arquivo`) e `685f5b88…` (`outra:execucao_de_texto` × `outra:executar_texto`). Com esses rótulos unificados,
+são 28 de 30 (93%, kappa 0,65; conta feita aqui, não pelo script). As 2 restantes são discordâncias de fato: `34c2c8ed…` e
+`87672291…`, em que o primeiro leitor marca `outra:introspeccao_de_ambiente` e `outra:retorno_nao_JSON` e o segundo,
+`inspecionar_valor`. Ambos os casos são do ContestacaoCivel. Os CSVs ficam no ambiente:
+`pipeline/resultados/leitura_degrau3_U_sandbox.E_base3.csv` e `leitura2_degrau3_…`.
+
+*O que isso diz.* Inspecionar um valor é a causa principal, em 26 a 28 de 30 (87–93%), coerente com os 92% contados por nome
+na população (item 27). Os dois leitores veem um `exec` e um `open` fora dessa causa, como os 8% de outros usos, para os quais
+o "não chame" continua certo (item 27). Na frase do segundo leitor, o `exec` serve para checar se uma variável existe, a lição
+do `b3 #51`; é um caso só.
+
+*Os limites.*
+- **O `conserto` da E não é medida firme:** 22 de 30, e 6 das 8 discordâncias são entre `corrigiu_a_licao` e `contornou`. O
+  roteiro dá só os nomes das categorias, sem definição. Hipótese, não verificada: tirar a chamada barrada ou trocar por outra
+  (item 31) pode ser lido dos dois jeitos. A pergunta deste degrau é a `causa`, que não depende disso.
+- **O propósito foi lido quase só no código:** pelo `onde_no_trace`, o segundo leitor não cita `error_model_output` nos casos
+  legíveis, e o primeiro cita em poucos, aparentemente nos `outra`. Para "inspecionar um valor", o código costuma mostrar o uso
+  (70% dentro de `print`, item 31), mas o pensamento do agente quase não aparece como fonte declarada.
+- **As frases:** a do primeiro leitor ("valide o formato e use apenas operações permitidas") é a mesma nos 30 casos e não
+  fala de inspeção. A do segundo cita `globals`, que não está na E (está na parte F, item 32).
+
+*O ambiente.* Estes comandos rodaram com `uv run`, sem `--no-sync`: os 8 pacotes removidos e os 4 instalados voltaram, e uma
+execução falhou com "Acesso negado". Os números não mudam, porque o `concordancia.py` usa só a biblioteca padrão. O
+`onde_no_trace` traz nomes de campo nos dois leitores, sem caminhos de arquivo como os de `tmp/jc_drill/`.
+
+**Estado:** as leituras das três memórias estão feitas. Falta o gate do pesquisador nas três e a gravação no catálogo.
+
+**36 · O gate da memória C: antes de aprovar, ler os casos de `datetime` (04/11).** A amostra da C não trouxe nenhum
+`datetime` (item 33), e o texto da memória manda importá-lo. Rafael escolheu ler os 3 casos da população antes de aprovar o
+texto, entre aprovar como está, ler antes ou tirar o `datetime`. O roteiro está em
+[`degrau3_leitores.md`](degrau3_leitores.md#os-3-casos-de-datetime-da-memória-c-gate-de-0411): a mesma dupla de leitores, às
+cegas, e os casos mascarados. A decisão sobre o texto e o destino da C fica para depois dessa leitura.
+
+**37 · Os 3 casos de `datetime`: o resultado (04/11).** Comandos do roteiro, sobre os 3 casos da população
+(`amostra_degrau3_U_sandbox.C.datetime_base3.csv`).
+
+| Coluna | Resultado | Concordância (script) |
+|---|---|---|
+| `causa` | `esqueceu_import` 3 | 3 de 3 |
+| `conserto` | `corrigiu_a_licao` 3 | 3 de 3 |
+
+Nenhum caso ficou como `outra` ou `indeterminado`. As contagens são as do segundo leitor, informadas por Rafael; as do primeiro
+não vieram, mas a concordância de 3 de 3 nas duas colunas implica as mesmas. O kappa de 1,00 não informa nada (uma categoria só).
+
+Os casos mascarados (`degrau3_sandbox.py casos`, varredor limpo) permitem conferir pela regra, sem depender dos leitores:
+
+| Caso | Papel · mês | Passo anterior | Passo seguinte |
+|---|---|---|---|
+| `c61e1e5e…`, posição 6 | CalculoTrabalhista · 2026-04 | sem `datetime` | importa `datetime`, sem erro |
+| `bdd342c6…`, posição 8 | JoogleAnalytics · 2026-07 | sem `datetime` | importa `datetime`, sem erro |
+| `8d441271…`, posição 10 | JoogleAnalytics · 2026-08 | sem `datetime` | importa `datetime`, sem erro |
+
+*O que isso diz.* A causa suposta vale também para o `datetime`, e a lacuna do item 33 fecha: com a C, os três módulos do texto
+têm casos lidos. O conserto é o que a memória manda, importar, nos 3.
+
+*Os limites.*
+- **São 3 casos:** é a população inteira do `datetime`, mas não sustenta proporção nenhuma.
+- **Caso `c61e1e5e…`:** a linha que falhou começa uma chamada em várias linhas, e o uso do `datetime` não aparece no trecho
+  mascarado. O nome vem da mensagem de erro, e o passo seguinte passa a importá-lo.
+- **Caso `bdd342c6…`:** o passo já tinha `import json` e usava também `relativedelta`, que o passo seguinte passa a importar. É
+  um caso só, e esse nome não está na memória.
+- **Modelos:** o roteiro pede `6.1 luna` e `5.3 codex`; a dupla desta leitura não foi confirmada.
+
+**Estado:** a leitura de `datetime` está feita. Falta o gate do texto e do destino da C.
+
+**38 · O gate da memória C (04/11).** Rafael aprovou o texto como está, "Importe antes de usar: import json, import re, import
+datetime.", com destino memória. Entre aprovar, mudar o texto ou deixar só monitorada, ficou com aprovar: os três módulos têm
+casos lidos, com a mesma causa (30 de 30 na amostra, 3 de 3 no `datetime`). A gravação do degrau 3 no catálogo ainda falta.
+
+**39 · O gate da memória C.JoogleAnalytics (04/11).** Rafael aprovou o texto como está, "Importe antes de usar: import pandas as
+pd.", com destino memória e sempre junto com a C. A leitura confirma a causa (30 de 30) e a decisão de 30/10 (`json` sem import
+em 29 de 30). Os erros depois do import são os da tabela do item 31: `json` não definido 99, `run_query` com argumento posicional
+53, `JSONDecodeError` 12, `TypeError` "não module" 7, outros 6. O mecanismo dos 7 `TypeError` continua sem leitura.
+
+**40 · O gate da memória E: antes de aprovar, ler as 2 discordâncias reais da causa (04/11).** Rafael escolheu ler `34c2c8ed…` e
+`87672291…` antes de decidir o texto, entre aprovar, tirar a dica de inspeção, deixar só monitorada ou ler antes. O objetivo é testar
+a hipótese de que o limite de "inspecionar um valor" não foi definido. Com os dois como `outra`, a causa ainda fica em 26 de 30. O
+roteiro está em [`degrau3_leitores.md`](degrau3_leitores.md#as-2-discordâncias-reais-da-causa-na-memória-e-gate-de-0411).
 
 ## 3 · A memória que o script montou (antes da emenda 4)
 

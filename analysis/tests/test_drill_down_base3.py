@@ -72,7 +72,7 @@ class TestDrillDownBase3(unittest.TestCase):
         self.assertTrue((pasta / "derivados" / "e1__P__3.md").exists())
 
     def test_toda_gravacao_passa_pelo_caminho_longo(self):
-        # máquina da base, 26/10: crus/<exec_id>__<papel>__<idx>.json com 288 caracteres → FileNotFoundError no Windows
+        # ambiente da base, 26/10: crus/<exec_id>__<papel>__<idx>.json com 288 caracteres → FileNotFoundError no Windows
         vistos = []
         original = dd.caminho_io
         dd.caminho_io = lambda p: (vistos.append(Path(p).name), original(p))[1]

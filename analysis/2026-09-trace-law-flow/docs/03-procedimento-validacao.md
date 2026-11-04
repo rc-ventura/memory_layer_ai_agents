@@ -30,7 +30,7 @@ git-ignored; `uv.lock` versionado para reprodutibilidade). Substituiu uma versã
 cd /Users/rafaelventura/ICT-ITAU/memory_layer_ai_agents   # raiz do repo, onde está o pyproject.toml
 uv sync                                                     # cria/atualiza .venv com pandas/numpy/matplotlib/jupyterlab
 uv run python -m ipykernel install --user --name memory-layer-ai-agents \
-    --display-name "Python (memory-layer-ai-agents)"        # só na 1ª vez por máquina
+    --display-name "Python (memory-layer-ai-agents)"        # só na 1ª vez por ambiente
 uv run jupyter lab analysis/2026-09-trace-law-flow/pipeline/analise_trace_esteira_juridica.ipynb
 ```
 
@@ -1121,12 +1121,12 @@ célula isolada.
 
 ### 1.16 · O resíduo da base 2 — dois ajustes de leitura (25/09/2026)
 
-**A pergunta.** A base 2 (ago/2026, na máquina de compliance) disparou o alarme de cobertura — sintoma não
+**A pergunta.** A base 2 (ago/2026, no ambiente de compliance) disparou o alarme de cobertura — sintoma não
 reconhecido em 25 erros, 5,2% dos ~479 — e trouxe 2 padrões "recorrentes" no resíduo. O que eles são de fato? O
 racional dos baldes está em `01-racionais.md` §7 Passo 2; o registro dos ajustes, em
 [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).
 
-**O método.** O procedimento do resíduo (Frente 3, passos 1–3), com o cru lido **na máquina da base 2** — de lá só
+**O método.** O procedimento do resíduo (Frente 3, passos 1–3), com o cru lido **no ambiente da base 2** — de lá só
 saem contagens, nomes de classe, categorias e verdadeiro/falso. Ferramentas: `drill_down.py residuo` (colunas
 `tem_due_to`, `tem_linha_error`, `linha_rejeitada_ok` e o bloco "estrutura por padrão"), `padrao "<nome exato>"` e
 `caso`.
