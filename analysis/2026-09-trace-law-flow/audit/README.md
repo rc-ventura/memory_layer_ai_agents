@@ -17,7 +17,7 @@ relatório como **Parte II**. Só então o estado vira **fechada**.
 - **Uma checagem que diverge sempre é consertada**, nunca convivida: ensina a ignorar a próxima divergência.
 - **Saídas** (`scripts/audit_out*.txt`) são git-ignored: podem ter trechos do trace. Os relatórios são manuscritos e
   versionados.
-- **Base 2:** auditada por fotos da máquina de compliance. Só contagens saem de lá — o `audit_recompute9` aceita
+- **Base 2:** auditada por contagens transcritas do ambiente de compliance. Só contagens saem de lá — o `audit_recompute9` aceita
   `--base base2 --trace …` para rodar lá. Todos os scripts aceitam `--trace <arquivo>` (CSV ou parquet); os números
   esperados embutidos nos scripts 1–8 são os da base 1. O `audit_recompute9` aceita qualquer `--base`: numa base sem números embutidos,
   imprime tudo como "a conferir" e, com `--json <arquivo>`, grava as medidas. É assim que o kit de mineração o usa,
@@ -45,7 +45,7 @@ relatório como **Parte II**. Só então o estado vira **fechada**.
 | `scripts/audit_recompute8.py` | evidência 11.10 (leituras de `get_available_documents`) | auditoria de 16/09 |
 | (acréscimo de 05/10 ao `audit_recompute6.py`) | `--json <arquivo> [--unidade <u>]` grava, por lição do balde visível, erros, ocorrências, execuções, meses, papéis e erros por papel; sem `--json`, a saída é a mesma. Usado em paralelo pela skill `mineracao-candidata` | base 1: as 11 candidatas com o encontro tudo igual |
 | `scripts/audit_recompute10.py` | **protocolo do harness**: as medidas do `drill_down.py protocolo` ([1]–[9]) e a fronteira de chamada, do zero; base 1 contra o `11` §1 (33 erros, meses, forma, recuperação, cascata, versões); `--json` para o kit de mineração | 0 divergências na base 1 em 05/10 |
-| `scripts/audit_recompute9.py` | **balde invisível**: funil, grupos do motivo (+ disparos por regra), [2], [3], [4] (Ajuste 11), forma do `busca_obf`, sondas da consolidação, **G: a `U_repr_colado` consolidada** (Ajuste 12; base 1 12 · 12 · 4 · 2) | **0 divergências** nas duas bases em 02/10 (base 2 na máquina 2: `--base base2 --trace <.csv>`); com o bloco G (04/10): base 1 0 divergências, base 2 a rodar |
+| `scripts/audit_recompute9.py` | **balde invisível**: funil, grupos do motivo (+ disparos por regra), [2], [3], [4] (Ajuste 11), forma do `busca_obf`, sondas da consolidação, **G: a `U_repr_colado` consolidada** (Ajuste 12; base 1 12 · 12 · 4 · 2) | **0 divergências** nas duas bases em 02/10 (base 2 no ambiente da base: `--base base2 --trace <.csv>`); com o bloco G (04/10): base 1 0 divergências, base 2 a rodar |
 
 Para conferir tudo de novo na base 1 (de `analysis/2026-09-trace-law-flow/`):
 

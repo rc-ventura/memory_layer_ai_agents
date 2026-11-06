@@ -55,11 +55,7 @@ The semantic layer is **one file per month**: `summarization/<Mês>/sintese_AAAA
 
 An entry logged on a Saturday or Sunday still belongs to the week that just closed on Friday (that Monday's file); it doesn't open a new one. A week counts toward the month that owns its **Wednesday** (the [Wednesday rule](#month-folders-from-092026)), so a week spanning a month boundary goes to whichever month holds the majority of its weekdays — and its record appears in that month's digest, numbered by chronological order among the weeks assigned to that month.
 
-The digest is derived and regenerable — safe to rebuild any time the understanding of a past week changes. It does **not** duplicate the episodic log and does **not** replace the coordinator `.docx` export. Generated and refreshed by the `sintese-diario` skill.
-
-## Monthly close-out
-
-At the start of a new calendar month (or on request), once the monthly digest holds every week of the closing month: export a clean `.docx` for the coordinator — cover (month/year, project number, entry count) + the digest's weekly records, in order, as the main body + the full episodic log (from that month's weekly files) as an appendix.
+The digest is derived and regenerable — safe to rebuild any time the understanding of a past week changes. It does **not** duplicate the episodic log. Generated and refreshed by the `sintese-diario` skill.
 
 ## Files
 

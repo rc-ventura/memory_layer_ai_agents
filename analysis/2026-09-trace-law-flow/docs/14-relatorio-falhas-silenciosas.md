@@ -8,7 +8,7 @@ medida está em [`13-racionais-falhas-silenciosas.md`](13-racionais-falhas-silen
 em [`15-procedimento-falhas-silenciosas.md`](15-procedimento-falhas-silenciosas.md). Base 1: saída do notebook
 [`../pipeline/falhas_silenciosas.ipynb`](../pipeline/falhas_silenciosas.ipynb) (01/10; reexecutado em 02/10 com o
 Ajuste 11). Base 1 conferida também por uma implementação independente
-([`../audit/scripts/audit_recompute9.py`](../audit/scripts/audit_recompute9.py), 0 divergências). Base 2: fotos da máquina 2 do
+([`../audit/scripts/audit_recompute9.py`](../audit/scripts/audit_recompute9.py), 0 divergências). Base 2: contagens do ambiente da base do
 `drill_down.py silenciosas` e `silenciosas --forma busca_obf` (01/10) — as mesmas funções; o notebook ainda não rodou lá.
 
 ---
@@ -41,7 +41,7 @@ Ajuste 11). Base 1 conferida também por uma implementação independente
 | steps · sequências de steps consecutivos | 119 · 100 | 134 · 129 |
 
 Base 1: os 120 estão em 119 steps (um step com duas ferramentas falhando). Base 2: papéis, steps, sequências e
-sobreposição vêm do `audit_recompute9` rodado na máquina 2 (02/10; 0 divergências no resto).
+sobreposição vêm do `audit_recompute9` rodado no ambiente da base (02/10; 0 divergências no resto).
 
 ## 2 · Por ferramenta (as principais)
 
@@ -107,12 +107,12 @@ rodando.
 **Ajuste 11 (02/10).** Candidato = o papel entregou `final_answer` **no próprio step da falha ou depois, na mesma
 chamada**. Antes valia o 1º final estritamente depois, em qualquer chamada. Base 1: 53 → 54. Entrou 1 `nao_reconhecido`
 (falha no próprio step do `final_answer`). Plataforma continua 16/19, mas um caso mudou de motivo: a falha estava no
-step final, e a regra antiga o contava por um final de **outra** chamada. Base 2 (máquina 2, 02/10; `drill_down.py
+step final, e a regra antiga o contava por um final de **outra** chamada. Base 2 (ambiente da base, 02/10; `drill_down.py
 silenciosas` e `audit_recompute9`): 20 → **24**. As 4 a mais são falhas no próprio step do `final_answer`: 1 de
 plataforma (16 → 17/22) e **3 de `json_invalido`** (0 → 3/86). Nenhum final de outra chamada. Pela regra antiga, o
 `audit_recompute9` dá exatamente o 20/116 publicado.
 
-**Leitura dos casos — base 2 (plano 4.1b, máquina 2, 02/10; [assistido], 6 casos escolhidos, não sorteados).**
+**Leitura dos casos — base 2 (plano 4.1b, ambiente da base, 02/10; [assistido], 6 casos escolhidos, não sorteados).**
 
 | Casos | O `final_answer` usa o dado que faltou? | De onde veio a resposta |
 |---|---|---|
@@ -172,7 +172,7 @@ da ferramenta, como o grupo diz.
 
 ## 7 · Detectores de comportamento
 
-Migrados do §7 do notebook da esteira (01/10), com os mesmos números na base 1. Base 2: recalculados na máquina 2
+Migrados do §7 do notebook da esteira (01/10), com os mesmos números na base 1. Base 2: recalculados no ambiente da base
 pela lógica da §13.7 (02/10; o notebook não foi reexecutado inteiro lá).
 
 | Detector | Base 1 | Base 2 | Estado |
@@ -189,7 +189,7 @@ São contagens de detector, não falhas confirmadas. O Result-Ignore fica na mes
 ## 8 · O que falta
 
 - **Base 2: finalizada (05/10, decisão do Rafael).** `audit_recompute9` com 0 divergências, inclusive a consolidação
-  (104 · 104 · 4 · 1); sucesso falso: nenhum confirmado. Fica para a próxima ida à máquina 2 reexecutar os notebooks no
+  (104 · 104 · 4 · 1); sucesso falso: nenhum confirmado. Fica para a próxima ida ao ambiente da base reexecutar os notebooks no
   terminal, com cópia íntegra dos arquivos.
 - **4.1b:** base 2 fechada (§5); falta a base 1, que roda aqui com a mesma regra. Medida em dois eixos: plano 4.1c.
 - **Aviso à plataforma (4.9):** a ferramenta devolve falha como texto; o passe dict → string JSON entre

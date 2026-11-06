@@ -30,7 +30,7 @@ a partir destes itens.
   5.818 erros de nome não definido são o primeiro ActionStep do papel, um por execução, 98% em agosto, 92% no
   ContestacaoCivel. Antes da mineração, rodar `scripts/contar_primeiro_passo_nome_base2.py --trace <trace da base 2>`
   (só contagens): quantos dos 101 são o primeiro passo, o denominador do papel no mês, nomes, modelo, o nome na tarefa
-  e no system prompt, usado antes de ser definido. **Rodado em 13/10** (fotos IMG_5709–5719; [relatório da base 3 §7.8](../../2026-10-trace-law-flow-third/docs/02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310)
+  e no system prompt, usado antes de ser definido. **Rodado em 13/10** ([relatório da base 3 §7.8](../../2026-10-trace-law-flow-third/docs/02-relatorio-achados.md#78--o-nome-não-definido-no-primeiro-passo-contagens-de-1310)
   e [§7.9](../../2026-10-trace-law-flow-third/docs/02-relatorio-achados.md#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310)):
   dos 118, **103 são o primeiro ActionStep** (97 `ContestacaoCivel`, 6 `RoteadorCivel`) e **15 são nome inventado de
   fato**; 11 de estado perdido à parte. 97 das 149 execuções do `ContestacaoCivel` em agosto (65%) começam com o erro.

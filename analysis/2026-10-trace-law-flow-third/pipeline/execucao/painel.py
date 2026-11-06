@@ -3,7 +3,7 @@
 Lê `resultados/observada_<id>/` (a mais recente, ou --rodada), confere o hash de cada CSV contra o manifesto e
 escreve `<rodada>/painel/` com `painel.md`, as figuras da rodada copiadas e uma figura nova de cobertura.
 Todo número e todo texto com número sai dos CSVs — nada escrito à mão. Só contagens, nomes de unidade e motivos:
-nenhum identificador de execução nem texto de caso, então o painel pode sair da máquina 2.
+nenhum identificador de execução nem texto de caso, então o painel pode sair do ambiente da base.
 
 Uso, da raiz:  uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py painel [--rodada <pasta>]
 """

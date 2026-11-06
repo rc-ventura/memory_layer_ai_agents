@@ -30,7 +30,7 @@ COLUNAS = ["step_pos", "step_number", "error_message", "next_step_number", "next
 LIMITE_DE_PASSOS = ("Reached max steps", "AgentMaxStepsError")   # o mesmo texto do base_pipeline.classify (Ajuste 8)
 
 # (chave, rótulo, cor) — a ordem é a das barras; verdes = seguiu sem erro até o fim, vermelhos = não se recuperou (o
-# limite de passos era preto e se confundia com o verde-escuro: Rafael, 26/10, foto IMG_6066)
+# limite de passos era preto e se confundia com o verde-escuro: Rafael, 26/10)
 CATEGORIAS = [("um_erro", "um erro, depois sem erro até o fim", "#1b4332"),
               ("cascata", "cascata (errou de novo em seguida), depois sem erro até o fim", "#52b788"),
               ("recaida", "recaída (errou de novo mais adiante), depois sem erro até o fim", "#b7e4c7"),

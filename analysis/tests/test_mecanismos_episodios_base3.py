@@ -171,7 +171,7 @@ class TestMecanismos(unittest.TestCase):
         self.assertEqual(a.EU.submecanismo.iloc[0], "texto_solto_no_codigo")
 
     def test_parsing_antigo_linha_na_mensagem_sem_codigo(self):
-        # TRANSCRIÇÃO: o fim desta mensagem saiu cortado na foto (depois de "Error: un"); completado.
+        # TRANSCRIÇÃO: o fim desta mensagem saiu cortado na transcrição (depois de "Error: un"); completado.
         a = self.analyze(janela(error_message="Code parsing failed on line 1 due to: SyntaxError\nhello = 'unterminated\nError: unterminated string literal",
                                 error_code_action=None))
         self.assertEqual(a.EU.submecanismo.iloc[0], "texto_em_literal")
@@ -191,7 +191,7 @@ class TestMecanismos(unittest.TestCase):
 
     def test_final_answer_nao_precisa_excluir_historico_repr(self):
         code = "final_answer({'a': 'text', 'b': 'text'})"
-        # TRANSCRIÇÃO: a linha abaixo saiu cortada à direita na foto (depois de "error_code_acti"); completada.
+        # TRANSCRIÇÃO: a linha abaixo saiu cortada à direita na transcrição (depois de "error_code_acti"); completada.
         a = self.analyze(janela(error_message="Code parsing failed on line 1 due to: SyntaxError: invalid syntax", error_code_action=code))
         self.assertEqual(a.EU.submecanismo.iloc[0], RAW1.submecanismo(a.EU.err_msg.iloc[0], code, 0, True))
 
@@ -215,7 +215,7 @@ class TestMecanismos(unittest.TestCase):
             BP.montar_unidades(a.EU)
 
     def test_carga_vazia_sem_inventar_unidades(self):
-        # TRANSCRIÇÃO: linha cortada à direita na foto (depois de "error_type=None, error"); completada.
+        # TRANSCRIÇÃO: linha cortada à direita na transcrição (depois de "error_type=None, error"); completada.
         b = state(janela(structured_error="0", observation_suspect="1", error_source="OBSERVATION_SUSPECT", error_type=None, error_message=None))
         a = BP.analisar_mecanismos_observaveis(b)
         self.assertTrue(a.EU.empty)

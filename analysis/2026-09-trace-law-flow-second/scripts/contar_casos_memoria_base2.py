@@ -20,7 +20,7 @@ A evidência de "uma causa só", por memória:
     com erro) — nomes de usos diferentes (inspecionar um valor × abrir arquivo × executar código) são candidatos a
     causas diferentes.
 Imprime só nomes, contagens e meses. Com `--listar <id>`, os exec_id, mês e idx dos casos, para abrir com
-`drill_down.py caso` na máquina da base. Uso, da raiz:
+`drill_down.py caso` no ambiente da base. Uso, da raiz:
     uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_casos_memoria_base2.py --trace <trace> [--id <id> ...]
 """
 import argparse

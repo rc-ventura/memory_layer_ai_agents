@@ -10,19 +10,19 @@ os resultados por base, em [`14-relatorio-falhas-silenciosas.md`](14-relatorio-f
 **Regra de ouro (do 03):** nenhum número agregado sem um caso concreto que o sustente — e nenhuma regra nova escrita
 olhando uma base só.
 
-## 0 · Pré-condições e o que sai da máquina
+## 0 · Pré-condições e o que sai do ambiente
 
-- Rodar de dentro da pasta `pipeline/` da base (`2026-09-trace-law-flow` ou `-second`). Na máquina 2, `uv run` na frente
+- Rodar de dentro da pasta `pipeline/` da base (`2026-09-trace-law-flow` ou `-second`). No ambiente da base, `uv run` na frente
   de cada comando.
 - **Copiar para a `-second`** (convenção do livro-razão): `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`),
   `drill_down.py` e `falhas_silenciosas.ipynb`. O notebook importa `analysis/base_utils.py` (dois níveis acima de
   `pipeline/`), que já vem com o repositório.
 - As medidas [2]/[3] do `drill_down.py silenciosas` precisam do `resultados/erros_mecanismo.csv` (gerado pelo notebook
   da esteira); o notebook das falhas silenciosas não precisa — monta os erros sozinho.
-- **Sai da máquina de compliance:** contagens, nomes de papel e de ferramenta, grupos, formas (só o tipo), motivos
-  **mascarados** (`--motivos`). Tudo o que o notebook e o `silenciosas` imprimem é isso — pode ser fotografado.
+- **Sai do ambiente de compliance:** contagens, nomes de papel e de ferramenta, grupos, formas (só o tipo), motivos
+  **mascarados** (`--motivos`). Tudo o que o notebook e o `silenciosas` imprimem é isso — pode sair do ambiente.
 - **Não sai:** `exec_id`, texto de caso, código do agente. `resultados/evidencia/silenciosas/casos.csv` e
-  `ocorrencias.csv` têm `exec_id`: **ler na máquina**. `resultados/` é git-ignored.
+  `ocorrencias.csv` têm `exec_id`: **ler no ambiente**. `resultados/` é git-ignored.
 
 ## Passo 1 — Rodar o balde
 
@@ -83,7 +83,7 @@ No notebook, §13.4 ([2] e [3]):
 
 ## Passo 5 — Candidatos a sucesso falso
 
-No notebook, §13.5 ([4]). É teto. Conferir no caso, na máquina:
+No notebook, §13.5 ([4]). É teto. Conferir no caso, no ambiente:
 
 1. Em `resultados/evidencia/silenciosas/casos.csv`, 2–3 linhas do grupo `plataforma` (e de outro grupo com taxa alta).
 2. `python drill_down.py caso <exec_id> <papel>` → o `final_answer` usa um dado que deveria ter vindo da ferramenta
@@ -102,7 +102,7 @@ No notebook, §13.7. Os números da base 1 são a referência (inventário 90; R
 ## Passo 7 — Ocorrências e registro
 
 - A §13.8 grava `resultados/evidencia/silenciosas/ocorrencias.csv` — a entrada do balde invisível para a consolidação,
-  com unidade (`REGRAS_INVISIVEL`) e ocorrência (cascata × unidade). Não sai da máquina.
+  com unidade (`REGRAS_INVISIVEL`) e ocorrência (cascata × unidade). Não sai do ambiente.
 - Depois, `consolidacao_unidades.ipynb` (§14.x): a §14.1 tem de dar 0 steps nos dois canais; a §14.3 lista o que a
   consolidação muda contra a triagem só do visível. Base 1: só a `U_repr_colado` (6 → 12). Conferência independente:
   bloco G do `audit_recompute9`.

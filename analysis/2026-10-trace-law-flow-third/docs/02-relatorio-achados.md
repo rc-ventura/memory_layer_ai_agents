@@ -361,7 +361,7 @@ passos sem erro, sem falhas silenciosas, sem tokens de entrada × saída por uni
 n+2. Cada ausência está no roadmap (#13, #15, #16, #32) ou no [pedido de dados](05-pedido-queries.md). A figura do
 depois do erro não traz a unidade de sinal de harness.
 
-**A recuperação do sistema inteiro (23/10, a rodar na máquina 2):** a tabela acima conta por erro e vê um passo; a
+**A recuperação do sistema inteiro (23/10, a rodar no ambiente da base):** a tabela acima conta por erro e vê um passo; a
 pergunta "o agente se recupera?" pede a conta por execução. Ela entra na parte 2 do relatório (`executar.py relatorio`):
 cada papel numa execução conta uma vez, do primeiro erro até o fim do papel (um erro só, cascata, recaída, terminou no
 erro, limite de passos), sobre o denominador das contagens, na população e por papel. Dá sem o trace completo porque a
@@ -371,11 +371,11 @@ completo dá a resposta (354 de 354 trajetórias iguais). Os números da base 3 
 
 ### 7.8 · O nome não definido no primeiro passo (contagens de 13/10)
 
-Duas contagens na máquina 2, sobre a mesma rodada, explicam o maior grupo pendente (os 5.818 de "predecessor não
+Duas contagens no ambiente da base, sobre a mesma rodada, explicam o maior grupo pendente (os 5.818 de "predecessor não
 identificado"). Nas saídas dos scripts, o papel aparece como `ContestacaoCivel`; é o `ContestacaoCivel`. **A causa do
 grupo, e uma correção da leitura de mecanismo que estava aqui, estão em [§7.9](#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310).**
 
-**1. São todos o primeiro ActionStep do papel** (`pipeline/validacao/contar_predecessor_pendentes.py`; foto IMG_5706).
+**1. São todos o primeiro ActionStep do papel** (`pipeline/validacao/contar_predecessor_pendentes.py`).
 A regra marcava o motivo para dois casos — não há passo anterior, ou há, sem `step_number`. O leitor do parquet já os
 separa: no primeiro, nenhuma coluna `prev_*` vem preenchida (a query calcula o vizinho n-1 sobre todos os ActionSteps,
 antes de filtrar os erros); no segundo, o número falta mas os outros campos vêm.
@@ -394,7 +394,7 @@ falso positivo, em 5.781 ActionSteps. O `step_number` = 1 sozinho não basta: el
 saiu do pedido B ([`05`](05-pedido-queries.md)).
 
 **2. Um erro por execução, poucos nomes, e o padrão da verificação de existência**
-(`pipeline/validacao/contar_primeiro_passo_nome.py`; fotos IMG_5707 e IMG_5708).
+(`pipeline/validacao/contar_primeiro_passo_nome.py`).
 
 | Medida | Resultado |
 |---|---|
@@ -415,7 +415,7 @@ com código inteiro, o agente "define o nome no próprio código, mas depois de 
 no `except`). A contagem vale; o mecanismo é o descrito em §7.9.
 
 **3. A base 2, com o trace inteiro, confirma o grupo**
-(`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`; fotos IMG_5709 e IMG_5710). A base 2 é o
+(`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`). A base 2 é o
 lote de agosto de 2026 (1.000 execuções, 3.907 ActionSteps, 479 erros estruturados, 129 de nome não definido).
 
 | Medida | Base 2 | Base 3 |
@@ -442,8 +442,8 @@ lote de agosto de 2026 (1.000 execuções, 3.907 ActionSteps, 479 erros estrutur
 
 ### 7.9 · A causa: uma instrução do prompt que o ambiente de execução não suporta (base 2, 13/10)
 
-Fontes: a parte F e a parte G do `contar_primeiro_passo_nome_base2.py` (fotos IMG_5712 e IMG_5713) e a leitura de três
-casos, feita por Rafael na máquina 2 (fotos IMG_5714 a IMG_5719). Tudo abaixo é contagem ou paráfrase; nenhum
+Fontes: a parte F e a parte G do `contar_primeiro_passo_nome_base2.py` e a leitura de três
+casos, feita por Rafael no ambiente da base. Tudo abaixo é contagem ou paráfrase; nenhum
 identificador de execução nem número de processo entra neste documento.
 
 **O papel × o modelo (parte F).** No grupo do primeiro passo da base 2, os 97 erros do `ContestacaoCivel` são todos do
@@ -517,7 +517,7 @@ do segundo.
 
 ### 7.10 · A assinatura na base 3: o padrão não é só do primeiro passo (13/10)
 
-`pipeline/validacao/contar_assinatura_try_nameerror.py`; foto IMG_5720. A mensagem de erro traz a linha que falhou
+`pipeline/validacao/contar_assinatura_try_nameerror.py`. A mensagem de erro traz a linha que falhou
 ("Code execution failed at line 'try: … except NameError: …' due to: InterpreterError: The variable … is not defined").
 O script conta, em cada erro de nome não definido, se a linha tem `try` com `except NameError`; "duvidoso" = a linha
 começa com `try:` mas sem `except NameError`. Não precisa do prompt.
@@ -558,8 +558,7 @@ harness: o `validar_quebra_sigilo` (contradição do prompt com o ambiente, deci
 
 **Aplicado como Ajuste 17 (13/10, decisão do Rafael; [livro-razão](../../pipeline-entre-bases.md)).** A assinatura na
 linha que falhou passa antes da posição e leva o erro à unidade `U_verificacao_try_nameerror`, com destino **harness**
-nas bases 2 e 3 (sinal de harness). Na base 1 nada muda (498 de 498 na mesma unidade). A simulação na base 3 (foto
-IMG_5721) mostrou: mudam 5.764, dos outros 24.377 nenhum muda; pendentes 7.107 (23,6%) → 1.803 (6,0%); estado perdido
+nas bases 2 e 3 (sinal de harness). Na base 1 nada muda (498 de 498 na mesma unidade). A simulação na base 3 mostrou: mudam 5.764, dos outros 24.377 nenhum muda; pendentes 7.107 (23,6%) → 1.803 (6,0%); estado perdido
 878 → 544 e nome inventado 477 → 351, os dois ainda candidatos; a unidade nova com 5.764 erros, 5.442 execuções e 112,0 mi
 de tokens. **A rodada nova (`observada_3f9c2806cac9cd4d`, 14/10) confirmou os números da simulação;** as seções 1 a 7.7
 estão atualizadas.

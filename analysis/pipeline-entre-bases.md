@@ -7,7 +7,7 @@
 Este documento registra **como o método muda quando uma base nova o testa**. Não repete o método (que está nos docs
 da análise) nem os números de uma base (que estão nos relatórios dela): registra, ajuste por ajuste, o que
 disparou a mudança, a evidência, o que foi alterado, como foi verificado, o efeito em cada base e o que replicar
-na outra máquina.
+na outro ambiente.
 
 ## 1. Por que ele existe
 
@@ -17,7 +17,7 @@ funções são **hipóteses mineradas numa base** — o checklist de intake (`RE
 base") já diz isso: copie-as sem mudar e leia o balde "sintoma não reconhecido" como sinal de cobertura.
 
 A base 2 (lote de ago/2026, 9 meses reais, 0 `exec_id` em comum com a base 1 — `04-roadmap.md` item 27) roda o mesmo
-pipeline **na máquina de compliance** (pasta `2026-09-trace-law-flow-second`); o cru dela não sai de lá. Onde as
+pipeline **no ambiente de compliance** (pasta `2026-09-trace-law-flow-second`); o cru dela não sai de lá. Onde as
 regras não alcançam, o resíduo cresce e o alarme dispara — e a resposta certa é **corrigir o método**, com a base 1
 como teste de regressão, e não remendar a base nova.
 
@@ -29,9 +29,9 @@ como teste de regressão, e não remendar a base nova.
 | O que falta fazer | `04-roadmap.md` (itens 29–36) |
 | **O que mudou entre bases, por quê, e o que replicar** | **este documento** |
 
-## 2. Como uma base nova entra — o fluxo entre as duas máquinas
+## 2. Como uma base nova entra — o fluxo entre os dois ambientes
 
-**O que sai da máquina de compliance:** só contagens, nomes de classe de exceção (`error_type`), nomes de papel e
+**O que sai do ambiente de compliance:** só contagens, nomes de classe de exceção (`error_type`), nomes de papel e
 de ferramenta, meses, verdadeiro/falso e esqueletos mascarados. **Não saem**: texto de caso, código do agente,
 nome de cliente, número de processo, `exec_id`. As colunas novas do `drill_down.py residuo` existem para isso
 (§3, Ajuste 1).
@@ -167,7 +167,7 @@ rejeitada, passem ou não na regra, com o esqueleto mascarado e o cru.
 pela consulta por mês e submecanismo. A triagem da base 2 depois do 2.2 ainda não foi vista: confirmar que
 `U_repr_colado` sai candidata lá (7 execuções em 3 meses).
 
-**Replicar na máquina 2** (o diff é o do commit `2943c1b`): `base_pipeline.py` — `__all__`, `explodir_memoria`,
+**Replicar no ambiente da base** (o diff é o do commit `2943c1b`): `base_pipeline.py` — `__all__`, `explodir_memoria`,
 `PAR_CHAVE_TEXTO`, `sinais_de_parsing`, `submecanismo`, `montar_unidades`, o texto de `U_repr_colado`; rodar o
 notebook inteiro e `genealogia_sankey.py`.
 
@@ -210,7 +210,7 @@ as mesmas duas regras, escritas à parte.
 `IndexError`, `Could not index` com lista, `APIConnectionError`, `UnicodeDecodeError`; os 4 `Import from` e o
 `FinalAnswer` saíram, e a causa não identificada caiu de 12 para 7.
 
-**Replicar na máquina 2** (`base_pipeline.py`): o ramo do sandbox em `submecanismo()` (`"Import from"`), a regra
+**Replicar no ambiente da base** (`base_pipeline.py`): o ramo do sandbox em `submecanismo()` (`"Import from"`), a regra
 `argumento_inexistente` logo depois da do `argumento_posicional`, a entrada no `SUB2UNI` e o texto de `U_arg_nomeado`;
 rodar o notebook inteiro e o `genealogia_sankey.py`.
 
@@ -266,7 +266,7 @@ não-memória; nunca entra na cobertura das candidatas.
 `H_timeout_ferramenta` aparece como não-memória com 16 erros; o sintoma não reconhecido continua "revisar — prioridade"
 só por causa do `?` (Etapa 5).
 
-**Replicar na máquina 2:** `base_pipeline.py` (4 trechos), `paleta.py` (2), `genealogia_sankey.py` (2).
+**Replicar no ambiente da base:** `base_pipeline.py` (4 trechos), `paleta.py` (2), `genealogia_sankey.py` (2).
 
 ### Ajuste 5 — a decisão da mineração entra na triagem: "sinal de harness"
 
@@ -302,7 +302,7 @@ retorno — foi erro do agente); a seção e o rótulo dizem que o conserto é n
 erros). Por papel: 18 células candidatas de 31 (antes 19 de 33), 13 herdadas, 8 das 18 caem na régua estrita. Auditoria
 nº 6: 0 divergências; cobertura e unidade sinalizada conferidas.
 
-**Replicar na máquina 2:** `base_pipeline.py` (a tabela, a `triagem()`, a ordem, a `triagem_por_papel()`, o `__all__`),
+**Replicar no ambiente da base:** `base_pipeline.py` (a tabela, a `triagem()`, a ordem, a `triagem_por_papel()`, o `__all__`),
 `genealogia_sankey.py` (import e destino) e as 3 células do notebook (9.2, 9.3, 9.4).
 
 ### Ajuste 6 (revertido) e Ajuste 7 — as bases são independentes; a decisão da mineração vale só onde foi tomada
@@ -333,7 +333,7 @@ nomes de variável, 5 de 10 unidades eram sinalizadas (alarme falso demais). O r
 aberto". Base 1: tudo idêntico ao Ajuste 5 (a nº10 segue sinal de harness); com `BASE_ID = "base2"`, a nº2 e a nº10
 voltam a candidatas, com destino em aberto, até serem mineradas lá.
 
-**Replicar na máquina 2:** `base_pipeline.py` (restaurar o `TRACE` e ajustar o `BASE_ID`), o notebook e o
+**Replicar no ambiente da base:** `base_pipeline.py` (restaurar o `TRACE` e ajustar o `BASE_ID`), o notebook e o
 `genealogia_sankey.py`; nada da pasta `referencia/`.
 
 ### Ajuste 8 — desmontar o `?`: tempo do interpretador, código lento e o erro crítico
@@ -365,7 +365,7 @@ tipos e "passava" na recorrência sem ser um padrão. Lidos no cru pelo Rafael:
    `?`, e `residuo_por_padrao()` marca essas chaves (coluna `chave`) como fora da recorrência.
 
 **Ainda por medir:** o número da lição do `U_codigo_lento` ("textos de ~N caracteres") — tamanhos das observações e das
-variáveis nos 6 casos de tempo, na máquina 2. **Medido em 29/09 — ver Etapa 5b (§5): o tamanho não explica o estouro, e
+variáveis nos 6 casos de tempo, no ambiente da base. **Medido em 29/09 — ver Etapa 5b (§5): o tamanho não explica o estouro, e
 a lição está em aberto.**
 
 **Conferido na base 2 (29/09):** o `?` sumiu; sintoma não reconhecido com 2 erros, em baixa prioridade; 1 erro crítico
@@ -378,7 +378,7 @@ novas (`chama_ferramenta`, `chave`, "execuções mortas…", todas zeradas/"iden
 → "revisar — baixa prioridade". `H_timeout_ferramenta` +3; `U_codigo_lento` com 3 erros em 2 execuções e 1 mês → "fora:
 sem recorrência"; 1 erro crítico (CalculoCivel) em "investigar — crítico", com o caminho em `criticos.csv`.
 
-**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`, `paleta.py`,
+**Replicar no ambiente da base:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`, `paleta.py`,
 `genealogia_sankey.py` e o notebook.
 
 ### Ajuste 9 — o resultado bruto entregue na resposta final
@@ -386,7 +386,7 @@ sem recorrência"; 1 erro crítico (CalculoCivel) em "investigar — crítico", 
 **Problema.** O Ajuste 8 chamou de "código lento" os 3 erros de tempo do AgenteProcuracoes, com a lição "não manipular
 textos enormes no bloco". A leitura (Etapa 5b, §5) mostrou que não era isso.
 
-**Evidência (máquina 2, 29/09; `drill_down.py tempo` e leitura do cru pelo Rafael — só tamanhos, nomes e o sentido dos
+**Evidência (ambiente da base, 29/09; `drill_down.py tempo` e leitura do cru pelo Rafael — só tamanhos, nomes e o sentido dos
 pensamentos, sem texto de caso).**
 
 | # | O quê | Onde |
@@ -420,7 +420,7 @@ falsa); auditoria nº 6 com 0 divergências.
 **Esperado na base 2.** `U_codigo_lento` 3 → 0 (some da triagem); **`U_resultado_bruto` com 3 erros, 2 execuções, 1 mês
 → "fora: sem recorrência"**. Nada mais muda.
 
-**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`,
+**Replicar no ambiente da base:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`,
 `drill_down.py`.
 
 ### Ajuste 10 — o erro crítico ganha família e cor próprias
@@ -443,7 +443,7 @@ destino `CRÍTICO` (as fitas saem cinza-escuro, pela transparência).
 **Esperado na base 2.** O erro crítico do CalculoCivel troca de família (`Protocolo do harness` → `Erro crítico`) e de
 cor (preto); a família de protocolo perde 1 erro. Nenhuma decisão de triagem muda.
 
-**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`.
+**Replicar no ambiente da base:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `paleta.py`, `genealogia_sankey.py`.
 
 ### Ajuste 11 — o [4] (candidato a sucesso falso) respeita o step final e a fronteira de chamada
 
@@ -480,15 +480,15 @@ divergências. Nenhuma outra saída do notebook muda (diff das saídas); os CSVs
 mudar muito — improvável, porque a regra nova só **acrescenta** falhas no step final e **tira** finais de outra
 chamada.
 
-**Conferido na base 2 (máquina 2, 02/10, fotos do `silenciosas` e do `audit_recompute9`, 0 divergências).** [4]
+**Conferido na base 2 (ambiente da base, 02/10, saídas do `silenciosas` e do `audit_recompute9`, 0 divergências).** [4]
 20/116 → **24/116**. As 4 a mais são falhas no próprio step do `final_answer`: plataforma 16 → 17/22 e **`json_invalido`
 0 → 3/86**. Nenhum final de outra chamada (24 de 1.000 papéis têm mais de uma chamada na base 2). A leitura muda em um
 ponto. O `json_invalido` **quase nunca** vira sucesso falso (3%), em vez de "nunca". O contraste com a plataforma (77%)
 continua. A regra antiga, reimplementada, dá exatamente o 20/116 publicado.
 
-**Replicar na máquina 2 (feito em 02/10):** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`) e `drill_down.py` →
+**Replicar no ambiente da base (feito em 02/10):** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`) e `drill_down.py` →
 `falhas_silenciosas.ipynb` → `audit/scripts/audit_recompute9.py --base base2 --trace <xz> --em <erros_mecanismo.csv>
---fonte <base_pipeline.py>`. Trazer a foto do [4] por grupo.
+--fonte <base_pipeline.py>`. Trazer o [4] por grupo.
 
 **Junto, sem mudar número:** a regra `^'default'$` de `MOTIVO_REGRAS` era anotada só `b2`; ela dispara 2 vezes na
 base 1 (CalculoCivel, `calculo_correcoes_monetarias`, fev/2026 — a mesma calculadora do erro crítico da base 2). A
@@ -548,10 +548,10 @@ soma de totais — evita contar duas vezes a execução que tem o gesto nos dois
 continua candidata; nenhuma outra unidade muda (o balde invisível da base 2 só tem regra para o JSON inválido colado);
 bloco G do `audit_recompute9` com 0 divergências (meses e papéis "a conferir").
 
-**Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `falhas_silenciosas.ipynb`,
+**Replicar no ambiente da base:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `falhas_silenciosas.ipynb`,
 `consolidacao_unidades.ipynb` (novo) e `audit/scripts/audit_recompute9.py` → rodar no terminal, nessa ordem: esteira,
 falhas silenciosas, consolidação, `audit_recompute9 --base base2`. Entra no prompt da rodada 2
-(`maquina2/2026-10-02-prompt-base2-rodada2.md`, passo 2b). Trazer a §14.3 e o bloco G.
+(prompt da rodada 2 da base 2, passo 2b). Trazer a §14.3 e o bloco G.
 
 **Complemento (04/10, plano 4.2c): a triagem sai da esteira e passa a morar na consolidação.** Com o Ajuste 12, a
 decisão sobre as unidades depende dos dois baldes; deixá-la também na esteira daria duas triagens com números
@@ -581,7 +581,7 @@ antes. A triagem global fica igual: 10 candidatas, 440 de 498 erros (88%), 91% d
 **Verificação (base 1):** fora da §9, as saídas da esteira reexecutada são idênticas às de antes (diff de todas as
 células); a consolidação roda sem erro, com as três figuras; `audit_recompute6` e `audit_recompute9` com 0 divergências.
 **Esperado na base 2:** a mesma estrutura; a sensibilidade por papel do `RoteadorCivel` pode mudar do mesmo jeito (a
-conferir). **Replicar na máquina 2:** `base_pipeline.py`, a esteira, `consolidacao_unidades.ipynb` (prompt da rodada 2,
+conferir). **Replicar no ambiente da base:** `base_pipeline.py`, a esteira, `consolidacao_unidades.ipynb` (prompt da rodada 2,
 passos 1 e 2b; hashes atualizados).
 
 ### Ajuste 13 — o "campo inexistente" da base 2 também é sinal de harness
@@ -599,7 +599,7 @@ outro: o conserto é no contrato do prompt, não na memória do agente.
 
 **Verificação (base 1).** Triagem global e por papel idênticas (a base 1 já tinha a decisão). **Esperado na base 2:** o
 `U_campo_inexistente` sai das candidatas e vai para "sinal de harness" — candidatas 8 → 7, erros cobertos pelas
-candidatas 370 → 332; as células dele saem da triagem por papel. **Replicar na máquina 2:** `base_pipeline.py` (restaurar
+candidatas 370 → 332; as células dele saem da triagem por papel. **Replicar no ambiente da base:** `base_pipeline.py` (restaurar
 `TRACE` e `BASE_ID`) → consolidação, na próxima ida.
 
 ### Ajuste 14 — desempate no catálogo do protocolo: reembrulho imediato é resposta final fora do envelope
@@ -617,7 +617,7 @@ step seguinte (sobreposição ≥ 50%) é M1. O roteiro de investigação do kit
 (05/10).**
 
 **Verificação (base 1).** Só documento: nenhum número muda. A tabela de `11` §1.3 já classifica esse caso como M1 ("o
-JSON do negócio em ```` ``` ````"). **Replicar na máquina 2:** nada a rodar; a próxima leitura usa a regra.
+JSON do negócio em ```` ``` ````"). **Replicar no ambiente da base:** nada a rodar; a próxima leitura usa a regra.
 
 ### Ajuste 15 — o sinal de resto compara com o normal do próprio papel, não com um valor fixo
 
@@ -649,7 +649,7 @@ todos os steps, inclusive os bons.
 - **Achado:** na base 1, 2 erros do RespostaBacen têm o sinal do M4, que o catálogo dava como só da base 2 (`10` §4
   M4). O destino não muda: nem M4 nem M2 são memória.
 - **Base 2:** os fatos publicados (0,03–0,18 do normal) ficam abaixo do limiar.
-- **Replicar na máquina 2:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py` e
+- **Replicar no ambiente da base:** `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py` e
   `audit_recompute10.py`; rodar `drill_down.py protocolo` e conferir que os erros do surto de ago/2026 têm o sinal.
 
 ### Ajuste 16 — a primeira regra automática da família do protocolo: a ferramenta que se apresenta como resposta final
@@ -682,7 +682,7 @@ não dependesse de leitura.
 - **Tabelas:** as colunas antigas do `casos.csv` ficam idênticas.
 - **Concordância com a leitura de 05/10:** M2 5 → 5 pela regra; M1 1 e indeterminado 1 → 0.
 - **Auditoria:** `audit_recompute10` com 0 divergências e a mesma contagem; encontro do kit, tudo igual.
-- **Replicar na máquina 2:** como no Ajuste 15; conferir o [10] da base 2. Pela leitura de 02/10 (`10` §4 M2), o único
+- **Replicar no ambiente da base:** como no Ajuste 15; conferir o [10] da base 2. Pela leitura de 02/10 (`10` §4 M2), o único
   M2 da base 2 é de dez/2025.
 
 ### Ajuste 17 — a linha que falhou decide antes da posição: a verificação por `try/except NameError`
@@ -694,7 +694,7 @@ verificar se uma variável existe com `try: nome` / `except NameError:`. O inter
 pela posição do passo anterior (com erro → `U_estado_perdido`; sem erro → `U_nome_inventado`; sem passo → pendente) e
 não via o padrão.
 
-**Evidência** (relatório da base 3 §7.8–7.10; fotos IMG_5706–5722).
+**Evidência** (relatório da base 3 §7.8–7.10).
 - **Base 2, trace inteiro** (`2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py`): 103 de 129
   erros de nome no primeiro passo; 65% das execuções do ContestacaoCivel em agosto começam com o erro; o mesmo
   `gpt-5.2` teve 0 de 72 em julho no primeiro passo (o modelo não explica); três casos lidos — o prompt instrui o
@@ -730,18 +730,18 @@ não via o padrão.
   `comparar_base1.py` segue 415 / 83 / 0.
 - **Testes:** 169 (164 + 5 novos em `analysis/tests/test_verificacao_try_nameerror.py`: as duas bases classificam igual,
   unidade e destino, o primeiro passo deixa de ser pendente, a assinatura vence a posição).
-- **Base 3, simulação** (`simular_regra_assinatura.py`, código de antes do ajuste, foto IMG_5721): mudam 5.764; dos 24.377
+- **Base 3, simulação** (`simular_regra_assinatura.py`, código de antes do ajuste): mudam 5.764; dos 24.377
   sem a assinatura, **0** mudam. Pendentes 7.107 (23,6%) → 1.803 (6,0%). Estado perdido 878 → 544 (19,8 → 10,1 mi de
   tokens) e nome inventado 477 → 351 (8,9 → 6,0 mi); os dois seguem passando na régua. A unidade nova: 5.764 erros,
   5.442 execuções, 4 meses, 112,0 mi de tokens.
 - **A conferência da rodada** (`conferir_rodada_observada.py`) foi escrita quando nenhuma unidade da base 3 tinha
   destino harness: recontava como candidata toda unidade que passa na régua e exigia "em aberto" em todos os destinos.
-  Na máquina 2 ela parou em `candidatura_recontada_internamente` (foto IMG_5727). Corrigida: a recontagem separa, entre
+  No ambiente da base ela parou em `candidatura_recontada_internamente`. Corrigida: a recontagem separa, entre
   as que passam na régua, as de destino harness registrado **para esta base** (sinal de harness) das candidatas, e as
   duas listas têm de bater com a triagem; "destinos não herdados" confere que cada destino é só o registrado para esta
   base (o `U_campo_inexistente`, harness nas bases 1 e 2, segue "em aberto" na 3). Testada numa cópia da base 1 com a
-  assinatura nos erros de nome: a versão antiga falha como na máquina 2; a nova passa em todas as verificações.
-- **Replicar na máquina 2:** (1) `git pull`; (2) aplicar a mesma mudança ao pipeline da base 2
+  assinatura nos erros de nome: a versão antiga falha como no ambiente da base; a nova passa em todas as verificações.
+- **Replicar no ambiente da base:** (1) `git pull`; (2) aplicar a mesma mudança ao pipeline da base 2
   (`2026-09-trace-law-flow-second/scripts/replicar_ajuste17.py`, que mostra o que faria e só grava com `--aplicar`);
   (3) `executar.py validar` (as regras da base 3 e da base 2 iguais); (4) `executar.py analisar` — rodada nova, a
   `observada_b4fcc7711a9ec8a6` fica intacta; (5) `executar.py conferir` e `painel`.
@@ -815,7 +815,7 @@ deixa sair hashes e proíbe o `exec_id`.
   mudou em cada versão.
 - **Validador** (`.claude/skills/mineracao-candidata/scripts/validar_memoria.py`): aceita as versões de `versoes_aceitas`,
   confere o prefixo da parte específica e confere cada caso contra o `casos_item`, tudo lido do esquema.
-- **Decisão do Rafael (16/10):** o arquivo da base 3 sai da máquina 2 inteiro. Como o localizador da base 3 é só de
+- **Decisão do Rafael (16/10):** o arquivo da base 3 sai do ambiente da base inteiro. Como o localizador da base 3 é só de
   hashes, isso não muda a regra de sigilo.
 - **Fora deste ajuste:** a parte específica como script em vez de notebook (procedimento `16`, skills
   `propor-notebook` e `validador-de-notebook`). O esquema já aceita o rótulo `script:`; o método muda no Ajuste 20.
@@ -841,14 +841,14 @@ deixa sair hashes e proíbe o `exec_id`.
 
 **Gatilho.** O piloto de mineração da base 3 (`b3 #12`, o inventário do sandbox) é o primeiro a ter parte específica
 fora da base 1. O procedimento (`16`) pedia um notebook, rodado com `jupyter nbconvert`, e a base 3 roda tudo por
-comando (`executar.py`), com manifesto e hash, numa máquina Windows.
+comando (`executar.py`), com manifesto e hash, numa ambiente Windows.
 
 **Evidência.**
 - O resultado de um notebook não entra em manifesto: o `hash_codigo` da base 3 ignora as saídas de um `.ipynb`, e o
   notebook da nº2/nº10 grava `resultados/unidades_memoria.json` sem hash de nada.
 - A suíte de testes (`analysis/tests/`, 213 testes antes deste ajuste) não alcança notebook.
 - O "ausente" do `b3 #42` (16/10): um script que abria a rodada sem o código do pipeline não achou um arquivo de 260
-  caracteres no OneDrive da máquina 2. Quem lê pela `ler_artefato` / `caminho_io` não tem esse problema.
+  caracteres no OneDrive do ambiente da base. Quem lê pela `ler_artefato` / `caminho_io` não tem esse problema.
 
 **Solução** (aprovada pelo Rafael em 16/10, com a troca dos nomes).
 - **Procedimento `16`:** o estágio 3 do ciclo de vida é o **script específico**, em
@@ -885,7 +885,7 @@ comando (`executar.py`), com manifesto e hash, numa máquina Windows.
 são do ContestacaoCivel, 1.592 em julho e 754 em agosto de 2026 — o mesmo papel e o mesmo período do `try/except NameError`
 do Ajuste 17 (95 em julho, 5.667 em agosto). Hipótese: a mesma instrução do prompt, cumprida de dois jeitos.
 
-**Evidência** (dossiê do sandbox na base 3, "A evidência, achado por achado"; fotos e comandos lá).
+**Evidência** (dossiê do sandbox na base 3, "A evidência, achado por achado"; comandos lá).
 - **Base 1:** o prompt de julho do ContestacaoCivel diz "Antes de chamar qualquer tool, VERIFIQUE se a variável de saída
   correspondente já está preenchida em memória. Se já estiver, PULE a chamada" — sem dizer como; 1 de 3 execuções verifica
   com `'x' not in globals()` e é barrada. Nenhum outro papel tem a instrução; a única outra verificação (ConversationAgent,
@@ -929,8 +929,7 @@ do Ajuste 17 (95 em julho, 5.667 em agosto). Hipótese: a mesma instrução do p
 - **Base 1:** 1 erro muda de unidade (ContestacaoCivel, jul/26, `verificacao_introspeccao`); `U_sandbox` 17 → 16; total 498.
   O `comparar_base1.py` dá o mesmo antes e depois (415 na mesma unidade; os 82 em "unidade diferente" já existiam antes do
   ajuste — `b3 #47`). Notebook da esteira refeito; `monitorar.py` reproduz a linha de base do item novo.
-- **Base 3 (rodada `observada_85706f1e94f88f59`, 19/10; `comparar_rodadas.py --antes e3ebc8274dcf108c`, fotos
-  `IMG_5901`–`IMG_5904`):** código que mudou: só os 3 arquivos do ajuste; **resumo do manifesto: 29 campos, 0 diferentes**
+- **Base 3 (rodada `observada_85706f1e94f88f59`, 19/10; `comparar_rodadas.py --antes e3ebc8274dcf108c`):** código que mudou: só os 3 arquivos do ajuste; **resumo do manifesto: 29 campos, 0 diferentes**
   (total de erros 30.141, pendentes 749, tokens 592.858.874, 18 unidades, 10 candidatas); genealogia com 30.141 erros em cada
   etapa e as 11 famílias com os mesmos erros; 12 artefatos com o mesmo hash. Mudou só o esperado: `U_sandbox` 3.653 → 1.436
   (**2.217** erros para `U_verificacao_existencia`; o teste da regra (b) contava 2.218 — 1 de diferença, provavelmente um
@@ -938,7 +937,7 @@ do Ajuste 17 (95 em julho, 5.667 em agosto). Hipótese: a mesma instrução do p
   cobertura (7 → 8); as linhas das duas unidades nas triagens e consolidações; 40 linhas do "que vem depois" (a unidade do
   erro seguinte). O veredito do script é "não fecha" porque ele exige números iguais; aqui a mudança é a pedida.
 - **Replicar no ambiente das bases:** (1) copiar os arquivos do ajuste; (2) base 2: o `replicar_ajuste21.py` recusou
-  (19/10) — o pipeline da base 2 na máquina dela não era a cópia da base 1 (tinha partes da carga da base 3, já antes deste
+  (19/10) — o pipeline da base 2 no ambiente dela não era a cópia da base 1 (tinha partes da carga da base 3, já antes deste
   ajuste). Decisão do Rafael: realinhar — copiar os `.py` e `.ipynb` da base 1 para a base 2, ajustar só TRACE e BASE_ID,
   conferir com o `conferir_versao.py` e rodar o notebook da esteira; a cópia já traz o Ajuste 21, e o script deixa de ser
   necessário; (3) base 3: `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes
@@ -984,9 +983,9 @@ reconhecido** (Timeout e `?`), e só então o alarme, que depende dos dois.
 | 3 | causa não identificada | `Import from` (4), `final_answer` com argumento inexistente (1); 7 de uma ocorrência ficam | nada | 1 erro — **feito** (Ajuste 3, §3) |
 | 4 | sintoma não reconhecido | Timeout de ferramenta → unidade de plataforma | — | não — **feito** (Ajuste 4, §3); falta conferir na base 2 |
 | 5 | sintoma não reconhecido | a chave `?` e a chave sem impressão digital | 1 categoria por caso, 6 casos | não — **feito** (Ajuste 8, §3); conferido na base 2 |
-| 5b | — | o tempo esgotado do AgenteProcuracoes: plataforma ou agente? | rodar `drill_down.py tempo` na máquina 2 | não — **feito** (Ajuste 9, §3); conferido na base 2 |
+| 5b | — | o tempo esgotado do AgenteProcuracoes: plataforma ou agente? | rodar `drill_down.py tempo` no ambiente da base | não — **feito** (Ajuste 9, §3); conferido na base 2 |
 | 6 | — | o alarme de cobertura | decisões abaixo | não |
-| 7 | — | comparar bases; achados laterais; auditoria E | rodar na máquina 2 | não |
+| 7 | — | comparar bases; achados laterais; auditoria E | rodar no ambiente da base | não |
 
 ### Etapa 3 — a causa não identificada da base 2 ✅
 
@@ -1026,7 +1025,7 @@ de passar, o `AgentMaxStepsError` aparece à parte, e o motivo do sintoma na tri
 memória) ou o código do agente (`U_codigo_lento`). O Ajuste 8 decide pelo código do step, sem contar o `final_answer`
 como ferramenta: OBFCivel e RespostaOficios (3) → ferramenta; AgenteProcuracoes (3) → código lento.
 
-**O que encontramos (máquina 2, 29/09, só tamanhos e estrutura).**
+**O que encontramos (ambiente da base, 29/09, só tamanhos e estrutura).**
 
 | | OBFCivel / RespostaOficios | AgenteProcuracoes |
 |---|---|---|
@@ -1075,7 +1074,7 @@ ali, ainda está por medir.
    chamada lenta mesmo com 180 s). No OBFCivel jul, o Rafael leu um `for` com `get_docs_from_filters` e o `tempo` mediu
    `laços=0`: um dos dois está errado. **Medida:** `drill_down.py tempo` passou a mostrar, por laço, a linha, o que se
    repete a cada volta e o que roda uma vez, e as linhas em que `for`/`while` aparece só como palavra (comentário, texto).
-   **Medido na máquina 2 (29/09) — fechado:** ago: `laço na linha 5 (for): repete {print, doc.get} · cabeçalho
+   **Medido no ambiente da base (29/09) — fechado:** ago: `laço na linha 5 (for): repete {print, doc.get} · cabeçalho
    {enumerate}` — o `extract_obf_requests` roda **uma vez, fora do laço** → uma chamada lenta mesmo com 180 s →
    plataforma (Ajuste 8 certo). jul: `laços=0`; `for` só como palavra na linha 13 (comentário/texto); cada uma das 3
    ferramentas chamada uma vez → é o achado 1 ("várias ferramentas num bloco"). **Nenhum caso de ferramenta em laço nem
@@ -1114,7 +1113,7 @@ fev 1, zero desde mar; forma: 31 texto sem marcador, 2 em ```; 33/33 recuperados
 as datas). Espalhado e com uma forma dominante → ver se há lição (ex.: "sempre responder com bloco de código, inclusive a
 resposta final") — ajuste próprio, com evidência.
 
-**Resultado na base 2 (máquina 2, 30/09; só contagens).**
+**Resultado na base 2 (ambiente da base, 30/09; só contagens).**
 
 | Bloco | Fato |
 |---|---|
@@ -1153,7 +1152,7 @@ rodou — já é o `U_estado_perdido`.
 **Hipótese do Rafael: o prompt — o achado: o MODO do agente.** `drill_down.py protocolo` ganhou o bloco [7]: as
 versões do formato no system prompt por papel (hash só das linhas com `<code>`, ```` ``` ````, `<end_code>`,
 `Thought:`, `final_answer(` — o prompt inteiro muda a cada execução, essas linhas não), com o **modo**, os meses e os
-erros de cada versão; e `--prompt <versão>`, que grava o texto da versão para ler na máquina. As formas de [4] ficaram:
+erros de cada versão; e `--prompt <versão>`, que grava o texto da versão para ler no ambiente. As formas de [4] ficaram:
 frase/texto, dict/JSON, ```` ``` ````, vazio (o `</code>` do fim é o harness devolvendo a sequência de parada).
 
 As versões são **os dois modos do CodeAgent do smolagents**, cada um com o seu modelo de prompt:
@@ -1177,7 +1176,7 @@ conferido na configuração de vocês); o que se afirma são os números.
 (`<code>` e ```` ```py ````)". Errado: o ```` ```python ```` aparece nas duas só para listar as ferramentas. A diferença
 real é JSON × texto; o [7] passou a mostrar o modo.
 
-**Base 2 ([7], máquina 2, 30/09):** **todos os papéis com o erro rodam no modo texto, o tempo todo** — RoteadorCivel e
+**Base 2 ([7], ambiente da base, 30/09):** **todos os papéis com o erro rodam no modo texto, o tempo todo** — RoteadorCivel e
 OBFCivel na versão `168d70e2`, RespostaBacen, CalculoCivel e CalculoTrabalhista na `b0f37eea`. **Ninguém mudou de modo.**
 O RoteadorCivel usa a mesma versão de mai a ago: **965 steps e 0 erros em mai–jul; 871 steps e 56 erros em ago**. O modo
 explica por que o erro **pode** acontecer na base 2 inteira, mas **não explica o surto de agosto** — outra coisa mudou.
@@ -1190,7 +1189,7 @@ raciocina por dentro (`o4-mini`, `gpt-5.2`). Na base 1, o RespostaBacen roda em 
 quase sempre vazio ou 0 — pouco informativo lá. **Hipótese para ago/2026:** o RoteadorCivel trocou de modelo, e o modelo
 novo esquece as marcas `<code>` no modo texto (e entrega o dict direto, como no caso 2).
 
-**Resultado ([8], máquina 2, 30/09) — a causa do incidente 2: troca de modelo.**
+**Resultado ([8], ambiente da base, 30/09) — a causa do incidente 2: troca de modelo.**
 
 | Papel | Modelo | Meses | Steps | Erros | Por 1k |
 |---|---|---|---:|---:|---:|
@@ -1298,7 +1297,7 @@ novo? → memória candidata por ferramenta). `11-relatorio-protocolo-harness.md
 **CalculoCivel e o erro crítico da base 2 (01/10).**
 
 - **Fontes:** `drill_down.py critico` (novo, `7c1625d`), a leitura dos 4 casos e duas leituras assistidas por LLM
-  na máquina 2.
+  no ambiente da base.
 - **A execução:** os 4 erros de protocolo estão na execução do único crítico. Ela tem **4 chamadas** do papel; as 3
   primeiras terminam com `final_answer`, e a 4ª (idx 28–48, 11 erros) morre no limite.
 - **A cadeia da 4ª chamada:**
@@ -1328,7 +1327,7 @@ falha só aparece na observação. **Pergunta:** isso é um caso só, ou um cana
 - Comandos: `drill_down.py silenciosas [--motivos] [<ferramenta>]`. Saída só com contagens e motivos mascarados
   (`mascarar_motivo`). Commits `78ed696`, `0a69ad0`, `41b43b9`.
 
-**Resultado nas duas bases.** Base 2 **conferida rodando** (fotos de 01/10: `silenciosas` e `silenciosas --forma
+**Resultado nas duas bases.** Base 2 **conferida rodando** (01/10: `silenciosas` e `silenciosas --forma
 busca_obf`, commits `6123716`, `de5b601`); o [1b] bate grupo a grupo com o que fora calculado sobre as contagens do
 `--motivos`.
 
@@ -1389,7 +1388,7 @@ comum.** Ele:
 - **A medida.** `silenciosas --forma busca_obf` (determinístico; "colado" = o critério do `repr_colado`: ≥2 pares
   `"chave": "texto"` e ≥2 chaves já impressas numa observação anterior do papel). Base 1: 6/6. Base 2: 86/86 (80
   `str(dict colado)`, 6 string colada). **Nenhum** `json.dumps` nem variável — o JSON quebrado não vem da ferramenta.
-- **O contrato.** `textos_decisoes (str)`: "… em JSON formatado como string" (declaração lida na máquina 2). O texto pede
+- **O contrato.** `textos_decisoes (str)`: "… em JSON formatado como string" (declaração lida no ambiente da base). O texto pede
   JSON; o tipo `(str)` convida ao `str(...)`. O dict vem de outra ferramenta da mesma esteira.
 - **O peso.** Na base 2 o canal silencioso é ~12× o visível (86 contra os 7 do `repr_colado`; *corrigido em 02/10: o visível são 18, ~5×*): a unidade foi medida pela
   parte pequena.
@@ -1421,17 +1420,17 @@ subiram para o `base_pipeline.py` (`DONO_DO_GRUPO`, `forma_argumento`, `formas_d
 `contrato_precedido`, `sucesso_falso_candidato`) e o `drill_down.py silenciosas` passou a chamá-las — saída idêntica,
 byte a byte, nos três modos (base 1). O §7 da esteira migrou inteiro para a §13.7 (mesmos números na base 1: inventário
 90, Result-Ignore 103/3.053, RAC 125, Tool-Skip 10/840); na esteira ficou um parágrafo de limite. A §13.8 grava
-`resultados/evidencia/silenciosas/ocorrencias.csv`, a entrada do balde para a consolidação. **Replicar na máquina 2:**
+`resultados/evidencia/silenciosas/ocorrencias.csv`, a entrada do balde para a consolidação. **Replicar no ambiente da base:**
 `base_pipeline.py` (restaurar `TRACE` e `BASE_ID`), `drill_down.py`, `falhas_silenciosas.ipynb` e o notebook da esteira.
 
-**Base 2 rodada (02/10, tarde) — relatório do agente da máquina 2 (prompt do plano 4.2a; 10 fotos).** O que é
-**[conferido]** veio de contagem determinística; o que é **[assistido]** é leitura do LLM da máquina 2, ou seja,
+**Base 2 rodada (02/10, tarde) — relatório do agente do ambiente da base (prompt do plano 4.2a).** O que é
+**[conferido]** veio de contagem determinística; o que é **[assistido]** é leitura do LLM do ambiente da base, ou seja,
 hipótese.
 
 *Como rodou.* O `nbconvert` dos dois notebooks não terminou no editor ("Cell did not finish executing"). Os passos 1–3
 foram recalculados pelas funções do pipeline e pela lógica dos detectores da §13.7, e conferem com os agregados
 gravados. O `drill_down.py caso` caiu num dos casos com `UnicodeEncodeError` (terminal cp1252); o agente leu esse caso
-direto do trace. Corrigido no `drill_down.py` (stdout em UTF-8). Os SHA-256 das cópias da máquina 2 não batem com o
+direto do trace. Corrigido no `drill_down.py` (stdout em UTF-8). Os SHA-256 das cópias do ambiente da base não batem com o
 repo (cópias com edição local). O que sustenta os números é o `audit_recompute9`, uma implementação independente, com
 0 divergências lá.
 
@@ -1464,11 +1463,10 @@ repo (cópias com edição local). O que sustenta os números é o `audit_recomp
 
 ### Etapa 10d — base 2, rodada 2 (05/10): as seis perguntas, e a base 2 finalizada
 
-**O que rodou.** Na máquina 2, o `audit_recompute9` (0 divergências, com o bloco G da consolidação) e o
+**O que rodou.** No ambiente da base, o `audit_recompute9` (0 divergências, com o bloco G da consolidação) e o
 `investigacao_achados.py`, no terminal **[conferido]**; os notebooks tiveram saídas salvas consultadas, não reexecução
 nesta rodada. Os arquivos foram levados por cópia do conteúdo (o Rafael confirma que são os da branch); a cópia mudou os
-hashes, então a conferência por hash não fecha. Decisão do Rafael: **a base 2 fica finalizada**, e a próxima ida à
-máquina 2 reexecuta os notebooks no terminal com cópia íntegra.
+hashes, então a conferência por hash não fecha. Decisão do Rafael: **a base 2 fica finalizada**, e a próxima ida ao ambiente da base reexecuta os notebooks no terminal com cópia íntegra.
 
 **Os achados, por pergunta.**
 
@@ -1520,7 +1518,7 @@ padrão só. (2) põe isso à vista sem mudar nenhuma decisão; (3) é coerênci
 
 **Comparar as bases.** A chave mascarada falha nos dois sentidos (§4, itens 2 e 5): junta mecanismos diferentes
 (os parênteses) e separa o mesmo mecanismo (o `FinalAnswer` da Etapa 3b, as 4 mensagens de `Import from`). Comparar por **classe
-de exceção + mecanismo**, com uma tabela feita nas duas máquinas e cruzada à mão (o cru não sai). Antes de somar bases,
+de exceção + mecanismo**, com uma tabela feita nas dois ambientes e cruzada à mão (o cru não sai). Antes de somar bases,
 `checklist.py <outra-base>` confere a sobreposição de `exec_id` (README, intake); o item 27 já registra 0.
 
 **Achados laterais** (base 1, `ConversationAgent`, mar/2026, o caso de referência do `repr_colado`): (a) o step seguinte
@@ -1546,7 +1544,7 @@ auditoria de 02/10; roadmap 36): a expectativa é a do mês da execução e a ch
 | Alarme de cobertura | não dispara (1 erro, 0,2%) | 25/09: dispara (5,2%); depois dos Ajustes 3, 4, 8 e 9 o sintoma não reconhecido caiu para 2 erros — reconferir na Etapa 6 |
 | Balde invisível | 9 com exceção · 120 silenciosas (93%) · [4] 54/75 | 20 · 134 (87%) · [4] 24/116 |
 
-*Base 2: triagem recalculada na máquina 2 pelas funções do pipeline (relatório da máquina 2, 02/10), coincide com o
+*Base 2: triagem recalculada no ambiente da base pelas funções do pipeline (relatório do ambiente da base, 02/10), coincide com o
 agregado gravado; o notebook não foi reexecutado inteiro lá (ver Etapa 10c, "Base 2 rodada").*
 
 ## 7. O que ficou velho — a errata (até 06/10/2026)
@@ -1565,7 +1563,7 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
 | arquivo de plano fora do repo; §5 do livro-razão ("Próximas etapas", 25/09) | **este arquivo** |
 | a seção "Agora" do `04-roadmap.md` | migrada em 02/10: o aberto está no §5 daqui; o roadmap ficou só com o backlog numerado da análise |
 | "o [4] da base 1 = 93 sucessos falsos" | teto; só falhas reais: 53/75, ainda teto |
-| o [1b] da base 2 "calculado sobre as fotos" | conferido rodando |
+| o [1b] da base 2 "calculado sobre as contagens transcritas" | conferido rodando |
 | dono do `json_invalido`: "a conferir" / "ler 2–3 casos" | o agente, o gesto do `repr_colado` (duas bases, pelo `--forma`) |
 | "o erro do agente se recupera, o de plataforma não" | o `json_invalido` quase sempre se recupera (0/6, **3/86**); argumento do agente 30/41 × 2/6 |
 | [4] = 53/75 e 20/116; "o 1º final depois da falha" | **54/75 e 24/116** (Ajuste 11: final no próprio step ou depois, **na mesma chamada**); plataforma 16/19 e **17/22**; conferido nas duas bases |
@@ -1581,64 +1579,71 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
 
 ### Ajuste 22 — uma lição pode ter várias memórias, e as fechadas entram num catálogo (19/10/2026)
 
-- **Gatilho:** o inventário do sandbox tem quatro partes com destinos diferentes (dossiê, §2b–2c), e a memória fechada só existia na pasta da mineração, fora do git, na máquina da base.
+- **Gatilho:** o inventário do sandbox tem quatro partes com destinos diferentes (dossiê, §2b–2c), e a memória fechada só existia na pasta da mineração, fora do git, no ambiente da base.
 - **Mudança:** esquema 0.3 (cabeçalho com `id` e `parte`, opcionais; um arquivo por memória, `memoria_<id>_<BASE_ID>.json`); o `minerar.py` aceita `memorias(...)` do script específico; o passo 9 monta `catalogo_<u>_<BASE_ID>.json` (varrido) para `analysis/registros/memorias.json` (`catalogar_memoria.py`, kit). Emenda 4 do racional do sandbox; a auditoria conta as partes.
 - **Verificação:** ensaio na base 1 (rodada `bf2d034f`): 9 passos, 28 medidas iguais, 4 memórias (C, D por 2 papéis, E), 3 no catálogo, E fora (destino em aberto); 259 testes.
-- **Replicar na máquina da base:** o esquema entra no hash do código da rodada → rodar `executar.py analisar --perfil U_sandbox` de novo antes do `minerar.py`.
+- **Replicar no ambiente da base:** o esquema entra no hash do código da rodada → rodar `executar.py analisar --perfil U_sandbox` de novo antes do `minerar.py`.
 
 ### Ajuste 23 — o `eval` da função auxiliar de verificação entra na verificação de existência (19/10/2026)
 
-- **Gatilho:** os testes da parte E do sandbox na base 3 (`contar_proibidas_linha.py`, fotos `IMG_5920`–`IMG_5928`): dos 46 erros de `eval` do ContestacaoCivel, 40 são uma função auxiliar escrita pelo agente (`if not _exists('x'): x = ferramenta(...)`), com a definição da função e o `eval` dentro vistos no código do passo; o código tem a verificação instruída em 44 de 46. Na base 2, nenhum prompt menciona `eval`: o agente usa `eval` para cumprir a instrução "verifique se a variável existe", como fazia com `globals` (Ajuste 21).
+- **Gatilho:** os testes da parte E do sandbox na base 3 (`contar_proibidas_linha.py`): dos 46 erros de `eval` do ContestacaoCivel, 40 são uma função auxiliar escrita pelo agente (`if not _exists('x'): x = ferramenta(...)`), com a definição da função e o `eval` dentro vistos no código do passo; o código tem a verificação instruída em 44 de 46. Na base 2, nenhum prompt menciona `eval`: o agente usa `eval` para cumprir a instrução "verifique se a variável existe", como fazia com `globals` (Ajuste 21).
 - **Mudança:** nos dois `base_pipeline.py` (base 1 e base 3), `VERIFICA_E_CRIA = ("globals", "locals", "vars", "eval")` na regra do Ajuste 21 (verifica um nome e guarda a criação dele por uma chamada); na base 3, o ramo observado também aceita `eval`. O rótulo da sub-unidade passa a "Verificação por globals()/locals()/eval". A auditoria do sandbox (`audit_candidata_base3.py`) e o `monitoramento.json` acompanham; emenda 5 do racional.
-- **Verificação:** testes `TestAjuste23` (as duas bases: o `eval` da função auxiliar sai do sandbox; `eval(texto)` fica); 261 testes; manifesto do kit regenerado (VERSAO 0.9.1); ensaio da base 1 refeito (rodada `3e5d9127`), sem mudança na base 1 (o único `eval` dela converte texto). Esperado na base 3: ≈ 40 erros saem do sandbox (1.436 → ≈ 1.396). **Conferido na base 3 (rodada `aedb9b5db70d6c92`, 19/10, fotos `IMG_5929`–`IMG_5936`): 35 saem (`eval` 49 → 14; sandbox 1.436 → 1.401), encontro com a auditoria 75 medidas iguais.**
-- **Replicar na máquina da base:** a base 2 copia o `base_pipeline.py` e o `paleta.py` da base 1 e ajusta só o `TRACE` (e o `BASE_ID`); a base 3 usa o próprio pipeline (git pull). Rodar `executar.py analisar --perfil U_sandbox` de novo.
+- **Verificação:** testes `TestAjuste23` (as duas bases: o `eval` da função auxiliar sai do sandbox; `eval(texto)` fica); 261 testes; manifesto do kit regenerado (VERSAO 0.9.1); ensaio da base 1 refeito (rodada `3e5d9127`), sem mudança na base 1 (o único `eval` dela converte texto). Esperado na base 3: ≈ 40 erros saem do sandbox (1.436 → ≈ 1.396). **Conferido na base 3 (rodada `aedb9b5db70d6c92`, 19/10): 35 saem (`eval` 49 → 14; sandbox 1.436 → 1.401), encontro com a auditoria 75 medidas iguais.**
+- **Replicar no ambiente da base:** a base 2 copia o `base_pipeline.py` e o `paleta.py` da base 1 e ajusta só o `TRACE` (e o `BASE_ID`); a base 3 usa o próprio pipeline (git pull). Rodar `executar.py analisar --perfil U_sandbox` de novo.
 
 ### Ajuste 24 — a validação de uma memória em quatro degraus (19/10/2026)
 
 - **Gatilho:** as 14 memórias do piloto do sandbox passaram na mineração (degrau 1), mas a releitura mostrou que várias não estavam prontas: a C manda importar `pd` em papéis sem `pandas`; a B manda chamar uma ferramenta que o prompt não declara; a E proíbe o que o prompt do ContestacaoCivel pede; as D repetem o prompt; seis falham na recorrência (dossiê do sandbox, §2e–2f).
 - **Mudança:** um documento à parte do procedimento, [`17-validacao-memorias.md`](2026-09-trace-law-flow/docs/17-validacao-memorias.md): candidata → conferida (cinco checagens determinísticas) → revisada (leitura de casos com dois leitores e o gate) → validada (o experimento, `b3 #39`). O `16` e o `06` apontam para ele; o glossário ganha "degrau".
 - **Verificação:** documental; o primeiro caso é o sandbox (`b3 #50`), e o script do degrau 2 (`conferir_memorias.py`) ainda não existe.
-- **Replicar na máquina da base:** nada por enquanto; o script do degrau 2, quando existir, entra no kit (entrou no Ajuste 25).
+- **Replicar no ambiente da base:** nada por enquanto; o script do degrau 2, quando existir, entra no kit (entrou no Ajuste 25).
 
 ### Ajuste 25 — o degrau 2 por script e o esquema 0.4 (20/10/2026)
 
 - **Gatilho:** o degrau 2 da validação (Ajuste 24) só existia como tabela no `17`; o resultado das 14 do sandbox (dossiê, §2f) foi montado à mão. As checagens precisam saber que nomes a memória manda usar ou evitar, e esses nomes só estavam no texto da guidance.
 - **Mudança:** (1) `conferir_memorias.py` no kit (skill `mineracao-candidata`, só biblioteca padrão, sem nome de base): as cinco checagens de cada memória do catálogo contra o prompt de cada papel e versão; grava o resultado e, com `--registrar`, a `conferencia` e o `degrau` no catálogo (2 só se as cinco passam). (2) `extrair_prompts_base2.py` (pasta da base 2; roda nas bases 1 e 2): o prompt de cada papel e versão num JSONL, gravado fora do repositório. (3) Esquema 0.4: `validation.nomes` (`importar`, `usar`, `nao_importar`, `nao_usar`), opcional — falta vira pendência no `validar_memoria.py`; o `catalogar_memoria.py` copia o campo. (4) O item `U_verificacao_existencia` do `monitoramento.json` ganha `instrucao_prompt` (o regex da instrução de verificar, de `contar_introspeccao_prompt_base2.py`) e `nomes_induzidos` (`globals`, `locals`, `vars`, `eval`), que a checagem 2 lê. (5) As 14 entradas do catálogo ganham `nomes`, transcrito da `description` e da guidance (marcado em `nomes_origem`), até a próxima mineração. Decisões do Rafael, 20/10 (`decisoes.md`). Com isso, a mudança da parte B do sandbox para harness (`b3 #49`), se vier, será o Ajuste 26.
 - **Verificação:** `test_conferir_memorias.py` (19 testes: cada checagem passando e falhando, a agregação por versão e por papel, a régua e a instrução lidas do monitoramento, o esquema 0.4 no validador e no catálogo, o extrator); suíte 282 testes, OK (`uv run python -m unittest discover -s analysis/tests`). Rodado sobre as 14 do catálogo com o prompt da base 1 (870 versões, 16 papéis): reproduz o §2f — C falha no ambiente (`pandas` fora da lista em 10 papéis; e, novo, `json` fora da lista em versões do OBFCivel, RoteadorCivel, managerAgent e ContestacaoCivel — a conferir na base 2), B.OBFCivel falha no ambiente e no conflito (o prompt cita `get_document_text`), E falha no conflito no ContestacaoCivel (a instrução de verificar), as D repetem o prompt, as 6 raras falham na recorrência; a 5 sai "não verificável" em todas (falta a classificação de uso) → dossiê do sandbox, §2g.
-- **Replicar na máquina da base:** copiar `conferir_memorias.py`, `catalogar_memoria.py` e `validar_memoria.py` (destino `.github/skills/mineracao-candidata/scripts/` na máquina 2), `extrair_prompts_base2.py`, o esquema e os dois registros; o esquema entra no hash do código da rodada → a próxima rodada da base 3 é nova.
+- **Replicar no ambiente da base:** copiar `conferir_memorias.py`, `catalogar_memoria.py` e `validar_memoria.py` (destino `.github/skills/mineracao-candidata/scripts/` no ambiente da base), `extrair_prompts_base2.py`, o esquema e os dois registros; o esquema entra no hash do código da rodada → a próxima rodada da base 3 é nova.
 
 ### Ajuste 26 — o import de uma ferramenta citada e não declarada sai do sandbox (20/10/2026)
 
-- **Gatilho:** a parte B do inventário do sandbox no OBFCivel (211 erros na base 3) tem 167 `import get_document_text`. O prompt do OBFCivel manda usar `get_document_text`, mas ela não está entre as ferramentas declaradas (os `def` do prompt): 63 de 63 execuções na base 2 (`contar_ferramentas_prompt_base2.py`, foto `IMG_5968`) e 11 de 11 na base 1. A memória "as ferramentas já estão no escopo, chame-as direto" mandaria chamar o que o prompt não declara (dossiê do sandbox, §2e e §2h; o que não está provado: que a função não exista no executor). Decisão do Rafael, 20/10 (`decisoes.md`): sinal de harness.
+- **Gatilho:** a parte B do inventário do sandbox no OBFCivel (211 erros na base 3) tem 167 `import get_document_text`. O prompt do OBFCivel manda usar `get_document_text`, mas ela não está entre as ferramentas declaradas (os `def` do prompt): 63 de 63 execuções na base 2 (`contar_ferramentas_prompt_base2.py`) e 11 de 11 na base 1. A memória "as ferramentas já estão no escopo, chame-as direto" mandaria chamar o que o prompt não declara (dossiê do sandbox, §2e e §2h; o que não está provado: que a função não exista no executor). Decisão do Rafael, 20/10 (`decisoes.md`): sinal de harness.
 - **Mudança:** nos dois `base_pipeline.py` (base 1 e base 3), `FERRAMENTAS_NAO_DECLARADAS = ("get_document_text",)` e `ferramenta_nao_declarada(m)`: o nome de `Import of/from X is not allowed` ou `No module named 'X'`, no último trecho da mensagem (depois do último `due to:`), pela raiz antes do ponto, está na lista → submecanismo `ferramenta_nao_declarada`, antes do `inventario_sandbox`; unidade nova `U_ferramenta_nao_declarada` ("Ferramenta citada no prompt e não declarada"), destino harness nas três bases (`DESTINO_MINERACAO`); rótulos em `paleta.py` e `genealogia_sankey.py`. Pelo nome, porque a base 3 não guarda o prompt: um nome só entra na lista com a evidência de que o prompt o cita sem declarar (o procedimento de três passos — suspeito na parte B, teste numa base com prompt, decisão — está no `16`, "Uma ferramenta citada e não declarada"; a descoberta pelo prompt é o `b3 #53`). Os nomes do framework (`python_interpreter`, `tools`, `smolagents`…) e os outros `get_*` ficam no sandbox (parte B, com o texto a corrigir no script específico — dossiê §2h, 6). A auditoria do sandbox (`audit_candidata_base3.py`) reescreve a regra da prosa (emenda 7 do racional), sem importar o pipeline.
 - **Verificação:** `test_ferramenta_nao_declarada.py` (5 testes: as duas bases classificam igual — `Import of`, `Import from` e `No module named` de `get_document_text` saem; `python_interpreter`, `get_docs`, `ast` e o nome só na linha de código ficam —; unidade e destino nas três bases; o modo observado da base 3; a auditoria tira da população; a lista da auditoria é a do pipeline); suíte 287 testes, OK. Manifesto do kit regenerado (só o hash do `base_pipeline.py` muda), `VERSAO` 0.10.0 → 0.10.1. **Base 1:** 0 de 498 erros caem na regra (nenhuma mensagem cita `get_document_text`) — nada muda. **Esperado na base 3, escrito antes de rodar:** 167 erros saem do sandbox, todos no OBFCivel (1.401 → 1.234; B.OBFCivel 211 → 44).
-- **Replicar na máquina da base:** junto com a extensão da regra do Ajuste 21 (a verificação com valor padrão, decisão de 20/10), numa rodada só: base 2 — copiar o `base_pipeline.py`, o `paleta.py` e o `genealogia_sankey.py` da base 1, ajustar `TRACE` e `BASE_ID`, `conferir_versao.py` IGUAL; base 3 — `git pull`, `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes aedb9b5db70d6c92 --depois <nova>`, `minerar.py U_sandbox --rodada <nova>`; o kit 0.10.1 em `.github/skills/` na máquina 2.
+- **Replicar no ambiente da base:** junto com a extensão da regra do Ajuste 21 (a verificação com valor padrão, decisão de 20/10), numa rodada só: base 2 — copiar o `base_pipeline.py`, o `paleta.py` e o `genealogia_sankey.py` da base 1, ajustar `TRACE` e `BASE_ID`, `conferir_versao.py` IGUAL; base 3 — `git pull`, `executar.py analisar --perfil U_sandbox` (rodada nova), `comparar_rodadas.py --antes aedb9b5db70d6c92 --depois <nova>`, `minerar.py U_sandbox --rodada <nova>`; o kit 0.10.1 em `.github/skills/` no ambiente da base.
 
 ### Ajuste 27 — no papel cujo prompt manda verificar, toda verificação de existência com `globals` vai para a verificação (20/10/2026)
 
-- **Gatilho:** a decisão 2 do fechamento do sandbox (20/10, `decisoes.md`): a verificação com valor padrão do ContestacaoCivel (`if 'x' not in globals(): x = '…'`), que a regra (b) do Ajuste 21 deixou no sandbox, é a mesma instrução do prompt cumprida sem caminho dado → sinal de harness, por coerência com o Ajuste 21. A medição antes da regra (`contar_introspeccao_linha.py`, parte E, nova; fotos `IMG_5976`–`IMG_5978`; critério escrito antes de rodar, dossiê do sandbox §2h, 7): no ContestacaoCivel (jul–ago/26), 135 verificações que a regra (b) deixa no sandbox, em quatro formas — cria com valor fixo 52, leitura com valor padrão 14, sem nome entre aspas 33, verifica e não cria 36; nos outros papéis, 9, **com as mesmas formas** (3, 1, 1, 4). A forma não separa; a regra vale pelo papel (decisão do Rafael).
+- **Gatilho:** a decisão 2 do fechamento do sandbox (20/10, `decisoes.md`): a verificação com valor padrão do ContestacaoCivel (`if 'x' not in globals(): x = '…'`), que a regra (b) do Ajuste 21 deixou no sandbox, é a mesma instrução do prompt cumprida sem caminho dado → sinal de harness, por coerência com o Ajuste 21. A medição antes da regra (`contar_introspeccao_linha.py`, parte E, nova; critério escrito antes de rodar, dossiê do sandbox §2h, 7): no ContestacaoCivel (jul–ago/26), 135 verificações que a regra (b) deixa no sandbox, em quatro formas — cria com valor fixo 52, leitura com valor padrão 14, sem nome entre aspas 33, verifica e não cria 36; nos outros papéis, 9, **com as mesmas formas** (3, 1, 1, 4). A forma não separa; a regra vale pelo papel (decisão do Rafael).
 - **Mudança:** nos dois `base_pipeline.py`, `PAPEIS_COM_INSTRUCAO_DE_VERIFICAR = ("ontestacaoCivel",)` (o ContestacaoCivel, como chega ao trace) e `verificacao_no_papel_da_instrucao(m, papel)`: a função proibida é `globals`/`locals`/`vars`, a linha que falhou verifica existência (`in globals()`, `globals().get(`, e o mesmo com `locals`/`vars`) e o papel está na lista → `verificacao_introspeccao` (`U_verificacao_existencia`). No caminho clássico entra no mesmo sinal da regra (b) (`verifica_e_cria`); no observado da base 3, a linha decide sem o código (razão `regra_por_mensagem_e_papel`) — o que hoje fica pendente por código cortado nesse papel passa a decidido. Um papel só entra na lista com a evidência de que o prompt dele tem a instrução (base 2, `contar_introspeccao_prompt_base2.py` parte F: só o ContestacaoCivel, 224 de 224). `dir` e `eval` não entram (o `eval` segue o Ajuste 23). A auditoria do sandbox reescreve a regra da prosa (emenda 8 do racional) e passa a receber o papel.
 - **Verificação:** `TestAjuste27` em `test_verificacao_try_nameerror.py` (3 testes: as quatro formas no papel, nenhuma fora dele, `dir` e `globals()` sem verificar ficam; o observado decide sem o código no papel e deixa pendente fora; a auditoria e a lista igual à do pipeline); a parte E do `contar_introspeccao_linha.py` com testes em `test_introspeccao.py`; suíte 292 testes, OK. Manifesto do kit regenerado, `VERSAO` 0.10.1 → 0.10.2. **Base 1:** 0 de 498 erros mudam (o único erro de verificação do papel já sai pela regra (b)). **Esperado na base 3, escrito antes de rodar:** 135 erros passam a `U_verificacao_existencia` — parte vinda do sandbox, parte dos pendentes por código cortado; o sandbox somado a esses pendentes cai 135. Com o Ajuste 26: sandbox ≈ 1.401 − 167 − (os dos 135 que estavam nele).
 - **O que fica em aberto:** os 9 dos outros papéis ficam no sandbox porque o prompt desses papéis não tem a instrução (bases 1 e 2) — inferência, sem o prompt na base 3; por que verificam sem instrução não se sabe (`b3 #54`).
-- **Replicar na máquina da base:** junto com o Ajuste 26, numa rodada só (a mesma lista de arquivos do Ajuste 26, mais o `contar_introspeccao_linha.py`); kit 0.10.2.
+- **Replicar no ambiente da base:** junto com o Ajuste 26, numa rodada só (a mesma lista de arquivos do Ajuste 26, mais o `contar_introspeccao_linha.py`); kit 0.10.2.
 
 ### Ajuste 28 — o degrau 2 confere o ambiente pelo interpretador, não pela lista do prompt (21/10/2026)
 
-- **Gatilho:** na mesma execução, o prompt não lista o `json` e o `import json` roda — 11 de 11 na base 1 e 520 de 520 na base 2 (`contar_import_vs_lista_base2.py`, foto `IMG_6014`), no RoteadorCivel, no ContestacaoCivel e no OBFCivel. O smolagents permite isso: o prompt é montado de `authorized_imports` do agente e um interpretador passado em `executor=` é usado como está (`agents.py`, l. 1544, 1585, 1620–1630, v1.26.0; reproduzido com um modelo falso, `testar_sandbox_executor_proprio.py`) — dossiê do sandbox, §2h, 18–21. Pelo prompt, o `conferir_memorias.py` reprovava a memória "importe `json`" (a C global do sandbox) estando certa, e dava "não verificável" à E, que manda usar `print`, `type` e `str` (`b3 #55`); e a checagem 5 sai "não verificável" em toda memória, sem caminho para o degrau 2. Decisões do Rafael, 21/10 (1 a 5 do fechamento do sandbox, `decisoes.md`).
+- **Gatilho:** na mesma execução, o prompt não lista o `json` e o `import json` roda — 11 de 11 na base 1 e 520 de 520 na base 2 (`contar_import_vs_lista_base2.py`), no RoteadorCivel, no ContestacaoCivel e no OBFCivel. O smolagents permite isso: o prompt é montado de `authorized_imports` do agente e um interpretador passado em `executor=` é usado como está (`agents.py`, l. 1544, 1585, 1620–1630, v1.26.0; reproduzido com um modelo falso, `testar_sandbox_executor_proprio.py`) — dossiê do sandbox, §2h, 18–21. Pelo prompt, o `conferir_memorias.py` reprovava a memória "importe `json`" (a C global do sandbox) estando certa, e dava "não verificável" à E, que manda usar `print`, `type` e `str` (`b3 #55`); e a checagem 5 sai "não verificável" em toda memória, sem caminho para o degrau 2. Decisões do Rafael, 21/10 (1 a 5 do fechamento do sandbox, `decisoes.md`).
 - **Mudança:** (1) `conferir_memorias.py` (kit): `--ambiente <json>` — por papel, as listas da mensagem de erro "Authorized imports are: [...]" (com os meses) e os módulos importados em passos sem erro; a checagem 1 usa o ambiente onde ele tem o papel (para mandar importar, o módulo tem de estar em todas as listas do papel; sem lista, basta um import que rodou; para proibir, basta o ambiente aceitar uma vez) e cai no prompt onde não tem, com o motivo dizendo a fonte; um papel só do ambiente (sem prompt) confere só a checagem 1. (2) `--funcoes <json>`: as funções embutidas testadas no interpretador (`usar` de uma que funciona passa; de uma barrada, falha; fora da lista, não verificável). (3) `--decidir <id> <checagem> --motivo`: o pesquisador aceita o resultado que o script dá agora, gravado com os motivos em `analysis/registros/decisoes_degrau2.json`; a checagem sai "decidido pelo pesquisador" (nunca "passa") enquanto o resultado e os motivos forem os aceitos; o degrau 2 pede cada checagem "passa" ou "decidida". As checagens 2 e 3 continuam pelo prompt. (4) Pela base: `extrair_ambiente_base2.py` (bases 1 e 2, do trace); `pipeline/validacao/ambiente_da_mineracao.py` (base 3, da tabela `imports_autorizados.csv` da mineração do sandbox; os meses da lista valem para todos os papéis dela — aproximação); `pipeline/validacao/testar_sandbox_funcoes.py` gera `analysis/registros/funcoes_sandbox.json` (smolagents 1.26.0: 111 funcionam, 40 barradas, entre elas `repr`, `dir`, `exec`, `__import__`, `bytes`, `open`, `hash`). (5) A regra de citação (`citado()`, checagens 2 e 3) exige a forma do Python — `nome(` sem espaço e `from nome[.x] import` —: no prompt do OBFCivel (base 1), "fallback tools (actions…)" e "the returns from tools." contavam como citação de `tools` (decisão do Rafael, 22/10; medido antes: nas 16 memórias, só o conflito da B.OBFCivel muda, falha → passa). `VERSAO` 0.10.2 → 0.11.0 (o pipeline não muda: o manifesto fica).
 - **Verificação:** `test_conferir_memorias.py` (34 testes, 15 novos, e a citação com os dois trechos de prosa: o interpretador vence o prompt; todas as listas do papel; o import que rodou; o papel fora do ambiente cai no prompt; proibir o que o interpretador aceita; as funções testadas; o papel só do ambiente; sem `--ambiente` nada muda; a decisão vale e deixa de valer; `--decidir` e o degrau; os dois extratores; o registro das funções); suíte 319 testes, OK. **Sem os argumentos novos, a saída nas 16 memórias do sandbox com o prompt da base 1 era idêntica à de antes** (a etapa 0, dossiê §2h, 22), até a correção da citação, que muda só o conflito da B.OBFCivel. **Com eles (base 1):** a C passa em 15 dos 16 papéis e falha no managerAgent, onde a própria mensagem do interpretador (abr/26) mostra uma lista sem `json` e nenhum `import json` rodou; a E passa na checagem 1 → dossiê §2h, 22.
-- **Replicar na máquina da base:** copiar `conferir_memorias.py` (destino `.github/skills/mineracao-candidata/scripts/` na máquina 2) e `VERSAO`; `extrair_ambiente_base2.py` na pasta da base 2; `ambiente_da_mineracao.py` e `testar_sandbox_funcoes.py` na base 3; os registros `funcoes_sandbox.json` e `decisoes_degrau2.json`. Rodar o degrau 2 com o prompt da base 2 e `--ambiente` de cada base (o da base 3 pela tabela da mineração).
+- **Replicar no ambiente da base:** copiar `conferir_memorias.py` (destino `.github/skills/mineracao-candidata/scripts/` no ambiente da base) e `VERSAO`; `extrair_ambiente_base2.py` na pasta da base 2; `ambiente_da_mineracao.py` e `testar_sandbox_funcoes.py` na base 3; os registros `funcoes_sandbox.json` e `decisoes_degrau2.json`. Rodar o degrau 2 com o prompt da base 2 e `--ambiente` de cada base (o da base 3 pela tabela da mineração).
 
 ### Ajuste 29 — a memória não injetada fica marcada e vigiada no catálogo (22/10/2026)
 
 - **Gatilho:** no fechamento do sandbox, 13 das 16 memórias ficam guardadas e não vão para o agente — memória de reforço (repete o prompt: as 10 D, decisão de 20/10; a B.OBFCivel, 22/10) ou memória rara (não passa na régua: a B.RespostaBacen, 20/10; a C.CalculoTrabalhista, 21/10). O desenho de 20/10 (`16`, "Dois níveis") põe o tipo e o alarme no catálogo, mas não estava implementado; e o `--registrar` trocava a entrada inteira a cada mineração, o que apagaria uma marcação. Aprovado pelo Rafael em 22/10.
 - **Mudança:** `catalogar_memoria.py` (kit): (1) `--monitorar <ids> --tipo rara|reforço --motivo --decidido-em` grava na entrada o `monitorada` — o tipo, a decisão, a linha de base (a rodada e a contagem de agora) e os gatilhos, com as regras do `monitorar.py`: rara → `regua` (a do `monitoramento.json`), reforço → `cresce` (fator 3); (2) o `--registrar` preserva o `monitorada` da entrada anterior, confere os gatilhos contra a linha de base e imprime `ALARME … — leve ao pesquisador` (registra assim mesmo); a conferência do degrau 2 da entrada anterior não passa (é de outra rodada); (3) o `--conferir` recusa um `monitorada` sem tipo, gatilhos ou linha de base. `VERSAO` 0.11.0 → 0.12.0 (o pipeline não muda).
 - **Verificação:** `test_catalogar_memoria.py` (8 testes, 3 novos: rara e reforço com os gatilhos e a linha de base; a mineração nova preserva a marcação, tira o degrau e dispara o alarme da rara que passou na régua e da de reforço que triplicou, e não o da que não triplicou; a marcação malformada; a linha de comando); suíte 327 testes, OK. Aplicado nas 13 do sandbox (rodada `99e032ad`), `--conferir`: catálogo ok, 16 memórias → dossiê do sandbox §2h, 25.
-- **Replicar na máquina da base:** copiar `catalogar_memoria.py` e `VERSAO` para `.github/skills/` (junto com o `conferir_memorias.py` do Ajuste 28) e o `memorias.json` do repositório; a próxima mineração do sandbox, no passo do `--registrar`, mostra os alarmes.
+- **Replicar no ambiente da base:** copiar `catalogar_memoria.py` e `VERSAO` para `.github/skills/` (junto com o `conferir_memorias.py` do Ajuste 28) e o `memorias.json` do repositório; a próxima mineração do sandbox, no passo do `--registrar`, mostra os alarmes.
 
 ### Ajuste 30 — uma memória global pode não valer num papel (26/10/2026)
 
 - **Gatilho:** a decisão 1 do Rafael (26/10, dossiê do sandbox §2h, 27): a memória C do sandbox ("importe `json`, `re`, `datetime`") é global, mas no managerAgent a lista do interpretador vista na base 1 é a padrão do smolagents, sem `json`, e nenhum `import json` rodou ali — o bilhete mandaria um import barrado. A base 3 não tem lista do managerAgent, então a regra da mineração (global = módulos de todas as listas vistas) não o enxerga. A memória só sabia ser global ou de um papel.
 - **Mudança:** `catalogar_memoria.py` (kit): `--excluir <id> <papel> [...] --motivo [--decidido-em] [--base]` grava na entrada o `nao_vale_em` (um item por papel: papel, data, porquê), só numa memória global; o `--registrar` preserva o campo entre minerações (como o `monitorada`, Ajuste 29); o `--conferir` recusa um `nao_vale_em` incompleto ou numa memória de papel. `conferir_memorias.py` (kit): numa memória global, os papéis excluídos saem das checagens 1 a 3, e o resultado os lista (`excluidos`). O esquema da memória e o script da mineração não mudam (o jeito A, no esquema, exigiria rodada nova: o esquema entra no hash do código da rodada) — escolha do Rafael. `VERSAO` 0.12.0 → 0.13.0.
 - **Verificação:** `test_catalogar_memoria.py` (3 testes novos: excluir, trocar o item do mesmo papel, preservar no `--registrar`; só em memória global; a linha de comando) e `test_conferir_memorias.py` (1 novo: o papel excluído sai das checagens e é listado; sem a exclusão, o mesmo papel reprova); suíte inteira, OK. Aplicado: `--excluir U_sandbox.C managerAgent`; com o prompt e o ambiente da base 1, as três memórias que vão para o agente (C, C.JoogleAnalytics, E) completam o degrau 2.
-- **Replicar na máquina da base:** copiar `catalogar_memoria.py`, `conferir_memorias.py` e `VERSAO` para `.github/skills/` e o `memorias.json` do repositório.
+- **Replicar no ambiente da base:** copiar `catalogar_memoria.py`, `conferir_memorias.py` e `VERSAO` para `.github/skills/` e o `memorias.json` do repositório.
+
+### Ajuste 31 — uma memória pode só valer junto com outra (30/10/2026)
+
+- **Gatilho:** o degrau 3 do sandbox no ambiente (30/10, dossiê do sandbox §2h, 31): no JoogleAnalytics, a linha que falha usa `pandas` e `json` sem importar nenhum dos dois (`json` na instrução que falhou em 231 de 231 erros da C.JoogleAnalytics; sem import no passo nem no anterior em 225; 99 caem no `json` não definido depois de importar só o `pandas`). O bilhete "import pandas as pd" corrige só o primeiro erro; o segundo é o da memória C, que vale no papel. Decisão do Rafael (30/10, a escolha B): o texto fica como está e a dependência fica escrita no catálogo — a escolha A (os dois imports no bilhete) pediria mudar o script da mineração e minerar de novo para repetir o que a C já diz.
+- **Mudança:** `catalogar_memoria.py` (kit): `--junto-com <id> <outro_id> [...] --motivo [--decidido-em] [--base]` grava na entrada o `vale_junto_com` (um item por memória: id, data, porquê); a outra tem de estar no catálogo na mesma base. O `--registrar` preserva o campo entre minerações (como o `monitorada` e o `nao_vale_em`, Ajustes 29 e 30). O `--conferir` recusa um item incompleto ou que aponta para a própria memória; o `--conferir`, o `--registrar` e o `--junto-com` imprimem `ALARME … — leve ao pesquisador` (sem recusar) quando a outra deixa de chegar aonde esta vale: some do catálogo, fica monitorada, passa a valer só noutro papel ou é excluída do papel desta. O esquema da memória e o script da mineração não mudam (nada no hash da rodada). `VERSAO` 0.13.0 → 0.14.0.
+- **Verificação:** `test_catalogar_memoria.py` (14 testes, 3 novos: marcar, nenhum alarme com a C excluída de outro papel e alarme com a C excluída do papel da memória, preservar no `--registrar` com o alarme; alarme com a outra monitorada ou fora do catálogo, recusa de uma outra que não existe e de um item que aponta para si mesmo; a linha de comando); suíte 362 testes, OK. Aplicado: `--junto-com U_sandbox.C.JoogleAnalytics U_sandbox.C --base base3`; `--conferir`: catálogo ok, 16 memórias, nenhum alarme.
+- **Replicar no ambiente da base:** copiar `catalogar_memoria.py` (destino `.github/skills/mineracao-candidata/scripts/`) e `VERSAO` (`.github/skills/mineracao-base/`) e o `memorias.json` do repositório (`analysis/registros/`).

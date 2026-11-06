@@ -19,7 +19,7 @@ Termos: `__name__`, `type(`, `repr`, `eval`, `exec(`, `traceback`, `except Excep
 registrar falhas (`falha`). Usa o leitor do `contar_primeiro_passo_nome_base2.py`, a população da auditoria da base 3
 (`populacao_sandbox`, tipos `funcao_proibida` e `atributo_dunder`) e a regra do uso da base 3 (o método é o mesmo nas
 bases). Não grava nada. Imprime contagens, nomes de papel, meses, hashes e linhas do prompt (texto técnico, não do
-caso). Uso, da raiz, na máquina da base 2:
+caso). Uso, da raiz, no ambiente da base 2:
     uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_proibidas_prompt_base2.py --trace <trace da base 2>
 """
 import argparse

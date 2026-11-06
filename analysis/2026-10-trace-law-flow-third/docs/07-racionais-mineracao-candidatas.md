@@ -97,7 +97,7 @@ ambiente; sai a versão varrida e um resumo só com contagens e nomes.
 **O catálogo (Ajuste 22):** a memória **fechada** (destino memória, decidido pelo pesquisador, e `derived-and-checked`)
 vira uma entrada de `catalogo_<u>_<BASE_ID>.json`, varrida junto com o resto, que vai para
 [`registros/memorias.json`](../../registros/memorias.json) com `catalogar_memoria.py --registrar`. **Por quê:** o
-arquivo final fica na pasta da mineração, fora do git e na máquina da base; o catálogo é o lugar único, versionado,
+arquivo final fica na pasta da mineração, fora do git e no ambiente da base; o catálogo é o lugar único, versionado,
 onde se vê o que já está fechado, em que base e com que destino — e é o que a POC vai ler para injetar as memórias.
 Só conteúdo técnico e o hash do arquivo final, sem os casos.
 

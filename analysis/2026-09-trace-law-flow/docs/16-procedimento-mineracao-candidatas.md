@@ -76,12 +76,12 @@ flowchart LR
     classDef dec fill:#eaf6ea,stroke:#3f8a3f,color:#1b3a1b
 ```
 
-## 0 · Pré-condições e o que sai da máquina
+## 0 · Pré-condições e o que sai do ambiente
 
 - **A lição precisa estar no `candidatos_memoria.csv` da base** (a triagem). Os notebooks da esteira, das falhas
   silenciosas e da consolidação já rodaram nessa base.
 - **Rodar de dentro de `pipeline/`**, com `uv run` na frente.
-- **Sai da máquina:** contagens, nomes de papel, ferramenta, modelo e unidade, meses, a versão do esquema e o arquivo
+- **Sai do ambiente:** contagens, nomes de papel, ferramenta, modelo e unidade, meses, a versão do esquema e o arquivo
   final na versão que sai.
 - **Não sai:** `exec_id`, texto de caso, código do agente, prompt. `resultados/mineracao/` é git-ignored.
 
@@ -178,7 +178,7 @@ O notebook grava em `resultados/mineracao/<unidade>/`:
 "Monitorar" não é uma nota para alguém lembrar: é um registro versionado e um script que para a rodada.
 - **O registro:** [`../../registros/monitoramento.json`](../../registros/monitoramento.json), em `analysis/`, **um só para as pastas de
   todas as bases** (cada base tem a sua pasta de análise, e o monitoramento compara bases; versionado; só decisões,
-  contagens e regras, nenhum dado de caso). Uma decisão de monitorar tomada na máquina de compliance volta para este
+  contagens e regras, nenhum dado de caso). Uma decisão de monitorar tomada no ambiente de compliance volta para este
   arquivo, depois do `varrer_pii.py`. Cada item tem: o que é, o tipo (memória rara · sinal de harness), quando e
   onde foi decidido, a população (uma tabela derivada e o filtro), a **linha de base** (a base onde se decidiu, com as
   contagens), as **regras contadas** que separam as sub-lições, e os **gatilhos**.
@@ -413,7 +413,7 @@ uv run python analysis/<pasta-da-analise>/pipeline/especificas/mineracao_<unidad
   da rodada.
 
 **Por que script e não notebook** (livro-razão, Ajuste 20, 16/10/2026): na base 3 tudo roda por comando, com manifesto
-e hash, e na máquina 2 (Windows) um comando só; um script entra na suíte de testes, e um notebook não; o resultado de
+e hash, e no ambiente da base (Windows) um comando só; um script entra na suíte de testes, e um notebook não; o resultado de
 um notebook não fica em manifesto nenhum; e quem lê a rodada pelo código do pipeline já herda o acesso a caminho longo
 (o "ausente" do `b3 #42`). Os notebooks da base 1 (a nº2/nº10) ficam como estão: o funil e o esquema da memória
 continuam aceitando `notebook:`.

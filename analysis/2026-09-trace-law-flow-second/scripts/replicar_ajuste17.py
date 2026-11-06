@@ -1,4 +1,4 @@
-"""Replica o Ajuste 17 no pipeline da base 2 (a pasta `pipeline/` desta análise, que só existe na máquina 2).
+"""Replica o Ajuste 17 no pipeline da base 2 (a pasta `pipeline/` desta análise, que só existe no ambiente da base).
 
 O pipeline da base 2 é uma cópia do da base 1 (`2026-09-trace-law-flow/pipeline/`), com outro TRACE e BASE_ID. O
 Ajuste 17 (livro-razão `pipeline-entre-bases.md`) muda cinco pontos do `base_pipeline.py` e um rótulo em `paleta.py` e

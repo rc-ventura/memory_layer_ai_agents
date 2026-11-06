@@ -1,7 +1,7 @@
 """Estudo de caso do `U_sandbox` na base 3: de onde a unidade partiu (3.653 erros, 16/10) até os 1.100 de hoje, e como
 os 1.100 se dividem nas memórias.
 
-Os números não são lidos de uma rodada: são as contagens das rodadas da máquina da base, transcritas das fotos no
+Os números não são lidos de uma rodada: são as contagens das rodadas do ambiente da base, transcritas no
 dossiê (`dossie_base3.md`, a seção de cada linha está ao lado). Só contagens. Uma contagem nova entra aqui com a seção do
 dossiê que a registra.
 
@@ -97,7 +97,7 @@ def desenhar(destino):
         ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: _n(int(v))))
         for lado in ("top", "right"):
             ax.spines[lado].set_visible(False)
-    fig.text(0.01, 0.005, "Contagens das rodadas da máquina da base, transcritas das fotos em dossie_base3.md. "
+    fig.text(0.01, 0.005, "Contagens das rodadas do ambiente da base, transcritas em dossie_base3.md. "
              "Cinza = saiu do sandbox para o sinal de harness (as unidades da verificação de existência e da ferramenta citada e não declarada).",
              fontsize=8, color=MUTED)
     fig.savefig(destino, dpi=160, bbox_inches="tight")

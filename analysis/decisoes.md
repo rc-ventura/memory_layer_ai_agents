@@ -17,11 +17,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 
 **Regras de trabalho:**
 - **Uma solução por vez:** contexto, solução, argumento com evidência e tipo da mudança; espera a aprovação; executa,
-  verifica na base 1, commita e diz o que o Rafael roda na máquina 2.
+  verifica na base 1, commita e diz o que o Rafael roda no ambiente da base.
 - **Regra nova só olhando as duas bases** (livro-razão, Ajuste 7).
 - **Leitura por LLM é `[assistido]`** e vale como hipótese; o determinístico é `[conferido]`. Nenhum LLM no caminho da
   classificação.
-- **Da máquina 2 só saem** contagens, nomes de papel, ferramenta e modelo, hashes, sim/não, tamanhos, tokens e motivos
+- **Do ambiente da base só saem** contagens, nomes de papel, ferramenta e modelo, hashes, sim/não, tamanhos, tokens e motivos
   mascarados. Nunca texto de caso nem `exec_id`. **Revogada em 16/10** pela decisão do sigilo, abaixo (só o dado pessoal
   e o conteúdo do cliente não saem).
 
@@ -106,7 +106,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   - **prioridade em dois painéis, um insight por painel:** para reduzir erros (todos os tokens em erro) e para memória (o teto: só
     as candidatas);
   - **genealogia: unidade e destino numa coluna só** (são 1 para 1; as arestas gravadas continuam com as cinco colunas); a cauda
-    **não** é agrupada (a decisão de 24/09 continua; rever com a foto);
+    **não** é agrupada (a decisão de 24/09 continua; rever com a figura);
   - **"o que vem depois do erro" de todas as unidades,** por uma tabela só de contagem na rodada (`consolidacao_depois_unidade.csv`),
     com **a unidade do erro seguinte** quando o vínculo está confirmado (a matriz de transição: sequência, não causa); e o
     **perfil sob demanda de qualquer unidade** (`--perfil-investigacao`), marcado como "investigação — não é candidatura", para os
@@ -127,6 +127,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   dispensa os dois leitores): a lição sai da mensagem de erro, e a confiança é a cobertura da regra, **≥ 95%**, escrita
   antes de rodar → base 3, [`propostas/U_sandbox/racional.md`](2026-10-trace-law-flow-third/propostas/U_sandbox/racional.md),
   [`07`](2026-10-trace-law-flow-third/docs/07-racionais-mineracao-candidatas.md).
+- **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
+  lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
+  passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,
+  [Ajuste 20](pipeline-entre-bases.md#ajuste-20--a-parte-específica-da-mineração-passa-a-ser-um-script-não-um-notebook); `16`, "Como o script roda".
 - **19/10, o script do inventário do sandbox está aprovado** (cobertura 99,86% na base 3, encontro 61/61, validador aprovado):
   sai de `propostas/U_sandbox/` para `pipeline/especificas/mineracao_U_sandbox.py`. A divisão da lição em partes e os destinos
   seguem em aberto → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md).
@@ -141,7 +145,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   no degrau 1 (`b3 #50`).
 - **19/10, o piloto do sandbox está fechado** (`b3 #12`): na rodada `aedb9b5db70d6c92` da base 3, 14 memórias (C e E
   globais, B e D por papel) com destino memória e derived-and-checked, registradas no catálogo `registros/memorias.json`
-  (transcritas das fotos e conferidas contra o inventário: 43 nomes, 1.396 erros). 6 delas têm 1 a 3 erros; a régua
+  (transcritas e conferidas contra o inventário: 43 nomes, 1.396 erros). 6 delas têm 1 a 3 erros; a régua
   de memória rara fica para depois, se o Rafael quiser → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2d.
 - **19/10, a parte E do sandbox vira memória global** (decisão do Rafael, depois da investigação, dossiê §2c): o que
   sobra depois do Ajuste 23 (depuração com `repr`/`.__name__`, outras funções proibidas, a verificação com valor padrão
@@ -200,7 +204,7 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   A causa por erro é inferida (a base 3 não guarda o prompt), como no Ajuste 21. A ideia de uma memória "como verificar no
   sandbox" fica como candidata própria → [dossiê](2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md) §2h;
   base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #50 e #51.
-  **Complemento (20/10, depois da medição — `contar_introspeccao_linha.py` parte E, fotos `IMG_5976`–`IMG_5978`):** a forma
+  **Complemento (20/10, depois da medição — `contar_introspeccao_linha.py` parte E):** a forma
   do código não separa o ContestacaoCivel dos outros papéis (fora dele aparecem as mesmas formas), e ele tem as quatro
   (cria com valor fixo 52, leitura com valor padrão 14, sem nome entre aspas 33, verifica e não cria 36). Decisão do Rafael:
   **a regra é pelo papel** — toda verificação com `globals`/`locals`/`vars` que a regra (b) deixa no sandbox, **no
@@ -223,137 +227,6 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   primeira rodada na base 3 com um HEAD que contenha essas emendas. As três observações do laudo para a base 3: conferir o
   esperado da emenda 8 (135); a ordem das raízes no `nomes` da B; o `destino_decidido_em` pelo título da entrada (feito)
   → [laudo](2026-10-trace-law-flow-third/propostas/U_sandbox/validacao.md), "Revalidação 7".
-- **21/10, o gráfico do custo da execução (com × sem erro) mostra valores reais, não razões** (decisão do Rafael, ao
-  tentar ler o gráfico para a apresentação): a versão de 15/10 normalizava as barras (sem erro = 1×), o que escondia os
-  números de que o "4,3×" e o "1,3×" saem e usava duas escalas diferentes; a leitura natural "1,3× = 30% a mais de passos"
-  estava errada — são medianas inteiras, 4 passos contra 3 (um passo a mais). Agora cada painel tem as duas barras em
-  unidades reais (tokens, 43.774 contra 10.074; passos inteiros, 4 contra 3), a razão escrita ao lado da barra, a média e o
-  n de cada grupo; a estatística da barra continua a mediana (a decisão de 15/10 se mantém) → `figuras_taxas.custo_execucao`,
-  teste `test_custo_execucao_em_valores_reais`; falta rodar na máquina da base 3 (`executar.py taxas`).
-- **21/10, entra o gráfico de erros e taxa por papel e mês (`taxas_papel_mes.png`; roadmap b3 #37, o papel fixo)** (Rafael, ao escrever o slide da escala: o gráfico por papel não mostra quanto cada papel erra por mês, e o mapa papel × unidade agrupa por unidade). Duas faixas lado a lado, contagem de erros e taxa do próprio papel no mês (erros ÷ passos do papel naquele mês), com a fatia dos erros e a fatia dos passos no rótulo de cada papel — "concentrado" só vale para o papel com mais erros do que passos. Régua de cor linear, não log. Entram também os papéis que erram mais de 2× a taxa global com poucos erros (o AnaliseProcessual não some em "demais"). **Junto, `taxas_papel_entrada.png`:** em que mês cada papel aparece (execuções por papel e mês) e a participação dele nos passos do mês (o mix), com a moldura no primeiro mês — a data de entrada que a taxa mensal não dava. Só código e teste; falta rodar na máquina 2.
-- **21/10, o "`json` sem import" do RoteadorCivel é memória, não harness** (decisão do Rafael): na base 3, o import de
-  `json` funciona no papel (218 de 241 erros corrigidos no passo seguinte importando; 129 imports rodaram; 0 "Import of
-  json is not allowed"), inclusive com o prompt sem `json` na lista; o erro começa em mai/26, quando o `json` sai da lista,
-  mas com volume pequeno antes e queda em ago/26 ainda sem ele — a lista não explica o erro. A C global fica como está. A
-  divergência entre a lista do prompt e a do interpretador fica como fato a avisar à plataforma → dossiê do sandbox §2h,
-  16–17.
-- **21/10, o degrau 2 confere o ambiente pelo que o interpretador aceita, não pela lista do prompt** (confirmado na base 2,
-  foto `IMG_6014`: 520 de 520 imports de `json` rodam em 808 execuções cujo prompt não o lista; com a base 1, 531 de 531):
-  na mesma execução, o prompt não lista o `json` e o `import json` roda (base 1: 11 de 11 passos, em 3 papéis);
-  o prompt anuncia um ambiente que não é o real, e o agente segue o real. A checagem de ambiente do `conferir_memorias.py`
-  passa a ler a lista do interpretador (mensagem "Authorized imports are: [...]") onde ela existe; a do prompt fica para a
-  checagem de conflito. No smolagents, o `CodeAgent` aceita um interpretador pronto (`executor=`), e só o criado por ele
-  recebe a lista do agente (`agents.py`, l. 1515 e 1585, v1.26.0; reproduzido com um modelo falso,
-  `testar_sandbox_executor_proprio.py`) — o mecanismo da plataforma é hipótese → dossiê do sandbox §2h, 18–21; feito no
-  Ajuste 28 (as decisões 1–3 abaixo); aviso à plataforma, [transversal](roadmap-transversal.md) #7.
-- **21/10, as 8 decisões do fechamento do sandbox** (decisões do Rafael, uma por vez; plano do fechamento): (1) o que o
-  agente pode importar vem da **mensagem de erro do interpretador e dos imports que rodaram sem erro**; sem nenhum dos dois,
-  do prompt, com aviso; (2) com mais de uma lista no papel, o módulo tem de estar **em todas** (a reprovação mostra a
-  versão e os meses); (3) as funções do Python que uma memória manda usar se conferem por uma **lista testada no
-  interpretador**, na mesma mudança (fecha o `b3 #55`); (4) a checagem "uma causa só" sem a classificação de uso é
-  **decidida pelo pesquisador, memória por memória, com motivo** ("decidido pelo pesquisador", nunca "passa"; a
-  classificação automática vira item do kit); (5) a E fica **liberada da regra da repetição**: o prompt cita `print`, mas
-  não avisa sobre `repr`/`dir`/`exec` — alarme falso (registrada em `registros/decisoes_degrau2.json`); (6) a
-  **C.CalculoTrabalhista é memória rara** (2 erros, 1 mês): guardada, monitorada, não injetada; (7) a **parte F fica para
-  depois**: o sandbox não fecha sem ela, e ela volta quando a maior parte das memórias estiver no degrau 3; (8) o degrau 3
-  lê casos **na base 1** para as memórias que têm casos nela e **na base 2** para as que não têm ou têm pouco → Ajuste 28
-  (1–5); dossiê do sandbox §2h, 22.
-- **22/10, as 3 questões que o degrau 2 novo abriu no sandbox** (decisões do Rafael, uma por vez): (1) a C global no
-  managerAgent — na base 1 o interpretador do papel mostra uma lista sem `json` e nenhum `import json` rodou — **espera a
-  base 3** (o ambiente pela tabela da mineração): sem lista do papel lá, volta para decisão; lista sem `json`, a regra da
-  mineração (global = módulos em todas as listas) já resolve; lista com `json`, vale a base 3; (2) a regra de citação do
-  degrau 2 **exige a forma do Python** (`nome(` sem espaço, `from nome import`): a prosa do prompt do OBFCivel contava
-  como citação de `tools` (Ajuste 28; só o conflito da B.OBFCivel muda); (3) a **B.OBFCivel é memória de reforço**, como
-  as D: o prompt do OBFCivel já diz que as ferramentas são funções para chamar direto ("these tools are basically Python
-  functions which you can call with code", 4 de 4 versões na base 1) e não libera `tools`/`python_interpreter`/
-  `smolagents` — guardada, monitorada, não injetada. As memórias injetadas (e o degrau 3) ficam três: **C, E e
-  C.JoogleAnalytics** → dossiê do sandbox §2h, 22.
-- **22/10, a memória não injetada fica marcada e vigiada no catálogo** (aprovado pelo Rafael; o desenho de 20/10 no `16`,
-  "Dois níveis"): rara → alarme quando passa na régua; reforço → alarme quando triplica; a marcação passa de uma mineração
-  para a outra. Aplicado nas 13 não injetadas do sandbox — reforço: as 10 D e a B.OBFCivel; rara: a B.RespostaBacen e a
-  C.CalculoTrabalhista → Ajuste 29; dossiê do sandbox §2h, 25.
-- **22/10, o degrau 3 do sandbox lê casos de todas as bases, com prioridade para a base 3** (revisão da decisão 8 de
-  21/10, decisão do Rafael): a base 1 tem 6, 5 e 0 casos da C, da E e da C.JoogleAnalytics, e a base 2 parece pequena; a
-  base 3 tem 423, 317 e 231. Na base 3, até 30 casos por memória, cada um com o passo do erro e os vizinhos (n-1, n+1,
-  n+2), sem o prompt, lidos na máquina pela skill de investigação; nas bases 1 e 2, todos os casos que houver, com o trace
-  inteiro (pegam o "importou antes e o nome sumiu" que a janela da base 3 pode não mostrar). Para ler a base 3, a pasta
-  dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26.
-- **26/10, a recuperação da população fica só com os papéis com erro, e o limite de passos ganha cor própria**
-  (decisão do Rafael, fotos IMG_6065–6066 da base 3): a barra das execuções (28,4% de 71.881 tiveram erro) repetia o
-  funil e saiu; o número de execuções com erro vai para o título. Fica por papel, e não por execução, porque a
-  recuperação acontece no laço de um agente e o gráfico seguinte é por papel; na base 3 quase não muda (20.442 papéis
-  com erro para cerca de 20,4 mil execuções com erro). O limite de passos era preto e se confundia com o verde-escuro
-  de "um erro": agora é vermelho (`#e5383b`), da família de "terminou no erro" — os dois são "não se recuperou"
-  (validador de paleta: daltonismo e visão normal passam). Leitura que não vale: "seguiu sem erro até o fim" não é
-  "entregou a resposta final" → `figuras_taxas.recuperacao_populacao`, `recuperacao.CATEGORIAS`.
-- **26/10, a cobertura das regras vira duas barras** (decisão do Rafael, ao ver o painel da base 3 na máquina 2, foto
-  IMG_6063): a figura de um motivo por barra confundia (nove barras, a maior com 87% dos erros, e os pendentes espalhados
-  em quatro). Agora: cobertos (a regra tem a evidência para decidir; na base 3, 29.392 de 30.141, 97,5%) e pendentes
-  (falta dado na extração; 749), com os maiores motivos dos pendentes em texto embaixo da barra; a lista inteira continua
-  na tabela do painel. Lido da rodada, sem rodada nova → `execucao/painel.py` (`figura_cobertura`).
-- **26/10, a memória C do sandbox exclui o managerAgent** (decisão do Rafael, depois da ida à máquina de 26/10): na base
-  1, a lista do interpretador do managerAgent é a padrão do smolagents, sem `json`, e nenhum `import json` rodou ali; a
-  base 3 não tem lista dele e tem 0 erros da C nesse papel (1 execução com algum erro no período). Excluir não perde nada
-  que se veja e evita o único risco que a evidência aponta. Nos outros papéis a C fica: o interpretador aceita `json` em
-  todos os vistos, e o bilhete é um lembrete, com a mesma causa (esquecimento) onde o prompt lista o `json` e onde o omite.
-  Para valer, a memória precisa de um alcance "global, exceto papéis": feito no catálogo (`nao_vale_em`, Ajuste 30, o
-  jeito B, escolhido pelo Rafael em 26/10 — sem mexer no esquema, para não exigir rodada nova) → dossiê do sandbox §2h, 27–28.
-- **26/10, "uma causa só" passa nas três memórias do sandbox que vão para o agente** (decisões do Rafael, uma por vez):
-  a **C** (esquecimento; 0 de 423 importados antes, import nunca barrado); a **C.JoogleAnalytics** (esquecimento, 0 de 231;
-  nota: em 77% o passo seguinte dá outro erro — o degrau 3 anota qual); a **E** (inspeção, 92% dos 317; nota: os 8% de outros
-  usos são funções barradas, o "não chame" continua certo). Gravadas em `registros/decisoes_degrau2.json` pelo
-  `conferir_memorias.py --decidir` → dossiê do sandbox §2h, 27.
-- **26/10, o degrau 3 do sandbox não espera a cota de IA da máquina** (decisão do Rafael; a cota volta em 30/10): regras
-  contadas sobre a população inteira de cada memória (só números e categorias) e **10 casos por memória** (não 30: a
-  leitura vira confirmação das regras), **mascarados** (código e mensagens de erro, com textos, comentários e números
-  trocados; sem a saída do modelo nem as observações; varredor antes de imprimir) e **trazidos por foto**, lidos aqui; no
-  dia 30, os dois leitores na máquina conferem as regras. Não é exceção à regra de sigilo de 16/10: só sai conteúdo
-  técnico → `pipeline/validacao/degrau3_sandbox.py`; dossiê do sandbox §2h, 30.
-- **23/10, a recuperação depois do erro é contada por trajetória, não por erro, e entra no relatório** (decisão do
-  Rafael, ao pedir um sinal de recuperação do sistema inteiro na base 3, que é censo dos erros): o gráfico "o que vem
-  depois do erro" da parte 1 conta por erro (uma cascata de 5 erros entra 4 vezes como "errou de novo") e só vê o passo
-  seguinte; fica como está, para a pergunta "que erro prende o agente". O novo conta cada papel numa execução uma vez,
-  do primeiro erro até o fim do papel: um erro só, cascata, recaída (os três seguidos de nenhum erro estruturado até o
-  fim), terminou no erro, limite de passos, indeterminado. Dois gráficos na parte 2: a população (execuções, com o
-  denominador das contagens, e papéis com erro) e um por papel. **Por que dá sem o trace completo:** a base 3 tem todos
-  os erros de cada papel (a junção confere chave a chave), e as sequências saem dos vizinhos da query (o seguinte errou ou
-  não), conferidos par a par. **A numeração não serve de posição:** na base 1, o `step_number` difere da posição do
-  ActionStep no papel em 1.749 de 5.781 passos (30,3%) e recomeça em 491 de 1.550 papéis (nova chamada). **Teste com
-  resposta conhecida na base 1:** 354 de 354 trajetórias na mesma categoria pelo trace completo e só pelos erros. Lido
-  das contagens e da fonte, sem rodada nova → `execucao/recuperacao.py`, `figuras_taxas.recuperacao_*`,
-  `validacao/conferir_recuperacao_base1.py`, teste `test_recuperacao_base3`; base 3, roadmap #56; falta rodar na
-  máquina 2.
-- **23/10, a genealogia vira duas figuras, e a da decisão começa na assinatura** (decisão do Rafael): família e
-  assinatura (o sintoma) e mecanismo, unidade e destino (a decisão) são análises diferentes e não ficam numa figura só.
-  **Por que a assinatura entra na decisão e a família não**, medido nas arestas (ensaio da base 1, 20/10): família →
-  assinatura é uma árvore (nenhuma assinatura em duas famílias) e vai para um censo em barras; assinatura → mecanismo
-  diverge e converge (11 de 21 assinaturas se abrem em mais de uma causa, 10 de 21 causas recebem mais de uma assinatura)
-  — é a única passagem com cruzamento, e sem ela o Sankey da decisão seria uma árvore; mecanismo → unidade só converge
-  (por construção: o dicionário causa → unidade); unidade → destino segue reto (D4 de 16/10, uma coluna só). O erro
-  estruturado é o evento que flui pela figura; a assinatura é o rótulo do sintoma dele. **O recorte por unidade**
-  (`execucao/figuras_genealogia.py --unidade U_sandbox`, fora do `executar.py` porque ele entra no hash de código) é exato porque cada causa vai para uma unidade só; o script recusa se
-  isso deixar de valer. **A cor das duas figuras é a família do erro** (a do censo, 10 cores da paleta, a fita mantém a cor do começo ao fim); o
-  destino fica escrito na última coluna. Pintar pelo destino foi testado e descartado (Rafael, 23/10): no recorte de uma
-  unidade, que tem um destino só, tudo saía de uma cor; a família mostra de que tipo de erro vem o que termina em cada
-  decisão (no `U_sandbox` da base 1, os 16 erros são todos de Ambiente & sandbox). **26/10, também pelo destino** (Rafael):
-  a genealogia inteira sai em duas figuras, a mesma genealogia com cores diferentes — `genealogia_decisao.png` (família)
-  e `genealogia_decisao_destino.png` (destino); cada figura tem uma variável só na cor (as duas paletas reusam o azul e
-  o laranja com sentidos diferentes, por isso nunca na mesma figura). O recorte por unidade é só pela família. A versão de 22/10 (decisão = mecanismo → unidade, sem a assinatura) foi revertida → painel,
-  `execucao/figuras_genealogia.py`, teste `test_genealogia_figuras_base3`; base 3, roadmap #57; falta rodar na máquina 2.
-- **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
-  **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
-  exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
-  papel" onde o módulo não está; (2) **E** — sai do texto `globals`, `locals`, `vars` e `eval` (o "não chame `globals`"
-  brigava com o prompt do ContestacaoCivel: o degrau 2 reprovou a E no conflito, §2g–§2h); os erros desses nomes que
-  sobram no sandbox depois dos Ajustes 21, 23 e 27 vão para uma parte própria, **F**, com destino em aberto — a
-  população da memória "como verificar no sandbox" (`b3 #51`); E fica com a depuração → racional do sandbox, emenda 9;
-  dossiê §2h, 9.
-- **20/10, a memória E perde a dica "para ler JSON, use json.loads"** (decisão do Rafael, na etapa 5 do fechamento do
-  sandbox): a E é global, e o `json` não está na lista autorizada de quatro papéis no prompt da base 1 (OBFCivel,
-  RoteadorCivel, managerAgent, ContestacaoCivel) — o degrau 2 do ensaio reprovou a E no ambiente por isso. A dica servia
-  ao `eval(texto)`, que foi para a parte F, e a ≈ 5 `__import__('json').loads` do ContestacaoCivel. Fica "Para inspecionar
-  um valor, use print(type(x)) e print(str(x)[:n])." (testado no interpretador: funciona); pode voltar se o `json` for
-  confirmado em todas as listas → racional do sandbox, emenda 9; dossiê §2h, 9.
 - **20/10, o monitoramento tem dois níveis** (decisão do Rafael): monitoram-se sempre erros, contados no recorte da
   **unidade** (a tabela do pipeline; `monitorar.py` e `monitoramento.json`, no passo 0 — os sinais de harness) ou no
   recorte de uma **memória** (unidade × parte × papel; o resultado da mineração e o catálogo; `catalogar_memoria.py`, no
@@ -375,9 +248,196 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 - **20/10, o `monitorar.py` ler a base 3 é item próprio, fora do fechamento do sandbox** (decisão do Rafael): o passo 0
   segue "não conferido" na base 3 (as tabelas dela têm outro formato); o sandbox fecha com os itens registrados, e a
   recontagem automática na base 3 vem com o item do kit → base 3, [roadmap](2026-10-trace-law-flow-third/docs/04-roadmap.md) #52.
-- **16/10, a parte específica da mineração é um script, não um notebook:** em `pipeline/especificas/`, com teste na suíte,
-  lendo a rodada conferida pelo código do pipeline e com manifesto próprio; fora do hash do código da rodada. A skill
-  passa a `propor-script` e o agente a `validador-de-script`. Os notebooks da base 1 continuam como legado → livro-razão,
-  [Ajuste 20](pipeline-entre-bases.md#ajuste-20--a-parte-específica-da-mineração-passa-a-ser-um-script-não-um-notebook); `16`, "Como o script roda".
+- **20/10, a memória E perde a dica "para ler JSON, use json.loads"** (decisão do Rafael, na etapa 5 do fechamento do
+  sandbox): a E é global, e o `json` não está na lista autorizada de quatro papéis no prompt da base 1 (OBFCivel,
+  RoteadorCivel, managerAgent, ContestacaoCivel) — o degrau 2 do ensaio reprovou a E no ambiente por isso. A dica servia
+  ao `eval(texto)`, que foi para a parte F, e a ≈ 5 `__import__('json').loads` do ContestacaoCivel. Fica "Para inspecionar
+  um valor, use print(type(x)) e print(str(x)[:n])." (testado no interpretador: funciona); pode voltar se o `json` for
+  confirmado em todas as listas → racional do sandbox, emenda 9; dossiê §2h, 9.
+- **20/10, as memórias C e E do sandbox se dividem pelo ambiente** (decisão do Rafael, no fechamento do sandbox): (1)
+  **C** — uma memória global só leva os módulos que estão em todas as listas autorizadas vistas; os outros (o `pd`, por
+  exemplo) viram memória do papel (`U_sandbox.C.<papel>`), com o import escrito, e "não está na lista autorizada deste
+  papel" onde o módulo não está; (2) **E** — sai do texto `globals`, `locals`, `vars` e `eval` (o "não chame `globals`"
+  brigava com o prompt do ContestacaoCivel: o degrau 2 reprovou a E no conflito, §2g–§2h); os erros desses nomes que
+  sobram no sandbox depois dos Ajustes 21, 23 e 27 vão para uma parte própria, **F**, com destino em aberto — a
+  população da memória "como verificar no sandbox" (`b3 #51`); E fica com a depuração → racional do sandbox, emenda 9;
+  dossiê §2h, 9.
+- **21/10, o gráfico do custo da execução (com × sem erro) mostra valores reais, não razões** (decisão do Rafael, ao
+  tentar ler o gráfico para a apresentação): a versão de 15/10 normalizava as barras (sem erro = 1×), o que escondia os
+  números de que o "4,3×" e o "1,3×" saem e usava duas escalas diferentes; a leitura natural "1,3× = 30% a mais de passos"
+  estava errada — são medianas inteiras, 4 passos contra 3 (um passo a mais). Agora cada painel tem as duas barras em
+  unidades reais (tokens, 43.774 contra 10.074; passos inteiros, 4 contra 3), a razão escrita ao lado da barra, a média e o
+  n de cada grupo; a estatística da barra continua a mediana (a decisão de 15/10 se mantém) → `figuras_taxas.custo_execucao`,
+  teste `test_custo_execucao_em_valores_reais`; falta rodar no ambiente da base 3 (`executar.py taxas`).
+- **21/10, entra o gráfico de erros e taxa por papel e mês (`taxas_papel_mes.png`; roadmap b3 #37, o papel fixo)** (Rafael, ao escrever o slide da escala: o gráfico por papel não mostra quanto cada papel erra por mês, e o mapa papel × unidade agrupa por unidade). Duas faixas lado a lado, contagem de erros e taxa do próprio papel no mês (erros ÷ passos do papel naquele mês), com a fatia dos erros e a fatia dos passos no rótulo de cada papel — "concentrado" só vale para o papel com mais erros do que passos. Régua de cor linear, não log. Entram também os papéis que erram mais de 2× a taxa global com poucos erros (o AnaliseProcessual não some em "demais"). **Junto, `taxas_papel_entrada.png`:** em que mês cada papel aparece (execuções por papel e mês) e a participação dele nos passos do mês (o mix), com a moldura no primeiro mês — a data de entrada que a taxa mensal não dava. Só código e teste; falta rodar no ambiente da base.
+- **21/10, o "`json` sem import" do RoteadorCivel é memória, não harness** (decisão do Rafael): na base 3, o import de
+  `json` funciona no papel (218 de 241 erros corrigidos no passo seguinte importando; 129 imports rodaram; 0 "Import of
+  json is not allowed"), inclusive com o prompt sem `json` na lista; o erro começa em mai/26, quando o `json` sai da lista,
+  mas com volume pequeno antes e queda em ago/26 ainda sem ele — a lista não explica o erro. A C global fica como está. A
+  divergência entre a lista do prompt e a do interpretador fica como fato a avisar à plataforma → dossiê do sandbox §2h,
+  16–17.
+- **21/10, o degrau 2 confere o ambiente pelo que o interpretador aceita, não pela lista do prompt** (confirmado na base 2: 520 de 520 imports de `json` rodam em 808 execuções cujo prompt não o lista; com a base 1, 531 de 531):
+  na mesma execução, o prompt não lista o `json` e o `import json` roda (base 1: 11 de 11 passos, em 3 papéis);
+  o prompt anuncia um ambiente que não é o real, e o agente segue o real. A checagem de ambiente do `conferir_memorias.py`
+  passa a ler a lista do interpretador (mensagem "Authorized imports are: [...]") onde ela existe; a do prompt fica para a
+  checagem de conflito. No smolagents, o `CodeAgent` aceita um interpretador pronto (`executor=`), e só o criado por ele
+  recebe a lista do agente (`agents.py`, l. 1515 e 1585, v1.26.0; reproduzido com um modelo falso,
+  `testar_sandbox_executor_proprio.py`) — o mecanismo da plataforma é hipótese → dossiê do sandbox §2h, 18–21; feito no
+  Ajuste 28 (as decisões 1–3 abaixo); aviso à plataforma, [transversal](roadmap-transversal.md) #7.
+- **21/10, as 8 decisões do fechamento do sandbox** (decisões do Rafael, uma por vez; plano do fechamento): (1) o que o
+  agente pode importar vem da **mensagem de erro do interpretador e dos imports que rodaram sem erro**; sem nenhum dos dois,
+  do prompt, com aviso; (2) com mais de uma lista no papel, o módulo tem de estar **em todas** (a reprovação mostra a
+  versão e os meses); (3) as funções do Python que uma memória manda usar se conferem por uma **lista testada no
+  interpretador**, na mesma mudança (fecha o `b3 #55`); (4) a checagem "uma causa só" sem a classificação de uso é
+  **decidida pelo pesquisador, memória por memória, com motivo** ("decidido pelo pesquisador", nunca "passa"; a
+  classificação automática vira item do kit); (5) a E fica **liberada da regra da repetição**: o prompt cita `print`, mas
+  não avisa sobre `repr`/`dir`/`exec` — alarme falso (registrada em `registros/decisoes_degrau2.json`); (6) a
+  **C.CalculoTrabalhista é memória rara** (2 erros, 1 mês): guardada, monitorada, não injetada; (7) a **parte F fica para
+  depois**: o sandbox não fecha sem ela, e ela volta quando a maior parte das memórias estiver no degrau 3; (8) o degrau 3
+  lê casos **na base 1** para as memórias que têm casos nela e **na base 2** para as que não têm ou têm pouco (**a (8) foi
+  revista em 22/10**, abaixo: todas as bases, com prioridade para a base 3) → Ajuste 28
+  (1–5); dossiê do sandbox §2h, 22.
+- **22/10, as 3 questões que o degrau 2 novo abriu no sandbox** (decisões do Rafael, uma por vez): (1) a C global no
+  managerAgent — na base 1 o interpretador do papel mostra uma lista sem `json` e nenhum `import json` rodou — **espera a
+  base 3** (o ambiente pela tabela da mineração): sem lista do papel lá, volta para decisão; lista sem `json`, a regra da
+  mineração (global = módulos em todas as listas) já resolve; lista com `json`, vale a base 3; (2) a regra de citação do
+  degrau 2 **exige a forma do Python** (`nome(` sem espaço, `from nome import`): a prosa do prompt do OBFCivel contava
+  como citação de `tools` (Ajuste 28; só o conflito da B.OBFCivel muda); (3) a **B.OBFCivel é memória de reforço**, como
+  as D: o prompt do OBFCivel já diz que as ferramentas são funções para chamar direto ("these tools are basically Python
+  functions which you can call with code", 4 de 4 versões na base 1) e não libera `tools`/`python_interpreter`/
+  `smolagents` — guardada, monitorada, não injetada. As memórias injetadas (e o degrau 3) ficam três: **C, E e
+  C.JoogleAnalytics** → dossiê do sandbox §2h, 22.
+- **22/10, a memória não injetada fica marcada e vigiada no catálogo** (aprovado pelo Rafael; o desenho de 20/10 no `16`,
+  "Dois níveis"): rara → alarme quando passa na régua; reforço → alarme quando triplica; a marcação passa de uma mineração
+  para a outra. Aplicado nas 13 não injetadas do sandbox — reforço: as 10 D e a B.OBFCivel; rara: a B.RespostaBacen e a
+  C.CalculoTrabalhista → Ajuste 29; dossiê do sandbox §2h, 25.
+- **22/10, o degrau 3 do sandbox lê casos de todas as bases, com prioridade para a base 3** (revisão da decisão 8 de
+  21/10, decisão do Rafael): a base 1 tem 6, 5 e 0 casos da C, da E e da C.JoogleAnalytics, e a base 2 parece pequena; a
+  base 3 tem 423, 317 e 231. Na base 3, até 30 casos por memória, cada um com o passo do erro e os vizinhos (n-1, n+1,
+  n+2), sem o prompt, lidos no ambiente pela skill de investigação; nas bases 1 e 2, todos os casos que houver, com o trace
+  inteiro (pegam o "importou antes e o nome sumiu" que a janela da base 3 pode não mostrar). Para ler a base 3, a pasta
+  dela ganha um `drill_down.py` (tabela, caso, evidencia: o contrato do kit) → dossiê do sandbox §2h, 26. **Revista em
+  26/10** (abaixo): sem esperar a cota de IA do ambiente, 10 casos por memória, mascarados e transcritos.
+- **23/10, a recuperação depois do erro é contada por trajetória, não por erro, e entra no relatório** (decisão do
+  Rafael, ao pedir um sinal de recuperação do sistema inteiro na base 3, que é censo dos erros): o gráfico "o que vem
+  depois do erro" da parte 1 conta por erro (uma cascata de 5 erros entra 4 vezes como "errou de novo") e só vê o passo
+  seguinte; fica como está, para a pergunta "que erro prende o agente". O novo conta cada papel numa execução uma vez,
+  do primeiro erro até o fim do papel: um erro só, cascata, recaída (os três seguidos de nenhum erro estruturado até o
+  fim), terminou no erro, limite de passos, indeterminado. Dois gráficos na parte 2: a população (execuções, com o
+  denominador das contagens, e papéis com erro) e um por papel (a barra das execuções saiu em 26/10, abaixo). **Por que dá sem o trace completo:** a base 3 tem todos
+  os erros de cada papel (a junção confere chave a chave), e as sequências saem dos vizinhos da query (o seguinte errou ou
+  não), conferidos par a par. **A numeração não serve de posição:** na base 1, o `step_number` difere da posição do
+  ActionStep no papel em 1.749 de 5.781 passos (30,3%) e recomeça em 491 de 1.550 papéis (nova chamada). **Teste com
+  resposta conhecida na base 1:** 354 de 354 trajetórias na mesma categoria pelo trace completo e só pelos erros. Lido
+  das contagens e da fonte, sem rodada nova → `execucao/recuperacao.py`, `figuras_taxas.recuperacao_*`,
+  `validacao/conferir_recuperacao_base1.py`, teste `test_recuperacao_base3`; base 3, roadmap #56; rodado no ambiente da base
+  em 26/10.
+- **23/10, a genealogia vira duas figuras, e a da decisão começa na assinatura** (decisão do Rafael): família e
+  assinatura (o sintoma) e mecanismo, unidade e destino (a decisão) são análises diferentes e não ficam numa figura só.
+  **Por que a assinatura entra na decisão e a família não**, medido nas arestas (ensaio da base 1, 20/10): família →
+  assinatura é uma árvore (nenhuma assinatura em duas famílias) e vai para um censo em barras; assinatura → mecanismo
+  diverge e converge (11 de 21 assinaturas se abrem em mais de uma causa, 10 de 21 causas recebem mais de uma assinatura)
+  — é a única passagem com cruzamento, e sem ela o Sankey da decisão seria uma árvore; mecanismo → unidade só converge
+  (por construção: o dicionário causa → unidade); unidade → destino segue reto (D4 de 16/10, uma coluna só). O erro
+  estruturado é o evento que flui pela figura; a assinatura é o rótulo do sintoma dele. **O recorte por unidade**
+  (`execucao/figuras_genealogia.py --unidade U_sandbox`, fora do `executar.py` porque ele entra no hash de código) é exato porque cada causa vai para uma unidade só; o script recusa se
+  isso deixar de valer. A cor da figura da decisão, nesta versão, era o destino (revista em 26/10, abaixo). A versão de
+  22/10 (decisão = mecanismo → unidade, sem a assinatura) foi revertida → painel, `execucao/figuras_genealogia.py`, teste
+  `test_genealogia_figuras_base3`; base 3, roadmap #57; rodada no ambiente da base em 26/10 (pintada pelo destino).
+- **26/10, a memória C do sandbox exclui o managerAgent** (decisão do Rafael, depois da ida ao ambiente de 26/10): na base
+  1, a lista do interpretador do managerAgent é a padrão do smolagents, sem `json`, e nenhum `import json` rodou ali; a
+  base 3 não tem lista dele e tem 0 erros da C nesse papel (1 execução com algum erro no período). Excluir não perde nada
+  que se veja e evita o único risco que a evidência aponta. Nos outros papéis a C fica: o interpretador aceita `json` em
+  todos os vistos, e o bilhete é um lembrete, com a mesma causa (esquecimento) onde o prompt lista o `json` e onde o omite.
+  Para valer, a memória precisa de um alcance "global, exceto papéis": feito no catálogo (`nao_vale_em`, Ajuste 30, o
+  jeito B, escolhido pelo Rafael em 26/10 — sem mexer no esquema, para não exigir rodada nova) → dossiê do sandbox §2h, 27–28.
+- **26/10, "uma causa só" passa nas três memórias do sandbox que vão para o agente** (decisões do Rafael, uma por vez):
+  a **C** (esquecimento; 0 de 423 importados antes, import nunca barrado); a **C.JoogleAnalytics** (esquecimento, 0 de 231;
+  nota: em 77% o passo seguinte dá outro erro — o degrau 3 anota qual); a **E** (inspeção, 92% dos 317; nota: os 8% de outros
+  usos são funções barradas, o "não chame" continua certo). Gravadas em `registros/decisoes_degrau2.json` pelo
+  `conferir_memorias.py --decidir` → dossiê do sandbox §2h, 27.
+- **26/10, a cobertura das regras vira duas barras** (decisão do Rafael, ao ver o painel da base 3 no ambiente da base): a figura de um motivo por barra confundia (nove barras, a maior com 87% dos erros, e os pendentes espalhados
+  em quatro). Agora: cobertos (a regra tem a evidência para decidir; na base 3, 29.392 de 30.141, 97,5%) e pendentes
+  (falta dado na extração; 749), com os maiores motivos dos pendentes em texto embaixo da barra; a lista inteira continua
+  na tabela do painel. Lido da rodada, sem rodada nova → `execucao/painel.py` (`figura_cobertura`).
+- **26/10, a recuperação da população fica só com os papéis com erro, e o limite de passos ganha cor própria**
+  (decisão do Rafael da base 3): a barra das execuções (28,4% de 71.881 tiveram erro) repetia o
+  funil e saiu; o número de execuções com erro vai para o título. Fica por papel, e não por execução, porque a
+  recuperação acontece no laço de um agente e o gráfico seguinte é por papel; na base 3 quase não muda (20.442 papéis
+  com erro para cerca de 20,4 mil execuções com erro). O limite de passos era preto e se confundia com o verde-escuro
+  de "um erro": agora é vermelho (`#e5383b`), da família de "terminou no erro" — os dois são "não se recuperou"
+  (validador de paleta: daltonismo e visão normal passam). Leitura que não vale: "seguiu sem erro até o fim" não é
+  "entregou a resposta final" → `figuras_taxas.recuperacao_populacao`, `recuperacao.CATEGORIAS`.
+- **26/10, o degrau 3 do sandbox não espera a cota de IA do ambiente** (decisão do Rafael; a cota volta em 30/10): regras
+  contadas sobre a população inteira de cada memória (só números e categorias) e **10 casos por memória** (não 30: a
+  leitura vira confirmação das regras), **mascarados** (código e mensagens de erro, com textos, comentários e números
+  trocados; sem a saída do modelo nem as observações; varredor antes de imprimir) e **transcritos**, lidos aqui; no
+  dia 30, os dois leitores no ambiente conferem as regras. Não é exceção à regra de sigilo de 16/10: só sai conteúdo
+  técnico → `pipeline/validacao/degrau3_sandbox.py`; dossiê do sandbox §2h, 30.
+- **26/10, a cor da genealogia da decisão: a família, e também o destino em figura separada** (decisões do Rafael):
+  primeiro, a figura passa a ser pintada pela **família do erro** (a cor do censo, 10 cores da paleta; a fita mantém a cor
+  do começo ao fim), com o destino escrito na última coluna: no recorte de uma unidade, que tem um destino só, a cor do
+  destino deixava tudo de uma cor, e a família mostra de que tipo de erro vem o que termina em cada decisão (no `U_sandbox`
+  da base 1, os 16 erros são todos de Ambiente & sandbox). Depois, a figura inteira sai **também pelo destino**, numa
+  figura separada: `genealogia_decisao.png` (família) e `genealogia_decisao_destino.png` (destino). Cada figura tem uma
+  variável só na cor; as duas paletas reusam o azul e o laranja com sentidos diferentes, por isso nunca na mesma figura.
+  O recorte por unidade é só pela família → `execucao/figuras_genealogia.py`; base 3, roadmap #57; a versão pela família
+  falta rodar no ambiente da base.
+- **29/10, pré-destino × destino** (decisão do Rafael): o que a triagem entrega antes da investigação (candidata a memória
+  com o tipo da lição, harness / infra, resíduo, crítico, sem recorrência) passa a se chamar **pré-destino**; **destino** é
+  só a decisão depois da investigação, do pesquisador, com evidência. Os gráficos de volume (`destinos`,
+  `unidades_destino_tipo` e a genealogia pelo destino) mostram pré-destino; o rótulo do gráfico é de quem apresenta, e o
+  arquivo e o código não mudam. **Nada muda no pipeline:** o destino já fica "em aberto" até a mineração
+  (`destino_mineracao`), e `base_pipeline.py`, `mineracao_observada.py` e `genealogia_sankey.py` entram no hash da rodada.
+  O sinal de harness segue na triagem como pré-destino híbrido (fora das candidatas, o teto de economia não conta como
+  memória o que já se decidiu ser harness). Na base 3, em 29/10, o destino está decidido para o `U_sandbox` (kit) e para
+  duas unidades de harness com evidência própria; as decisões das bases 1 e 2 são evidência prévia, não herdada
+  (Ajuste 7) → [racionais da base 3 §8](2026-10-trace-law-flow-third/docs/01-racionais.md#8--pré-destino-e-destino-29102026),
+  [glossário §9](glossario.md#9--pré-destino-e-destino-29102026).
+- **30/10, a quinta checagem do degrau 2 (uma causa só) é decisão do pesquisador, confirmada no degrau 3; `causas` na
+  granularidade da lição da memória** (decisão do Rafael): nenhum script de mineração grava o campo `causas`, então a checagem
+  sai "não verificável" e o pesquisador a decide com a evidência registrada em `decisoes_degrau2.json`. Fazer o script que
+  minera gravar as causas seria circular (a checagem só confirmaria que ele concorda consigo mesmo), então a confirmação
+  independente é a leitura do degrau 3, que registra `causa` e `licao` por caso. Quando a checagem for automatizada,
+  **`causas` será registrada na granularidade da lição da memória**: a lição é o que a memória carrega, e a unidade agrupa várias causas
+  com a mesma lição; causas com a mesma lição levam o mesmo rótulo e não reprovam. Assim o `conferir_memorias.py`
+  (que falha com mais de uma causa distinta) fica como está e passa a concordar com o doc 17 (que define a falha por
+  lições diferentes). A regra de classificação nasce da investigação (leitura aberta, segundo leitor, `testar_regra.py`)
+  e a auditoria independente a recalcula no encontro. Se `causas` virar campo do esquema, o `esquema-memoria.json` está na
+  lista do hash da rodada → [doc 17](2026-09-trace-law-flow/docs/17-validacao-memorias.md), base 3, roadmap #59.
+- **30/10, "lição" para a unidade e para a memória; "conserto" sai como termo** (decisão do Rafael; **revista no mesmo dia**:
+  a primeira versão separava "lição" (unidade) de "conserto" (memória)). Os slides do degrau 3 perguntam "que lições aparecem
+  nos erros?" e "o pesquisador aprova a lista de lições?"; um termo só evita que o slide e o dossiê falem de coisas
+  diferentes, e a coluna `conserto` do roteiro `candidata` (L3, o que o agente fez depois do erro) deixa de colidir com um
+  termo do glossário. A **lição da unidade** é a ideia geral; a **lição da memória** é a instrução específica de uma parte,
+  com escopo e destino (`correction_guidance`); a quinta checagem do degrau 2 é "é uma lição só?". **Nada muda no código nem
+  no esquema** (`correction_guidance` e o `esquema-memoria.json` estão no hash da rodada); vale para os textos novos, os
+  slides e as legendas → [glossário §10](glossario.md#10--lição-30102026-revista-no-mesmo-dia).
+- **30/10, a memória C.JoogleAnalytics do sandbox só vale junto com a C** (decisão do Rafael, a escolha B, depois do
+  degrau 3 no ambiente): no JoogleAnalytics a linha que falha usa `pandas` e `json` sem importar nenhum
+  dos dois (`json` na instrução em 231 de 231; sem import no passo nem no anterior em 225; 99 caem no `json` depois de
+  importar só o `pandas`). O bilhete "import pandas as pd" corrige só o primeiro erro, e o segundo é o da C, que vale no
+  papel. O texto fica como está (a escolha A, os dois imports no bilhete, pediria mineração nova para repetir o que a C já
+  diz); a dependência fica escrita no catálogo (`vale_junto_com`, Ajuste 31), que avisa se a C deixar de chegar ao papel →
+  dossiê do sandbox §2h, 31.
+- **31/10, a parte F do sandbox vai inteira para o `b3 #51`** (decisão do Rafael, a escolha (a), depois da contagem e da
+  leitura de 10 casos no ambiente): os 37 erros (`globals` 18, `eval` 14, `locals` 4, `vars` 1; 25 no
+  ContestacaoCivel) são, na maior parte, a mesma lição do `#51` — verificar se uma variável existe com um nome que o
+  sandbox barra (5 de 10 casos; 1 `eval` de texto; 3 sem ver para quê). O sandbox fecha a F como movida, sem regra nem
+  rodada nova. **Nota para o `#51`:** uma memória "use `except Exception`, nunca `except NameError`" contrasta com o prompt
+  novo do ContestacaoCivel (ago/26, base 2: manda `try/except NameError`), então ali a parte deve sair harness; nos papéis
+  sem a instrução não há contraste → dossiê do sandbox §2h, 32.
+- **03/11, a lista de categorias dos dois leitores do degrau 3 do sandbox é aprovada sem ajuste** (decisão do Rafael): `causa`,
+  `tambem_json` (só na C.JoogleAnalytics), `conserto` e `licao_livre`, como estão no roteiro → `propostas/U_sandbox/degrau3_leitores.md`
+  da base 3; dossiê do sandbox §2h, 33.
+- **04/11, antes de aprovar o texto da memória C, ler os 3 casos de `datetime`** (decisão do Rafael): a amostra da C não trouxe
+  nenhum, e o texto manda importá-lo → dossiê do sandbox §2h, 36; roteiro em `degrau3_leitores.md` da base 3.
+- **04/11, o vocabulário dos documentos** (decisão do Rafael): o lugar onde as bases 2 e 3 estão se chama **ambiente da base**; a
+  evidência cita data e comando, sem identificar de onde veio a transcrição; a coluna da leitura dos casos é `onde_no_trace`.
+  Arquivos com hash registrado ficam como estão até a próxima mudança neles (a rodada da base 3 e o manifesto do kit dependem deles).
+- **04/11, a memória C passa no gate do degrau 3** (decisão do Rafael): o texto fica como está, "Importe antes de usar: import json,
+  import re, import datetime.", com destino memória → dossiê do sandbox §2h, 37 e 38.
+- **04/11, a memória C.JoogleAnalytics passa no gate do degrau 3** (decisão do Rafael): o texto fica como está, "Importe antes de
+  usar: import pandas as pd.", com destino memória e sempre junto com a C → dossiê do sandbox §2h, 39.
 
 ---

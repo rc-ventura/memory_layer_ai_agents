@@ -81,7 +81,8 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   scripts/comparar_auditoria.py   o encontro: a parte genérica × a auditoria independente (audit_recompute6)
   scripts/catalogar_memoria.py    o catálogo das memórias fechadas (analysis/registros/memorias.json): monta a entrada, registra, confere;
                                   --monitorar marca uma memória não injetada (rara ou reforço) e o --registrar confere o alarme dela;
-                                  --excluir marca os papéis em que uma memória global não vale
+                                  --excluir marca os papéis em que uma memória global não vale;
+                                  --junto-com marca a memória que só vale junto com outra (e avisa se a outra deixar de chegar)
   scripts/conferir_memorias.py    o degrau 2 da validação: as cinco checagens de cada memória do catálogo contra o prompt de cada papel
                                   e, com --ambiente/--funcoes, contra o que o interpretador aceita; --decidir registra a decisão do pesquisador
   scripts/valor_da_licao.py       o painel das lições: frequência (Pareto · presença no tempo), confiança (lida do confianca.json), situação e decisão
@@ -111,7 +112,7 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
   com `disable-model-invocation: true`, só rodam quando chamadas. O argumento: no Claude, o `$ARGUMENTS` é
   substituído; no Copilot, o texto depois do `/nome` vai junto como contexto — por isso o texto diz "indicada no
   pedido".
-- Se o VS Code de uma máquina for antigo e não achar as skills do `.claude/`, o problema é a versão, não o kit.
+- Se o VS Code de um ambiente for antigo e não achar as skills do `.claude/`, o problema é a versão, não o kit.
 - Para usar em outro repositório, copie `.claude/skills/{mineracao-*,investigar,propor-script}` e os
   quatro agentes.
 

@@ -71,7 +71,7 @@ então os leitores classificam e o script mede.
 - **Etapa 2 · Leitura fechada.** Os dois leitores, às cegas, classificam **todos** os casos da leitura fechada (pelo
   menos 20, ou todos os que restam quando a população é menor) na lista aprovada, e escrevem também `licao_livre`.
   Gravam `leitura_candidata_<u>_<BASE_ID>.csv` (com `licao`, `causa`, `conserto`, `destino_lido`, `licao_livre`,
-  `onde_no_cru`) e `leitura2_candidata_<u>_<BASE_ID>.csv` (com `licao`, `causa`, `licao_livre`, `onde_no_cru`).
+  `onde_no_trace`) e `leitura2_candidata_<u>_<BASE_ID>.csv` (com `licao`, `causa`, `licao_livre`, `onde_no_trace`).
 - **A medida.** A concordância (`concordancia.py`) é medida por coluna, **sempre com
   `--registrar resultados/mineracao/<u>/confianca.json --nula sem_licao_unica`**, e a tabela lado a lado vai para o
   dossiê:

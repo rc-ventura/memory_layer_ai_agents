@@ -31,7 +31,7 @@ de existência e (2) os dois erros se substituem no tempo, no mesmo papel.
        'sem nome entre aspas'        verifica, mas sem um nome literal (`[v for v in obrigatorias if v not in globals()]`).
 
 Lê o parquet cru com o pyarrow (não usa o pipeline). Não grava nada. Imprime só contagens, nomes de papel e meses.
-Uso, da raiz, na máquina da base:
+Uso, da raiz, no ambiente da base:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_introspeccao_linha.py --fonte <parquet>
 """
 import argparse

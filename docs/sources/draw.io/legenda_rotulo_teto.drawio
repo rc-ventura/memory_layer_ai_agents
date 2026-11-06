@@ -1,0 +1,79 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="legenda-teto" name="Page-1">
+    <mxGraphModel dx="1414" dy="822" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="l2" parent="1" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="336" width="690" x="20" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="l3" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=16;fontColor=#B5573A;" value="&lt;b&gt;Como ler o rótulo à direita de cada barra&lt;/b&gt;" vertex="1">
+          <mxGeometry height="26" width="640" x="38" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="l4" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=12;fontColor=#6B7280;fontStyle=2;" value="Exemplo: ContestacaoCivel" vertex="1">
+          <mxGeometry height="20" width="640" x="38" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="l5" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=center;fontSize=14;fontColor=#4A5560;" value="de" vertex="1">
+          <mxGeometry height="40" width="18" x="126" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="l6" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=center;fontSize=14;fontColor=#4A5560;" value="· teto" vertex="1">
+          <mxGeometry height="40" width="50" x="266" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="l7" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F4F5FA;strokeColor=#272B4D;strokeWidth=1.5;fontColor=#1B1E38;fontSize=17;fontStyle=1;" value="39,3%" vertex="1">
+          <mxGeometry height="40" width="86" x="38" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="l8" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#B5573A;strokeColor=#FFFFFF;fontColor=#FFFFFF;" value="1" vertex="1">
+          <mxGeometry height="22" width="22" x="30" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="l9" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F4F5FA;strokeColor=#272B4D;strokeWidth=1.5;fontColor=#1B1E38;fontSize=17;fontStyle=1;" value="896,1 mi" vertex="1">
+          <mxGeometry height="40" width="118" x="146" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="l10" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#B5573A;strokeColor=#FFFFFF;fontColor=#FFFFFF;" value="2" vertex="1">
+          <mxGeometry height="22" width="22" x="138" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="l11" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F4F5FA;strokeColor=#272B4D;strokeWidth=1.5;fontColor=#1B1E38;fontSize=17;fontStyle=1;" value="160,0 mi" vertex="1">
+          <mxGeometry height="40" width="128" x="318" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="l12" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#B5573A;strokeColor=#FFFFFF;fontColor=#FFFFFF;" value="3" vertex="1">
+          <mxGeometry height="22" width="22" x="310" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="l13" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#F4F5FA;strokeColor=#272B4D;strokeWidth=1.5;fontColor=#1B1E38;fontSize=17;fontStyle=1;" value="(17,9%)" vertex="1">
+          <mxGeometry height="40" width="100" x="462" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="l14" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#B5573A;strokeColor=#FFFFFF;fontColor=#FFFFFF;" value="4" vertex="1">
+          <mxGeometry height="22" width="22" x="454" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="l15" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#B5573A;strokeColor=#FFFFFF;fontColor=#FFFFFF;" value="1" vertex="1">
+          <mxGeometry height="22" width="22" x="38" y="158" as="geometry" />
+        </mxCell>
+        <mxCell id="l16" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#1B1E38;" value="&lt;b&gt;39,3%&lt;/b&gt; · a fatia do gasto do papel que foi para passos com erro, em qualquer destino (a barra inteira)." vertex="1">
+          <mxGeometry height="38" width="626" x="70" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="l17" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#B5573A;strokeColor=#FFFFFF;fontColor=#FFFFFF;" value="2" vertex="1">
+          <mxGeometry height="22" width="22" x="38" y="198" as="geometry" />
+        </mxCell>
+        <mxCell id="l18" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#1B1E38;" value="&lt;b&gt;896,1 mi&lt;/b&gt; · o gasto total do papel, em tokens, com e sem erro." vertex="1">
+          <mxGeometry height="38" width="626" x="70" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="l19" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#B5573A;strokeColor=#FFFFFF;fontColor=#FFFFFF;" value="3" vertex="1">
+          <mxGeometry height="22" width="22" x="38" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="l20" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#1B1E38;" value="&lt;b&gt;teto 160,0 mi&lt;/b&gt; · os tokens em erro de unidades candidatas a memória: o máximo que uma memória poderia economizar neste papel." vertex="1">
+          <mxGeometry height="38" width="626" x="70" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="l21" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#B5573A;strokeColor=#FFFFFF;fontColor=#FFFFFF;" value="4" vertex="1">
+          <mxGeometry height="22" width="22" x="38" y="278" as="geometry" />
+        </mxCell>
+        <mxCell id="l22" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#1B1E38;" value="&lt;b&gt;(17,9%)&lt;/b&gt; · o teto como fatia do gasto do papel, 160,0 ÷ 896,1: é o trecho azul da barra." vertex="1">
+          <mxGeometry height="38" width="626" x="70" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="l23" parent="1" style="html=1;fillColor=#C9CCD8;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="1" width="656" x="38" y="316" as="geometry" />
+        </mxCell>
+        <mxCell id="l24" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=12;fontColor=#4A5560;fontStyle=2;" value="39,3% de 896,1 mi são cerca de 352 mi em passos com erro. O teto é só a parte azul dessa fatia, e é uma hipótese: supõe evitar todos esses erros, sem o custo de injetar a memória." vertex="1">
+          <mxGeometry height="32" width="656" x="38" y="320" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -163,8 +163,8 @@ Vale baixar junto no dataset de erros como contexto de estado.
 | 34 | validado | fev/2026 |
 | 67 | falha | mar/2026 |
 
-A tabela só traduz código → nome; é um dicionário fotografado a cada corte (`anomesdia`, 18 cortes, de set/2025 a
-set/2026), não um log por execução. O "desde" é a primeira fotografia em que o código aparece, e não diz quando as
+A tabela só traduz código → nome; é um dicionário registrado a cada corte (`anomesdia`, 18 cortes, de set/2025 a
+set/2026), não um log por execução. O "desde" é a primeiro corte em que o código aparece, e não diz quando as
 execuções passaram a receber o status. **Correção:** a inferência anterior "34 = erro" estava errada — 34 é
 **validado**. O código 67 (**falha**) **não aparece na base 1** (0/1.000); existe no dicionário, e a base 2 pode tê-lo.
 O que a tabela **não** diz: por que status 1 (ativo) nunca traz encerramento (o nome sugere "ainda em curso", o que

@@ -21,7 +21,7 @@ recebe:
    `indeterminado` com uma palavra do porquê. Não crie categoria nova; se faltar uma, diga isso na resposta e conte
    quantos casos ficaram sem lugar. Escreva também as colunas livres que o roteiro pede nesta etapa.
 3. Grave o arquivo que o roteiro nomeia para a etapa (por padrão `pipeline/resultados/leitura_<decisao>_<BASE_ID>.csv`)
-   com `exec_id`, `role`, a coluna de idx do roteiro, uma coluna por eixo (e as livres) e `onde_no_cru` (o campo lido).
+   com `exec_id`, `role`, a coluna de idx do roteiro, uma coluna por eixo (e as livres) e `onde_no_trace` (o campo lido).
 4. Na leitura fechada, proponha a regra que separaria a categoria-alvo (regex num campo do step) e conte-a com o `testar_regra.py`, com
    `--lidos` apontando para a sua leitura. Itere sobre a regra e registre cada versão testada com a linha de
    resultado do script.

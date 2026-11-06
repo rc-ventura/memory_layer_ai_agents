@@ -2,7 +2,7 @@
 
 Projeto: Mecanismo de atualização de memória para agentes de IA generativa aplicado a fluxos jurídicos ([PROGRAMA-FOMENTO], Nº [ANONIMIZADO])
 
-*Leitura rápida do mês, semana a semana. Até 4 registros — a reflexão de cada semana, tirada dos arquivos episódicos em `../../Set/diario_campo_*.md` e apenas organizada aqui. Regenerável. Não duplica o log episódico nem substitui o export `.docx` do coordenador.*
+*Leitura rápida do mês, semana a semana. Até 4 registros — a reflexão de cada semana, tirada dos arquivos episódicos em `../../Set/diario_campo_*.md` e apenas organizada aqui. Regenerável. Não duplica o log episódico.*
 
 - **Última regeneração:** 25/09/2026
 

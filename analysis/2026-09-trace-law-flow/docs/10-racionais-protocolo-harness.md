@@ -194,7 +194,7 @@ entra aqui.
   formato, não escreva os delimitadores na explicação; um bloco só; entregue com `final_answer` — `print` não encerra")
   fica **candidata, não promovida**: um caso só.
 - **Status:** 1 execução (base 2, CalculoCivel, a do erro crítico; `11` §2.5), 12 steps. A regex reproduzida bate com o
-  `code_action` nos 12 (conferido na máquina 2). Frequência nas duas bases: a medir.
+  `code_action` nos 12 (conferido no ambiente da base). Frequência nas duas bases: a medir.
 
 ## 5 · Quem corrige, e por que (quase) nunca é memória
 

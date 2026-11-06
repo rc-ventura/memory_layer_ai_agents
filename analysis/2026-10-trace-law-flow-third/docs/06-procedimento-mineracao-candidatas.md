@@ -51,7 +51,7 @@ Os passos gravam em `pipeline/resultados/mineracao/<u>/` (ou em `--saida <pasta>
 uv run python analysis/2026-10-trace-law-flow-third/audit/scripts/audit_candidata_base3.py <u> --fonte <parquet> --json <arquivo>
 ```
 
-**O resumo** (fim do passo 9) cabe numa foto: cada passo com ok ou o motivo da parada, a confiança, o encontro e as
+**O resumo** (fim do passo 9) cabe numa tela: cada passo com ok ou o motivo da parada, a confiança, o encontro e as
 tabelas principais da lição, só com contagens e nomes (papel, mês, módulo, função). É dele que saem
 o dossiê e as decisões do pesquisador (`07`, "O gate").
 

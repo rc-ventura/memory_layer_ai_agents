@@ -211,7 +211,7 @@ def _fora_do_manifesto(path, esperado, gerado_em):
 
 
 def _juntar_perfis(itens):
-    """perfis/<unidade>/<tabela> com a mesma situação e o mesmo detalhe numa linha só (a saída cabe numa foto)."""
+    """perfis/<unidade>/<tabela> com a mesma situação e o mesmo detalhe numa linha só (a saída cabe numa tela)."""
     vistos, ordem = {}, []
     for nome, detalhe in itens:
         partes = nome.split("/")

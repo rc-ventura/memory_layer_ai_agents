@@ -25,7 +25,7 @@ numa versão do trecho que manda verificar e não proíbe `globals()`, e somem n
      instruída pelo prompt ou espontânea.
 
 Usa o leitor do `contar_primeiro_passo_nome_base2.py` e as funções do pipeline da base 1 (o método é o mesmo nas duas
-bases). Não grava nada. Imprime só contagens, nomes de papel, meses e hashes. Uso, da raiz, na máquina da base 2:
+bases). Não grava nada. Imprime só contagens, nomes de papel, meses e hashes. Uso, da raiz, no ambiente da base 2:
     uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_introspeccao_prompt_base2.py --trace <trace da base 2>
 """
 import argparse

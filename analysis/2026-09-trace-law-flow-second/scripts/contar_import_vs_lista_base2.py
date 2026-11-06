@@ -12,7 +12,7 @@ que rodaram e os barrados. Não grava nada. Só contagens e nomes de papel. Uso,
     uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_import_vs_lista_base2.py --trace <trace> [--modulo json]
 Com `--listar <papel>`: os exec_id, mês e idx dos passos com `import <módulo>` em execuções cujo prompt NÃO lista o
 módulo — para abrir o caso inteiro com `drill_down.py caso <exec_id> <papel>` (na pasta pipeline/ da base; o caso tem
-texto cru: fica na máquina da base).
+texto cru: fica no ambiente da base).
 """
 import argparse
 from pathlib import Path

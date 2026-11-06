@@ -10,5 +10,4 @@ dependencies = [
     "jupyterlab>=4.2",
     "ipykernel>=6.29",
     "pyarrow>=17",
-    "python-pptx>=1.0",
 ]

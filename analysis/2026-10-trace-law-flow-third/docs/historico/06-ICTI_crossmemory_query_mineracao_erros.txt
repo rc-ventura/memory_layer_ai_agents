@@ -1,8 +1,8 @@
--- TRANSCRIÇÃO das fotos da query `ICTI_crossmemory_query_mineracao_erros` (máquina 2), 09/10/2026.
--- Fiel às fotos; onde a foto não deixou ler, `-- [linhas N–M não visíveis]`.
+-- TRANSCRIÇÃO da query `ICTI_crossmemory_query_mineracao_erros` (ambiente da base), 09/10/2026.
+-- Fiel ao original; onde não deu para ler, `-- [linhas N–M não visíveis]`.
 -- Registro histórico da extração v1 da base 3 — não é a query de um pedido novo (ver ../05-pedido-queries.md).
--- Lacunas: linhas 146–147 e 805–816 (o limite e o alias de `action_output` não aparecem nas fotos).
--- Lido até aqui: a query inteira (linhas 1–1015, fotos IMG_5276 a IMG_5306 e IMG_5395). Lacunas marcadas no texto: linhas 146–147 e 805–816.
+-- Lacunas: linhas 146–147 e 805–816 (o limite e o alias de `action_output` não foram lidos).
+-- Lido até aqui: a query inteira (linhas 1–1015). Lacunas marcadas no texto: linhas 146–147 e 805–816.
 
 WITH source_raw AS (
 
@@ -149,7 +149,7 @@ roles AS (
     FROM base b
 
     CROSS JOIN UNNEST(b.trace_map)
-    -- [linhas 146–147 não visíveis nas fotos]
+    -- [linhas 146–147 não visíveis]
     WHERE b.trace_map IS NOT NULL
 ),
 
@@ -793,7 +793,7 @@ SELECT
         20000
     ) AS error_observations,
 
-    -- [linhas 805–816 só em parte visíveis: começa `SUBSTR(action_output, 1, …` — o limite e o alias não aparecem nas fotos]
+    -- [linhas 805–816 só em parte visíveis: começa `SUBSTR(action_output, 1, …` — o limite e o alias não foram lidos]
 
 
     -- ==============================================================

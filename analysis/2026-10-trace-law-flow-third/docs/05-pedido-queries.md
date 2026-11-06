@@ -127,4 +127,4 @@ O que ainda não é coberto por A e B. Cada item, a limitação que resolve e a 
 
 - Texto de caso além do que B descreve (o fim da mensagem e do código). As marcas sim/não e as contagens são
   calculadas na consulta justamente para não exportar a tarefa, o prompt ou as observações.
-- Identificadores fora do ambiente da máquina 2: as tabelas ficam lá, como o parquet atual.
+- Identificadores fora do ambiente do ambiente da base: as tabelas ficam lá, como o parquet atual.
