@@ -17,14 +17,13 @@ Divisão de trabalho com a skill **`diario-campo`**:
 |---|---|
 | Registrar uma entrada nova / corrigir uma entrada | `diario-campo` |
 | Ver o status do mês (contagens, últimos registros) sem escrever | `diario-campo` |
-| Export `.docx` limpo para o coordenador | `diario-campo` (fechamento mensal) |
 | **(Re)gerar o digest mensal (`summarization/`)** | **`sintese-diario` (esta)** |
 
 Nunca reescreva registros episódicos (o `Registro objetivo`, `Reflexão`, `Decisão/próximo passo`, `Tags` de uma entrada `##`/`###` de data). A camada episódica é imutável; só o digest mensal é derivado e regenerável.
 
 ## Por que este design (contexto que não pode se perder)
 
-O diário tem duas camadas por decisão de projeto: **episódica** (entradas diárias nos arquivos semanais, baratas de escrever, nunca resumidas no lugar) e **semântica** (o digest mensal, destilado, maior valor de releitura, regenerável se o entendimento mudar). É a mesma separação episódico/semântico que o Plano de Trabalho propõe para o mecanismo de memória do agente (Sub 2.2), aplicada à prática de pesquisa do bolsista — por isso o digest mensal em Markdown vive no repo (barato, versionado, regenerável) e **não substitui** nem o log episódico (fica nos arquivos semanais) nem o export `.docx` para o coordenador (continua sendo tarefa da skill `diario-campo`).
+O diário tem duas camadas por decisão de projeto: **episódica** (entradas diárias nos arquivos semanais, baratas de escrever, nunca resumidas no lugar) e **semântica** (o digest mensal, destilado, maior valor de releitura, regenerável se o entendimento mudar). É a mesma separação episódico/semântico que o Plano de Trabalho propõe para o mecanismo de memória do agente (Sub 2.2), aplicada à prática de pesquisa do bolsista — por isso o digest mensal em Markdown vive no repo (barato, versionado, regenerável) e **não substitui** o log episódico (fica nos arquivos semanais).
 
 ## Fluxo obrigatório
 
@@ -82,7 +81,7 @@ Para cada semana, produza **um** registro no [formato abaixo](#formato--digest-m
 ### 6. Verificar e reportar
 
 - `Read` o arquivo recém-escrito para conferir a estrutura.
-- Reporte a Rafael, sem escrever num arquivo: qual digest mensal foi escrito, semanas cobertas, contagem de registros por semana, e o lembrete de que a skill **não** fez commit e **não** gerou o `.docx` do coordenador.
+- Reporte a Rafael, sem escrever num arquivo: qual digest mensal foi escrito, semanas cobertas, contagem de registros por semana, e o lembrete de que a skill **não** fez commit.
 
 ## Formato — digest mensal
 
@@ -93,7 +92,7 @@ Arquivo `research-diary/summarization/<Mês>/sintese_AAAA-MM.md`:
 
 Projeto: Mecanismo de atualização de memória para agentes de IA generativa aplicado a fluxos jurídicos ([PROGRAMA-FOMENTO], Nº [ANONIMIZADO])
 
-*Leitura rápida do mês, semana a semana. Até 4 registros — a reflexão de cada semana, tirada dos arquivos episódicos em `../../<Mês>/diario_campo_*.md` e apenas organizada aqui. Regenerável. Não duplica o log episódico nem substitui o export `.docx` do coordenador.*
+*Leitura rápida do mês, semana a semana. Até 4 registros — a reflexão de cada semana, tirada dos arquivos episódicos em `../../<Mês>/diario_campo_*.md` e apenas organizada aqui. Regenerável. Não duplica o log episódico.*
 
 - **Última regeneração:** {DD/MM/AAAA}
 
@@ -139,7 +138,7 @@ Não faça commit nem push automaticamente. Ao terminar, liste os arquivos criad
 **Exemplo 1 — digest do mês corrente:**
 > `/sintese-diario`
 
-→ Arquivo semanal de data mais alta = `research-diary/Ago/diario_campo_2026-08-24.md` (semana 24–28/08, quarta 26/08 → agosto) → mês alvo agosto/2026. Semanas de agosto com registro: 17–23/08 (reflexão lida do bloco `## Síntese da Semana` já embutido no arquivo legado `research-diary/Ago/diario_campo_2026-08.md`) e 24–28/08 (reflexão destilada das entradas episódicas do arquivo semanal). Cria `research-diary/summarization/Ago/` e escreve `sintese_2026-08.md` com 2 registros (Semana 1 e Semana 2), cada um parágrafo + Decidido + Em aberto. **Não toca** nos arquivos semanais. Reporta e lembra que não fez commit nem `.docx`.
+→ Arquivo semanal de data mais alta = `research-diary/Ago/diario_campo_2026-08-24.md` (semana 24–28/08, quarta 26/08 → agosto) → mês alvo agosto/2026. Semanas de agosto com registro: 17–23/08 (reflexão lida do bloco `## Síntese da Semana` já embutido no arquivo legado `research-diary/Ago/diario_campo_2026-08.md`) e 24–28/08 (reflexão destilada das entradas episódicas do arquivo semanal). Cria `research-diary/summarization/Ago/` e escreve `sintese_2026-08.md` com 2 registros (Semana 1 e Semana 2), cada um parágrafo + Decidido + Em aberto. **Não toca** nos arquivos semanais. Reporta e lembra que não fez commit.
 
 **Exemplo 2 — mês explícito:**
 > `sumariza o diário de agosto`
@@ -153,6 +152,6 @@ Não faça commit nem push automaticamente. Ao terminar, liste os arquivos criad
 
 ## Referências
 
-- `../diario-campo/SKILL.md` — skill de registro do diário e export `.docx` mensal para o coordenador; esquema dos campos das entradas.
-- `../diario-campo/references/sub_atividades.md` — mapa de sub-atividades (usado no `.docx` do coordenador, não no digest).
+- `../diario-campo/SKILL.md` — skill de registro do diário; esquema dos campos das entradas.
+- `../diario-campo/references/sub_atividades.md` — mapa de sub-atividades (usado nas entradas, não no digest).
 - `../../research-diary/README.md` — convenção de arquivos (semanal episódico vs. legado mensal), pastas de mês (abreviação PT), **regra da quarta-feira** ("semana conta para o mês que contém a sua quarta-feira"), camadas episódica/semântica.

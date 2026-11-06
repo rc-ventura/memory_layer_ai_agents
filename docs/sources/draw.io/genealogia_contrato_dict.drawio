@@ -4,34 +4,34 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="g17" edge="1" parent="1" source="g7" target="g10" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=2.9;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="g17" edge="1" parent="1" source="g7" target="g10" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g18" edge="1" parent="1" source="g7" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=1.5;exitX=1;exitY=0.8;exitDx=0;exitDy=0;entryX=0;entryY=0.08;entryDx=0;entryDy=0;">
+        <mxCell id="g18" edge="1" parent="1" source="g7" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.8;exitDx=0;exitDy=0;entryX=0;entryY=0.08;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g19" edge="1" parent="1" source="g8" target="g11" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=37.4;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="g19" edge="1" parent="1" source="g8" target="g11" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=5;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g20" edge="1" parent="1" source="g8" target="g12" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=4.2;exitX=1;exitY=0.68;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="g20" edge="1" parent="1" source="g8" target="g12" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.68;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g21" edge="1" parent="1" source="g8" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=15.5;exitX=1;exitY=0.88;exitDx=0;exitDy=0;entryX=0;entryY=0.42;entryDx=0;entryDy=0;">
+        <mxCell id="g21" edge="1" parent="1" source="g8" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.88;exitDx=0;exitDy=0;entryX=0;entryY=0.42;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g22" edge="1" parent="1" source="g9" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=3.8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.85;entryDx=0;entryDy=0;">
+        <mxCell id="g22" edge="1" parent="1" source="g9" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.85;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g23" edge="1" parent="1" source="g10" target="g14" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=2.9;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.09;entryDx=0;entryDy=0;">
+        <mxCell id="g23" edge="1" parent="1" source="g10" target="g14" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.09;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g24" edge="1" parent="1" source="g11" target="g14" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=37.4;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.58;entryDx=0;entryDy=0;">
+        <mxCell id="g24" edge="1" parent="1" source="g11" target="g14" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.58;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g25" edge="1" parent="1" source="g12" target="g15" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=4.2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="g25" edge="1" parent="1" source="g12" target="g15" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="g26" edge="1" parent="1" source="g13" target="g16" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=19.7;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="g26" edge="1" parent="1" source="g13" target="g16" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="g2" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=34;" value="Genealogia: da mensagem à lição" vertex="1">
@@ -40,7 +40,7 @@
         <mxCell id="g3" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=15;fontStyle=1;" value="Assinatura" vertex="1">
           <mxGeometry height="26" width="300" x="60" y="100" as="geometry" />
         </mxCell>
-        <mxCell id="g4" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=15;fontStyle=1;" value="Final da mensagem" vertex="1">
+        <mxCell id="g4" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=15;fontStyle=1;" value="Pista que a regra lê" vertex="1">
           <mxGeometry height="26" width="300" x="305" y="100" as="geometry" />
         </mxCell>
         <mxCell id="g5" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=15;fontStyle=1;" value="Causa" vertex="1">
@@ -79,16 +79,16 @@
         <mxCell id="g16" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;fontColor=#272B4D;fontSize=15;" value="Retorno pode chegar como string&lt;br&gt;&lt;small&gt;U_tipo_retorno · 47 erros&lt;/small&gt;" vertex="1">
           <mxGeometry height="136" width="310" x="930" y="470" as="geometry" />
         </mxCell>
-        <mxCell id="g27" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="KeyError: 0" vertex="1">
+        <mxCell id="g27" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A8FA8;strokeWidth=1;dashed=1;fontFamily=Courier New;fontSize=12;fontColor=#4A5560;" value="KeyError: 0" vertex="1">
           <mxGeometry height="30" width="200" x="305" y="288" as="geometry" />
         </mxCell>
-        <mxCell id="g28" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="KeyError: &#x27;campo&#x27;" vertex="1">
+        <mxCell id="g28" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A8FA8;strokeWidth=1;dashed=1;fontFamily=Courier New;fontSize=12;fontColor=#4A5560;" value="KeyError: &#x27;campo&#x27;" vertex="1">
           <mxGeometry height="30" width="200" x="305" y="402" as="geometry" />
         </mxCell>
-        <mxCell id="g29" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="string indices must be integers" vertex="1">
+        <mxCell id="g29" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A8FA8;strokeWidth=1;dashed=1;fontFamily=Courier New;fontSize=12;fontColor=#4A5560;" value="string indices must be integers" vertex="1">
           <mxGeometry height="46" width="200" x="305" y="478" as="geometry" />
         </mxCell>
-        <mxCell id="g30" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=12;fontColor=#4A5560;" value="Base 1 · 498 erros · largura das fitas = número de erros · Outras mensagens: Tipo diferente 6, Retorno não era JSON 2, Formato inválido 1" vertex="1">
+        <mxCell id="g30" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=12;fontColor=#4A5560;" value="Base 1 · 498 erros · Outras mensagens: Tipo diferente 6, Retorno não era JSON 2, Formato inválido 1" vertex="1">
           <mxGeometry height="22" width="1200" x="40" y="618" as="geometry" />
         </mxCell>
         <mxCell id="g31" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=12;fontColor=#4A5560;" value="Finais raros do Could not index: unhashable type: &#x27;slice&#x27;, 1 erro, conta como posição; are in the [columns], 1 erro, conta como campo inexistente." vertex="1">

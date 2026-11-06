@@ -73,13 +73,13 @@
         <mxCell id="db1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="2" vertex="1">
           <mxGeometry height="18" width="18" x="304" y="368" as="geometry" />
         </mxCell>
-        <mxCell id="dt1" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;" value="assinatura: o que o Python reclamou. Lê só a mensagem → Falha ao indexar o retorno" vertex="1">
+        <mxCell id="dt1" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;" value="assinatura: o nome do sintoma que a mensagem mostra → Falha ao indexar o retorno" vertex="1">
           <mxGeometry height="22" width="900" x="330" y="366" as="geometry" />
         </mxCell>
         <mxCell id="db2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#D32F2F;strokeColor=#D32F2F;fontColor=#FFFFFF;" value="3" vertex="1">
           <mxGeometry height="18" width="18" x="304" y="390" as="geometry" />
         </mxCell>
-        <mxCell id="dt2" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;" value="mecanismo: o que o agente fez de errado → indexou o dict por posição. Aqui a regra lê só a mensagem (KeyError: 0)" vertex="1">
+        <mxCell id="dt2" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=13;fontColor=#1B1E38;" value="mecanismo: o que o agente fez de errado → indexou o dict por posição. A pista aqui é o final da mensagem (KeyError: 0)" vertex="1">
           <mxGeometry height="22" width="900" x="330" y="388" as="geometry" />
         </mxCell>
         <mxCell id="k0" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Erro estruturado" vertex="1">

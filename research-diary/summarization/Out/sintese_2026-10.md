@@ -2,9 +2,9 @@
 
 Projeto: Mecanismo de atualização de memória para agentes de IA generativa aplicado a fluxos jurídicos ([PROGRAMA-FOMENTO], Nº [ANONIMIZADO])
 
-*Leitura rápida do mês, semana a semana. Até 4 registros — a reflexão de cada semana, tirada dos arquivos episódicos em `../../Out/diario_campo_*.md` e apenas organizada aqui. Regenerável. Não duplica o log episódico nem substitui o export `.docx` do coordenador.*
+*Leitura rápida do mês, semana a semana. Até 4 registros — a reflexão de cada semana, tirada dos arquivos episódicos em `../../Out/diario_campo_*.md` e apenas organizada aqui. Regenerável. Não duplica o log episódico.*
 
-- **Última regeneração:** 28/10/2026
+- **Última regeneração:** 06/11/2026
 
 ---
 
@@ -35,3 +35,13 @@ A semana foi do piloto de mineração do sandbox e da montagem da apresentação
 **Decidido:** A vai para o harness; C e E são memória global; B e D, memória por papel; as não injetadas ficam monitoradas como rara ou reforço, com alarme no catálogo; a conferência de ambiente usa o interpretador; "sinal de harness" (erro induzido pelo prompt ou pelo contrato da ferramenta) e "destino harness" (infraestrutura, protocolo, timeout) ficam distintos nos slides; o degrau 3 (revisão de casos) vai para a base 3, com prioridade; apresentação segue com o piloto do sandbox nos slides 5 e 6.
 
 **Em aberto:** seis das 14 memórias têm de 1 a 3 erros — decidir se aplica a régua de memória rara antes do experimento (`b3 #48`); as memórias foram construídas, não testadas: a redução do erro só se mede no teste de compensação (`b3 #39`); o destino memória de C, B e D foi decidido sem ler os prompts desses papéis; cerca de 134 verificações com valor padrão continuam na E, provavelmente com a mesma causa do prompt; a parte F (`globals`, `locals`, `vars`, `eval`) fica para depois; a divergência prompt × interpretador segue como aviso à plataforma (transversal #7); a segunda unidade de memória e o fechamento dos gráficos de cada slide.
+
+---
+
+### Semana 4 · 26–30/10/2026 · 8 registros
+
+A semana levou ao ambiente das bases 2 e 3 o degrau 2 das três memórias do sandbox que vão para o agente (C, C.JoogleAnalytics e E). Com o prompt da base 2, do mesmo período da base 3, e o ambiente lido do interpretador, as três passaram, e seis hipóteses foram testadas: o interpretador aceita o que o prompt não lista, o erro da C é esquecer o import, e a E é, em 92% dos casos, inspecionar um valor. O degrau 3 sem cota de IA (regras contadas na população e 10 casos mascarados por memória, lidos por um agente, sem provider definido) confirmou as três causas e trouxe o achado da semana: no JoogleAnalytics o agente esquece dois imports na mesma linha, e o `json` está na linha em 231 de 231 erros. A parte F do sandbox foi reaberta e fechada. Em paralelo, as figuras da base 3 foram reorganizadas (genealogia em duas figuras, cobertura em duas barras, recuperação só com os papéis com erro, figuras do estudo de caso), entrou a taxa de erro por execução de cada papel, foi aberta a suspeita de viés de seleção na query da extração (`b3 #58`) e começaram os diagramas da apresentação ao tutor.
+
+**Decidido:** a C não vale no managerAgent (registrado no catálogo, sem mudar o esquema); "uma causa só" passa nas três por decisão do pesquisador, e a checagem passa a ser "é uma lição só?" (`b3 #59`); "lição" é o termo nos dois níveis, o da unidade (hipótese da classificação) e o da memória (instrução de uma parte); o bilhete do JoogleAnalytics fica como está e vale junto com a C (`--junto-com`, Ajuste 31); a parte F vai inteira para o `b3 #51`; pré-destino × destino e os nomes minerada, conferida, revisada e validada nos slides; o esqueleto e os scripts que geravam a apresentação saíram do repositório.
+
+**Em aberto:** os dois leitores do degrau 3 no ambiente, deixados para 02/11, quando a cota volta, e a gravação do degrau 3 no catálogo, ainda sem comando; o `b3 #58` é hipótese e só fecha com a tabela de origem; o erro depois do import no JoogleAnalytics é de outra lição (argumento posicional); a regra de onde está a chamada da E põe em "outra" as chamadas dentro de um `try`; os 25 erros da F no ContestacaoCivel serem sinal de harness é hipótese, e os 12 dos outros papéis ainda precisam passar na régua (a F arrasta da semana 3).

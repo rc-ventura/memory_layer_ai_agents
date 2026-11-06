@@ -10,7 +10,7 @@
         <mxCell id="f03" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=32;fontColor=#FFFFFF;" value="&lt;b&gt;Retorno pode chegar como string&lt;/b&gt;" vertex="1">
           <mxGeometry height="52" width="910" x="40" y="14" as="geometry" />
         </mxCell>
-        <mxCell id="f04" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Família: Contrato de retorno da ferramenta" vertex="1">
+        <mxCell id="f04" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Famílias: Contrato de retorno da ferramenta · Suposição sobre dados" vertex="1">
           <mxGeometry height="28" width="880" x="40" y="64" as="geometry" />
         </mxCell>
         <mxCell id="f05" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;fontColor=#272B4D;fontSize=18;fontStyle=1;" value="Candidata a memória" vertex="1">
@@ -22,7 +22,7 @@
         <mxCell id="f07" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f08" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Antes de indexar por chave, fazer conta ou json.loads, checar se o retorno é texto: JSON serializado ou mensagem de erro da ferramenta." vertex="1">
+        <mxCell id="f08" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Antes de indexar por chave, fazer cálculos ou json.loads, checar se o retorno é texto: JSON serializado ou mensagem de erro da ferramenta." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f09" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -90,7 +90,7 @@
         <mxCell id="f13" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=25;fontColor=#FFFFFF;" value="&lt;b&gt;Verificação de existência de variável (instruída pelo prompt)&lt;/b&gt;" vertex="1">
           <mxGeometry height="52" width="910" x="40" y="14" as="geometry" />
         </mxCell>
-        <mxCell id="f14" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Família: Suposição sobre estado · Ambiente &amp; sandbox" vertex="1">
+        <mxCell id="f14" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Famílias: Suposição sobre estado · Ambiente &amp; sandbox" vertex="1">
           <mxGeometry height="28" width="880" x="40" y="64" as="geometry" />
         </mxCell>
         <mxCell id="f15" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;fontColor=#C0582A;fontSize=18;fontStyle=1;" value="Sinal de harness" vertex="1">
@@ -102,7 +102,7 @@
         <mxCell id="f17" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f18" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="As duas formas de checar se a variável existe falham no sandbox. Se ela não foi criada, chamar a ferramenta direto. O conserto é no prompt que instrui a verificação." vertex="1">
+        <mxCell id="f18" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="As duas formas de checar se a variável existe falham no sandbox: &#x27;x&#x27; in globals() é proibida, e except NameError não captura o InterpreterError do nome inexistente. Se ela ainda não foi criada, chamar a ferramenta direto. O conserto é no prompt que instrui a verificação." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f19" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -152,7 +152,7 @@
         <mxCell id="f23" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=32;fontColor=#FFFFFF;" value="&lt;b&gt;Ferramentas só aceitam argumento nomeado&lt;/b&gt;" vertex="1">
           <mxGeometry height="52" width="910" x="40" y="14" as="geometry" />
         </mxCell>
-        <mxCell id="f24" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Família: Convenção de chamada de ferramenta" vertex="1">
+        <mxCell id="f24" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Famílias: Convenção de chamada de ferramenta · Contrato de retorno da ferramenta" vertex="1">
           <mxGeometry height="28" width="880" x="40" y="64" as="geometry" />
         </mxCell>
         <mxCell id="f25" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;fontColor=#272B4D;fontSize=18;fontStyle=1;" value="Candidata a memória" vertex="1">
@@ -235,7 +235,7 @@
         <mxCell id="f37" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f38" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Não é lição para a memória: o conserto é no protocolo e na leitura da resposta. Há um gatilho de monitoramento que reabre a unidade." vertex="1">
+        <mxCell id="f38" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Não é lição para a memória: o conserto é no protocolo e na leitura da resposta. Uma regra de monitoramento reabre a unidade com 2 casos ou mais num mês, ou mais de 1 por mil passos." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f39" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -265,7 +265,7 @@
         <mxCell id="f317" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=15;fontStyle=1;fontColor=#FFB199;" value="Error in code parsing: Your code snippet is invalid, because the regex pattern &amp;lt;code&amp;gt;(.*?)&amp;lt;/code&amp;gt; was not found in it." vertex="1">
           <mxGeometry height="80" width="1168" x="56" y="459" as="geometry" />
         </mxCell>
-        <mxCell id="f318" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;A investigação separou seis mecanismos: resposta final fora do bloco, ferramenta concorrente do final_answer, marca digitada errada, resposta esvaziada, step vazio e narração executada. Os dois primeiros são sinal de harness.&lt;/b&gt;" vertex="1">
+        <mxCell id="f318" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;A mensagem é sempre a mesma. Por trás dela, a investigação das bases 1 e 2 achou mecanismos diferentes; dois são sinal de harness: resposta final fora do bloco e ferramenta concorrente do final_answer.&lt;/b&gt;" vertex="1">
           <mxGeometry height="44" width="1200" x="40" y="553" as="geometry" />
         </mxCell>
       </root>
@@ -282,7 +282,7 @@
         <mxCell id="f43" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=25;fontColor=#FFFFFF;" value="&lt;b&gt;Ferramenta excedeu o timeout — correção na plataforma&lt;/b&gt;" vertex="1">
           <mxGeometry height="52" width="910" x="40" y="14" as="geometry" />
         </mxCell>
-        <mxCell id="f44" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Família: Infra / ferramenta" vertex="1">
+        <mxCell id="f44" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Famílias: Infra / ferramenta · Ambiente &amp; sandbox" vertex="1">
           <mxGeometry height="28" width="880" x="40" y="64" as="geometry" />
         </mxCell>
         <mxCell id="f45" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;fontColor=#6B6F85;fontSize=18;fontStyle=1;" value="Harness/infra" vertex="1">
@@ -294,7 +294,7 @@
         <mxCell id="f47" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f48" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Revisar os limites das ferramentas longas ou torná-las assíncronas. O agente já segue o fallback do prompt." vertex="1">
+        <mxCell id="f48" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Revisar os limites das ferramentas longas ou torná-las assíncronas. O agente já segue a alternativa prevista no prompt." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f49" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -315,11 +315,8 @@
         <mxCell id="f414" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" value="Tempo limite do interpretador" vertex="1">
           <mxGeometry height="34" width="262" x="462" y="315" as="geometry" />
         </mxCell>
-        <mxCell id="f415" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=20;fontStyle=1;" value="Sem caso na base 1.&lt;br&gt;Trazer um exemplo mascarado do ambiente da base." vertex="1">
+        <mxCell id="f415" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=20;fontStyle=1;" value="Sem caso na base 1.&lt;br&gt;Os casos desta unidade estão na base 3." vertex="1">
           <mxGeometry height="186" width="1200" x="40" y="361" as="geometry" />
-        </mxCell>
-        <mxCell id="f416" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Não há caso na base 1; o exemplo real precisa vir do ambiente da base.&lt;/b&gt;" vertex="1">
-          <mxGeometry height="44" width="1200" x="40" y="553" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
@@ -406,7 +403,7 @@
         <mxCell id="f67" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f68" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Algumas funções e imports são proibidos, e json e datetime exigem import explícito. A lição foi dividida por causa no estudo de caso." vertex="1">
+        <mxCell id="f68" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="repr/eval/globals/dir e imports fora da lista (ex.: ast) são proibidos; json/datetime exigem import explícito; openpyxl ausente — usar envia_excel_para_usuario." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f69" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -457,7 +454,7 @@
         <mxCell id="f624" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=15;fontStyle=1;fontColor=#FFB199;" value="InterpreterError: The variable `json` is not defined." vertex="1">
           <mxGeometry height="80" width="560" x="664" y="459" as="geometry" />
         </mxCell>
-        <mxCell id="f625" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;O detalhe está no estudo de caso e na tabela das partes.&lt;/b&gt;" vertex="1">
+        <mxCell id="f625" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Esta é a lição genérica da unidade. Ela foi aberta em partes: o detalhe está no estudo de caso e na tabela das partes.&lt;/b&gt;" vertex="1">
           <mxGeometry height="44" width="1200" x="40" y="553" as="geometry" />
         </mxCell>
       </root>
@@ -474,7 +471,7 @@
         <mxCell id="f73" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=32;fontColor=#FFFFFF;" value="&lt;b&gt;Causa não identificada&lt;/b&gt;" vertex="1">
           <mxGeometry height="52" width="910" x="40" y="14" as="geometry" />
         </mxCell>
-        <mxCell id="f74" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Família: Geração de código · Contrato de retorno · Suposição sobre dados" vertex="1">
+        <mxCell id="f74" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Famílias: Geração de código · Contrato de retorno · Suposição sobre dados" vertex="1">
           <mxGeometry height="28" width="880" x="40" y="64" as="geometry" />
         </mxCell>
         <mxCell id="f75" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;fontColor=#4A5560;fontSize=18;fontStyle=1;" value="Resíduo" vertex="1">
@@ -563,7 +560,7 @@
         <mxCell id="f87" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f88" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Se a observação anterior traz exceção, redefinir as variáveis e funções auxiliares daquele step antes de usá-las." vertex="1">
+        <mxCell id="f88" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Se a observação anterior traz exceção, redefinir as variáveis e funções auxiliares daquele passo antes de usá-las." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f89" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -572,7 +569,7 @@
         <mxCell id="f810" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A causa&lt;/b&gt;" vertex="1">
           <mxGeometry height="54" width="130" x="58" y="246" as="geometry" />
         </mxCell>
-        <mxCell id="f811" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="O step anterior falhou, e a variável que ele criaria não chegou a existir." vertex="1">
+        <mxCell id="f811" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="O passo anterior falhou, e a variável que ele criaria não chegou a existir." vertex="1">
           <mxGeometry height="54" width="1040" x="190" y="246" as="geometry" />
         </mxCell>
         <mxCell id="f812" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#B5573A;" value="&lt;b&gt;Como aparece&lt;/b&gt;" vertex="1">
@@ -587,10 +584,10 @@
         <mxCell id="f815" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#B5573A;strokeColor=none;fontColor=#FFFFFF;fontSize=13;fontStyle=1;" value="ConversationAgent, out/25" vertex="1">
           <mxGeometry height="28" width="300" x="54" y="373" as="geometry" />
         </mxCell>
-        <mxCell id="f816" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=16;fontColor=#FFFFFF;" value="e" vertex="1">
+        <mxCell id="f816" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=16;fontColor=#FFFFFF;" value="for i, x in enumerate(respostas_criterios): …" vertex="1">
           <mxGeometry height="52" width="1168" x="56" y="405" as="geometry" />
         </mxCell>
-        <mxCell id="f817" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=15;fontStyle=1;fontColor=#FFB199;" value="InterpreterError: The variable `e` is not defined." vertex="1">
+        <mxCell id="f817" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=15;fontStyle=1;fontColor=#FFB199;" value="InterpreterError: The variable `respostas_criterios` is not defined." vertex="1">
           <mxGeometry height="80" width="1168" x="56" y="459" as="geometry" />
         </mxCell>
       </root>
@@ -681,7 +678,7 @@
         <mxCell id="f107" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f108" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Referenciar a variável que guardou o retorno, em vez de colar o print dele no código. Se a ferramenta pede JSON, converter com json.dumps(...), nunca com str(...)." vertex="1">
+        <mxCell id="f108" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Referenciar a variável que guardou o retorno, em vez de colar o print dele, truncado ou inteiro, dentro do código. Se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca com str(...)." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f109" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -728,7 +725,7 @@
         <mxCell id="f113" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=32;fontColor=#FFFFFF;" value="&lt;b&gt;Nome usado sem ter sido definido&lt;/b&gt;" vertex="1">
           <mxGeometry height="52" width="910" x="40" y="14" as="geometry" />
         </mxCell>
-        <mxCell id="f114" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Família: Suposição sobre estado · Ambiente &amp; sandbox" vertex="1">
+        <mxCell id="f114" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#E6E7F0;" value="Famílias: Suposição sobre estado · Ambiente &amp; sandbox" vertex="1">
           <mxGeometry height="28" width="880" x="40" y="64" as="geometry" />
         </mxCell>
         <mxCell id="f115" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=none;fontColor=#272B4D;fontSize=18;fontStyle=1;" value="Candidata a memória" vertex="1">
@@ -808,7 +805,7 @@
         <mxCell id="f1210" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A causa&lt;/b&gt;" vertex="1">
           <mxGeometry height="54" width="130" x="58" y="246" as="geometry" />
         </mxCell>
-        <mxCell id="f1211" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Nenhuma regra reconhece a mensagem: pode ser um erro novo ou uma versão nova da esteira." vertex="1">
+        <mxCell id="f1211" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Nenhuma regra reconhece a mensagem: é um erro novo para a taxonomia." vertex="1">
           <mxGeometry height="54" width="1040" x="190" y="246" as="geometry" />
         </mxCell>
         <mxCell id="f1212" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#B5573A;" value="&lt;b&gt;Como aparece&lt;/b&gt;" vertex="1">
@@ -873,10 +870,10 @@
         <mxCell id="f1313" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" value="Função ou import bloqueado" vertex="1">
           <mxGeometry height="34" width="238" x="200" y="315" as="geometry" />
         </mxCell>
-        <mxCell id="f1314" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=20;fontStyle=1;" value="Sem caso na base 1.&lt;br&gt;Trazer um exemplo mascarado do ambiente da base." vertex="1">
+        <mxCell id="f1314" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=20;fontStyle=1;" value="Sem caso na base 1.&lt;br&gt;Os casos desta unidade estão na base 3." vertex="1">
           <mxGeometry height="186" width="1200" x="40" y="361" as="geometry" />
         </mxCell>
-        <mxCell id="f1315" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Hoje é o get_document_text, no OBFCivel. Não há erro desse tipo na base 1; o exemplo real precisa vir do ambiente da base.&lt;/b&gt;" vertex="1">
+        <mxCell id="f1315" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Hoje é o get_document_text, no OBFCivel.&lt;/b&gt;" vertex="1">
           <mxGeometry height="44" width="1200" x="40" y="553" as="geometry" />
         </mxCell>
       </root>
@@ -905,7 +902,7 @@
         <mxCell id="f147" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f148" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Montar o relatório em variáveis ou numa lista de partes, e só então chamar final_answer. Não colar markdown, tabela ou texto de documento entre aspas." vertex="1">
+        <mxCell id="f148" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Montar o relatório ou documento em variáveis ou numa lista de partes, e só então chamar final_answer. Não colar markdown, tabela ou texto de documento entre aspas." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f149" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -970,7 +967,7 @@
         <mxCell id="f157" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f158" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Não é lição: é desfecho. Investigar cada caso, porque o passo crítico está nos erros anteriores." vertex="1">
+        <mxCell id="f158" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Não é lição: é desfecho, não causa. Investigar cada caso, porque o passo crítico está nos erros anteriores do papel." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f159" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -979,7 +976,7 @@
         <mxCell id="f1510" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A causa&lt;/b&gt;" vertex="1">
           <mxGeometry height="54" width="130" x="58" y="246" as="geometry" />
         </mxCell>
-        <mxCell id="f1511" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="A execução esgotou os passos sem entregar resposta." vertex="1">
+        <mxCell id="f1511" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="A execução esgotou os passos sem chamar final_answer." vertex="1">
           <mxGeometry height="54" width="1040" x="190" y="246" as="geometry" />
         </mxCell>
         <mxCell id="f1512" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#B5573A;" value="&lt;b&gt;Como aparece&lt;/b&gt;" vertex="1">
@@ -988,11 +985,8 @@
         <mxCell id="f1513" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=none;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" value="Limite de passos atingido" vertex="1">
           <mxGeometry height="34" width="230" x="200" y="315" as="geometry" />
         </mxCell>
-        <mxCell id="f1514" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=20;fontStyle=1;" value="Sem caso na base 1.&lt;br&gt;Trazer um exemplo mascarado do ambiente da base." vertex="1">
+        <mxCell id="f1514" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=20;fontStyle=1;" value="Sem caso na base 1.&lt;br&gt;Os casos desta unidade estão na base 3." vertex="1">
           <mxGeometry height="186" width="1200" x="40" y="361" as="geometry" />
-        </mxCell>
-        <mxCell id="f1515" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#1B1E38;" value="&lt;b&gt;Não há caso na base 1. O exemplo da base 2 está no slide “O que é erro crítico?”.&lt;/b&gt;" vertex="1">
-          <mxGeometry height="44" width="1200" x="40" y="553" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
@@ -1020,7 +1014,7 @@
         <mxCell id="f167" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A lição&lt;/b&gt;" vertex="1">
           <mxGeometry height="30" width="300" x="58" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="f168" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Não é lição para a memória: nova tentativa com espera e proteção por subagente." vertex="1">
+        <mxCell id="f168" parent="1" style="text;html=1;verticalAlign=top;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="Não é lição para a memória: nova tentativa com espera crescente e interrupção após falhas seguidas, por subagente." vertex="1">
           <mxGeometry height="76" width="1164" x="58" y="152" as="geometry" />
         </mxCell>
         <mxCell id="f169" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;" value="" vertex="1">
@@ -1029,7 +1023,7 @@
         <mxCell id="f1610" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=19;fontColor=#B5573A;" value="&lt;b&gt;A causa&lt;/b&gt;" vertex="1">
           <mxGeometry height="54" width="130" x="58" y="246" as="geometry" />
         </mxCell>
-        <mxCell id="f1611" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="O serviço do modelo falhou." vertex="1">
+        <mxCell id="f1611" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=18;fontColor=#1B1E38;" value="A chamada ao modelo falhou." vertex="1">
           <mxGeometry height="54" width="1040" x="190" y="246" as="geometry" />
         </mxCell>
         <mxCell id="f1612" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#B5573A;" value="&lt;b&gt;Como aparece&lt;/b&gt;" vertex="1">
