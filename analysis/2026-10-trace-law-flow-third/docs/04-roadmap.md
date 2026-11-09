@@ -448,6 +448,13 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   iguais. Não mexe no catálogo: as 3 memórias do sandbox continuam no degrau 3; se o sandbox for minerado de novo, rodar o
   degrau 2 e o `--revisar` outra vez (Ajuste 33) → [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md); decisão do
   Rafael (09/11).
+- [ ] **#63** **Os rótulos de exibição fora da lista de hash (aberto em 09/11, ligado ao #45 b).** Hoje o nome que aparece nas
+  figuras (unidades, assinaturas, papéis cortados na origem, como "ontestacaoCivel") vive em `base_pipeline.py`, `paleta.py` e
+  `genealogia_sankey.py`, os três na lista de hash da rodada: trocar um rótulo invalida a rodada, e por isso não dá para ajustar
+  uma figura direto no ambiente da base. Proposta: um arquivo de rótulos de exibição (por exemplo
+  `pipeline/execucao/rotulos.py`) lido só pelas figuras e fora da lista de hash, como as outras figuras da rodada
+  (`execucao/figuras_*.py`). Mudar um rótulo ali não mexe na rodada. Pergunta antes de fazer: quais rótulos hoje estão nos três
+  arquivos e quais figuras os leem? A regra do ambiente da base está no `AGENTS.md` (decisão do Rafael, 09/11).
 
 ## Fora de escopo / adiado
 

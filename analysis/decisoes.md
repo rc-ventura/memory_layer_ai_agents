@@ -480,5 +480,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `simular_regra_assinatura` (para `pipeline/validacao/historico/`); na base 2, `replicar_ajuste17` e `replicar_ajuste21`
   (para `scripts/historico/`). Não são apagados, porque cada um é o comando que reproduz um achado citado; os caminhos nos
   docs e o caminho interno de cada script foram corrigidos. Nenhum está na lista de hash.
+- **09/11, a regra do ambiente da base no `AGENTS.md`** (decisão do Rafael): no ambiente da base, o agente não edita arquivo da
+  lista de hash da base 3 nem o `manifesto.json` do kit para contornar um erro; para e traz o erro (a causa costuma ser um
+  clone desatualizado ou uma rodada de antes de uma troca de nome, como a da unidade `U_verificacao_existencia`). Rodar o
+  pipeline e gerar figuras lá é esperado; mudanças de exibição só em arquivos fora da lista; toda mudança feita lá volta ao
+  repositório no mesmo dia. Os rótulos de exibição fora da lista de hash viram o `b3 #63`.
 
 ---
