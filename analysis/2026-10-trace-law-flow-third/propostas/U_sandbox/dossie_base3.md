@@ -1290,13 +1290,6 @@ em 29 de 30). Os erros depois do import são os da tabela do item 31: `json` nã
 a hipótese de que o limite de "inspecionar um valor" não foi definido. Com os dois como `outra`, a causa ainda fica em 26 de 30. O
 roteiro está em [`degrau3_leitores.md`](degrau3_leitores.md#as-2-discordâncias-reais-da-causa-na-memória-e-gate-de-0411).
 
-**41 · A leitura das 2 discordâncias da E passa para um agente (09/11).** Rafael pediu que os passos do item 40 rodem
-automatizados no ambiente da base, por um agente do Copilot. Com isso, o desempate deixa de ser do pesquisador e passa a ser de
-um terceiro leitor às cegas (o agente `segundo-leitor`, com um modelo diferente de `6.1 luna` e `5.3 codex`), que não abre as
-duas leituras nem este dossiê. A pergunta é a mesma do item 40, com as três respostas definidas no prompt. Rafael confere a
-resposta, e a decisão do texto e do destino da E continua dele. O prompt está em
-[`degrau3_leitores.md`](degrau3_leitores.md#versão-automatizada-um-agente-faz-os-passos-1-a-3-0911).
-
 ## 3 · A memória que o script montou (antes da emenda 4)
 
 `scope: role null` (global) e uma `correction_guidance` única: "Não chame: globals, repr, eval, locals, dir, exec,
