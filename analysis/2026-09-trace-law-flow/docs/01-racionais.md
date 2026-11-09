@@ -755,37 +755,15 @@ rejeitou**. Sem LLM, regras em ordem:
   steps" → *limite de passos*, que não é causa: é o desfecho de uma cascata (ver Passo 5, erro crítico). (`Import from` e o argumento inexistente entraram em
   25/09/2026, Ajuste 3; o timeout, no Ajuste 4 — [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).)
 
-**Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** Duas funções leem a mesma
-mensagem de erro, com papéis diferentes. O `classify()` dá o **sintoma** (família e assinatura, §2 do relatório) e
-não decide nada: descreve. O `submecanismo()` dá a **causa**, e é ela que leva o erro a uma unidade. Cada uma tem
-a sua sobra, e cair em cada uma diz uma coisa diferente:
-
-| Balde | Classe (submecanismo) | Quando cai | O que pode significar |
-|---|---|---|---|
-| **Causa não identificada** (`X_causa_nao_identificada`) | **Código Python mal escrito** (`codigo_mal_escrito`) | erro de sintaxe ou indentação em que a linha rejeitada não é texto colado, literal de texto nem retorno colado | código mal formado de verdade (parêntese, indentação, operador): ruído, até se provar que se repete |
-| | **Erro conhecido, causa sem regra** (`causa_sem_regra`) | o `classify()` reconhece o sintoma, mas nenhuma regra de causa casa — inclusive "Could not index" fora dos três padrões | o sintoma tem nome, a causa não: **candidato a regra nova** se recorrer (ex.: o argumento nomeado que não existe no `final_answer` — virou regra em 25/09/2026, ao reaparecer na base 2) |
-| **Sintoma não reconhecido** (`X_sintoma_nao_reconhecido`) | **Erro que a taxonomia não conhece** (`sintoma_nao_reconhecido`) | nem o `classify()` nem o `submecanismo()` reconhecem a mensagem | **erro novo**: tipo que a taxonomia nunca viu, versão nova da esteira ou do smolagents, ou algo que não é erro de código (ex.: `AgentMaxStepsError`, exaustão de iterações). É o sinal de cobertura: onde ele cresce, as regras não alcançam |
-
-Na prática, as duas leituras se combinam **num só ponto** — `montar_unidades()` — e **só para o resíduo**:
-
-| O sintoma foi reconhecido? (`classify()`) | A causa foi identificada? (`submecanismo()`) | Vai para |
-|---|---|---|
-| sim | sim | uma unidade normal (ex.: `U_contrato_dict`) |
-| sim | não | **Causa não identificada** — classe *Código Python mal escrito* (erro de sintaxe) ou *Erro conhecido, causa sem regra* |
-| não | não | **Sintoma não reconhecido** — classe *Erro que a taxonomia não conhece* |
-| não | sim | uma unidade normal; só a coluna de família fica "Sintoma não reconhecido" (raro; 0 casos na base 1) |
-
-**Não há sobreposição:** cada erro vai para exatamente uma unidade; um erro nunca está nos dois baldes. "Sintoma
-não reconhecido" aparece em dois lugares — como **família** (coluna do `classify()`) e como **unidade** — e quase
-sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
-
-**Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
-`montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
-candidata depende disso — testado: as 10 candidatas (e o sinal de harness) da base 1 saem idênticas com ou sem a separação.
-
-O nome "causa não identificada" diz o que aconteceu com a regra, não com o erro: **não quer dizer que o erro
-aconteceu uma vez só** (até 23/09/2026 o balde chamava "erros pontuais", o que sugeria isso sem que a regra
-conferisse). Os casos da base 1 estão em `03-procedimento-validacao.md` §1.13.
+**Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** O `classify()` dá o **sintoma** e
+não decide nada; o `submecanismo()` dá a **causa**, que leva o erro a uma unidade. Cada um tem a sua sobra:
+**causa não identificada** (`X_causa_nao_identificada`, o sintoma tem nome e a causa não: classes *Código Python mal
+escrito* e *Erro conhecido, causa sem regra*) e **sintoma não reconhecido** (`X_sintoma_nao_reconhecido`, o erro que a
+taxonomia não conhece). As duas leituras se combinam num ponto só, o `montar_unidades()`, e só para separar os dois
+baldes, que nunca viram memória. Cada erro está em exatamente uma unidade. A tabela das classes, a combinação das
+duas leituras, o padrão e a recorrência por padrão estão em [`18-racionais-residuo.md`](18-racionais-residuo.md) §1–§3
+(movidos para lá em 09/11/2026); o roteiro, em [`19-procedimento-residuo.md`](19-procedimento-residuo.md); os casos
+da base 1, em `03-procedimento-validacao.md` §1.13.
 
 Cada submecanismo aponta para uma **unidade** (um conteúdo). O CSV `triagem_assinaturas.csv` mostra, para cada
 assinatura da §2, em quantas unidades ela se divide e quanto cai na dominante.
@@ -833,7 +811,7 @@ ablação); **a operacionalização por cascata é nossa**, não do paper.
    Algum padrão passa → **revisar — prioridade**; nenhum passa → **revisar — baixa prioridade** (continua na lista:
    é sinal de cobertura). **Alarme de cobertura:** se o "Sintoma não reconhecido" passar de 5% de todos os erros da
    base (`ALARME_COBERTURA`), ele sobe para prioridade mesmo sem padrão recorrente — a taxonomia não cobre aquela
-   base. O que fazer com cada decisão: `03-procedimento-validacao.md` Frente 3. A máscara é aproximação declarada — pode juntar erros que diferem só dentro das aspas, ou
+   base. O que fazer com cada decisão: `03-procedimento-validacao.md` Frente 3; o resíduo, padrão por padrão, em `19-procedimento-residuo.md` (o porquê em `18`). A máscara é aproximação declarada — pode juntar erros que diferem só dentro das aspas, ou
    separar o mesmo erro se a frase fora das aspas variar; por isso a tabela por padrão fica visível (notebook 9.2,
    `resultados/residuo_padroes.csv`) para conferência humana antes de escrever a regra. "Revisar" não é
    não-memória: lá a causa é conhecida e a correção vive fora do agente; aqui a causa não é conhecida.

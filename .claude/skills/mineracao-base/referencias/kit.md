@@ -21,7 +21,7 @@ preparação ──┬──► mineração (lê as tabelas da base) ──┐
                                                                                                    regra fixa)      contada)
 ```
 
-- **Mineração (determinística):** a skill de cada mineração (hoje `mineracao-silenciosas`) lê as tabelas que o
+- **Mineração (determinística):** a skill de cada mineração (`mineracao-silenciosas`, `-protocolo`, `-residuo`) lê as tabelas que o
   pipeline produziu para a base, passo a passo do procedimento da análise, e descreve o que elas mostram. Ela não
   compara com relatório nem com outra base. Os números são o resultado.
 - **Verificação, sem relatório nenhum:** o `auditor-independente` roda em paralelo uma segunda implementação, que
@@ -92,9 +92,13 @@ nada fora do `manifesto.json` e do `exemplo.md`, que é uma rodada real e cita n
 .claude/skills/mineracao-protocolo/  a mineração do protocolo do harness (resposta sem bloco de código)
   scripts/comparar_auditoria.py   o encontro: casos/passos/versões/modelos × a auditoria independente (audit_recompute10)
   scripts/cobertura.py            o cenário de cobertura: papéis por erros, com a cobertura acumulada
+.claude/skills/mineracao-residuo/    a mineração do resíduo (os padrões que nenhuma regra explica), numa análise com rodada
+  scripts/comparar_auditoria.py   o encontro: a tabela de padrões (`especificas/residuo.py` da análise) × a auditoria
+                                  independente (`audit/scripts/audit_residuo_*.py`), padrão por padrão
 .claude/skills/mineracao-investigacao/  a investigação depois do determinístico
   roteiros/silenciosas.md         as perguntas abertas (S1 dono, S2 sucesso falso, S3 não reconhecido)
   roteiros/protocolo.md           P1 a camada do surto (o fim do prompt), P2 o mecanismo de cada caso (catálogo M1–M6)
+  roteiros/residuo.md             R1 o agrupamento, R2 de quem é a falha, R3 que unidade (um padrão do resíduo por vez)
   roteiros/candidata.md           a parte específica de uma candidata: a lição, a causa, o conserto, o destino → o arquivo final
   scripts/testar_regra.py · concordancia.py
 .claude/agents/                   auditor-independente · investigador · segundo-leitor · validador-de-script
@@ -123,6 +127,8 @@ Cada mineração tem **um nome só**: a skill `mineracao-<assunto>` é o método
 pedindo em texto ("minere o protocolo da base X"). Uma execução dela numa base é uma *rodada*.
 - `/mineracao-silenciosas <pasta da análise>`: preparação → auditor em paralelo → mineração das tabelas → encontro → relatório com as paradas.
 - `/mineracao-protocolo <pasta da análise>`: o mesmo fluxo para o protocolo do harness (auditoria `audit_recompute10`).
+- `/mineracao-residuo <pasta da análise> --rodada <id>`: o resíduo de uma rodada, padrão por padrão (tabela do
+  `especificas/residuo.py` da análise, auditoria independente, encontro); as paradas R1–R3 vão para `/investigar residuo`.
 - `/mineracao-candidata <U_...> [<pasta>]`: minera uma candidata a memória e entrega o arquivo final no esquema da memória
   (`analysis/registros/esquema-memoria.json`). O desenho está em `.claude/skills/mineracao-candidata/referencias/fluxo.md`.
 - `/propor-script <U_...>`: só quando a lição cumpre a regra de criação do procedimento; escreve em `propostas/` e
@@ -143,7 +149,6 @@ na análise X"), que as skills disparam pela descrição.
 
 | Mineração | O que falta antes da skill |
 |---|---|
-| resíduo | tirar o "procedimento do resíduo" do doc de validação para um doc próprio, no formato do procedimento das silenciosas |
 | erro crítico | escrever o procedimento e resolver as fronteiras de chamada (os comandos ainda misturam as chamadas) |
 
 ## Limites desta versão
@@ -151,7 +156,7 @@ na análise X"), que as skills disparam pela descrição.
 - **A leitura do `investigador` ainda não rodou ao vivo.** A ponte foi validada com uma resposta conhecida: o
   `testar_regra.py` reproduz caso a caso uma classificação determinística que já existia. A primeira leitura real é a
   primeira rodada de uso.
-- **A auditoria em paralelo existe hoje para as falhas silenciosas e o protocolo** (`audit_recompute9` e `10`, com `--json`). Cada mineração
+- **A auditoria em paralelo existe hoje para as falhas silenciosas, o protocolo e o resíduo** (`audit_recompute9` e `10`, com `--json`; `audit_residuo_*.py`, que confere o padrão, a contagem e a recorrência e recebe do pipeline só quem é resíduo). Cada mineração
   nova do backlog precisa de uma auditoria com `--json` e de um script de encontro. Sem isso, ela fica só com as
   conferências internas.
 - **A leitura do `.claude/` pelo Copilot** segue a documentação do VS Code de 2026 (agent skills, custom agents).

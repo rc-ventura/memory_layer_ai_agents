@@ -16,7 +16,8 @@ contagem, marcada `[assistido]`, e vale como hipótese.
 ## Peças
 
 - **Roteiros** (`roteiros/<mineracao>.md`): as perguntas abertas de cada mineração, quando abrir cada uma, a
-  população, o campo do step e as categorias fechadas. Hoje: [`silenciosas`](roteiros/silenciosas.md), [`protocolo`](roteiros/protocolo.md) e
+  população, o campo do step e as categorias fechadas. Hoje: [`silenciosas`](roteiros/silenciosas.md), [`protocolo`](roteiros/protocolo.md),
+  [`residuo`](roteiros/residuo.md) (R1 o agrupamento, R2 de quem é a falha, R3 que unidade) e
   [`candidata`](roteiros/candidata.md) (a parte específica de uma candidata a memória, que entrega o arquivo final no
   esquema da memória).
 - **Scripts** (determinísticos):

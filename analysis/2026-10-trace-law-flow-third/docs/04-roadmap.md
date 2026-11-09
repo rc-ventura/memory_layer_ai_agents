@@ -409,7 +409,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   papéis, 10 meses). Racionais, relatório e procedimento próprios, como na base 1.
 - [ ] **#4** **Críticos:** as 25 execuções que esgotaram os passos (`C_limite_passos`) — o caminho de erros até o fim de cada uma.
 - [ ] **#5** **Resíduos:** os 565 erros de causa ou sintoma não reconhecidos (376 + 189, rodada `609c…`; eram 538 na
-  v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases).
+  v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases). **O instrumento existe desde
+  09/11** (`transversal #8`): `especificas/residuo.py --rodada <id>` grava a tabela de padrões, a auditoria
+  `audit_residuo_base3.py` e o encontro conferem, e a skill `mineracao-residuo` monta o relatório
+  (procedimento: base 1 `docs/19`). **Próximo:** rodar no ambiente da base, na rodada vigente, e trazer a tabela de
+  padrões (mascarada) e o encontro; a ordem dos padrões a investigar e cada Ajuste são decisões do Rafael.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

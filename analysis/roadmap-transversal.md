@@ -62,8 +62,12 @@ o que vai à plataforma. O que é de uma base fica no roadmap dela:
 - [ ] **#6 · Etapa C — as regras determinísticas da família do protocolo** (4.8) — *depois.* Regras M1–M6 + notebook
   `mineracao_protocolo_harness.ipynb`; a família se abre nos mecanismos nas figuras. A regra do M2 já entrou (Ajuste
   16). Usa as fronteiras de chamada (#3).
-- [ ] **#8 · Skill de resíduo** (4.14, passo 3). Antes, o racional e o procedimento saem do `01` (os dois baldes de
-  resíduo) e do `03` (Frente 3; §1.16) para docs próprios; depois a skill, a auditoria independente e o encontro.
+- [ ] **#8 · Skill de resíduo** (4.14, passo 3). **Feito em 09/11 (branch `2026-11-09-mineracao-residual`):** o
+  racional e o procedimento saíram do `01` e do `03` para o `18` e o `19`; a tabela de padrões da base 3
+  (`pipeline/especificas/residuo.py`, fora do hash da rodada), a auditoria independente (`audit/scripts/audit_residuo_base3.py`),
+  o encontro e a skill `mineracao-residuo`, com o roteiro `residuo` (R1–R3) da investigação; ensaio na base 1: 8 erros,
+  6 padrões, 1 recorrente, 0 divergências. **Falta:** a primeira rodada no ambiente da base 3 (os 565 erros, `b3 #5`) e,
+  dela, os Ajustes um por vez.
 - [ ] **#9 · Skill de erro crítico** (4.14, passo 4). Antes, o racional de método e o procedimento (hoje só existe a
   decisão: `01`, #5). **Depende de:** #3.
 - [ ] **#10 · Skill de apresentação para stakeholders** (4.14, passo 5; formato a decidir: HTML ou slides). Mostra os
@@ -109,7 +113,7 @@ kit; os de uma base estão no roadmap dela.
 | Falhas silenciosas | `13` | `15` | `14` | sim |
 | Protocolo do harness | `10` | `12` | `11` | sim |
 | Candidatas | `06` §9 (fato sobre a ferramenta) e §10 (hábito do agente), com o `09` | `16` | `07` (nº2/nº10); as outras nos dossiês, git-ignored | sim |
-| Resíduo | parcial, no `01` | parcial, no `03` (Frente 3, §1.16) | — | não (#8) |
+| Resíduo | `18` | `19` | base 1/2: `03` §1.13/§1.16; base 3: `02` §5 | sim (`mineracao-residuo`) |
 | Erro crítico | só a decisão (`01`, #5) | — | — | não (#9) |
 
 (Os números `01`…`16` são os docs da [base 1](2026-09-trace-law-flow/docs/).)
