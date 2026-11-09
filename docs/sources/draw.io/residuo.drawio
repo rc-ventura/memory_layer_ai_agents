@@ -1,14 +1,14 @@
 <mxfile host="app.diagrams.net">
   <diagram id="residuo" name="Page-1">
-    <mxGraphModel dx="1414" dy="822" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+    <mxGraphModel dx="1297" dy="1285" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="r2" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=34;fontColor=#B5573A;" value="O que é resíduo?" vertex="1">
-          <mxGeometry height="52" width="1200" x="40" y="26" as="geometry" />
+          <mxGeometry height="52" width="1200" x="40" y="-12" as="geometry" />
         </mxCell>
         <mxCell id="r3" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;O erro que nenhuma regra explicou: é trabalho para a taxonomia, não lição para o agente.&lt;/b&gt;" vertex="1">
-          <mxGeometry height="28" width="1200" x="40" y="78" as="geometry" />
+          <mxGeometry height="28" width="1200" x="40" y="48" as="geometry" />
         </mxCell>
         <mxCell id="r4" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FDF3E7;strokeColor=#B5573A;strokeWidth=2;dashed=1;" value="" vertex="1">
           <mxGeometry height="110" width="840" x="400" y="132" as="geometry" />
@@ -31,80 +31,74 @@
         <mxCell id="r10" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Segue para a unidade" vertex="1">
           <mxGeometry height="42" width="322" x="900" y="194" as="geometry" />
         </mxCell>
-        <mxCell id="r11" edge="1" parent="1" source="r6" target="r7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="r11" edge="1" parent="1" source="r6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="r7" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="r12" edge="1" parent="1" source="r7" target="r8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="r12" edge="1" parent="1" source="r7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="r8" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="r13" edge="1" parent="1" source="r8" target="r9" value="não" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#C0582A;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#C0582A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="r13" edge="1" parent="1" source="r8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#C0582A;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#C0582A;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="r9" value="não">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="r14" edge="1" parent="1" source="r8" target="r10" value="sim" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+        <mxCell id="r14" edge="1" parent="1" source="r8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;fontSize=13;fontStyle=1;fontColor=#2B2F52;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="r10" value="sim">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="r15" parent="1" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
-          <mxGeometry height="296" width="590" x="40" y="262" as="geometry" />
+          <mxGeometry height="296" width="590" x="40" y="295" as="geometry" />
         </mxCell>
         <mxCell id="r16" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#B5573A;" value="&lt;b&gt;Exemplo 1 · conhecemos o sintoma, não a causa&lt;/b&gt;" vertex="1">
-          <mxGeometry height="26" width="566" x="52" y="268" as="geometry" />
+          <mxGeometry height="26" width="566" x="52" y="301" as="geometry" />
         </mxCell>
         <mxCell id="r17" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="Mensagem real:" vertex="1">
-          <mxGeometry height="20" width="566" x="52" y="296" as="geometry" />
+          <mxGeometry height="20" width="566" x="52" y="329" as="geometry" />
         </mxCell>
-        <mxCell id="r18" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="TypeError: &#x27;&amp;lt;&#x27; not supported between instances of &#x27;NoneType&#x27; and &#x27;NoneType&#x27;" vertex="1">
-          <mxGeometry height="42" width="566" x="52" y="316" as="geometry" />
+        <mxCell id="r18" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="TypeError: &#39;&amp;lt;&#39; not supported between instances of &#39;NoneType&#39; and &#39;NoneType&#39;" vertex="1">
+          <mxGeometry height="42" width="566" x="52" y="349" as="geometry" />
         </mxCell>
         <mxCell id="r19" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=13;" value="Tem &lt;b&gt;assinatura&lt;/b&gt;,&lt;br&gt;falta a regra de causa" vertex="1">
-          <mxGeometry height="88" width="170" x="52" y="366" as="geometry" />
+          <mxGeometry height="88" width="170" x="52" y="399" as="geometry" />
         </mxCell>
         <mxCell id="r20" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=13;" value="Se repetir, vira regra nova.&lt;br&gt;Na base 3: &lt;b&gt;376&lt;/b&gt; erros · 16,9 mi de tokens" vertex="1">
-          <mxGeometry height="88" width="368" x="250" y="366" as="geometry" />
+          <mxGeometry height="88" width="368" x="250" y="399" as="geometry" />
         </mxCell>
         <mxCell id="r21" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" value="Resíduo: causa não identificada&lt;br&gt;&lt;small&gt;trabalho: escrever a regra que falta&lt;/small&gt;" vertex="1">
-          <mxGeometry height="76" width="566" x="52" y="468" as="geometry" />
+          <mxGeometry height="76" width="566" x="52" y="501" as="geometry" />
         </mxCell>
         <mxCell id="r22" parent="1" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
-          <mxGeometry height="296" width="590" x="650" y="262" as="geometry" />
+          <mxGeometry height="296" width="590" x="650" y="295" as="geometry" />
         </mxCell>
         <mxCell id="r23" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#B5573A;" value="&lt;b&gt;Exemplo 2 · nem o sintoma a taxonomia conhece&lt;/b&gt;" vertex="1">
-          <mxGeometry height="26" width="566" x="662" y="268" as="geometry" />
+          <mxGeometry height="26" width="566" x="662" y="301" as="geometry" />
         </mxCell>
         <mxCell id="r24" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="Mensagem real:" vertex="1">
-          <mxGeometry height="20" width="566" x="662" y="296" as="geometry" />
+          <mxGeometry height="20" width="566" x="662" y="329" as="geometry" />
         </mxCell>
         <mxCell id="r25" parent="1" style="text;html=1;verticalAlign=middle;align=left;whiteSpace=wrap;fontFamily=Courier New;fontSize=13;fontColor=#1B1E38;" value="InterpreterError: NoneType is not supported." vertex="1">
-          <mxGeometry height="42" width="566" x="662" y="316" as="geometry" />
+          <mxGeometry height="42" width="566" x="662" y="349" as="geometry" />
         </mxCell>
         <mxCell id="r26" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=13;" value="&lt;b&gt;Nenhuma regra&lt;/b&gt;&lt;br&gt;reconhece&lt;br&gt;a mensagem" vertex="1">
-          <mxGeometry height="88" width="170" x="662" y="366" as="geometry" />
+          <mxGeometry height="88" width="170" x="662" y="399" as="geometry" />
         </mxCell>
         <mxCell id="r27" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;fontColor=#1B1E38;fontSize=13;" value="Pode ser um erro novo ou uma versão nova da esteira.&lt;br&gt;Na base 3: &lt;b&gt;189&lt;/b&gt; erros · 5,0 mi de tokens" vertex="1">
-          <mxGeometry height="88" width="368" x="860" y="366" as="geometry" />
+          <mxGeometry height="88" width="368" x="860" y="399" as="geometry" />
         </mxCell>
         <mxCell id="r28" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#C0582A;strokeColor=#7A3412;fontColor=#FFFFFF;fontSize=15;fontStyle=1;" value="Resíduo: sintoma não reconhecido&lt;br&gt;&lt;small&gt;trabalho: entender o erro e ampliar a taxonomia&lt;/small&gt;" vertex="1">
-          <mxGeometry height="76" width="566" x="662" y="468" as="geometry" />
+          <mxGeometry height="76" width="566" x="662" y="501" as="geometry" />
         </mxCell>
         <mxCell id="r29" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#B5573A;" value="→" vertex="1">
-          <mxGeometry height="24" width="18" x="226" y="398" as="geometry" />
+          <mxGeometry height="24" width="18" x="226" y="431" as="geometry" />
         </mxCell>
         <mxCell id="r30" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontColor=#B5573A;" value="→" vertex="1">
-          <mxGeometry height="24" width="18" x="836" y="398" as="geometry" />
-        </mxCell>
-        <mxCell id="r31" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=15;fontColor=#B5573A;" value="&lt;b&gt;Não confundir&lt;/b&gt;" vertex="1">
-          <mxGeometry height="62" width="130" x="40" y="568" as="geometry" />
+          <mxGeometry height="24" width="18" x="836" y="431" as="geometry" />
         </mxCell>
         <mxCell id="r32" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;fontColor=#1B1E38;fontSize=14;" value="&lt;b&gt;Pendente (749 erros):&lt;/b&gt; a regra existe, faltou o dado na extração." vertex="1">
-          <mxGeometry height="62" width="525" x="170" y="568" as="geometry" />
+          <mxGeometry height="62" width="525" x="65" y="614" as="geometry" />
         </mxCell>
         <mxCell id="r33" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;fontColor=#1B1E38;fontSize=14;" value="&lt;b&gt;Sem recorrência:&lt;/b&gt; a unidade existe, mas não passou na régua (U_contrato_dict na base 3, com 2 erros)." vertex="1">
-          <mxGeometry height="62" width="525" x="715" y="568" as="geometry" />
+          <mxGeometry height="62" width="525" x="688" y="614" as="geometry" />
         </mxCell>
-        <mxCell id="r34" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=16;fontColor=#272B4D;" value="&lt;b&gt;Na base 3, o resíduo é de 565 erros: 1,9% do total, abaixo do alarme de 5%.&lt;/b&gt;" vertex="1">
-          <mxGeometry height="28" width="1200" x="40" y="638" as="geometry" />
-        </mxCell>
-        <mxCell id="r35" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=12;fontColor=#4A5560;" value="Mensagens reais da base 1; contagens da base 3 (rodada de 14/10)." vertex="1">
-          <mxGeometry height="24" width="1200" x="40" y="666" as="geometry" />
+        <mxCell id="r34" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=16;fontColor=#272B4D;" value="Na base 3, o resíduo é de 565 erros: 1,9% do total." vertex="1">
+          <mxGeometry height="28" width="1200" x="32" y="705" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

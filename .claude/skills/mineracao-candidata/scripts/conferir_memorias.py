@@ -406,6 +406,8 @@ def main(argv=None):
     for e in alvo:
         ch = conferir_memoria(e, prompts, instr, rg, amb, funcoes, decisoes)
         degrau = 2 if all(c["resultado"] in (PASSA, DECIDIDO) for c in ch.values()) else 1
+        if degrau == 2 and "texto" in (e.get("revisao") or {}) and e["revisao"]["texto"] == e.get("correction_guidance"):
+            degrau = 3   # o gate do degrau 3 (catalogar_memoria.py --revisar) vale enquanto o texto for o aprovado
         resultado.append({"id": e["id"], "base": e.get("base"), "degrau": degrau, "checagens": ch})
         print(f"{e['id'][:38]:38} " + " ".join(f"{CURTO.get(ch[c]['resultado'], ch[c]['resultado']):>15}"
                                                for c in CHECAGENS))

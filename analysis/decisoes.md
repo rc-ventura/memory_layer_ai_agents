@@ -439,5 +439,40 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   import re, import datetime.", com destino memória → dossiê do sandbox §2h, 37 e 38.
 - **04/11, a memória C.JoogleAnalytics passa no gate do degrau 3** (decisão do Rafael): o texto fica como está, "Importe antes de
   usar: import pandas as pd.", com destino memória e sempre junto com a C → dossiê do sandbox §2h, 39.
+- **09/11, a memória E passa no gate do degrau 3** (decisão do Rafael): o texto fica como está ("Não chame: repr, dir, exec,
+  \_\_import\_\_, bytes, open, hash; Não acesse: \_\_name\_\_, \_\_class\_\_, \_\_doc\_\_, \_\_len\_\_. Para inspecionar um valor,
+  use print(type(x)) e print(str(x)[:n])."), com destino memória. A causa se sustenta em 27 de 30 casos depois de reler as 2
+  discordâncias; as definições que faltaram (`inspecionar_valor`, `corrigiu_a_licao` × `contornou`) entram no roteiro antes da
+  próxima leitura → dossiê do sandbox §2h, 41 e 42.
+- **09/11, o fechamento da unidade sandbox (`U_sandbox`, base 3)** (decisão do Rafael; a decisão geral, que junta as
+  anteriores). **O erro:** o agente usa no interpretador do sandbox um nome que ali não existe ou é barrado (módulo sem
+  import, função ou atributo proibido, ferramenta não declarada). Na base 3 são 3.653 erros em 16 papéis e 10 meses, com
+  a lição tirada da própria mensagem (cobertura 99,86%). **A divisão:** 70% (2.553) é conserto do harness, no prompt ou
+  na ferramenta (verificação de existência, ferramenta não declarada), e vai para o monitoramento; 30% (1.100) são lições
+  que o agente pode aprender, divididas pelo ambiente em 16 entradas no catálogo. **O que vai para o agente: 3 memórias,
+  971 erros, todas no degrau 3 (revisada):**
+  - **C** (global, menos o managerAgent): "Importe antes de usar: import json, import re, import datetime." · 423 erros ·
+    causa confirmada em 30 de 30 casos e nos 3 de `datetime` · gate em 04/11;
+  - **C.JoogleAnalytics** (só no JoogleAnalytics, sempre junto com a C): "Importe antes de usar: import pandas as pd." ·
+    231 erros · causa em 30 de 30; a linha que falha esquece o `pandas` e o `json` · gate em 04/11;
+  - **E** (global): "Não chame: repr, dir, exec, \_\_import\_\_, bytes, open, hash; Não acesse: \_\_name\_\_, \_\_class\_\_,
+    \_\_doc\_\_, \_\_len\_\_. Para inspecionar um valor, use print(type(x)) e print(str(x)[:n])." · 317 erros · causa em 27 de
+    30 · gate em 09/11.
+
+  **Como chegaram lá:** degrau 1 pela mineração por script (61 medidas iguais à auditoria independente); degrau 2 pelas
+  cinco checagens (`conferir_memorias.py`, com o prompt das bases 1 e 2 e o ambiente da base 3); degrau 3 por dois
+  leitores às cegas (`6.1 luna` e `5.3 codex`, os mesmos nas três), 30 casos por memória, concordância por script, as
+  discordâncias relidas e o gate do pesquisador sobre o texto e o destino; gravado no catálogo com
+  `catalogar_memoria.py --revisar` (Ajuste 32). **O que fica fora:** as outras 13 entradas seguem monitoradas, não
+  injetadas — 11 de reforço (repetem o prompt; as D e a B do OBFCivel) e 2 raras (abaixo da régua de 3 execuções em 2
+  meses), com os gatilhos no catálogo; a parte F (37 erros de `globals`, `eval`, `locals`, `vars`) vai para a memória de
+  verificação de existência (`b3 #51`), junto com o `dir()` usado para o mesmo fim. **Os limites:** o degrau 3 mede se a
+  causa é a suposta, não se a memória funciona — isso é o degrau 4 (`b3 #39`, o teste de compensação); a base 3 só
+  guarda erros, então o que o agente fez depois sai do passo seguinte, não da execução inteira; as definições que faltaram
+  na leitura da E estão no roteiro. **Em aberto, fora do fechamento:** `b3 #51` (verificação de existência) e `b3 #61`
+  (os erros que vêm depois do import) → dossiê do sandbox §2h, 27–42; roadmap da base 3, #50.
+- **09/11, os arquivos com hash também mudam o vocabulário** (decisão do Rafael): os 8 arquivos que ainda usavam
+  o vocabulário antigo (seis da base 1, no manifesto do kit; dois da base 3, na lista de hash da rodada) passam a
+  dizer "ambiente da base", aceitando gerar o manifesto de novo e rodar uma rodada nova da base 3 → Ajuste 33.
 
 ---

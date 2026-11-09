@@ -251,7 +251,7 @@
           "motivo": "Na base 1, a lista do interpretador do managerAgent é a padrão do smolagents, sem json, e nenhum import json rodou ali; a base 3 não tem lista dele e tem 0 erros da C nesse papel. Excluir não perde nada que se veja e evita mandar um import barrado (decisão 1 de 26/10; dossiê do sandbox §2h, 27)."
         }
       ],
-      "degrau": 2,
+      "degrau": 3,
       "conferencia": {
         "em": "2026-10-26",
         "prompts": {
@@ -280,6 +280,16 @@
           "4_recorrencia": "passa",
           "5_uma_causa": "decidido pelo pesquisador"
         }
+      },
+      "revisao": {
+        "decidido_em": "2026-11-04",
+        "causa": {
+          "confirmada": 30,
+          "lidos": 30
+        },
+        "motivo": "texto aprovado como está, destino memória; os 3 casos de datetime da população também confirmam a causa (3 de 3)",
+        "evidencia": "dossiê do sandbox §2h, 33–38; decisoes.md, 04/11",
+        "texto": "Importe antes de usar: import json, import re, import datetime."
       }
     },
     {
@@ -420,7 +430,7 @@
       },
       "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
-      "degrau": 2,
+      "degrau": 3,
       "conferencia": {
         "em": "2026-10-26",
         "prompts": {
@@ -456,7 +466,17 @@
           "decidido_em": "2026-10-30",
           "motivo": "No JoogleAnalytics a linha que falha usa pandas e json sem importar nenhum dos dois: o json aparece na instrução que falhou em 231 de 231 erros, sem import no passo nem no anterior em 225; nos 10 casos lidos, 5 importam só o pandas e caem no json não definido (99 na população). O bilhete 'import pandas as pd' corrige só o primeiro erro; o segundo é o da memória C, que vale no papel. O texto fica como está e as duas vão juntas (decisão de 30/10; dossiê do sandbox §2h, 31)."
         }
-      ]
+      ],
+      "revisao": {
+        "decidido_em": "2026-11-04",
+        "causa": {
+          "confirmada": 30,
+          "lidos": 30
+        },
+        "motivo": "texto aprovado como está, destino memória, sempre junto com a C",
+        "evidencia": "dossiê do sandbox §2h, 33–35 e 39; decisoes.md, 04/11",
+        "texto": "Importe antes de usar: import pandas as pd."
+      }
     },
     {
       "id": "U_sandbox.D.AgenteTestemunhas",
@@ -1450,7 +1470,7 @@
       },
       "transcricao": "transcrita do ambiente da base em 21/10, conferida contra o inventário e as partes do resumo",
       "registrado_em": "2026-10-21",
-      "degrau": 2,
+      "degrau": 3,
       "conferencia": {
         "em": "2026-10-26",
         "prompts": {
@@ -1479,6 +1499,16 @@
           "4_recorrencia": "passa",
           "5_uma_causa": "decidido pelo pesquisador"
         }
+      },
+      "revisao": {
+        "decidido_em": "2026-11-09",
+        "causa": {
+          "confirmada": 27,
+          "lidos": 30
+        },
+        "motivo": "texto aprovado como está, destino memória; as 2 discordâncias relidas: uma é inspeção, a outra é verificar se uma variável existe (memória do #51)",
+        "evidencia": "dossiê do sandbox §2h, 33–35 e 40–42; decisoes.md, 09/11",
+        "texto": "Não chame: repr, dir, exec, __import__, bytes, open, hash; Não acesse: __name__, __class__, __doc__, __len__. Para inspecionar um valor, use print(type(x)) e print(str(x)[:n])."
       }
     }
   ]

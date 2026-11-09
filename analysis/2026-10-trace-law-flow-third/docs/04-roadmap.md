@@ -264,7 +264,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   etapa da base 3 em si); o `analysis/README.md`, o intake por formato; o `kit.md`, o que o kit pode e não pode na base 3. Regra do
   repositório: um código novo entra no glossário no mesmo commit. (O `plano-atual.md` não entra: virou o schema dos
   roadmaps — ver o #20, fechado.)
-- [ ] **#50** **O degrau 2 (conferida) das 14 memórias do sandbox** ([`17`](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md),
+- [x] **#50** **O degrau 2 (conferida) das memórias do sandbox e o degrau 3 (revisada) das 3 que vão para o agente** ([`17`](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md),
   dossiê §2f). (1) ~~o script do degrau 2 no kit~~ **feito em 20/10** (`conferir_memorias.py`, Ajuste 25; com o prompt da
   base 1 reproduz o §2f → dossiê §2g); **a unidade fecha no degrau 3** para as que vão para injeção (decisão de 20/10); (2) ~~rodá-lo na base 2~~ **feito em 20/10** (66 versões, 18 papéis: o mesmo resultado da base 1 → dossiê §2h); (3) o
   ~~Ajuste 26~~ **escrito em 20/10** (o import de `get_document_text` → `U_ferramenta_nao_declarada`, harness; emenda 7 do
@@ -295,8 +295,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   só vale junto com a C** (`vale_junto_com` no catálogo, Ajuste 31). **03/11:** lista de categorias aprovada; os dois leitores da C
   fechados (§2h, 33: `causa` 30 de 30, `conserto` 28 de 30). **04/11:** os dois leitores da C.JoogleAnalytics fechados (§2h, 34:
   `causa` e `tambem_json` 30 de 30, `conserto` 29 de 30) e os da E (§2h, 35: `causa` 26 de 30, 28 com os rótulos livres
-  unificados; `conserto` 22 de 30). Falta: o gate do
-  pesquisador nas três (o texto e o destino; os 3 casos de `datetime` da C foram lidos em 04/11: `esqueceu_import` 3 de 3, §2h, 37), gravar o degrau 3 no catálogo (sem comando ainda). ~~A parte F~~ **fechada em 31/10: vai inteira para o #51** (§2h, 32:
+  unificados; `conserto` 22 de 30). ~~O gate do
+  pesquisador nas três~~ **feito**: C e C.JoogleAnalytics em 04/11 (os 3 casos de `datetime` da C: `esqueceu_import` 3 de 3,
+  §2h, 37–39), E em 09/11 (as 2 discordâncias relidas: causa em 27 de 30, §2h, 40–42). ~~Gravar o degrau 3 no catálogo~~
+  **feito em 09/11** (`catalogar_memoria.py --revisar`, Ajuste 32): **as três no degrau 3 (revisada); a unidade fecha.** O
+  degrau 4 (validada) é o #39; as outras 13 entradas do catálogo seguem monitoradas. ~~A parte F~~ **fechada em 31/10: vai inteira para o #51** (§2h, 32:
   37 erros, na maior parte verificação de existência; decisão do Rafael, `decisoes.md`).
 - [ ] **#54** **As 9 verificações de variável fora do ContestacaoCivel: sem instrução mesmo? e por quê? (aberto em 20/10,
   baixa prioridade).** Na base 3, 9 erros de verificação com `globals`/`locals` em 7 papéis (CalculoTrabalhista 2,
@@ -328,7 +331,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   [dossiê](../propostas/U_sandbox/dossie_base3.md) §2h. **31/10:** a parte F do sandbox (37 erros de `globals`, `eval`,
   `locals`, `vars`) entra aqui (§2h, 32). **Nota:** a memória contrasta com o prompt novo do ContestacaoCivel (ago/26: manda
   `try/except NameError`), então ali a parte deve sair harness; a memória vale para os papéis sem a instrução (na F, 12
-  erros em 9 papéis, a passar na régua).
+  erros em 9 papéis, a passar na régua). **09/11:** a releitura da E achou também `dir()` usado para saber se uma variável
+  existe (1 dos 30 casos lidos, `34c2c8ed…`, §2h, 41). Ao minerar, contar esse uso dentro da E também.
 - [ ] **#7** **Minerar as demais candidatas, uma por vez**, pela ordem de tokens. Cada uma com racionais, relatório e
   procedimento próprios ([procedimento de mineração](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md)),
   destino decidido na base 3. Fecham só com o parquet: argumento nomeado, `next()` sobre gerador. Precisam do
@@ -438,6 +442,12 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   duas memórias. Serve também para saber o que esperar delas: 78 dos 231 erros da C.JoogleAnalytics têm outro erro no passo
   seguinte sem relação com import (inferência da contagem; quem mede é o degrau 4). Limite: a contagem olha só o passo seguinte →
   dossiê do sandbox §2h, 31 e 39; decisão do Rafael (04/11).
+- [ ] **#62** **Rodada nova da base 3 depois do Ajuste 33 (aberto em 09/11).** O vocabulário mudou em dois arquivos da lista de
+  hash (`base_pipeline.py` e `validacao/validar_observada.py`, só comentários), e a rodada atual passa a ser recusada. No
+  ambiente da base: `git pull`, `executar.py conferir` e `executar.py relatorio --rodada <a nova>`; os números devem sair
+  iguais. Não mexe no catálogo: as 3 memórias do sandbox continuam no degrau 3; se o sandbox for minerado de novo, rodar o
+  degrau 2 e o `--revisar` outra vez (Ajuste 33) → [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md); decisão do
+  Rafael (09/11).
 
 ## Fora de escopo / adiado
 

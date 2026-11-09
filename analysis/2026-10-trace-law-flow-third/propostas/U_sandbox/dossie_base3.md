@@ -7,6 +7,10 @@
 ambiente da base · **Evidência:** `pipeline/resultados/mineracao/U_sandbox/` no ambiente da base (`memoria_U_sandbox_base3.json`,
 `inventario.csv`, `inventario_papel.csv`, `inventario_mes.csv`, `manifesto_mineracao.json`), transcrita em 19/10/2026.
 
+**Fechamento (09/11/2026).** A unidade fecha no degrau 3: C (30 de 30), C.JoogleAnalytics (30 de 30) e E (27 de 30) vão
+para o agente, com o texto aprovado pelo Rafael; as outras 13 entradas seguem monitoradas, e a parte F vai para o `b3 #51`.
+A decisão geral, com os detalhes, está em [`decisoes.md`](../../../decisoes.md) (09/11); o caminho está no §2h, 27–42.
+
 ## 1 · A mineração fechou
 
 | Passo | Resultado |
@@ -1289,6 +1293,29 @@ em 29 de 30). Os erros depois do import são os da tabela do item 31: `json` nã
 `87672291…` antes de decidir o texto, entre aprovar, tirar a dica de inspeção, deixar só monitorada ou ler antes. O objetivo é testar
 a hipótese de que o limite de "inspecionar um valor" não foi definido. Com os dois como `outra`, a causa ainda fica em 26 de 30. O
 roteiro está em [`degrau3_leitores.md`](degrau3_leitores.md#as-2-discordâncias-reais-da-causa-na-memória-e-gate-de-0411).
+
+**41 · As 2 discordâncias da E, lidas de novo às cegas (09/11).** No ambiente da base, cada um dos dois modelos dos leitores
+(`6.1 luna` e `5.3 codex`) leu de novo os 2 casos, num chat novo e sem ver as leituras anteriores. A pergunta foi uma só:
+antes do erro, o agente queria ver o tipo ou o conteúdo de um valor? O varredor passou limpo nos casos mascarados.
+
+| Caso | Linha que falhou (mascarada) | `6.1 luna` | `5.3 codex` |
+|---|---|---|---|
+| `34c2c8ed…` (ContestacaoCivel, 2026-08, posição 3) | `if "<texto>" not in dir():`, seguida de `peticao_inicial_json = None` | `nao` | `sim` |
+| `87672291…` (ContestacaoCivel, 2026-08, posição 4) | `print("<texto>", type(peticao_raw).__name__)` | `sim` | `sim` |
+
+No segundo caso, os dois leitores concordam, e o código mostra o agente querendo ver o tipo de um valor. No primeiro, o código usa
+`dir()` para saber se uma variável já existe, e não para ver um valor que existe. Isso é a verificação de existência, a parte F,
+que espera uma memória própria. A causa da E fica em 27 de 30 casos (90%), e os outros 3 são `outra`. O limite que faltou
+definir é este: inspecionar um valor é ver o tipo, a forma ou o conteúdo de um valor que existe; perguntar se um nome existe fica
+fora. Nos dois casos, o passo seguinte não teve erro.
+
+**42 · A memória E passa no gate (09/11).** Rafael aprovou o texto como está, com destino memória. A causa fica em 27 de 30 (item
+41). As duas definições que faltaram entraram na lista de categorias do roteiro
+([`degrau3_leitores.md`](degrau3_leitores.md#a-lista-de-categorias-a-aprovar)): o limite de `inspecionar_valor` (perguntar se
+um nome existe fica fora) e a diferença entre `corrigiu_a_licao` e `contornou`. Os casos de `dir()` usados para saber se uma
+variável existe pertencem à memória do #51, e não à dica da E. As três memórias que vão para o agente passaram no gate e estão no degrau 3 no
+catálogo (`catalogar_memoria.py --revisar`, Ajuste 32, 09/11): C 30 de 30, C.JoogleAnalytics 30 de 30, E 27 de 30. A unidade
+fecha no degrau 3; o degrau 4 é o `b3 #39`.
 
 ## 3 · A memória que o script montou (antes da emenda 4)
 

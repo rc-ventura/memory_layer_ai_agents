@@ -54,7 +54,7 @@ def main():
     validation["testes"] = int(count.group(1)) if count else None
     # Regras/catálogos comparados com a second por AST, sem minerar dados. O baseline da Etapa 7 (notebook)
     # não é mais lido: os notebooks saíram do pipeline em 08/10.
-    # Sem a pasta da second (repositório fora da máquina 2), a referência é a base 1; o JSON diz qual foi.
+    # Sem a pasta da second (repositório fora do ambiente da base), a referência é a base 1; o JSON diz qual foi.
     old_pipeline = ROOT / "analysis/2026-09-trace-law-flow-second/pipeline/base_pipeline.py"
     if not old_pipeline.is_file():
         old_pipeline = ROOT / "analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py"

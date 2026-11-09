@@ -315,6 +315,17 @@ class TestDecisaoDoPesquisador(unittest.TestCase):
             self.assertEqual(depois["checagens"]["5_uma_causa"]["resultado"], cf.DECIDIDO)
             self.assertEqual(depois["degrau"], 2)
             self.assertEqual(json.loads((d / "reg.json").read_text(encoding="utf-8"))["itens"][0]["degrau"], 2)
+            # o gate do degrau 3 vale enquanto o texto for o aprovado
+            reg = json.loads((d / "reg.json").read_text(encoding="utf-8"))
+            reg["itens"][0]["correction_guidance"] = "g"
+            reg["itens"][0]["revisao"] = {"texto": "g"}
+            (d / "reg.json").write_text(json.dumps(reg), encoding="utf-8")
+            cf.main(base + ["--registrar"])
+            self.assertEqual(json.loads((d / "reg.json").read_text(encoding="utf-8"))["itens"][0]["degrau"], 3)
+            reg["itens"][0]["revisao"]["texto"] = "outro"
+            (d / "reg.json").write_text(json.dumps(reg), encoding="utf-8")
+            cf.main(base + ["--registrar"])
+            self.assertEqual(json.loads((d / "reg.json").read_text(encoding="utf-8"))["itens"][0]["degrau"], 2)
 
     def test_decidir_o_que_ja_passa_nao_registra(self):
         with tempfile.TemporaryDirectory() as d:

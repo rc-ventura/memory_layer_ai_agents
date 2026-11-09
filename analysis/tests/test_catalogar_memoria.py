@@ -196,6 +196,52 @@ class TestCatalogo(unittest.TestCase):
         self.assertEqual(itens["U_x.C.P"]["vale_junto_com"][0]["id"], "U_x.C")
         self.assertEqual(cm.main(["--conferir", "--registro", str(reg)]), 0)
 
+    def _conferida(self, ident="U_x.C"):
+        e, _ = cm.entrada(doc(ident), self.gravar(f"{ident}.json", doc(ident)))
+        reg, _ = cm.registrar({"itens": []}, [e], hoje="2026-10-20")
+        reg["itens"][0].update(degrau=2, conferencia={"em": "2026-10-26", "checagens": {}})
+        return reg
+
+    def test_revisar_grava_o_degrau_3(self):
+        # o gate do degrau 3 (09/11): a causa confirmada na leitura e o texto aprovado
+        reg = self._conferida()
+        cm.revisar(reg, "U_x.C", 27, 30, "aprovado como está", "dossiê §2h, 42", decidido_em="2026-11-09")
+        e = reg["itens"][0]
+        self.assertEqual((e["degrau"], e["revisao"]["causa"], e["revisao"]["texto"]),
+                         (3, {"confirmada": 27, "lidos": 30}, "g"))
+        self.assertEqual(cm.conferir(reg), [])
+        # o texto muda depois do gate: a revisão é de outro texto
+        e["correction_guidance"] = "outro"
+        self.assertTrue(any("texto mudou" in x for x in cm.conferir(reg)))
+        # mineração nova: a revisão não passa para a entrada nova (é de outra rodada)
+        reg, _ = cm.registrar(reg, [{**cm.entrada(doc("U_x.C"), self.p / "U_x.C.json")[0]}], hoje="2026-11-10")
+        self.assertNotIn("revisao", reg["itens"][0])
+
+    def test_revisar_so_depois_do_degrau_2_e_fora_do_monitoramento(self):
+        e, _ = cm.entrada(doc("U_x.C"), self.gravar("a.json", doc("U_x.C")))
+        reg, _ = cm.registrar({"itens": []}, [e], hoje="2026-10-20")
+        with self.assertRaises(SystemExit):                                    # degrau 1
+            cm.revisar(reg, "U_x.C", 30, 30, "m", "ev")
+        reg = self._conferida()
+        cm.monitorar(reg, ["U_x.C"], "rara", "m", {"itens": []})
+        with self.assertRaises(SystemExit):                                    # monitorada
+            cm.revisar(reg, "U_x.C", 30, 30, "m", "ev")
+        reg = self._conferida()
+        with self.assertRaises(SystemExit):                                    # mais casos que lidos
+            cm.revisar(reg, "U_x.C", 31, 30, "m", "ev")
+        reg["itens"][0]["degrau"] = 3                                          # degrau 3 sem revisão: o --conferir recusa
+        self.assertTrue(any("sem `revisao`" in x for x in cm.conferir(reg)))
+
+    def test_cli_revisar(self):
+        reg = self.gravar("memorias.json", self._conferida())
+        self.assertEqual(cm.main(["--revisar", "U_x.C", "--causa", "27/30", "--motivo", "m", "--evidencia", "ev",
+                                  "--decidido-em", "2026-11-09", "--registro", str(reg)]), 0)
+        e = json.loads(reg.read_text(encoding="utf-8"))["itens"][0]
+        self.assertEqual((e["degrau"], e["revisao"]["decidido_em"]), (3, "2026-11-09"))
+        self.assertEqual(cm.main(["--conferir", "--registro", str(reg)]), 0)
+        with self.assertRaises(SystemExit):                                    # --causa fora do formato
+            cm.main(["--revisar", "U_x.C", "--causa", "27", "--motivo", "m", "--evidencia", "ev", "--registro", str(reg)])
+
     def test_o_catalogo_do_repositorio_confere(self):
         self.assertEqual(cm.conferir(cm.ler_registro(cm.REGISTRO)), [])
 

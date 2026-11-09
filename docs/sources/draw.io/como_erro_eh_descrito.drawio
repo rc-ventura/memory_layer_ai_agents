@@ -1,11 +1,11 @@
 <mxfile host="app.diagrams.net">
   <diagram id="RfZRRzvIkYMwvUVBow8T" name="Page-1">
-    <mxGraphModel dx="1414" dy="822" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+    <mxGraphModel dx="1025" dy="1099" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="title" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=34;" value="Como o erro é descrito?" vertex="1">
-          <mxGeometry height="52" width="700" x="40" y="50" as="geometry" />
+          <mxGeometry height="52" width="700" x="40" y="-5" as="geometry" />
         </mxCell>
         <mxCell id="panel" parent="1" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B2F52;strokeWidth=1.5;" value="" vertex="1">
           <mxGeometry height="300" width="950" x="290" y="112" as="geometry" />
@@ -101,13 +101,7 @@
           <mxGeometry height="20" width="20" x="30" y="252" as="geometry" />
         </mxCell>
         <mxCell id="k3" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Unidade (lição)" vertex="1">
-          <mxGeometry height="48" width="200" x="40" y="452" as="geometry" />
-        </mxCell>
-        <mxCell id="k4" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Triagem" vertex="1">
-          <mxGeometry height="48" width="200" x="40" y="532" as="geometry" />
-        </mxCell>
-        <mxCell id="k5" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=16;" value="Destino pré-investigação" vertex="1">
-          <mxGeometry height="48" width="200" x="40" y="612" as="geometry" />
+          <mxGeometry height="48" width="200" x="40" y="465" as="geometry" />
         </mxCell>
         <mxCell id="ka0" edge="1" parent="1" source="k0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k1" value="">
           <mxGeometry relative="1" as="geometry" />
@@ -118,28 +112,10 @@
         <mxCell id="ka2" edge="1" parent="1" source="k2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k3" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ka3" edge="1" parent="1" source="k3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k4" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="ka4" edge="1" parent="1" source="k4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;" target="k5" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="v1" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=15;" value="U_contrato_dict&lt;br&gt;&lt;small&gt;Retorno das ferramentas de documento é dict&lt;/small&gt;" vertex="1">
-          <mxGeometry height="60" width="640" x="290" y="446" as="geometry" />
-        </mxCell>
-        <mxCell id="v2" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=15;" value="candidato&lt;br&gt;&lt;small&gt;87 execuções em 8 meses · régua: ≥ 3 execuções e ≥ 2 meses&lt;/small&gt;" vertex="1">
-          <mxGeometry height="60" width="640" x="290" y="526" as="geometry" />
-        </mxCell>
-        <mxCell id="v3" parent="1" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=15;" value="memória&lt;br&gt;&lt;small&gt;decisão do pesquisador&lt;/small&gt;" vertex="1">
-          <mxGeometry height="60" width="640" x="290" y="606" as="geometry" />
+          <mxGeometry height="60" width="640" x="361" y="459" as="geometry" />
         </mxCell>
         <mxCell id="kv0" edge="1" parent="1" source="k3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="v1" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="kv1" edge="1" parent="1" source="k4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="v2" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="kv2" edge="1" parent="1" source="k5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#2B2F52;strokeWidth=2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="v3" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

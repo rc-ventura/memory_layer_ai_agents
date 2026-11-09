@@ -10,6 +10,8 @@ no catálogo e confere o catálogo.
                                 [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
     python catalogar_memoria.py --junto-com <id> <outro_id> [...] --motivo "<o porquê>" [--base <BASE_ID>]
                                 [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
+    python catalogar_memoria.py --revisar <id> --causa <casos>/<lidos> --motivo "<a decisão>" --evidencia "<onde>"
+                                [--base <BASE_ID>] [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
 
 Uma memória entra no catálogo quando está **fechada**: `validation.destino` = "memória" (decisão do pesquisador) e
 `status` = "derived-and-checked". O que tem destino harness vai para o `monitoramento.json`, e o que tem destino em
@@ -41,6 +43,13 @@ de outra (o erro é uma linha com dois problemas, e cada memória cobre um). `--
 `vale_junto_com`: um item por memória, com quando e por quê. Passa de uma mineração para a outra no `--registrar`. O
 `--conferir` e o `--registrar` avisam (`ALARME`, sem recusar) quando a outra memória deixa de chegar aonde esta vale:
 some do catálogo, fica monitorada (não injetada), passa a valer só noutro papel ou é excluída do papel desta.
+
+**Degrau 3 (revisada):** depois da leitura de casos (dois leitores às cegas, concordância por script) e do gate do
+pesquisador, que aprova o texto e o destino. `--revisar` grava na entrada o `revisao` (quando, a causa confirmada em
+quantos dos casos lidos, a decisão nas palavras do pesquisador, onde está a evidência e o texto aprovado) e põe o
+`degrau` em 3. Só numa entrada no degrau 2 (conferida) e não monitorada. A revisão vale para aquele texto: o `--conferir`
+recusa um degrau 3 cujo `correction_guidance` mudou depois do gate, e o `conferir_memorias.py` (degrau 2) só devolve o
+degrau 3 enquanto o texto for o aprovado. Como a `conferencia`, não passa para a entrada de uma mineração nova.
 """
 import argparse
 import datetime
@@ -121,6 +130,15 @@ def conferir(reg):
         if junto and any(not (x.get("id") and x.get("motivo") and x.get("decidido_em")) or x.get("id") == e.get("id")
                          for x in junto):
             erros.append(f"item {i} ({e.get('id')}): `vale_junto_com` sem id, motivo ou data, ou apontando para si mesma")
+        if e.get("degrau") == 3:
+            rev = e.get("revisao") or {}
+            causa = rev.get("causa") or {}
+            if not (rev.get("decidido_em") and rev.get("motivo") and rev.get("evidencia") and causa.get("lidos")
+                    and causa.get("confirmada") is not None and e.get("conferencia")):
+                erros.append(f"item {i} ({e.get('id')}): degrau 3 sem `revisao` completa (data, causa, motivo, evidência) "
+                             "ou sem a `conferencia` do degrau 2")
+            elif rev.get("texto") != e.get("correction_guidance"):
+                erros.append(f"item {i} ({e.get('id')}): degrau 3, mas o texto mudou depois do gate (a revisão é de outro texto)")
         chave = (e.get("id"), e.get("base"))
         if chave in vistos:
             erros.append(f"item {i}: {chave} repetido")
@@ -241,6 +259,25 @@ def junto_com(reg, ident, outras, motivo, base=None, decidido_em=None):
     return e
 
 
+def revisar(reg, ident, confirmada, lidos, motivo, evidencia, base=None, decidido_em=None):
+    """Grava o degrau 3 (revisada): a causa confirmada na leitura e o gate do pesquisador sobre o texto atual."""
+    alvo = [e for e in reg.get("itens", []) if e["id"] == ident and (not base or e.get("base") == base)]
+    if len(alvo) != 1:
+        sys.exit(f"{ident}: {len(alvo)} entradas no catálogo (use --base para escolher uma)")
+    e = alvo[0]
+    if e.get("degrau") not in (2, 3) or not e.get("conferencia"):
+        sys.exit(f"{ident}: está no degrau {e.get('degrau')}; o degrau 3 vem depois do 2 (conferida)")
+    if e.get("monitorada"):
+        sys.exit(f"{ident}: está monitorada ({e['monitorada'].get('tipo')}), não vai para o agente; não há gate a gravar")
+    if not 0 <= confirmada <= lidos or lidos < 1:
+        sys.exit(f"{ident}: causa {confirmada}/{lidos} não faz sentido")
+    e["degrau"] = 3
+    e["revisao"] = {"decidido_em": decidido_em or datetime.date.today().isoformat(),
+                    "causa": {"confirmada": confirmada, "lidos": lidos}, "motivo": motivo, "evidencia": evidencia,
+                    "texto": e.get("correction_guidance")}
+    return e
+
+
 def main(argv=None):
     for fluxo in (sys.stdout, sys.stderr):
         if hasattr(fluxo, "reconfigure"):
@@ -256,9 +293,12 @@ def main(argv=None):
     p.add_argument("--excluir", nargs="+", metavar="ID PAPEL", help="a memória global e os papéis em que ela não vale")
     p.add_argument("--junto-com", nargs="+", metavar="ID OUTRO_ID",
                    help="a memória e as memórias sem as quais o bilhete dela não está completo")
-    p.add_argument("--motivo", help="com --monitorar, --excluir ou --junto-com: o porquê, nas palavras do pesquisador")
-    p.add_argument("--base", help="com --monitorar, --excluir ou --junto-com: a base das entradas")
-    p.add_argument("--decidido-em", help="com --monitorar, --excluir ou --junto-com: a data da decisão (padrão: hoje)")
+    p.add_argument("--revisar", metavar="ID", help="grava o degrau 3 (revisada) desta memória, depois do gate")
+    p.add_argument("--causa", metavar="CASOS/LIDOS", help="com --revisar: em quantos dos casos lidos a causa se confirmou")
+    p.add_argument("--evidencia", help="com --revisar: onde está a leitura e o gate (dossiê, item)")
+    p.add_argument("--motivo", help="com --monitorar, --excluir, --junto-com ou --revisar: o porquê, nas palavras do pesquisador")
+    p.add_argument("--base", help="com --monitorar, --excluir, --junto-com ou --revisar: a base das entradas")
+    p.add_argument("--decidido-em", help="com --monitorar, --excluir, --junto-com ou --revisar: a data da decisão (padrão: hoje)")
     p.add_argument("--monitoramento", default=str(MONITORAMENTO))
     a = p.parse_args(argv)
     if a.monitorar:
@@ -288,6 +328,22 @@ def main(argv=None):
         print(f"  vale junto com  {e['id']}: {', '.join(x['id'] for x in e['vale_junto_com'])}")
         for x in dependencias(reg):
             print(f"  ALARME  {x} — leve ao pesquisador")
+        Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return 0
+    if a.revisar:
+        if not (a.causa and a.motivo and a.evidencia):
+            p.error("--revisar pede --causa <casos>/<lidos>, --motivo e --evidencia")
+        try:
+            confirmada, lidos = (int(x) for x in a.causa.split("/"))
+        except ValueError:
+            p.error("--causa no formato <casos>/<lidos>, por exemplo 27/30")
+        reg = ler_registro(a.registro)
+        e = revisar(reg, a.revisar, confirmada, lidos, a.motivo, a.evidencia, a.base, a.decidido_em)
+        erros = conferir(reg)
+        if erros:
+            print("NÃO REGISTRA:\n  " + "\n  ".join(erros))
+            return 1
+        print(f"  revisada  {e['id']} · {e['base']} · causa {confirmada} de {lidos} · degrau 3")
         Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return 0
     if a.registrar:

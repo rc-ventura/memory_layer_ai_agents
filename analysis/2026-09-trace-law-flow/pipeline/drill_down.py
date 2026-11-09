@@ -88,12 +88,12 @@ Uso:
            M1_LIMIAR). Ver pipeline-entre-bases.md, Ajuste 10b; 10-racionais-protocolo-harness.md §4 M1.
 
     python drill_down.py protocolo --prompt <versão>
-        -> grava o texto daquela versão do system prompt em resultados/evidencia/protocolo/ para ler na máquina.
+        -> grava o texto daquela versão do system prompt em resultados/evidencia/protocolo/ para ler no ambiente da base.
 
     python drill_down.py protocolo --casos <papel> [<versão>] [<quantos>]
         -> um arquivo por erro do papel (e da versão, se dada; padrão 3 erros, alternando as formas) com, na ordem: o
            system prompt exato do step, a observação anterior, o que o modelo escreveu no lugar do código, o erro, o
-           step seguinte e a resposta final. Rode `protocolo` antes. Caso em claro: ler na máquina.
+           step seguinte e a resposta final. Rode `protocolo` antes. Caso em claro: ler no ambiente da base.
 
     python drill_down.py silenciosas [<ferramenta>]
         -> falhas silenciosas de ferramenta: "Error calling tool '<nome>'" na observação com error: null (o step conta
@@ -105,7 +105,7 @@ Uso:
 
     python drill_down.py silenciosas --motivos [<ferramenta>]
         -> os motivos das falhas de ferramenta, por ferramenta, mascarados (o que está entre aspas e depois de '=' vira
-           <v>, dígito vira 9, 60 caracteres): sobra o texto que o dev da ferramenta escreveu. Pode ser fotografado.
+           <v>, dígito vira 9, 60 caracteres): sobra o texto que o dev da ferramenta escreveu. Pode sair do ambiente da base.
 
     python drill_down.py silenciosas --forma <ferramenta>
         -> em cada falha silenciosa da ferramenta, como o 1º argumento foi passado — json.dumps, str(...), dict ou
@@ -117,7 +117,7 @@ Uso:
         -> os erros críticos (o papel esgotou os passos): uma linha por execução morta — papel, mês, idx do crítico,
            steps, erros antes, primeira unidade, unidades no caminho —, se a execução tem "resposta sem bloco de
            código" (quantos e em que idx) e a trajetória do papel step a step, só o tipo (ok ou unidade do erro),
-           com repetições agrupadas. Só números e nomes — sem texto de caso nem exec_id; pode ser fotografada.
+           com repetições agrupadas. Só números e nomes — sem texto de caso nem exec_id; pode sair do ambiente da base.
            Lê resultados/criticos.csv (ou recalcula com caminho_dos_criticos) e resultados/erros_mecanismo.csv.
            Ver 12-procedimento-protocolo-harness.md e o item 39 do roadmap.
 
@@ -146,8 +146,8 @@ import sys, os, json, re, random, ast
 from collections import Counter
 import pandas as pd
 
-# terminal do Windows (máquina 2): sem isso, um caractere fora do cp1252 no texto do caso ("\u2015"…) derruba o
-# `caso` com UnicodeEncodeError (relatório da máquina 2, 02/10/2026). Também vale para quem importa daqui.
+# terminal do Windows (ambiente da base): sem isso, um caractere fora do cp1252 no texto do caso ("\u2015"…) derruba o
+# `caso` com UnicodeEncodeError (relatório do ambiente da base, 02/10/2026). Também vale para quem importa daqui.
 try: sys.stdout.reconfigure(encoding="utf-8")
 except Exception: pass
 
@@ -748,7 +748,7 @@ def residuo():
     print(f"A5_residuo: {len(casos)} erros · {casos['exec_id'].nunique()} crus")
     for (u, c), n in cont.items(): print(f"  {u} · {c}: {n}")
     # contagens por padrão × error.type × estrutura da mensagem — só nomes de classe e verdadeiro/falso, sem texto de
-    # caso: o bloco que pode sair da máquina para a conferência do resíduo (plano do resíduo da base 2, Etapa 1)
+    # caso: o bloco que pode sair do ambiente da base para a conferência do resíduo (plano do resíduo da base 2, Etapa 1)
     est = (casos.groupby(["unidade", "padrao", "error_type", "tem_due_to", "tem_linha_error", "linha_rejeitada_ok"],
                          dropna=False)
            .agg(erros=("exec_id", "size"), execucoes=("exec_id", "nunique"), meses=("mes", "nunique"),
@@ -866,7 +866,7 @@ def tempo(papel=None, mecanismos=None):
     """Quem gastou os 30 s? Para cada erro de tempo do interpretador (`timeout_interpretador`, `codigo_lento`):
     os tamanhos em jogo, a estrutura do código do step, o que ia para o final_answer e o que o agente fez depois no
     mesmo papel; e, por papel, os final_answer que deram certo, para comparar. Só números e nomes (de variáveis e de
-    funções) — nenhum texto de caso, nenhum exec_id: a saída pode sair da máquina. Lê resultados/erros_mecanismo.csv
+    funções) — nenhum texto de caso, nenhum exec_id: a saída pode sair do ambiente da base. Lê resultados/erros_mecanismo.csv
     — rode o notebook antes. Plano da Etapa 5b (pipeline-entre-bases.md)."""
     M = pd.read_csv(os.path.join(os.path.dirname(PASTA_EVIDENCIA), "erros_mecanismo.csv"), dtype={"exec_id": str})
     F = M[M["submecanismo"].isin(mecanismos or MECANISMOS_TEMPO)]
@@ -1084,10 +1084,10 @@ def silenciosas(ferramenta=None, janela=3, motivos=False, forma=False):
 
     pasta = os.path.join(PASTA_EVIDENCIA, "silenciosas")
     os.makedirs(pasta, exist_ok=True)
-    # a coluna do [4], para escolher na máquina os casos do plano 4.1b (False nas falhas que não são reais)
+    # a coluna do [4], para escolher no ambiente da base os casos do plano 4.1b (False nas falhas que não são reais)
     sil = sil.assign(sucesso_falso_candidato=sucesso_falso_candidato(F, sil).reindex(sil.index, fill_value=False))
     sil.to_csv(os.path.join(pasta, "casos.csv"), index=False)
-    print(f"\nCasos (com exec_id): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
+    print(f"\nCasos (com exec_id): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai do ambiente da base.")
 
 
 def critico(papel=None):
@@ -1138,7 +1138,7 @@ def critico(papel=None):
               + "; ".join(f"{u} → {a}" for u, a in nomes.items()))
     print(f"\nPasso crítico: o primeiro erro da trajetória que inicia a cascata (ver 'primeira unidade'). Leitura do "
           f"caso, se precisar: `caso <exec_id> <papel>` — o exec_id está em "
-          f"{os.path.relpath(arq_crit if os.path.exists(arq_crit) else arq_mec)}, não sai da máquina.")
+          f"{os.path.relpath(arq_crit if os.path.exists(arq_crit) else arq_mec)}, não sai do ambiente da base.")
 
 
 def protocolo_casos(papel, versao=None, n=3):
@@ -1146,7 +1146,7 @@ def protocolo_casos(papel, versao=None, n=3):
     ler prompt, erro e recuperação juntos: o system prompt exato do step, a observação que o agente acabara de ver, o
     que ele escreveu no lugar do código, o erro, o step seguinte e a resposta final. Escolhe até `n` erros, alternando
     entre as formas (frase, markdown, dict, ...). Lê resultados/evidencia/protocolo/casos.csv — rode `protocolo` antes.
-    Os arquivos têm o caso em claro: ficam em resultados/ (git-ignored), para ler na máquina."""
+    Os arquivos têm o caso em claro: ficam em resultados/ (git-ignored), para ler no ambiente da base."""
     pasta = os.path.join(PASTA_EVIDENCIA, "protocolo")
     arq_casos = os.path.join(pasta, "casos.csv")
     if not os.path.exists(arq_casos):
@@ -1290,7 +1290,7 @@ def protocolo(prompt=None):
     pd.DataFrame([{"role": r, "eixo": ex, "valor": val, "steps": v["steps"], "erros": v["erros"],
                    "meses": meses_txt(v["meses"])} for (r, ex, val), v in sorted(por_modelo.items())]).to_csv(
         os.path.join(pasta, "modelos.csv"), index=False)
-    if prompt:   # grava o texto de uma versão do system prompt, para ler na máquina (não sai dela)
+    if prompt:   # grava o texto de uma versão do system prompt, para ler no ambiente da base (não sai dele)
         achou = [(r, v) for (r, vid), v in variantes.items() if vid == prompt]
         if not achou:
             print(f"versão {prompt} não encontrada. Rode `protocolo` sem argumento para ver as versões."); return
@@ -1368,7 +1368,7 @@ def protocolo(prompt=None):
         if c["anterior_ferramenta_final"].any():
             print(f"  {role:24s} {len(c):4d} · {int(c['anterior_ferramenta_final'].sum()):3d} · {int(c['regra_ferramenta_final'].sum()):3d}")
     print(f"  total pela regra: {int(C['regra_ferramenta_final'].sum())} de {len(C)}")
-    print(f"\nCasos (com exec_id, para `evidencia`): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai da máquina.")
+    print(f"\nCasos (com exec_id, para `evidencia`): {os.path.relpath(os.path.join(pasta, 'casos.csv'))} — não sai do ambiente da base.")
     print(f"{'='*100}")
 
 def caso(exec_id, role, as_json=False):

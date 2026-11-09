@@ -35,6 +35,15 @@ Uma categoria por coluna, por caso. `indeterminado` quando o caso não deixa ver
 - **`conserto`** (o que o agente fez no passo seguinte): `corrigiu_a_licao` · `contornou` · `repetiu` · `desistiu` · `indeterminado`
 - **`licao_livre`**: a lição em uma frase, com as próprias palavras, em termos gerais (sem nome, número ou trecho do caso)
 
+**Definições que faltaram na primeira leitura (09/11; dossiê §2h, 41 e 42).** Na leitura da E, os leitores divergiram onde a
+lista não dizia o limite:
+- **`inspecionar_valor`**: o agente queria ver o tipo, a forma ou o conteúdo de um valor que existe. Perguntar se um nome
+  existe (`dir()`, `globals()`, `locals()`, `"x" in ...`) **não** é inspecionar: é `outra:verificar_existencia`.
+- **`corrigiu_a_licao`**: no passo seguinte, o agente faz o que a lição diz (na E: vê o valor com uma função permitida,
+  como `print(type(x))` ou `print(str(x)[:n])`; na C: importa o módulo).
+- **`contornou`**: no passo seguinte, o agente segue sem o erro, mas não pelo que a lição diz: tira a chamada, troca de
+  abordagem ou desiste só daquela parte.
+
 ## No ambiente (segunda)
 
 **0 · Conferir.** Este arquivo copiado para `analysis/2026-10-trace-law-flow-third/propostas/U_sandbox/`. As amostras
