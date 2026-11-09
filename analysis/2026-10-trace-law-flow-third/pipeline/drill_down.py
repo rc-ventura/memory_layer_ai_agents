@@ -18,7 +18,7 @@ dossiê do sandbox §2h, 26).
           da fonte) e derivados/<…>.md (a janela); a última linha diz quantos crus conferem
 
 A fonte é a do pipeline (`base_pipeline.TRACE`, a extração v2) ou a da variável de ambiente `DRILL_DOWN_FONTE`. O texto
-dos casos fica na máquina da base (`resultados/` é git-ignored).
+dos casos fica no ambiente da base (`resultados/` é git-ignored).
 """
 import argparse
 import csv

@@ -5,7 +5,7 @@
 > **Fechada em 02/10/2026 — ver a [Parte II](#parte-ii--revisão-do-autor-e-fechamento-02102026).** A Parte I é o
 > parecer do auditor, mantido como foi entregue (o PR #29 foi mergeado depois dele). A Parte II é a resposta do autor:
 > confere a auditoria, fecha as ressalvas, cobre a lacuna de método que ela deixou e registra o que ainda depende da
-> máquina 2. Índice de todas as auditorias: [`README.md`](README.md).
+> ambiente da base. Índice de todas as auditorias: [`README.md`](README.md).
 
 # Parte I — Parecer do auditor
 
@@ -23,7 +23,7 @@ A documentação é honesta sobre a epistemologia: distingue "conferido" (determ
 LLM) e "conferido" de "esperado" na base 2, registra leituras retiradas e reverts com data e motivo. A qualidade da
 evidência é compatível com a regra declarada ("nenhum número agregado sem apontar o caso concreto").
 
-**Limites desta auditoria:** a base 2 roda na máquina de compliance e não é verificável aqui — todos os números da
+**Limites desta auditoria:** a base 2 roda no ambiente de compliance e não é verificável aqui — todos os números da
 base 2 (o incidente do `gpt-5.6-terra`, 134 falhas silenciosas, 86/86 gesto colado, a cadeia do erro crítico) foram
 auditados como **coerência interna e reprodutibilidade do procedimento** (docs 12 e 15), não como recomputação. O
 que a base 2 afirma precisa ser re-verificado quando o notebook `falhas_silenciosas.ipynb` rodar lá (o próprio doc
@@ -83,7 +83,7 @@ racionais) e `drill_down.py` na íntegra.
   leituras retiradas marcadas ("Leitura retirada", §2.3/§2.5 do doc 11; "Correção registrada" no ledger para o
   commit 4f6ecaa). É a prática correta de controle de versões metodológico.
 - **Divisão conferido/assistido**: o doc 11 §2.5 marca cada afirmação do caso CalculoCivel como [conferido] (AST,
-  regex reproduzida, contagem) ou [assistido] (leitura de LLM na máquina 2, hipótese) — alinhado à regra "nenhum
+  regex reproduzida, contagem) ou [assistido] (leitura de LLM no ambiente da base, hipótese) — alinhado à regra "nenhum
   LLM no caminho da classificação" (plano-atual §1).
 - **Integridade do funil** (doc 13 §2): recomputado — 0 steps nos dois baldes; a soma dos grupos = total.
 - **Docs mutuamente consistentes**: os números da §1.16/§1.15 do doc 03, do `09`, do `schema-e-taxonomia.md` e do
@@ -113,9 +113,9 @@ Cosmético; vale renomear o label para "chamadas".
 avulsa em 30/09 e não vive no código — o doc 10 §7 declara isso como limite, então é honesto, mas para a base ser
 reauditável vale transformar em função (`base_pipeline.py` ou `drill_down.py`) numa próxima etapa.
 
-**E. Base 2 = inteiramente fora do alcance desta máquina.** As contagens reportadas (69 erros de protocolo, 61 em
+**E. Base 2 = inteiramente fora do alcance deste ambiente.** As contagens reportadas (69 erros de protocolo, 61 em
 ago; terra 54/478 vs gpt-4.1 0/381; 134 silenciosas; 86/86 gesto colado; custo do crítico ~2,09M tokens) vieram de
-fotos e leituras do Rafael na máquina de compliance — a documentação o declara consistentemente ("conferido
+contagens e leituras do Rafael no ambiente de compliance — a documentação o declara consistentemente ("conferido
 rodando" vs. "esperado"). Os Ajustes 4, 9 e 10 têm efeito na base 2 marcado como **"esperado"** (não conferido) no
 ledger — importante: a contagem final da base 2 pode divergir discretamente quando os notebooks rodarem lá, e os
 docs já preveem isso.
@@ -154,7 +154,7 @@ consistente com o plano.
 
 Do ponto de vista de auditoria, **os resultados da branch são confiáveis para tomada de decisão**, com duas
 reservas explícitas que o próprio trabalho declara: (1) os números da base 2 são de segunda mão por construção
-(máquina de compliance) e dependem da conferência final quando os notebooks rodarem lá — em particular, o efeito
+(ambiente de compliance) e dependem da conferência final quando os notebooks rodarem lá — em particular, o efeito
 "esperado" dos Ajustes 4/9/10 e o run de `falhas_silenciosas.ipynb` na base 2; (2) a medida M1 de sobreposição
 (mediana 97%) deveria ser promovida a função versionada. Recomendações de menor risco: atualizar a expectativa E do
 `audit_recompute6`, a linha de cascata do doc 11 (o `U_estado_perdido`), o label "steps" do `silenciosas` e o
@@ -187,7 +187,7 @@ na base 1:
 | **B** | a cascata do protocolo omite 1 `U_estado_perdido` | ✅ | `drill_down.py protocolo` [6]: 25 sem erro · 7 `U_texto_solto` · **1 `U_estado_perdido`** | corrigida (II.5) |
 | **C** | o rótulo "steps" do `silenciosas` conta pares | ✅ | 3.573 linhas de `falhas_silenciosas()` = pares step × ferramenta; 3.373 steps distintos | corrigida (II.5) |
 | **D** | a sobreposição do M1 não é reproduzível pelo repo | ✅ | não havia função; reconstruída e versionada | **função nova** (II.4) |
-| **E** | a base 2 está fora do alcance | ✅ | correto por construção (máquina de compliance) | **roteiro** para a máquina 2 (II.6) |
+| **E** | a base 2 está fora do alcance | ✅ | correto por construção (ambiente de compliance) | **roteiro** para o ambiente da base (II.6) |
 | **F** | cabeçalho do livro-razão "atualizado 29/09" | ✅ | linha 3 do `pipeline-entre-bases.md` | corrigida |
 | **G** | o relatório mensal está congelado em 25/09 | ✅ | correto como registro histórico | nenhuma ação (é o que foi submetido) |
 | **H** | worktree abandonado e PR aberto | ✅, e havia mais um | o `wt-mineracao` já tinha sido removido e o PR #29 mergeado; o worktree **da própria auditoria** (`/tmp/audit-0928`, detached `d98a2ca`) continuava registrado | removido (o trace lá era cópia idêntica: mesmo SHA-256) |
@@ -232,8 +232,8 @@ invisível, no padrão dos `audit_recompute7/8`:
 - escolhas **deliberadamente diferentes** das do pipeline, para que um erro de implementação apareça como divergência:
   o 1º argumento do `busca_obf` é recortado por contagem de parênteses (o pipeline usa uma janela de 600 caracteres);
   cada execução é lida uma vez só (o pipeline não deduplica linhas — a sonda F confirma 0 duplicadas na base 1);
-- **roda na máquina 2** (`--base base2 --trace … --em … --fonte …`) e imprime só contagens e nomes: pode ser
-  fotografado.
+- **roda no ambiente da base** (`--base base2 --trace … --em … --fonte …`) e imprime só contagens e nomes: pode ser
+  transcrito.
 
 **Limite honesto.** A independência é de **implementação**, não de leitor: quem escreveu o `audit_recompute9` leu o
 código do pipeline antes. O que protege é a construção por outro caminho e a comparação número a número.
@@ -303,7 +303,7 @@ tocados (o notebook da esteira não chama essas funções), e a `ocorrencias.csv
 **A leitura publicada continua de pé.** O contraste plataforma (16/19) × `json_invalido` (0/6) não mudou. Na base 2, o
 [4] publicado (20/116; plataforma 16/22) é de antes do ajuste e está marcado "a reconferir" no `14` §5. A regra nova só
 **acrescenta** falhas no step final e **tira** finais de outra chamada, então uma virada da leitura é improvável — mas
-quem confirma é a foto da máquina 2.
+quem confirma é a saída no ambiente da base.
 
 **Registro:** livro-razão §3, Ajuste 11 · `13` §4 e §7 · `14` §5 · commit `675523b`.
 
@@ -338,7 +338,7 @@ com os 6 `U_repr_colado` visíveis. Na base 1, então, "6 → 12" vale com qualq
 não se sabe — o agente refaz a chamada e acerta, o que sugere falhas isoladas, mas é preciso contar.
 
 **Solução.** O 4.2b ganha uma **pré-condição**: escolher a regra de ocorrência do balde invisível (falha × sequência)
-olhando as duas bases, antes de consolidar. Os dois números que faltam saem da sonda F rodada na máquina 2 (II.6).
+olhando as duas bases, antes de consolidar. Os dois números que faltam saem da sonda F rodada no ambiente da base (II.6).
 Registrado também como limite no `13` §7.
 
 ### II.3.4 · Sondas sem achado — o que elas descartam
@@ -393,9 +393,9 @@ intervalo, e a margem é estreita dos dois lados: o número é sensível ao limi
 | **C** | `silenciosas`: "chamadas de ferramenta (step × ferramenta…): 3.573 em 3.373 steps" | dois números diferentes com o mesmo rótulo ("steps") parecem uma divergência entre o comando e o notebook (§13.1) — agora os dois aparecem com o nome certo |
 | **F** | cabeçalho do livro-razão: "atualizado 02/10", estado com os Ajustes 10 e 11 e ponteiro para o `plano-atual.md` | o cabeçalho é a primeira coisa que se lê para saber se o arquivo está vivo |
 
-## II.6 · O que continua aberto — e o roteiro para a máquina 2
+## II.6 · O que continua aberto — e o roteiro para o ambiente da base
 
-A base 2 continua sendo verificada por fotos (ressalva E). Para fechá-la, o Rafael roda na `-second`:
+A base 2 continua sendo verificada por contagens transcritas (ressalva E). Para fechá-la, o Rafael roda na `-second`:
 
 ```
 # copiar do repo: pipeline/base_pipeline.py (restaurar TRACE e BASE_ID = "base2"), pipeline/drill_down.py,
@@ -407,7 +407,7 @@ uv run python ../audit/scripts/audit_recompute9.py --base base2 --trace ../data/
        --em resultados/erros_mecanismo.csv --fonte base_pipeline.py
 ```
 
-**Trazer (só contagens, pode fotografar):**
+**Trazer (só contagens, podem sair):**
 
 1. a saída inteira do `audit_recompute9` — os blocos A–C e E têm o publicado da base 2 como expectativa (o que não foi
    publicado aparece como "a conferir"). Qualquer `DIVERGE` vira um item do plano;
@@ -422,8 +422,8 @@ O resto continua no `plano-atual.md` (4.1b, 4.2b, 4.2c, S3–S6, D2), agora com 
 
 ## II.7 · A base 2 rodada (02/10, tarde) — o que o roteiro II.6 trouxe
 
-O Rafael rodou o roteiro na máquina 2: `drill_down.py silenciosas`, `drill_down.py protocolo` e `audit_recompute9.py
---base base2` (fotos de 02/10). Na primeira tentativa, o script falhou com "input format not supported by decoder". O
+O Rafael rodou o roteiro no ambiente da base: `drill_down.py silenciosas`, `drill_down.py protocolo` e `audit_recompute9.py
+--base base2` (02/10). Na primeira tentativa, o script falhou com "input format not supported by decoder". O
 trace da base 2 é `.csv` sem compressão e o script abria tudo como `.xz`. Ele passou a reconhecer o formato pelo
 conteúdo do arquivo (commit `2ba2c1f`, testado na base 1 nos dois formatos).
 
@@ -464,12 +464,12 @@ indicava (M4/M5). Registrado no `11` §2.6.
 ## II.8 · Estado final
 
 - **Auditoria de 02/10: fechada nas duas bases.** As ressalvas A–D, F e H foram resolvidas e G não pede ação. A E
-  (base 2) ficou conferida pelo II.7; falta só a foto das §13.1/§13.7 do notebook (detectores), que não entram nos
+  (base 2) ficou conferida pelo II.7; falta só a saída das §13.1/§13.7 do notebook (detectores), que não entram nos
   números auditados.
 - **Ajuste 11** feito e verificado nas duas bases (54/75 e 24/116).
 - **Balde invisível com verificação independente nas duas bases** (`audit_recompute9`, 0 divergências).
 - **Uma pendência nova, fora do escopo auditado:** o `U_repr_colado` visível da base 2 (18 × 7), no 4.2b-0 —
-  **resolvida no mesmo dia**: são 18 (triagem da base 2 pelo agente da máquina 2; livro-razão Etapa 10c, "Base 2
+  **resolvida no mesmo dia**: são 18 (triagem da base 2 pelo agente do ambiente da base; livro-razão Etapa 10c, "Base 2
   rodada").
 - **Nenhuma decisão de destino mudou.** As quatro decisões que dependem do balde invisível (II.2) foram confirmadas por
   um segundo programa.

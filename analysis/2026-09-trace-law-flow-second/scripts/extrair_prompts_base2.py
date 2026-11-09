@@ -7,7 +7,7 @@ O `conferir_memorias.py` (kit, skill mineracao-candidata) confere cada memória 
 O prompt é o do primeiro ActionStep de cada execução e papel (o system prompt, `model_input_messages[0]`).
 
 O arquivo tem o texto do prompt: grava só fora do repositório (como o --evidencia do `contar_primeiro_passo_nome_base2.py`)
-e não sai da máquina; o que sai é o resultado do `conferir_memorias.py` (contagens, nomes e hashes). Imprime só papel,
+e não sai do ambiente; o que sai é o resultado do `conferir_memorias.py` (contagens, nomes e hashes). Imprime só papel,
 versão, meses e contagens. Uso, da raiz:
     uv run python analysis/2026-09-trace-law-flow-second/scripts/extrair_prompts_base2.py --trace <trace> --saida <fora do repo>/prompts.jsonl
 """

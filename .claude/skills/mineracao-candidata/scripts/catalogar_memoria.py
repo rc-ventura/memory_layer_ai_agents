@@ -8,11 +8,15 @@ no catálogo e confere o catálogo.
                                 [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>] [--monitoramento <monitoramento.json>]
     python catalogar_memoria.py --excluir <id> <papel> [<papel> ...] --motivo "<o porquê>" [--base <BASE_ID>]
                                 [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
+    python catalogar_memoria.py --junto-com <id> <outro_id> [...] --motivo "<o porquê>" [--base <BASE_ID>]
+                                [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
+    python catalogar_memoria.py --revisar <id> --causa <casos>/<lidos> --motivo "<a decisão>" --evidencia "<onde>"
+                                [--base <BASE_ID>] [--decidido-em <AAAA-MM-DD>] [--registro <memorias.json>]
 
 Uma memória entra no catálogo quando está **fechada**: `validation.destino` = "memória" (decisão do pesquisador) e
 `status` = "derived-and-checked". O que tem destino harness vai para o `monitoramento.json`, e o que tem destino em
 aberto fica fora; as duas listas saem no resumo com o motivo. A entrada leva só conteúdo técnico (o que a memória diz,
-onde vale, quantos erros, de que rodada) e o hash do arquivo final, que fica na pasta da mineração, na máquina da base:
+onde vale, quantos erros, de que rodada) e o hash do arquivo final, que fica na pasta da mineração, no ambiente da base:
 sem `location` nem `evidence` (os casos). Desde o esquema 0.4, leva também `validation.nomes` (os nomes que a memória
 manda usar ou evitar), que o `conferir_memorias.py` (degrau 2) confere. Passa pelo `varrer_pii.py` antes de sair (o `minerar.py` faz isso no passo 9).
 
@@ -33,6 +37,19 @@ mandaria fazer o que o ambiente desse papel barra, por evidência que a mineraç
 entrada o `nao_vale_em`: um item por papel, com quando e por quê. Só numa memória global (`scope.role` nulo). Como o
 `monitorada`, passa de uma mineração para a outra no `--registrar`; o `conferir_memorias.py` (degrau 2) não confere a
 memória nesses papéis, e um injetor de memórias não a injeta neles.
+
+**Memória que só vale junto com outra:** o pesquisador decide que o bilhete de uma memória só está completo junto com o
+de outra (o erro é uma linha com dois problemas, e cada memória cobre um). `--junto-com` grava na entrada o
+`vale_junto_com`: um item por memória, com quando e por quê. Passa de uma mineração para a outra no `--registrar`. O
+`--conferir` e o `--registrar` avisam (`ALARME`, sem recusar) quando a outra memória deixa de chegar aonde esta vale:
+some do catálogo, fica monitorada (não injetada), passa a valer só noutro papel ou é excluída do papel desta.
+
+**Degrau 3 (revisada):** depois da leitura de casos (dois leitores às cegas, concordância por script) e do gate do
+pesquisador, que aprova o texto e o destino. `--revisar` grava na entrada o `revisao` (quando, a causa confirmada em
+quantos dos casos lidos, a decisão nas palavras do pesquisador, onde está a evidência e o texto aprovado) e põe o
+`degrau` em 3. Só numa entrada no degrau 2 (conferida) e não monitorada. A revisão vale para aquele texto: o `--conferir`
+recusa um degrau 3 cujo `correction_guidance` mudou depois do gate, e o `conferir_memorias.py` (degrau 2) só devolve o
+degrau 3 enquanto o texto for o aprovado. Como a `conferencia`, não passa para a entrada de uma mineração nova.
 """
 import argparse
 import datetime
@@ -45,7 +62,7 @@ RAIZ = Path(__file__).resolve().parents[4]
 REGISTRO = RAIZ / "analysis" / "registros" / "memorias.json"
 MONITORAMENTO = RAIZ / "analysis" / "registros" / "monitoramento.json"
 TIPOS = ("rara", "reforço")
-PRESERVADOS = ("monitorada", "nao_vale_em")   # decisões do pesquisador: passam de uma mineração para a outra
+PRESERVADOS = ("monitorada", "nao_vale_em", "vale_junto_com")   # decisões do pesquisador: passam de uma mineração para a outra
 CAMPOS = ("id", "unidade", "parte", "base", "rodada_id", "fonte_id", "gerado_em", "esquema", "parte_especifica",
           "destino", "status", "category", "scope", "description", "correction_guidance", "occurrences", "arquivo")
 
@@ -79,7 +96,7 @@ def entrada(doc, caminho):
             "occurrences": {"erros": occ.get("erros"), "execucoes": occ.get("execucoes"),
                             "meses": occ.get("meses") or []},
             "arquivo": {"nome": Path(caminho).name, "sha256_16": _sha16(caminho),
-                        "onde": "na pasta da mineração, na máquina da base"}}, None
+                        "onde": "na pasta da mineração, no ambiente da base"}}, None
 
 
 def montar(caminhos):
@@ -109,11 +126,51 @@ def conferir(reg):
         if excl and (any(not (x.get("papel") and x.get("motivo") and x.get("decidido_em")) for x in excl)
                      or (e.get("scope") or {}).get("role")):
             erros.append(f"item {i} ({e.get('id')}): `nao_vale_em` sem papel, motivo ou data, ou numa memória que não é global")
+        junto = e.get("vale_junto_com")
+        if junto and any(not (x.get("id") and x.get("motivo") and x.get("decidido_em")) or x.get("id") == e.get("id")
+                         for x in junto):
+            erros.append(f"item {i} ({e.get('id')}): `vale_junto_com` sem id, motivo ou data, ou apontando para si mesma")
+        if e.get("degrau") == 3:
+            rev = e.get("revisao") or {}
+            causa = rev.get("causa") or {}
+            if not (rev.get("decidido_em") and rev.get("motivo") and rev.get("evidencia") and causa.get("lidos")
+                    and causa.get("confirmada") is not None and e.get("conferencia")):
+                erros.append(f"item {i} ({e.get('id')}): degrau 3 sem `revisao` completa (data, causa, motivo, evidência) "
+                             "ou sem a `conferencia` do degrau 2")
+            elif rev.get("texto") != e.get("correction_guidance"):
+                erros.append(f"item {i} ({e.get('id')}): degrau 3, mas o texto mudou depois do gate (a revisão é de outro texto)")
         chave = (e.get("id"), e.get("base"))
         if chave in vistos:
             erros.append(f"item {i}: {chave} repetido")
         vistos.add(chave)
     return erros
+
+
+def chega(outra, e):
+    """A outra memória chega aonde `e` vale? (injetada, e no papel de `e` — ou em todos os papéis de `e`, se `e` é
+    global). Devolve None se chega, o motivo se não."""
+    if outra.get("monitorada"):
+        return f"está monitorada ({outra['monitorada'].get('tipo')}), não vai para o agente"
+    papel, papel_outra = (e.get("scope") or {}).get("role"), (outra.get("scope") or {}).get("role")
+    if papel_outra and papel_outra != papel:
+        return f"vale só no papel {papel_outra}"
+    fora = {x["papel"] for x in outra.get("nao_vale_em") or []} - {x["papel"] for x in e.get("nao_vale_em") or []}
+    if papel in fora or (not papel and fora):
+        return f"não vale em {', '.join(sorted({papel} if papel else fora))}"
+    return None
+
+
+def dependencias(reg):
+    """Os alarmes das memórias que só valem junto com outra que deixou de chegar aonde elas valem."""
+    por = {(e.get("id"), e.get("base")): e for e in reg.get("itens", [])}
+    alarmes = []
+    for e in reg.get("itens", []):
+        for x in e.get("vale_junto_com") or []:
+            outra = por.get((x.get("id"), e.get("base")))
+            motivo = "não está no catálogo nesta base" if outra is None else chega(outra, e)
+            if motivo:
+                alarmes.append(f"{e['id']} só vale junto com {x.get('id')}, que {motivo}")
+    return alarmes
 
 
 def registrar(reg, entradas, hoje=None):
@@ -133,7 +190,7 @@ def registrar(reg, entradas, hoje=None):
         novas[(e["id"], e["base"])] = n
     itens = [e for e in reg.get("itens", []) if (e.get("id"), e.get("base")) not in novas] + list(novas.values())
     reg["itens"] = sorted(itens, key=lambda e: (str(e.get("unidade")), str(e.get("id")), str(e.get("base"))))
-    return reg, alarmes
+    return reg, alarmes + dependencias(reg)
 
 
 def gatilhos(tipo, monitoramento):
@@ -186,6 +243,41 @@ def excluir(reg, ident, papeis, motivo, base=None, decidido_em=None):
     return e
 
 
+def junto_com(reg, ident, outras, motivo, base=None, decidido_em=None):
+    """Marca as memórias sem as quais esta não está completa (troca o item de uma já marcada)."""
+    alvo = [e for e in reg.get("itens", []) if e["id"] == ident and (not base or e.get("base") == base)]
+    if len(alvo) != 1:
+        sys.exit(f"{ident}: {len(alvo)} entradas no catálogo (use --base para escolher uma)")
+    e = alvo[0]
+    ids = {x["id"] for x in reg.get("itens", []) if x.get("base") == e.get("base")}
+    faltam = [o for o in outras if o not in ids or o == ident]
+    if faltam:
+        sys.exit(f"{ident}: {', '.join(faltam)} não está no catálogo na base {e.get('base')} (ou é a própria memória)")
+    quando = decidido_em or datetime.date.today().isoformat()
+    itens = [x for x in e.get("vale_junto_com") or [] if x["id"] not in outras]
+    e["vale_junto_com"] = itens + [{"id": o, "decidido_em": quando, "motivo": motivo} for o in outras]
+    return e
+
+
+def revisar(reg, ident, confirmada, lidos, motivo, evidencia, base=None, decidido_em=None):
+    """Grava o degrau 3 (revisada): a causa confirmada na leitura e o gate do pesquisador sobre o texto atual."""
+    alvo = [e for e in reg.get("itens", []) if e["id"] == ident and (not base or e.get("base") == base)]
+    if len(alvo) != 1:
+        sys.exit(f"{ident}: {len(alvo)} entradas no catálogo (use --base para escolher uma)")
+    e = alvo[0]
+    if e.get("degrau") not in (2, 3) or not e.get("conferencia"):
+        sys.exit(f"{ident}: está no degrau {e.get('degrau')}; o degrau 3 vem depois do 2 (conferida)")
+    if e.get("monitorada"):
+        sys.exit(f"{ident}: está monitorada ({e['monitorada'].get('tipo')}), não vai para o agente; não há gate a gravar")
+    if not 0 <= confirmada <= lidos or lidos < 1:
+        sys.exit(f"{ident}: causa {confirmada}/{lidos} não faz sentido")
+    e["degrau"] = 3
+    e["revisao"] = {"decidido_em": decidido_em or datetime.date.today().isoformat(),
+                    "causa": {"confirmada": confirmada, "lidos": lidos}, "motivo": motivo, "evidencia": evidencia,
+                    "texto": e.get("correction_guidance")}
+    return e
+
+
 def main(argv=None):
     for fluxo in (sys.stdout, sys.stderr):
         if hasattr(fluxo, "reconfigure"):
@@ -199,9 +291,14 @@ def main(argv=None):
     p.add_argument("--monitorar", nargs="+", metavar="ID", help="marca estas memórias como monitoradas (não injetadas)")
     p.add_argument("--tipo", choices=TIPOS, help="com --monitorar: rara ou reforço")
     p.add_argument("--excluir", nargs="+", metavar="ID PAPEL", help="a memória global e os papéis em que ela não vale")
-    p.add_argument("--motivo", help="com --monitorar ou --excluir: o porquê, nas palavras do pesquisador")
-    p.add_argument("--base", help="com --monitorar ou --excluir: a base das entradas")
-    p.add_argument("--decidido-em", help="com --monitorar ou --excluir: a data da decisão (padrão: hoje)")
+    p.add_argument("--junto-com", nargs="+", metavar="ID OUTRO_ID",
+                   help="a memória e as memórias sem as quais o bilhete dela não está completo")
+    p.add_argument("--revisar", metavar="ID", help="grava o degrau 3 (revisada) desta memória, depois do gate")
+    p.add_argument("--causa", metavar="CASOS/LIDOS", help="com --revisar: em quantos dos casos lidos a causa se confirmou")
+    p.add_argument("--evidencia", help="com --revisar: onde está a leitura e o gate (dossiê, item)")
+    p.add_argument("--motivo", help="com --monitorar, --excluir, --junto-com ou --revisar: o porquê, nas palavras do pesquisador")
+    p.add_argument("--base", help="com --monitorar, --excluir, --junto-com ou --revisar: a base das entradas")
+    p.add_argument("--decidido-em", help="com --monitorar, --excluir, --junto-com ou --revisar: a data da decisão (padrão: hoje)")
     p.add_argument("--monitoramento", default=str(MONITORAMENTO))
     a = p.parse_args(argv)
     if a.monitorar:
@@ -223,6 +320,32 @@ def main(argv=None):
         print(f"  não vale em  {e['id']}: {', '.join(x['papel'] for x in e['nao_vale_em'])}")
         Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return 0
+    if a.junto_com:
+        if len(a.junto_com) < 2 or not a.motivo:
+            p.error("--junto-com pede o id da memória, pelo menos uma outra memória e --motivo")
+        reg = ler_registro(a.registro)
+        e = junto_com(reg, a.junto_com[0], a.junto_com[1:], a.motivo, a.base, a.decidido_em)
+        print(f"  vale junto com  {e['id']}: {', '.join(x['id'] for x in e['vale_junto_com'])}")
+        for x in dependencias(reg):
+            print(f"  ALARME  {x} — leve ao pesquisador")
+        Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return 0
+    if a.revisar:
+        if not (a.causa and a.motivo and a.evidencia):
+            p.error("--revisar pede --causa <casos>/<lidos>, --motivo e --evidencia")
+        try:
+            confirmada, lidos = (int(x) for x in a.causa.split("/"))
+        except ValueError:
+            p.error("--causa no formato <casos>/<lidos>, por exemplo 27/30")
+        reg = ler_registro(a.registro)
+        e = revisar(reg, a.revisar, confirmada, lidos, a.motivo, a.evidencia, a.base, a.decidido_em)
+        erros = conferir(reg)
+        if erros:
+            print("NÃO REGISTRA:\n  " + "\n  ".join(erros))
+            return 1
+        print(f"  revisada  {e['id']} · {e['base']} · causa {confirmada} de {lidos} · degrau 3")
+        Path(a.registro).write_text(json.dumps(reg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return 0
     if a.registrar:
         reg, alarmes = registrar(ler_registro(a.registro),
                                  json.loads(Path(a.registrar).read_text(encoding="utf-8"))["entradas"])
@@ -236,8 +359,11 @@ def main(argv=None):
             print(f"  ALARME  {x} — leve ao pesquisador")
         return 0
     if a.conferir:
-        erros = conferir(ler_registro(a.registro))
-        print("\n".join(erros) if erros else f"catálogo ok: {len(ler_registro(a.registro).get('itens', []))} memória(s)")
+        reg = ler_registro(a.registro)
+        erros = conferir(reg)
+        print("\n".join(erros) if erros else f"catálogo ok: {len(reg.get('itens', []))} memória(s)")
+        for x in dependencias(reg):
+            print(f"  ALARME  {x} — leve ao pesquisador")
         return 1 if erros else 0
     entradas, fora = montar(a.memorias)
     if a.saida:

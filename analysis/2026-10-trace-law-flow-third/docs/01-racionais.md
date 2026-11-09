@@ -106,7 +106,7 @@ não resultado** — para que o número de hoje sirva de linha de base quando ho
 recorrência), por papel e no total: o que se gastou em passos que falharam por um erro que uma lição poderia evitar. Na
 rodada `609c…` (fonte v2, contagens do pedido A):
 
-| Destino do erro | Tokens (mi) | % do gasto total (3.729,3 mi) | Quem resolve |
+| Pré-destino do erro (§8) | Tokens (mi) | % do gasto total (3.729,3 mi) | Quem resolve |
 |---|---:|---:|---|
 | Candidatas a memória | 387,0 | **10,4%** | memória (hipótese) |
 | Sinal de harness (`try/except NameError`) | 112,0 | 3,0% | prompt/harness |
@@ -137,3 +137,44 @@ base − tokens em erro depois; (2) o **custo da injeção** = tokens injetados 
 **compensa** se economia medida − custo da injeção > 0; (4) a **eficácia** = economia medida ÷ teto. A comparação é por
 **taxa e por papel**, nunca por total: o gráfico mensal de custo mostrou que a mistura de papéis muda o custo por execução
 sem mudar a eficiência de nenhum deles ([roadmap](04-roadmap.md) #36, gráfico 6; #37).
+
+## 8 · Pré-destino e destino (29/10/2026)
+
+**O problema.** Os gráficos de volume (`destinos`, `unidades_destino_tipo` e a genealogia pelo destino) mostram, para cada
+erro, a decisão da triagem da unidade dele: candidata a memória, sinal de harness, harness / infra, crítico, resíduo ou
+sem recorrência. Isso é um **encaminhamento antes da investigação**, e a palavra "destino" no título sugere que a
+investigação já aconteceu para todas as unidades. Não aconteceu: no kit, só o `U_sandbox` a completou.
+
+**A definição.**
+- **Pré-destino** é o que a triagem entrega, por regra: para as unidades candidatas, "memória candidata" com o tipo da lição
+  (`UNI[u][1]`: factual · ambiente ou experiencial · estratégia); para as famílias de plataforma, "harness / infra"
+  (não-memória, por taxonomia); e "resíduo", "crítico" e "sem recorrência". É provisório.
+- **Destino** é só a decisão depois da investigação, do pesquisador, com evidência: memória catalogada (com o degrau),
+  harness registrado, monitorada ou em aberto.
+
+**O que o pipeline já faz.** O código não define destino antes da mineração: `destino_mineracao(u)` devolve "em aberto" para
+a unidade que não foi minerada nesta base, e a coluna `destino_proposto` da triagem só lê esse registro. O que os gráficos
+chamam de destino é a **decisão da triagem**, isto é, o pré-destino. Por isso não há mudança de pipeline: os nomes
+(`destino_proposto`, `DESTINO_MINERACAO`, a coluna "destino" da genealogia) ficam como estão, e `base_pipeline.py`,
+`mineracao_observada.py` e `genealogia_sankey.py` entram no hash de código da rodada. O rótulo que aparece no gráfico é
+escolha de quem apresenta.
+
+**O sinal de harness é híbrido.** A triagem só o emite quando uma mineração anterior já decidiu "harness" para a unidade
+nesta base (`_decisao`, em `mineracao_observada.py`). Ele pertence ao pré-destino, mas já carrega uma decisão
+pós-investigação. Mantê-lo fora das candidatas tem uma razão funcional: o teto de economia (§7) não conta como memória o
+que já se decidiu ser harness.
+
+**O pré-destino é provisório, e a mineração o corrige.** O `U_sandbox` entrou como candidata com 3.653 erros; depois da
+mineração, os erros de verificação de existência e de ferramenta não declarada foram para unidades de harness, e a unidade
+ficou com 1.401 erros, dividida em partes com destinos diferentes (dossiê do sandbox, §1 e §2d). É o resultado correto da
+mineração, não uma falha do pré-destino.
+
+**O estado do destino na base 3, em 29/10/2026** (registro `DESTINO_MINERACAO` e catálogo `registros/memorias.json`):
+- **destino decidido nesta base:** o `U_sandbox` (pelo kit, por parte: 13 memórias no degrau 1 e 3 no degrau 2 no
+  catálogo) e as duas unidades de harness com evidência própria da base 3, `U_verificacao_existencia` e
+  `U_ferramenta_nao_declarada`;
+- **decisão de outra base, não herdada** (Ajuste 7): `U_contrato_dict` (memória, base 1) e `U_campo_inexistente` (harness,
+  bases 1 e 2). São evidência prévia, não destino desta base;
+- **as demais unidades:** só pré-destino.
+
+Como apresentar: os gráficos de volume dizem "pré-destino"; "destino" só se usa para o que passou pela investigação.

@@ -19,7 +19,7 @@ definida, e isso só vale às cegas.
    sem nome, número ou trecho do caso). **Na leitura fechada,** classifique em uma categoria por eixo, só entre as da
    lista, com `indeterminado` quando não der, e escreva também as colunas livres que o roteiro pede.
 3. Grave o arquivo que o roteiro nomeia para a etapa (por padrão `pipeline/resultados/leitura2_<decisao>_<BASE_ID>.csv`),
-   com `exec_id`, `role`, a coluna de idx, uma coluna por eixo (e as livres) e `onde_no_cru`.
+   com `exec_id`, `role`, a coluna de idx, uma coluna por eixo (e as livres) e `onde_no_trace`.
 
 **Regras:**
 - Não copie dado pessoal nem conteúdo do cliente (documento, pergunta, resposta) para a resposta.

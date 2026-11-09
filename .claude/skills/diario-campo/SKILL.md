@@ -1,6 +1,6 @@
 ---
 name: diario-campo
-description: "Registra, organiza e sintetiza o diário de campo pessoal de pesquisa de Rafael Coelho Ventura para o projeto [PROGRAMA-FOMENTO] (Nº [ANONIMIZADO], mecanismo de atualização de memória para agentes de IA em fluxos jurídicos). Use esta skill SEMPRE que a mensagem começar com 'diário:', 'diario:', 'registro de campo:', 'novo registro:', ou quando o usuário disser explicitamente 'registra isso no diário' / 'guarda isso no meu diário de campo'. Use também quando ele pedir para ver, revisar ou fechar/exportar o diário do mês ('como está meu diário desse mês', 'fecha o diário de agosto', 'exporta o diário pro [TUTOR]'). Para 'gera a síntese da semana' / 'sumariza o diário' / 'gera o digest mensal', a skill é `sintese-diario`, não esta. NÃO use para conversas normais de trabalho onde ele apenas menciona ter lido algo ou testado algo sem pedir explicitamente para registrar — isso evitaria logging não solicitado e ruído no arquivo."
+description: "Registra, organiza e sintetiza o diário de campo pessoal de pesquisa de Rafael Coelho Ventura para o projeto [PROGRAMA-FOMENTO] (Nº [ANONIMIZADO], mecanismo de atualização de memória para agentes de IA em fluxos jurídicos). Use esta skill SEMPRE que a mensagem começar com 'diário:', 'diario:', 'registro de campo:', 'novo registro:', ou quando o usuário disser explicitamente 'registra isso no diário' / 'guarda isso no meu diário de campo'. Use também quando ele pedir para ver ou revisar o diário do mês ('como está meu diário desse mês'). Para 'gera a síntese da semana' / 'sumariza o diário' / 'gera o digest mensal', a skill é `sintese-diario`, não esta. NÃO use para conversas normais de trabalho onde ele apenas menciona ter lido algo ou testado algo sem pedir explicitamente para registrar — isso evitaria logging não solicitado e ruído no arquivo."
 ---
 
 # Diário de Campo — memória episódica/semântica pessoal do bolsista
@@ -35,7 +35,7 @@ Fluxo em toda interação com esta skill:
 Acione esta skill quando a mensagem:
 - Começar com `diário:`, `diario:`, `registro de campo:` ou `novo registro:` (o texto após os dois-pontos é o conteúdo bruto da entrada).
 - For um pedido explícito para registrar algo ("registra isso no diário", "guarda isso no meu diário de campo").
-- For um pedido sobre o estado do diário: ver o mês atual, fechar/exportar o mês para o coordenador, ou corrigir uma entrada anterior. (Para gerar/atualizar a síntese semana a semana, a skill é `sintese-diario`.)
+- For um pedido sobre o estado do diário: ver o mês atual ou corrigir uma entrada anterior. (Para gerar/atualizar a síntese semana a semana, a skill é `sintese-diario`.)
 
 Não acione implicitamente. Se Rafael mencionar de passagem que leu um artigo ou fez um teste, sem pedir para registrar, não crie uma entrada — isso geraria ruído e quebraria a expectativa de que só entra no diário o que ele decidiu que vale registrar.
 
@@ -99,22 +99,6 @@ Projeto: Mecanismo de atualização de memória para agentes de IA generativa ap
 O arquivo semanal é só episódico. A reflexão destilada de cada semana (um registro curto: parágrafo + `**Decidido:**` + `**Em aberto:**`) vive no digest mensal `research-diary/summarization/<Mês>/sintese_AAAA-MM.md` (ex.: `research-diary/summarization/Ago/sintese_2026-08.md`), com até 4 registros por mês — um por semana. Quem gera e regenera esse digest é a skill **`sintese-diario`**. Se Rafael pedir "gera a síntese da semana" / "sumariza o diário", acione `sintese-diario`, não escreva síntese no arquivo semanal.
 
 Uma entrada de sábado ou domingo pertence à semana que fechou na sexta anterior — não abre semana nova. A qual mês uma semana pertence segue a **regra da quarta-feira** (ver "Onde o diário vive").
-
-## Fechamento e exportação mensal (para o coordenador)
-
-Quando (a) a primeira entrada de um novo mês calendário for registrada e o mês anterior ainda não tiver sido exportado, ou (b) Rafael pedir explicitamente para exportar/fechar o diário de um mês:
-
-1. Garanta que o digest mensal `research-diary/summarization/<Mês>/sintese_AAAA-MM.md` está atualizado — rode a skill `sintese-diario` primeiro (ela regenera o digest por inteiro).
-2. Use a skill de geração de `.docx` disponível no ambiente antes de gerar o arquivo — não pule esse passo mesmo já tendo feito isso antes na conversa.
-3. Monte um `.docx` limpo com esta estrutura:
-   - Capa simples: mês/ano, nome do bolsista, número do projeto, contagem de registros do mês.
-   - Corpo principal: os registros semanais do digest mensal, em ordem — isto é o que o coordenador deve ler primeiro.
-   - Anexo: o log episódico completo do mês (todas as entradas dos arquivos semanais da pasta `research-diary/<Mês>/` — as semanas atribuídas ao mês pela regra da quarta-feira; formato tabela ou lista), para quem quiser o detalhe.
-4. Verifique o resultado visualmente (converter para PDF com `soffice` e rasterizar com `pdftoppm`, conforme a skill de `.docx`) antes de apresentar.
-5. Apresente o `.docx` com a ferramenta de apresentação de arquivos.
-6. Confira que o índice do projeto — `CLAUDE.md` na raiz (ou `AGENTS.md`, se o repo usar esse nome) — ainda tem um ponteiro do diário apontando para `research-diary/README.md`. É um índice, não um rulebook: só edite se o ponteiro estiver faltando ou quebrado, e aí conserte só essa linha.
-
-Nunca gere o export mensal sem que o digest mensal daquele mês esteja atualizado — o export é uma composição dos registros semanais do digest, não uma reformatação do log bruto.
 
 ## Exemplos
 

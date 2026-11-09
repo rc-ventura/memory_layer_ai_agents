@@ -5,7 +5,7 @@ dado pessoal e o conteúdo do cliente; o conteúdo técnico sai.** Decisão do p
 
 - **O relatório completo fica no ambiente.** Ele leva a evidência de cada afirmação e mora em `pipeline/resultados/`,
   que é git-ignored.
-- **Para fora** (a resposta no chat, um commit, uma foto, uma mensagem) vai o que está em "Pode sair", **depois do
+- **Para fora** (a resposta no chat, um commit, uma mensagem) vai o que está em "Pode sair", **depois do
   `varrer_pii.py`**.
 
 ## Pode sair

@@ -18,7 +18,7 @@ traz o molde `fluxo_encerramento`? Mais: se o papel foi chamado mais de uma vez 
 Serve para a pergunta do grupo B do RoteadorCivel (base 2): o step 1 veio vazio por quê — orçamento de tokens
 gasto em raciocínio (finish=length, reasoning alto), filtro de conteúdo, ou o modelo parou sem gerar nada?
 
-A saída não tem texto de caso nem exec_id (o caso é o número do arquivo): pode ser fotografada na máquina 2.
+A saída não tem texto de caso nem exec_id (o caso é o número do arquivo): pode sair do ambiente da base.
 Os arquivos erro_*.txt continuam com o caso em claro — não copiar para fora.
 """
 import glob, json, os, re, sys

@@ -1,0 +1,100 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="genealogia-contrato-dict" name="Page-1">
+    <mxGraphModel dx="1414" dy="822" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="g17" edge="1" parent="1" source="g7" target="g10" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g18" edge="1" parent="1" source="g7" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.8;exitDx=0;exitDy=0;entryX=0;entryY=0.08;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g19" edge="1" parent="1" source="g8" target="g11" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=5;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g20" edge="1" parent="1" source="g8" target="g12" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.68;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g21" edge="1" parent="1" source="g8" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.88;exitDx=0;exitDy=0;entryX=0;entryY=0.42;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g22" edge="1" parent="1" source="g9" target="g13" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.85;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g23" edge="1" parent="1" source="g10" target="g14" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.09;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g24" edge="1" parent="1" source="g11" target="g14" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#B5573A;opacity=60;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.58;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g25" edge="1" parent="1" source="g12" target="g15" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g26" edge="1" parent="1" source="g13" target="g16" value="" style="edgeStyle=entityRelationEdgeStyle;curved=1;html=1;endArrow=none;startArrow=none;strokeColor=#8A8FA8;opacity=45;strokeWidth=5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g2" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=34;" value="Genealogia: da mensagem à lição" vertex="1">
+          <mxGeometry height="52" width="1200" x="40" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="g3" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=15;fontStyle=1;" value="Assinatura" vertex="1">
+          <mxGeometry height="26" width="300" x="60" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="g4" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=15;fontStyle=1;" value="Pista que a regra lê" vertex="1">
+          <mxGeometry height="26" width="300" x="305" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="g5" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=15;fontStyle=1;" value="Causa" vertex="1">
+          <mxGeometry height="26" width="300" x="530" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="g6" parent="1" style="text;html=1;verticalAlign=middle;fontColor=#B5573A;align=left;fontSize=15;fontStyle=1;" value="Unidade (lição)" vertex="1">
+          <mxGeometry height="26" width="300" x="930" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="g7" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=15;" value="Objeto sem o atributo&lt;br&gt;&lt;small&gt;8 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="62" width="220" x="60" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="g8" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;fontColor=#B5573A;fontSize=15;" value="Falha ao indexar&lt;br&gt;(Could not index)&lt;br&gt;&lt;small&gt;136 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="270" width="220" x="60" y="232" as="geometry" />
+        </mxCell>
+        <mxCell id="g9" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B5573A;strokeWidth=2;dashed=1;fontColor=#B5573A;fontSize=14;" value="Outras mensagens&lt;br&gt;&lt;small&gt;9 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="62" width="220" x="60" y="544" as="geometry" />
+        </mxCell>
+        <mxCell id="g10" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="dict iterado como lista&lt;br&gt;&lt;small&gt;7 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="56" width="250" x="530" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="g11" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="dict indexado por posição&lt;br&gt;&lt;small&gt;89 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="170" width="250" x="530" y="208" as="geometry" />
+        </mxCell>
+        <mxCell id="g12" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;fontColor=#272B4D;fontSize=15;" value="campo inexistente&lt;br&gt;&lt;small&gt;10 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="56" width="250" x="530" y="396" as="geometry" />
+        </mxCell>
+        <mxCell id="g13" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;fontColor=#272B4D;fontSize=15;" value="tipo real do retorno&lt;br&gt;&lt;small&gt;47 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="136" width="250" x="530" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="g14" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#272B4D;strokeColor=#1B1E38;fontColor=#FFFFFF;fontSize=15;" value="Retorno das ferramentas é dict&lt;br&gt;&lt;small&gt;U_contrato_dict · 96 erros&lt;/small&gt;&lt;br&gt;&lt;br&gt;&lt;small&gt;use r[&#x27;result&#x27;][0], que é a lista de documentos;&lt;br&gt;r[&#x27;result&#x27;][0][0] é um documento só&lt;/small&gt;" vertex="1">
+          <mxGeometry height="242" width="310" x="930" y="136" as="geometry" />
+        </mxCell>
+        <mxCell id="g15" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;fontColor=#272B4D;fontSize=15;" value="Campo inexistente no retorno&lt;br&gt;&lt;small&gt;U_campo_inexistente · 10 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="56" width="310" x="930" y="396" as="geometry" />
+        </mxCell>
+        <mxCell id="g16" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;fontColor=#272B4D;fontSize=15;" value="Retorno pode chegar como string&lt;br&gt;&lt;small&gt;U_tipo_retorno · 47 erros&lt;/small&gt;" vertex="1">
+          <mxGeometry height="136" width="310" x="930" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="g27" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A8FA8;strokeWidth=1;dashed=1;fontFamily=Courier New;fontSize=12;fontColor=#4A5560;" value="KeyError: 0" vertex="1">
+          <mxGeometry height="30" width="200" x="305" y="288" as="geometry" />
+        </mxCell>
+        <mxCell id="g28" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A8FA8;strokeWidth=1;dashed=1;fontFamily=Courier New;fontSize=12;fontColor=#4A5560;" value="KeyError: &#x27;campo&#x27;" vertex="1">
+          <mxGeometry height="30" width="200" x="305" y="402" as="geometry" />
+        </mxCell>
+        <mxCell id="g29" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#8A8FA8;strokeWidth=1;dashed=1;fontFamily=Courier New;fontSize=12;fontColor=#4A5560;" value="string indices must be integers" vertex="1">
+          <mxGeometry height="46" width="200" x="305" y="478" as="geometry" />
+        </mxCell>
+        <mxCell id="g30" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=12;fontColor=#4A5560;" value="Base 1 · 498 erros · Outras mensagens: Tipo diferente 6, Retorno não era JSON 2, Formato inválido 1" vertex="1">
+          <mxGeometry height="22" width="1200" x="40" y="618" as="geometry" />
+        </mxCell>
+        <mxCell id="g31" parent="1" style="text;html=1;verticalAlign=middle;align=left;fontSize=12;fontColor=#4A5560;" value="Finais raros do Could not index: unhashable type: &#x27;slice&#x27;, 1 erro, conta como posição; are in the [columns], 1 erro, conta como campo inexistente." vertex="1">
+          <mxGeometry height="22" width="1200" x="40" y="638" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

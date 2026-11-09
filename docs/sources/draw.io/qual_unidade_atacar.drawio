@@ -1,0 +1,115 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="unidade" name="Page-1">
+    <mxGraphModel dx="1414" dy="822" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="u2" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=34;fontColor=#B5573A;" value="Qual unidade atacar?" vertex="1">
+          <mxGeometry height="52" width="1200" x="40" y="26" as="geometry" />
+        </mxCell>
+        <mxCell id="u3" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=17;fontColor=#1B1E38;" value="&lt;b&gt;Duas unidades levam 61% dos tokens em erro: uma é candidata a memória, a outra é o nosso prompt.&lt;/b&gt;" vertex="1">
+          <mxGeometry height="28" width="1200" x="40" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="u4" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=14;fontColor=#1B1E38;" value="&lt;b&gt;Retorno pode chegar como string&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="392" x="40" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="u5" parent="1" style="html=1;fillColor=#272B4D;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="26" width="642" x="440" y="126" as="geometry" />
+        </mxCell>
+        <mxCell id="u6" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#1B1E38;" value="&lt;b&gt;207,0 mi · 34,9%&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="170" x="1088" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="u7" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=14;fontColor=#1B1E38;" value="&lt;b&gt;Verificação de existência (instruída pelo prompt)&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="392" x="40" y="162" as="geometry" />
+        </mxCell>
+        <mxCell id="u8" parent="1" style="html=1;fillColor=#C0582A;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="26" width="484" x="440" y="164" as="geometry" />
+        </mxCell>
+        <mxCell id="u9" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#1B1E38;" value="&lt;b&gt;156,1 mi · 26,3%&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="170" x="930" y="162" as="geometry" />
+        </mxCell>
+        <mxCell id="u10" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=14;fontColor=#4A5560;" value="Ferramentas só aceitam argumento nomeado" vertex="1">
+          <mxGeometry height="30" width="392" x="40" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="u11" parent="1" style="html=1;fillColor=#272B4D;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="26" width="160" x="440" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="u12" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="&lt;b&gt;51,6 mi · 8,7%&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="170" x="606" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="u13" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=14;fontColor=#4A5560;" value="Protocolo do harness" vertex="1">
+          <mxGeometry height="30" width="392" x="40" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="u14" parent="1" style="html=1;fillColor=#6B6F85;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="26" width="108" x="440" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="u15" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="&lt;b&gt;34,8 mi · 5,9%&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="170" x="554" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="u16" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=14;fontColor=#4A5560;" value="Ferramenta acima do tempo limite" vertex="1">
+          <mxGeometry height="30" width="392" x="40" y="276" as="geometry" />
+        </mxCell>
+        <mxCell id="u17" parent="1" style="html=1;fillColor=#6B6F85;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="26" width="90" x="440" y="278" as="geometry" />
+        </mxCell>
+        <mxCell id="u18" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="&lt;b&gt;28,9 mi · 4,9%&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="170" x="536" y="276" as="geometry" />
+        </mxCell>
+        <mxCell id="u19" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=14;fontColor=#4A5560;" value="Campo inexistente no retorno" vertex="1">
+          <mxGeometry height="30" width="392" x="40" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="u20" parent="1" style="html=1;fillColor=#272B4D;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="26" width="75" x="440" y="316" as="geometry" />
+        </mxCell>
+        <mxCell id="u21" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="&lt;b&gt;24,2 mi · 4,1%&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="170" x="521" y="314" as="geometry" />
+        </mxCell>
+        <mxCell id="u22" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=14;fontColor=#4A5560;" value="Inventário do sandbox" vertex="1">
+          <mxGeometry height="30" width="392" x="40" y="352" as="geometry" />
+        </mxCell>
+        <mxCell id="u23" parent="1" style="html=1;fillColor=#272B4D;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="26" width="67" x="440" y="354" as="geometry" />
+        </mxCell>
+        <mxCell id="u24" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="&lt;b&gt;21,6 mi · 3,6%&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="170" x="513" y="352" as="geometry" />
+        </mxCell>
+        <mxCell id="u25" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=right;fontSize=14;fontColor=#4A5560;" value="As demais 12 unidades" vertex="1">
+          <mxGeometry height="30" width="392" x="40" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="u26" parent="1" style="html=1;fillColor=#D9DBE8;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="26" width="197" x="440" y="392" as="geometry" />
+        </mxCell>
+        <mxCell id="u27" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=14;fontColor=#4A5560;" value="&lt;b&gt;63,5 mi · 10,7%&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="170" x="643" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="u28" parent="1" style="html=1;fillColor=#272B4D;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="1050" y="272" as="geometry" />
+        </mxCell>
+        <mxCell id="u29" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="Candidata a memória" vertex="1">
+          <mxGeometry height="26" width="170" x="1074" y="268" as="geometry" />
+        </mxCell>
+        <mxCell id="u30" parent="1" style="html=1;fillColor=#C0582A;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="1050" y="298" as="geometry" />
+        </mxCell>
+        <mxCell id="u31" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="Sinal de harness" vertex="1">
+          <mxGeometry height="26" width="170" x="1074" y="294" as="geometry" />
+        </mxCell>
+        <mxCell id="u32" parent="1" style="html=1;fillColor=#6B6F85;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="1050" y="324" as="geometry" />
+        </mxCell>
+        <mxCell id="u33" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=13;fontColor=#4A5560;" value="Harness/infra" vertex="1">
+          <mxGeometry height="26" width="170" x="1074" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="u34" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#272B4D;strokeWidth=2;fontColor=#1B1E38;fontSize=15;" value="&lt;b&gt;Retorno como string: a mais cara entre as frequentes&lt;/b&gt;&lt;br&gt;38,9 mil tokens por erro, contra 20,0 mil de média · 5.319 erros" vertex="1">
+          <mxGeometry height="96" width="590" x="40" y="438" as="geometry" />
+        </mxCell>
+        <mxCell id="u35" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FBE7D0;strokeColor=#B5573A;strokeWidth=2;fontColor=#1B1E38;fontSize=15;" value="&lt;b&gt;Verificação de existência: a mais frequente&lt;/b&gt;&lt;br&gt;Custa na média, mas são 8.150 erros · conserto no prompt" vertex="1">
+          <mxGeometry height="96" width="590" x="650" y="438" as="geometry" />
+        </mxCell>
+        <mxCell id="u36" parent="1" style="text;html=1;verticalAlign=middle;whiteSpace=wrap;align=left;fontSize=12;fontColor=#4A5560;" value="Base 3, rodada 99e032ad. Percentuais sobre 592,9 mi de tokens em erro; 749 erros pendentes (5,2 mi) ficam fora das barras." vertex="1">
+          <mxGeometry height="24" width="1200" x="40" y="542" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

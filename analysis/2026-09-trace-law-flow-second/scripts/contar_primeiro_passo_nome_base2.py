@@ -15,7 +15,7 @@ conferir sem regex de janela e responder o que o parquet não responde.
 
 Usa as funções do pipeline da base 1 (o método é o mesmo nas duas bases). Não grava nada. Imprime só contagens,
 nomes de papel, meses e nomes de modelo — nenhum identificador de execução nem texto de caso. Os nomes das variáveis
-só saem com --mostrar-nomes. Uso, da raiz, na máquina onde está a base 2:
+só saem com --mostrar-nomes. Uso, da raiz, no ambiente onde está a base 2:
     uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_primeiro_passo_nome_base2.py --trace <arquivo do trace da base 2> [--mostrar-nomes]
 """
 import argparse
@@ -117,7 +117,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--trace", required=True, type=Path, help="o arquivo do trace cru da base 2 (CSV ou parquet)")
     p.add_argument("--mostrar-nomes", action="store_true", help="imprime os 10 nomes mais frequentes (confira antes se podem sair)")
-    p.add_argument("--evidencia", type=Path, help="pasta FORA do repositório onde gravar os casos para leitura (texto do caso; não sai da máquina)")
+    p.add_argument("--evidencia", type=Path, help="pasta FORA do repositório onde gravar os casos para leitura (texto do caso; não sai do ambiente)")
     p.add_argument("--n-casos", type=int, default=3, help="quantos casos com erro gravar (padrão 3), mais 1 de contraste")
     args = p.parse_args(argv)
     if args.evidencia is not None and args.evidencia.resolve().is_relative_to(REPO.resolve()):
@@ -278,7 +278,7 @@ def _trechos(texto, nome, contexto=6):
 
 
 def gravar_evidencia(pasta, n, G, P1, seg):
-    """Casos para LEITURA na própria máquina: o trecho do system prompt em volta do nome, o código do primeiro passo,
+    """Casos para LEITURA na próprio ambiente: o trecho do system prompt em volta do nome, o código do primeiro passo,
     o erro e o código do passo seguinte; mais um caso de contraste (mesmo papel e modelo, mês anterior, sem o erro) e o
     diff entre os dois prompts. Regra fixa de escolha: o papel com mais erros, no mês com mais erros, casos espalhados
     no tempo (primeiro, do meio, último). Na tela, só contagens."""
@@ -315,7 +315,7 @@ def gravar_evidencia(pasta, n, G, P1, seg):
         (pasta / "diff_prompt_contraste_x_caso1.txt").write_text("\n".join(diff), encoding="utf-8")
         linhas_diff = sum(1 for l in diff if l[:1] in "+-" and not l.startswith(("+++", "---")))
     print(f"\nEvidência gravada fora do repositório: {gravados} casos de {role} {mes}, contraste: {len(ctr)} (mês anterior, mesmo modelo, sem o erro);",
-          f"diff entre os prompts: {linhas_diff} linhas mudadas. Leia lá; não copie o texto para fora da máquina.")
+          f"diff entre os prompts: {linhas_diff} linhas mudadas. Leia lá; não copie o texto para fora do ambiente.")
 
 
 if __name__ == "__main__":

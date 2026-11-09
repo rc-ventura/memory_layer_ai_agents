@@ -1,4 +1,4 @@
-"""Resumo de uma rodada observada para levar da máquina 2: só contagens, nomes de unidade e motivos.
+"""Resumo de uma rodada observada para levar do ambiente da base: só contagens, nomes de unidade e motivos.
 
 Lê a pasta da rodada (a mais recente em resultados/observada_*, ou --rodada) e imprime:
   1. o resumo do manifesto (erros, elegíveis, observáveis, pendentes, candidatas, tokens);

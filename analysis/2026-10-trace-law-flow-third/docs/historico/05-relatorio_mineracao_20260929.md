@@ -1,9 +1,9 @@
 <!--
-Transcrição das fotos do guia `relatorio_mineracao_20260929.md` (máquina 2, `…/third/docs/`), feita em 09/10/2026.
+Transcrição do guia `relatorio_mineracao_20260929.md` (ambiente da base, `…/third/docs/`), feita em 09/10/2026.
 É o guia que acompanha a base minerada de erros e a query `ICTI_crossmemory_query_mineracao_erros`
 (ver `06-ICTI_crossmemory_query_mineracao_erros.txt` nesta pasta). Não é a documentação atual da base 3 (essa está em `../`).
-Texto fiel ao das fotos. Marcas: `[linhas N–M não visíveis na foto]` onde o corte da foto impediu a leitura.
-Fotos usadas: IMG_5307 a IMG_5364 da pasta `relatorio_query_mineracao`. Pontos cortados na foto: fim da linha 389 (seção 7), linhas 955–956 (seção 19), 1241–1244 (seção 26) e 1313–1316 (seção 27).
+Texto fiel ao original. Marcas: `[linhas N–M não visíveis]` onde a leitura não foi possível.
+Pontos não lidos: fim da linha 389 (seção 7), linhas 955–956 (seção 19), 1241–1244 (seção 26) e 1313–1316 (seção 27).
 -->
 
 # Guia da Base Minerada de Erros dos Agentes
@@ -394,7 +394,7 @@ Resultado:
 0 execuções
 ```
 
-Ou seja, no conjunto analisado não foi encontrado indício de que a deduplicação estivesse selecionando traces truncados em relação a snapshots an[teriores]. [o fim da linha 389 está cortado na foto]
+Ou seja, no conjunto analisado não foi encontrado indício de que a deduplicação estivesse selecionando traces truncados em relação a snapshots an[teriores]. [o fim da linha 389 não foi lido]
 
 ---
 
@@ -1243,7 +1243,7 @@ reached_final_answer
 
 tokens_error_steps
 tokens_until_first_clean
-[linhas 1241–1244 não visíveis na foto]
+[linhas 1241–1244 não visíveis]
 ```
 
 Essa granularidade provavelmente será mais adequada para responder perguntas comportamentais sobre o agente.
@@ -1314,7 +1314,7 @@ Geração de código
 Contrato de retorno da ferramenta
 Convenção de chamada
 Ambiente / sandbox
-[linhas 1313–1316 não visíveis na foto]
+[linhas 1313–1316 não visíveis]
 ```
 
 ---

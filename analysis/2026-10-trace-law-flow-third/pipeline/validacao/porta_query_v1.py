@@ -1,7 +1,7 @@
 """A query v1 da base 3 (ICTI_crossmemory_query_mineracao_erros) reescrita em Python, para um trace completo.
 
 Serve para testar o modo observado com resposta conhecida: a base 1 (trace completo, aqui) passa pela mesma
-extração que gerou a base 3 (na máquina 2), e o resultado é comparado com o pipeline clássico da base 1
+extração que gerou a base 3 (no ambiente da base), e o resultado é comparado com o pipeline clássico da base 1
 (`comparar_base1.py`). Não é usado na análise da base 3 — lá a extração é a própria query no Athena.
 
 Segue a query CTE a CTE, com a semântica do Trino onde ela importa:

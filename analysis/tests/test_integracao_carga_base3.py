@@ -1,7 +1,7 @@
 """Integração da carga estrutural no pipeline da third; fixtures sintéticas."""
-# TRANSCRIÇÃO: as linhas 1–29 (cabeçalho) não vieram nas fotos; reconstruídas pelo uso no resto do
+# TRANSCRIÇÃO: as linhas 1–29 (cabeçalho) não vieram na transcrição; reconstruídas pelo uso no resto do
 # arquivo e no test_mineracao_observada_base3. Neste repositório não existe a pasta -second: o RAW2
-# cai no pipeline da base 1, e a comparação "duas cópias" vira uma só. Conferir contra a máquina 2.
+# cai no pipeline da base 1, e a comparação "duas cópias" vira uma só. Conferir contra o ambiente da base.
 from importlib.util import module_from_spec, spec_from_file_location
 import json
 from pathlib import Path

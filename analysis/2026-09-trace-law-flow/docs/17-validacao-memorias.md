@@ -47,10 +47,17 @@ e o prompt de cada papel. Nenhuma lê texto de caso.
 | 2 | **conflito com o prompt** | o prompt do papel não manda o contrário do que a memória diz | a memória proíbe o que o prompt pede (ou o prompt manda usar o que a memória diz que não existe) | a memória "não chame `globals`" no papel cujo prompt manda verificar se a variável existe |
 | 3 | **repete o prompt** | o conteúdo da memória não está já escrito no prompt do papel | o prompt já diz isso e o agente ignora — a memória repetiria a mesma instrução | a lista de imports autorizados já está nos 16 prompts (base 1) |
 | 4 | **recorrência** | a memória passa na régua de memória rara: pelo menos 3 execuções em pelo menos 2 meses | poucos casos: a memória fica monitorada, não injetada | 6 das 14 memórias do piloto |
-| 5 | **uma causa só** | a memória não junta sub-causas com consertos diferentes (por exemplo, o mesmo nome barrado usado para depurar e para verificar) | a parte mistura causas: divide-se antes de injetar | a parte E junta a depuração e a verificação com valor padrão |
+| 5 | **uma causa só** | a memória não junta sub-causas com lições diferentes (por exemplo, o mesmo nome barrado usado para depurar e para verificar) | a parte mistura causas: divide-se antes de injetar | a parte E junta a depuração e a verificação com valor padrão |
 
 **O que cada falha pede:** a 1 e a 5 corrigem o script específico (com nova validação pelo `validador-de-script`); a 2
 costuma mudar o destino para harness; a 3 e a 4 são decisão do pesquisador (manter, monitorar ou descartar).
+
+**A checagem 5 hoje (30/10/2026).** Nenhum script de mineração grava o campo `causas`; por isso o `conferir_memorias.py`
+a devolve "não verificável" e o pesquisador a decide com a evidência (`decisoes_degrau2.json`). O script que minera não
+pode ser também quem prova que a memória tem uma causa só (seria circular): a confirmação independente é a leitura do
+degrau 3, que registra `causa` e `licao` de cada caso. Quando for automatizada, `causas` entra na granularidade da lição da
+memória — a lição é o que a memória carrega, e causas com a mesma lição levam o mesmo rótulo —, e a classificação nasce da
+investigação e é recalculada pela auditoria independente (roadmap da base 3, #59; `decisoes.md`, 30/10).
 
 **Limite:** as checagens 1 (ferramentas), 2 e 3 precisam do prompt; a 1 (módulos e funções do Python) confere pelo
 interpretador onde ele mostra o papel, e cai no prompt onde não mostra. Numa base sem prompt (a base 3), usa-se o prompt
@@ -101,11 +108,27 @@ não deve valer num papel — o bilhete mandaria fazer o que o ambiente desse pa
 mineração não vê —, `catalogar_memoria.py --excluir <id> <papel> --motivo "…"` grava na entrada do catálogo o
 `nao_vale_em` (o papel, a data, o porquê). A exclusão passa de uma mineração para a outra; o degrau 2 não confere a
 memória nesse papel (o resultado diz quais foram excluídos), e um injetor de memórias não a injeta nele. O primeiro caso:
-a memória C do sandbox no managerAgent (dossiê do sandbox, §2h, 27–28). Os nomes que cada memória manda usar ou evitar vêm do campo
+a memória C do sandbox no managerAgent (dossiê do sandbox, §2h, 27–28).
+
+**Uma memória que só vale junto com outra** (Ajuste 31, 30/10/2026): quando o erro é uma linha com dois problemas e cada
+memória cobre um, o pesquisador pode deixar o texto de cada uma como está e escrever a dependência:
+`catalogar_memoria.py --junto-com <id> <outro_id> --motivo "…"` grava o `vale_junto_com` na entrada. Passa de uma
+mineração para a outra, e o catálogo avisa (`ALARME`) se a outra deixar de chegar aonde esta vale — sumir, ficar
+monitorada, ser excluída do papel. O primeiro caso: a C.JoogleAnalytics do sandbox (o `pandas`) só vale junto com a C
+(o `json`), porque a linha que falha no JoogleAnalytics esquece os dois imports (dossiê do sandbox, §2h, 31). Os nomes que cada memória manda usar ou evitar vêm do campo
 `validation.nomes` do arquivo final (esquema 0.4), que o catálogo copia. A instrução do prompt que induz um nome (a
 checagem 2) fica no item do sinal de harness no `monitoramento.json` (`instrucao_prompt`, `nomes_induzidos`).
 
+**O degrau 3 no catálogo** (Ajuste 32, 09/11/2026): depois da leitura dos dois leitores e do gate do pesquisador,
+`catalogar_memoria.py --revisar <id> --causa <casos>/<lidos> --motivo "…" --evidencia "…"` grava na entrada o `revisao`
+(a data, a causa confirmada nos casos lidos, a decisão, onde está a evidência e o texto aprovado) e põe o `degrau` em 3.
+A revisão vale para aquele texto: se o `correction_guidance` mudar, o `--conferir` recusa o degrau 3 e o
+`conferir_memorias.py` volta a dar 2. Uma mineração nova começa sem revisão, como começa sem conferência.
+
 ## O primeiro caso
 
-O sandbox (`U_sandbox`, base 3): 14 candidatas no degrau 1 (19/10). O que falta para o degrau 2 está no
-[dossiê](../../2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md), §2f, e no roadmap da base 3, `b3 #50`.
+O sandbox (`U_sandbox`, base 3): 14 candidatas no degrau 1 (19/10), 16 entradas no catálogo depois da divisão pelo
+ambiente. As 3 que vão para o agente (C, C.JoogleAnalytics e E) chegaram ao degrau 3 em 09/11: a causa se confirmou em
+30 de 30, 30 de 30 e 27 de 30 casos lidos, e o pesquisador aprovou o texto de cada uma. As outras 13 seguem monitoradas.
+O caminho está no [dossiê](../../2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md), §2f a §2h, e no
+roadmap da base 3, `b3 #50`. O degrau 4 é o `b3 #39`.

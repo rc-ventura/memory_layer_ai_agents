@@ -159,4 +159,4 @@ nenhum ID ou texto de caso entra neste documento.
 - Componentes fechadas são fechadas na definição da extração/papel, não prova
   de mesma chamada ou de recuperação. Vínculos de janelas são candidatos.
 
-<!-- TRANSCRIÇÃO: o resto do §5 (depois da linha 160 na máquina 2) não estava nas fotos. -->
+<!-- TRANSCRIÇÃO: o resto do §5 (depois da linha 160 no ambiente da base) não foi transcrito. -->

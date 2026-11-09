@@ -26,14 +26,14 @@ Uso (de dentro de audit/scripts/ ou de qualquer lugar):
     python audit_recompute9.py                       # base 1, caminhos do repo
     python audit_recompute9.py --base base2 --trace <arquivo .csv, .csv.xz ou .parquet> --em <erros_mecanismo.csv> --fonte <base_pipeline.py>
     python audit_recompute9.py --base <base nova> --trace <…> --json <medidas.json>   # sem números publicados: grava as medidas
-Saída: só contagens, nomes de papel e de ferramenta — nenhum exec_id, nenhum texto de caso. Pode ser fotografada na
-máquina 2. Gravar em audit/scripts/audit_out9.txt (git-ignored).
+Saída: só contagens, nomes de papel e de ferramenta — nenhum exec_id, nenhum texto de caso. Pode sair do
+ambiente da base. Gravar em audit/scripts/audit_out9.txt (git-ignored).
 """
 import argparse, ast, csv, gzip, json, lzma, os, re, sys, unicodedata
 from collections import Counter, defaultdict
 
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
-try: sys.stdout.reconfigure(encoding="utf-8")   # terminal do Windows (máquina 2): sem isso, "×"/"∩" derrubam o print
+try: sys.stdout.reconfigure(encoding="utf-8")   # terminal do Windows (ambiente da base): sem isso, "×"/"∩" derrubam o print
 except Exception: pass
 
 
@@ -67,8 +67,8 @@ ESPERADO = {
                   forma_colado=(6, 6),
                   # consolidação (Ajuste 12): visível 6 + silencioso 6, sem execução em comum
                   consolidado=dict(ocorrencias=12, execucoes=12, meses=4, papeis=2)),
-    # pares/steps_ferr: o cabeçalho do `drill_down.py silenciosas` na máquina 2 (foto de 02/10)
-    # steps_sil, papeis e o [4] novo: a 1ª rodada deste script na máquina 2 (02/10), agora publicados no doc 14
+    # pares/steps_ferr: o cabeçalho do `drill_down.py silenciosas` no ambiente da base (saída de 02/10)
+    # steps_sil, papeis e o [4] novo: a 1ª rodada deste script no ambiente da base (02/10), agora publicados no doc 14
     "base2": dict(excecao=20, silenciosas=134, steps_sil=134, execs=124, meses=7, papeis=10, ferramentas=18,
                   pares=8232, steps_ferr=2771,
                   grupos=dict(sem_resultado=8, fora_da_cobertura=10, argumento_do_agente=6, plataforma=22,
@@ -80,7 +80,7 @@ ESPERADO = {
                   sucesso={"argumento_do_agente": (2, 6), "plataforma": (17, 22), "json_invalido": (3, 86),
                            "nao_reconhecido": (2, 2)}, sucesso_total=(24, 116), sucesso_antes=(20, 116),
                   forma_colado=(86, 86),
-                  # consolidação (Ajuste 12): visível 18 (triagem da máquina 2, 02/10) + silencioso 86, 0 em comum;
+                  # consolidação (Ajuste 12): visível 18 (triagem no ambiente da base, 02/10) + silencioso 86, 0 em comum;
                   # meses 4 (o silencioso tem mai/2026, o visível começa em jun) e papéis 1 — rodada 2 (05/10)
                   consolidado=dict(ocorrencias=104, execucoes=104, meses=4, papeis=1)),
 }.get(args.base)

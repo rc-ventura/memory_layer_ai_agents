@@ -8,7 +8,7 @@
 [`../../pipeline-entre-bases.md`](../../pipeline-entre-bases.md), Etapa 10b.
 
 **Fontes:** base 1 — este repositório (`drill_down.py protocolo`, `protocolo --casos`, `metadados_steps.py`); base 2 —
-máquina de compliance, só contagens, nomes de papel, ferramenta e modelo, hashes e sim/não lidos das fotos e das
+ambiente de compliance, só contagens, nomes de papel, ferramenta e modelo, hashes e sim/não lidos das saídas e das
 leituras do Rafael (nenhum texto de caso sai de lá).
 
 ## TL;DR
@@ -180,10 +180,10 @@ nos 13 erros dos outros papéis, **não verificado**.
 
 | Fonte | Tipo | Conteúdo |
 |---|---|---|
-| `drill_down.py critico CalculoCivel` | determinística, máquina 2 | a fila dos críticos, a ligação ao protocolo e a trajetória por tipo |
+| `drill_down.py critico CalculoCivel` | determinística, ambiente da base | a fila dos críticos, a ligação ao protocolo e a trajetória por tipo |
 | 4 arquivos `protocolo --casos CalculoCivel 4` | leitura do Rafael | — |
-| relatório "cascata crítica" (12 fotos) | leitura assistida por LLM (GPT-6.1 Sol, máquina 2) | — |
-| relatório "calculadora" (5 fotos) | leitura assistida por LLM (GPT-6.1 Sol, máquina 2) | — |
+| relatório "cascata crítica" | leitura assistida por LLM (GPT-6.1 Sol, ambiente da base) | — |
+| relatório "calculadora" | leitura assistida por LLM (GPT-6.1 Sol, ambiente da base) | — |
 
 Abaixo, **[conferido]** = verificado no cru de forma determinística (AST, reprodução da regex, tipo da variável,
 contagem); **[assistido]** = leitura do LLM, hipótese.
@@ -267,12 +267,12 @@ crítico (plano 4.6), não à da maior candidata da base 2. A chamada terminal t
 | Papel | Erros | Pergunta | Prioridade |
 |---|---:|---|---|
 | ~~CalculoCivel~~ | 4 | feito — §2.5 | — |
-| ~~RespostaBacen~~ | 4 | **feito 02/10** (máquina 2, assistido): `o4-mini`, `b0f37eea`, modo texto. **M1 em 3**: JSON do negócio ×2 e pergunta ao usuário, os 3 com `resposta_gerada` e o prompt pedindo formato. **M2 em 1**: dez/2025, logo depois do `resposta_final`, com `json_resposta`. 3/4 recuperam no step seguinte, 4/4 entregam `final_answer` depois. O M2 **não** reapareceu com o contrato atual: segue sinal de harness, já corrigido, não vira memória (`10` §4 M2) | — |
+| ~~RespostaBacen~~ | 4 | **feito 02/10** (ambiente da base, assistido): `o4-mini`, `b0f37eea`, modo texto. **M1 em 3**: JSON do negócio ×2 e pergunta ao usuário, os 3 com `resposta_gerada` e o prompt pedindo formato. **M2 em 1**: dez/2025, logo depois do `resposta_final`, com `json_resposta`. 3/4 recuperam no step seguinte, 4/4 entregam `final_answer` depois. O M2 **não** reapareceu com o contrato atual: segue sinal de harness, já corrigido, não vira memória (`10` §4 M2) | — |
 | RoteadorCivel | 56 | os 49 não lidos seguem o mesmo padrão de metadados (M4/M5)? | baixa |
 | OBFCivel | 4 | mesmo modelo novo, mesmo mês — provavelmente M4/M5 | baixa |
 | CalculoTrabalhista | 1 | `gpt-4.1` em ago — fundo? | baixa |
 
-**M1 medido na base 2 (`protocolo` [9], máquina 2, 02/10).** Antecipou a resposta final / mediana / copiou da
+**M1 medido na base 2 (`protocolo` [9], ambiente da base, 02/10).** Antecipou a resposta final / mediana / copiou da
 observação anterior:
 
 | Papel | Erros | Antecipou (≥ 50%) | Mediana | Copiou da observação |

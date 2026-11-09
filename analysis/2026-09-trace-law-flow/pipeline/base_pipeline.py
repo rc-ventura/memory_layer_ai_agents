@@ -586,7 +586,7 @@ ALARME_COBERTURA = 0.05
 # mineração foi feita (a nº10 da base 2 não herda o "harness" da base 1 — pipeline-entre-bases.md, Ajuste 7). Quando a
 # mesma decisão é tomada noutra base, com evidência dela, a base entra em `bases` (Ajuste 13, 05/10: o "campo
 # inexistente" da base 2 — 38/38 com a chave pedida no system prompt, 31 delas `quebra_sigilo` contra o retorno
-# `vazamento_sigilo` do `validar_quebra_sigilo`; `investigacao_achados.py` seção C, rodada 2 da máquina 2).
+# `vazamento_sigilo` do `validar_quebra_sigilo`; `investigacao_achados.py` seção C, rodada 2 no ambiente da base).
 DESTINO_MINERACAO = {
     "U_contrato_dict": {"destino": "memória", "bases": ("base1",)},
     "U_campo_inexistente": {"destino": "harness", "bases": ("base1", "base2")},

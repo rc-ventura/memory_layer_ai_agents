@@ -27,7 +27,7 @@ espontâneos: `print(repr(x))`, `print(type(x).__name__)`, `print(dir(x))`, `eva
 
 Mesma população da auditoria (`audit/scripts/audit_candidata_base3.py`, `populacao_sandbox`), tipos `funcao_proibida` e
 `atributo_dunder`. Lê o parquet cru com o pyarrow. Não grava nada. Imprime só contagens, nomes de papel, meses e
-formatos mascarados de código. Uso, da raiz, na máquina da base:
+formatos mascarados de código. Uso, da raiz, no ambiente da base:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_proibidas_linha.py --fonte <parquet>
 """
 import argparse

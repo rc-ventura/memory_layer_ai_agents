@@ -45,7 +45,7 @@ verifica um nome — direto (`'x' in globals()`, `'x' not in globals()`, `global
 agente que recebe o nome entre aspas (`f('x')`) e, na mesma linha, cria `x`; e esse nome recebe, no código do passo ou na
 própria linha, o resultado de uma chamada de função que não é `globals`/`locals`/`vars` (`x = ferramenta(...)`). Esses
 erros vão para `U_verificacao_existencia` (sinal de harness). Regras do passo 4 e limiares não mudam. A emenda foi
-escrita depois da primeira mineração na base 3 e do teste da regra (b) nela (dossiê, foto `IMG_5900`): é descritiva.
+escrita depois da primeira mineração na base 3 e do teste da regra (b) nela (dossiê): é descritiva.
 
 **Emenda 2, de 16/10, depois da primeira rodada na base 3** (`observada_e3ebc8274dcf108c`): a lista acima não tinha os
 três primeiros sinais (bloco de código, falha do LLM, timeout de ferramenta), que o pipeline decide antes do sandbox
@@ -165,7 +165,7 @@ o complemento fixo "Para inspecionar um valor, use print(type(x)) e print(str(x)
 (o jeito permitido de fazer o que a depuração e a conversão de texto faziam). Regras, partes e limiar não mudam.
 
 **Emenda 7, de 20/10 (consequência do Ajuste 26, decidido pelo Rafael; descritiva, escrita depois do teste na base 2,
-dossiê §2h, foto `IMG_5968`):** sai também da população o import de uma ferramenta que o prompt **cita e não declara**:
+dossiê §2h):** sai também da população o import de uma ferramenta que o prompt **cita e não declara**:
 no último trecho da mensagem (depois do último `due to:`), o nome de `Import of X is not allowed`, `Import from X is not
 allowed` ou `No module named 'X'`, pela raiz antes do primeiro ponto, está na lista do pipeline das ferramentas citadas e
 não declaradas — hoje só `get_document_text` (o prompt do OBFCivel a cita e não a declara em 63 de 63 execuções na base 2
@@ -175,7 +175,7 @@ os outros `get_*`. Regras do passo 4, partes e limiar não mudam. Na base 1, 0 e
 **167** (todos no OBFCivel): o sandbox 1.401 → 1.234 e a B.OBFCivel 211 → 44.
 
 **Emenda 8, de 20/10 (consequência do Ajuste 27, decidido pelo Rafael; descritiva, escrita depois da medição na base 3,
-dossiê §2h, 7–8, fotos `IMG_5976`–`IMG_5978`):** sai também da população, **no papel cujo prompt manda verificar se a
+dossiê §2h, 7–8):** sai também da população, **no papel cujo prompt manda verificar se a
 variável existe** (a lista do pipeline; hoje só o ContestacaoCivel, que chega ao trace como `ontestacaoCivel`), toda
 verificação de existência com a função proibida `globals`, `locals` ou `vars`: a linha que falhou tem `in globals()` /
 `in locals()` / `in vars()` ou `globals().get(` (e o mesmo com `locals`/`vars`), crie a variável ou não, com nome entre

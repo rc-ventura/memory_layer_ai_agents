@@ -145,6 +145,103 @@ class TestCatalogo(unittest.TestCase):
         self.assertEqual(cm.main(["--excluir", "U_x.C", "managerAgent", "--motivo", "m", "--registro", str(reg)]), 0)
         self.assertEqual(json.loads(reg.read_text(encoding="utf-8"))["itens"][0]["nao_vale_em"][0]["papel"], "managerAgent")
 
+    def _c_e_c_de_papel(self):
+        """Uma memória global (U_x.C) e uma de papel (U_x.C.P), como a C e a C.JoogleAnalytics do sandbox."""
+        g, _ = cm.entrada(doc("U_x.C"), self.gravar("a.json", doc("U_x.C")))
+        d = doc("U_x.C.P")
+        d["memoria"]["scope"] = {"role": "P", "tool": None}
+        p, _ = cm.entrada(d, self.gravar("b.json", d))
+        reg, _ = cm.registrar({"itens": []}, [g, p], hoje="2026-10-20")
+        return reg, g, p
+
+    def test_junto_com_e_os_alarmes(self):
+        # Ajuste 31 (30/10): a C.JoogleAnalytics só vale junto com a C (a linha esquece pandas e json)
+        reg, g, p = self._c_e_c_de_papel()
+        cm.junto_com(reg, "U_x.C.P", ["U_x.C"], "a linha usa pd e json", decidido_em="2026-10-30")
+        por = {e["id"]: e for e in reg["itens"]}
+        self.assertEqual(por["U_x.C.P"]["vale_junto_com"],
+                         [{"id": "U_x.C", "decidido_em": "2026-10-30", "motivo": "a linha usa pd e json"}])
+        self.assertEqual((cm.conferir(reg), cm.dependencias(reg)), ([], []))
+        # a outra excluída de um papel que não é o desta: sem alarme; do papel desta: alarme
+        cm.excluir(reg, "U_x.C", ["managerAgent"], "m")
+        self.assertEqual(cm.dependencias(reg), [])
+        cm.excluir(reg, "U_x.C", ["P"], "m")
+        self.assertEqual(cm.dependencias(reg), ["U_x.C.P só vale junto com U_x.C, que não vale em P"])
+        # mineração nova: a marcação passa, e o alarme sai no --registrar
+        reg, alarmes = cm.registrar(reg, [{**p, "description": "nova"}], hoje="2026-11-01")
+        self.assertEqual(len({e["id"]: e for e in reg["itens"]}["U_x.C.P"]["vale_junto_com"]), 1)
+        self.assertEqual(alarmes, ["U_x.C.P só vale junto com U_x.C, que não vale em P"])
+
+    def test_junto_com_monitorada_ausente_e_malformada(self):
+        reg, g, p = self._c_e_c_de_papel()
+        cm.junto_com(reg, "U_x.C.P", ["U_x.C"], "m")
+        cm.monitorar(reg, ["U_x.C"], "reforço", "m", {"itens": []})
+        self.assertIn("está monitorada", cm.dependencias(reg)[0])
+        reg["itens"] = [e for e in reg["itens"] if e["id"] != "U_x.C"]
+        self.assertIn("não está no catálogo", cm.dependencias(reg)[0])
+        with self.assertRaises(SystemExit):                                   # a outra tem de estar no catálogo
+            cm.junto_com(reg, "U_x.C.P", ["U_x.Z"], "m")
+        reg["itens"][0]["vale_junto_com"] = [{"id": "U_x.C.P", "decidido_em": "2026-10-30", "motivo": "m"}]
+        self.assertTrue(any("`vale_junto_com`" in x for x in cm.conferir(reg)))
+
+    def test_cli_junto_com(self):
+        reg = self.gravar("memorias.json", {"o_que_e": "x", "itens": []})
+        d = doc("U_x.C.P")
+        d["memoria"]["scope"] = {"role": "P", "tool": None}
+        cat = self.p / "cat.json"
+        cm.main([str(self.gravar("a.json", doc("U_x.C"))), str(self.gravar("b.json", d)), "--saida", str(cat)])
+        cm.main(["--registrar", str(cat), "--registro", str(reg)])
+        self.assertEqual(cm.main(["--junto-com", "U_x.C.P", "U_x.C", "--motivo", "m", "--registro", str(reg)]), 0)
+        itens = {e["id"]: e for e in json.loads(reg.read_text(encoding="utf-8"))["itens"]}
+        self.assertEqual(itens["U_x.C.P"]["vale_junto_com"][0]["id"], "U_x.C")
+        self.assertEqual(cm.main(["--conferir", "--registro", str(reg)]), 0)
+
+    def _conferida(self, ident="U_x.C"):
+        e, _ = cm.entrada(doc(ident), self.gravar(f"{ident}.json", doc(ident)))
+        reg, _ = cm.registrar({"itens": []}, [e], hoje="2026-10-20")
+        reg["itens"][0].update(degrau=2, conferencia={"em": "2026-10-26", "checagens": {}})
+        return reg
+
+    def test_revisar_grava_o_degrau_3(self):
+        # o gate do degrau 3 (09/11): a causa confirmada na leitura e o texto aprovado
+        reg = self._conferida()
+        cm.revisar(reg, "U_x.C", 27, 30, "aprovado como está", "dossiê §2h, 42", decidido_em="2026-11-09")
+        e = reg["itens"][0]
+        self.assertEqual((e["degrau"], e["revisao"]["causa"], e["revisao"]["texto"]),
+                         (3, {"confirmada": 27, "lidos": 30}, "g"))
+        self.assertEqual(cm.conferir(reg), [])
+        # o texto muda depois do gate: a revisão é de outro texto
+        e["correction_guidance"] = "outro"
+        self.assertTrue(any("texto mudou" in x for x in cm.conferir(reg)))
+        # mineração nova: a revisão não passa para a entrada nova (é de outra rodada)
+        reg, _ = cm.registrar(reg, [{**cm.entrada(doc("U_x.C"), self.p / "U_x.C.json")[0]}], hoje="2026-11-10")
+        self.assertNotIn("revisao", reg["itens"][0])
+
+    def test_revisar_so_depois_do_degrau_2_e_fora_do_monitoramento(self):
+        e, _ = cm.entrada(doc("U_x.C"), self.gravar("a.json", doc("U_x.C")))
+        reg, _ = cm.registrar({"itens": []}, [e], hoje="2026-10-20")
+        with self.assertRaises(SystemExit):                                    # degrau 1
+            cm.revisar(reg, "U_x.C", 30, 30, "m", "ev")
+        reg = self._conferida()
+        cm.monitorar(reg, ["U_x.C"], "rara", "m", {"itens": []})
+        with self.assertRaises(SystemExit):                                    # monitorada
+            cm.revisar(reg, "U_x.C", 30, 30, "m", "ev")
+        reg = self._conferida()
+        with self.assertRaises(SystemExit):                                    # mais casos que lidos
+            cm.revisar(reg, "U_x.C", 31, 30, "m", "ev")
+        reg["itens"][0]["degrau"] = 3                                          # degrau 3 sem revisão: o --conferir recusa
+        self.assertTrue(any("sem `revisao`" in x for x in cm.conferir(reg)))
+
+    def test_cli_revisar(self):
+        reg = self.gravar("memorias.json", self._conferida())
+        self.assertEqual(cm.main(["--revisar", "U_x.C", "--causa", "27/30", "--motivo", "m", "--evidencia", "ev",
+                                  "--decidido-em", "2026-11-09", "--registro", str(reg)]), 0)
+        e = json.loads(reg.read_text(encoding="utf-8"))["itens"][0]
+        self.assertEqual((e["degrau"], e["revisao"]["decidido_em"]), (3, "2026-11-09"))
+        self.assertEqual(cm.main(["--conferir", "--registro", str(reg)]), 0)
+        with self.assertRaises(SystemExit):                                    # --causa fora do formato
+            cm.main(["--revisar", "U_x.C", "--causa", "27", "--motivo", "m", "--evidencia", "ev", "--registro", str(reg)])
+
     def test_o_catalogo_do_repositorio_confere(self):
         self.assertEqual(cm.conferir(cm.ler_registro(cm.REGISTRO)), [])
 

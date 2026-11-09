@@ -44,7 +44,7 @@ class TestLinha(unittest.TestCase):
 
     def test_regra_b(self):
         vi = b3.verificacao_instruida
-        # os formatos da base 3 (foto IMG_5898) e da base 1
+        # os formatos da base 3 e da base 1
         self.assertEqual(vi("if not has_var('peticao_json'): peticao_json = get_peticao_inicial(numero_pasta=p)", ""), "instruída")
         self.assertEqual(vi("peticao_json_str = ensure('peticao_json_str', lambda: get_peticao_inicial(numero_pasta=p))", ""), "instruída")
         self.assertEqual(vi("if 'peticao' not in globals():", "if 'peticao' not in globals():\n    peticao = get_doc(x)"), "instruída")
@@ -55,7 +55,7 @@ class TestLinha(unittest.TestCase):
 
     def test_forma_espontanea(self):
         fe = b3.forma_espontanea
-        # as formas da base 3 (fotos IMG_5922–IMG_5923, mascaradas) e da base 1
+        # as formas da base 3 (mascaradas) e da base 1
         self.assertEqual(fe("if 'id_processo' not in globals(): id_processo = 'x'", ""), "cria com valor fixo")
         self.assertEqual(fe("if 'id_processo' not in globals() or not id_processo: id_processo = 'x'", ""), "cria com valor fixo")
         self.assertEqual(fe("if 'a' not in locals():", "if 'a' not in locals():\n    a = None"), "cria com valor fixo")
