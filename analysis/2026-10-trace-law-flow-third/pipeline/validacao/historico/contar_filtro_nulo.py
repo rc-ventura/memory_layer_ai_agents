@@ -5,7 +5,7 @@ três textos é NULL, e a linha sai da base. Se nenhuma execução da base 3 tem
 has_final_locals = 0), é sinal de que as sem resposta/estado foram cortadas. Na base 1, vazio=NULL deixaria 100/1000.
 
 Imprime só contagens — nada de identificador ou texto. Uso, de qualquer pasta:
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_filtro_nulo.py [--fonte <parquet>]
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/contar_filtro_nulo.py [--fonte <parquet>]
 """
 import argparse
 from pathlib import Path
@@ -13,7 +13,7 @@ import sys
 
 import pyarrow.parquet as pq
 
-PIPELINE = Path(__file__).resolve().parents[1]
+PIPELINE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PIPELINE))
 import base_pipeline as bp
 

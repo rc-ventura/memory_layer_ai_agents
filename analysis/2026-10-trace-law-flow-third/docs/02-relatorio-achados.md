@@ -61,7 +61,7 @@ casos de cada candidata estão em `<rodada>/perfis/<unidade>/casos.csv`.
 | Mensagens de erro limitadas pelo corte | 0 (na v1: 1.009; a maior mensagem tem 833.507 caracteres) |
 
 Fonte: `<rodada>/manifesto.json` (bloco `resumo`) e `cobertura_sintomas.csv`; o comprimento, do
-`validacao/inspecionar_parquet.py` ([roadmap](04-roadmap.md) #26).
+`validacao/historico/inspecionar_parquet.py` ([roadmap](04-roadmap.md) #26).
 
 ## 2 · Cobertura: o que as regras conseguem decidir
 
@@ -394,7 +394,7 @@ falso positivo, em 5.781 ActionSteps. O `step_number` = 1 sozinho não basta: el
 saiu do pedido B ([`05`](05-pedido-queries.md)).
 
 **2. Um erro por execução, poucos nomes, e o padrão da verificação de existência**
-(`pipeline/validacao/contar_primeiro_passo_nome.py`).
+(`pipeline/validacao/historico/contar_primeiro_passo_nome.py`).
 
 | Medida | Resultado |
 |---|---|
@@ -483,7 +483,7 @@ nossa tabela é um `InterpreterError` ("The variable ... is not defined"), com o
 o interpretador do sandbox levanta o seu próprio erro, que o `except NameError` não pega. O passo seguinte passa porque o
 agente deixa de verificar e cria a variável direto.
 
-**Reproduzido no interpretador** (`pipeline/validacao/testar_sandbox_try_nameerror.py`, código sintético; smolagents
+**Reproduzido no interpretador** (`pipeline/validacao/historico/testar_sandbox_try_nameerror.py`, código sintético; smolagents
 1.26.0 — a versão da plataforma não é conhecida):
 
 | Forma de verificar se a variável existe | Variável ainda não existe | Já existe (passo anterior) |

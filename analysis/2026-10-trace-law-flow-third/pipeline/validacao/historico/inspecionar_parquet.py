@@ -6,7 +6,7 @@ atingem esse maior comprimento nas de texto (é o que mostra o novo corte da men
 Nunca imprime valor de célula, identificador ou texto: só nomes de colunas e contagens.
 
 Uso, de qualquer pasta, um arquivo por vez:
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/inspecionar_parquet.py <parquet>
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/inspecionar_parquet.py <parquet>
 """
 import argparse
 from pathlib import Path

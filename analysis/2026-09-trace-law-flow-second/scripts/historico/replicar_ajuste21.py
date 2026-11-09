@@ -20,7 +20,7 @@ import ast
 from pathlib import Path
 import sys
 
-AQUI = Path(__file__).resolve().parent
+AQUI = Path(__file__).resolve().parents[1]   # a pasta scripts/ (este arquivo está em scripts/historico/)
 RAIZ = AQUI.parents[2]
 BASE1 = RAIZ / "analysis" / "2026-09-trace-law-flow" / "pipeline"
 BASE2 = AQUI.parent / "pipeline"

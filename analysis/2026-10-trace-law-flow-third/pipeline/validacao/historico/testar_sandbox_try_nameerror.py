@@ -18,7 +18,7 @@ Resultado em 13/10/2026, smolagents 1.26.0 (a versão da plataforma não é conh
   ainda não existe — isto é, no primeiro passo.
 
 Uso, da raiz (o smolagents não é dependência do projeto):
-    uv run --with smolagents python analysis/2026-10-trace-law-flow-third/pipeline/validacao/testar_sandbox_try_nameerror.py
+    uv run --with smolagents python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/testar_sandbox_try_nameerror.py
 """
 from smolagents.local_python_executor import LocalPythonExecutor
 

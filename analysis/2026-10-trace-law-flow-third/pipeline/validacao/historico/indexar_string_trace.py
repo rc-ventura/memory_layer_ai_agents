@@ -10,8 +10,8 @@ texto (JSON ou repr) → `string indices must be integers` (smolagents 1.26.0, 1
 Saída: só contagens, nomes de papel e nomes de função. Na base 1, os identificadores ficam em
 `2026-09-trace-law-flow/pipeline/resultados/evidencia/34_indexar_string/casos.csv` (fora do git); em outra base, só
 com --evidencia (uma pasta fora do repositório). Uso, da raiz:
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/indexar_string_trace.py
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/indexar_string_trace.py --trace <trace da base 2>
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/indexar_string_trace.py
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/indexar_string_trace.py --trace <trace da base 2>
 Resultado na base 1 (14/10): 136 "Could not index"; 37 com o erro de string, nenhum com valor começando por `{`
 (9 `[`, 28 texto); 13 dos 37 desserializam no passo seguinte; 88 retorno-dict (`{'`, `get_available_documents`).
 """
@@ -23,7 +23,7 @@ import sys
 
 import pandas as pd
 
-ANALYSIS = Path(__file__).resolve().parents[3]
+ANALYSIS = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ANALYSIS))
 from leitor_trace import ler_trace
 

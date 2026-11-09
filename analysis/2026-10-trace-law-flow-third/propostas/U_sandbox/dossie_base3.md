@@ -449,7 +449,7 @@ para a pasta da base 1) e sem o número de antes para dizer o que mudou de unida
 outros papéis, 9) e a da base 2 (só esse papel tem a instrução, 224 de 224). A coluna "código com a verificação
 instruída" (117 de 137 em `globals`) não conta como prova: procura `in globals()`, que a própria linha tem. A
 instrução não diz como verificar; o sandbox barra os dois jeitos que o agente tenta. No interpretador
-(`pipeline/validacao/testar_sandbox_try_nameerror.py`, smolagents 1.26.0): `globals()` e `except NameError` falham;
+(`pipeline/validacao/historico/testar_sandbox_try_nameerror.py`, smolagents 1.26.0): `globals()` e `except NameError` falham;
 `except Exception`, `except` sem tipo e `x = None` + `if x is None` funcionam. **Decisão do Rafael: harness**, por coerência
 com o Ajuste 21 (o prompt induz o erro ao deixar o como em aberto). A memória "como verificar no sandbox" fica como
 candidata própria (roadmap `#51`).
@@ -693,7 +693,7 @@ Com a base 1 (11 de 11), são **531 de 531** imports de `json` que rodam com o p
 lista, em 3 papéis e duas bases. **A divergência entre a lista do prompt e a do interpretador é geral nesses papéis, não
 um acaso** — o item 19 vale, e a regra do degrau 2 (o ambiente pela lista do interpretador) fica confirmada.
 
-**21 · O mecanismo do item 18 reproduzido no smolagents (21/10; `pipeline/validacao/testar_sandbox_executor_proprio.py`,
+**21 · O mecanismo do item 18 reproduzido no smolagents (21/10; `pipeline/validacao/historico/testar_sandbox_executor_proprio.py`,
 smolagents 1.26.0).** Um `CodeAgent` com um modelo falso que sempre responde `import json` (nenhuma chamada a LLM, nenhum
 dado de caso), em três montagens:
 
@@ -814,7 +814,7 @@ uv run python analysis/2026-09-trace-law-flow-second/scripts/contar_casos_memori
   **A decisão 8 (ler nas bases 1 e 2) precisa ser revista: questão a trazer.**
 - **C, uma causa só — evidência a favor:** na base 1, em **0 de 6** o módulo tinha sido importado antes, sem erro, no mesmo
   papel e execução, e nos 6 o passo seguinte roda sem erro. No interpretador, um import vale nos passos seguintes
-  (`pipeline/validacao/testar_sandbox_import_persiste.py`, 22/10, smolagents 1.26.0: os três passos rodam): se o import
+  (`pipeline/validacao/historico/testar_sandbox_import_persiste.py`, 22/10, smolagents 1.26.0: os três passos rodam): se o import
   tivesse rodado antes, a causa seria estado perdido, não esquecimento. Na base 3 (item 16): no RoteadorCivel, o passo
   seguinte importa e roda em 218 de 241. A medida do passo anterior na base 3 entrou no `contar_modulo_sem_import_papel.py`
   (parte C, nova; `--papel todos`, `--nome pd` para o `pandas`) e sai no ambiente (roteiro). Na base 1 no formato da base 3

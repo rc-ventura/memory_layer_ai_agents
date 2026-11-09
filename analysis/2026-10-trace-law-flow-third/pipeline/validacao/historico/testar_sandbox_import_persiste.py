@@ -9,7 +9,7 @@ execução aponta para estado perdido, não para esquecimento (`contar_casos_mem
 `contar_modulo_sem_import_papel.py`, parte C, base 3). A versão do smolagents da plataforma não é conhecida.
 
 Uso, da raiz (o smolagents não é dependência do projeto):
-    uv run --no-project --with smolagents==1.26.0 --with pandas python analysis/2026-10-trace-law-flow-third/pipeline/validacao/testar_sandbox_import_persiste.py
+    uv run --no-project --with smolagents==1.26.0 --with pandas python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/testar_sandbox_import_persiste.py
 """
 from smolagents.local_python_executor import LocalPythonExecutor
 

@@ -15,7 +15,7 @@ faltam para decidir se o grupo é um incidente ou um padrão, e se vira unidade 
 Não muda regra nem grava nada em resultados. Imprime só contagens, nomes de papel e meses — nenhum identificador de
 execução nem texto de caso. Os NOMES das variáveis só saem com --mostrar-nomes (por padrão, só contagens e parcelas),
 porque código de agente pode carregar termos do caso. Uso, da raiz:
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_primeiro_passo_nome.py [--fonte <parquet>] [--mostrar-nomes]
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/contar_primeiro_passo_nome.py [--fonte <parquet>] [--mostrar-nomes]
 """
 import argparse
 from pathlib import Path
@@ -24,10 +24,10 @@ import sys
 
 import pandas as pd
 
-PIPELINE = Path(__file__).resolve().parents[1]
+PIPELINE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PIPELINE))
 sys.path.insert(0, str(PIPELINE.parents[1]))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # validacao/: os módulos irmãos
 import base_pipeline as bp
 from contar_predecessor_pendentes import contar, MOTIVO
 from episodios_trace import contexto_local

@@ -66,7 +66,7 @@ TROCAS = {
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--aplicar", action="store_true", help="grava as mudanças (sem isto, só mostra)")
-    p.add_argument("--pasta", type=Path, default=Path(__file__).resolve().parents[1] / "pipeline",
+    p.add_argument("--pasta", type=Path, default=Path(__file__).resolve().parents[2] / "pipeline",
                    help="a pasta do pipeline da base 2 (padrão: ../pipeline)")
     args = p.parse_args(argv)
     novos, problemas = {}, []

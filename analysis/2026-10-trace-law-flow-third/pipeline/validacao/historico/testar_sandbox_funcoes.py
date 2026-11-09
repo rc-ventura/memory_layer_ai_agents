@@ -10,7 +10,7 @@ que a memória E do sandbox proíbe (`repr`, `dir`, `exec`, `__import__`, `bytes
 funcionam. A versão do smolagents da plataforma não é conhecida.
 
 Uso, da raiz (o smolagents não é dependência do projeto):
-    uv run --no-project --with smolagents==1.26.0 python analysis/2026-10-trace-law-flow-third/pipeline/validacao/testar_sandbox_funcoes.py --saida analysis/registros/funcoes_sandbox.json
+    uv run --no-project --with smolagents==1.26.0 python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/testar_sandbox_funcoes.py --saida analysis/registros/funcoes_sandbox.json
 """
 import argparse
 import builtins

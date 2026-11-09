@@ -14,7 +14,7 @@ Este script aplica a proposta SÓ na tabela em memória e confere:
 nova e nada muda; os números da simulação (ambiente da base) são do código do commit `9fd032b`.
 
 Imprime só contagens e nomes de unidade, papel e mês. Uso, da raiz:
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/simular_regra_assinatura.py [--fonte <parquet>]
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/simular_regra_assinatura.py [--fonte <parquet>]
 """
 import argparse
 from pathlib import Path
@@ -22,10 +22,10 @@ import sys
 
 import pandas as pd
 
-PIPELINE = Path(__file__).resolve().parents[1]
+PIPELINE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PIPELINE))
 sys.path.insert(0, str(PIPELINE.parents[1]))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # validacao/: os módulos irmãos
 import base_pipeline as bp
 from contar_assinatura_try_nameerror import assinatura, situacao
 

@@ -8,7 +8,7 @@ mensagem é longa quando o valor indexado é longo. Aqui se vê como o valor com
 termina — só categorias e contagens, nenhum texto de caso. Resultado de 14/10 (roadmap #34): 848 das 854 longas
 com "Could not index" começam com `{` e 849 terminam no erro de string, que só sai de texto (`testar_sandbox_indexar.py`);
 se o texto é JSON (`{"`) ou repr (`{'`), qual função o produziu e o que vem depois: as linhas do retorno-string (#35). Uso, da raiz:
-    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_mensagens_longas.py [--fonte <v2.parquet>]
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/contar_mensagens_longas.py [--fonte <v2.parquet>]
 """
 import argparse
 from pathlib import Path
@@ -18,7 +18,7 @@ import sys
 import pandas as pd
 import pyarrow.parquet as pq
 
-PIPELINE = Path(__file__).resolve().parents[1]
+PIPELINE = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PIPELINE))
 import base_pipeline as bp
 

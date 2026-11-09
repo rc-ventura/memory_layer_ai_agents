@@ -324,7 +324,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   Rafael na decisão 2 do fechamento do sandbox: quando o prompt manda verificar sem dizer como, uma memória pode dizer
   como — `try/except Exception`, ou `x = None` no primeiro passo e `if x is None` depois; nunca `globals()` nem
   `except NameError` (o sandbox lança o próprio erro, que esse `except` não pega). Reproduzido no interpretador
-  (`pipeline/validacao/testar_sandbox_try_nameerror.py`, variantes 3, 4 e 8; smolagents 1.26.0, a versão da plataforma
+  (`pipeline/validacao/historico/testar_sandbox_try_nameerror.py`, variantes 3, 4 e 8; smolagents 1.26.0, a versão da plataforma
   não é conhecida). População: toda a `U_verificacao_existencia` (introspecção, valor padrão, `eval` e `try/except`),
   hoje harness. Minerar pelos quatro degraus como qualquer candidata; se passar, decidir ali se o destino de parte da
   unidade muda (memória enquanto o prompt não é consertado) — sem reabrir o Ajuste 21 antes disso →
@@ -460,7 +460,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
 - [x] **#55** **O degrau 2 e as funções embutidas** — fechado em 21/10 (Ajuste 28). O `conferir_memorias.py` lê, em
-    `--funcoes`, as funções embutidas testadas uma a uma no interpretador (`pipeline/validacao/testar_sandbox_funcoes.py`
+    `--funcoes`, as funções embutidas testadas uma a uma no interpretador (`pipeline/validacao/historico/testar_sandbox_funcoes.py`
     → `analysis/registros/funcoes_sandbox.json`; smolagents 1.26.0: 111 funcionam, 40 barradas); a memória E passa na
     checagem do ambiente com o prompt da base 1 → dossiê do sandbox §2h, 22; [`decisoes.md`](../../decisoes.md) (21/10).
 - [x] **#48** **As memórias pequenas do sandbox: a régua de memória rara** — fechado em 20/10. Das 6 que falham na
@@ -608,13 +608,13 @@ Cada linha: o que foi feito → o commit ou o documento (a prova).
 
 - [x] **#35 · O que são os valores longos que começam com `{` e dão erro de string** (14/10): **o retorno da petição
   inicial chegando como texto JSON**, que o agente indexa como dict. Evidência, nas duas bases que têm o caso:
-  - **Base 3** (`validacao/contar_mensagens_longas.py`, nas 849 "Could not index" longas do retorno-string): a aspa
+  - **Base 3** (`validacao/historico/contar_mensagens_longas.py`, nas 849 "Could not index" longas do retorno-string): a aspa
     depois do `{` é `{"` em 845 (4 outros) — no sandbox, `{"` é o que um texto JSON dá; dict e repr Python dão `{'`
     (`testar_sandbox_indexar.py`); a variável indexada vem de `get_peticao_inicial_from_pasta` (727) e
     `ingestao_peticao_inicial` (106) (6 atribuídas em outro passo, 3 de `json.loads`, 2 de `draft_resposta`, 1 de
     `coerce_to_obj`); no passo seguinte o agente desserializa (`json.loads`/`literal_eval`) em 789 (93%), e 382 (45%)
     ficam sem erro.
-  - **Base 2, trace completo** (`validacao/indexar_string_trace.py --trace <base 2>`): 78 "Could not index"; 38 com
+  - **Base 2, trace completo** (`validacao/historico/indexar_string_trace.py --trace <base 2>`): 78 "Could not index"; 38 com
     erro de string; **11 com valor `{` — todos `{"`, todos do ContestacaoCivel, 10 de `get_peticao_inicial_from_pasta`
     e 1 de `ingestao_peticao_inicial`, 10 desserializam no passo seguinte**; 0 retorno-dict.
   - **Base 1** não tem o caso (0 valores `{` com erro de string; não tem o ContestacaoCivel).
@@ -624,12 +624,12 @@ Cada linha: o que foi feito → o commit ou o documento (a prova).
 
 - [x] **#34 · Por que o retorno-dict não voltou na v2** (14/10): **não estava escondido pelo corte.** Evidência:
   (1) a regra do dict casa `KeyError: <número>` no fim da mensagem; nas 1.009 mensagens que a v1 cortava (> 20.000
-  caracteres, contadas na v2 por `validacao/contar_mensagens_longas.py`), esse fim aparece **0** vezes, nenhuma o tem
+  caracteres, contadas na v2 por `validacao/historico/contar_mensagens_longas.py`), esse fim aparece **0** vezes, nenhuma o tem
   fora do fim e nenhuma traz os dois padrões juntos; na base inteira, 2 vezes. (2) Pela regra real, 1.002 das 1.009
   vão para o retorno-string (849 por `string indices must be integers`, 151 por objeto sem o atributo, 2 por formato
   inválido), 3 para campo inexistente, 3 sem regra, 1 código mal escrito; 847 são do ContestacaoCivel. (3) No sandbox
-  (`validacao/testar_sandbox_indexar.py`, smolagents 1.26.0), um dict indexado nunca dá o erro de string — só texto
-  dá; um dict indexado com `0` dá `KeyError: 0`. (4) Na base 1 (trace completo, `validacao/indexar_string_trace.py`):
+  (`validacao/historico/testar_sandbox_indexar.py`, smolagents 1.26.0), um dict indexado nunca dá o erro de string — só texto
+  dá; um dict indexado com `0` dá `KeyError: 0`. (4) Na base 1 (trace completo, `validacao/historico/indexar_string_trace.py`):
   88 retorno-dict (81 longos, valor `{'`, a `get_available_documents` onde a origem foi lida) e 37 erros de string —
   valor `[` (9) ou texto (28), **nenhum começando com `{`**; 13 dos 37 desserializam no passo seguinte. **O que não está
   provado:** que os 848 valores longos da base 3 que começam com `{` sejam JSON → #35. (A primeira versão do relatório
@@ -665,7 +665,7 @@ Cada linha: o que foi feito → o commit ou o documento (a prova).
   candidatas somam 17.308 erros e 387,1 mi de tokens (65% dos tokens dos erros). As somas fecham: 29.392 + 749 =
   30.141; tokens 587,7 + 5,1 = 592,8 mi (arredondamento).
 
-- [x] **#26 · Os dois parquets novos conferidos** (14/10), com `validacao/inspecionar_parquet.py` (schema e agregados)
+- [x] **#26 · Os dois parquets novos conferidos** (14/10), com `validacao/historico/inspecionar_parquet.py` (schema e agregados)
   e `validacao/conferir_contagens.py` (junção), sem nenhum valor de célula:
   - **`base_erros_minerados_full_v2.parquet` é a v1 sem o corte de texto:** as mesmas 31.421 linhas (30.141 erros +
     1.280 suspeitas, 20.986 execuções) e 69 colunas; nenhuma linha só numa das duas; `error_type` e `total_tokens`

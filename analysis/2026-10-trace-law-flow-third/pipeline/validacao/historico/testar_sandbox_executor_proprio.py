@@ -13,7 +13,7 @@ Mostra que o caso B é possível; não mostra que a plataforma o faz assim (um p
 `instructions`, com a lista escrita à mão, deixa a mesma marca no trace).
 
 Uso, da raiz (o smolagents não é dependência do projeto):
-    uv run --with smolagents==1.26.0 python analysis/2026-10-trace-law-flow-third/pipeline/validacao/testar_sandbox_executor_proprio.py
+    uv run --with smolagents==1.26.0 python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/testar_sandbox_executor_proprio.py
 """
 import re
 

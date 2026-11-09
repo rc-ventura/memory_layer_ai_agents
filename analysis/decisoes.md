@@ -474,5 +474,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
 - **09/11, os arquivos com hash também mudam o vocabulário** (decisão do Rafael): os 8 arquivos que ainda usavam
   o vocabulário antigo (seis da base 1, no manifesto do kit; dois da base 3, na lista de hash da rodada) passam a
   dizer "ambiente da base", aceitando gerar o manifesto de novo e rodar uma rodada nova da base 3 → Ajuste 33.
+- **09/11, os scripts de uso único vão para `historico/`** (decisão do Rafael): os 13 que rodaram uma vez para medir ou
+  reproduzir um achado e que nada no pipeline chama — na base 3, os 5 `testar_sandbox_*`, `contar_filtro_nulo`,
+  `contar_mensagens_longas`, `contar_primeiro_passo_nome`, `indexar_string_trace`, `inspecionar_parquet` e
+  `simular_regra_assinatura` (para `pipeline/validacao/historico/`); na base 2, `replicar_ajuste17` e `replicar_ajuste21`
+  (para `scripts/historico/`). Não são apagados, porque cada um é o comando que reproduz um achado citado; os caminhos nos
+  docs e o caminho interno de cada script foram corrigidos. Nenhum está na lista de hash.
 
 ---

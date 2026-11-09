@@ -67,11 +67,11 @@ com o manifesto.
 | Regras e catálogos comparados por estrutura de código com a base 2 (`classify`, `submecanismo`, `SUB2UNI`, `UNI`, `triagem`…) | ambiente da base, `executar.py validar` | **10 de 10 iguais** |
 | Conferência da rodada contra o parquet lido direto (contagens, tokens, duração, conservação de erros e tokens entre tabelas, genealogia, perfis, hashes, fonte inalterada) | ambiente da base, `executar.py conferir` | **46 verificações, todas passam** |
 | Fonte | ambiente da base 3 | SHA-256 `908aa005…f0ed86306` (v2), igual à referência no código (`FONTE_V2_SHA256`); a v1 (`7604f77d…c2873f1`, `FONTE_V1_SHA256`) é recusada sem `--extracao v1` |
-| Schema e agregados dos dois parquets novos, sem valor de célula | `validacao/inspecionar_parquet.py <parquet>` | v2: 31.421 linhas, as 69 colunas da v1, maior mensagem 833.507 caracteres; contagens: 71.894 linhas, 19 colunas, somas 283.925 ActionSteps, 30.141 erros, 1.280 suspeitas (roadmap #26) |
+| Schema e agregados dos dois parquets novos, sem valor de célula | `validacao/historico/inspecionar_parquet.py <parquet>` | v2: 31.421 linhas, as 69 colunas da v1, maior mensagem 833.507 caracteres; contagens: 71.894 linhas, 19 colunas, somas 283.925 ActionSteps, 30.141 erros, 1.280 suspeitas (roadmap #26) |
 | v1 × v2 e junção com as contagens (pedido A) | `validacao/conferir_contagens.py --v2 … --contagens … --v1 …` | as mesmas 31.421 linhas, `error_type` e tokens iguais, a mensagem da v1 é o começo da da v2 em todas; as 20.986 chaves da v2 nas contagens com 0 diferenças de erros e suspeitas; taxa por mês (roadmap #26) |
-| As 1.009 mensagens que a v1 cortava, pela regra real | `validacao/contar_mensagens_longas.py` | 1.002 no retorno-string; 849 "Could not index" com valor `{"` (845) da `get_peticao_inicial_from_pasta`/`ingestao_peticao_inicial`; 0 com o fim do retorno-dict (roadmap #34, #35) |
-| O que cada valor produz no "Could not index" | `validacao/testar_sandbox_indexar.py` (smolagents 1.26.0) | dict → `KeyError`; texto (JSON `{"` ou repr `{'`) → `string indices must be integers` (roadmap #34) |
-| O mesmo padrão nos traces completos | `validacao/indexar_string_trace.py [--trace <base 2>]` | base 1: 0 valores `{` com erro de string, 88 retorno-dict; base 2: 11, todos `{"`, ContestacaoCivel, mesma ferramenta (roadmap #35) |
+| As 1.009 mensagens que a v1 cortava, pela regra real | `validacao/historico/contar_mensagens_longas.py` | 1.002 no retorno-string; 849 "Could not index" com valor `{"` (845) da `get_peticao_inicial_from_pasta`/`ingestao_peticao_inicial`; 0 com o fim do retorno-dict (roadmap #34, #35) |
+| O que cada valor produz no "Could not index" | `validacao/historico/testar_sandbox_indexar.py` (smolagents 1.26.0) | dict → `KeyError`; texto (JSON `{"` ou repr `{'`) → `string indices must be integers` (roadmap #34) |
+| O mesmo padrão nos traces completos | `validacao/historico/indexar_string_trace.py [--trace <base 2>]` | base 1: 0 valores `{` com erro de string, 88 retorno-dict; base 2: 11, todos `{"`, ContestacaoCivel, mesma ferramenta (roadmap #35) |
 
 As 46 verificações estão listadas em `resultados/conferencia_observada_2026-10-07/conferencia.json` (ambiente da base).
 Elas conferem que os números são consistentes entre si e com o parquet — **não** conferem que a causa atribuída a cada
@@ -115,7 +115,7 @@ dependem do fim da mensagem (retorno-dict).
 | 8 | `tool_name` é só a primeira ferramenta do passo | base 1: 5.742 de 5.742 são `python_interpreter` | a coluna não identifica a ferramenta que falhou; ela sai do código e da mensagem |
 | 9 | O nome não definido é dividido pela posição (passo anterior com erro ou não), sem olhar a linha que falhou | base 3: 5.764 de 7.178 erros de nome têm `try/except NameError` na linha que falhou; 460 estão em `U_estado_perdido` (334 de 878) e `U_nome_inventado` (126 de 477) só pela posição; na base 1, 0 de 10 | as duas unidades ficam infladas por um padrão que o prompt instrui e o sandbox não suporta; **corrigida pelo Ajuste 17** (13/10): a assinatura decide antes da posição ([relatório §7.10](02-relatorio-achados.md#710--a-assinatura-na-base-3-o-padrão-não-é-só-do-primeiro-passo-1310)); vale a partir da rodada nova |
 
-Contagens da limitação 7 no ambiente da base: `pipeline/validacao/contar_filtro_nulo.py`. Cada limitação vira item do pedido
+Contagens da limitação 7 no ambiente da base: `pipeline/validacao/historico/contar_filtro_nulo.py`. Cada limitação vira item do pedido
 da próxima versão da query ([roadmap](04-roadmap.md) #2).
 
 **Sobre os 5.818 pendentes por "predecessor não identificado".** Esse motivo é gerado só para erros de nome não

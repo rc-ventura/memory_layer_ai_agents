@@ -14,7 +14,7 @@ Um dict nunca dá o erro de string: ele só sai quando o valor indexado é TEXTO
 texto; a aspa depois do `{` separa JSON (`{"`) de repr Python (`{'`), mas um dict e um repr em texto começam igual.
 
 Uso, da raiz (o smolagents não é dependência do projeto):
-    uv run --with smolagents python analysis/2026-10-trace-law-flow-third/pipeline/validacao/testar_sandbox_indexar.py
+    uv run --with smolagents python analysis/2026-10-trace-law-flow-third/pipeline/validacao/historico/testar_sandbox_indexar.py
 """
 import json
 from smolagents.local_python_executor import LocalPythonExecutor
