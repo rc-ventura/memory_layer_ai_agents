@@ -171,6 +171,21 @@ class TestSimularMascaraHex(unittest.TestCase):
         self.assertEqual((r["com_hex"], r["mudam"], r["mudam_sem_hex"]), (4, 4, 0))
         self.assertEqual(int(r["antes"].passa_na_recorrencia.sum()), 0)
         self.assertEqual(int(r["depois"].passa_na_recorrencia.sum()), 1)
+        # B (cortar depois de mascarar): números de tamanhos diferentes antes do corte não separam mais o mesmo erro
+        longa = ("LayoutError: Flowable <Table@0x{h} {r} rows x 3 cols(tallest row 1)> with cell(0,0) containing "
+                 "'{q}' too large on page")
+        L = [(f"f{i}", f"2026-0{2 + i % 3}", longa.format(h=h, r=r, q=q))
+             for i, (h, r, q) in enumerate([("7F3B", 3, "x"), ("7FA8BC", 12, "yy"), ("7FEA", 120, "z"), ("7F00", 7, "w")])]
+        C2 = pd.DataFrame([{"exec_id": e, "agente": "1", "role": "A", "idx": 1, "mes": m,
+                            "unidade": "X_sintoma_nao_reconhecido", "submecanismo": "sintoma_nao_reconhecido",
+                            "err_type": "AgentExecutionError", "mensagem": msg, "tok_tot": 10,
+                            "padrao": bp.padrao_residuo(msg, "sintoma_nao_reconhecido", "AgentExecutionError")}
+                           for e, m, msg in L])
+        self.assertGreater(len(sim.simular(C2)["depois"]), 1)          # A: o corte ainda separa
+        rb = sim.simular(C2, cortar_depois=True)
+        self.assertEqual(len(rb["depois"]), 1)                           # B: um padrão só
+        self.assertTrue(rb["depois"].passa_na_recorrencia.iloc[0])
+        self.assertLessEqual(len(rb["depois"].padrao.iloc[0]), len("LayoutError: ") + 90)
         # a máscara de hoje não muda: a simulação troca a função só em memória
         self.assertIn("<n>x<n>F", bp.padrao_residuo(linhas[0][2], "sintoma_nao_reconhecido", None))
 
