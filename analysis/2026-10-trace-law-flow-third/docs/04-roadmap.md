@@ -414,6 +414,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `audit_residuo_base3.py` e o encontro conferem, e a skill `mineracao-residuo` monta o relatório
   (procedimento: base 1 `docs/19`). **Próximo:** rodar no ambiente da base, na rodada vigente, e trazer a tabela de
   padrões (mascarada) e o encontro; a ordem dos padrões a investigar e cada Ajuste são decisões do Rafael.
+  **Primeira rodada (10/11, `5d2098f6d706bd3b`):** 565 erros, 120 padrões, 23 recorrentes; encontro: 0 divergências.
+  **Ajuste 34** (a máscara do padrão: endereço de memória e corte depois da máscara): esperado 111 padrões, 25
+  recorrentes, depois da rodada nova. **Próximo:** a ordem dos grupos a investigar (limite do interpretador, infra/LLM,
+  nome de ferramenta usado como variável, os maiores de causa sem regra).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

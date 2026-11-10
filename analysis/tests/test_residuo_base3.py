@@ -152,42 +152,49 @@ class TestPontaAPonta(unittest.TestCase):
         self.assertEqual(r.returncode, 1, r.stdout)
 
 
-class TestSimularMascaraHex(unittest.TestCase):
-    """A máscara proposta junta o mesmo erro com endereços de memória diferentes e não mexe no resto."""
+class TestMascaraAjuste34(unittest.TestCase):
+    """Ajuste 34: o endereço de memória (`0x…`) vira `<id>`, e a frase é mascarada inteira antes do corte de 90."""
 
-    def test_junta_enderecos_e_passa_a_recorrer(self):
+    SUB, TIPO = "sintoma_nao_reconhecido", "AgentExecutionError"
+    LONGA = ("LayoutError: Flowable <Table@0x{h} {r} rows x 3 cols(tallest row 1)> with cell(0,0) containing "
+             "'{q}' too large on page")
+    VARIANTES = [("7F3B2D1E", 3, "x"), ("7FA8BC", 12, "yy"), ("7FEAAAD0", 120, "z"), ("7F00", 7, "w")]
+
+    def padrao(self, msg):
+        return bp.padrao_residuo(msg, self.SUB, self.TIPO)
+
+    def test_mesmo_erro_um_padrao(self):
+        # endereços e números de tamanhos diferentes: antes do Ajuste 34, quatro padrões; agora, um
+        padroes = {self.padrao(self.LONGA.format(h=h, r=r, q=q)) for h, r, q in self.VARIANTES}
+        self.assertEqual(len(padroes), 1)
+        p = padroes.pop()
+        self.assertIn("Table@<id>", p)
+        self.assertLessEqual(len(p), len("LayoutError: ") + 90)
+
+    def test_corte_nao_deixa_aspas_sem_mascara(self):
+        msg = "ValueError: " + "x" * 80 + " 'texto do caso que nao pode aparecer no padrao'"
+        self.assertNotIn("texto do caso", self.padrao(msg))
+
+    def test_auditoria_e_pipeline_iguais(self):
+        msgs = [self.LONGA.format(h=h, r=r, q=q) for h, r, q in self.VARIANTES]
+        msgs += ["UnicodeDecodeError: 'utf-8' codec can't decode byte 0x8c in position 3: invalid start byte",
+                 'KeyError: "None of [Index([\'a\', \'b\'], dtype=\'object\')] are in the [columns]"']
+        for m in msgs:
+            self.assertEqual(aud.impressao_digital(m, self.SUB, self.TIPO), self.padrao(m), m)
+
+    def test_simulacao_depois_do_ajuste_nao_muda_nada(self):
+        # o simular_mascara_hex.py foi a evidência do Ajuste 34; com a regra no pipeline, A e B não mudam mais nada
         sim = carregar("simular_mascara_hex_test", B3 / "pipeline/validacao/simular_mascara_hex.py")
-        layout = "LayoutError: Flowable <Table@0x{h} 3 rows x 2 cols> with cell(0,0) containing too large"
-        linhas = [(f"e{i}", f"2026-0{2 + i % 3}", layout.format(h=h))
-                  for i, h in enumerate(["7F3B2D1E", "7FA8BCDC", "7FEAAAD0", "7F00FB12"])]
-        linhas.append(("e9", "2026-02", "TypeError: unsupported operand type(s) for +: 'int' and 'str'"))
-        C = pd.DataFrame([{"exec_id": e, "agente": "1", "role": "A", "idx": 1, "mes": m,
-                           "unidade": "X_sintoma_nao_reconhecido", "submecanismo": "sintoma_nao_reconhecido",
-                           "err_type": "AgentExecutionError", "mensagem": msg, "tok_tot": 10,
-                           "padrao": bp.padrao_residuo(msg, "sintoma_nao_reconhecido", "AgentExecutionError")}
-                          for e, m, msg in linhas])
-        r = sim.simular(C)
-        self.assertEqual((len(r["antes"]), len(r["depois"])), (5, 2))
-        self.assertEqual((r["com_hex"], r["mudam"], r["mudam_sem_hex"]), (4, 4, 0))
-        self.assertEqual(int(r["antes"].passa_na_recorrencia.sum()), 0)
-        self.assertEqual(int(r["depois"].passa_na_recorrencia.sum()), 1)
-        # B (cortar depois de mascarar): números de tamanhos diferentes antes do corte não separam mais o mesmo erro
-        longa = ("LayoutError: Flowable <Table@0x{h} {r} rows x 3 cols(tallest row 1)> with cell(0,0) containing "
-                 "'{q}' too large on page")
-        L = [(f"f{i}", f"2026-0{2 + i % 3}", longa.format(h=h, r=r, q=q))
-             for i, (h, r, q) in enumerate([("7F3B", 3, "x"), ("7FA8BC", 12, "yy"), ("7FEA", 120, "z"), ("7F00", 7, "w")])]
-        C2 = pd.DataFrame([{"exec_id": e, "agente": "1", "role": "A", "idx": 1, "mes": m,
-                            "unidade": "X_sintoma_nao_reconhecido", "submecanismo": "sintoma_nao_reconhecido",
-                            "err_type": "AgentExecutionError", "mensagem": msg, "tok_tot": 10,
-                            "padrao": bp.padrao_residuo(msg, "sintoma_nao_reconhecido", "AgentExecutionError")}
-                           for e, m, msg in L])
-        self.assertGreater(len(sim.simular(C2)["depois"]), 1)          # A: o corte ainda separa
-        rb = sim.simular(C2, cortar_depois=True)
-        self.assertEqual(len(rb["depois"]), 1)                           # B: um padrão só
-        self.assertTrue(rb["depois"].passa_na_recorrencia.iloc[0])
-        self.assertLessEqual(len(rb["depois"].padrao.iloc[0]), len("LayoutError: ") + 90)
-        # a máscara de hoje não muda: a simulação troca a função só em memória
-        self.assertIn("<n>x<n>F", bp.padrao_residuo(linhas[0][2], "sintoma_nao_reconhecido", None))
+        L = [(f"f{i}", f"2026-0{2 + i % 3}", self.LONGA.format(h=h, r=r, q=q))
+             for i, (h, r, q) in enumerate(self.VARIANTES)]
+        C = pd.DataFrame([{"exec_id": e, "agente": "1", "role": "A", "idx": 1, "mes": m, "unidade": "X_sintoma_nao_reconhecido",
+                           "submecanismo": self.SUB, "err_type": self.TIPO, "mensagem": msg, "tok_tot": 10,
+                           "padrao": self.padrao(msg)} for e, m, msg in L])
+        for cortar in (False, True):
+            r = sim.simular(C, cortar_depois=cortar)
+            self.assertEqual(r["mudam"], 0)
+            self.assertEqual(len(r["depois"]), 1)
+            self.assertTrue(r["depois"].passa_na_recorrencia.iloc[0])
 
 
 if __name__ == "__main__":

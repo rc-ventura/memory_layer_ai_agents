@@ -59,8 +59,11 @@ conferisse.
 A unidade de resíduo junta, por construção, erros diferentes: é o que sobrou. Para contar se **um** erro volta, cada
 erro ganha um **padrão** (`padrao_residuo()`, no `base_pipeline.py`):
 - **fora da sintaxe:** a classe da exceção mais a frase mascarada. O texto entre aspas vira `<q>`, o texto entre crases
-  vira `<id>` e os números viram `<n>`. Os valores entre aspas podem ser dados do caso, e a máscara também serve ao
-  sigilo;
+  vira `<id>`, o endereço de memória (`0x…`) vira `<id>` e os números viram `<n>`. A frase é mascarada inteira e só
+  depois cortada em 90 caracteres. Os valores entre aspas podem ser dados do caso, e a máscara também serve ao sigilo.
+  O endereço e o corte depois da máscara entraram em 10/11/2026 (Ajuste 34): antes, as letras do endereço sobravam e o
+  corte caía em pontos diferentes, e o mesmo erro virava um padrão por execução (na base 3, um `LayoutError` em 13
+  padrões);
 - **na sintaxe** (`codigo_mal_escrito`): a classe mais o motivo do parser (a linha `Error:`, ou, no formato novo, o
   trecho depois de `due to: …Error:`), sem a posição. Só a classe juntaria códigos quebrados de jeitos diferentes
   (Ajuste 2.1);

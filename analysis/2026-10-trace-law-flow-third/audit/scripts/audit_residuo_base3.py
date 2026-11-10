@@ -5,9 +5,10 @@
 
 Uma segunda implementação, escrita a partir do racional (`18-racionais-residuo.md` §2 e §3), **sem importar o
 pipeline nem o `especificas/residuo.py`**. Ela lê o parquet cru com o pyarrow e reescreve à parte:
-  - a máscara (aspas → `<q>`, crases → `<id>`, números → `<n>`);
+  - a máscara (aspas → `<q>`, crases → `<id>`, endereço de memória `0x…` → `<id>`, números → `<n>`);
   - a impressão digital de cada erro (o padrão): a classe da exceção mais a frase mascarada; na sintaxe, o motivo do
-    parser sem a posição; sem nome de exceção, "sem nome de exceção: <tipo>", que nunca conta como recorrente;
+    parser sem a posição; a frase é mascarada inteira e só depois cortada em 90 caracteres; sem nome de exceção,
+    "sem nome de exceção: <tipo>", que nunca conta como recorrente;
   - a régua de recorrência da triagem da base 3: ≥3 execuções (execução = execução × agente) e ≥2 meses, por erro.
 Grava as medidas por padrão num JSON. O encontro com a tabela da mineração é o `comparar_auditoria.py` da skill
 `mineracao-residuo`.
@@ -38,6 +39,7 @@ MIN_EXECUCOES, MIN_MESES = 3, 2
 def mascara(frase):
     frase = re.sub(r"'[^']*'|\"[^\"]*\"", "<q>", frase)
     frase = re.sub(r"`[^`]*`", "<id>", frase)
+    frase = re.sub(r"\b0x[0-9a-fA-F]+\b", "<id>", frase)          # endereço de memória (Ajuste 34)
     return re.sub(r"\d+", "<n>", frase).strip()
 
 
@@ -54,9 +56,9 @@ def impressao_digital(msg, classe_causa, tipo):
             motivo = mascara(na_linha.group(1)) if na_linha else ""
         motivo = re.sub(r"\s+on line <n>", "", re.sub(r"\s*\(<unknown>, line <n>\)", "", motivo))
         return f"{nome}: {motivo}".rstrip(": ")
-    pares = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]{0,90})", msg)
-    if pares:
-        return f"{pares[-1][0]}: {mascara(pares[-1][1])}"
+    pares = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]*)", msg)
+    if pares:   # mascara a frase inteira e só então corta em 90 caracteres (Ajuste 34)
+        return f"{pares[-1][0]}: {mascara(pares[-1][1])[:90].strip()}"
     nomes = re.findall(r"\b\w+(?:Error|Exception)\b", msg)
     return nomes[-1] if nomes else f"{SEM_NOME}: {tipo or '?'}"
 

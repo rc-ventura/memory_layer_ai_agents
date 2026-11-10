@@ -927,9 +927,12 @@ def analisar_mecanismos_observaveis(carga, sintomas=None):
 
 
 def mascarar(frase):
-    """Texto entre aspas → <q>, entre crases → <id>, números → <n>. Sobra só o texto padrão da exceção do Python."""
+    """Texto entre aspas → <q>, entre crases → <id>, endereço de memória (`0x…`) → <id>, números → <n>. Sobra só o
+    texto padrão da exceção do Python. O endereço entra antes dos números: sem isso, as letras dele sobram e o mesmo
+    erro vira um padrão por execução (Ajuste 34)."""
     frase = re.sub(r"'[^']*'|\"[^\"]*\"", "<q>", frase)
     frase = re.sub(r"`[^`]*`", "<id>", frase)
+    frase = re.sub(r"\b0x[0-9a-fA-F]+\b", "<id>", frase)
     return re.sub(r"\d+", "<n>", frase).strip()
 
 
@@ -949,9 +952,11 @@ def padrao_residuo(m, sub, err_type=None):
         motivo = re.sub(r"\s*\(<unknown>, line <n>\)", "", motivo)
         motivo = re.sub(r"\s+on line <n>", "", motivo)
         return f"{classe}: {motivo}".rstrip(": ")
-    k = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]{0,90})", m)
+    # a frase é mascarada inteira e só depois cortada em 90 caracteres: cortada antes, o mesmo erro com números de
+    # tamanhos diferentes saía com fins diferentes, e o corte podia cair dentro de aspas e deixá-las sem máscara (Ajuste 34)
+    k = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]*)", m)
     if k:
-        return f"{k[-1][0]}: {mascarar(k[-1][1])}"
+        return f"{k[-1][0]}: {mascarar(k[-1][1])[:90].strip()}"
     classe = re.findall(r"\b\w+(?:Error|Exception)\b", m)
     # sem nome de exceção na mensagem: a chave diz o tipo do erro e NÃO conta como padrão recorrente — juntaria erros
     # diferentes (na base 2, o antigo "?" juntava tempo do interpretador e limite de passos — Ajuste 8)

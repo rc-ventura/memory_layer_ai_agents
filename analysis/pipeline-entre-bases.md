@@ -1661,3 +1661,42 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
 - **Mudança:** só texto — comentários, docstrings, mensagens impressas e o markdown de dois notebooks; nenhuma regra, nenhum número. Base 1: `pipeline/base_pipeline.py`, `pipeline/drill_down.py` (inclui 4 mensagens na tela: "não sai do ambiente da base"), `pipeline/metadados_steps.py`, `pipeline/falhas_silenciosas.ipynb`, `pipeline/mineracao_generica.ipynb`, `audit/scripts/audit_recompute9.py`. Base 3: `pipeline/base_pipeline.py` (um comentário) e `pipeline/validacao/validar_observada.py` (um comentário). O manifesto do kit foi gerado de novo (`conferir_versao.py analysis/2026-09-trace-law-flow --gerar`: 6 hashes novos); a `VERSAO` 0.15.0 do Ajuste 32, ainda não publicada, cobre os dois.
 - **Verificação:** `conferir_versao.py analysis/2026-09-trace-law-flow`: igual ao manifesto; os 6 `.py` compilam e os 2 notebooks são JSON válidos; suíte 366 testes, OK; nenhuma ocorrência do vocabulário antigo nos `.py` e `.ipynb` de `analysis/` (busca por `git grep`).
 - **Replicar no ambiente da base:** `git pull`. Na base 2, `conferir_versao.py` deve dar igual. **Na base 3, a rodada atual passa a ser recusada** (os dois arquivos estão em `mineracao_observada.versoes_codigo()`): rodar uma rodada nova da raiz, `uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py conferir` e depois `executar.py relatorio --rodada <a rodada nova>` (`03-procedimento-validacao.md` da base 3, §1). Os números devem sair iguais, porque nenhuma regra mudou. **O catálogo não muda sozinho:** as entradas do sandbox continuam com a rodada antiga e o degrau 3. Se o sandbox for minerado de novo e registrado (`--registrar`), as entradas novas começam sem `conferencia` e sem `revisao` (são de outra rodada); aí rodar o degrau 2 (`conferir_memorias.py … --registrar`) e de novo `catalogar_memoria.py --revisar` nas três, com a mesma evidência, se o texto não mudar.
+
+### Ajuste 34 — o padrão do resíduo: endereço de memória e corte depois da máscara (10/11/2026)
+
+- **Gatilho:** a primeira mineração do resíduo da base 3 (`especificas/residuo.py`, rodada `5d2098f6d706bd3b`, 10/11; 565
+  erros, 120 padrões, 23 recorrentes; encontro com a auditoria independente: 0 divergências). Na tabela, o mesmo
+  `LayoutError` aparecia em 13 padrões de 1 erro cada: a máscara troca números, mas deixa as letras do endereço de memória
+  (`Table@0x7F3B…` → `Table@<n>x<n>F<n>B…`), e o corte de 90 caracteres era feito **antes** da máscara, então o mesmo erro
+  com números de tamanhos diferentes terminava em pontos diferentes (um dos 13 ficava fora mesmo com o endereço
+  mascarado). O corte antes da máscara também podia cair dentro de aspas e deixar o trecho sem máscara.
+- **Evidência:** `validacao/simular_mascara_hex.py` (fora do hash), no ambiente da base, sobre o `casos.csv` da rodada:
+  - **A (só o endereço):** 23 erros com `0x`, 22 mudam de padrão, nenhum sem `0x`; padrões 120 → 109, recorrentes
+    23 → 24 (o `LayoutError`: 12 erros, 12 execuções, 3 meses); decisão dos dois baldes igual;
+  - **A + B (cortar depois):** 62 erros mudam (39 sem `0x`); padrões 120 → 111, recorrentes 23 → 25; decisão dos dois
+    baldes igual; 18 padrões só mudam de texto. Três junções: o `LayoutError` (13 · 12 · 3 · 1, o mesmo erro), o
+    `UFuncTypeError` de assinatura (5 · 4 · 4 · 2, a mesma mensagem cortada em dois pontos) e o `KeyError: <q>` (3 · 3 · 3
+    · 2, passa a recorrer: o `KeyError` do pandas sobre colunas só escapava porque o corte caía antes de fechar as aspas;
+    toda mensagem de `KeyError` vem entre aspas). Se esses três são um erro só é a pergunta R1 da investigação;
+  - **base 1:** nenhum dos 498 erros tem `0x`; a simulação dá 0 mudanças em A e em B.
+- **Mudança:** `mascarar()` troca `\b0x[0-9a-fA-F]+\b` por `<id>` antes dos números; `padrao_residuo()` pega a frase
+  inteira depois de `Classe:`, mascara e só então corta em 90 caracteres. A sintaxe não muda (já não tinha corte). Nos
+  `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base) e, reescrita à parte, na
+  auditoria `audit/scripts/audit_residuo_base3.py`. A auditoria nº 6 não calcula o padrão: não muda. O manifesto do kit
+  foi gerado de novo (`base_pipeline.py` da base 1); `VERSAO` 0.16.0 → 0.17.0.
+- **Verificação:** base 1, pipeline do trace inteiro: `residuo_por_padrao()` idêntica ao `resultados/residuo_padroes.csv`
+  publicado (6 padrões, 1 recorrente, 8 erros). Base 1 pela porta da query, rodada nova `528901ffc8aa27f7`: `residuo.py`
+  8 erros, 6 padrões, 1 recorrente; auditoria e encontro, 0 divergências (a rodada antiga é recusada: outro código).
+  `test_residuo_base3.py` (4 testes novos: o mesmo erro vira um padrão; o corte não deixa aspas sem máscara; auditoria =
+  pipeline; a simulação não muda mais nada); suíte 377 testes, OK. `conferir_versao.py analysis/2026-09-trace-law-flow`:
+  antes de gerar o manifesto, PARAR (1 arquivo); depois, igual.
+- **Replicar no ambiente da base:**
+  - **base 2 (não esquecer):** copiar `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` por cima do da pasta
+    `-second`, restaurar `TRACE` e `BASE_ID`, e conferir com
+    `uv run python .github/skills/mineracao-base/scripts/conferir_versao.py analysis/2026-09-trace-law-flow-second` →
+    tem de dar igual. Se não for copiado, toda skill do kit para no passo 0.3 com o `base_pipeline.py` em DIFERE. Os
+    números da base 2 não mudam fora da tabela de padrões do resíduo (o notebook 9.2 e o `drill_down.py residuo`);
+  - **base 3:** copiar `base_pipeline.py` e `audit/scripts/audit_residuo_base3.py`; a rodada atual passa a ser
+    recusada (o `base_pipeline.py` está no hash): `executar.py analisar` (rodada nova), `validacao/comparar_rodadas.py
+    --antes 5d2098f6d706bd3b --depois <nova>` (nenhum número da triagem deve mudar) e o `residuo.py`, a auditoria e o
+    encontro na rodada nova (esperado: 565 erros, 111 padrões, 25 recorrentes, 0 divergências).

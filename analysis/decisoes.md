@@ -485,5 +485,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   clone desatualizado ou uma rodada de antes de uma troca de nome, como a da unidade `U_verificacao_existencia`). Rodar o
   pipeline e gerar figuras lá é esperado; mudanças de exibição só em arquivos fora da lista; toda mudança feita lá volta ao
   repositório no mesmo dia. Os rótulos de exibição fora da lista de hash viram o `b3 #63`.
+- **10/11, o padrão do resíduo: o endereço de memória é mascarado e a frase é cortada depois da máscara** (decisão do
+  Rafael, A + B, depois da simulação na base 3): o mesmo erro deixa de virar um padrão por execução (o `LayoutError`, de 13
+  padrões para 1, que passa a recorrer). O `KeyError` do pandas junta-se ao `KeyError: <q>` (toda mensagem de `KeyError`
+  vem entre aspas), e a pergunta de leitura R1 confere se é um erro só. Nenhuma unidade, candidata ou decisão de balde muda
+  → livro-razão, Ajuste 34; racional do resíduo (`18` §2).
 
 ---
