@@ -152,5 +152,28 @@ class TestPontaAPonta(unittest.TestCase):
         self.assertEqual(r.returncode, 1, r.stdout)
 
 
+class TestSimularMascaraHex(unittest.TestCase):
+    """A máscara proposta junta o mesmo erro com endereços de memória diferentes e não mexe no resto."""
+
+    def test_junta_enderecos_e_passa_a_recorrer(self):
+        sim = carregar("simular_mascara_hex_test", B3 / "pipeline/validacao/simular_mascara_hex.py")
+        layout = "LayoutError: Flowable <Table@0x{h} 3 rows x 2 cols> with cell(0,0) containing too large"
+        linhas = [(f"e{i}", f"2026-0{2 + i % 3}", layout.format(h=h))
+                  for i, h in enumerate(["7F3B2D1E", "7FA8BCDC", "7FEAAAD0", "7F00FB12"])]
+        linhas.append(("e9", "2026-02", "TypeError: unsupported operand type(s) for +: 'int' and 'str'"))
+        C = pd.DataFrame([{"exec_id": e, "agente": "1", "role": "A", "idx": 1, "mes": m,
+                           "unidade": "X_sintoma_nao_reconhecido", "submecanismo": "sintoma_nao_reconhecido",
+                           "err_type": "AgentExecutionError", "mensagem": msg, "tok_tot": 10,
+                           "padrao": bp.padrao_residuo(msg, "sintoma_nao_reconhecido", "AgentExecutionError")}
+                          for e, m, msg in linhas])
+        r = sim.simular(C)
+        self.assertEqual((len(r["antes"]), len(r["depois"])), (5, 2))
+        self.assertEqual((r["com_hex"], r["mudam"], r["mudam_sem_hex"]), (4, 4, 0))
+        self.assertEqual(int(r["antes"].passa_na_recorrencia.sum()), 0)
+        self.assertEqual(int(r["depois"].passa_na_recorrencia.sum()), 1)
+        # a máscara de hoje não muda: a simulação troca a função só em memória
+        self.assertIn("<n>x<n>F", bp.padrao_residuo(linhas[0][2], "sintoma_nao_reconhecido", None))
+
+
 if __name__ == "__main__":
     unittest.main()
