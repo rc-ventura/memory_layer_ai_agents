@@ -1706,3 +1706,69 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
   divergências**. **Falta:** o `comparar_rodadas.py` contra a `5d2098f6d706bd3b`, apagada por engano no ambiente; ela se
   recria rodando `executar.py analisar` com o `base_pipeline.py` de antes do ajuste (mesma fonte e mesmo código dão o
   mesmo identificador).
+
+### Ajuste 35 — a conexão perdida na chamada aninhada vai para a falha do LLM upstream (10/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `13b0d026242de2dc`), grupo "infra / LLM": 54 erros do
+  balde "Sintoma não reconhecido" com exceção de rede, de API, de recusa do LLM ou de ferramenta que nenhuma regra
+  conhecia. O `validacao/contar_infra_residuo.py` (fora do hash) separa o grupo em quatro pelo nome da exceção: rede e
+  API 33, recusa do LLM 5, ferramenta que falhou (`RecoverableToolError`) 5, conteúdo inválido devolvido pela
+  ferramenta 11. Os 54 são `AgentExecutionError` (falhou o código que o agente escreveu, dentro de uma chamada), nenhum
+  `AgentGenerationError`: por isso nenhum caía na `H_infra_llm`, que só conhecia a geração do próprio agente.
+- **Evidência (rede e API, 33 erros, 30 execuções, só o AgenteEstruturador; fev 1, mar 2, abr 9, mai 21):**
+  - **por script** (`casos_infra.csv`, coluna `funcao_na_linha`): a linha que falhou chama `orquestrador_eletronico`
+    (18) ou `orquestrador_papel` (15), uma chamada a outro agente; padrões `APIConnectionError: Connection error.` (30),
+    `APIStatusError: <html>` (2, a página de um gateway) e `APIConnectionError: Connection error. For troubleshooting…`
+    (1);
+  - **por leitura** (`[assistido]`, um leitor, os 54 casos com os crus conferidos, categorias fechadas;
+    `resultados/evidencia/leitura_infra_residuo_todos.csv` no ambiente da base): nos 33, a chamada era a um modelo, não
+    a uma API interna; depois do erro, 10 repetiram a chamada e deu certo, 20 mudaram de caminho, 3 repetiram e falharam
+    de novo. Repetir resolve, que é a correção da unidade;
+  - **base 1:** nenhum `APIConnectionError`, `APIStatusError` nem `APITimeoutError` no trace cru: a regra não muda nada
+    lá. O `APITimeoutError` já cai no timeout de ferramenta (o `classify()` e o `submecanismo()` testam `TimeoutError`
+    antes).
+- **Decisão (Rafael, 10/11):** separar na causa e agrupar na correção. A causa ganha um **submecanismo próprio**,
+  `conexao_llm_aninhada`, para o monitoramento distinguir a conexão da geração; a unidade continua a `H_infra_llm`,
+  porque a correção é a mesma (retry com backoff, circuit breaker por subagente). Não se abre unidade para causa que a
+  base não mostrou (filtro de conteúdo, requisição mal montada). **A aprovação vale só para este grupo:** os outros 21
+  erros voltam, um grupo por vez, com o contexto.
+- **Mudança:** nos `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base):
+  - `classify()`: `\bAPI(?:Connection|Status)Error\b` → (`Infra / LLM upstream`, `Conexão perdida na chamada aninhada ao
+    LLM`), como **última** regra;
+  - `submecanismo()`: a mesma expressão → `conexao_llm_aninhada`, como **última** regra, logo antes do
+    `causa_sem_regra`. No fim, as duas só alcançam o que hoje é resíduo (procedimento do resíduo, `19`, passo 6): um
+    erro que outra regra já pega não muda;
+  - `SUB2UNI`: `conexao_llm_aninhada` → `H_infra_llm`; o texto da correção em `UNI` cita as duas camadas;
+  - base 3: o submecanismo entra no conjunto das regras que decidem só pela mensagem (`_mecanismo_com_evidencia`), ao
+    lado da `infra_llm`: é observável sem exigir o código integral;
+  - reescrita à parte na auditoria nº 6 (`audit/scripts/audit_recompute6.py`: `submecanismo_spec`, `SUB2UNI` e a
+    família em `classify_sig_local`). O manifesto do kit foi gerado de novo; a `VERSAO` não muda (o kit não mudou).
+- **Verificação:** `analysis/tests/test_conexao_llm_aninhada.py` (5 testes: as duas bases classificam igual; as regras
+  anteriores continuam ganhando — `APITimeoutError`, `AgentGenerationError`, "Could not index"; o nome tem de estar
+  inteiro; observável na base 3; a auditoria nº 6 reescreve a regra); suíte 382 testes, OK.
+  `conferir_versao.py analysis/2026-09-trace-law-flow`: antes de gerar o manifesto, PARAR (2 arquivos); depois, igual.
+- **Replicar no ambiente da base:**
+  - **base 2 (não esquecer):** copiar `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` por cima do da pasta
+    `-second`, restaurar `TRACE` e `BASE_ID`, e conferir com
+    `uv run --no-sync python .github/skills/mineracao-base/scripts/conferir_versao.py analysis/2026-09-trace-law-flow-second`
+    → tem de dar igual;
+  - **base 3:** a rodada atual passa a ser recusada (o `base_pipeline.py` está no hash): `executar.py analisar`
+    (rodada nova; **não apagar a `13b0d026242de2dc`**), `validacao/comparar_rodadas.py --antes 13b0d026242de2dc
+    --depois <nova>` (esperado: só os 33 erros mudam, "Sintoma não reconhecido" 189 → 156 e `H_infra_llm` + 33) e o
+    `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 532 erros, 108 padrões, 24 recorrentes — o
+    `Connection error.` passava na régua —, 0 divergências).
+- **O que ficou aberto no grupo (próximas decisões, uma por vez):**
+  - **ferramenta** (16 erros): conteúdo inválido devolvido (11, todos `enterprise_web_search` devolvendo `None`, só em
+    agosto, ContestacaoCivel: incidente da ferramenta) e `RecoverableToolError` (5, CalculoProprios, mai–ago: 2
+    Tracebacks da ferramenta, 3 "Nenhum documento do tipo inicial"; nos 5 o agente mudou de caminho);
+  - **a "recusa do LLM" não é política de conteúdo** (5 erros, 2 execuções, abril, `orquestrador_papel`): a mensagem é
+    um 400 do Azure que o litellm rotula `ContentPolicyViolationError`, mas os sinais do filtro (`content_filter`,
+    `ResponsibleAI`, as categorias) dão 0 e os de limite (`token`, `length`, `limit`, `exceed`) dão 5 de 5. A primeira
+    leitura (`politica_conteudo`, 5 de 5) e a primeira contagem estavam erradas: o `content.?policy` casava o próprio
+    nome da classe. Uma releitura do mesmo leitor apontou o limite, e a contagem confirmou. Lição: **o nome da exceção
+    pode mentir sobre a causa quando uma biblioteca intermediária a reembrulha**; conte os sinais da mensagem, não o
+    rótulo.
+- **O que a máscara mostrou (§4 deste livro, item 2, e o racional do resíduo §2):** um mecanismo só, três padrões —
+  "Connection error." com e sem a frase de troubleshooting, e "Nenhum documento… processo FQ `<n>`" × "…processo
+  `<n>`". No grupo da recusa, o corte em 90 caracteres deixou no padrão só o embrulho do litellm e escondeu a causa.
+  Nada muda agora: as regras novas leem o nome da exceção, não o padrão.

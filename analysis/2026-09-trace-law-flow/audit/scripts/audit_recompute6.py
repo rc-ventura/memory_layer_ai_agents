@@ -123,6 +123,8 @@ def submecanismo_spec(m, code="", obs_ant="", sysp=""):
     if f and not hasattr(builtins, f.group(1)): return "nome_nao_definido"
     if f or re.search(r"Import (of|from) ", m) or "ModuleNotFound" in m or "Forbidden" in m: return "inventario_sandbox"
     if v: return "nome_nao_definido"
+    # Ajuste 35 (livro-razão): a conexão com outro agente/LLM caiu dentro do código — por último, só o que sobra
+    if re.search(r"\bAPI(Connection|Status)Error\b", m): return "conexao_llm_aninhada"
     return "causa_sem_regra"
 
 SUB2UNI = {
@@ -132,7 +134,7 @@ SUB2UNI = {
     "argumento_posicional":"U_arg_nomeado", "argumento_inexistente":"U_arg_nomeado", "inventario_sandbox":"U_sandbox", "modulo_sem_import":"U_sandbox",
     "next_sobre_gerador":"U_next_gerador", "nome_de_step_que_falhou":"U_estado_perdido",
     "nome_nunca_definido":"U_nome_inventado", "repr_colado":"U_repr_colado",
-    "infra_llm":"H_infra_llm", "timeout_ferramenta":"H_timeout_ferramenta",
+    "infra_llm":"H_infra_llm", "conexao_llm_aninhada":"H_infra_llm", "timeout_ferramenta":"H_timeout_ferramenta",
     "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "resultado_bruto_na_resposta":"U_resultado_bruto", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code",
     "codigo_mal_escrito":"X_causa_nao_identificada", "causa_sem_regra":"X_causa_nao_identificada",
     "sintoma_nao_reconhecido":"X_sintoma_nao_reconhecido",
@@ -211,6 +213,7 @@ def classify_sig_local(m):
     if 'TypeError' in m: return 'tipo'
     if 'ValueError' in m: return 'valor'
     if 'IndexError' in m: return 'ret_vazio'
+    if re.search(r'\bAPI(Connection|Status)Error\b', m): return 'conexao_llm'   # Ajuste 35
     return 'NC'
 
 csv_map = {(r["exec_id"], r["role"], int(r["idx"])): r for r in csv_rows}

@@ -416,8 +416,14 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   padrões (mascarada) e o encontro; a ordem dos padrões a investigar e cada Ajuste são decisões do Rafael.
   **Primeira rodada (10/11, `5d2098f6d706bd3b`):** 565 erros, 120 padrões, 23 recorrentes; encontro: 0 divergências.
   **Ajuste 34** (a máscara do padrão: endereço de memória e corte depois da máscara): rodada `13b0d026242de2dc`
-  (10/11), 111 padrões, 25 recorrentes; encontro: 0 divergências; falta o `comparar_rodadas.py` contra a `5d2098…`. **Próximo:** a ordem dos grupos a investigar (limite do interpretador, infra/LLM,
-  nome de ferramenta usado como variável, os maiores de causa sem regra).
+  (10/11), 111 padrões, 25 recorrentes; encontro: 0 divergências; falta o `comparar_rodadas.py` contra a `5d2098…`.
+  **Grupo infra / LLM (54 erros, 10/11):** contado por script (`validacao/contar_infra_residuo.py`) e lido inteiro
+  (`[assistido]`, um leitor). **Ajuste 35** (aprovado): a conexão perdida na chamada aninhada a outro agente (rede e
+  API, 33) → `H_infra_llm`, submecanismo `conexao_llm_aninhada`. Falta a rodada nova no ambiente da base e o
+  `comparar_rodadas.py --antes 13b0d026242de2dc` (esperado: só os 33 mudam; resíduo 532 erros, 108 padrões, 24
+  recorrentes). **Abertos, um por vez:** ferramenta (16: `enterprise_web_search` devolvendo `None` em agosto, 11;
+  `RecoverableToolError`, 5) e a "recusa do LLM" (5, que é limite de tamanho com rótulo de política de conteúdo). **Depois:**
+  limite do interpretador, nome de ferramenta usado como variável, os maiores de causa sem regra.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

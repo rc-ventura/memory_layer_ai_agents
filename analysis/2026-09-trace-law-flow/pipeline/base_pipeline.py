@@ -151,6 +151,10 @@ def classify(m):
     if 'TypeError' in m:            return ('Contrato de retorno da ferramenta','Tipo diferente do esperado')
     if 'ValueError' in m:           return ('Suposição sobre dados','Formato/valor inválido')
     if 'IndexError' in m:           return ('Contrato de retorno da ferramenta','Retorno vazio indexado')
+    # conexão perdida numa chamada a outro agente/LLM feita de dentro do código; última regra, para só alcançar o
+    # que nenhuma outra reconhece (Ajuste 35)
+    if re.search(r'\bAPI(?:Connection|Status)Error\b', m):
+        return ('Infra / LLM upstream', 'Conexão perdida na chamada aninhada ao LLM')
     return ('Sintoma não reconhecido', 'Sintoma não reconhecido')  # nenhuma regra de sintoma casou: erro novo para a taxonomia
 
 
@@ -412,6 +416,10 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         return "verificacao_try_nameerror"
     if v:
         return "nome_nao_definido"
+    # conexão perdida numa chamada a outro agente/LLM de dentro do código (orquestrador_*): a mesma correção da
+    # infra_llm, em outra camada; no fim, para só alcançar o que hoje é resíduo (Ajuste 35)
+    if re.search(r"\bAPI(?:Connection|Status)Error\b", m):
+        return "conexao_llm_aninhada"
     return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
 
 
@@ -429,7 +437,7 @@ SUB2UNI = {
     "verificacao_try_nameerror": "U_verificacao_existencia", "verificacao_introspeccao": "U_verificacao_existencia",
     "ferramenta_nao_declarada": "U_ferramenta_nao_declarada",
     "repr_colado": "U_repr_colado",
-    "infra_llm": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
+    "infra_llm": "H_infra_llm", "conexao_llm_aninhada": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
     "resultado_bruto_na_resposta": "U_resultado_bruto",
     "limite_de_passos": "C_limite_passos",
@@ -478,7 +486,9 @@ UNI = {
                       "dentro do código; se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca "
                       "com str(...)."),
     "H_infra_llm": ("Falha do LLM upstream — política de retry", NAO,
-                    "AgentGenerationError/422: retry com backoff e circuit breaker por subagente."),
+                    "AgentGenerationError/422 (a geração do próprio agente) e conexão perdida numa chamada aninhada a "
+                    "outro agente (APIConnectionError/APIStatusError, Ajuste 35): retry com backoff e circuit breaker "
+                    "por subagente."),
     # tipo=NAO reflete só a base 1 (o incidente de out/2025 morre a partir de mar/2026 NESTA base).
     # Gatilho de reabertura (≥2 casos/mês ou taxa > 1/1k steps) foi acionado na base 2 — ver diário
     # de campo 22/09/2026 e `04-roadmap.md` §Monitoramento. Reclassificar (tipo/decisão) quando a

@@ -490,5 +490,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   padrões para 1, que passa a recorrer). O `KeyError` do pandas junta-se ao `KeyError: <q>` (toda mensagem de `KeyError`
   vem entre aspas), e a pergunta de leitura R1 confere se é um erro só. Nenhuma unidade, candidata ou decisão de balde muda
   → livro-razão, Ajuste 34; racional do resíduo (`18` §2).
+- **10/11, a conexão perdida na chamada aninhada a outro agente vai para a `H_infra_llm`** (decisão do Rafael, só o grupo
+  rede e API do resíduo da base 3, 33 erros): a linha que falhou chama um `orquestrador_*` e a conexão caiu
+  (`APIConnectionError`/`APIStatusError`). Separa-se na causa e agrupa-se na correção: submecanismo próprio,
+  `conexao_llm_aninhada`, e a mesma unidade, porque a correção é a mesma (retry com backoff). Não se abre unidade para
+  causa que a base não mostrou. Os outros grupos do resíduo voltam um por vez, cada um com a sua aprovação
+  → livro-razão, Ajuste 35.
 
 ---
