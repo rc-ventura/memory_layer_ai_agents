@@ -1700,3 +1700,9 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     recusada (o `base_pipeline.py` está no hash): `executar.py analisar` (rodada nova), `validacao/comparar_rodadas.py
     --antes 5d2098f6d706bd3b --depois <nova>` (nenhum número da triagem deve mudar) e o `residuo.py`, a auditoria e o
     encontro na rodada nova (esperado: 565 erros, 111 padrões, 25 recorrentes, 0 divergências).
+- **Resultado no ambiente da base (10/11):** rodada nova `13b0d026242de2dc`. `residuo.py`: 565 erros, **111 padrões, 25
+  recorrentes**, 66 de uma execução (eram 77), 2 sem nome de exceção; as três conferências `ok` (os dois baldes iguais à
+  triagem). Auditoria, sobre o `casos.csv` desta rodada: 565 · 111 · 25, chaves na fonte 565/565. Encontro: **0
+  divergências**. **Falta:** o `comparar_rodadas.py` contra a `5d2098f6d706bd3b`, apagada por engano no ambiente; ela se
+  recria rodando `executar.py analisar` com o `base_pipeline.py` de antes do ajuste (mesma fonte e mesmo código dão o
+  mesmo identificador).
