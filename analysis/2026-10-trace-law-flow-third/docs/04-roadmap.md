@@ -425,8 +425,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   divergências. **Ajuste 36** (aprovado, 11/11): a ferramenta que sai do próprio contrato (16: `None` fora do esquema,
   11; Traceback vazado, 2; ausência como exceção, 3) → unidade nova `H_contrato_ferramenta`. Rodada `7f146976cf5c74ed`
   (11/11): só os 16 mudaram (sintoma não reconhecido 156 → 140, 20 unidades); resíduo **516 erros, 104 padrões, 24
-  recorrentes**; encontro: 0 divergências. **Aberto:** a "recusa do LLM" (5, que
-  é limite de tamanho com rótulo de política de conteúdo). **Depois:** limite do interpretador, nome de ferramenta usado como variável, os maiores de causa sem regra.
+  recorrentes**; encontro: 0 divergências. A "recusa do LLM" (5) **fica como cobertura** (11/11): estouro do limite
+  de tokens de entrada (285.148 contra 272.000) com rótulo de política de conteúdo, 2 execuções num mês
+  (`decisoes.md`). **O grupo infra / LLM fecha:** 33 + 16 saíram do resíduo, 5 ficam com motivo. **Depois:** nome de
+  ferramenta usado como variável (49), limite do interpretador, os maiores de causa sem regra.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

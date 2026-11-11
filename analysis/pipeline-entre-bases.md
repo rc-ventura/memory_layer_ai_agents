@@ -1786,6 +1786,12 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     nome da classe. Uma releitura do mesmo leitor apontou o limite, e a contagem confirmou. Lição: **o nome da exceção
     pode mentir sobre a causa quando uma biblioteca intermediária a reembrulha**; conte os sinais da mensagem, não o
     rótulo.
+    **Fechado (11/11), fica como cobertura.** A mensagem crua, lida no ambiente da base, confirma: o limite é o de tokens
+    de entrada, 272.000, e a requisição foi com 285.148 (+13.148, +4,8%); o mesmo número volta nos casos — a mesma
+    entrada reenviada, que um retry não resolveria (por isso não é `H_infra_llm`). A correção, se vier, pode ser do
+    harness (dividir ou resumir antes da chamada aninhada) ou do agente (não mandar tudo); com 2 execuções num mês, abaixo
+    da régua, nenhum lado tem base para uma unidade. Os 5 continuam no resíduo com o motivo escrito (`decisoes.md`,
+    11/11) e voltam se reaparecerem. Com isso o grupo infra / LLM (54) fecha: 33 + 16 saíram do resíduo, 5 ficam.
 - **O que a máscara mostrou (§4 deste livro, item 2, e o racional do resíduo §2):** um mecanismo só, três padrões —
   "Connection error." com e sem a frase de troubleshooting, e "Nenhum documento… processo FQ `<n>`" × "…processo
   `<n>`". No grupo da recusa, o corte em 90 caracteres deixou no padrão só o embrulho do litellm e escondeu a causa.

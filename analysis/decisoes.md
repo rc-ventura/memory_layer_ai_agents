@@ -502,5 +502,10 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   correção é a mesma e é da ferramenta. A ausência de dado também entra: nas falhas silenciosas ela chega como resposta
   vazia, aqui como exceção — a diferença é a semântica de erro da ferramenta. Dono, SLA e medição semanal ficam fora do
   pipeline (decisão da organização) → livro-razão, Ajuste 36.
+- **11/11, a "recusa do LLM" do resíduo da base 3 fica como cobertura** (decisão do Rafael; 5 erros, 2 execuções,
+  abril, chamada aninhada ao `orquestrador_papel`): é o estouro do limite de tokens de entrada (285.148 contra 272.000)
+  que o litellm rotula `ContentPolicyViolationError`, não recusa de conteúdo. Retry não resolve (a mesma entrada volta);
+  abaixo da régua e sem unidade que caiba. Continua no resíduo com este motivo; volta se reaparecer → livro-razão,
+  Ajuste 35 ("O que ficou aberto").
 
 ---
