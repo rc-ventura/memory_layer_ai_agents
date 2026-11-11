@@ -113,6 +113,7 @@ CURTO_MEM = {
     "U_ferramenta_nao_declarada": "declarar a ferramenta no prompt",
     "H_infra_llm": "retry/backoff LLM",
     "H_timeout_ferramenta": "timeout de ferramenta",
+    "H_contrato_ferramenta": "contrato da ferramenta",
     "U_codigo_lento": "nada de laço pesado no bloco",
     "U_resultado_bruto": "extrair, não entregar o bruto",
     "C_limite_passos": "limite de passos",

@@ -1790,3 +1790,58 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
   "Connection error." com e sem a frase de troubleshooting, e "Nenhum documento… processo FQ `<n>`" × "…processo
   `<n>`". No grupo da recusa, o corte em 90 caracteres deixou no padrão só o embrulho do litellm e escondeu a causa.
   Nada muda agora: as regras novas leem o nome da exceção, não o padrão.
+
+### Ajuste 36 — a ferramenta que sai do próprio contrato ganha uma unidade, `H_contrato_ferramenta` (11/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `ed138b1815816ea3`), grupo "infra / LLM", o segundo
+  grupo depois do Ajuste 35: 16 erros em que a ferramenta chamada pelo agente falhou, no balde "sintoma não reconhecido".
+- **Evidência:** a contagem por script (`validacao/contar_infra_residuo.py`, grupos `ferramenta_conteudo` e
+  `ferramenta_recuperavel`) e a leitura dos casos (`[assistido]`, um leitor; uma segunda leitura no ambiente da base chegou
+  às mesmas três causas):
+  - **retorno fora do contrato** (11 erros, 11 execuções, ContestacaoCivel, só agosto/2026): `enterprise_web_search`
+    devolveu `None` onde o próprio esquema exige objeto ("Invalid structured content returned by tool …"); depois, o agente
+    mudou de caminho em 5, seguiu em 5 e repetiu em 1. Cara de incidente: uma ferramenta, um mês;
+  - **erro interno vazado** (2, CalculoProprios, `get_infos_pasta_calculo_proprios`): `RecoverableToolError` com um
+    Traceback dentro;
+  - **ausência como exceção** (3, CalculoProprios, `get_docs_calculo_proprios`): `RecoverableToolError` "Nenhum documento
+    do tipo inicial encontrado…". Nos 5 de CalculoProprios o agente mudou de caminho.
+  As regras de motivo das falhas silenciosas (`motivo_da_falha`) não reconhecem nenhuma das três (dão `nao_reconhecido`):
+  elas leem o formato `Error calling tool '<nome>'`.
+- **Decisão (Rafael, 11/11):** separar na causa e agrupar na correção, como no Ajuste 35. Uma unidade de não-memória, a
+  correção é da ferramenta (validar a saída contra o esquema, trocar o Traceback por erro com código e contexto, devolver
+  "sem documento" como resposta de negócio). A primeira proposta deixava a ausência como cobertura ("não é falha", por
+  analogia com o `sem_resultado` das silenciosas); a segunda leitura mostrou que a analogia conta ao contrário: lá a
+  ausência chega como resposta vazia, aqui como exceção — a diferença é a semântica de erro da ferramenta, que tem
+  correção. Três unidades (uma por causa) foram descartadas: fragmentam 16 erros e a correção é a mesma. O nome
+  `H_contrato_ferramenta` foi escolhido por Rafael (o primeiro, `H_ferramenta`, não dizia o que aconteceu). Dono, SLA e
+  medição semanal ficam fora do pipeline. O gatilho de monitoramento da unidade é decisão separada.
+- **Mudança:** nos `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base), como
+  **últimas** regras, depois da do Ajuste 35 — só alcançam o que hoje é resíduo:
+  - `classify()`, família `Infra / ferramenta` (a do timeout de ferramenta): `Invalid structured content returned by tool
+    \w+` → "Ferramenta devolveu conteúdo fora do próprio esquema"; `RecoverableToolError` … `Traceback` → "Erro interno
+    da ferramenta vazou como Traceback"; `RecoverableToolError` … `nenhum` … `encontrad` (sem caixa) → "Ausência de dado
+    sinalizada como exceção". O Traceback vem antes da ausência: com os dois, conta como erro interno;
+  - `submecanismo()`: as mesmas expressões → `retorno_fora_do_contrato`, `erro_interno_ferramenta`,
+    `ausencia_como_excecao`; `SUB2UNI` → `H_contrato_ferramenta`; a unidade nova em `UNI` (tipo não-memória);
+  - base 3: os três entram nas regras que decidem só pela mensagem (`_mecanismo_com_evidencia`): observáveis;
+  - `genealogia_sankey.py` (bases 1 e 3): o rótulo curto "contrato da ferramenta" (sem ele, o diagrama usa o título
+    longo);
+  - auditoria nº 6 (`audit_recompute6.py`): as três regras reescritas à parte (`submecanismo_spec`, `SUB2UNI`,
+    `classify_sig_local`). O manifesto do kit foi gerado de novo; a `VERSAO` não muda.
+- **Verificação:** `analysis/tests/test_contrato_ferramenta.py` (5 testes: as duas bases classificam igual; Traceback e
+  ausência juntos contam como erro interno; outro `RecoverableToolError` continua no resíduo; o timeout continua no
+  timeout; observável na base 3; a auditoria nº 6 reescreve as regras); suíte 387 testes, OK. Base 1: o trace não tem
+  nenhuma das três mensagens (0), nenhum número muda. `conferir_versao.py analysis/2026-09-trace-law-flow`: antes de
+  gerar o manifesto, PARAR (2 arquivos); depois, igual.
+- **Replicar no ambiente da base** (os arquivos de código que mudaram, copiados sem edição):
+  - `analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py` e `…/genealogia_sankey.py`;
+  - `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` e `…/genealogia_sankey.py`;
+  - `analysis/2026-09-trace-law-flow/audit/scripts/audit_recompute6.py`;
+  - `.claude/skills/mineracao-base/manifesto.json` → no ambiente, `.github/skills/mineracao-base/manifesto.json`;
+  - **base 2 (não esquecer):** copiar o `base_pipeline.py` da base 1 por cima do da pasta `-second`, restaurar `TRACE` e
+    `BASE_ID`; o `audit_recompute6.py` também, sem mudança (o trace vai por `--trace`); `conferir_versao.py
+    analysis/2026-09-trace-law-flow-second` → igual;
+  - **base 3:** `executar.py analisar` (rodada nova; não apagar a `ed138b1815816ea3`), `comparar_rodadas.py --antes
+    ed138b1815816ea3 --depois <nova>` (esperado: só os 16 erros mudam, sintoma não reconhecido 156 → 140,
+    `H_contrato_ferramenta` com 16 — e uma unidade a mais na triagem, 19 → 20), e o `residuo.py`, a auditoria e o
+    encontro na rodada nova (esperado: 516 erros, 0 divergências).

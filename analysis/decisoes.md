@@ -496,5 +496,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `conexao_llm_aninhada`, e a mesma unidade, porque a correção é a mesma (retry com backoff). Não se abre unidade para
   causa que a base não mostrou. Os outros grupos do resíduo voltam um por vez, cada um com a sua aprovação
   → livro-razão, Ajuste 35.
+- **11/11, a ferramenta que sai do próprio contrato vai para uma unidade nova, a `H_contrato_ferramenta`** (decisão do
+  Rafael, só o grupo da ferramenta do resíduo da base 3, 16 erros): `None` fora do esquema da ferramenta (11), Traceback
+  vazado (2) e "nenhum documento encontrado" sinalizado como exceção (3). Três submecanismos, uma unidade, porque a
+  correção é a mesma e é da ferramenta. A ausência de dado também entra: nas falhas silenciosas ela chega como resposta
+  vazia, aqui como exceção — a diferença é a semântica de erro da ferramenta. Dono, SLA e medição semanal ficam fora do
+  pipeline (decisão da organização) → livro-razão, Ajuste 36.
 
 ---

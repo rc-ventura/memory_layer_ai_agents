@@ -422,9 +422,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (`[assistido]`, um leitor). **Ajuste 35** (aprovado): a conexão perdida na chamada aninhada a outro agente (rede e
   API, 33) → `H_infra_llm`, submecanismo `conexao_llm_aninhada`. Rodada `ed138b1815816ea3` (11/11): só os 33
   mudaram (sintoma não reconhecido 189 → 156); resíduo **532 erros, 108 padrões, 24 recorrentes**; encontro: 0
-  divergências. **Abertos, um por vez:** ferramenta (16: `enterprise_web_search` devolvendo `None` em agosto, 11;
-  `RecoverableToolError`, 5) e a "recusa do LLM" (5, que é limite de tamanho com rótulo de política de conteúdo). **Depois:**
-  limite do interpretador, nome de ferramenta usado como variável, os maiores de causa sem regra.
+  divergências. **Ajuste 36** (aprovado, 11/11): a ferramenta que sai do próprio contrato (16: `None` fora do esquema,
+  11; Traceback vazado, 2; ausência como exceção, 3) → unidade nova `H_contrato_ferramenta`. Falta a rodada nova no
+  ambiente da base (esperado: sintoma não reconhecido 156 → 140, resíduo 516). **Aberto:** a "recusa do LLM" (5, que
+  é limite de tamanho com rótulo de política de conteúdo). **Depois:** limite do interpretador, nome de ferramenta usado como variável, os maiores de causa sem regra.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

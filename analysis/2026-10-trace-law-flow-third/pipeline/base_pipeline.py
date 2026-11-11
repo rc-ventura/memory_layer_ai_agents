@@ -276,6 +276,14 @@ def classify(m):
     # que nenhuma outra reconhece (Ajuste 35)
     if re.search(r'\bAPI(?:Connection|Status)Error\b', m):
         return ('Infra / LLM upstream', 'Conexão perdida na chamada aninhada ao LLM')
+    # a ferramenta saiu do próprio contrato de retorno ou de erro; últimas regras, para só alcançar o que nenhuma outra
+    # reconhece (Ajuste 36). O Traceback vem antes da ausência: com os dois, conta como erro interno
+    if re.search(r'Invalid structured content returned by tool \w+', m):
+        return ('Infra / ferramenta', 'Ferramenta devolveu conteúdo fora do próprio esquema')
+    if re.search(r'\bRecoverableToolError\b[\s\S]*\bTraceback\b', m):
+        return ('Infra / ferramenta', 'Erro interno da ferramenta vazou como Traceback')
+    if re.search(r'\bRecoverableToolError\b[\s\S]*\bnenhum\b[\s\S]*\bencontrad', m, re.I):
+        return ('Infra / ferramenta', 'Ausência de dado sinalizada como exceção')
     return ('Sintoma não reconhecido', 'Sintoma não reconhecido')  # nenhuma regra de sintoma casou: erro novo para a taxonomia
 
 
@@ -645,6 +653,14 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
     # infra_llm, em outra camada; no fim, para só alcançar o que hoje é resíduo (Ajuste 35)
     if re.search(r"\bAPI(?:Connection|Status)Error\b", m):
         return "conexao_llm_aninhada"
+    # a ferramenta saiu do próprio contrato: devolveu conteúdo fora do esquema, deixou vazar um Traceback ou sinalizou
+    # a ausência de um dado como exceção. A correção é na ferramenta; no fim, para só alcançar o resíduo (Ajuste 36)
+    if re.search(r"Invalid structured content returned by tool \w+", m):
+        return "retorno_fora_do_contrato"
+    if re.search(r"\bRecoverableToolError\b[\s\S]*\bTraceback\b", m):
+        return "erro_interno_ferramenta"
+    if re.search(r"\bRecoverableToolError\b[\s\S]*\bnenhum\b[\s\S]*\bencontrad", m, re.I):
+        return "ausencia_como_excecao"
     return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
 
 
@@ -663,6 +679,8 @@ SUB2UNI = {
     "ferramenta_nao_declarada": "U_ferramenta_nao_declarada",
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm", "conexao_llm_aninhada": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
+    "retorno_fora_do_contrato": "H_contrato_ferramenta", "erro_interno_ferramenta": "H_contrato_ferramenta",
+    "ausencia_como_excecao": "H_contrato_ferramenta",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
     "resultado_bruto_na_resposta": "U_resultado_bruto",
     "limite_de_passos": "C_limite_passos",
@@ -714,6 +732,12 @@ UNI = {
                     "AgentGenerationError/422 (a geração do próprio agente) e conexão perdida numa chamada aninhada a "
                     "outro agente (APIConnectionError/APIStatusError, Ajuste 35): retry com backoff e circuit breaker "
                     "por subagente."),
+    "H_contrato_ferramenta": ("A ferramenta saiu do próprio contrato — correção na ferramenta", NAO,
+                              "A ferramenta não cumpriu o contrato de retorno ou de erro: devolveu conteúdo fora do "
+                              "próprio esquema (None onde exige objeto), deixou vazar um Traceback, ou sinalizou a "
+                              "ausência de um dado como exceção em vez de resposta. A correção é na ferramenta: validar a "
+                              "saída contra o esquema, trocar o Traceback por erro com código e contexto, devolver 'sem "
+                              "documento' como resposta de negócio. Não é lição do agente (Ajuste 36)."),
     # tipo=NAO reflete só a base 1 (o incidente de out/2025 morre a partir de mar/2026 NESTA base).
     # Gatilho de reabertura (≥2 casos/mês ou taxa > 1/1k steps) foi acionado na base 2 — ver diário
     # de campo 22/09/2026 e `04-roadmap.md` §Monitoramento. Reclassificar (tipo/decisão) quando a
@@ -790,7 +814,8 @@ def _mecanismo_com_evidencia(r, carga, ctx, incoming, byref):
     # Preview não decide unidade: serve para reconhecer qual ramo exige sinais.
     preview = submecanismo(m)
     if preview in {"harness_bloco_code", "infra_llm", "conexao_llm_aninhada", "timeout_ferramenta", "limite_de_passos",
-                   "verificacao_try_nameerror"}:
+                   "verificacao_try_nameerror", "retorno_fora_do_contrato", "erro_interno_ferramenta",
+                   "ausencia_como_excecao"}:
         return preview, "observavel", "regra_por_mensagem_elegivel"
     if preview in {"codigo_lento", "timeout_interpretador", "resultado_bruto_na_resposta"}:
         return None, "pendente", "timeout_requer_prompt_declarado_e_codigo"
