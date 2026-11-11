@@ -172,8 +172,9 @@ do alarme de cobertura de 5%. Com o texto inteiro, a causa não identificada gan
 de taxonomia, não de memória ([roadmap](04-roadmap.md) #5). Fonte: `<rodada>/triagem_visivel_observada.csv`.
 
 **A mineração do resíduo (desde 10/11) já mudou esses números.** O Ajuste 35 levou para `H_infra_llm` os 33 erros de
-conexão perdida numa chamada aninhada a outro agente ([livro-razão](../../pipeline-entre-bases.md)): na rodada
-`ed138b1815816ea3` (11/11) o resíduo é **532 erros** (376 + 156), 108 padrões, 24 recorrentes. O resto deste relatório
+conexão perdida numa chamada aninhada a outro agente, e o Ajuste 36 levou para a unidade nova `H_contrato_ferramenta`
+os 16 em que a ferramenta saiu do próprio contrato ([livro-razão](../../pipeline-entre-bases.md)): na rodada
+`7f146976cf5c74ed` (11/11) o resíduo é **516 erros** (376 + 140), 104 padrões, 24 recorrentes. O resto deste relatório
 segue a rodada `609c947b15295c84`.
 
 ## 6 · Limitações que afetam a leitura

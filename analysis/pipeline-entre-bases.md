@@ -1845,3 +1845,16 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     ed138b1815816ea3 --depois <nova>` (esperado: só os 16 erros mudam, sintoma não reconhecido 156 → 140,
     `H_contrato_ferramenta` com 16 — e uma unidade a mais na triagem, 19 → 20), e o `residuo.py`, a auditoria e o
     encontro na rodada nova (esperado: 516 erros, 0 divergências).
+- **Resultado no ambiente da base (11/11):**
+  - **base 2:** `conferir_versao` igual (14 de 14; o `base_pipeline.py` da `-second`, sem a camada da base, tem o hash do
+    manifesto, `ca6100ec5aba6a40`);
+  - **base 3, rodada nova `7f146976cf5c74ed`.** `comparar_rodadas.py --antes ed138b1815816ea3`: mesma fonte; mudaram
+    os dois arquivos previstos (`base_pipeline.py`, `genealogia_sankey.py`); no resumo, só "sintomas não reconhecidos"
+    156 → 140 e "unidades observáveis" 19 → 20 (erros 30.141, pendentes 749, candidatas 10 iguais); a triagem ganhou
+    uma linha (19 → 20); as conferências da rodada nova, `ok` (o gasto por unidade fecha com a triagem nas 20
+    unidades). "NÃO FECHA" é o veredito esperado num Ajuste;
+  - **resíduo da rodada nova:** 516 erros (causa sem regra 250, código mal escrito 126, sintoma não reconhecido 140),
+    **104 padrões, 24 recorrentes**, 2 sem impressão digital, 63 de uma execução; conferências `ok`. Os 16 erros estavam
+    em 4 padrões (o `None` fora do esquema, os dois do "Nenhum documento…" e o do Traceback), nenhum passava na régua:
+    a recorrência não muda. Auditoria: 516 · 104 · 24, chaves na fonte 516/516. Encontro: **0 divergências**. Ajuste 36
+    verificado.
