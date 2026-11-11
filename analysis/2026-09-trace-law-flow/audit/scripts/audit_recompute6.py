@@ -129,6 +129,8 @@ def submecanismo_spec(m, code="", obs_ant="", sysp=""):
     if "Invalid structured content returned by tool" in m: return "retorno_fora_do_contrato"
     if "RecoverableToolError" in m and "Traceback" in m: return "erro_interno_ferramenta"
     if "RecoverableToolError" in m and re.search(r"nenhum.*encontrad", m, re.I | re.S): return "ausencia_como_excecao"
+    # Ajuste 37: atribuição a nome de ferramenta (ou de função embutida) barrada pelo interpretador — por último
+    if "Cannot assign to name '" in m and "would erase the existing tool" in m: return "nome_de_ferramenta_atribuido"
     return "causa_sem_regra"
 
 SUB2UNI = {
@@ -141,6 +143,7 @@ SUB2UNI = {
     "infra_llm":"H_infra_llm", "conexao_llm_aninhada":"H_infra_llm", "timeout_ferramenta":"H_timeout_ferramenta",
     "retorno_fora_do_contrato":"H_contrato_ferramenta", "erro_interno_ferramenta":"H_contrato_ferramenta",
     "ausencia_como_excecao":"H_contrato_ferramenta",
+    "nome_de_ferramenta_atribuido":"U_nome_ferramenta_como_variavel",
     "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "resultado_bruto_na_resposta":"U_resultado_bruto", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code",
     "codigo_mal_escrito":"X_causa_nao_identificada", "causa_sem_regra":"X_causa_nao_identificada",
     "sintoma_nao_reconhecido":"X_sintoma_nao_reconhecido",
@@ -223,6 +226,7 @@ def classify_sig_local(m):
     if 'Invalid structured content returned by tool' in m: return 'ferramenta_fora_esquema'   # Ajuste 36
     if 'RecoverableToolError' in m and 'Traceback' in m: return 'ferramenta_traceback'
     if 'RecoverableToolError' in m and re.search(r'nenhum.*encontrad', m, re.I | re.S): return 'ferramenta_ausencia'
+    if "Cannot assign to name '" in m and 'would erase the existing tool' in m: return 'nome_ferramenta_variavel'   # Ajuste 37
     return 'NC'
 
 csv_map = {(r["exec_id"], r["role"], int(r["idx"])): r for r in csv_rows}

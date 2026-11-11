@@ -513,5 +513,21 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   conhecida abaixo da régua sem unidade que caiba. O alarme automático (um item no `monitoramento.json` por padrão em
   observação) depende de o `monitorar.py` ler as tabelas da base 3 (b3 #52) → procedimento do resíduo (`19`, "Quando um
   padrão termina"), racional (`18`).
+- **11/11, o nome de ferramenta usado como variável é erro do agente e memória de reforço, não sinal de harness**
+  (decisão do Rafael; 49 erros da base 3, 0 nas bases 1 e 2): o agente dá a uma variável o nome de uma ferramenta
+  (`final_answer = {...}`, 37 no OBFCivel; `resposta_final`, 4; `calculo_*`, 5) ou de uma função embutida do
+  interpretador (`exp`, 2), e o interpretador barra. Unidade nova `U_nome_ferramenta_como_variavel` (factual ·
+  ambiente). **Não é sinal de harness:** o harness faz o certo — o prompt proíbe (a regra 7 do prompt padrão do
+  smolagents, "Don't name any new variable with the same name as a tool: for instance don't name a variable
+  'final_answer'", em 1.550 de 1.550 prompts na base 1 e em 100% dos 4 papéis na base 2), o interpretador protege e a
+  mensagem explica; nenhum prompt induz (0 atribuições). A origem no framework não decide (o dev mantém o modelo padrão
+  e poderia mudá-lo; a regra do `<code>` também é do framework e é harness): decide quem corrige, e não há defeito do
+  lado do harness. **Não é memória nova:** a memória repetiria a regra 7 → **memória de reforço**, monitorada, não
+  injetada (como as do "import fora da lista", 20/10). Nos gráficos de destino a unidade aparece como candidata (erro do
+  agente); o reforço é decidido na mineração. O alarme de reforço ("triplicou") espera o b3 #52. Notas, sem mudar o
+  destino: a taxa do OBFCivel subiu de 0,4% (abr–jun) para 1,8% (jul–ago) das execuções com erro, sem causa medida (a
+  base 3 não tem prompt e a versão do agente é sempre "0"); o RespostaBacen declara uma ferramenta `resposta_final`, o
+  nome mais natural para a variável da resposta; em 32 dos 49 o passo seguinte também falha (qual erro, ainda não
+  contado) → livro-razão, Ajuste 37.
 
 ---

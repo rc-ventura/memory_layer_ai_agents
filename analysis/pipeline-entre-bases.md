@@ -1864,3 +1864,59 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     em 4 padrões (o `None` fora do esquema, os dois do "Nenhum documento…" e o do Traceback), nenhum passava na régua:
     a recorrência não muda. Auditoria: 516 · 104 · 24, chaves na fonte 516/516. Encontro: **0 divergências**. Ajuste 36
     verificado.
+
+### Ajuste 37 — o nome de ferramenta usado como variável ganha uma unidade, `U_nome_ferramenta_como_variavel` (11/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `7f146976cf5c74ed`), o maior padrão do balde "sintoma
+  não reconhecido": 49 erros `InterpreterError` "Cannot assign to name '<nome>': doing this would erase the existing
+  tool!".
+- **Evidência:**
+  - **contagem do grupo** (`validacao/contar_nome_ferramenta_residuo.py`, no ambiente da base): 49 erros, 49 execuções,
+    7 meses, 4 papéis, 2,09 mi de tokens. Por papel e nome: OBFCivel · `final_answer` 37, CalculoTrabalhista ·
+    `calculo_horas_extras` 5 e `calculo_enquadramento` 1, RespostaBacen · `resposta_final` 4, JoogleAnalytics · `exp` 2.
+    Forma da linha: outro valor 45 (os 41 de `final_answer`/`resposta_final` são todos um dict literal),
+    `x = x(...)` 4 (os de `calculo_*`). Nenhuma execução repete o erro no mesmo papel;
+  - **fechamento no ambiente da base** (um prompt ao agente de lá, só contagens): a regex pega 49 em todos os erros da
+    base 3 (0 mensagens "Cannot assign" fora dela) e 0 na base 2. Na base 2 (trace completo), nos 4 papéis, os nomes são
+    ferramentas declaradas (`def <nome>(` em 100% dos prompts), `exp` não é declarado (JoogleAnalytics, 10 de 10), a regra
+    "same name as a tool" está em 100% dos prompts e nenhum prompt atribui `final_answer =`. Na base 3, nenhum dos 41
+    dicts chama `get_final_answer_schema` no mesmo bloco; o passo seguinte também falha em 32 dos 49
+    (`AgentExecutionError`, erro ainda não classificado). A taxa no OBFCivel, por execução com erro: 1 em 275 (abr–jun),
+    36 em 1.968 (jul–ago). A base 3 não tem prompt de sistema (`sysprompt` `nao_exportado`) e a versão do agente é
+    sempre "0";
+  - **base 1, aqui** (`validacao/contar_regra_nome_ferramenta_prompt.py`): 0 ocorrências da mensagem; a regra
+    "Don't name any new variable with the same name as a tool: for instance don't name a variable 'final_answer'." em
+    1.550 de 1.550 prompts (o número muda entre 5, 6 e 7 conforme a versão do modelo). É o prompt padrão do smolagents
+    (as regras 1–11 são as do modelo do framework; o texto do papel vem depois da regra 11, no espaço das
+    `instructions`).
+- **Decisão (Rafael, 11/11):** erro do agente, unidade nova de fato do ambiente; destino **memória de reforço** (a memória
+  repetiria a regra 7), não sinal de harness (o prompt proíbe, o interpretador protege e explica; nenhum prompt induz) →
+  `decisoes.md`. O nome `U_nome_ferramenta_como_variavel` foi o sugerido pela leitura no ambiente da base. O `exp` (função
+  embutida, não declarada) fica na mesma unidade: é a mesma correção (renomear a variável).
+- **Mudança:** nos `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base), como
+  **últimas** regras, depois das do Ajuste 36:
+  - `classify()`: `Cannot assign to name '[^']*': doing this would erase the existing tool` → família
+    `Ambiente & sandbox`, "Nome de ferramenta usado como variável";
+  - `submecanismo()`: a mesma expressão → `nome_de_ferramenta_atribuido`; `SUB2UNI` →
+    `U_nome_ferramenta_como_variavel`; a unidade nova em `UNI` (factual · ambiente);
+  - base 3: o submecanismo entra nas regras que decidem só pela mensagem (`_mecanismo_com_evidencia`): observável;
+  - `genealogia_sankey.py` (bases 1 e 3): o rótulo curto "nome de ferramenta";
+  - auditoria nº 6 (`audit_recompute6.py`): a regra reescrita à parte (`submecanismo_spec`, `SUB2UNI`,
+    `classify_sig_local` → `nome_ferramenta_variavel`). Manifesto do kit gerado de novo; `VERSAO` 0.19.0.
+- **Verificação:** `analysis/tests/test_nome_ferramenta_variavel.py` (5 testes: as duas bases classificam igual para o
+  dict, o `x = x(...)` e o `exp`; uma mensagem parecida sem a proteção continua no resíduo; o timeout continua no
+  timeout; observável na base 3; a auditoria nº 6 reescreve a regra) e
+  `analysis/tests/test_contar_regra_nome_ferramenta_prompt.py`; suíte 395 testes, OK. Base 1: o trace não tem a mensagem
+  (0), nenhum número muda.
+- **Replicar no ambiente da base** (os arquivos de código que mudaram, copiados sem edição):
+  - `analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py` e `…/genealogia_sankey.py`;
+  - `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` e `…/genealogia_sankey.py`;
+  - `analysis/2026-09-trace-law-flow/audit/scripts/audit_recompute6.py`;
+  - `.claude/skills/mineracao-base/manifesto.json` e `VERSAO` → no ambiente, `.github/skills/mineracao-base/`;
+  - **base 2 (não esquecer):** copiar o `base_pipeline.py` da base 1 por cima do da pasta `-second`, restaurar `TRACE` e
+    `BASE_ID`; o `audit_recompute6.py` também, sem mudança (o trace vai por `--trace`); `conferir_versao.py
+    analysis/2026-09-trace-law-flow-second` → igual;
+  - **base 3:** `executar.py analisar` (rodada nova; não apagar a `7f146976cf5c74ed`), `comparar_rodadas.py --antes
+    7f146976cf5c74ed --depois <nova>` (esperado: só os 49 erros mudam, sintoma não reconhecido 140 → 91,
+    `U_nome_ferramenta_como_variavel` com 49 como candidata — uma unidade a mais na triagem, 20 → 21, e candidatas
+    10 → 11), e o `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 467 erros, 0 divergências).

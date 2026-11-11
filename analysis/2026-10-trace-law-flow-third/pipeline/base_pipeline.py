@@ -284,6 +284,10 @@ def classify(m):
         return ('Infra / ferramenta', 'Erro interno da ferramenta vazou como Traceback')
     if re.search(r'\bRecoverableToolError\b[\s\S]*\bnenhum\b[\s\S]*\bencontrad', m, re.I):
         return ('Infra / ferramenta', 'Ausência de dado sinalizada como exceção')
+    # o agente deu a uma variável o nome de uma ferramenta (ou de função embutida do interpretador) e o interpretador
+    # barrou; última regra, para só alcançar o que nenhuma outra reconhece (Ajuste 37)
+    if re.search(r"Cannot assign to name '[^']*': doing this would erase the existing tool", m):
+        return ('Ambiente & sandbox', 'Nome de ferramenta usado como variável')
     return ('Sintoma não reconhecido', 'Sintoma não reconhecido')  # nenhuma regra de sintoma casou: erro novo para a taxonomia
 
 
@@ -661,6 +665,11 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         return "erro_interno_ferramenta"
     if re.search(r"\bRecoverableToolError\b[\s\S]*\bnenhum\b[\s\S]*\bencontrad", m, re.I):
         return "ausencia_como_excecao"
+    # o agente atribuiu a um nome de ferramenta declarada (ex.: final_answer = {...}) ou de função embutida do
+    # interpretador (ex.: exp); a regra 7 do prompt padrão do framework já proíbe. No fim, para só alcançar o resíduo
+    # (Ajuste 37)
+    if re.search(r"Cannot assign to name '[^']*': doing this would erase the existing tool", m):
+        return "nome_de_ferramenta_atribuido"
     return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
 
 
@@ -681,6 +690,7 @@ SUB2UNI = {
     "infra_llm": "H_infra_llm", "conexao_llm_aninhada": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
     "retorno_fora_do_contrato": "H_contrato_ferramenta", "erro_interno_ferramenta": "H_contrato_ferramenta",
     "ausencia_como_excecao": "H_contrato_ferramenta",
+    "nome_de_ferramenta_atribuido": "U_nome_ferramenta_como_variavel",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
     "resultado_bruto_na_resposta": "U_resultado_bruto",
     "limite_de_passos": "C_limite_passos",
@@ -738,6 +748,11 @@ UNI = {
                               "ausência de um dado como exceção em vez de resposta. A correção é na ferramenta: validar a "
                               "saída contra o esquema, trocar o Traceback por erro com código e contexto, devolver 'sem "
                               "documento' como resposta de negócio. Não é lição do agente (Ajuste 36)."),
+    "U_nome_ferramenta_como_variavel": ("Nome de ferramenta não serve de variável", FACT,
+                                        "Guardar a resposta em outro nome (resposta = {...}) e entregar com "
+                                        "final_answer(resposta). Nenhum nome de ferramenta declarada, nem de função "
+                                        "embutida do interpretador (ex.: exp), pode receber valor. Repete a regra 7 do "
+                                        "prompt padrão do framework: memória de reforço (Ajuste 37)."),
     # tipo=NAO reflete só a base 1 (o incidente de out/2025 morre a partir de mar/2026 NESTA base).
     # Gatilho de reabertura (≥2 casos/mês ou taxa > 1/1k steps) foi acionado na base 2 — ver diário
     # de campo 22/09/2026 e `04-roadmap.md` §Monitoramento. Reclassificar (tipo/decisão) quando a
@@ -815,7 +830,7 @@ def _mecanismo_com_evidencia(r, carga, ctx, incoming, byref):
     preview = submecanismo(m)
     if preview in {"harness_bloco_code", "infra_llm", "conexao_llm_aninhada", "timeout_ferramenta", "limite_de_passos",
                    "verificacao_try_nameerror", "retorno_fora_do_contrato", "erro_interno_ferramenta",
-                   "ausencia_como_excecao"}:
+                   "ausencia_como_excecao", "nome_de_ferramenta_atribuido"}:
         return preview, "observavel", "regra_por_mensagem_elegivel"
     if preview in {"codigo_lento", "timeout_interpretador", "resultado_bruto_na_resposta"}:
         return None, "pendente", "timeout_requer_prompt_declarado_e_codigo"

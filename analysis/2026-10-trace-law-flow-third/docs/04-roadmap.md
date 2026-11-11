@@ -327,6 +327,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
     LLM" (5 erros, 2 execuções, abril; gatilho: a régua, ≥3 execuções e ≥2 meses) → `decisoes.md` 11/11;
   - **o `try/except NameError`** (#28);
   - **o gatilho da `H_contrato_ferramenta`** (Ajuste 36: ficou como decisão separada);
+  - **a memória de reforço da `U_nome_ferramenta_como_variavel`** (Ajuste 37; tipo "memória de reforço", gatilho
+    "triplicou"): linha de base a escolher, porque a taxa do OBFCivel já subiu de 0,4% (abr–jun) para 1,8% (jul–ago);
   - **os gatilhos que só estão no texto das unidades** e não no registro: `H_timeout_ferramenta` e `H_bloco_code` ("≥2
     casos num mês ou > 1/1k steps") — conferir se entram;
   - um item sem tabela na base não pode parar o passo 0 das outras bases (hoje todo item lê as tabelas das bases 1 e 2,
@@ -438,8 +440,13 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (11/11): só os 16 mudaram (sintoma não reconhecido 156 → 140, 20 unidades); resíduo **516 erros, 104 padrões, 24
   recorrentes**; encontro: 0 divergências. A "recusa do LLM" (5) **fica em observação** (11/11): estouro do limite
   de tokens de entrada (285.148 contra 272.000) com rótulo de política de conteúdo, 2 execuções num mês
-  (`decisoes.md`). **O grupo infra / LLM fecha:** 33 + 16 saíram do resíduo, 5 ficam com motivo. **Depois:** nome de
-  ferramenta usado como variável (49), limite do interpretador, os maiores de causa sem regra.
+  (`decisoes.md`). **O grupo infra / LLM fecha:** 33 + 16 saíram do resíduo, 5 ficam com motivo.
+  **Grupo nome de ferramenta usado como variável (49, 11/11):** contado por script
+  (`validacao/contar_nome_ferramenta_residuo.py`) e fechado no ambiente da base (bases 2 e 3) e aqui (base 1, o prompt:
+  `validacao/contar_regra_nome_ferramenta_prompt.py`). **Ajuste 37** (aprovado): unidade nova
+  `U_nome_ferramenta_como_variavel`, erro do agente, destino memória de reforço (o prompt padrão já proíbe; não é sinal
+  de harness → `decisoes.md`). Esperado na rodada nova: resíduo 516 → 467, sintoma não reconhecido 140 → 91.
+  **Depois:** limite do interpretador, os maiores de causa sem regra.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

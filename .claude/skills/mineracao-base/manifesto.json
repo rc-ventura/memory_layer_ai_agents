@@ -2,7 +2,7 @@
   "arquivos": {
     "../leitor_trace.py": "998e1594bf5f35e6",
     "../base_utils.py": "2fe1d2451d5fb6b6",
-    "pipeline/base_pipeline.py": "ca6100ec5aba6a40",
+    "pipeline/base_pipeline.py": "54fe350067ca6797",
     "pipeline/checklist.py": "fb541ecf19a29b36",
     "pipeline/drill_down.py": "ee0b82f87f0d3436",
     "pipeline/metadados_steps.py": "87245a0aef391fff",
@@ -11,7 +11,7 @@
     "pipeline/mineracao_unidades_n2_n10.ipynb": "0ca88b6c1e5b30c7",
     "pipeline/falhas_silenciosas.ipynb": "b19de5bbffa84169",
     "pipeline/consolidacao_unidades.ipynb": "c5cc2467dc2fd6db",
-    "audit/scripts/audit_recompute6.py": "e032043d8562a78f",
+    "audit/scripts/audit_recompute6.py": "c4589d7408dded91",
     "audit/scripts/audit_recompute9.py": "46af33416d222561",
     "audit/scripts/audit_recompute10.py": "55bd419542d7b489"
   }
