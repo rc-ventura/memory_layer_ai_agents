@@ -171,6 +171,11 @@ do alarme de cobertura de 5%. Com o texto inteiro, a causa não identificada gan
 1. Os dois baldes têm padrão recorrente (≥3 execuções, ≥2 meses), por isso estão em "revisar — prioridade": é trabalho
 de taxonomia, não de memória ([roadmap](04-roadmap.md) #5). Fonte: `<rodada>/triagem_visivel_observada.csv`.
 
+**A mineração do resíduo (desde 10/11) já mudou esses números.** O Ajuste 35 levou para `H_infra_llm` os 33 erros de
+conexão perdida numa chamada aninhada a outro agente ([livro-razão](../../pipeline-entre-bases.md)): na rodada
+`ed138b1815816ea3` (11/11) o resíduo é **532 erros** (376 + 156), 108 padrões, 24 recorrentes. O resto deste relatório
+segue a rodada `609c947b15295c84`.
+
 ## 6 · Limitações que afetam a leitura
 
 Medidas no [procedimento §4](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Em resumo: o corte da

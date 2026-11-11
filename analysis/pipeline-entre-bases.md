@@ -1703,9 +1703,10 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
 - **Resultado no ambiente da base (10/11):** rodada nova `13b0d026242de2dc`. `residuo.py`: 565 erros, **111 padrões, 25
   recorrentes**, 66 de uma execução (eram 77), 2 sem nome de exceção; as três conferências `ok` (os dois baldes iguais à
   triagem). Auditoria, sobre o `casos.csv` desta rodada: 565 · 111 · 25, chaves na fonte 565/565. Encontro: **0
-  divergências**. **Falta:** o `comparar_rodadas.py` contra a `5d2098f6d706bd3b`, apagada por engano no ambiente; ela se
-  recria rodando `executar.py analisar` com o `base_pipeline.py` de antes do ajuste (mesma fonte e mesmo código dão o
-  mesmo identificador).
+  divergências**. **`comparar_rodadas.py` (11/11):** a `5d2098f6d706bd3b`, apagada por engano no ambiente, foi recriada
+  rodando `executar.py analisar` com o `base_pipeline.py` de antes do ajuste (mesma fonte e mesmo código dão o mesmo
+  identificador); `--antes 5d2098f6d706bd3b --depois 13b0d026242de2dc`: **nenhuma divergência** na triagem, como
+  esperado de uma mudança só na máscara do padrão. Ajuste 34 fechado.
 
 ### Ajuste 35 — a conexão perdida na chamada aninhada vai para a falha do LLM upstream (10/11/2026)
 
@@ -1757,6 +1758,23 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     --depois <nova>` (esperado: só os 33 erros mudam, "Sintoma não reconhecido" 189 → 156 e `H_infra_llm` + 33) e o
     `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 532 erros, 108 padrões, 24 recorrentes — o
     `Connection error.` passava na régua —, 0 divergências).
+- **Resultado no ambiente da base (11/11):**
+  - **base 2:** `conferir_versao` igual (14 de 14). O `audit_recompute6.py` dava DIFERE porque a cópia da base 2 tinha o
+    caminho do trace editado; o certo é copiar o da base 1 sem mudança e passar o trace da base 2 com `--trace <arquivo>`
+    (o `conferir_versao` só ignora `TRACE` e `BASE_ID` no `base_pipeline.py`);
+  - **base 3, rodada nova `ed138b1815816ea3`.** `comparar_rodadas.py --antes 13b0d026242de2dc`: mesma fonte; mudou
+    só o código do `base_pipeline.py` da base 3; no resumo, só "sintomas não reconhecidos" 189 → 156 (erros
+    estruturados 30.141, pendentes 749, unidades 19 e candidatas 10 iguais); as conferências da rodada nova, `ok`.
+    O veredito do script é "NÃO FECHA", o esperado num Ajuste: ele sai com 1 sempre que um número muda. O critério aqui
+    é outro — mudou só o que o Ajuste prevê. As linhas diferentes dos 12 artefatos foram abertas no ambiente
+    (`[assistido]`, um leitor): todas são de `H_infra_llm` (família Infra / LLM upstream 4 → 37), de
+    `X_sintoma_nao_reconhecido` (−33), da assinatura e do submecanismo novos (33 erros) e do papel AgenteEstruturador.
+    Na tabela do que vem depois do erro mudam também linhas de `U_tipo_retorno` e `U_sandbox`: a coluna da unidade do
+    erro seguinte (`mineracao_observada.py`, `depois_por_unidade`) passa a dizer `H_infra_llm` quando o seguinte é um
+    dos 33 — o erro dessas unidades não mudou;
+  - **resíduo da rodada nova:** 532 erros (causa sem regra 250, código mal escrito 126, sintoma não reconhecido 156),
+    **108 padrões, 24 recorrentes**, 2 sem impressão digital, 64 de uma execução; conferências `ok`. Auditoria: 532 ·
+    108 · 24, chaves na fonte 532/532. Encontro: **0 divergências**. Ajuste 35 verificado.
 - **O que ficou aberto no grupo (próximas decisões, uma por vez):**
   - **ferramenta** (16 erros): conteúdo inválido devolvido (11, todos `enterprise_web_search` devolvendo `None`, só em
     agosto, ContestacaoCivel: incidente da ferramenta) e `RecoverableToolError` (5, CalculoProprios, mai–ago: 2
