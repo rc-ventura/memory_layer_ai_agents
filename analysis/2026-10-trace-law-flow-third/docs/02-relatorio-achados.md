@@ -173,8 +173,10 @@ de taxonomia, não de memória ([roadmap](04-roadmap.md) #5). Fonte: `<rodada>/t
 
 **A mineração do resíduo (desde 10/11) já mudou esses números.** O Ajuste 35 levou para `H_infra_llm` os 33 erros de
 conexão perdida numa chamada aninhada a outro agente, e o Ajuste 36 levou para a unidade nova `H_contrato_ferramenta`
-os 16 em que a ferramenta saiu do próprio contrato ([livro-razão](../../pipeline-entre-bases.md)): na rodada
-`7f146976cf5c74ed` (11/11) o resíduo é **516 erros** (376 + 140), 104 padrões, 24 recorrentes. O resto deste relatório
+os 16 em que a ferramenta saiu do próprio contrato, e o Ajuste 37 levou para a unidade nova
+`U_nome_ferramenta_como_variavel` os 49 em que o agente deu a uma variável o nome de uma ferramenta
+([livro-razão](../../pipeline-entre-bases.md)): na rodada `2db46d963c549710` (11/11) o resíduo é **467 erros**
+(376 + 91), 103 padrões, 23 recorrentes. O resto deste relatório
 segue a rodada `609c947b15295c84`.
 
 ## 6 · Limitações que afetam a leitura

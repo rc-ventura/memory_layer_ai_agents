@@ -1920,3 +1920,15 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     7f146976cf5c74ed --depois <nova>` (esperado: só os 49 erros mudam, sintoma não reconhecido 140 → 91,
     `U_nome_ferramenta_como_variavel` com 49 como candidata — uma unidade a mais na triagem, 20 → 21, e candidatas
     10 → 11), e o `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 467 erros, 0 divergências).
+- **Resultado no ambiente da base (11/11):**
+  - **base 2:** `conferir_versao` igual;
+  - **base 3, rodada nova `2db46d963c549710`.** `comparar_rodadas.py --antes 7f146976cf5c74ed`: mesma fonte; mudaram
+    os dois arquivos previstos (`base_pipeline.py`, `genealogia_sankey.py`); no resumo, só candidatas 10 → 11,
+    sintomas não reconhecidos 140 → 91 e unidades observáveis 20 → 21 (erros 30.141, pendentes 749 iguais); a triagem
+    ganhou uma linha (20 → 21) e as famílias trocaram 49 erros de "Sintoma não reconhecido" para "Ambiente & sandbox"
+    (11 famílias); as conferências da rodada nova, `ok` (o gasto por unidade fecha com a triagem nas 21 unidades).
+    "NÃO FECHA" é o veredito esperado num Ajuste;
+  - **resíduo da rodada nova:** 467 erros (causa sem regra 250, código mal escrito 126, sintoma não reconhecido 91),
+    **103 padrões, 23 recorrentes**, 2 sem impressão digital, 63 de uma execução; conferências `ok`. Os 49 erros eram
+    um padrão só (a máscara troca o nome entre aspas por `<q>`), e ele passava na régua: sai um recorrente. Auditoria:
+    467 · 103 · 23, chaves na fonte 467/467. Encontro: **0 divergências**. Ajuste 37 verificado.

@@ -445,7 +445,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (`validacao/contar_nome_ferramenta_residuo.py`) e fechado no ambiente da base (bases 2 e 3) e aqui (base 1, o prompt:
   `validacao/contar_regra_nome_ferramenta_prompt.py`). **Ajuste 37** (aprovado): unidade nova
   `U_nome_ferramenta_como_variavel`, erro do agente, destino memória de reforço (o prompt padrão já proíbe; não é sinal
-  de harness → `decisoes.md`). Esperado na rodada nova: resíduo 516 → 467, sintoma não reconhecido 140 → 91.
+  de harness → `decisoes.md`). Rodada `2db46d963c549710` (11/11): só os 49 mudaram (sintoma não reconhecido
+  140 → 91, 21 unidades, 11 candidatas); resíduo **467 erros, 103 padrões, 23 recorrentes**; encontro: 0 divergências.
   **Depois:** limite do interpretador, os maiores de causa sem regra.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
