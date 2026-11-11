@@ -19,7 +19,7 @@ discordância.
 
 **O objetivo do pesquisador é diminuir o resíduo.** Esta skill não diminui nada: ela mostra onde estão os padrões que
 valem uma regra. O resíduo só cai quando um Ajuste aprovado põe uma regra nova no pipeline e uma rodada nova roda. A
-meta não é zerar: o padrão de uma execução só fica como cobertura.
+meta não é zerar: o padrão de uma execução só fica em observação (continua no resíduo, com o motivo escrito).
 
 ## 1 · Preparação: a skill `mineracao-base`
 

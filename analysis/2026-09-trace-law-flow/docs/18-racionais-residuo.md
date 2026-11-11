@@ -134,8 +134,9 @@ duas.
   reescrita à parte na auditoria nº 6;
 - **é descartado com motivo escrito:** quando o agrupamento era falso, ou quando os casos não têm nada em comum além
   da classe;
-- **fica como cobertura:** os padrões de uma ocorrência só. Não há trabalho agora; o padrão volta se reaparecer em
-  outra base com o mesmo mecanismo.
+- **fica em observação** (até 11/11/2026, "cobertura"): os padrões de uma ocorrência só, ou de causa conhecida mas
+  abaixo da régua e sem unidade que caiba. Os erros continuam no resíduo, com o motivo escrito; não há trabalho agora; o
+  padrão volta se reaparecer, nesta ou em outra base, com o mesmo mecanismo.
 
 Uma regra nova muda o número de alguma unidade já publicada, e por isso **é um Ajuste**: evidência, aprovação do
 pesquisador, rodada nas bases, registro no livro-razão. A leitura de casos (do pesquisador ou dos leitores do kit,

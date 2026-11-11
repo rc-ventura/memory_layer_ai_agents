@@ -3,7 +3,7 @@
 > **Códigos e siglas** (M1–M6, [1]–[4], S1–S6, `U_…`/`H_…`/`X_…`, Ajuste N, roadmap #N, [conferido]/[assistido]): o que cada um quer dizer está no [glossário](../../glossario.md).
 
 **Para que serve este documento:** o roteiro para minerar o resíduo de uma base, padrão por padrão, até cada padrão
-virar regra, ser descartado com motivo ou ficar como cobertura. É a decisão **revisar** da triagem
+virar regra, ser descartado com motivo ou ficar em observação. É a decisão **revisar** da triagem
 ([`03-procedimento-validacao.md`](03-procedimento-validacao.md), Frente 3). O **porquê** de cada passo está em
 [`18-racionais-residuo.md`](18-racionais-residuo.md). Os casos de cada base estão em:
 - base 1: `03` §1.13;
@@ -133,7 +133,9 @@ A unidade nova passa pela triagem como qualquer outra: se sair candidata, entra 
 |---|---|---|
 | **vira regra** | passos 4–7 completos, Ajuste aprovado | livro-razão; a unidade nova ou estendida |
 | **descartado com motivo** | o agrupamento era falso e as partes são de uma ocorrência só, ou os casos não têm nada em comum além da classe | `analysis/decisoes.md` (a decisão) e o doc da base (os casos) |
-| **fica como cobertura** | padrão de uma ocorrência só, ou sem impressão digital e sem leitura que o una | a tabela de padrões da base; volta se reaparecer em outra base com o mesmo mecanismo |
+| **fica em observação** | padrão de uma ocorrência só, ou sem impressão digital e sem leitura que o una; ou a causa é conhecida, mas o padrão está abaixo da régua e nenhuma unidade cabe | os erros continuam no resíduo; o motivo em `analysis/decisoes.md`; o padrão volta se reaparecer (na tabela de padrões de toda rodada; o alarme automático no `monitoramento.json` depende do b3 #52) |
+
+**"Em observação" era "cobertura" até 11/11/2026** (decisão do Rafael: o nome vinha do alarme de cobertura e não dizia o que acontece com o erro). O erro em observação **não sai do resíduo e não é esquecido**: continua contado em toda rodada, com o motivo escrito, e volta à fila se passar na régua.
 
 ## Dois casos particulares
 

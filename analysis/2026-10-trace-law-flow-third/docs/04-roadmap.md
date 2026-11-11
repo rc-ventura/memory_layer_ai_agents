@@ -320,6 +320,17 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `erros_mecanismo.csv` das bases 1 e 2; na base 3 o passo 0 fica "não conferido". Ensinar o script do kit a ler as
   tabelas da base 3 (outro formato: só erros, do parquet), com teste e `VERSAO` nova; vale para toda unidade, não só o
   sandbox. Decisão do Rafael (20/10): item próprio, fora do fechamento do sandbox (#50) → [`decisoes.md`](../../decisoes.md).
+  **Junto (11/11), os monitoramentos que esperam este item** — cada um entra no `monitoramento.json` quando o script ler a
+  base 3, com linha de base e gatilho:
+  - **os padrões do resíduo em observação** (o filtro precisa de expressão na mensagem, `coluna~regex`, que o
+    `aplicar_onde` ainda não tem; a população é o `casos.csv` do `especificas/residuo.py`): o primeiro é a "recusa do
+    LLM" (5 erros, 2 execuções, abril; gatilho: a régua, ≥3 execuções e ≥2 meses) → `decisoes.md` 11/11;
+  - **o `try/except NameError`** (#28);
+  - **o gatilho da `H_contrato_ferramenta`** (Ajuste 36: ficou como decisão separada);
+  - **os gatilhos que só estão no texto das unidades** e não no registro: `H_timeout_ferramenta` e `H_bloco_code` ("≥2
+    casos num mês ou > 1/1k steps") — conferir se entram;
+  - um item sem tabela na base não pode parar o passo 0 das outras bases (hoje todo item lê as tabelas das bases 1 e 2,
+    e a base 3 sai com "falta tabela").
 - [ ] **#51** **Uma memória "como verificar se uma variável existe, no sandbox" (aberto em 20/10, depois do #50).** Ideia do
   Rafael na decisão 2 do fechamento do sandbox: quando o prompt manda verificar sem dizer como, uma memória pode dizer
   como — `try/except Exception`, ou `x = None` no primeiro passo e `if x is None` depois; nunca `globals()` nem
@@ -425,7 +436,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   divergências. **Ajuste 36** (aprovado, 11/11): a ferramenta que sai do próprio contrato (16: `None` fora do esquema,
   11; Traceback vazado, 2; ausência como exceção, 3) → unidade nova `H_contrato_ferramenta`. Rodada `7f146976cf5c74ed`
   (11/11): só os 16 mudaram (sintoma não reconhecido 156 → 140, 20 unidades); resíduo **516 erros, 104 padrões, 24
-  recorrentes**; encontro: 0 divergências. A "recusa do LLM" (5) **fica como cobertura** (11/11): estouro do limite
+  recorrentes**; encontro: 0 divergências. A "recusa do LLM" (5) **fica em observação** (11/11): estouro do limite
   de tokens de entrada (285.148 contra 272.000) com rótulo de política de conteúdo, 2 execuções num mês
   (`decisoes.md`). **O grupo infra / LLM fecha:** 33 + 16 saíram do resíduo, 5 ficam com motivo. **Depois:** nome de
   ferramenta usado como variável (49), limite do interpretador, os maiores de causa sem regra.

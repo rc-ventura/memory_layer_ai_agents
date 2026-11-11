@@ -502,10 +502,16 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   correção é a mesma e é da ferramenta. A ausência de dado também entra: nas falhas silenciosas ela chega como resposta
   vazia, aqui como exceção — a diferença é a semântica de erro da ferramenta. Dono, SLA e medição semanal ficam fora do
   pipeline (decisão da organização) → livro-razão, Ajuste 36.
-- **11/11, a "recusa do LLM" do resíduo da base 3 fica como cobertura** (decisão do Rafael; 5 erros, 2 execuções,
+- **11/11, a "recusa do LLM" do resíduo da base 3 fica em observação** (decisão do Rafael; 5 erros, 2 execuções,
   abril, chamada aninhada ao `orquestrador_papel`): é o estouro do limite de tokens de entrada (285.148 contra 272.000)
   que o litellm rotula `ContentPolicyViolationError`, não recusa de conteúdo. Retry não resolve (a mesma entrada volta);
   abaixo da régua e sem unidade que caiba. Continua no resíduo com este motivo; volta se reaparecer → livro-razão,
   Ajuste 35 ("O que ficou aberto").
+- **11/11, a saída "cobertura" do resíduo passa a se chamar "em observação"** (decisão do Rafael): o nome vinha do
+  alarme de cobertura e não dizia o que acontece com o erro. Em observação, o erro continua no resíduo, contado em toda
+  rodada, com o motivo escrito aqui, e volta à fila se passar na régua. A saída também passa a valer para a causa
+  conhecida abaixo da régua sem unidade que caiba. O alarme automático (um item no `monitoramento.json` por padrão em
+  observação) depende de o `monitorar.py` ler as tabelas da base 3 (b3 #52) → procedimento do resíduo (`19`, "Quando um
+  padrão termina"), racional (`18`).
 
 ---

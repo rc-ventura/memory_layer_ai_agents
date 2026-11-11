@@ -1786,7 +1786,7 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     nome da classe. Uma releitura do mesmo leitor apontou o limite, e a contagem confirmou. Lição: **o nome da exceção
     pode mentir sobre a causa quando uma biblioteca intermediária a reembrulha**; conte os sinais da mensagem, não o
     rótulo.
-    **Fechado (11/11), fica como cobertura.** A mensagem crua, lida no ambiente da base, confirma: o limite é o de tokens
+    **Fechado (11/11), fica em observação** (o antigo "cobertura"). A mensagem crua, lida no ambiente da base, confirma: o limite é o de tokens
     de entrada, 272.000, e a requisição foi com 285.148 (+13.148, +4,8%); o mesmo número volta nos casos — a mesma
     entrada reenviada, que um retry não resolveria (por isso não é `H_infra_llm`). A correção, se vier, pode ser do
     harness (dividir ou resumir antes da chamada aninhada) ou do agente (não mandar tudo); com 2 execuções num mês, abaixo
