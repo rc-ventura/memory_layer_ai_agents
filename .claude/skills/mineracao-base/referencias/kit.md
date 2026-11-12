@@ -131,6 +131,9 @@ pedindo em texto ("minere o protocolo da base X"). Uma execução dela numa base
   `especificas/residuo.py` da análise, auditoria independente, encontro); as paradas R1–R3 vão para `/investigar residuo`.
 - `/mineracao-candidata <U_...> [<pasta>]`: minera uma candidata a memória e entrega o arquivo final no esquema da memória
   (`analysis/registros/esquema-memoria.json`). O desenho está em `.claude/skills/mineracao-candidata/referencias/fluxo.md`.
+- **Re-entrada** (não é skill: um script da análise, `pipeline/especificas/reentrada.py`): depois de todo Ajuste e antes
+  de minerar de novo uma unidade com memória no catálogo, confere se a unidade mudou desde a mineração e se as memórias
+  cobrem os erros novos; idempotente, saída 0/1/2. O procedimento está no doc `16` da base 1, "Re-entrada".
 - `/propor-script <U_...>`: só quando a lição cumpre a regra de criação do procedimento; escreve em `propostas/` e
   pede o laudo do validador.
 - `/investigar silenciosas S2 [<pasta>]` ou `/investigar protocolo P2 [<pasta>]`: uma parada até o dossiê de decisão.

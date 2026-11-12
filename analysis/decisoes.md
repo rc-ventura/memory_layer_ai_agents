@@ -544,5 +544,16 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   está num `except NameError`. **Fora:** o "Cannot unpack non-tuple value" (2 erros, 1 execução) falha também no Python
   normal; fica no resíduo. Os picos de julho (`:=` no RoteadorCivel, `global` no ContestacaoCivel) seguem sem causa
   medida (a versão do agente não muda neles) → livro-razão, Ajuste 38.
+- **12/11, a re-entrada: uma unidade já minerada que muda volta à investigação, só pelos erros novos** (decisão do
+  Rafael, depois da pergunta "o que acontece com os erros que entram numa unidade já minerada?"): eles contam na
+  unidade e no destino dela, mas não entram em nenhuma memória do catálogo até uma parte da lição os cobrir. Passo
+  idempotente, por script (`especificas/reentrada.py` da base 3): a foto da mineração (`erros_lidos.csv`, com
+  `step_ref` e `memoria_id`) contra a rodada nova, lida pela mesma parte específica; o delta pelo `step_ref`; a
+  cobertura de cada erro novo (memória no catálogo, parte decidida sem memória, parte nova, sem parte); os estados
+  (igual, cresceu coberto, descoberto, encolheu, mudou de parte, revisar). Roda no fim de todo Ajuste e antes de
+  minerar de novo uma unidade com memória; o descoberto vira investigação **só do delta** e, se pedir parte nova, uma
+  emenda pré-registrada ao racional da lição com os degraus só para ela. **Em aberto:** a régua de `revisar` (20%,
+  proposta) e a parte nova do inventário do sandbox para os 47 erros do Ajuste 38 (b3 #64) → procedimento `16`,
+  "Re-entrada".
 
 ---

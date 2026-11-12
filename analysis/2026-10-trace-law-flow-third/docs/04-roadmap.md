@@ -493,6 +493,14 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `pipeline/execucao/rotulos.py`) lido só pelas figuras e fora da lista de hash, como as outras figuras da rodada
   (`execucao/figuras_*.py`). Mudar um rótulo ali não mexe na rodada. Pergunta antes de fazer: quais rótulos hoje estão nos três
   arquivos e quais figuras os leem? A regra do ambiente da base está no `AGENTS.md` (decisão do Rafael, 09/11).
+- [ ] **#64** **A re-entrada do inventário do sandbox depois do Ajuste 38 (aberto em 12/11).** O script e o procedimento
+  existem (`especificas/reentrada.py`; base 1 `16`, "Re-entrada"; `decisoes.md`, 12/11); ensaio na base 1: 1 erro
+  entra (o `NoneType`), sem parte, estado `descoberto`, e duas execuções gravam os mesmos arquivos. Falta, no ambiente
+  da base: (1) rodar `reentrada.py --todas` na rodada do Ajuste 38 (esperado no inventário do sandbox: `descoberto`, 47
+  sem parte; a foto é a pasta `resultados/mineracao/U_sandbox/` da mineração que fechou o catálogo, rodada
+  `99e032ad3a8528d8`; se ela foi sobrescrita, o resumo avisa); (2) a emenda ao racional do sandbox com a parte nova
+  "sintaxe que o interpretador não implementa" e os degraus só para ela; (3) a régua de `revisar` (20%, proposta,
+  decisão do Rafael).
 
 ## Fora de escopo / adiado
 

@@ -1992,4 +1992,7 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     2db46d963c549710 --depois <nova>` (esperado: só os 47 erros mudam, sintoma não reconhecido 91 → 44, o inventário do
     sandbox +47, a triagem com as mesmas 21 unidades, as famílias trocando 47 erros de "Sintoma não reconhecido" para
     "Ambiente & sandbox"), e o `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 420 erros; se cada
-    limite for um padrão, 98 padrões e 20 recorrentes; 0 divergências).
+    limite for um padrão, 98 padrões e 20 recorrentes; 0 divergências);
+  - **a re-entrada** (12/11; procedimento `16`, "Re-entrada"): `especificas/reentrada.py --todas --rodada <nova>`
+    (esperado: inventário do sandbox `descoberto`, 47 erros sem parte — hoje é a única unidade da base 3 com memória no catálogo; podem aparecer também `revisar` ou `mudou_de_parte`, pelos Ajustes desde a mineração de 21/10) →
+    b3 #64.

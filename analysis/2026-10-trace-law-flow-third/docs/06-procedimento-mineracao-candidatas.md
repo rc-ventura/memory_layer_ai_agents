@@ -58,6 +58,17 @@ o dossiê e as decisões do pesquisador (`07`, "O gate").
 **Depois do passo 9:** a memória é uma **candidata** (degrau 1). A validação até memória validada (degraus 2–4) está
 em [`17-validacao-memorias.md`](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md).
 
+**Re-entrada (12/11):** depois de todo Ajuste, e antes de minerar de novo uma unidade que já tem memória no catálogo,
+confira se a unidade mudou desde a mineração e se as memórias cobrem os erros novos:
+
+```bash
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/especificas/reentrada.py --todas --rodada <rodada nova>
+```
+
+A foto é a pasta da mineração (`resultados/mineracao/<u>/`): **não minere de novo por cima dela** (use `--saida` com
+uma pasta nova). Os estados, o que fazer com cada um e a re-entrada dos erros descobertos estão no procedimento da base
+1, [`16`, "Re-entrada"](../../2026-09-trace-law-flow/docs/16-procedimento-mineracao-candidatas.md#re-entrada-a-unidade-mudou-depois-de-minerada-decidido-com-o-rafael-em-12112026).
+
 ## 3 · Como ensaiar aqui (base 1 pela porta da query)
 
 ```bash
