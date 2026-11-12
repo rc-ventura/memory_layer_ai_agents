@@ -33,7 +33,7 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 | `U_campo_inexistente` | Campo inexistente no retorno estruturado | o agente pede uma chave que o retorno não tem |
 | `U_texto_solto` | Explicação nunca solta no bloco de código | o agente escreve explicação em prosa dentro do bloco de código |
 | `U_arg_nomeado` | Ferramentas só aceitam argumento nomeado | chamada posicional numa ferramenta que exige `nome=valor` |
-| `U_sandbox` | Inventário do sandbox | uso de módulo ou função que o ambiente bloqueia |
+| `U_sandbox` | Inventário do sandbox | uso de módulo, função ou sintaxe que o ambiente não roda (a sintaxe — `{**x}`, `:=`, `global`, `nonlocal`, `raise` sozinho — entrou no Ajuste 38, submecanismo `sintaxe_nao_suportada`) |
 | `U_next_gerador` | `next()` sobre expressão geradora falha no sandbox | um idioma de Python que o ambiente não aceita |
 | `U_estado_perdido` | Após step com erro, o que ele definiria não existe | o agente usa uma variável que o step com erro nunca chegou a criar |
 | `U_nome_inventado` | Nome usado sem ter sido definido | o agente usa um nome (variável ou função) que não existe |

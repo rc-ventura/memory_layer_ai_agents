@@ -529,5 +529,20 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   base 3 não tem prompt e a versão do agente é sempre "0"); o RespostaBacen declara uma ferramenta `resposta_final`, o
   nome mais natural para a variável da resposta; em 32 dos 49 o passo seguinte também falha (qual erro, ainda não
   contado) → livro-razão, Ajuste 37.
+- **12/11, a sintaxe que o interpretador não implementa vai para o inventário do sandbox, não para uma unidade nova
+  nem para a do `next()`** (decisão do Rafael; 47 erros da base 3, 1 na base 1): `{**x}` num dicionário (a mensagem
+  "NoneType is not supported", 21 de 21), `:=` (13), `global` (11), `nonlocal` (1) e `raise` sozinho (1). Python
+  válido que o interpretador recusa da 1.15 à 1.26 do smolagents (`validacao/testar_sandbox_construtos.py`); o prompt
+  não avisa (0 de 1.550 na base 1). **Erro do agente, não harness:** ele não tem como saber antes do erro e, depois da
+  mensagem, larga a construção no passo seguinte em 46 de 47 (38 já dão certo) — o conhecimento é aprendível, e o que
+  falta é levá-lo à próxima execução. **Inventário, não unidade nova:** a correção é a mesma ("o ambiente não roda X;
+  use Y"), e a diferença de causa (limite permanente, não política configurável) fica no submecanismo
+  `sintaxe_nao_suportada`. **Não a unidade do `next()`:** o `next()` sobre gerador é defeito de versão antiga (falha até
+  a 1.20 e funciona da 1.21), estas construções falham em todas. **O `global` não é a instrução de verificação do
+  ContestacaoCivel** (a suspeita, pelo papel e pelo mês): 0 de 11 funções com `global` testam a variável e a preenchem
+  com o retorno de uma chamada, 0 têm nome de verificação, 1 usa `globals()`/`except NameError`; o `raise` sozinho não
+  está num `except NameError`. **Fora:** o "Cannot unpack non-tuple value" (2 erros, 1 execução) falha também no Python
+  normal; fica no resíduo. Os picos de julho (`:=` no RoteadorCivel, `global` no ContestacaoCivel) seguem sem causa
+  medida (a versão do agente não muda neles) → livro-razão, Ajuste 38.
 
 ---

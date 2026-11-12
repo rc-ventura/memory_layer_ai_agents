@@ -1932,3 +1932,64 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     **103 padrões, 23 recorrentes**, 2 sem impressão digital, 63 de uma execução; conferências `ok`. Os 49 erros eram
     um padrão só (a máscara troca o nome entre aspas por `<q>`), e ele passava na régua: sai um recorrente. Auditoria:
     467 · 103 · 23, chaves na fonte 467/467. Encontro: **0 divergências**. Ajuste 37 verificado.
+
+### Ajuste 38 — a sintaxe que o interpretador não implementa vai para o inventário do sandbox, `U_sandbox` (12/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `2db46d963c549710`), grupo 2 do balde "sintoma não
+  reconhecido": 49 erros `InterpreterError` "<Nó> is not supported." e "Re-raise is not supported without an active
+  exception", mais 2 "Cannot unpack non-tuple value".
+- **Evidência:**
+  - **contagem do grupo** (`validacao/contar_limites_interpretador_residuo.py --casos`, no ambiente da base): 49 erros,
+    46 execuções, 6 meses, 8 papéis, 1,52 mi de tokens. `NoneType` 21 (19 execuções, 6 meses, 4 papéis; **21 de 21 são
+    `{**x}` num dicionário literal**, lido pela árvore sintática da linha), `NamedExpr` 13 (só RoteadorCivel, jul 11 e ago
+    2), `Global` 11 (só ContestacaoCivel, jul 10 e ago 1; a linha que falhou não tem `global`), unpack 2 (1 execução),
+    `Nonlocal` 1, `Re-raise` 1. O mesmo limite se repete na mesma execução-papel em 3 de 46;
+  - **o interpretador** (`validacao/testar_sandbox_construtos.py`, código sintético, smolagents 1.15.0, 1.20.0, 1.21.0,
+    1.22.0, 1.24.0 e 1.26.0, a mais nova): as cinco construções rodam no Python normal e o interpretador recusa todas,
+    em todas as versões, com a mensagem do trace. O `global` falha na linha que **chama** a função (o corpo só roda na
+    chamada); o `raise` sozinho falha mesmo dentro do `except`. Os consertos resolvem em todas as versões — `dict(a)` +
+    `d['k'] = v`/`update`, `a | b`, atribuir antes, a função recebe e devolve, o dicionário mutável, `raise e` —, menos
+    `dict(a, **b)`, que falha até a 1.20 ("keywords must be strings"). O unpack falha também no Python normal
+    (`ValueError`). Contraste: `globals()` é barrada pelo nome em todas; o `next()` sobre gerador falha até a 1.20 e
+    funciona da 1.21;
+  - **o passo seguinte** (`--fonte`, no ambiente): `{**x}` 18 trocam e dão certo, 2 trocam e caem em outro erro, 1
+    repete; `:=` 13 de 13 trocam e dão certo; `global` 6 dão certo, 5 caem em outro `InterpreterError`; `nonlocal` dá
+    certo; `raise` cai num `ValueError` e o passo depois dá certo. A versão do agente não muda nos picos de julho;
+  - **o `global` não é a instrução de verificação do ContestacaoCivel** (`sinais_verificacao`, no ambiente): a função
+    com `global` está no próprio passo em 11 de 11; 0 testam a variável e a preenchem com o retorno de uma chamada, 5 só
+    testam, 6 outro uso; 0 com nome de verificação ou estado; 1 com `globals()`/`except NameError`. O `raise` não está
+    num `except NameError`;
+  - **o prompt** (`--trace`, base 1): 0 de 1.550 prompts citam `:=`, `global`, `nonlocal`, `{**` ou "not supported", e
+    0 os usam nos exemplos.
+- **Decisão (Rafael, 12/11):** erro do agente (não sabe antes, aprende na hora); destino o **inventário do sandbox**, e
+  não uma unidade nova nem a do `next()` → `decisoes.md`. O unpack fica no resíduo.
+- **Mudança:** nos `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base), como
+  **últimas** regras, depois das do Ajuste 37:
+  - a expressão `SINTAXE_NAO_SUPORTADA` (`InterpreterError: ` seguido de `<Nó> is not supported.` ou da mensagem do
+    `Re-raise`; o prefixo deixa de fora o "is not supported" das bibliotecas);
+  - `classify()`: família `Ambiente & sandbox`, "Sintaxe que o interpretador não implementa";
+  - `submecanismo()`: `sintaxe_nao_suportada`; `SUB2UNI` → `U_sandbox`; o texto da memória do inventário (`UNI`) ganha
+    os consertos testados;
+  - base 3: o submecanismo entra nas regras que decidem só pela mensagem (`_mecanismo_com_evidencia`): observável;
+  - `genealogia_sankey.py`: sem mudança (o inventário já tem rótulo);
+  - auditoria nº 6 (`audit_recompute6.py`): a regra reescrita à parte (`InterpreterError: \S+ is not supported`).
+    Manifesto do kit gerado de novo; `VERSAO` 0.20.0.
+- **Verificação:** `analysis/tests/test_sintaxe_nao_suportada.py` (5 testes: as duas bases classificam igual as cinco
+  mensagens; o unpack e um "is not supported" de biblioteca continuam fora; o Ajuste 37 e a função barrada não mudam;
+  observável na base 3; a auditoria reescreve a regra); suíte 409 testes, OK. **Base 1** (ensaio pela porta da query,
+  `fonte_base1_v1`): 498 erros iguais; resíduo 8 → 7 (o único `NoneType`, um `{**x}`, sai do "sintoma não
+  reconhecido"); inventário do sandbox 16 → 17. O resíduo publicado da base 1 (`residuo_padroes.csv`) tem o mesmo
+  padrão: muda 1 erro. Base 2: nenhum padrão "is not supported" no resíduo (8 padrões, Ajuste 8): nada deve mudar.
+- **Replicar no ambiente da base** (os arquivos de código que mudaram, copiados sem edição):
+  - `analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py`;
+  - `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py`;
+  - `analysis/2026-09-trace-law-flow/audit/scripts/audit_recompute6.py`;
+  - `.claude/skills/mineracao-base/manifesto.json` e `VERSAO` → no ambiente, `.github/skills/mineracao-base/`;
+  - **base 2 (não esquecer):** copiar o `base_pipeline.py` da base 1 por cima do da pasta `-second`, restaurar `TRACE` e
+    `BASE_ID`; o `audit_recompute6.py` também, sem mudança (o trace vai por `--trace`); `conferir_versao.py
+    analysis/2026-09-trace-law-flow-second` → igual;
+  - **base 3:** `executar.py analisar` (rodada nova; não apagar a `2db46d963c549710`), `comparar_rodadas.py --antes
+    2db46d963c549710 --depois <nova>` (esperado: só os 47 erros mudam, sintoma não reconhecido 91 → 44, o inventário do
+    sandbox +47, a triagem com as mesmas 21 unidades, as famílias trocando 47 erros de "Sintoma não reconhecido" para
+    "Ambiente & sandbox"), e o `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 420 erros; se cada
+    limite for um padrão, 98 padrões e 20 recorrentes; 0 divergências).

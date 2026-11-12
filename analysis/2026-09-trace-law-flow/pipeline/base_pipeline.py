@@ -114,6 +114,14 @@ def explodir_memoria(df):
     return steps, RAW, execs
 
 
+# o interpretador não implementa a construção de Python que o agente escreveu (`{**x}` num dicionário, `:=`, `global`,
+# `nonlocal`, `raise` sozinho): Python válido, recusado da 1.15 à 1.26 do smolagents
+# (`validacao/testar_sandbox_construtos.py` da base 3). O prefixo `InterpreterError:` deixa de fora o "is not supported"
+# das bibliotecas; o "Cannot unpack non-tuple value" não entra (falha também no Python normal) (Ajuste 38)
+SINTAXE_NAO_SUPORTADA = re.compile(
+    r"InterpreterError: (?:[A-Z]\w* is not supported\.|Re-raise is not supported without an active exception)")
+
+
 def classify(m):
     # limite de tempo do wrapper de ferramentas da esteira (mensagem em português): falha da plataforma, não do agente
     if 'excedeu o timeout' in m or 'TimeoutError' in m: return ('Infra / ferramenta','Ferramenta excedeu o timeout')
@@ -167,6 +175,9 @@ def classify(m):
     # barrou; última regra, para só alcançar o que nenhuma outra reconhece (Ajuste 37)
     if re.search(r"Cannot assign to name '[^']*': doing this would erase the existing tool", m):
         return ('Ambiente & sandbox', 'Nome de ferramenta usado como variável')
+    # o interpretador não implementa a sintaxe (Ajuste 38); última regra, como a do Ajuste 37
+    if SINTAXE_NAO_SUPORTADA.search(m):
+        return ('Ambiente & sandbox', 'Sintaxe que o interpretador não implementa')
     return ('Sintoma não reconhecido', 'Sintoma não reconhecido')  # nenhuma regra de sintoma casou: erro novo para a taxonomia
 
 
@@ -445,6 +456,10 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
     # (Ajuste 37)
     if re.search(r"Cannot assign to name '[^']*': doing this would erase the existing tool", m):
         return "nome_de_ferramenta_atribuido"
+    # Python válido que o interpretador não implementa ({**x}, :=, global, nonlocal, raise sozinho): a mesma correção
+    # do inventário do sandbox ("o ambiente não roda X; use Y"). No fim, para só alcançar o resíduo (Ajuste 38)
+    if SINTAXE_NAO_SUPORTADA.search(m):
+        return "sintaxe_nao_suportada"
     return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
 
 
@@ -466,6 +481,7 @@ SUB2UNI = {
     "retorno_fora_do_contrato": "H_contrato_ferramenta", "erro_interno_ferramenta": "H_contrato_ferramenta",
     "ausencia_como_excecao": "H_contrato_ferramenta",
     "nome_de_ferramenta_atribuido": "U_nome_ferramenta_como_variavel",
+    "sintaxe_nao_suportada": "U_sandbox",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
     "resultado_bruto_na_resposta": "U_resultado_bruto",
     "limite_de_passos": "C_limite_passos",
@@ -493,7 +509,10 @@ UNI = {
                       "Chamar as ferramentas com argumentos nomeados e só com os nomes da assinatura declarada: "
                       "f(arg=valor); nenhuma aceita posicional, e o final_answer só recebe a resposta."),
     "U_sandbox": ("Inventário do sandbox", FACT,
-                  "repr/eval/globals/dir e imports fora da lista (ex.: ast) são proibidos; json/datetime exigem import explícito; openpyxl ausente — usar envia_excel_para_usuario."),
+                  "repr/eval/globals/dir e imports fora da lista (ex.: ast) são proibidos; json/datetime exigem import explícito; openpyxl ausente — usar envia_excel_para_usuario. "
+                  "Sintaxe que o interpretador não implementa: {**a, 'k': v} → d = dict(a); d['k'] = v (nunca dict(a, **b)); "
+                  "x := f() → x = f() na linha antes; global/nonlocal → a função recebe e devolve o valor; "
+                  "raise sozinho → except ... as e: raise e."),
     "U_next_gerador": ("next() sobre expressão geradora falha no sandbox", FACT,
                        "Usar list comprehension com [0] (ou for + break) em vez de next(x for x in ...)."),
     "U_estado_perdido": ("Após step com erro, o que ele definiria não existe", ESTR,
