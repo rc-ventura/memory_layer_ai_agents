@@ -506,10 +506,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   da base: (1) rodar `reentrada.py --todas` na rodada do Ajuste 38 (esperado no inventário do sandbox: `descoberto`, 47
   sem parte; a foto é a pasta `resultados/mineracao/U_sandbox/` da mineração que fechou o catálogo, rodada
   `99e032ad3a8528d8`; se ela foi sobrescrita, o resumo avisa) — **feito em 12/11**, rodada `c2e5e8b31f297d21`:
-  1.100 → 1.147 erros, entraram 47, saíram 0, **mudaram de parte 5**, os 52 sem parte, estado `descoberto` e
-  `mudou_de_parte`, nenhum `revisar` (livro-razão, Ajuste 38); **(1b) os 5 que mudaram de parte:** de que memória
-  vieram e por que a regra não os lê mais (o script não mudou desde 20/10) — a explicar antes da emenda, pelo agente do ambiente com
-  `propostas/U_sandbox/prompt_reentrada_mudou_de_parte.md`; (2) a emenda ao racional do sandbox com a parte nova
+  1.100 → 1.147 erros, entraram 47, saíram 0, os 47 sem parte, estado `descoberto` (livro-razão, Ajuste 38). Os 5
+  "mudaram de parte" da primeira execução eram um defeito da re-entrada (vazio × vazio), achado pelo agente do
+  ambiente com `propostas/U_sandbox/prompt_reentrada_mudou_de_parte.md` e corrigido em 12/11; **(1b) rodar de novo
+  com o `reentrada.py` corrigido** (esperado: mudaram de parte 0, estado só `descoberto`); (2) a emenda ao racional do sandbox com a parte nova
   "sintaxe que o interpretador não implementa" e os degraus só para ela; (3) a régua de `revisar` (20%, proposta,
   decisão do Rafael).
 

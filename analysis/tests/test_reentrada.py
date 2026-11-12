@@ -78,6 +78,20 @@ class TestDelta(unittest.TestCase):
         D = R.delta(FOTO, agora, CATALOGO)
         self.assertEqual(set(D.cobertura), {"sem_parte"})
 
+    def test_vazio_na_foto_e_agora_nao_mudou_de_parte(self):
+        """O caso do ambiente (12/11): erros sem memória na foto (o CSV volta NaN) e sem memória agora (None, NaN ou
+        "") não mudaram de parte; antes, NaN != NaN dava 5 `mudou_de_parte` falsos no inventário do sandbox."""
+        foto = pd.concat([FOTO, pd.DataFrame([erro("s1", None), erro("s2", None), erro("s3", None)])])
+        with tempfile.TemporaryDirectory() as tmp:
+            foto.to_csv(Path(tmp) / "f.csv", index=False)
+            foto = pd.read_csv(Path(tmp) / "f.csv")           # memoria_id vazio volta como NaN
+        agora = pd.concat([FOTO, pd.DataFrame([erro("s1", None), erro("s2", float("nan")), erro("s3", "")])])
+        D = R.delta(foto, agora, CATALOGO)
+        self.assertTrue(D.empty, D.to_string())
+        M = R.por_memoria(foto, agora, CATALOGO)
+        self.assertNotIn("", set(M.memoria_id))
+        self.assertEqual(R.estado(D, M), ["igual"])
+
 
 class TestUnidade(unittest.TestCase):
     """O fluxo de uma unidade, com a rodada e a parte específica falsas: os arquivos, o resumo e a idempotência."""

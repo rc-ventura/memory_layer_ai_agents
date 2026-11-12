@@ -2012,7 +2012,13 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     `mudou_de_parte`; nenhum `revisar`. Cobertura dos 52 (entraram + mudaram): **todos sem parte**. Por papel:
     RoteadorCivel 13, CalculoTrabalhista 12, ContestacaoCivel 12, OBFCivel 8, JoogleAnalytics 4, RecursoCivel 1,
     RespostaBacen 1, RespostaOficios 1; por mês: 2025-12 2, 2026-01 5, 2026-02 2, 2026-05 9, 2026-07 24, 2026-08 10.
-    Os 47 que entraram são os do Ajuste. **Os 5 que mudaram de parte estão em aberto:** tinham memória na foto e hoje a
-    regra do script não os lê. O script do sandbox não mudou desde 20/10 (antes da foto) e não importa o pipeline; o
-    `step_ref` e a regra são os mesmos, então a diferença está no que entra no `medir` (a mensagem ou o estado dela) →
-    conferir de que memória vieram e o tipo da mensagem (b3 #64).
+    Os 47 que entraram são os do Ajuste. **Os 5 que "mudaram de parte" eram um defeito da re-entrada**, achado pelo
+    agente do ambiente (`propostas/U_sandbox/prompt_reentrada_mudou_de_parte.md`): os 5 (JoogleAnalytics 4,
+    CalculoTrabalhista 1; `sem_nome`, `InterpreterError`) já estavam **sem memória na foto** e continuam sem memória
+    agora; o estado da mensagem é íntegro nos 5 e nos 1.095 de controle, e o hash do `mineracao_U_sandbox.py` é o
+    mesmo na foto e hoje. O vazio da foto volta do CSV como NaN, e NaN ≠ NaN contava como mudança. **Correção**
+    (`especificas/reentrada.py`): dois vazios (None, NaN ou "") são a mesma parte, e a contagem por memória
+    ignora o vazio; teste novo com a foto lida de CSV (`test_reentrada.py`, 10 testes; suíte 419, OK). O ensaio da
+    base 1 não pegou o defeito porque a foto dele não tem erro sem memória; repetido com o script corrigido, dá o
+    mesmo (1 entrou, sem parte). **Esperado ao rodar de novo no ambiente:** entraram 47, mudaram de parte 0, os 47
+    sem parte, estado só `descoberto`.

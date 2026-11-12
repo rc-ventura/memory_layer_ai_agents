@@ -87,6 +87,19 @@ def _vazio(v):
     return v is None or (isinstance(v, float) and v != v) or (isinstance(v, str) and not v.strip())
 
 
+def _mesma_parte(a, b):
+    """Duas memórias são a mesma: os dois vazios (None, NaN ou "", como o CSV da foto volta) ou o mesmo id. Sem isto,
+    NaN != NaN contava como `mudou_de_parte` todo erro sem memória na foto e agora (5 falsos no sandbox, 12/11)."""
+    if _vazio(a) or _vazio(b):
+        return _vazio(a) and _vazio(b)
+    return str(a) == str(b)
+
+
+def _ids(serie):
+    """As memórias de uma coluna, sem os vazios."""
+    return serie[[not _vazio(v) for v in serie]].astype(str)
+
+
 def carregar_rodada(rodada, fonte=None):
     """(pasta, manifesto, análise) da rodada, com as conferências do `residuo.py`: concluída, do código atual, a fonte
     é a do manifesto e a análise recalculada tem o mesmo identificador."""
@@ -169,13 +182,13 @@ def delta(F, A, catalogo_ids):
         df["step_ref"] = df["step_ref"].astype(str)
         return df.drop_duplicates("step_ref")
     F, A = norm(F), norm(A)
-    foto_ids = {m for m in F.memoria_id if m}
+    foto_ids = set(_ids(F.memoria_id))
     antes = dict(zip(F.step_ref, F.memoria_id))
     linhas = []
     for r in A.itertuples(index=False):
         if r.step_ref not in antes:
             sit = "entrou"
-        elif antes[r.step_ref] != r.memoria_id:
+        elif not _mesma_parte(antes[r.step_ref], r.memoria_id):
             sit = "mudou_de_parte"
         else:
             continue
@@ -194,8 +207,8 @@ def por_memoria(F, A, catalogo_ids):
     """Por memória (as da foto, as de agora e as do catálogo): erros na foto, agora, a variação e `revisar`. Só
     revisa a memória do catálogo que está na foto: uma que não está (0 na foto) quer dizer que a foto não é a
     mineração que fechou o catálogo — vira o aviso `catalogo_fora_da_foto` do resumo, não variação."""
-    f = F.memoria_id.dropna().astype(str).value_counts()
-    a = A.memoria_id.dropna().astype(str).value_counts()
+    f = _ids(F.memoria_id).value_counts()
+    a = _ids(A.memoria_id).value_counts()
     ids = sorted(set(f.index) | set(a.index) | set(catalogo_ids))
     linhas = []
     for i in ids:
