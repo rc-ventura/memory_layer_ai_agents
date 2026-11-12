@@ -43,7 +43,12 @@ da fonte, ligados pela chave execução, agente, papel e posição do passo) rec
 limite de novo; trocou a construção (ok ou com outro erro); ainda usa a construção (ok ou com outro erro); não lido (o
 unpack, ou o código não parseia). Mais o tipo do outro erro, tirado da mensagem. E a **versão do agente** por papel, na
 fonte inteira, com rótulos v1, v2… em ordem do 1º mês (o código da versão não sai): os picos de julho (`:=` no
-RoteadorCivel, `global` no ontestacaoCivel) coincidem com uma versão nova?
+RoteadorCivel, `global` no ontestacaoCivel) coincidem com uma versão nova? E **a instrução de verificação**: o `global`
+e o `raise` sozinho do ContestacaoCivel seriam um terceiro jeito de cumprir "VERIFIQUE se a variável de saída já está
+preenchida; se já estiver, PULE a chamada" (como o `'x' in globals()` e o `try/except NameError`, que são da unidade da
+verificação de existência, destino harness)? No código do passo que falhou e do anterior (`sinais_verificacao`): onde
+está a função com `global`, se ela testa a variável global e a preenche com o retorno de uma chamada, se o nome dela é
+de verificação ou estado, e se o código usa `globals()` ou `except NameError`; com um controle nos outros limites.
 
 Grava `casos_limites_interpretador.csv` (os erros do grupo, com `limite`, `forma` e `construtos`, sem a mensagem) na
 pasta do `casos.csv`, para o `montar_evidencia.py --de mineracao/residuo/<pasta>/casos_limites_interpretador.csv
@@ -254,8 +259,94 @@ DESFECHOS = ["sem_passo", "mesmo_limite", "trocou_ok", "trocou_outro_erro", "usa
              "nao_lido_ok", "nao_lido_outro_erro"]
 PASSOS = ("next", "next2")
 CHAVE_FONTE = ["cod_idef_exeo", "cod_idef_aget", "papel", "step_pos"]
-COLUNAS_FONTE = CHAVE_FONTE + ["cod_vers_aget", "mes_execucao"] + [
+COLUNAS_FONTE = CHAVE_FONTE + ["cod_vers_aget", "mes_execucao", "error_code_action", "prev_code_action"] + [
     f"{p}_{c}" for p in PASSOS for c in ("step_number", "code_action", "error_message")]
+
+# O `global` e o `raise` sozinho são a instrução de verificação do prompt? (dossiê do inventário do sandbox, parte A: o
+# ContestacaoCivel recebe "VERIFIQUE se a variável de saída já está preenchida em memória; se já estiver, PULE a
+# chamada" e a cumpre com `'x' in globals()` em julho e `try/except NameError` em agosto, as duas barradas; a unidade é a
+# verificação de existência, destino harness.) Os sinais, no código do passo que falhou e no do passo anterior (a
+# função com o `global` pode ter sido definida antes; a linha que falhou é a da chamada):
+INTROSPECCAO = re.compile(r"\b(?:globals|locals|vars)\s*\(")
+EXCEPT_NAMEERROR = re.compile(r"except\s+\(?[^)\n:]*\bNameError\b")
+NOME_DE_ESTADO = re.compile(r"(?i)has_|exist|defin|ensure|check|verif|preench|filled|^ja_|cache|get_or|garant|^set_|"
+                            r"salva|guarda|estado|memo|state|store|^is_")
+USOS_GLOBAL = ["verifica_e_guarda_chamada", "so_guarda_chamada", "so_verifica", "outro_uso", "def_nao_visto",
+               "codigo_nao_parseia"]
+
+
+def _defs_com_global(t):
+    """As funções do código que declaram `global`, com os nomes declarados."""
+    for f in ast.walk(t):
+        if isinstance(f, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            nomes = {n for g in ast.walk(f) if isinstance(g, ast.Global) for n in g.names}
+            if nomes:
+                yield f, nomes
+
+
+def _verifica(f, nomes):
+    """A função testa uma das variáveis globais (`if x is None`, `if not x`, `'x' in globals()`…)?"""
+    for n in ast.walk(f):
+        if isinstance(n, (ast.If, ast.IfExp, ast.While)):
+            for m in ast.walk(n.test):
+                if (isinstance(m, ast.Name) and m.id in nomes) or (isinstance(m, ast.Constant) and m.value in nomes):
+                    return True
+    return False
+
+
+def _guarda_chamada(f, nomes):
+    """A função guarda numa variável global o retorno de uma chamada (`x = ferramenta(...)`)?"""
+    for n in ast.walk(f):
+        alvos = n.targets if isinstance(n, ast.Assign) else [n.target] if isinstance(n, (ast.AnnAssign, ast.AugAssign)) else []
+        if any(isinstance(a, ast.Name) and a.id in nomes for a in alvos) and isinstance(getattr(n, "value", None), ast.Call):
+            return True
+    return False
+
+
+def _raise_em_except_nameerror(t):
+    """Um `raise` sozinho dentro de um `except` que pega NameError?"""
+    for h in ast.walk(t):
+        if isinstance(h, ast.ExceptHandler) and h.type is not None and any(
+                isinstance(m, ast.Name) and m.id == "NameError" for m in ast.walk(h.type)):
+            if any(isinstance(r, ast.Raise) and r.exc is None for r in ast.walk(h)):
+                return True
+    return False
+
+
+def sinais_verificacao(codigo, anterior):
+    """Os sinais da instrução de verificação no código do passo que falhou e no do anterior:
+      onde_def_global  passo / anterior / nao_visto (nenhuma função com `global` nos dois) / nao_parseia;
+      uso_global       verifica_e_guarda_chamada (testa a variável global e a preenche com o retorno de uma chamada: o
+                       que a instrução pede), so_guarda_chamada, so_verifica, outro_uso, def_nao_visto,
+                       codigo_nao_parseia;
+      nome_de_estado   o nome da função com `global` é de verificação ou estado (`has_`, `exist`, `ensure`, `cache`…);
+      introspeccao     `globals()`/`locals()`/`vars()` no código; except_nameerror  `except NameError` no código;
+      raise_em_except_nameerror  `raise` sozinho dentro de um `except NameError`."""
+    s = {"onde_def_global": "nao_visto", "uso_global": "def_nao_visto", "nome_de_estado": False,
+         "introspeccao": False, "except_nameerror": False, "raise_em_except_nameerror": False}
+    algum_parseia = False
+    for onde, c in (("passo", codigo), ("anterior", anterior)):
+        if _vazio(c):
+            continue
+        c = str(c)
+        s["introspeccao"] |= bool(INTROSPECCAO.search(c))
+        s["except_nameerror"] |= bool(EXCEPT_NAMEERROR.search(c))
+        t = arvore(c)
+        if t is None:
+            continue
+        algum_parseia = True
+        s["raise_em_except_nameerror"] |= _raise_em_except_nameerror(t)
+        defs = list(_defs_com_global(t))
+        if defs and s["onde_def_global"] == "nao_visto":
+            s["onde_def_global"] = onde
+            v = any(_verifica(f, n) for f, n in defs)
+            g = any(_guarda_chamada(f, n) for f, n in defs)
+            s["uso_global"] = ("verifica_e_guarda_chamada" if v and g else "so_guarda_chamada" if g else
+                               "so_verifica" if v else "outro_uso")
+            s["nome_de_estado"] = any(NOME_DE_ESTADO.search(f.name) for f, _ in defs)
+    if not algum_parseia and s["onde_def_global"] == "nao_visto":
+        s["onde_def_global"], s["uso_global"] = "nao_parseia", "codigo_nao_parseia"
+    return s
 
 
 def _vazio(v):
@@ -322,6 +413,10 @@ def depois(G, F):
         G[f"erro_{p}"] = ["" if l is None else tipo_erro(l.get(f"{p}_error_message")) for l in linhas]
     G["versao_bruta"] = [None if l is None or _vazio(l.get("cod_vers_aget")) else str(l.get("cod_vers_aget"))
                          for l in linhas]
+    sv = [sinais_verificacao(*(None, None) if l is None else (l.get("error_code_action"), l.get("prev_code_action")))
+          for l in linhas]
+    for k in sv[0] if sv else []:
+        G[k] = [x[k] for x in sv]
     return G, sum(l is None for l in linhas)
 
 
@@ -354,6 +449,18 @@ def _imprimir_depois(G, faltam, V):
         outros = g.loc[g.depois_next.str.endswith("outro_erro"), "erro_next"].value_counts()
         if len(outros):
             print(f"    o outro erro do passo seguinte: {outros.head(8).to_dict()}")
+    print("\na instrução de verificação? (código do passo que falhou e do anterior; ver sinais_verificacao):")
+    for lim in ("Global", "Re-raise", "Nonlocal"):
+        for papel, g in G[G.limite == lim].groupby("role"):
+            print(f"  {lim} · {papel} ({len(g)}): onde está o def com global "
+                  f"{g.onde_def_global.value_counts().to_dict()} · uso "
+                  f"{g.uso_global.value_counts().reindex(USOS_GLOBAL, fill_value=0).loc[lambda x: x > 0].to_dict()} · "
+                  f"nome de verificação/estado {int(g.nome_de_estado.sum())} · globals()/locals()/vars() "
+                  f"{int(g.introspeccao.sum())} · except NameError {int(g.except_nameerror.sum())} · "
+                  f"raise sozinho em except NameError {int(g.raise_em_except_nameerror.sum())}")
+    print("  controle, todos os limites (papel: erros · com globals()/locals()/vars() · com except NameError):")
+    for (lim, papel), g in G.groupby(["limite", "role"]):
+        print(f"    {lim} · {papel}: {len(g)} · {int(g.introspeccao.sum())} · {int(g.except_nameerror.sum())}")
     if V:
         print("\nversão do agente por papel (na fonte inteira; rótulo em ordem do 1º mês, o código não sai):")
         rot = {(p, v): r for p, vs in V.items() for r, v, *_ in vs}

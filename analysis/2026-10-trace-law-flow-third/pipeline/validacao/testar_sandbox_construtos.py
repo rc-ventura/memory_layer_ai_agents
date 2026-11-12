@@ -73,7 +73,15 @@ CASOS = [
                                            "r = 'ok'\ntry:\n    try:\n        1 / 0\n    except ZeroDivisionError as e:\n"
                                            "        repassa(e)\nexcept ZeroDivisionError:\n    r = 'repassou'"]),
     ]),
-    ("desempacotar o que não é tupla", ["d = {'a': 1, 'b': 2}\nr = []\nfor k, v in d:\n    r.append(k)"], "r", [
+    # Contraste (não são deste grupo): a função barrada pelo nome (o inventário do sandbox, a verificação de existência)
+    # e o idioma que o interpretador implementa diferente (a unidade do next() sobre gerador).
+    ("contraste · globals(), a função (barrada pelo nome)", ["x = 1\nr = 'x' in globals()"], "r", [
+        ("try/except Exception", ["x = 1\ntry:\n    x\n    r = True\nexcept Exception:\n    r = False"]),
+    ]),
+    ("contraste · next() sobre gerador", ["xs = [1, 2, 3]\nr = next(x for x in xs if x > 1)"], "r", [
+        ("[...][0]", ["xs = [1, 2, 3]\nr = [x for x in xs if x > 1][0]"]),
+    ]),
+    ("desempacotar o que não é tupla",["d = {'a': 1, 'b': 2}\nr = []\nfor k, v in d:\n    r.append(k)"], "r", [
         (".items()", ["d = {'a': 1, 'b': 2}\nr = []\nfor k, v in d.items():\n    r.append(k)"]),
     ]),
 ]

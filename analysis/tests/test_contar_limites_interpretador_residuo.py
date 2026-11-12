@@ -114,6 +114,24 @@ class TestDepois(unittest.TestCase):
         self.assertEqual(d("Global", 4, "soma(5)", msg("soma(5)", "Global is not supported.")), "mesmo_limite")
         self.assertEqual(d("Global", 4, "total = soma(total, 5)", None), "trocou_ok")
 
+    def test_sinais_verificacao(self):
+        s = M.sinais_verificacao
+        instruida = ("def ensure_peticao():\n    global peticao\n    if peticao is None:\n"
+                     "        peticao = buscar_peticao(id=1)\n    return peticao")
+        r = s("p = ensure_peticao()", instruida)                   # o def no passo anterior, a chamada no que falhou
+        self.assertEqual((r["onde_def_global"], r["uso_global"], r["nome_de_estado"]),
+                         ("anterior", "verifica_e_guarda_chamada", True))
+        r = s("total = 0\ndef soma(v):\n    global total\n    total += v\nsoma(5)", None)
+        self.assertEqual((r["onde_def_global"], r["uso_global"], r["nome_de_estado"]), ("passo", "outro_uso", False))
+        r = s("def f():\n    global x\n    x = g()\nf()", None)
+        self.assertEqual(r["uso_global"], "so_guarda_chamada")
+        r = s("y = 1", None)
+        self.assertEqual((r["onde_def_global"], r["uso_global"]), ("nao_visto", "def_nao_visto"))
+        self.assertEqual(s("y = (", None)["uso_global"], "codigo_nao_parseia")
+        r = s("try:\n    x\nexcept NameError:\n    raise\nok = 'x' in globals()", None)
+        self.assertTrue(r["raise_em_except_nameerror"] and r["except_nameerror"] and r["introspeccao"])
+        self.assertFalse(s("try:\n    x\nexcept KeyError:\n    raise", None)["raise_em_except_nameerror"])
+
     def test_tipo_erro(self):
         self.assertEqual(M.tipo_erro(falha("x[0]", "KeyError: 'k'")), "KeyError")
         self.assertEqual(M.tipo_erro("TypeError: unsupported operand"), "TypeError")
