@@ -18,6 +18,7 @@ injetar (o teste de compensação, que o roadmap da base 3 já previa).
 | Adendo | Unidade | Estado |
 |---|---|---|
 | [A · Inventário do sandbox](plano-experimento-adendo-sandbox.md) | erros por usar algo que o interpretador do agente barra (como `repr`) ou por esquecer um import que ele aceita (como `json`): as 3 memórias que chegaram ao degrau 3 | rascunho; é a primeira rodada |
+| [B · Memória consultada no erro](plano-experimento-adendo-memoria-no-erro.md) | não é uma unidade: é um **braço** (a memória entra por um middleware depois do erro), com medida e poder próprios; vale para toda unidade | rascunho; o braço segue exploratório neste plano |
 | (próximos) | qualquer unidade cuja memória chegue ao degrau 3 | a escrever pela ficha do §16 |
 
 Regra de leitura: o que está neste documento vale para toda unidade; um número ou nome de papel só aparece aqui como
@@ -32,10 +33,10 @@ smolagents. Onde ele entra no blueprint, e onde diverge dele:
 |---|---|---|
 | E0 · setup, backend de LLM, Harbor × runner próprio | etapa 0 | o plano supõe o **runner próprio** (ferramentas simuladas como funções Python do smolagents); a decisão do blueprint segue aberta (§15) |
 | E1 · a suíte de tarefas (grupos A–D, sintéticos) | §7: tarefas **por memória** do catálogo — uma unidade se divide em partes, e cada parte gera memórias com lição e escopo próprios (global ou de um papel); a tarefa-gatilho provoca o erro daquela memória, naquele papel | a suíte do blueprint foi pensada antes das memórias existirem (o grupo A era a ferramenta de documento da base 1). Aqui as tarefas nascem do erro-alvo de cada memória. Os grupos B (sinal de harness), C (casos triviais) e D (falha silenciosa) não estão neste plano |
-| E3 · POC-B (smolagents + memória programática) | a parte de leitura: injetor, ferramenta `consultar_memoria`, registro | o caminho de escrita da POC-B (log, gate de promoção, decaimento) fica fora (§14) |
-| EX-1 · recall explícito × injeção nativa | braços "injetada" × "por ferramenta" (hipótese 3) | sem o braço Hermes; a injeção aqui é a do harness, não a nativa do Hermes |
+| E3 · POC-B (smolagents + memória programática) | a parte de leitura: injetor, ferramenta `recall_memory`, registro | o caminho de escrita da POC-B (log, gate de promoção, decaimento) fica fora (§14) |
+| EX-1 · recall explícito × injeção nativa | braços "injetada" × "por ferramenta" (hipótese 3) | sem o braço Hermes. A "injeção automática" daqui é a memória **nativa no contexto do agente**, numa região `<memory>` no prompt de sistema, com o conteúdo escolhido em tempo de execução por uma heurística; não é a injeção do laço do Hermes, que lê a memória pelo próprio mecanismo dele |
 | EX-2 · redução de recorrência entre execuções | só a comparação final: memória já persistida × sem memória | a curva de aprendizado ao longo de "meses" simulados **não** é medida: a memória é congelada (§6). Isso continua no EX-2 do blueprint |
-| Regime temporal: N ≈ 20–30 execuções por tarefa | 3 a 5 repetições por tarefa, com muitas tarefas | o poder vem do número de tarefas, não de repetir a mesma (§9.1, Miller, 2024) |
+| Regime temporal: N ≈ 20–30 execuções por tarefa | 3 a 5 repetições por tarefa, com muitas tarefas | o poder vem do número de tarefas; repetir a mesma só encolhe a variação dentro dela (§9.1; Miller, 2024, §3.1). O "3 a 5" é de partida, e o piloto escolhe `K` |
 | Q4 · implícito × explícito (Sub 1.7) | braço "autogerada" (hipótese 8) | o polo implícito aqui é o próprio smolagents escrevendo a lição, não a conversão sessão→skill do Hermes |
 | EX-8 · memória de reforço | braço exploratório (§6.1) | igual |
 | §8 · critério de "pronto" (os 6 casos de fronteira, uma execução lida inteira, falhas que não são do agente separadas) | etapas 2 e 7 | igual |
@@ -47,10 +48,10 @@ Nada aqui foi rodado. Toda previsão está escrita como hipótese. O que é fato
 
 | | |
 |---|---|
-| **Pergunta** | A memória revisada reduz o erro que ela descreve? A economia de tokens e de tempo paga a injeção? Qual forma de entrega funciona: injetada pelo harness, por ferramenta ou só depois do erro? E ela vale mais que a lição que o agente escreve sozinho, sem gate (o implícito × explícito do Sub 1.7)? |
+| **Pergunta** | A memória revisada reduz o erro que ela descreve? A economia de tokens e de tempo paga a injeção? Qual forma de entrega funciona: injetada no contexto (nativa, na região `<memory>`), por ferramenta ou só depois do erro? E ela vale mais que a lição que o agente escreve sozinho, sem gate (o implícito × explícito do Sub 1.7)? |
 | **Memórias testadas** | Toda memória do catálogo no degrau 3 (revisada) de uma unidade; a lista e os textos literais ficam no adendo da unidade. As que estão no degrau 1 ou 2, ou monitoradas, entram só como exploratórias |
 | **Agentes** | Trilha 1 (já): agentes mínimos em smolagents que espelham os papéis onde o erro da unidade mora. Trilha 2 (quando a permissão sair): os agentes reais, no mesmo protocolo |
-| **Braços** | sem memória · memória injetada pelo harness · memória por ferramenta · memória no erro · placebo · memória autogerada (sem gate) |
+| **Braços** | sem memória · memória injetada no contexto · memória por ferramenta · memória no erro · placebo · memória autogerada (sem gate) |
 | **Unidade de observação** | uma execução do agente numa tarefa sintética, com ferramentas simuladas; pareada por tarefa |
 | **Medida principal** | a execução teve o erro da unidade? (classificado pelas mesmas regras do pipeline, sem LLM) |
 | **Medida de compensação** | tokens totais e tempo por execução, com × sem memória (já incluem o custo da injeção) |
@@ -186,7 +187,7 @@ próprias, rotuladas como tal.
 
 | # | Pergunta | Hipótese | Por que se espera isso |
 |---|---|---|---|
-| 1 | A memória injetada pelo harness reduz o erro da unidade? | Reduz, nas tarefas em que o erro pode acontecer | Instruções em arquivos de contexto são seguidas pelos agentes (Gloaguen et al., 2026); documentação de ferramenta substitui exemplos (Hsieh et al., 2023); lições extraídas de falhas melhoram execuções seguintes (Shinn et al., 2023; Zhao et al., 2024; Ouyang et al., 2025; Suzgun et al., 2025) |
+| 1 | A memória injetada no contexto (região `<memory>`) reduz o erro da unidade? | Reduz, nas tarefas em que o erro pode acontecer | Instruções em arquivos de contexto são seguidas pelos agentes (Gloaguen et al., 2026); documentação de ferramenta substitui exemplos (Hsieh et al., 2023); lições extraídas de falhas melhoram execuções seguintes (Shinn et al., 2023; Zhao et al., 2024; Ouyang et al., 2025; Suzgun et al., 2025) |
 | 2 | A economia paga a injeção, em tokens e em tempo? | Paga, se a incidência real do erro no papel passar de um limiar baixo (§8.2). No tempo, a memória acrescenta a leitura de dezenas de tokens e o erro evitado tira um passo inteiro (§8.3) | A memória tem dezenas de tokens e o passo perdido, milhares. Mas contexto a mais tem custo próprio: arquivos de contexto gerados por LLM subiram o custo em ~20% e os passos em 2,5–3,9 sem mudar o sucesso (Gloaguen et al., 2026) |
 | 3 | A memória por ferramenta funciona tão bem quanto a injetada? | Não, para lições de fato do ambiente com chave por papel (hipótese de generalidade, §2.3) | O agente não sabe que vai cometer o erro, então não tem por que consultar; e no `CodeAgent` consultar custa um passo, o mesmo que o erro custaria. Em memória por ferramenta (o desenho do MemGPT, Packer et al., 2023), a qualidade depende de o agente decidir chamar — apontado na descrição dos sistemas, **sem medida direta que eu tenha encontrado** na busca desta rodada; é justamente o que o braço testa |
 | 4 | O efeito é do conteúdo ou de qualquer texto a mais? | Do conteúdo: o placebo não reduz o erro | Texto irrelevante no prompt muda o comportamento do modelo (Shi et al., 2023); sem placebo não se separa uma coisa da outra |
@@ -196,7 +197,7 @@ próprias, rotuladas como tal.
 | 8 | A memória revisada vale mais que a autogerada (a lição que o próprio agente escreve sobre o erro, sem gate)? | Vale: a autogerada reduz menos o erro e cria mais efeito colateral | Lições escritas pelo próprio modelo não deram ganho médio, e as curadas deram +16 pontos (SkillsBench, v1, 2026); arquivos de contexto escritos por desenvolvedor superaram os gerados por LLM (Gloaguen et al., 2026); memória com erro é copiada e amplificada pelo agente (Xiong et al., 2025). É a comparação implícito × explícito do Sub 1.7 |
 
 Se a hipótese 3 se confirmar, a consequência para a arquitetura é: lições do tipo "fato do ambiente", com chave por
-papel, são entregues pelo harness, por filtro de escopo; a ferramenta `recall_memory` fica reservada para memórias
+papel, são injetadas no contexto, por filtro de escopo; a ferramenta `recall_memory` fica reservada para memórias
 maiores ou raras, a testar depois. Se for refutada, a premissa do recall explícito sai fortalecida. A hipótese 8 não
 entra no veredito de nenhuma memória (§11): é o resultado comparativo do Sub 1.7.
 
@@ -268,11 +269,51 @@ Todos os braços usam o mesmo agente, as mesmas tarefas, o mesmo modelo. Só mud
 | Braço | O que faz | Como (smolagents) | Para que serve |
 |---|---|---|---|
 | **sem memória** | o agente como é | — | controle; mede a taxa de erro de base |
-| **memória injetada pelo harness** | ao montar o agente, o harness busca no catálogo as memórias do papel e põe o texto aprovado no fim do prompt de sistema, numa seção rotulada; registra o que entrou | parâmetro `instructions` do agente | o tratamento principal; o polo "injeção automática" da pergunta do recall |
-| **memória por ferramenta** | o agente tem a ferramenta `consultar_memoria`, que devolve o mesmo texto; ele decide se chama | ferramenta local com descrição de quando usar | testa o recall explícito da arquitetura |
-| **memória no erro** | depois de um passo com erro da unidade, o texto é anexado à observação | `step_callbacks`, com o classificador determinístico | custo zero em execução limpa; mede o valor de reagir em vez de prevenir |
-| **placebo** | texto do mesmo tamanho e formato, verdadeiro e sem relação com as tarefas, no mesmo lugar do prompt | `instructions` | separa o efeito do conteúdo do efeito de "mais texto" |
-| **memória autogerada** | a lição que o próprio agente escreveu depois de errar, no piloto, injetada no mesmo lugar, sem leitura de casos nem gate | `instructions` | o polo implícito do Sub 1.7 (hipótese 8) |
+| **memória injetada no contexto** (nativa, na região `<memory>`) | o texto aprovado da memória entra **dentro do contexto do agente**, numa região rotulada `<memory>…</memory>` no fim do prompt de sistema. Quem a compõe é o harness, a cada execução, por uma heurística que escolhe as memórias do catálogo (abaixo); o agente a lê sem fazer nada | parâmetro `instructions` do agente | o tratamento principal; o polo "memória nativa no contexto" da pergunta do recall |
+| **memória por ferramenta** | a região `<memory>` não existe. O agente tem a ferramenta `recall_memory`, que devolve o mesmo texto; ele decide se chama | ferramenta local com descrição de quando usar | testa o recall explícito da arquitetura |
+| **memória no erro** (consulta por *middleware*) | a memória **não está no contexto no começo**. Depois de cada passo, um middleware do harness roda o classificador do pipeline no resultado do passo; se o erro for o da unidade, ele **consulta o catálogo** (pela unidade e pelo papel) e anexa o texto da memória à observação que o agente lê no passo seguinte. A consulta é decidida pelo harness, não pelo agente | `step_callbacks`, que recebe o passo e o agente e pode alterar a observação | custo zero em execução limpa (nada entra no contexto sem erro); mede o valor de reagir ao erro em vez de antecipar |
+| **placebo** | a mesma região `<memory>` e o mesmo invólucro, com texto do mesmo tamanho, verdadeiro e sem relação com as tarefas | `instructions` | separa o efeito do conteúdo do efeito de "mais texto" |
+| **memória autogerada** | a mesma região `<memory>`, com a lição que o próprio agente escreveu depois de errar, no piloto, sem leitura de casos nem gate | `instructions` | o polo implícito do Sub 1.7 (hipótese 8) |
+
+**Três momentos de entrega, e quem decide cada um.** Os braços com memória diferem em *quando* a memória chega ao
+agente e em *quem decide*:
+
+| Momento | Braço | Quem decide | Pergunta que responde |
+|---|---|---|---|
+| **antes** (antecipação) | injetada no contexto | o harness, ao montar o agente | basta o agente ter a memória à mão? |
+| **durante, se o agente quiser** | por ferramenta (`recall_memory`) | o agente | o agente sabe quando consultar? |
+| **depois do erro** | no erro (middleware) | o harness, ao ver o erro | basta reagir quando o erro aparece? |
+
+O terceiro braço não testa recuperação nem antecipação: o erro **acontece** uma vez, e a memória entra na consulta que o
+middleware faz a partir da assinatura do erro. O que ele não faz é evitar o primeiro erro (hipótese 5). O que ele pode
+reduzir é o que vem depois: a cascata e os passos perdidos (§8.4). Num par de memórias como o do pandas com os imports,
+a assinatura do primeiro erro dispara a consulta das duas, e o segundo erro some (hipótese S2 do adendo do sandbox).
+
+**O terceiro braço tem a medida e o poder dele no [adendo B](plano-experimento-adendo-memoria-no-erro.md).** A medida é a
+reincidência (dado o primeiro erro, houve um segundo?), e não "teve o erro?". Neste plano ele segue exploratório, fora
+da família corrigida por Holm.
+
+**A região `<memory>` é igual em todos os braços que a têm** (injetada, placebo, autogerada): o mesmo rótulo, a mesma
+frase de abertura e o mesmo formato de itens. O que muda é só o conteúdo. Assim, qualquer diferença entre eles é de
+conteúdo, não de formato. No braço da ferramenta o prompt não tem a região, mas tem uma linha dizendo que a ferramenta
+existe e quando usá-la; os tokens dessa linha entram no custo `c` desse braço (§8.2). Forma da região:
+
+```
+<memory>
+Lições aprovadas para o seu papel (aplique-as quando o caso pedir):
+- <texto literal da memória 1>
+- <texto literal da memória 2>
+</memory>
+```
+
+**O conteúdo da região é decidido em tempo de execução, não escrito à mão.** Os braços de entrega são só dois: memória
+**nativa** (na região `<memory>`) e memória **por ferramenta**. Dentro da nativa, o que vai na região não é um texto
+fixo no código: uma **heurística** escolhe, a cada execução, quais memórias entram. A heurística dos braços
+confirmatórios é determinística e simples: o papel do agente, mais as regras do catálogo (`nao_vale_em`,
+`vale_junto_com`, só memórias do degrau 3), lendo o texto na versão do dia. Não há busca semântica nem LLM nessa escolha
+(§3, item 4). Outras heurísticas (por exemplo, uma que olhe o conteúdo da tarefa) são variantes exploratórias do §6.1.
+O que continua fixo nos braços confirmatórios é a posição (o fim do prompt de sistema) e o momento (uma vez, ao montar o
+agente).
 
 **Como nasce a memória autogerada.** No piloto (etapa 3), depois de cada execução em que o erro da unidade aconteceu, o
 mesmo modelo recebe o passo que falhou e a pergunta "escreva, em uma ou duas frases, a lição para não repetir este
@@ -282,14 +323,20 @@ difere do da revisada; o registro guarda os tokens de cada uma, e a comparação
 
 Decisões de desenho e a razão de cada uma:
 
-- **Injetar não é editar o prompt.** A arquitetura proíbe escrever no prompt de sistema dos repositórios. O harness
-  monta o contexto de cada execução a partir do catálogo, filtrado por papel, como a revelação progressiva pede: só a
-  memória do papel entra. Como o harness registra o que injetou, a entrega automática não é silenciosa, que era a
-  objeção da arquitetura à injeção (§F, "loop-native").
+- **Injetar no contexto não é editar o prompt do repositório.** A arquitetura proíbe escrever no prompt de sistema dos
+  repositórios dos agentes. A região `<memory>` é composta pelo harness na hora de montar a execução, a partir do
+  catálogo, filtrada por papel, como a revelação progressiva pede: só a memória do papel entra. O arquivo do prompt
+  do agente não muda. Como o harness registra o que injetou (quais memórias, qual versão do texto), a entrega
+  automática não é silenciosa, que era a objeção da arquitetura à injeção (§F, "loop-native").
 - **A memória fica no fim do prompt de sistema, em itens.** A posição pesa (Liu et al., 2023), e conteúdo no fim do
   prompt de sistema preserva o cache do prefixo (Lumer et al., 2026). Itens separados evitam o colapso que reescritas
   em bloco causam (ACE, 2025).
-- **Sem busca semântica.** Filtro por papel, e por ferramenta quando houver. Ver §3, item 4.
+- **A região diz ao agente que aquilo é a memória dele.** O rótulo `<memory>` e a frase de abertura não são enfeite: a
+  ideia é que o agente entenda o conteúdo como a sua própria memória, e não como mais um trecho do prompt. O Rafael
+  lembra de um artigo que mostra que ter uma região assim no contexto é mais efetivo; **o artigo ainda precisa ser
+  localizado, e até lá isso é uma hipótese do plano, não uma citação**. O braço exploratório "sem rótulo" (§6.1) testa
+  a ideia dentro do experimento.
+- **Sem busca semântica.** A heurística é um filtro por papel e pelas regras do catálogo. Ver §3, item 4.
 - **O conteúdo é congelado.** Nenhum braço aprende durante o teste. Aqui se mede o valor de uma memória aprovada; a
   dinâmica de aprender entre execuções é outro experimento. Memória que cresce sem controle propaga erro (Xiong et al.,
   2025), e por isso o projeto tem o gate.
@@ -306,7 +353,10 @@ Rodam depois, com amostra menor, e não entram na decisão do degrau 4. Cada ade
 |---|---|
 | **conserto no ambiente** (o que o sinal de harness da unidade pediria: o ambiente configurado de outro jeito, uma ferramenta nova) | hipótese 6: o teto prático, e memória × harness |
 | **carga de memória** (todas as memórias do catálogo do papel no prompt, e não só as da unidade) | hipótese 7 |
-| **ferramenta via MCP** (a mesma `consultar_memoria` num servidor MCP local, por `MCPClient`) | o transporte muda o comportamento ou só a latência? Muitas ferramentas no contexto degradam a escolha (Gan e Sun, 2025) |
+| **ferramenta via MCP** (a mesma `recall_memory` num servidor MCP local, por `MCPClient`) | o transporte muda o comportamento ou só a latência? Muitas ferramentas no contexto degradam a escolha (Gan e Sun, 2025) |
+| **sem rótulo** (o mesmo texto da memória solto no fim do prompt, sem a região `<memory>` nem a frase de abertura) | a região que o agente reconhece como a memória dele pesa mais que o texto solto? É a hipótese do §6; ela precisa do artigo para virar citação. É barato: o mesmo conteúdo, só muda o invólucro |
+| **heurística de seleção** (a região escolhida por outra regra: o papel mais o conteúdo da tarefa, como as ferramentas ou os termos citados nela; ou todas as do papel) | uma seleção mais fina reduz o ruído ou introduz erro de recuperação? Em memória, a maior parte das falhas está na recuperação, não no uso (Yuan et al., 2026) |
+| **posição e momento da região `<memory>`** (início do prompt de sistema; na mensagem da tarefa; renovada a cada passo por `step_callbacks`, com o catálogo relido) | a posição e a renovação mudam o efeito? A instrução do prompt perde peso com a distância (Liu et al., 2023; Li et al., 2024); renovar a cada passo custa tokens a cada passo |
 | **ferramenta com consulta obrigatória** (o prompt manda consultar antes do primeiro código) | quanto da diferença para a injetada é a decisão de chamar |
 | **memória de reforço** (as memórias que só repetem o prompt e não são injetadas) | o experimento de memória de reforço do blueprint |
 
@@ -326,6 +376,14 @@ regressão à média (Barnett et al., 2005). Por isso o controle também é roda
 replays.
 
 ### 7.2 As tarefas sintéticas
+
+**O que é um gerador.** É um programa pequeno e determinístico (não um LLM) que fabrica tarefas. Escreve-se **uma vez** o
+modelo da tarefa, deixando alguns pontos como parâmetros; cada combinação de parâmetros dá uma tarefa diferente, e o
+verificador calcula a resposta certa a partir dos mesmos parâmetros. Exemplo, para um espelho que lê um registro
+devolvido como texto: o modelo é "a ferramenta devolve um registro; leia o campo indicado e decida o destino", e os
+parâmetros são os nomes dos campos, o número de registros, a profundidade do aninhamento, os valores e a redação da
+instrução. Neste plano, **"gerador" e "modelo de tarefa" querem dizer a mesma coisa**, e o texto usa "gerador". Tarefas do
+mesmo gerador se parecem entre si, e isso pesa no cálculo de `K` e `N` (§9.3).
 
 Para cada agente-espelho, duas populações:
 
@@ -463,9 +521,15 @@ Três correções sobre essa tabela:
 
 1. **Comparações múltiplas.** Quatro comparações confirmatórias (§12), corrigidas por Holm (1979). Com a taxa de base em
    40% e redução de 50%, sobe de 82 para cerca de 116 por braço.
-2. **Repetições da mesma tarefa não são independentes.** Com `k` repetições por tarefa e correlação `ρ` entre elas, o
-   tamanho efetivo é dividido por `1 + (k − 1)·ρ` (o erro-padrão agrupado de Miller, 2024). Com `k = 4` e `ρ = 0,3`, por
-   1,9. Por isso vale mais ter tarefas diferentes do que repetir as mesmas.
+2. **Repetições da mesma tarefa não são independentes.** Miller (2024, §3.1) decompõe a variância da média em
+   `(Var(x) + E[σ²]/K) / n`: repetir a tarefa `K` vezes só encolhe o segundo termo (a variação dentro da tarefa); o
+   primeiro (a variação entre tarefas) só encolhe com mais tarefas. Escrito como efeito de desenho, com `ρ =
+   Var(x) / (Var(x) + E[σ²])`, o tamanho efetivo é dividido por `1 + (k − 1)·ρ`. **Essa forma é uma derivação a partir da
+   decomposição dele, não uma fórmula do paper.** Com `k = 4` e `ρ = 0,3` (perto do `ρ = 1/3` do exemplo dele, de
+   escore binário e dificuldade uniforme), divide por 1,9. Por isso vale mais ter tarefas diferentes do que repetir as
+   mesmas. O número de repetições se escolhe pelo critério do paper, `E[σ²]/K ≪ Var(x)`, estimado no piloto; o "3 a 5" do
+   plano é uma estimativa de partida, não um número do paper. O paper também avisa que calcular o erro-padrão sobre as
+   `K·N` execuções empilhadas é inconsistente: o cálculo é sobre a média por tarefa (§12).
 3. **A taxa de erro real costuma ser baixa demais para testar direto.** Na base 1, 37% das execuções têm algum erro,
    mas uma unidade sozinha aparece em poucos por cento. Com 5% de base seriam mais de 900 execuções por braço. Por isso
    a eficácia é medida nas tarefas-gatilho, onde o erro é provável, e o custo nas neutras; a incidência real entra
@@ -483,7 +547,8 @@ autogerado (uma chamada de LLM por execução com erro, sem execução nova).
 
 **Replay de passo:** por memória, 30 contextos que erraram × 5 gerações × 2 (com e sem) → **300 chamadas de um passo**.
 
-**Confirmatório**, por agente-espelho e por braço (6 braços), no modelo principal:
+**Confirmatório**, por agente-espelho e por braço (6 braços), no modelo principal. **Os valores abaixo são de partida:**
+o número de tarefas (N) e de repetições (K) é decidido pelo §9.3, com contas antes do piloto e medidas depois dele.
 
 | Versão | Tarefas-gatilho × repetições | Neutras × repetições | Por agente-espelho (6 braços) | Quando usar |
 |---|---|---|---:|---|
@@ -498,12 +563,104 @@ necessárias (taxa de base de 40%, redução de 50%, Holm). Na guarda, com três
 de 570 efetivas, acima das 446. Com um ou dois espelhos, a guarda não fecha com esse tamanho, e o adendo diz o que fazer
 (mais tarefas neutras ou uma margem maior).
 
-**A regra:** o tamanho final é recalculado com a taxa de base e o `ρ` do piloto e fixado no pré-registro **antes** do
-confirmatório. Não se acrescentam execuções depois de olhar o resultado.
+**A regra:** o tamanho final (N e K) é recalculado com a taxa de base e o `ρ` do piloto, pelo §9.3, e fixado no
+pré-registro **antes** do confirmatório. Não se acrescentam execuções depois de olhar o resultado.
 
 **Custo (hipótese, a medir no piloto):** se uma execução do espelho gastar 15–25 mil tokens, cada agente-espelho na
 versão cheia fica na ordem de 32 a 54 milhões de tokens e na enxuta, na metade. O valor em dinheiro depende do modelo;
 fecha-se na etapa 3, com o número do piloto.
+
+### 9.3 Como K (repetições) e N (tarefas) são decididos
+
+> **Status: em discussão (12/11/2026).** Esta seção se apoia no Miller (2024), cujo fichamento é 🔎 e ainda **falta o ✅**
+> do Rafael ([`literature/miller-2411.00640.md`](literature/miller-2411.00640.md)). Depois da leitura dele, a seção é
+> fechada ou ajustada, e a discussão continua: o que ainda está aberto está no §15 (decisões 7 a 9). Os valores de
+> partida do §9.2 valem até lá.
+
+**O que o Miller (2024, §3.1) dá.** A variância da taxa medida é `(Var(x) + E[σ²]/K) / N`: a variação **entre tarefas**
+`Var(x)` só diminui com mais tarefas; a variação **dentro** da tarefa `E[σ²]` diminui com as repetições `K`. A razão
+`ρ = Var(x) / (Var(x) + E[σ²])` diz qual das duas domina: `ρ` alto, repetir ajuda pouco; `ρ` baixo, repetir ajuda mais. O
+`ρ` só se conhece depois de medir, mas dá para calcular antes com valores supostos e ver o que é robusto. As duas
+fórmulas abaixo decorrem da decomposição dele, e a segunda é um resultado clássico de amostragem em dois estágios;
+**nenhuma está escrita no paper** (derivação minha). Os números das tabelas são de uma conta e de uma simulação feitas em
+12/11/2026, e a simulação reproduziu a fórmula do Miller até a terceira casa.
+
+**Passo 1 — antes do piloto: calcular com suposições.**
+
+*(a) Quantas tarefas, dado K.* Se o §9.1 pede `n` execuções independentes por braço, com `K` repetições por tarefa e
+correlação `ρ`, o número de tarefas é `N = n · (1 + (K − 1)·ρ) / K`. Exemplo, com `n = 116` (taxa de base de 40%,
+redução de 50%, Holm) e `ρ = 0,3`:
+
+| Repetições K | Tarefas N necessárias | Execuções por braço (N × K) |
+|---:|---:|---:|
+| 1 | 116 | 116 |
+| 2 | 76 | 152 |
+| 3 | 62 | 186 |
+| 4 | 56 | 224 |
+| 5 | 52 | 260 |
+| 8 | 45 | 360 |
+| infinitas | 35 (o piso: `ρ·n`) | — |
+
+Mais repetições poupam tarefas, mas com retorno decrescente, e **nunca menos que `ρ·n` tarefas**. O ponto de partida do §9.2
+(60 tarefas × 4) é o caso `K = 4`, que pede 56.
+
+*(b) Qual K, dado o custo.* Com `c` = (custo marginal de criar e validar **mais uma tarefa** de um gerador já pronto) ÷
+(custo de **uma execução**), na mesma unidade (dinheiro ou tempo), o `K` que dá a menor variância para um orçamento fixo é
+`K* = √( c · (1 − ρ) / ρ )`:
+
+| ρ \ c | 1 | 5 | 10 | 30 | 100 |
+|---:|---:|---:|---:|---:|---:|
+| 0,1 | 3,0 | 6,7 | 9,5 | 16,4 | 30,0 |
+| 0,3 | 1,5 | 3,4 | 4,8 | 8,4 | 15,3 |
+| 0,5 | 1,0 | 2,2 | 3,2 | 5,5 | 10,0 |
+| 0,8 | 0,5 | 1,1 | 1,6 | 2,7 | 5,0 |
+
+**Como ler.** A perda por errar o `K` é plana perto do ótimo: `K = 4` fica **a menos de 10% do ótimo** para `ρ` entre 0,3 e
+0,5 e `c` entre 5 e 30. Só custa caro nos extremos (até 1,5 a 2 vezes a variância: `ρ` alto com tarefa barata, ou `ρ`
+baixo com tarefa cara). Isso é o que torna o `K` uma decisão robusta, mesmo antes de medir o `ρ`. Um caso a ter em mente:
+com gerador paramétrico, o `c` marginal pode ser quase zero, e o `K` ótimo cai para 1 ou 2; nesse caso, `K` acima de 2 só
+se justifica pela **estabilidade** (a medida `pass^k` exige `k` repetições) e pela estimativa do próprio `ρ`.
+
+**Passo 2 — no piloto: medir ρ.** O piloto (só o braço sem memória) tem 20 tarefas-gatilho × 5 repetições por espelho. O
+`ρ` se estima por análise de variância de um fator (entre e dentro das tarefas). A variância das médias por tarefa
+superestima `Var(x)` em `σ²/K`, e a estimativa subtrai esse termo (o apêndice C do paper usa `K` bem maior que 1 e divide
+por `K − 1` para a variância de dentro). Precisão do `ρ` estimado, por simulação (escore binário, taxa de 40%):
+
+| Piloto | ρ estimado, para ρ verdadeiro de 0,15 · 0,33 · 0,60 |
+|---|---|
+| 20 tarefas × 5 | 0,15 ± 0,10 · 0,33 ± 0,12 · 0,60 ± 0,12 |
+| 40 tarefas × 5 | ± 0,07 · ± 0,08 · ± 0,08 |
+| 60 tarefas × 4 | ± 0,07 · ± 0,07 · ± 0,07 |
+
+Com 20 × 5, o piloto separa `ρ` baixo de `ρ` alto, mas não distingue 0,3 de 0,4. **Isso basta**, porque a perda por errar
+o `K` é plana (tabela do passo 1). Se quiser a precisão de ±0,08, o piloto passa a 40 tarefas-gatilho × 5 repetições:
+100 execuções a mais por espelho e por modelo. É decisão do §15.
+
+**Passo 3 — com os dados do piloto: testar a hipótese e fixar K e N.** Três verificações, todas determinísticas e
+reproduzíveis:
+
+1. **O `ρ` com intervalo** (reamostragem das tarefas do piloto). `ρ` alto: poucas repetições. `ρ` baixo: mais
+   repetições compensam.
+2. **A curva do erro-padrão × K nos dados do piloto.** Com as 5 repetições de cada tarefa, sorteiam-se 1, 2, 3, 4 e 5
+   repetições, reamostram-se as tarefas e mede-se o erro-padrão da taxa. Compara-se com a fórmula do Miller. Se a curva
+   achata em `K = 2` ou `3`, repetir mais é desperdício **nesta unidade**. É o teste direto de que a decomposição vale
+   nos nossos dados.
+3. **O poder por simulação, para o N.** Reamostram-se as tarefas do piloto (com as suas probabilidades de erro),
+   aplica-se a redução hipotética, simula-se o confirmatório inteiro (N tarefas, K repetições, 6 braços, Holm) muitas
+   vezes e conta-se quantas vezes ele detecta o efeito. O `N` é o menor que chega a 80%. Confere-se com a fórmula pareada do
+   Miller (Eq. 9, §5), que usa `ω²` e `σ²` estimados do piloto. Para escore binário e poucas centenas de casos, a
+   simulação é mais confiável que a fórmula gaussiana (Bowyer et al., 2025).
+
+**Passo 4 — congelar.** `K` e `N` por espelho, a versão (cheia ou enxuta) e os números de poder entram no pré-registro
+(etapa 4). Vale a regra do §9.2: nada se acrescenta depois de olhar o resultado.
+
+**Um limite sobre as tarefas.** Tarefas do mesmo gerador se parecem entre si, e se comportam como o "grupo de perguntas
+relacionadas" do §2.2 do paper. Para o que o plano afirma (a memória reduz o erro neste tipo de tarefa), o gerador *define*
+a população e não há problema. Para generalizar além dele, vários geradores por espelho são melhores que um só, e o
+erro-padrão agrupado por gerador se aplica (§12). **[inferência minha]**
+
+**O que depende de duas decisões suas (§15):** o `c` (quanto custa criar uma tarefa a mais, que se mede na etapa 2) e se a
+estabilidade `pass^k` é medida confirmatória ou só secundária, porque é ela que pode exigir `K ≥ 3`.
 
 ## 10. Etapas, do início ao fim
 
@@ -565,8 +722,13 @@ compensação, que depende do custo e da incidência reais.
 
 ## 12. Análise estatística
 
-- **Unidade:** a execução; **agrupamento:** a tarefa. Diferenças pareadas por tarefa e erro-padrão agrupado (Miller,
-  2024).
+- **Unidade de análise:** a **tarefa**. As `K` repetições de cada tarefa viram uma média por tarefa, e a incerteza se
+  calcula sobre as tarefas, nunca sobre as execuções empilhadas (Miller, 2024, §3.1). Diferenças **pareadas por
+  tarefa**, porque todos os braços rodam as mesmas tarefas (§4.2 do paper). Se as tarefas nascem de um mesmo gerador, elas
+  são perguntas agrupadas no sentido do §2.2 dele, e o erro-padrão agrupado por gerador ou por espelho se aplica a essa
+  parte. Depois do piloto, o tamanho de amostra se refaz pela fórmula pareada do paper (Eq. 9), com a variância entre
+  tarefas e a variância dentro da tarefa estimadas do piloto; a tabela do §9.1, de duas proporções independentes, é o
+  teto conservador. Não se mexe na temperatura para reduzir variância (§3.3 do paper).
 - **Medida principal:** regressão logística com efeito aleatório da tarefa e efeito fixo do braço, por agente. Como
   conferência, o teste de McNemar sobre o resultado majoritário de cada tarefa (Dietterich, 1998). Reporta-se a
   diferença de risco com intervalo de 95%.
@@ -650,6 +812,15 @@ Decisões do protocolo (valem para toda unidade):
 6. **O nome da pasta do código.** O blueprint e o `CLAUDE.md` indicam `pocs/2026-09-min-agents/`, que ainda não existe.
    Criada agora, a convenção de data do repositório pediria um nome de novembro. Uma pasta só, para o blueprint e este
    plano.
+7. **O tamanho do piloto de tarefas-gatilho** (§9.3, passo 2): 20 tarefas × 5 repetições por espelho estima o `ρ` com
+   erro de cerca de ±0,10; 40 × 5 reduz para ±0,08, ao custo de 100 execuções a mais por espelho e por modelo. Como o
+   `K` é robusto a esse erro, a recomendação é ficar com 20 × 5, a menos que o `ρ` medido caia perto de uma fronteira da
+   tabela de `K`.
+8. **A estabilidade (`pass^k`) é medida confirmatória ou secundária?** Hoje é secundária (§8.4). Se for confirmatória,
+   ela exige `K ≥ 3` mesmo que a estatística pedisse menos, e o §9.3 passa a ter esse piso.
+9. **Fechar o §9.3 depois da leitura do Miller pelo Rafael.** Hoje a seção está marcada como em discussão. Pontos a levar
+   para essa conversa: (a) se "poucas repetições, muitas tarefas" se mantém como regra de partida; (b) quantos geradores
+   por espelho, já que tarefas do mesmo gerador se parecem; (c) o custo `c` de uma tarefa a mais, que se mede na etapa 2.
 
 As decisões de cada unidade (quais agentes-espelho, quais memórias exploratórias) ficam no adendo dela.
 
@@ -687,10 +858,12 @@ Para a parte estatística (§9 e §12), o complemento é Miller (2024).
 
 **Estado da verificação:** os itens sem † tiveram título, autores, ano e identificador conferidos por busca na web em
 12/11/2026. Os marcados com † (Reflexion, ExpeL, ReasoningBank, MemGPT, Lost in the Middle, AgentDebug) **não foram
-buscados de novo**: o identificador vem das notas já existentes em `papers/` e da fila de leitura. Só dois tiveram mais
-que o resumo lido, por um agente, em 12/11: **Gloaguen et al.** (o texto do arXiv, quase inteiro: desenho, medidas,
-estatística e limites conferidos) e o **SkillsBench** (as páginas de resumo da v1 e da v4). **Nenhum foi lido pelo
-Rafael**; os outros números citados vêm dos resumos.
+buscados de novo**: o identificador vem das notas já existentes em `papers/` e da fila de leitura. Só três tiveram mais
+que o resumo lido, por um agente, em 12/11: **Miller (2024)**, o PDF inteiro, com fichamento em
+[`pocs/literature/miller-2411.00640.md`](literature/miller-2411.00640.md); **Gloaguen et al.** (o texto do
+arXiv, quase inteiro: desenho, medidas, estatística e limites conferidos); e o **SkillsBench** (as páginas de resumo da
+v1 e da v4). **Nenhum foi lido pelo Rafael** (o fichamento do Miller está marcado como 🔎, falta o ✅); os outros números
+citados vêm dos resumos.
 
 *Fontes internas que o plano usa:* a [hipótese de arquitetura](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md)
 (§A, §C, §D, §F, "Scope clarification"), a [política de promoção](../discussion/hipoteses/promotion-policy-log-to-ltm.md),
@@ -725,6 +898,7 @@ os relatórios das bases 2 e 3 e o [blueprint](blueprint-m1-pocs-minimos.md).
 - Shi, F., Chen, X. et al. (2023). *Large Language Models Can Be Easily Distracted by Irrelevant Context.* ICML 2023. arXiv:2302.00093.
 - Hong, K., Troynikov, A., Huber, J. (2025). *Context Rot: How Increasing Input Tokens Impacts LLM Performance.* Relatório técnico, Chroma.
 - Liu, N. F. et al. (2023). *Lost in the Middle: How Language Models Use Long Contexts.* TACL. arXiv:2307.03172. †
+- Li, Liu, Bashkansky, Bau, Viégas, Pfister, Wattenberg (2024). *Instruction (In)Stability.* COLM 2024. arXiv:2402.10962. † (autores e título como na fila de leitura do repositório, item 48; não conferido de novo, e o título pode estar abreviado)
 - Gan, T., Sun, Q. (2025). *RAG-MCP: Mitigating Prompt Bloat in LLM Tool Selection via Retrieval-Augmented Generation.* arXiv:2505.03275.
 
 *Memória de experiência em agentes*
