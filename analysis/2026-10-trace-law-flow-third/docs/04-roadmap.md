@@ -454,6 +454,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   destino memória. Rodada `c2e5e8b31f297d21` (12/11): só os 47 mudaram (sintoma não reconhecido 91 → 44, 21
   unidades, 11 candidatas); resíduo **420 erros, 98 padrões, 20 recorrentes**; encontro: 0 divergências. A
   re-entrada do sandbox segue no #64.
+  **O que sobrou do balde "sintoma não reconhecido" (44, 12/11):** a decisão do Rafael é medir primeiro se cada
+  grupo recorre (≥ 3 execuções e ≥ 2 meses) e só investigar os que passam; os que não passam ficam no resíduo com
+  motivo, numa tabela de decisão em lote, sem Ajuste. Medição: `validacao/contar_recorrencia_sintoma_residuo.py`
+  (a recusa do LLM, 5, já está decidida em observação) → o resultado no ambiente decide o que investigar.
   **Depois:** os maiores de causa sem regra.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
