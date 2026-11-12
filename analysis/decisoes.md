@@ -555,5 +555,11 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   emenda pré-registrada ao racional da lição com os degraus só para ela. **Em aberto:** a régua de `revisar` (20%,
   proposta) e a parte nova do inventário do sandbox para os 47 erros do Ajuste 38 (b3 #64) → procedimento `16`,
   "Re-entrada".
+- **12/11, a re-entrada se investiga quando o balde do resíduo fecha, não a cada Ajuste** (decisão do Rafael): o
+  `reentrada.py` continua rodando depois de todo Ajuste (é barato e mostra o descoberto), mas a investigação dos
+  descobertos e as emendas às lições mineradas esperam o balde em questão (hoje, "sintoma não reconhecido") ter
+  destino para todos os grupos. Porquê: os erros novos de uma unidade já vêm investigados pelo grupo do resíduo que os
+  levou (ex.: os 47 do Ajuste 38), e outros Ajustes do mesmo balde podem levar mais erros à mesma lição; uma emenda
+  por lição, no fim, roda os degraus uma vez só (b3 #64).
 
 ---

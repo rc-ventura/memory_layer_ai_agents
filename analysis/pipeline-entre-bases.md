@@ -2013,7 +2013,7 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     RoteadorCivel 13, CalculoTrabalhista 12, ContestacaoCivel 12, OBFCivel 8, JoogleAnalytics 4, RecursoCivel 1,
     RespostaBacen 1, RespostaOficios 1; por mês: 2025-12 2, 2026-01 5, 2026-02 2, 2026-05 9, 2026-07 24, 2026-08 10.
     Os 47 que entraram são os do Ajuste. **Os 5 que "mudaram de parte" eram um defeito da re-entrada**, achado pelo
-    agente do ambiente (`propostas/U_sandbox/prompt_reentrada_mudou_de_parte.md`): os 5 (JoogleAnalytics 4,
+    agente do ambiente (um prompt de uso único, apagado depois): os 5 (JoogleAnalytics 4,
     CalculoTrabalhista 1; `sem_nome`, `InterpreterError`) já estavam **sem memória na foto** e continuam sem memória
     agora; o estado da mensagem é íntegro nos 5 e nos 1.095 de controle, e o hash do `mineracao_U_sandbox.py` é o
     mesmo na foto e hoje. O vazio da foto volta do CSV como NaN, e NaN ≠ NaN contava como mudança. **Correção**
