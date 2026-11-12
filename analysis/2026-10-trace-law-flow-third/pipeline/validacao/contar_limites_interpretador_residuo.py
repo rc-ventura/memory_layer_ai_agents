@@ -37,6 +37,14 @@ sintática do Python, `ast`, nunca impressa):
 Com `--trace <trace com prompt>`: por papel, quantos prompts citam cada construção (`:=`/walrus, `global`, `nonlocal`,
 `{**`, "not supported") e quantos a usam nos exemplos de código (o prompt induziria o erro). Só contagens.
 
+Com `--fonte <parquet da base>` (junto do `--casos`): **o que o agente faz depois do erro**, para separar "não conhecia
+o ambiente" de "errou mesmo sabendo". Em cada erro do grupo, o passo seguinte e o seguinte a ele (`next_*` e `next2_*`
+da fonte, ligados pela chave execução, agente, papel e posição do passo) recebem um desfecho: sem passo; o mesmo
+limite de novo; trocou a construção (ok ou com outro erro); ainda usa a construção (ok ou com outro erro); não lido (o
+unpack, ou o código não parseia). Mais o tipo do outro erro, tirado da mensagem. E a **versão do agente** por papel, na
+fonte inteira, com rótulos v1, v2… em ordem do 1º mês (o código da versão não sai): os picos de julho (`:=` no
+RoteadorCivel, `global` no ontestacaoCivel) coincidem com uma versão nova?
+
 Grava `casos_limites_interpretador.csv` (os erros do grupo, com `limite`, `forma` e `construtos`, sem a mensagem) na
 pasta do `casos.csv`, para o `montar_evidencia.py --de mineracao/residuo/<pasta>/casos_limites_interpretador.csv
 --onde forma=<f>` montar a amostra com os crus.
@@ -44,7 +52,8 @@ pasta do `casos.csv`, para o `montar_evidencia.py --de mineracao/residuo/<pasta>
 Não muda nada no pipeline e fica fora do hash da rodada. Imprime só contagens, nomes de papel, os limites, as formas e
 os meses: nada de mensagem, de código nem de identificador. Uso, da raiz, no ambiente da base:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/validacao/contar_limites_interpretador_residuo.py
-        --casos <pipeline/resultados/mineracao/residuo/<pasta>/casos.csv> [--trace <trace com prompt>]
+        --casos <pipeline/resultados/mineracao/residuo/<pasta>/casos.csv> [--fonte <parquet da base>]
+        [--trace <trace com prompt>]
 """
 import argparse
 import ast
@@ -237,6 +246,124 @@ def medir_prompt(memos):
     return por
 
 
+# O que o agente faz depois do erro (com --fonte): a construção recusada de cada limite, procurada na árvore do código
+# do passo seguinte. O unpack não tem construção própria (é erro de código comum): só o erro conta.
+ALVO = {"NoneType": "dict_com_estrela", "NamedExpr": "walrus", "Global": "global", "Nonlocal": "nonlocal",
+        "Re-raise": "raise_sozinho", "unpack": None}
+DESFECHOS = ["sem_passo", "mesmo_limite", "trocou_ok", "trocou_outro_erro", "usa_ok", "usa_outro_erro",
+             "nao_lido_ok", "nao_lido_outro_erro"]
+PASSOS = ("next", "next2")
+CHAVE_FONTE = ["cod_idef_exeo", "cod_idef_aget", "papel", "step_pos"]
+COLUNAS_FONTE = CHAVE_FONTE + ["cod_vers_aget", "mes_execucao"] + [
+    f"{p}_{c}" for p in PASSOS for c in ("step_number", "code_action", "error_message")]
+
+
+def _vazio(v):
+    return v is None or (isinstance(v, float) and v != v) or (isinstance(v, str) and not v.strip())
+
+
+def desfecho(lim, passo, codigo, erro):
+    """O que aconteceu num passo depois do erro (ver DESFECHOS):
+      sem_passo          o papel não teve esse passo (a execução acabou ou o papel parou);
+      mesmo_limite       o passo falhou com a mesma mensagem (para o `global`, pega também a função definida antes
+                         e chamada de novo, que não traz a palavra no código do passo);
+      trocou_* / usa_*   o código do passo não tem / ainda tem a construção recusada; `ok` sem erro, `outro_erro` com
+                         outro erro;
+      nao_lido_*         sem construção para procurar (unpack) ou o código não parseia: só o erro conta."""
+    if _vazio(passo):
+        return "sem_passo"
+    erro = "" if _vazio(erro) else str(erro)
+    if erro and limite(erro) == lim:
+        return "mesmo_limite"
+    fim = "outro_erro" if erro else "ok"
+    t = arvore(str(codigo)) if ALVO.get(lim) and not _vazio(codigo) else None
+    if t is None:
+        return f"nao_lido_{fim}"
+    return f"{'usa' if ALVO[lim] in construtos(t) else 'trocou'}_{fim}"
+
+
+def tipo_erro(msg):
+    """O tipo do erro pela mensagem (o `next_error_type` só diz AgentExecutionError); '' se não houve erro."""
+    if _vazio(msg):
+        return ""
+    m = re.search(r"due to: (\w+)", str(msg)) or re.match(r"\s*(\w+(?:Error|Exception))\b", str(msg))
+    if not m:
+        return "outro"
+    lim = limite(str(msg)) if m.group(1) == "InterpreterError" else None   # outro limite do grupo: diz qual
+    return f"InterpreterError ({lim})" if lim else m.group(1)
+
+
+def _chave_casos(r):
+    return (str(r["exec_id"]), str(r["agente"]), str(r["role"]), int(float(r["idx"])))
+
+
+def ler_fonte(fonte):
+    """A fonte só nas colunas usadas (pyarrow), como DataFrame."""
+    import pyarrow.parquet as pq
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from mineracao_observada import caminho_io
+    caminho = caminho_io(fonte)
+    nomes = set(pq.read_schema(caminho).names)
+    return pq.read_table(caminho, columns=[c for c in COLUNAS_FONTE if c in nomes]).to_pandas()
+
+
+def depois(G, F):
+    """Junta à população do grupo o que veio depois (desfecho e tipo do erro, nos passos `next` e `next2`) e a versão
+    do agente. Devolve (G com as colunas novas, quantos erros não acharam linha na fonte)."""
+    por = {}
+    for r in F.to_dict("records"):
+        por.setdefault((str(r["cod_idef_exeo"]), str(r["cod_idef_aget"]), str(r["papel"]), int(float(r["step_pos"]))), r)
+    G = G.copy()
+    linhas = [por.get(_chave_casos(r)) for _, r in G.iterrows()]
+    for p in PASSOS:
+        G[f"depois_{p}"] = [desfecho(lim, *(None, None, None) if l is None else
+                                     (l.get(f"{p}_step_number"), l.get(f"{p}_code_action"), l.get(f"{p}_error_message")))
+                            for lim, l in zip(G.limite, linhas)]
+        G[f"erro_{p}"] = ["" if l is None else tipo_erro(l.get(f"{p}_error_message")) for l in linhas]
+    G["versao_bruta"] = [None if l is None or _vazio(l.get("cod_vers_aget")) else str(l.get("cod_vers_aget"))
+                         for l in linhas]
+    return G, sum(l is None for l in linhas)
+
+
+def versoes(F, papeis):
+    """Por papel, as versões do agente na fonte inteira, em ordem do 1º mês, com rótulos v1, v2… (o código da versão
+    não sai): {papel: [(rótulo, versão bruta, 1º mês, último mês, passos)]}."""
+    if "cod_vers_aget" not in F.columns or "mes_execucao" not in F.columns:
+        return {}
+    F = F[F.papel.isin(papeis)].copy()
+    F["v"] = F.cod_vers_aget.map(lambda v: "sem versão" if _vazio(v) else str(v))
+    out = {}
+    for papel, g in F.groupby("papel"):
+        t = g.groupby("v").mes_execucao.agg(["min", "max", "size"]).sort_values(["min", "max"])
+        reais = iter(range(1, len(t) + 1))
+        out[papel] = [(v if v == "sem versão" else f"v{next(reais)}", v, str(r["min"]), str(r["max"]), int(r["size"]))
+                      for v, r in t.iterrows()]
+    return out
+
+
+def _imprimir_depois(G, faltam, V):
+    print(f"\no que veio depois (fonte; {faltam} erros sem linha na fonte):")
+    for lim, _ in LIMITES:
+        g = G[G.limite == lim]
+        if g.empty:
+            continue
+        print(f"  {lim} ({len(g)}):")
+        for p in PASSOS:
+            d = g[f"depois_{p}"].value_counts().reindex(DESFECHOS, fill_value=0)
+            print(f"    passo {'seguinte' if p == 'next' else 'depois dele'}: {d[d > 0].to_dict()}")
+        outros = g.loc[g.depois_next.str.endswith("outro_erro"), "erro_next"].value_counts()
+        if len(outros):
+            print(f"    o outro erro do passo seguinte: {outros.head(8).to_dict()}")
+    if V:
+        print("\nversão do agente por papel (na fonte inteira; rótulo em ordem do 1º mês, o código não sai):")
+        rot = {(p, v): r for p, vs in V.items() for r, v, *_ in vs}
+        for papel, vs in V.items():
+            g = G[G.role == papel]
+            erros = Counter(rot.get((papel, v or "sem versão"), "?") for v in g.versao_bruta)
+            print(f"  {papel}: " + " · ".join(f"{r} {a}→{b} ({n} passos; {erros.get(r, 0)} do grupo)"
+                                             for r, _, a, b, n in vs))
+
+
 def _resumo(g):
     return (f"{len(g)} erros · {len(g[['exec_id', 'agente']].drop_duplicates())} execuções · {g.mes.nunique()} meses · "
             f"{g.role.nunique()} papéis · {int(g.tok_tot.fillna(0).sum()):,} tokens".replace(",", "."))
@@ -261,9 +388,12 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--casos")
     p.add_argument("--trace")
+    p.add_argument("--fonte", help="o parquet da base (com --casos): o que veio depois do erro e a versão do agente")
     a = p.parse_args(argv)
     if not a.casos and not a.trace:
         p.error("passe --casos, --trace ou os dois")
+    if a.fonte and not a.casos:
+        p.error("--fonte precisa do --casos")
     if a.casos:
         C = pd.read_csv(a.casos, dtype={"exec_id": str, "agente": str})
         if "mensagem" not in C.columns:
@@ -286,6 +416,14 @@ def main(argv=None):
                 print(f"    construtos na linha: {dict(cs.most_common())}")
                 print(f"    papéis: {g.role.value_counts().to_dict()}")
                 print(f"    meses: {g.mes.value_counts().sort_index().to_dict()}")
+            if a.fonte:
+                F = ler_fonte(a.fonte)
+                G, faltam = depois(G, F)
+                V = versoes(F, set(G.role))
+                _imprimir_depois(G, faltam, V)
+                rot = {(p, v): r for p, vs in V.items() for r, v, *_ in vs}
+                G["versao"] = [rot.get((p, v or "sem versão"), "") for p, v in zip(G.role, G.versao_bruta)]
+                G = G.drop(columns=["versao_bruta"])
             destino = Path(a.casos).parent / "casos_limites_interpretador.csv"
             G.drop(columns=["mensagem"]).to_csv(destino, index=False)
             print(f"\n→ {destino} ({len(G)} erros; sem a coluna mensagem)")
