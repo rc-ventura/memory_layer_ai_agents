@@ -1996,3 +1996,23 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
   - **a re-entrada** (12/11; procedimento `16`, "Re-entrada"): `especificas/reentrada.py --todas --rodada <nova>`
     (esperado: inventário do sandbox `descoberto`, 47 erros sem parte — hoje é a única unidade da base 3 com memória no catálogo; podem aparecer também `revisar` ou `mudou_de_parte`, pelos Ajustes desde a mineração de 21/10) →
     b3 #64.
+- **Resultado no ambiente da base (12/11):**
+  - **base 2:** `conferir_versao` igual ao manifesto (14 de 14).
+  - **base 3, rodada nova `c2e5e8b31f297d21`.** `comparar_rodadas.py --antes 2db46d963c549710`: mesma fonte (extração
+    v2); mudou só o código do `base_pipeline.py` da base 3; no resumo do manifesto, 1 campo diferente de 29, "sintomas
+    não reconhecidos" 91 → 44 (erros estruturados 30.141, pendentes 749, unidades 21 e candidatas 11 iguais); 15
+    artefatos com conteúdo diferente, 9 iguais, 1 só na ordem das linhas; as tabelas novas da rodada, todas `ok`. O
+    veredito "NÃO FECHA" é o esperado num Ajuste (sai com 1 sempre que um número muda).
+  - **O resíduo na rodada nova:** `residuo.py` → 420 erros, 98 padrões, 20 que passam na recorrência (2 sem impressão
+    digital, 61 de uma execução); causa sem regra 250, código mal escrito 126, sintoma não reconhecido 44; as três
+    conferências internas, `ok`. `audit_residuo_base3.py` → 420 erros, 98 padrões, 20 passam, chaves na fonte 420/420.
+    `comparar_auditoria.py` → **0 divergências**, padrão a padrão, nos totais e nas conferências. Bate com a previsão.
+  - **A re-entrada (`reentrada.py --todas`):** o inventário do sandbox, foto `99e032ad3a8528d8` (1.100 erros) →
+    rodada `c2e5e8b31f297d21` (1.147): **entraram 47, saíram 0, mudaram de parte 5**; estado `descoberto` e
+    `mudou_de_parte`; nenhum `revisar`. Cobertura dos 52 (entraram + mudaram): **todos sem parte**. Por papel:
+    RoteadorCivel 13, CalculoTrabalhista 12, ContestacaoCivel 12, OBFCivel 8, JoogleAnalytics 4, RecursoCivel 1,
+    RespostaBacen 1, RespostaOficios 1; por mês: 2025-12 2, 2026-01 5, 2026-02 2, 2026-05 9, 2026-07 24, 2026-08 10.
+    Os 47 que entraram são os do Ajuste. **Os 5 que mudaram de parte estão em aberto:** tinham memória na foto e hoje a
+    regra do script não os lê. O script do sandbox não mudou desde 20/10 (antes da foto) e não importa o pipeline; o
+    `step_ref` e a regra são os mesmos, então a diferença está no que entra no `medir` (a mensagem ou o estado dela) →
+    conferir de que memória vieram e o tipo da mensagem (b3 #64).

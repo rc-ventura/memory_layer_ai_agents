@@ -447,7 +447,14 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `U_nome_ferramenta_como_variavel`, erro do agente, destino memória de reforço (o prompt padrão já proíbe; não é sinal
   de harness → `decisoes.md`). Rodada `2db46d963c549710` (11/11): só os 49 mudaram (sintoma não reconhecido
   140 → 91, 21 unidades, 11 candidatas); resíduo **467 erros, 103 padrões, 23 recorrentes**; encontro: 0 divergências.
-  **Depois:** limite do interpretador, os maiores de causa sem regra.
+  **Grupo sintaxe que o interpretador não implementa (47, 12/11):** contado por script
+  (`validacao/contar_limites_interpretador_residuo.py`; teste no interpretador:
+  `validacao/testar_sandbox_construtos.py`); o agente troca a construção no passo seguinte em 46 de 47. **Ajuste 38**
+  (aprovado): estende o inventário do sandbox (`U_sandbox`), submecanismo `sintaxe_nao_suportada`, erro do agente,
+  destino memória. Rodada `c2e5e8b31f297d21` (12/11): só os 47 mudaram (sintoma não reconhecido 91 → 44, 21
+  unidades, 11 candidatas); resíduo **420 erros, 98 padrões, 20 recorrentes**; encontro: 0 divergências. A
+  re-entrada do sandbox segue no #64.
+  **Depois:** os maiores de causa sem regra.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
@@ -498,7 +505,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   entra (o `NoneType`), sem parte, estado `descoberto`, e duas execuções gravam os mesmos arquivos. Falta, no ambiente
   da base: (1) rodar `reentrada.py --todas` na rodada do Ajuste 38 (esperado no inventário do sandbox: `descoberto`, 47
   sem parte; a foto é a pasta `resultados/mineracao/U_sandbox/` da mineração que fechou o catálogo, rodada
-  `99e032ad3a8528d8`; se ela foi sobrescrita, o resumo avisa); (2) a emenda ao racional do sandbox com a parte nova
+  `99e032ad3a8528d8`; se ela foi sobrescrita, o resumo avisa) — **feito em 12/11**, rodada `c2e5e8b31f297d21`:
+  1.100 → 1.147 erros, entraram 47, saíram 0, **mudaram de parte 5**, os 52 sem parte, estado `descoberto` e
+  `mudou_de_parte`, nenhum `revisar` (livro-razão, Ajuste 38); **(1b) os 5 que mudaram de parte:** de que memória
+  vieram e por que a regra não os lê mais (o script não mudou desde 20/10) — a explicar antes da emenda, pelo agente do ambiente com
+  `propostas/U_sandbox/prompt_reentrada_mudou_de_parte.md`; (2) a emenda ao racional do sandbox com a parte nova
   "sintaxe que o interpretador não implementa" e os degraus só para ela; (3) a régua de `revisar` (20%, proposta,
   decisão do Rafael).
 
