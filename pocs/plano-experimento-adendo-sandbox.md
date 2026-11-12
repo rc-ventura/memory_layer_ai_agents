@@ -138,7 +138,7 @@ Além das hipóteses do plano (§4):
 | # | Hipótese da unidade | Tipo | Como se testa |
 |---|---|---|---|
 | S1 | No par, a memória do pandas **sozinha** corrige só o primeiro erro: o `json` continua faltando e o erro seguinte aparece | exploratória | braço "só pandas" no espelho Analítico, contra o par |
-| S2 | A "memória no erro" (hipótese 5) encurta a recuperação no par: ao primeiro erro, entrega as duas lições e evita o segundo passo perdido | exploratória | tamanho da cascata no espelho Analítico (§8.4) |
+| S2 | A "memória no erro" (hipótese 5) encurta a recuperação no par: ao primeiro erro, entrega as duas lições e evita o segundo passo perdido | confirmatória (a hipótese 5 no par), com a condição de poder do adendo B | tamanho da cascata no espelho Analítico (§8.4) |
 | S3 | A memória das funções proibidas troca `repr` e `dir` por `print(type(x))` sem empurrar o agente para outra função barrada | confirmatória (é a guarda do §8.5, item 2, para esta unidade) | taxa de erros de funções barradas fora da lista da memória |
 
 Braços exploratórios do §6.1 desta unidade:

@@ -4,8 +4,8 @@
 
 Este adendo é diferente do [adendo do sandbox](plano-experimento-adendo-sandbox.md): aquele preenche o plano para **uma
 unidade**; este detalha **um braço** do plano, o que vale para toda unidade. Ele existe porque o braço pede uma medida
-própria e uma condição de poder que não cabem no corpo do plano, e porque, no plano principal, ele continua
-**exploratório** (hipótese 5): o plano principal não foi alterado para promovê-lo.
+própria e uma condição de poder que não cabem no corpo do plano, e porque, no plano principal, ele é
+**confirmatório** (hipótese 5), com a condição de poder de B.5.
 
 ## B.1 A ideia
 
@@ -116,9 +116,9 @@ se anexa a memória", sem separar conteúdo de formato.
 | **A plataforma real permite esse middleware?** O experimento o monta com `step_callbacks` do smolagents; se a plataforma não deixar o harness alterar a observação, o braço vale como teste de conceito, não como desenho de integração | pergunta para a revisão de integração (Sub 2.5): onde, na plataforma, um middleware desse tipo poderia ficar |
 | A memória entregue depois do erro é lida como o texto de erro e não como memória | a região `<memory>` no mesmo invólucro dos outros braços; o braço "sem rótulo" do plano testa o rótulo |
 
-## B.8 Decisão aberta
+## B.8 Decisão tomada
 
-**Promover este braço à família confirmatória do plano?** Hoje ele é exploratório (hipótese 5). Se for promovido, a
-família passa de 4 para 5 comparações; a amostra por braço sobe de 116 para 122 (taxa de base de 40%, redução de 50%); a
-versão cheia continua dando conta (126 execuções efetivas contra 122), no limite; a medida dele é a reincidência (B.3), e
-o critério é o de B.6. Fica para você decidir depois de ver o piloto, quando a reincidência de base estiver medida.
+**O braço é confirmatório** no experimento 1 (12/11/2026), com a condição de poder de B.5: só vale como comparação
+confirmatória no espelho em que o piloto mostrar reincidência suficiente; nos outros fica exploratório. A família do
+experimento 1 passou a ter 5 comparações, e a amostra por braço sobe de 116 para 122 (taxa de base de 40%, redução de
+50%); a versão cheia dá conta, no limite (126 execuções efetivas contra 122).

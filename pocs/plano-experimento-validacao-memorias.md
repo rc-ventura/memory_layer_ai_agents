@@ -18,8 +18,30 @@ injetar (o teste de compensação, que o roadmap da base 3 já previa).
 | Adendo | Unidade | Estado |
 |---|---|---|
 | [A · Inventário do sandbox](plano-experimento-adendo-sandbox.md) | erros por usar algo que o interpretador do agente barra (como `repr`) ou por esquecer um import que ele aceita (como `json`): as 3 memórias que chegaram ao degrau 3 | rascunho; é a primeira rodada |
-| [B · Memória consultada no erro](plano-experimento-adendo-memoria-no-erro.md) | não é uma unidade: é um **braço** (a memória entra por um middleware depois do erro), com medida e poder próprios; vale para toda unidade | rascunho; o braço segue exploratório neste plano |
+| [B · Memória consultada no erro](plano-experimento-adendo-memoria-no-erro.md) | não é uma unidade: é um **braço** (a memória entra por um middleware depois do erro), com medida e poder próprios; vale para toda unidade | rascunho; o braço é confirmatório neste plano, com condição de poder |
 | (próximos) | qualquer unidade cuja memória chegue ao degrau 3 | a escrever pela ficha do §16 |
+
+**Antes dos três experimentos: a fase 1.** A pergunta mais básica é se a memória **mitiga o erro**, rodando os **agentes
+reais** com **inputs reais**. Ela tem a sua própria receita, com volumetria e critério de sucesso, em
+[`plano-fase-1-a-memoria-mitiga-o-erro.md`](plano-fase-1-a-memoria-mitiga-o-erro.md). **Os três experimentos abaixo são a
+fase 2**: só rodam para os pares (agente × memória) em que a fase 1 mostrar que a memória mitiga. Nesta ordem, os
+agentes-espelho da trilha 1 (§5) passam a ser **ensaio e reserva**: servem para construir o executor, o registro, a
+análise e o injetor, e para o caso de um agente real não poder rodar.
+
+**Os três experimentos (fase 2).** As perguntas se organizam em três eixos independentes, cada um com a sua pergunta, os seus
+braços e a sua família de comparações. Eles compartilham o núcleo (tarefas, medidas, estatística, piloto) e a linha de
+base:
+
+| Experimento | Pergunta | Braços | Estatuto |
+|---|---|---|---|
+| **1 · Entrega** | como a memória chega ao agente? | sem memória (linha de base) · nativa (região `<memory>`) · por ferramenta · no erro (middleware) · placebo (controle da nativa) | **confirmatório** |
+| **2 · Origem** | a taxonomia vale como produtora de memória, ou o próprio agente aprende sozinho? | revisada (a taxonomia produz, a revisão aprova; é o braço "nativa" do experimento 1) × autogerada (o agente escreve a lição, sem taxonomia), as duas entregues de forma nativa | exploratório |
+| **3 · Conteúdo** | o que a memória diz? | conteúdo novo × reforço (repete o prompt); depois, tamanho, quantidade e tipo da lição | **adiado** |
+
+**Coleta única, análises separadas.** Os braços são coletados na mesma sessão, com a ordem sorteada em blocos por tarefa. O
+experimento 2 acrescenta **um único braço** ao 1, porque a memória revisada nativa e a linha de base já existem. O
+experimento 3 fica para quando houver uma unidade com o mesmo erro em dois textos (um que ensina e um que repete): no
+sandbox, conteúdo novo e reforço são memórias de erros diferentes, e compará-las mistura conteúdo com tipo de erro.
 
 Regra de leitura: o que está neste documento vale para toda unidade; um número ou nome de papel só aparece aqui como
 **exemplo declarado**, e o valor medido fica no adendo. Onde uma escolha do protocolo foi feita olhando só a primeira
@@ -37,7 +59,7 @@ smolagents. Onde ele entra no blueprint, e onde diverge dele:
 | EX-1 · recall explícito × injeção nativa | braços "injetada" × "por ferramenta" (hipótese 3) | sem o braço Hermes. A "injeção automática" daqui é a memória **nativa no contexto do agente**, numa região `<memory>` no prompt de sistema, com o conteúdo escolhido em tempo de execução por uma heurística; não é a injeção do laço do Hermes, que lê a memória pelo próprio mecanismo dele |
 | EX-2 · redução de recorrência entre execuções | só a comparação final: memória já persistida × sem memória | a curva de aprendizado ao longo de "meses" simulados **não** é medida: a memória é congelada (§6). Isso continua no EX-2 do blueprint |
 | Regime temporal: N ≈ 20–30 execuções por tarefa | 3 a 5 repetições por tarefa, com muitas tarefas | o poder vem do número de tarefas; repetir a mesma só encolhe a variação dentro dela (§9.1; Miller, 2024, §3.1). O "3 a 5" é de partida, e o piloto escolhe `K` |
-| Q4 · implícito × explícito (Sub 1.7) | braço "autogerada" (hipótese 8) | o polo implícito aqui é o próprio smolagents escrevendo a lição, não a conversão sessão→skill do Hermes |
+| Q4 · implícito × explícito (Sub 1.7) | braço "autogerada" (hipótese 8, experimento 2, exploratório) | o polo implícito aqui é o agente escrevendo a lição sozinho, sem taxonomia, e não a conversão sessão→skill do Hermes; a definição está no §6 |
 | EX-8 · memória de reforço | braço exploratório (§6.1) | igual |
 | §8 · critério de "pronto" (os 6 casos de fronteira, uma execução lida inteira, falhas que não são do agente separadas) | etapas 2 e 7 | igual |
 | EX-3 a EX-7 (gatilho, gate, destino memória × harness, promoção, esquecimento) | — | fora deste plano (§14) |
@@ -51,7 +73,7 @@ Nada aqui foi rodado. Toda previsão está escrita como hipótese. O que é fato
 | **Pergunta** | A memória revisada reduz o erro que ela descreve? A economia de tokens e de tempo paga a injeção? Qual forma de entrega funciona: injetada no contexto (nativa, na região `<memory>`), por ferramenta ou só depois do erro? E ela vale mais que a lição que o agente escreve sozinho, sem gate (o implícito × explícito do Sub 1.7)? |
 | **Memórias testadas** | Toda memória do catálogo no degrau 3 (revisada) de uma unidade; a lista e os textos literais ficam no adendo da unidade. As que estão no degrau 1 ou 2, ou monitoradas, entram só como exploratórias |
 | **Agentes** | Trilha 1 (já): agentes mínimos em smolagents que espelham os papéis onde o erro da unidade mora. Trilha 2 (quando a permissão sair): os agentes reais, no mesmo protocolo |
-| **Braços** | sem memória · memória injetada no contexto · memória por ferramenta · memória no erro · placebo · memória autogerada (sem gate) |
+| **Braços** | Experimento 1 (entrega, confirmatório): sem memória · injetada no contexto · por ferramenta · no erro · placebo. Experimento 2 (origem, exploratório): + autogerada (o agente escreve a lição, sem taxonomia). Experimento 3 (conteúdo): adiado |
 | **Unidade de observação** | uma execução do agente numa tarefa sintética, com ferramentas simuladas; pareada por tarefa |
 | **Medida principal** | a execução teve o erro da unidade? (classificado pelas mesmas regras do pipeline, sem LLM) |
 | **Medida de compensação** | tokens totais e tempo por execução, com × sem memória (já incluem o custo da injeção) |
@@ -181,7 +203,7 @@ empresa.
 
 ## 4. Perguntas e hipóteses
 
-Escritas antes dos dados, e as mesmas para toda unidade. As hipóteses 1 a 4 e a 8 são confirmatórias; a 5, a 6 e a 7,
+Escritas antes dos dados, e as mesmas para toda unidade. As hipóteses 1 a 5 são confirmatórias e pertencem ao experimento 1 (a 5, com a condição de poder do adendo B); a 6, a 7 e a 8,
 exploratórias (Nosek et al., 2018, sobre separar previsão de exploração). Cada adendo pode acrescentar hipóteses
 próprias, rotuladas como tal.
 
@@ -191,10 +213,10 @@ próprias, rotuladas como tal.
 | 2 | A economia paga a injeção, em tokens e em tempo? | Paga, se a incidência real do erro no papel passar de um limiar baixo (§8.2). No tempo, a memória acrescenta a leitura de dezenas de tokens e o erro evitado tira um passo inteiro (§8.3) | A memória tem dezenas de tokens e o passo perdido, milhares. Mas contexto a mais tem custo próprio: arquivos de contexto gerados por LLM subiram o custo em ~20% e os passos em 2,5–3,9 sem mudar o sucesso (Gloaguen et al., 2026) |
 | 3 | A memória por ferramenta funciona tão bem quanto a injetada? | Não, para lições de fato do ambiente com chave por papel (hipótese de generalidade, §2.3) | O agente não sabe que vai cometer o erro, então não tem por que consultar; e no `CodeAgent` consultar custa um passo, o mesmo que o erro custaria. Em memória por ferramenta (o desenho do MemGPT, Packer et al., 2023), a qualidade depende de o agente decidir chamar — apontado na descrição dos sistemas, **sem medida direta que eu tenha encontrado** na busca desta rodada; é justamente o que o braço testa |
 | 4 | O efeito é do conteúdo ou de qualquer texto a mais? | Do conteúdo: o placebo não reduz o erro | Texto irrelevante no prompt muda o comportamento do modelo (Shi et al., 2023); sem placebo não se separa uma coisa da outra |
-| 5 | A memória entregue só depois do erro ajuda? | Não evita o primeiro erro; encurta a recuperação quando o erro se repete em cascata | Realimentar a correção no passo crítico recupera execuções (Zhu et al., 2025; Ma et al., 2025) |
+| 5 | A memória consultada pelo middleware quando o erro aparece reduz a reincidência do erro? | Não evita o primeiro erro (por construção); reduz a **reincidência**: o segundo erro da unidade e a cascata que vem depois. A medida é condicional ao primeiro erro (§8.1). Só é confirmatória no espelho em que o piloto mostrar reincidência suficiente (condição de poder do adendo B) | Realimentar a correção no passo crítico recupera execuções (Zhu et al., 2025; Ma et al., 2025). Ressalva: a mensagem de erro do interpretador já diz o que faltou, e o agente costuma corrigir no passo seguinte sozinho; por isso o ganho esperado é pequeno onde o erro tem uma causa só, e maior onde uma lição cobre dois erros em sequência |
 | 6 | Consertar o ambiente vale mais que a memória? | Sim, onde o conserto existe | É a fronteira memória × sinal de harness do projeto; serve de teto prático |
 | 7 | Mais memórias no prompt pioram? | Pioram custo; efeito no erro incerto | Desempenho cai com contexto maior (Hong et al., 2025; Liu et al., 2023) |
-| 8 | A memória revisada vale mais que a autogerada (a lição que o próprio agente escreve sobre o erro, sem gate)? | Vale: a autogerada reduz menos o erro e cria mais efeito colateral | Lições escritas pelo próprio modelo não deram ganho médio, e as curadas deram +16 pontos (SkillsBench, v1, 2026); arquivos de contexto escritos por desenvolvedor superaram os gerados por LLM (Gloaguen et al., 2026); memória com erro é copiada e amplificada pelo agente (Xiong et al., 2025). É a comparação implícito × explícito do Sub 1.7 |
+| 8 | A memória que a taxonomia produz e a revisão aprova vale mais que a que o próprio agente escreve sozinho (a "autogerada")? | Vale: a autogerada reduz menos o erro e cria mais efeito colateral | Lições escritas pelo próprio modelo não deram ganho médio, e as curadas deram +16 pontos (SkillsBench, v1, 2026); arquivos de contexto escritos por desenvolvedor superaram os gerados por LLM (Gloaguen et al., 2026); memória com erro é copiada e amplificada pelo agente (Xiong et al., 2025). É a comparação implícito × explícito do Sub 1.7 |
 
 Se a hipótese 3 se confirmar, a consequência para a arquitetura é: lições do tipo "fato do ambiente", com chave por
 papel, são injetadas no contexto, por filtro de escopo; a ferramenta `recall_memory` fica reservada para memórias
@@ -204,6 +226,9 @@ entra no veredito de nenhuma memória (§11): é o resultado comparativo do Sub 
 ## 5. Agentes
 
 ### 5.1 Duas trilhas, um protocolo
+
+> **Atualização de 12/11/2026.** Com a [fase 1](plano-fase-1-a-memoria-mitiga-o-erro.md), os agentes reais passam a ser o
+> caminho principal, e os agentes-espelho, o ensaio e a reserva. O texto abaixo continua valendo para os espelhos.
 
 Hoje não há agente rodando localmente: os reais existem, mas não estão no repositório. Por isso:
 
@@ -273,7 +298,7 @@ Todos os braços usam o mesmo agente, as mesmas tarefas, o mesmo modelo. Só mud
 | **memória por ferramenta** | a região `<memory>` não existe. O agente tem a ferramenta `recall_memory`, que devolve o mesmo texto; ele decide se chama | ferramenta local com descrição de quando usar | testa o recall explícito da arquitetura |
 | **memória no erro** (consulta por *middleware*) | a memória **não está no contexto no começo**. Depois de cada passo, um middleware do harness roda o classificador do pipeline no resultado do passo; se o erro for o da unidade, ele **consulta o catálogo** (pela unidade e pelo papel) e anexa o texto da memória à observação que o agente lê no passo seguinte. A consulta é decidida pelo harness, não pelo agente | `step_callbacks`, que recebe o passo e o agente e pode alterar a observação | custo zero em execução limpa (nada entra no contexto sem erro); mede o valor de reagir ao erro em vez de antecipar |
 | **placebo** | a mesma região `<memory>` e o mesmo invólucro, com texto do mesmo tamanho, verdadeiro e sem relação com as tarefas | `instructions` | separa o efeito do conteúdo do efeito de "mais texto" |
-| **memória autogerada** | a mesma região `<memory>`, com a lição que o próprio agente escreveu depois de errar, no piloto, sem leitura de casos nem gate | `instructions` | o polo implícito do Sub 1.7 (hipótese 8) |
+| **memória autogerada** | a mesma região `<memory>`, com as lições que o próprio agente escreveu, sem taxonomia (a definição está logo abaixo) | `instructions` | o polo implícito do Sub 1.7 (hipótese 8) |
 
 **Três momentos de entrega, e quem decide cada um.** Os braços com memória diferem em *quando* a memória chega ao
 agente e em *quem decide*:
@@ -290,8 +315,8 @@ reduzir é o que vem depois: a cascata e os passos perdidos (§8.4). Num par de 
 a assinatura do primeiro erro dispara a consulta das duas, e o segundo erro some (hipótese S2 do adendo do sandbox).
 
 **O terceiro braço tem a medida e o poder dele no [adendo B](plano-experimento-adendo-memoria-no-erro.md).** A medida é a
-reincidência (dado o primeiro erro, houve um segundo?), e não "teve o erro?". Neste plano ele segue exploratório, fora
-da família corrigida por Holm.
+reincidência (dado o primeiro erro, houve um segundo?), e não "teve o erro?". Neste plano ele é confirmatório, dentro
+da família do experimento 1, com a condição de poder do adendo B.
 
 **A região `<memory>` é igual em todos os braços que a têm** (injetada, placebo, autogerada): o mesmo rótulo, a mesma
 frase de abertura e o mesmo formato de itens. O que muda é só o conteúdo. Assim, qualquer diferença entre eles é de
@@ -315,11 +340,26 @@ confirmatórios é determinística e simples: o papel do agente, mais as regras 
 O que continua fixo nos braços confirmatórios é a posição (o fim do prompt de sistema) e o momento (uma vez, ao montar o
 agente).
 
-**Como nasce a memória autogerada.** No piloto (etapa 3), depois de cada execução em que o erro da unidade aconteceu, o
-mesmo modelo recebe o passo que falhou e a pergunta "escreva, em uma ou duas frases, a lição para não repetir este
-erro". Nada é filtrado, corrigido ou lido por um humano, como no Reflexion (Shinn et al., 2023). Por papel, entram as
-três lições mais recentes. É o desenho do aprendizado implícito: o agente escreve a própria memória. O tamanho dela
-difere do da revisada; o registro guarda os tokens de cada uma, e a comparação de custo usa essa diferença.
+**Como nasce a memória autogerada (experimento 2).** A taxonomia é um pipeline determinístico: pega os erros dos agentes,
+agrupa por regras em unidades que têm uma lição genérica, e a revisão aprova o texto. A autogerada faz o mesmo trabalho
+**sem a taxonomia**, que é exatamente o que o experimento testa: vale a pena o pipeline produzir memória, ou é melhor o
+próprio agente aprender com o erro? Se a autogerada empatar, a taxonomia deixa de ser justificada como produtora de
+memória e fica como **painel de análise** (e como auditora, abaixo).
+
+- **Quando e a partir de quê.** Ao **fim de cada execução com erro**, o agente recebe a **janela de erros daquela
+  execução** (todos os passos com erro, sem classificá-los) e escreve, em uma ou duas frases, a lição. É o aprendizado
+  implícito, como no Reflexion (Shinn et al., 2023). Sem classificação, sem leitura de casos, sem gate.
+- **Como vira memória.** As lições entram num conjunto **por papel** (as três mais recentes) e são entregues de forma
+  nativa, na mesma região `<memory>` da revisada.
+- **Conjuntos independentes.** A lição varia a cada geração, e um conjunto azarado ou sortudo contaminaria o resultado.
+  Geram-se **pelo menos 3 conjuntos independentes** por espelho, e as execuções do braço se dividem entre eles; a
+  variação entre conjuntos é reportada.
+- **A taxonomia como auditora.** Cada lição autogerada tem um erro de origem, e o classificador do pipeline pode dizer
+  qual é a unidade e o destino dele. Mede-se a fração das lições que vêm de erros que a taxonomia manda para harness ou
+  infraestrutura (memória que não devia existir), e as que duplicam outra.
+- **Custo de produção.** A revisada nasce de um script e de uma revisão; a autogerada custa **uma chamada de LLM por
+  execução com erro**, justamente o que a arquitetura e o tutor rejeitaram por custo (cerca de 300 mil execuções por
+  ano). O custo entra no experimento (§8.4).
 
 Decisões de desenho e a razão de cada uma:
 
@@ -422,6 +462,13 @@ formato do trace real (`{papel: [passos]}`, o `agent.memory` do smolagents), e o
 contagem das regras nos dados sintéticos é conferida por uma segunda implementação (§12). Quando a memória cobre só uma
 parte da unidade (uma memória por papel ou por nome), o erro-alvo é o daquela parte, e o adendo diz qual.
 
+**A medida do braço "memória no erro" é outra: a reincidência.** Nesse braço a memória só chega depois do primeiro erro,
+então "a execução teve o erro?" seria "sim" quase sempre, por construção, e não mediria nada. A medida é: **dado que a
+execução teve o primeiro erro da unidade, ela teve um segundo?** (sim/não), comparada com a do braço sem memória.
+Condicionar ao primeiro erro vale aqui porque, nesse braço, o primeiro erro vem **antes** da entrega e ocorre com a mesma
+probabilidade nos dois braços; o mesmo condicionamento **não** valeria para a memória injetada, que muda a chance do
+primeiro erro. Secundárias: o tamanho da cascata e os passos a menos depois do primeiro erro (§8.4).
+
 ### 8.2 Compensação — tokens líquidos
 
 **Tokens totais da execução** (entrada + saída, somados nos passos). Como a memória injetada é contada na entrada de
@@ -440,7 +487,8 @@ equilíbrio** `c ÷ (c + s)`. É a mesma ideia do "ponto de equilíbrio" do glos
 *Conta de ordem de grandeza (hipótese, para saber o que esperar; os valores reais são do adendo):* memória de 20
 tokens × 7 passos ≈ 140 tokens por execução; um passo evitado ≈ 13.135 tokens. Com eficácia de 50%, a incidência de
 equilíbrio fica perto de 2% das execuções do papel. Para a ferramenta, a consulta custa um passo inteiro, o mesmo que o
-erro: a conta não fecha a menos que uma consulta evite mais de um erro.
+erro: a conta não fecha a menos que uma consulta evite mais de um erro. Para o middleware, `c` é praticamente zero por
+construção (nada entra no contexto numa execução sem erro): a pergunta é se `s` é maior que zero, e quanto.
 
 ### 8.3 Latência
 
@@ -489,6 +537,8 @@ lento pode ser infraestrutura ou modelo, não falta de memória (política de pr
 | estabilidade (`pass^k`) | fração das tarefas em que todas as `k` repetições passam (Yao et al., 2024) | média alta com muita variação não serve em produção; é a "estabilidade" do Plano |
 | custo por acerto | tokens por execução ÷ taxa de sucesso (Erol et al., 2025) | junta custo e resultado num número |
 | tokens em cache | se o provedor informar | o trace de produção não registra; aqui dá para medir |
+| custo de produção da memória (experimento 2) | tokens e chamadas de LLM para gerar a memória: nenhum no script da taxonomia (a revisão humana não se mede em tokens); uma chamada por execução com erro na autogerada | o caminho quente da arquitetura não leva LLM por evento (§D, "custo de LLM") |
+| origem das lições autogeradas (experimento 2) | a taxonomia classifica o erro de origem de cada lição: fração de lições de erros de harness ou infraestrutura, e de duplicatas | a taxonomia como auditora da autogerada |
 
 ### 8.5 Guardas — o que não pode piorar
 
@@ -519,8 +569,8 @@ sem memória, que vem do piloto da unidade.
 
 Três correções sobre essa tabela:
 
-1. **Comparações múltiplas.** Quatro comparações confirmatórias (§12), corrigidas por Holm (1979). Com a taxa de base em
-   40% e redução de 50%, sobe de 82 para cerca de 116 por braço.
+1. **Comparações múltiplas.** Cinco comparações confirmatórias, as do experimento 1 (§12), corrigidas por Holm (1979).
+   Com a taxa de base em 40% e redução de 50%, sobe de 82 para cerca de 122 por braço (com 4 comparações seria 116).
 2. **Repetições da mesma tarefa não são independentes.** Miller (2024, §3.1) decompõe a variância da média em
    `(Var(x) + E[σ²]/K) / n`: repetir a tarefa `K` vezes só encolhe o segundo termo (a variação dentro da tarefa); o
    primeiro (a variação entre tarefas) só encolhe com mais tarefas. Escrito como efeito de desenho, com `ρ =
@@ -558,7 +608,7 @@ o número de tarefas (N) e de repetições (K) é decidido pelo §9.3, com conta
 **Total da unidade** = (número de agentes-espelho) × (valor da tabela). O adendo dá a conta da unidade. A checagem no
 outro modelo (só "sem memória" e "memória injetada") acrescenta 2 ÷ 6 do total.
 
-Conferência da versão cheia: 240 execuções-gatilho com `ρ = 0,3` valem cerca de 126 independentes, acima das 116
+Conferência da versão cheia: 240 execuções-gatilho com `ρ = 0,3` valem cerca de 126 independentes, acima das 122
 necessárias (taxa de base de 40%, redução de 50%, Holm). Na guarda, com três espelhos: 3 × 360 = 1.080 por braço, cerca
 de 570 efetivas, acima das 446. Com um ou dois espelhos, a guarda não fecha com esse tamanho, e o adendo diz o que fazer
 (mais tarefas neutras ou uma margem maior).
@@ -691,14 +741,16 @@ Uma memória passa ao **degrau 4 (validada)**, num agente, numa forma de entrega
 valerem:
 
 1. **Eficácia.** Nas tarefas-gatilho, a taxa do erro da unidade é menor que a do braço sem memória, com p < 0,05 depois
-   da correção de Holm, e o intervalo de 95% da diferença não inclui zero.
+   da correção de Holm, e o intervalo de 95% da diferença não inclui zero. (Para o braço "no erro", a medida é a
+   reincidência, §8.1.)
 2. **Compensação.** A incidência de equilíbrio `c ÷ (c + s)` fica abaixo da incidência real `π` do papel (etapa 1), com
    o limite superior do intervalo de `c ÷ (c + s)` ainda abaixo de `π`.
 3. **Sem dano.** O sucesso da tarefa não é inferior ao do controle (margem de 5 pontos, os agentes-espelho da unidade
    juntos); a taxa de erros de outras unidades não sobe (intervalo da diferença inclui zero ou é negativo); e a latência
    mediana nas tarefas neutras não sobe além da margem do pré-registro (proposta: 10%, fixada com a variância medida no
    piloto).
-4. **Especificidade.** A memória é melhor que o placebo na medida principal.
+4. **Especificidade.** A memória é melhor que o placebo na medida principal. (O braço "no erro" não tem placebo
+   confirmatório; a especificidade dele fica sem teste, ver adendo B.)
 
 **Entre as formas de entrega** que passarem, escolhe-se a de menor custo esperado por execução na incidência real;
 empatando, a de menor tempo esperado; empatando de novo, a mais simples. A compensação em segundos (§8.3) é reportada,
@@ -715,7 +767,7 @@ mas não é condição: os segundos do provedor do experimento não são os da p
 | O placebo reduz tanto quanto a memória | O efeito é de perturbar o prompt, não do conteúdo | Não validar |
 | O espelho não erra (piloto) | A trilha 1 não mede essa memória | Trilha 2 |
 | O erro acontece no modelo antigo e não no atual | A lição era do modelo antigo | Monitorada; a troca de modelo vira gatilho de revalidação |
-| A autogerada reduz o erro tanto quanto a revisada | Para este tipo de lição, o agente escreve sozinho o que precisa | Resultado do Sub 1.7; o gate continua justificado pelo que ele barra (dano, harness), não pela eficácia |
+| A autogerada reduz o erro tanto quanto a revisada | Para este tipo de lição, o agente escreve sozinho o que precisa | Resultado do Sub 1.7: a taxonomia deixa de ser justificada como produtora de memória e passa a valer como painel de análise e como auditora das lições; continua justificada pelo que o agente não faz: decidir o destino (memória × harness) e dar evidência auditável |
 
 O planejamento usou "redução de 50%" para dimensionar a amostra. Isso **não** é critério de sucesso: o critério é a
 compensação, que depende do custo e da incidência reais.
@@ -743,9 +795,10 @@ compensação, que depende do custo e da incidência reais.
   tarefa, com intervalo por reamostragem; p50 e p95. A guarda (margem do §11) é um teste de não-inferioridade unilateral
   sobre a razão das medianas.
 - **Incidência de equilíbrio:** intervalo por reamostragem conjunta de `c` e `s` (e de `c_t` e `s_t`).
-- **Família confirmatória e Holm:** quatro comparações na medida principal, por memória — injetada × sem memória
-  (hipótese 1), injetada × placebo (4), injetada × por ferramenta (3) e injetada × autogerada (8) —, corrigidas juntas por
-  Holm. Os demais contrastes (memória no erro, exploratórios) sem correção e rotulados como tal.
+- **Família confirmatória e Holm (experimento 1):** cinco comparações, por memória — nativa × sem memória (hipótese 1),
+  ferramenta × sem memória e nativa × ferramenta (3), no erro × sem memória, na reincidência (5), e nativa × placebo
+  (4) —, corrigidas juntas por Holm. O experimento 2 e os demais contrastes, exploratórios, vão sem correção e rotulados
+  como tal.
 - **Sem olhar e parar:** uma análise só, no fim.
 - **Auditoria independente:** uma segunda implementação recalcula as medidas direto dos registros crus, sem usar o
   código da análise, e os números são confrontados um a um — a regra do projeto, "re-rodar não é verificar".
@@ -764,6 +817,8 @@ compensação, que depende do custo e da incidência reais.
 | A ferramenta simulada responde na hora e esconde o tempo real | a economia em segundos usa a duração real do passo com erro, da base 3 (§8.3) |
 | A tarefa ou o verificador vazam a resposta ao agente | o agente vê só a instrução; a especificação da tarefa (Task.md) e o verificador nunca entram no contexto dele (Eval Engineering) |
 | A lição autogerada é mais longa ou mais curta que a revisada | tokens de cada uma registrados; a comparação de custo usa a diferença; o placebo controla o tamanho só da revisada (limite) |
+| Assimetria de dados entre as origens: a revisada nasce de milhares de erros reais; a autogerada, de poucas execuções do piloto do espelho | declarado como limite: conservador quanto ao volume, favorável à autogerada quanto à relevância (ela vê exatamente os erros do espelho). Alimentá-la com erros reais exigiria rodar o agente sobre conteúdo real, o que o plano veda |
+| A lição autogerada varia a cada geração: um conjunto azarado ou sortudo | pelo menos 3 conjuntos independentes por espelho; a variação entre conjuntos é reportada |
 | Estado que vaza entre execuções | agente e interpretador novos a cada execução; memória só de leitura |
 | A tarefa entrega a resposta (cita o objeto da lição) | regra 2 do §7.2, conferida por script |
 | Ajustar a tarefa até dar certo | tarefas do piloto fora do confirmatório; conjunto congelado com hash |
@@ -800,8 +855,9 @@ Decisões do protocolo (valem para toda unidade):
 1. **Onde roda o modelo.** O plano supõe acesso por API aos dois modelos do §5.3, com dados só sintéticos. Se o modelo
    atual de uma unidade só existir pelo gateway interno, ou o experimento roda no ambiente da empresa, ou o modelo atual
    passa a ser outro disponível, com o limite declarado.
-2. **O braço autogerado** entra no confirmatório? Custa um sexto a mais de execuções; sem ele, o implícito × explícito
-   do Sub 1.7 fica para depois.
+2. **A memória autogerada: decidido (12/11).** É o agente escrevendo a lição ao fim da execução, sem taxonomia (§6). O
+   braço é **exploratório**, no experimento 2, entregue de forma nativa. A leitura alternativa (o script da unidade gera,
+   sem a investigação) fica descartada para o sandbox, porque as 3 memórias revisadas têm o mesmo texto que o script gerou.
 3. **Versão cheia ou enxuta** — decide-se depois do piloto, mas o teto de gasto pode ser dito já.
 4. **Como o degrau 4 é gravado no catálogo** (um campo novo muda o esquema; fica para a etapa 9).
 5. **Harbor ou runner próprio** (a decisão aberta da E0 do blueprint). O plano supõe o runner próprio. Recomendação:
