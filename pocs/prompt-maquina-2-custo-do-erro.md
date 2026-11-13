@@ -1,8 +1,8 @@
-# Prompt para a máquina 2 — custo do passo com erro
+# Prompt para a máquina 2 — custo do passo com erro e a incidência de todas as unidades
 
 > **Para quê:** fechar o que a primeira volumetria não mediu: (1) os **tokens e a duração do passo que errou**, por memória
-> e papel (é a economia `s` da conta de compensação).
-> A unidade do retorno que chega como texto **não entra aqui**: ela não está minerada, então não há perfil para medir.
+> e papel (é a economia `s` da conta de compensação); (2) a **incidência de todas as unidades da rodada**, mineradas ou não
+> (inclui o retorno que chega como texto), lida do `triagem_por_papel.csv` que a rodada já publica, sem precisar de perfil.
 > Só contagens, tokens e segundos saem.
 > **Como usar:** cole **tudo abaixo da linha** no agente da máquina 2 e traga a resposta inteira.
 > **Descartável:** apague este arquivo quando o resultado voltar. Relatório que explica a conta:
@@ -40,9 +40,17 @@ git ls-files --others --ignored --exclude-standard -- analysis/2026-10-trace-law
 ```
 Não rode a mineração por conta própria.
 
-## Passo 3 — o que me devolver
+## Passo 3 — a incidência de todas as unidades (qualquer uma, minerada ou não)
 
-1. A **saída inteira** do comando do passo 2, colada como texto (inclui as linhas `AVISO`, se houver).
-2. O conteúdo do arquivo que o script escreveu (pequeno, só números): `custo_do_erro_por_memoria.csv`.
+```
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --rodada analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21
+```
+
+Se der `não achei triagem_por_papel.csv da rodada`: **não gere nada.** Me devolva só os nomes dos arquivos que existem na raiz da pasta `analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21`.
+
+## Passo 4 — o que me devolver
+
+1. A **saída inteira** dos comandos dos passos 2 e 3, colada como texto (inclui as linhas `AVISO`, se houver).
+2. O conteúdo dos dois arquivos que os scripts escreveram (só números): `custo_do_erro_por_memoria.csv` e `volumetria_por_unidade_e_papel.csv`.
 3. Se você consegue ver, **sem abrir nenhum conteúdo de caso**: o **modelo** e a **versão do prompt** que cada um destes quatro papéis usa **hoje** no código do agente (só os nomes, por exemplo `gpt-5.2` e a versão): `ContestacaoCivel`, `RespostaBacen`, `JoogleAnalytics` e `CalculoTrabalhista`. Se não conseguir, escreva "não vi".
 4. **A data da execução mais recente** que existe hoje no banco de traces de cada um desses quatro papéis (só a data, e quantas execuções cada um teve nos **últimos 30 dias**). Se não houver acesso, escreva "sem acesso".

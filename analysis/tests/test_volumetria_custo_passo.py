@@ -50,6 +50,21 @@ class TestCustoPasso(unittest.TestCase):
         jul = por_mes[por_mes.mes == "2026-07"].iloc[0]
         self.assertEqual((jul.erros, jul.execucoes_com_a_unidade, jul.execucoes_do_papel), (2, 1, 10))
 
+    def test_por_rodada_qualquer_unidade(self):
+        tri = pd.DataFrame([
+            dict(role="PapelA", unidade="U_x", erros_observaveis=4, execucoes=3, tokens_n_conhecidos=6000.0,
+                 tokens_n_ausentes=1, dur_s_n_conhecida=60.0, dur_s_n_ausente=1),
+            dict(role="PapelA", unidade="U_y", erros_observaveis=2, execucoes=2, tokens_n_conhecidos=500.0,
+                 tokens_n_ausentes=0, dur_s_n_conhecida=8.0, dur_s_n_ausente=0)])
+        out, avisos = vc.volumetria_por_rodada(tri, cont(), ["U_x"])
+        self.assertEqual(list(out.unidade), ["U_x"])
+        r = out.iloc[0]
+        self.assertAlmostEqual(r.incidencia_total, 3 / 30)               # 3 execuções ÷ 30 do papel
+        self.assertAlmostEqual(r.tokens_passo_media, 6000 / 3)           # 4 erros − 1 sem o dado
+        self.assertAlmostEqual(r.erros_por_execucao, 4 / 3)
+        self.assertEqual(len(vc.volumetria_por_rodada(tri, cont())[0]), 2)   # sem filtro: todas as unidades
+        self.assertFalse({"exec_id", "step_ref", "role"} & set(out.columns))
+
     def test_saida_sem_identificador(self):
         por_mes, resumo, _ = vc.volumetria_unidade(casos(), cont(), "U_x")
         out, _ = vc.custo_por_memoria(erros(), casos())

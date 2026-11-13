@@ -6,12 +6,16 @@ e `dur_s` do passo que errou):
    (mediana, p90) e quantos erros têm esses valores. É o `s` da conta de compensação.
 2. `--casos-unidade` + `--nome`: para outra unidade (por exemplo, o retorno que chega como texto), a incidência por papel e
    mês (execuções distintas com a unidade ÷ execuções do papel) e o mesmo custo do passo com erro.
+3. `--rodada` (+ `--unidade`, repetível; sem ela, todas as unidades): a incidência de QUALQUER unidade, minerada ou não,
+   lida de `triagem_por_papel.csv` na raiz da rodada, que a rodada já publica para todas as unidades de fato ou de
+   estrutura. Não precisa de perfil. Dá o total do período (não o mês a mês) e a média de tokens e segundos do passo com erro.
 Só sai contagem, nome de memória, de unidade, de papel e mês, tokens e segundos: nenhum identificador de execução, nenhum
 texto de caso. Fica fora do hash do código da rodada.
 
 Uso, da raiz:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-sandbox <casos.csv> --erros-lidos <erros_lidos.csv>
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-unidade <casos.csv> --nome <U_...>
+    uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --rodada <pasta da rodada> [--unidade U_...]
 """
 import argparse
 from pathlib import Path
@@ -85,16 +89,45 @@ def volumetria_unidade(casos, cont, nome):
     return por_mes, resumo, avisos
 
 
+def volumetria_por_rodada(tri, cont, unidades=None):
+    """Incidência total por unidade × papel, para qualquer unidade da rodada (sem perfil, sem mineração).
+
+    `tri` é o `triagem_por_papel.csv` da rodada: uma linha por papel × unidade, com os erros, as execuções distintas e as
+    SOMAS de tokens e segundos do passo com erro (mais quantos erros ficaram sem o dado). A incidência é as execuções com a
+    unidade ÷ as execuções do papel nas contagens, no período inteiro: não mostra a tendência mês a mês."""
+    k = tri if not unidades else tri[tri.unidade.isin(unidades)]
+    den = vm.execucoes_por_papel_mes(cont)
+    tot = den.groupby("papel").agg(execucoes_do_papel=("execucoes_do_papel", "sum")).reset_index()
+    mapa, avisos = vm.casar_papeis(k.role, set(tot.papel))
+    k = k.assign(papel=k.role.map(mapa))
+    if k.papel.isna().any():
+        avisos.append(f"{int(k.papel.isna().sum())} linhas sem papel nas contagens saem da incidência")
+    k = k[k.papel.notna()].merge(tot, on="papel", how="left")
+    ok_tok = (k.erros_observaveis - k.tokens_n_ausentes).where(lambda s: s > 0)
+    ok_dur = (k.erros_observaveis - k.dur_s_n_ausente).where(lambda s: s > 0)
+    out = pd.DataFrame({"unidade": k.unidade, "papel": k.papel, "erros": k.erros_observaveis,
+                        "execucoes_com_a_unidade": k.execucoes, "execucoes_do_papel": k.execucoes_do_papel,
+                        "incidencia_total": k.execucoes / k.execucoes_do_papel,
+                        "execucoes_para_ver_1_vez_95": [vm.execucoes_para_ver(p) if 0 < p < 1 else None
+                                                        for p in k.execucoes / k.execucoes_do_papel],
+                        "erros_por_execucao": k.erros_observaveis / k.execucoes,
+                        "tokens_passo_media": k.tokens_n_conhecidos / ok_tok,
+                        "segundos_passo_media": k.dur_s_n_conhecida / ok_dur})
+    return out.sort_values(["unidade", "erros"], ascending=[True, False]).reset_index(drop=True), avisos
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--casos-sandbox", type=Path)
     ap.add_argument("--erros-lidos", type=Path, default=vm.ERROS_LIDOS)
     ap.add_argument("--casos-unidade", type=Path)
     ap.add_argument("--nome", default="unidade")
+    ap.add_argument("--rodada", type=Path, help="pasta da rodada (tem o triagem_por_papel.csv); serve a qualquer unidade")
+    ap.add_argument("--unidade", action="append", default=[], help="com --rodada: só esta unidade (repetível)")
     ap.add_argument("--contagens", type=Path, default=vm.CONTAGENS)
     a = ap.parse_args(argv)
-    if not a.casos_sandbox and not a.casos_unidade:
-        raise SystemExit("passe --casos-sandbox (com --erros-lidos) e/ou --casos-unidade (com --nome)")
+    if not a.casos_sandbox and not a.casos_unidade and not a.rodada:
+        raise SystemExit("passe --rodada (qualquer unidade), --casos-sandbox (com --erros-lidos) e/ou --casos-unidade (com --nome)")
     pd.set_option("display.width", 250)
     pd.set_option("display.max_columns", 40)
     pd.set_option("display.max_rows", 300)
@@ -126,6 +159,20 @@ def main(argv=None):
         print("\npor mês (os 3 papéis com mais erros):")
         top = set(resumo.papel.head(3))
         print(por_mes[por_mes.papel.isin(top)].round(4).to_string(index=False))
+    if a.rodada:
+        tri_arq = a.rodada / "triagem_por_papel.csv"
+        for nome, arq in [("triagem_por_papel.csv da rodada", tri_arq), ("contagens", a.contagens)]:
+            if not arq.is_file():
+                raise SystemExit(f"não achei {nome}: {arq}")
+        out, avisos = volumetria_por_rodada(pd.read_csv(tri_arq), pd.read_parquet(a.contagens), a.unidade)
+        if out.empty:
+            raise SystemExit("nenhuma linha: a unidade não está na triagem por papel (só unidades de fato ou de estrutura entram)")
+        saida = a.rodada / "volumetria_por_unidade_e_papel.csv"
+        out.to_csv(saida, index=False)
+        print(f"escrito: {saida.name} em {saida.parent}")
+        for av in avisos:
+            print("AVISO:", av)
+        print(out.round(4).to_string(index=False))
     return 0
 
 

@@ -166,7 +166,7 @@ A mediana subestima o custo, porque execuções com erro são mais longas; o tet
 | O que falta | Por que importa | Como fechar |
 |---|---|---|
 | tokens e duração do **passo com erro**, por memória e papel | é a economia `s` da Tabela 3, hoje uma hipótese | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-sandbox analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21/perfis/U_sandbox/casos.csv` |
-| a volumetria da unidade do **retorno que chega como texto** | decide se vale incluí-la (§10.2) | a unidade **não está minerada**, então não há perfil: o script só mede depois que a rodada gera `perfis/U_tipo_retorno/casos.csv` (a mineração da unidade, em investigação) |
+| a volumetria da unidade do **retorno que chega como texto** | decide se vale incluí-la (§10.2) | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --rodada analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21 --unidade U_tipo_retorno` (qualquer unidade, sem perfil; dá o total do período, não o mês a mês) |
 | o **modelo e a versão do prompt de hoje** de cada agente | explicaria a queda de agosto | a sua leitura do código dos agentes |
 | **a taxa de hoje** | a base termina em agosto | a data da última execução e as execuções dos últimos 30 dias de cada papel, no banco de traces; e, de vez, o piloto da fase 1 |
 | se o **input de usuário** das execuções com erro pode ser recuperado | sem ele não há conjunto gatilho | sua leitura do código e do banco de traces (§3.1 do plano da fase 1) |
