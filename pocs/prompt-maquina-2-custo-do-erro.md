@@ -1,7 +1,8 @@
-# Prompt para a máquina 2 — custo do passo com erro e a unidade "retorno que chega como texto"
+# Prompt para a máquina 2 — custo do passo com erro
 
 > **Para quê:** fechar o que a primeira volumetria não mediu: (1) os **tokens e a duração do passo que errou**, por memória
-> e papel (é a economia `s` da conta de compensação); (2) a **volumetria da unidade do retorno que chega como texto**.
+> e papel (é a economia `s` da conta de compensação).
+> A unidade do retorno que chega como texto **não entra aqui**: ela não está minerada, então não há perfil para medir.
 > Só contagens, tokens e segundos saem.
 > **Como usar:** cole **tudo abaixo da linha** no agente da máquina 2 e traga a resposta inteira.
 > **Descartável:** apague este arquivo quando o resultado voltar. Relatório que explica a conta:
@@ -9,7 +10,7 @@
 
 ---
 
-Você vai rodar **um script que já existe e já foi testado**, e me devolver a saída. **Não é uma tarefa de análise, de código ou de interpretação.** O script de volumetria do sandbox já foi rodado antes; **não o rode de novo**. Este pedido é outro: o custo do passo com erro e a unidade "retorno que chega como texto".
+Você vai rodar **um script que já existe e já foi testado**, e me devolver a saída. **Não é uma tarefa de análise, de código ou de interpretação.** O script de volumetria do sandbox já foi rodado antes; **não o rode de novo**. Este pedido é outro: o custo do passo com erro .
 
 ## Regras (valem para tudo)
 
@@ -39,17 +40,9 @@ git ls-files --others --ignored --exclude-standard -- analysis/2026-10-trace-law
 ```
 Não rode a mineração por conta própria.
 
-## Passo 3 — a unidade do retorno que chega como texto
+## Passo 3 — o que me devolver
 
-```
-uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-unidade analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21/perfis/U_tipo_retorno/casos.csv --nome U_tipo_retorno
-```
-
-Se der `não achei casos da unidade`: o perfil dessa unidade pode não ter sido gerado nessa rodada. **Não o gere.** Procure com a linha do passo 2 e me devolva os nomes das pastas que existem dentro de `perfis`.
-
-## Passo 4 — o que me devolver
-
-1. A **saída inteira** dos comandos dos passos 2 e 3, colada como texto (inclui as linhas `AVISO`, se houver).
-2. O conteúdo dos três arquivos que os scripts escreveram (são pequenos, só números): `custo_do_erro_por_memoria.csv`, `volumetria_unidade_U_tipo_retorno_resumo.csv` e `volumetria_unidade_U_tipo_retorno_por_mes.csv`.
+1. A **saída inteira** do comando do passo 2, colada como texto (inclui as linhas `AVISO`, se houver).
+2. O conteúdo do arquivo que o script escreveu (pequeno, só números): `custo_do_erro_por_memoria.csv`.
 3. Se você consegue ver, **sem abrir nenhum conteúdo de caso**: o **modelo** e a **versão do prompt** que cada um destes quatro papéis usa **hoje** no código do agente (só os nomes, por exemplo `gpt-5.2` e a versão): `ContestacaoCivel`, `RespostaBacen`, `JoogleAnalytics` e `CalculoTrabalhista`. Se não conseguir, escreva "não vi".
 4. **A data da execução mais recente** que existe hoje no banco de traces de cada um desses quatro papéis (só a data, e quantas execuções cada um teve nos **últimos 30 dias**). Se não houver acesso, escreva "sem acesso".
