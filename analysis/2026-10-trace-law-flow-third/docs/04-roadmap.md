@@ -466,9 +466,15 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   literal do passo que falhou é pequeno (mediana 74 caracteres): o conteúdo grande chega por variável, de passos
   anteriores. **Correção à leitura anterior:** "13 de 13 sem erro no passo seguinte" não é "o agente corrige": em 6
   deles o passo seguinte nem chama a ferramenta, e em 9 de 13 a execução acaba logo depois — o PDF pode ter deixado de
-  ser gerado (falha silenciosa). Falta: para onde o agente vai nos 6 (ferramenta irmã? volta no depois? a execução
-  acaba sem PDF?), medido pela extensão do mesmo script (as ferramentas chamadas nos dois passos seguintes); depois
-  a interpretação (R2: agente, ferramenta ou falha silenciosa) e, se passar, o Ajuste. **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
+  ser gerado (falha silenciosa). **Para onde o agente vai** (extensão do script, 13/11): nenhum vai para a
+  ferramenta irmã; 9 de 13 chamam a ferramenta de novo (7 no passo seguinte, 2 no depois dele) e o erro não se repete
+  no passo seguinte em nenhum; 4 de 13 (1 do eletronico, 3 do papel) nunca chamam de novo e terminam com
+  `final_answer` no passo seguinte (candidatos a falha silenciosa). **Hipótese de destino (a testar, não achado):**
+  harness — a ferramenta devia partir a linha ou tratar o erro (o erro nasce dentro dela, o conteúdo do papel chega
+  por variável, 0 divisões e 3 reações diferentes), com possível falha silenciosa nos 4; memória é a menos provável
+  (o agente não vê o tamanho; só uma memória de recuperação ajudaria os 4). Falta a leitura dos 13 casos no
+  ambiente (`propostas/residuo/prompt_pdf_leitura.md`: o que há na linha grande, o que o agente muda nos 9, o que o
+  `final_answer` dos 4 diz), a interpretação (R2) e, se passar, o Ajuste. **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
   420 (24%), mais de 99% na versão v1 (medir se é só volume); "etapa já executada" pode ser código do passo
   levantando `RuntimeError` (conferir no prompt do papel).
   **Depois:** os maiores de causa sem regra.
