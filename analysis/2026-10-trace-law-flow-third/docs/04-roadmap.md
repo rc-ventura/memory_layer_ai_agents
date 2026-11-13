@@ -320,6 +320,19 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `erros_mecanismo.csv` das bases 1 e 2; na base 3 o passo 0 fica "não conferido". Ensinar o script do kit a ler as
   tabelas da base 3 (outro formato: só erros, do parquet), com teste e `VERSAO` nova; vale para toda unidade, não só o
   sandbox. Decisão do Rafael (20/10): item próprio, fora do fechamento do sandbox (#50) → [`decisoes.md`](../../decisoes.md).
+  **Junto (11/11), os monitoramentos que esperam este item** — cada um entra no `monitoramento.json` quando o script ler a
+  base 3, com linha de base e gatilho:
+  - **os padrões do resíduo em observação** (o filtro precisa de expressão na mensagem, `coluna~regex`, que o
+    `aplicar_onde` ainda não tem; a população é o `casos.csv` do `especificas/residuo.py`): o primeiro é a "recusa do
+    LLM" (5 erros, 2 execuções, abril; gatilho: a régua, ≥3 execuções e ≥2 meses) → `decisoes.md` 11/11;
+  - **o `try/except NameError`** (#28);
+  - **o gatilho da `H_contrato_ferramenta`** (Ajuste 36: ficou como decisão separada);
+  - **a memória de reforço da `U_nome_ferramenta_como_variavel`** (Ajuste 37; tipo "memória de reforço", gatilho
+    "triplicou"): linha de base a escolher, porque a taxa do OBFCivel já subiu de 0,4% (abr–jun) para 1,8% (jul–ago);
+  - **os gatilhos que só estão no texto das unidades** e não no registro: `H_timeout_ferramenta` e `H_bloco_code` ("≥2
+    casos num mês ou > 1/1k steps") — conferir se entram;
+  - um item sem tabela na base não pode parar o passo 0 das outras bases (hoje todo item lê as tabelas das bases 1 e 2,
+    e a base 3 sai com "falta tabela").
 - [ ] **#51** **Uma memória "como verificar se uma variável existe, no sandbox" (aberto em 20/10, depois do #50).** Ideia do
   Rafael na decisão 2 do fechamento do sandbox: quando o prompt manda verificar sem dizer como, uma memória pode dizer
   como — `try/except Exception`, ou `x = None` no primeiro passo e `if x is None` depois; nunca `globals()` nem
@@ -409,7 +422,99 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   papéis, 10 meses). Racionais, relatório e procedimento próprios, como na base 1.
 - [ ] **#4** **Críticos:** as 25 execuções que esgotaram os passos (`C_limite_passos`) — o caminho de erros até o fim de cada uma.
 - [ ] **#5** **Resíduos:** os 565 erros de causa ou sintoma não reconhecidos (376 + 189, rodada `609c…`; eram 538 na
-  v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases).
+  v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases). **O instrumento existe desde
+  09/11** (`transversal #8`): `especificas/residuo.py --rodada <id>` grava a tabela de padrões, a auditoria
+  `audit_residuo_base3.py` e o encontro conferem, e a skill `mineracao-residuo` monta o relatório
+  (procedimento: base 1 `docs/19`). **Próximo:** rodar no ambiente da base, na rodada vigente, e trazer a tabela de
+  padrões (mascarada) e o encontro; a ordem dos padrões a investigar e cada Ajuste são decisões do Rafael.
+  **Primeira rodada (10/11, `5d2098f6d706bd3b`):** 565 erros, 120 padrões, 23 recorrentes; encontro: 0 divergências.
+  **Ajuste 34** (a máscara do padrão: endereço de memória e corte depois da máscara): rodada `13b0d026242de2dc`
+  (10/11), 111 padrões, 25 recorrentes; encontro: 0 divergências; `comparar_rodadas.py` contra a `5d2098…` (recriada,
+  11/11): nenhuma divergência.
+  **Grupo infra / LLM (54 erros, 10/11):** contado por script (`validacao/contar_infra_residuo.py`) e lido inteiro
+  (`[assistido]`, um leitor). **Ajuste 35** (aprovado): a conexão perdida na chamada aninhada a outro agente (rede e
+  API, 33) → `H_infra_llm`, submecanismo `conexao_llm_aninhada`. Rodada `ed138b1815816ea3` (11/11): só os 33
+  mudaram (sintoma não reconhecido 189 → 156); resíduo **532 erros, 108 padrões, 24 recorrentes**; encontro: 0
+  divergências. **Ajuste 36** (aprovado, 11/11): a ferramenta que sai do próprio contrato (16: `None` fora do esquema,
+  11; Traceback vazado, 2; ausência como exceção, 3) → unidade nova `H_contrato_ferramenta`. Rodada `7f146976cf5c74ed`
+  (11/11): só os 16 mudaram (sintoma não reconhecido 156 → 140, 20 unidades); resíduo **516 erros, 104 padrões, 24
+  recorrentes**; encontro: 0 divergências. A "recusa do LLM" (5) **fica em observação** (11/11): estouro do limite
+  de tokens de entrada (285.148 contra 272.000) com rótulo de política de conteúdo, 2 execuções num mês
+  (`decisoes.md`). **O grupo infra / LLM fecha:** 33 + 16 saíram do resíduo, 5 ficam com motivo.
+  **Grupo nome de ferramenta usado como variável (49, 11/11):** contado por script
+  (`validacao/contar_nome_ferramenta_residuo.py`) e fechado no ambiente da base (bases 2 e 3) e aqui (base 1, o prompt:
+  `validacao/contar_regra_nome_ferramenta_prompt.py`). **Ajuste 37** (aprovado): unidade nova
+  `U_nome_ferramenta_como_variavel`, erro do agente, destino memória de reforço (o prompt padrão já proíbe; não é sinal
+  de harness → `decisoes.md`). Rodada `2db46d963c549710` (11/11): só os 49 mudaram (sintoma não reconhecido
+  140 → 91, 21 unidades, 11 candidatas); resíduo **467 erros, 103 padrões, 23 recorrentes**; encontro: 0 divergências.
+  **Grupo sintaxe que o interpretador não implementa (47, 12/11):** contado por script
+  (`validacao/contar_limites_interpretador_residuo.py`; teste no interpretador:
+  `validacao/testar_sandbox_construtos.py`); o agente troca a construção no passo seguinte em 46 de 47. **Ajuste 38**
+  (aprovado): estende o inventário do sandbox (`U_sandbox`), submecanismo `sintaxe_nao_suportada`, erro do agente,
+  destino memória. Rodada `c2e5e8b31f297d21` (12/11): só os 47 mudaram (sintoma não reconhecido 91 → 44, 21
+  unidades, 11 candidatas); resíduo **420 erros, 98 padrões, 20 recorrentes**; encontro: 0 divergências. A
+  re-entrada do sandbox segue no #64.
+  **O que sobrou do balde "sintoma não reconhecido" (44, 12–13/11):** medida a recorrência por grupo
+  (`validacao/contar_recorrencia_sintoma_residuo.py`: passam o PDF 13, dado/conta 7, etapa já executada 3 e sem
+  nome 3, mas só o PDF passa sozinho) e o agente do ambiente testou a tabela de decisão (nenhum grupo tem erro nas
+  outras unidades). **Decisão (13/11, `decisoes.md`):** só o PDF vai à investigação (13 erros, 12 execuções, fev a
+  abr, AgenteEstruturador, `LayoutError` vindo de uma de duas ferramentas, o agente conserta no passo seguinte em
+  13 de 13); o resto fica no resíduo com motivo, sem Ajuste. **Medida do que o agente muda no passo seguinte**
+  (`validacao/contar_pdf_residuo.py`, rodada no ambiente em 13/11): 8 erros do `orquestrador_eletronico` e 5 do
+  `orquestrador_papel`; o agente **deixa de chamar a ferramenta em 6 de 13**, chama de novo com o código ≥ 20%
+  menor em 4 e muda outra coisa em 3; **divide o conteúdo em várias chamadas em 0**. No `orquestrador_papel` o maior
+  literal do passo que falhou é pequeno (mediana 74 caracteres): o conteúdo grande chega por variável, de passos
+  anteriores. **Correção à leitura anterior:** "13 de 13 sem erro no passo seguinte" não é "o agente corrige": em 6
+  deles o passo seguinte nem chama a ferramenta, e em 9 de 13 a execução acaba logo depois — o PDF pode ter deixado de
+  ser gerado (falha silenciosa). **Para onde o agente vai** (extensão do script, 13/11): nenhum vai para a
+  ferramenta irmã; 9 de 13 chamam a ferramenta de novo (7 no passo seguinte, 2 no depois dele) e o erro não se repete
+  no passo seguinte em nenhum; 4 de 13 (1 do eletronico, 3 do papel) nunca chamam de novo e terminam com
+  `final_answer` no passo seguinte (candidatos a falha silenciosa). **Hipótese de destino (a testar, não achado):**
+  harness — a ferramenta devia partir a linha ou tratar o erro (o erro nasce dentro dela, o conteúdo do papel chega
+  por variável, 0 divisões e 3 reações diferentes), com possível falha silenciosa nos 4; memória é a menos provável
+  (o agente não vê o tamanho; só uma memória de recuperação ajudaria os 4). **Leitura dos 13 casos** (ambiente,
+  13/11, `[assistido]`, um leitor): conteúdo da linha grande de variável de passo anterior em 10 e escrito no
+  próprio passo em 3 (tipo não visto em 7); tabela sempre de 5 colunas, linha mais alta de 690 a 8058 pontos para
+  716,5 disponíveis; nos 9 que voltam, 4 encurtam e 5 mudam outra coisa sem relação com o tamanho; dos 4
+  `final_answer`, 2 admitem que não geraram e 2 não mencionam o documento (nenhum afirma que gerou).
+  **Decisão (13/11, `decisoes.md`, opção 1):** o PDF fecha no resíduo com uma pista de harness (a ferramenta devia
+  partir a linha ou tratar o `LayoutError`), sem unidade nem Ajuste. **O balde "sintoma não reconhecido" fecha**:
+  os 44 têm destino, nenhum vira Ajuste; segue a re-entrada (#64). **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
+  420 (24%), mais de 99% na versão v1 (medir se é só volume); "etapa já executada" pode ser código do passo
+  levantando `RuntimeError` (conferir no prompt do papel).
+  **Balde "causa não identificada" (376: 250 `causa_sem_regra` + 126 `codigo_mal_escrito`, 13/11):** dos 20 padrões do
+  resíduo que passam na régua, 19 estão aqui. Mesmo caminho do balde do sintoma: medir primeiro a recorrência por
+  família de mecanismo (`validacao/contar_recorrencia_causa_residuo.py`: 19 famílias por regra sobre a mensagem, e
+  se um padrão recorre sozinho ou só somado, com o passo seguinte pela fonte), decidir em lote o que investiga e
+  deixar o resto no resíduo com motivo. Maiores padrões vistos (13/11): `invalid syntax` 75, soma entre tipos 33,
+  barra no fim da linha 32, `round` sobre texto 24, "Número inválido: deve conter n dígitos" 23, formato
+  desconhecido 20, construtor de DataFrame 19; o papel ContestacaoCivel em jul/ago concentra 99 dos 420 erros do
+  resíduo (24%; medir se é só volume).
+  **Recorrência medida no ambiente (13/11):** 20 famílias (375 de 376 cobertos; `outro` 1 erro); 14 passam a régua e
+  12 têm um padrão que recorre sozinho; passam só somando `sintaxe_outra` (12) e `data_ou_hora` (9); não passam
+  (1 mês) "Número inválido" 23, JSON ausente 13 e índice de lista com texto 7. **Pistas que atravessam famílias:**
+  (A) `round`/formato em texto (45, todos CalculoTrabalhista) e a soma entre tipos (41 de 52 do mesmo papel) têm 31
+  erros cada em agosto: valor numérico que chega como texto (cerca de 86 erros, 6 milhões de tokens); (B) barra
+  invertida no código do ContestacaoCivel em jul/ago: barra no fim da linha 32 (30 do papel) + f-string + 8 do
+  `decodificar_barra` do balde do sintoma (cerca de 45); (C) `invalid syntax` 75 erros e 3,37 milhões de tokens, o
+  único em que o agente quase não se corrige (33% dos passos seguintes sem erro); (D) construtor de DataFrame 19
+  (JoogleAnalytics, 84% se corrigem); (E) `object is not callable` 7, com nomes de ferramenta na linha (pode ser o
+  Ajuste 37). Cuidado: agosto teve mais execuções e taxa de erro por ActionStep de 6,7% → 15,7%, então parte das
+  rajadas é volume.
+  **Primeira leitura no ambiente (13/11, `[assistido]`, um leitor):** (A) 86 erros: o valor em texto vem de retorno
+  de ferramenta em 79, de arquivo ou JSON em 5 e é escrito pelo agente em 2; formato com símbolo de moeda 43, com
+  ponto 36, com vírgula 5; no passo seguinte o agente converte o texto em 68; só 1 execução tem as duas famílias
+  (round/formato e soma); a taxa de agosto no CalculoTrabalhista é 3,3 vezes a dos outros meses (1,305% × 0,393%).
+  (B) 44 erros: o texto com barra é literal escrito pelo agente em 20 de 20; barra: 11 escape digitado, 7 regex, 2
+  caminho; nenhuma execução com mais de uma ponta; 40 de 44 no ContestacaoCivel em jul/ago e nenhum antes de julho
+  (começo em julho, não efeito de volume). (C) 75 `invalid syntax`: a regra de forma concordou em 7 de 15 com a
+  leitura e 45 ficaram em "outra": falta leitura aberta. (D) 19 DataFrame: "passou uma string" = 0; 10 de
+  variável de passo anterior, 9 "outra". (E) 7 `not callable`: 0 de 7 com atribuição local, 7 de 7 "não deu
+  para ver" (a fonte só guarda um passo para trás): inconclusivo, não contradiz. O agente sugeriu subir a indexação
+  sem evidência nova (só a recorrência). **Proposta (tabela aprovada como hipótese de trabalho):** A, B e C a
+  investigar; D, E, "ficam" e "em observação" como estavam. **Para fechar o A:** cada ferramenta devolve sempre o
+  mesmo formato (memória: o formato de retorno) ou mistura (harness: o contrato da ferramenta)? Continuação:
+  `propostas/residuo/prompt_causa_continuacao.md` (A por ferramenta e mês, B por mês, leitura aberta do C).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
@@ -448,6 +553,26 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   iguais. Não mexe no catálogo: as 3 memórias do sandbox continuam no degrau 3; se o sandbox for minerado de novo, rodar o
   degrau 2 e o `--revisar` outra vez (Ajuste 33) → [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md); decisão do
   Rafael (09/11).
+- [ ] **#63** **Os rótulos de exibição fora da lista de hash (aberto em 09/11, ligado ao #45 b).** Hoje o nome que aparece nas
+  figuras (unidades, assinaturas, papéis cortados na origem, como "ontestacaoCivel") vive em `base_pipeline.py`, `paleta.py` e
+  `genealogia_sankey.py`, os três na lista de hash da rodada: trocar um rótulo invalida a rodada, e por isso não dá para ajustar
+  uma figura direto no ambiente da base. Proposta: um arquivo de rótulos de exibição (por exemplo
+  `pipeline/execucao/rotulos.py`) lido só pelas figuras e fora da lista de hash, como as outras figuras da rodada
+  (`execucao/figuras_*.py`). Mudar um rótulo ali não mexe na rodada. Pergunta antes de fazer: quais rótulos hoje estão nos três
+  arquivos e quais figuras os leem? A regra do ambiente da base está no `AGENTS.md` (decisão do Rafael, 09/11).
+- [ ] **#64** **A re-entrada do inventário do sandbox depois do Ajuste 38 (aberto em 12/11).** O script e o procedimento
+  existem (`especificas/reentrada.py`; base 1 `16`, "Re-entrada"; `decisoes.md`, 12/11); ensaio na base 1: 1 erro
+  entra (o `NoneType`), sem parte, estado `descoberto`, e duas execuções gravam os mesmos arquivos. Falta, no ambiente
+  da base: (1) rodar `reentrada.py --todas` na rodada do Ajuste 38 (esperado no inventário do sandbox: `descoberto`, 47
+  sem parte; a foto é a pasta `resultados/mineracao/U_sandbox/` da mineração que fechou o catálogo, rodada
+  `99e032ad3a8528d8`; se ela foi sobrescrita, o resumo avisa) — **feito em 12/11**, rodada `c2e5e8b31f297d21`:
+  1.100 → 1.147 erros, entraram 47, saíram 0, os 47 sem parte, estado `descoberto` (livro-razão, Ajuste 38). Os 5
+  "mudaram de parte" da primeira execução eram um defeito da re-entrada (vazio × vazio), achado pelo agente do
+  ambiente e corrigido em 12/11; **(1b) rodar de novo
+  com o `reentrada.py` corrigido** (esperado: mudaram de parte 0, estado só `descoberto`); (2) a emenda ao racional do sandbox com a parte nova
+  "sintaxe que o interpretador não implementa" e os degraus só para ela, **(o balde "sintoma não reconhecido" fechou em
+  13/11; `decisoes.md`)**; (3) a régua de `revisar` (20%, proposta,
+  decisão do Rafael).
 
 ## Fora de escopo / adiado
 

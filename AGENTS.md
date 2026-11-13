@@ -12,6 +12,14 @@ Applies to every agent in this repo (Claude Code here, Copilot on the compliance
 
 A base-3 rodada records the hash of every file listed in `mineracao_observada.versoes_codigo()` (`analysis/2026-10-trace-law-flow-third/pipeline/`): among them `executar.py`, `genealogia_sankey.py`, `base_pipeline.py`, `paleta.py`. Changing any of them makes the specific mining and the rodada check refuse the current rodada until a new one runs on the compliance-side environment. Figures and reports that only read a rodada belong in `pipeline/execucao/` files outside that list and run as scripts (e.g. `execucao/figuras_genealogia.py`); don't add a command to `executar.py` for them.
 
+## Working on the compliance-side environment (the "ambiente da base")
+
+Applies to the Copilot agent there. The repository is the source of the code; that environment only runs it and holds the data.
+
+- **Never edit a file in the base-3 hash list** (`mineracao_observada.versoes_codigo()`) **or the kit's `manifesto.json`** to get around an error, such as adding a mapping for a name an old round still has. Stop and bring the error text to Rafael: the cause is usually an outdated clone (`git fetch origin && git status -sb`, look for `behind`) or a round generated before a rename (pass `--rodada <the new one>`). A local edit there makes the next rodada record a code version that does not exist in the repository.
+- **Running the pipeline and generating figures there is expected.** Display changes (a label, a title, a color) go only in files outside the hash list, such as `pipeline/execucao/figuras_*.py`; labels that live in `base_pipeline.py`, `paleta.py` or `genealogia_sankey.py` are in the hash list, so those changes are made in the repository.
+- **Any change made there returns to the repository the same day** (a commit on a dated branch, or `git diff` brought to Rafael); otherwise the next `git pull` conflicts.
+
 <!-- OPENWIKI:START -->
 
 ## OpenWiki

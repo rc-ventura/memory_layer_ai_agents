@@ -480,5 +480,119 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `simular_regra_assinatura` (para `pipeline/validacao/historico/`); na base 2, `replicar_ajuste17` e `replicar_ajuste21`
   (para `scripts/historico/`). Não são apagados, porque cada um é o comando que reproduz um achado citado; os caminhos nos
   docs e o caminho interno de cada script foram corrigidos. Nenhum está na lista de hash.
+- **09/11, a regra do ambiente da base no `AGENTS.md`** (decisão do Rafael): no ambiente da base, o agente não edita arquivo da
+  lista de hash da base 3 nem o `manifesto.json` do kit para contornar um erro; para e traz o erro (a causa costuma ser um
+  clone desatualizado ou uma rodada de antes de uma troca de nome, como a da unidade `U_verificacao_existencia`). Rodar o
+  pipeline e gerar figuras lá é esperado; mudanças de exibição só em arquivos fora da lista; toda mudança feita lá volta ao
+  repositório no mesmo dia. Os rótulos de exibição fora da lista de hash viram o `b3 #63`.
+- **10/11, o padrão do resíduo: o endereço de memória é mascarado e a frase é cortada depois da máscara** (decisão do
+  Rafael, A + B, depois da simulação na base 3): o mesmo erro deixa de virar um padrão por execução (o `LayoutError`, de 13
+  padrões para 1, que passa a recorrer). O `KeyError` do pandas junta-se ao `KeyError: <q>` (toda mensagem de `KeyError`
+  vem entre aspas), e a pergunta de leitura R1 confere se é um erro só. Nenhuma unidade, candidata ou decisão de balde muda
+  → livro-razão, Ajuste 34; racional do resíduo (`18` §2).
+- **10/11, a conexão perdida na chamada aninhada a outro agente vai para a `H_infra_llm`** (decisão do Rafael, só o grupo
+  rede e API do resíduo da base 3, 33 erros): a linha que falhou chama um `orquestrador_*` e a conexão caiu
+  (`APIConnectionError`/`APIStatusError`). Separa-se na causa e agrupa-se na correção: submecanismo próprio,
+  `conexao_llm_aninhada`, e a mesma unidade, porque a correção é a mesma (retry com backoff). Não se abre unidade para
+  causa que a base não mostrou. Os outros grupos do resíduo voltam um por vez, cada um com a sua aprovação
+  → livro-razão, Ajuste 35.
+- **11/11, a ferramenta que sai do próprio contrato vai para uma unidade nova, a `H_contrato_ferramenta`** (decisão do
+  Rafael, só o grupo da ferramenta do resíduo da base 3, 16 erros): `None` fora do esquema da ferramenta (11), Traceback
+  vazado (2) e "nenhum documento encontrado" sinalizado como exceção (3). Três submecanismos, uma unidade, porque a
+  correção é a mesma e é da ferramenta. A ausência de dado também entra: nas falhas silenciosas ela chega como resposta
+  vazia, aqui como exceção — a diferença é a semântica de erro da ferramenta. Dono, SLA e medição semanal ficam fora do
+  pipeline (decisão da organização) → livro-razão, Ajuste 36.
+- **11/11, a "recusa do LLM" do resíduo da base 3 fica em observação** (decisão do Rafael; 5 erros, 2 execuções,
+  abril, chamada aninhada ao `orquestrador_papel`): é o estouro do limite de tokens de entrada (285.148 contra 272.000)
+  que o litellm rotula `ContentPolicyViolationError`, não recusa de conteúdo. Retry não resolve (a mesma entrada volta);
+  abaixo da régua e sem unidade que caiba. Continua no resíduo com este motivo; volta se reaparecer → livro-razão,
+  Ajuste 35 ("O que ficou aberto").
+- **11/11, a saída "cobertura" do resíduo passa a se chamar "em observação"** (decisão do Rafael): o nome vinha do
+  alarme de cobertura e não dizia o que acontece com o erro. Em observação, o erro continua no resíduo, contado em toda
+  rodada, com o motivo escrito aqui, e volta à fila se passar na régua. A saída também passa a valer para a causa
+  conhecida abaixo da régua sem unidade que caiba. O alarme automático (um item no `monitoramento.json` por padrão em
+  observação) depende de o `monitorar.py` ler as tabelas da base 3 (b3 #52) → procedimento do resíduo (`19`, "Quando um
+  padrão termina"), racional (`18`).
+- **11/11, o nome de ferramenta usado como variável é erro do agente e memória de reforço, não sinal de harness**
+  (decisão do Rafael; 49 erros da base 3, 0 nas bases 1 e 2): o agente dá a uma variável o nome de uma ferramenta
+  (`final_answer = {...}`, 37 no OBFCivel; `resposta_final`, 4; `calculo_*`, 5) ou de uma função embutida do
+  interpretador (`exp`, 2), e o interpretador barra. Unidade nova `U_nome_ferramenta_como_variavel` (factual ·
+  ambiente). **Não é sinal de harness:** o harness faz o certo — o prompt proíbe (a regra 7 do prompt padrão do
+  smolagents, "Don't name any new variable with the same name as a tool: for instance don't name a variable
+  'final_answer'", em 1.550 de 1.550 prompts na base 1 e em 100% dos 4 papéis na base 2), o interpretador protege e a
+  mensagem explica; nenhum prompt induz (0 atribuições). A origem no framework não decide (o dev mantém o modelo padrão
+  e poderia mudá-lo; a regra do `<code>` também é do framework e é harness): decide quem corrige, e não há defeito do
+  lado do harness. **Não é memória nova:** a memória repetiria a regra 7 → **memória de reforço**, monitorada, não
+  injetada (como as do "import fora da lista", 20/10). Nos gráficos de destino a unidade aparece como candidata (erro do
+  agente); o reforço é decidido na mineração. O alarme de reforço ("triplicou") espera o b3 #52. Notas, sem mudar o
+  destino: a taxa do OBFCivel subiu de 0,4% (abr–jun) para 1,8% (jul–ago) das execuções com erro, sem causa medida (a
+  base 3 não tem prompt e a versão do agente é sempre "0"); o RespostaBacen declara uma ferramenta `resposta_final`, o
+  nome mais natural para a variável da resposta; em 32 dos 49 o passo seguinte também falha (qual erro, ainda não
+  contado) → livro-razão, Ajuste 37.
+- **12/11, a sintaxe que o interpretador não implementa vai para o inventário do sandbox, não para uma unidade nova
+  nem para a do `next()`** (decisão do Rafael; 47 erros da base 3, 1 na base 1): `{**x}` num dicionário (a mensagem
+  "NoneType is not supported", 21 de 21), `:=` (13), `global` (11), `nonlocal` (1) e `raise` sozinho (1). Python
+  válido que o interpretador recusa da 1.15 à 1.26 do smolagents (`validacao/testar_sandbox_construtos.py`); o prompt
+  não avisa (0 de 1.550 na base 1). **Erro do agente, não harness:** ele não tem como saber antes do erro e, depois da
+  mensagem, larga a construção no passo seguinte em 46 de 47 (38 já dão certo) — o conhecimento é aprendível, e o que
+  falta é levá-lo à próxima execução. **Inventário, não unidade nova:** a correção é a mesma ("o ambiente não roda X;
+  use Y"), e a diferença de causa (limite permanente, não política configurável) fica no submecanismo
+  `sintaxe_nao_suportada`. **Não a unidade do `next()`:** o `next()` sobre gerador é defeito de versão antiga (falha até
+  a 1.20 e funciona da 1.21), estas construções falham em todas. **O `global` não é a instrução de verificação do
+  ContestacaoCivel** (a suspeita, pelo papel e pelo mês): 0 de 11 funções com `global` testam a variável e a preenchem
+  com o retorno de uma chamada, 0 têm nome de verificação, 1 usa `globals()`/`except NameError`; o `raise` sozinho não
+  está num `except NameError`. **Fora:** o "Cannot unpack non-tuple value" (2 erros, 1 execução) falha também no Python
+  normal; fica no resíduo. Os picos de julho (`:=` no RoteadorCivel, `global` no ContestacaoCivel) seguem sem causa
+  medida (a versão do agente não muda neles) → livro-razão, Ajuste 38.
+- **12/11, a re-entrada: uma unidade já minerada que muda volta à investigação, só pelos erros novos** (decisão do
+  Rafael, depois da pergunta "o que acontece com os erros que entram numa unidade já minerada?"): eles contam na
+  unidade e no destino dela, mas não entram em nenhuma memória do catálogo até uma parte da lição os cobrir. Passo
+  idempotente, por script (`especificas/reentrada.py` da base 3): a foto da mineração (`erros_lidos.csv`, com
+  `step_ref` e `memoria_id`) contra a rodada nova, lida pela mesma parte específica; o delta pelo `step_ref`; a
+  cobertura de cada erro novo (memória no catálogo, parte decidida sem memória, parte nova, sem parte); os estados
+  (igual, cresceu coberto, descoberto, encolheu, mudou de parte, revisar). Roda no fim de todo Ajuste e antes de
+  minerar de novo uma unidade com memória; o descoberto vira investigação **só do delta** e, se pedir parte nova, uma
+  emenda pré-registrada ao racional da lição com os degraus só para ela. **Em aberto:** a régua de `revisar` (20%,
+  proposta) e a parte nova do inventário do sandbox para os 47 erros do Ajuste 38 (b3 #64) → procedimento `16`,
+  "Re-entrada".
+- **12/11, a re-entrada se investiga quando o balde do resíduo fecha, não a cada Ajuste** (decisão do Rafael): o
+  `reentrada.py` continua rodando depois de todo Ajuste (é barato e mostra o descoberto), mas a investigação dos
+  descobertos e as emendas às lições mineradas esperam o balde em questão (hoje, "sintoma não reconhecido") ter
+  destino para todos os grupos. Porquê: os erros novos de uma unidade já vêm investigados pelo grupo do resíduo que os
+  levou (ex.: os 47 do Ajuste 38), e outros Ajustes do mesmo balde podem levar mais erros à mesma lição; uma emenda
+  por lição, no fim, roda os degraus uma vez só (b3 #64).
+- **13/11, o que sobrou do balde "sintoma não reconhecido" (44 erros): só o PDF vai à investigação; o resto fica no
+  resíduo com motivo, sem Ajuste** (decisão do Rafael, depois de medir a recorrência por grupo e de o agente do ambiente
+  testar a tabela de decisão; rodada `c2e5e8b31f297d21`). Régua: ≥ 3 execuções e ≥ 2 meses
+  (`validacao/contar_recorrencia_sintoma_residuo.py`). **Investigar:** o PDF (13 erros, 12 execuções, fev a abr, papel
+  AgenteEstruturador; o `LayoutError` vem de uma de duas ferramentas, e o agente conserta no passo seguinte em 13 de
+  13) — recorre sozinho, é o único. **Ficam no resíduo:** dado de tipo errado ou conta (7: 5 padrões, 5 funções, 2
+  papéis), etapa já executada (3: 3 padrões; os 300 mil tokens são de um passo só, não do grupo) e sem nome (3: 2
+  funções, 2 papéis) — passam só somando, são sacolas de mecanismos diferentes; arquivo não achado (2), desempacotar
+  (2) e planilha (1), por baixo volume. **Em observação:** o texto terminado em barra (8: só agosto, só
+  ContestacaoCivel, só a versão v1, 7 funções diferentes) e a recusa do LLM (5; decidida em 11/11): passam na régua se
+  aparecerem em outro mês. Nenhum dos grupos tem erro nas outras unidades nem no outro balde (salvo 1 "sem nome" na
+  causa não identificada), então o tamanho deles é o dos 44. O agente do ambiente rotulou três grupos como "a
+  evidência contradiz"; os números (heterogeneidade) apoiam deixá-los no resíduo, e é assim que a decisão os lê.
+  **Pistas para o resíduo de causa sem regra:** o papel ContestacaoCivel concentra 99 dos 420 erros do resíduo em
+  julho e agosto (24%), mais de 99% na versão v1 (a versão não explica; falta medir se é só volume); em 2 dos 3 erros
+  de "etapa já executada" a linha que falhou chama `RuntimeError(...)` (o código do passo levanta o erro: conferir no
+  prompt do papel). → b3 #5.
+- **13/11, o PDF fecha no resíduo, com uma pista de harness, sem unidade nem Ajuste** (decisão do Rafael, opção 1 de
+  três, depois da leitura dos 13 casos no ambiente, `[assistido]`, um leitor). A leitura: o conteúdo da linha grande
+  vem de variável de passo anterior em 10 e é escrito no próprio passo em 3 (o tipo não se viu em 7); a tabela é
+  sempre a de 5 colunas (2 a 14 linhas), com a linha mais alta de 690 a 8058 pontos para 716,5 disponíveis; nos 9 em que
+  a ferramenta volta, 4 encurtam o texto e 5 mudam outra coisa sem relação com o tamanho (nenhum divide, trunca, remove
+  ou troca o formato); dos 4 `final_answer`, 2 admitem que não geraram o documento e 2 não o mencionam (**nenhum afirma
+  que gerou**: a falha silenciosa no sentido forte não aparece). Fecha no resíduo porque a causa é mista (3 de texto
+  escrito pelo agente, 10 de origem não determinada), a leitura de um leitor deixou o tipo sem ver em 7 e o ganho é
+  pequeno (13 erros, um papel sem atividade depois de maio, cerca de 80 mil tokens). **Pista de harness, para quem
+  cuida da ferramenta:** `orquestrador_eletronico` (8) e `orquestrador_papel` (5) levantam `LayoutError` quando a linha
+  mais alta da tabela passa da página; a correção natural é na ferramenta (partir a linha ou tratar o erro). **Não é
+  unidade:** a evidência é mista e não há reparo único que o agente aprenda. Dois cuidados da leitura: o "sem medir o
+  tamanho no meio, 11 de 13" do agente é consequência de só 2 casos terem passo no meio, e o "falha silenciosa apoia,
+  2 de 4" veio de uma redação minha do prompt ("ou nem menciona a falha" × a categoria lida, "não menciona o
+  documento"). **O balde "sintoma não reconhecido" fecha:** os 44 têm destino (decisões de 11/11 e 13/11) e nenhum
+  vira Ajuste. Isso libera a re-entrada (decisão de 12/11): a emenda ao racional do sandbox com a parte nova (b3 #64).
 
 ---

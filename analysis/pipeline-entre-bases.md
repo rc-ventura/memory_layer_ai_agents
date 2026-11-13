@@ -1661,3 +1661,364 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
 - **Mudança:** só texto — comentários, docstrings, mensagens impressas e o markdown de dois notebooks; nenhuma regra, nenhum número. Base 1: `pipeline/base_pipeline.py`, `pipeline/drill_down.py` (inclui 4 mensagens na tela: "não sai do ambiente da base"), `pipeline/metadados_steps.py`, `pipeline/falhas_silenciosas.ipynb`, `pipeline/mineracao_generica.ipynb`, `audit/scripts/audit_recompute9.py`. Base 3: `pipeline/base_pipeline.py` (um comentário) e `pipeline/validacao/validar_observada.py` (um comentário). O manifesto do kit foi gerado de novo (`conferir_versao.py analysis/2026-09-trace-law-flow --gerar`: 6 hashes novos); a `VERSAO` 0.15.0 do Ajuste 32, ainda não publicada, cobre os dois.
 - **Verificação:** `conferir_versao.py analysis/2026-09-trace-law-flow`: igual ao manifesto; os 6 `.py` compilam e os 2 notebooks são JSON válidos; suíte 366 testes, OK; nenhuma ocorrência do vocabulário antigo nos `.py` e `.ipynb` de `analysis/` (busca por `git grep`).
 - **Replicar no ambiente da base:** `git pull`. Na base 2, `conferir_versao.py` deve dar igual. **Na base 3, a rodada atual passa a ser recusada** (os dois arquivos estão em `mineracao_observada.versoes_codigo()`): rodar uma rodada nova da raiz, `uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py conferir` e depois `executar.py relatorio --rodada <a rodada nova>` (`03-procedimento-validacao.md` da base 3, §1). Os números devem sair iguais, porque nenhuma regra mudou. **O catálogo não muda sozinho:** as entradas do sandbox continuam com a rodada antiga e o degrau 3. Se o sandbox for minerado de novo e registrado (`--registrar`), as entradas novas começam sem `conferencia` e sem `revisao` (são de outra rodada); aí rodar o degrau 2 (`conferir_memorias.py … --registrar`) e de novo `catalogar_memoria.py --revisar` nas três, com a mesma evidência, se o texto não mudar.
+
+### Ajuste 34 — o padrão do resíduo: endereço de memória e corte depois da máscara (10/11/2026)
+
+- **Gatilho:** a primeira mineração do resíduo da base 3 (`especificas/residuo.py`, rodada `5d2098f6d706bd3b`, 10/11; 565
+  erros, 120 padrões, 23 recorrentes; encontro com a auditoria independente: 0 divergências). Na tabela, o mesmo
+  `LayoutError` aparecia em 13 padrões de 1 erro cada: a máscara troca números, mas deixa as letras do endereço de memória
+  (`Table@0x7F3B…` → `Table@<n>x<n>F<n>B…`), e o corte de 90 caracteres era feito **antes** da máscara, então o mesmo erro
+  com números de tamanhos diferentes terminava em pontos diferentes (um dos 13 ficava fora mesmo com o endereço
+  mascarado). O corte antes da máscara também podia cair dentro de aspas e deixar o trecho sem máscara.
+- **Evidência:** `validacao/simular_mascara_hex.py` (fora do hash), no ambiente da base, sobre o `casos.csv` da rodada:
+  - **A (só o endereço):** 23 erros com `0x`, 22 mudam de padrão, nenhum sem `0x`; padrões 120 → 109, recorrentes
+    23 → 24 (o `LayoutError`: 12 erros, 12 execuções, 3 meses); decisão dos dois baldes igual;
+  - **A + B (cortar depois):** 62 erros mudam (39 sem `0x`); padrões 120 → 111, recorrentes 23 → 25; decisão dos dois
+    baldes igual; 18 padrões só mudam de texto. Três junções: o `LayoutError` (13 · 12 · 3 · 1, o mesmo erro), o
+    `UFuncTypeError` de assinatura (5 · 4 · 4 · 2, a mesma mensagem cortada em dois pontos) e o `KeyError: <q>` (3 · 3 · 3
+    · 2, passa a recorrer: o `KeyError` do pandas sobre colunas só escapava porque o corte caía antes de fechar as aspas;
+    toda mensagem de `KeyError` vem entre aspas). Se esses três são um erro só é a pergunta R1 da investigação;
+  - **base 1:** nenhum dos 498 erros tem `0x`; a simulação dá 0 mudanças em A e em B.
+- **Mudança:** `mascarar()` troca `\b0x[0-9a-fA-F]+\b` por `<id>` antes dos números; `padrao_residuo()` pega a frase
+  inteira depois de `Classe:`, mascara e só então corta em 90 caracteres. A sintaxe não muda (já não tinha corte). Nos
+  `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base) e, reescrita à parte, na
+  auditoria `audit/scripts/audit_residuo_base3.py`. A auditoria nº 6 não calcula o padrão: não muda. O manifesto do kit
+  foi gerado de novo (`base_pipeline.py` da base 1); `VERSAO` 0.16.0 → 0.17.0.
+- **Verificação:** base 1, pipeline do trace inteiro: `residuo_por_padrao()` idêntica ao `resultados/residuo_padroes.csv`
+  publicado (6 padrões, 1 recorrente, 8 erros). Base 1 pela porta da query, rodada nova `528901ffc8aa27f7`: `residuo.py`
+  8 erros, 6 padrões, 1 recorrente; auditoria e encontro, 0 divergências (a rodada antiga é recusada: outro código).
+  `test_residuo_base3.py` (4 testes novos: o mesmo erro vira um padrão; o corte não deixa aspas sem máscara; auditoria =
+  pipeline; a simulação não muda mais nada); suíte 377 testes, OK. `conferir_versao.py analysis/2026-09-trace-law-flow`:
+  antes de gerar o manifesto, PARAR (1 arquivo); depois, igual.
+- **Replicar no ambiente da base:**
+  - **base 2 (não esquecer):** copiar `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` por cima do da pasta
+    `-second`, restaurar `TRACE` e `BASE_ID`, e conferir com
+    `uv run python .github/skills/mineracao-base/scripts/conferir_versao.py analysis/2026-09-trace-law-flow-second` →
+    tem de dar igual. Se não for copiado, toda skill do kit para no passo 0.3 com o `base_pipeline.py` em DIFERE. Os
+    números da base 2 não mudam fora da tabela de padrões do resíduo (o notebook 9.2 e o `drill_down.py residuo`);
+  - **base 3:** copiar `base_pipeline.py` e `audit/scripts/audit_residuo_base3.py`; a rodada atual passa a ser
+    recusada (o `base_pipeline.py` está no hash): `executar.py analisar` (rodada nova), `validacao/comparar_rodadas.py
+    --antes 5d2098f6d706bd3b --depois <nova>` (nenhum número da triagem deve mudar) e o `residuo.py`, a auditoria e o
+    encontro na rodada nova (esperado: 565 erros, 111 padrões, 25 recorrentes, 0 divergências).
+- **Resultado no ambiente da base (10/11):** rodada nova `13b0d026242de2dc`. `residuo.py`: 565 erros, **111 padrões, 25
+  recorrentes**, 66 de uma execução (eram 77), 2 sem nome de exceção; as três conferências `ok` (os dois baldes iguais à
+  triagem). Auditoria, sobre o `casos.csv` desta rodada: 565 · 111 · 25, chaves na fonte 565/565. Encontro: **0
+  divergências**. **`comparar_rodadas.py` (11/11):** a `5d2098f6d706bd3b`, apagada por engano no ambiente, foi recriada
+  rodando `executar.py analisar` com o `base_pipeline.py` de antes do ajuste (mesma fonte e mesmo código dão o mesmo
+  identificador); `--antes 5d2098f6d706bd3b --depois 13b0d026242de2dc`: **nenhuma divergência** na triagem, como
+  esperado de uma mudança só na máscara do padrão. Ajuste 34 fechado.
+
+### Ajuste 35 — a conexão perdida na chamada aninhada vai para a falha do LLM upstream (10/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `13b0d026242de2dc`), grupo "infra / LLM": 54 erros do
+  balde "Sintoma não reconhecido" com exceção de rede, de API, de recusa do LLM ou de ferramenta que nenhuma regra
+  conhecia. O `validacao/contar_infra_residuo.py` (fora do hash) separa o grupo em quatro pelo nome da exceção: rede e
+  API 33, recusa do LLM 5, ferramenta que falhou (`RecoverableToolError`) 5, conteúdo inválido devolvido pela
+  ferramenta 11. Os 54 são `AgentExecutionError` (falhou o código que o agente escreveu, dentro de uma chamada), nenhum
+  `AgentGenerationError`: por isso nenhum caía na `H_infra_llm`, que só conhecia a geração do próprio agente.
+- **Evidência (rede e API, 33 erros, 30 execuções, só o AgenteEstruturador; fev 1, mar 2, abr 9, mai 21):**
+  - **por script** (`casos_infra.csv`, coluna `funcao_na_linha`): a linha que falhou chama `orquestrador_eletronico`
+    (18) ou `orquestrador_papel` (15), uma chamada a outro agente; padrões `APIConnectionError: Connection error.` (30),
+    `APIStatusError: <html>` (2, a página de um gateway) e `APIConnectionError: Connection error. For troubleshooting…`
+    (1);
+  - **por leitura** (`[assistido]`, um leitor, os 54 casos com os crus conferidos, categorias fechadas;
+    `resultados/evidencia/leitura_infra_residuo_todos.csv` no ambiente da base): nos 33, a chamada era a um modelo, não
+    a uma API interna; depois do erro, 10 repetiram a chamada e deu certo, 20 mudaram de caminho, 3 repetiram e falharam
+    de novo. Repetir resolve, que é a correção da unidade;
+  - **base 1:** nenhum `APIConnectionError`, `APIStatusError` nem `APITimeoutError` no trace cru: a regra não muda nada
+    lá. O `APITimeoutError` já cai no timeout de ferramenta (o `classify()` e o `submecanismo()` testam `TimeoutError`
+    antes).
+- **Decisão (Rafael, 10/11):** separar na causa e agrupar na correção. A causa ganha um **submecanismo próprio**,
+  `conexao_llm_aninhada`, para o monitoramento distinguir a conexão da geração; a unidade continua a `H_infra_llm`,
+  porque a correção é a mesma (retry com backoff, circuit breaker por subagente). Não se abre unidade para causa que a
+  base não mostrou (filtro de conteúdo, requisição mal montada). **A aprovação vale só para este grupo:** os outros 21
+  erros voltam, um grupo por vez, com o contexto.
+- **Mudança:** nos `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base):
+  - `classify()`: `\bAPI(?:Connection|Status)Error\b` → (`Infra / LLM upstream`, `Conexão perdida na chamada aninhada ao
+    LLM`), como **última** regra;
+  - `submecanismo()`: a mesma expressão → `conexao_llm_aninhada`, como **última** regra, logo antes do
+    `causa_sem_regra`. No fim, as duas só alcançam o que hoje é resíduo (procedimento do resíduo, `19`, passo 6): um
+    erro que outra regra já pega não muda;
+  - `SUB2UNI`: `conexao_llm_aninhada` → `H_infra_llm`; o texto da correção em `UNI` cita as duas camadas;
+  - base 3: o submecanismo entra no conjunto das regras que decidem só pela mensagem (`_mecanismo_com_evidencia`), ao
+    lado da `infra_llm`: é observável sem exigir o código integral;
+  - reescrita à parte na auditoria nº 6 (`audit/scripts/audit_recompute6.py`: `submecanismo_spec`, `SUB2UNI` e a
+    família em `classify_sig_local`). O manifesto do kit foi gerado de novo; a `VERSAO` não muda (o kit não mudou).
+- **Verificação:** `analysis/tests/test_conexao_llm_aninhada.py` (5 testes: as duas bases classificam igual; as regras
+  anteriores continuam ganhando — `APITimeoutError`, `AgentGenerationError`, "Could not index"; o nome tem de estar
+  inteiro; observável na base 3; a auditoria nº 6 reescreve a regra); suíte 382 testes, OK.
+  `conferir_versao.py analysis/2026-09-trace-law-flow`: antes de gerar o manifesto, PARAR (2 arquivos); depois, igual.
+- **Replicar no ambiente da base:**
+  - **base 2 (não esquecer):** copiar `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` por cima do da pasta
+    `-second`, restaurar `TRACE` e `BASE_ID`, e conferir com
+    `uv run --no-sync python .github/skills/mineracao-base/scripts/conferir_versao.py analysis/2026-09-trace-law-flow-second`
+    → tem de dar igual;
+  - **base 3:** a rodada atual passa a ser recusada (o `base_pipeline.py` está no hash): `executar.py analisar`
+    (rodada nova; **não apagar a `13b0d026242de2dc`**), `validacao/comparar_rodadas.py --antes 13b0d026242de2dc
+    --depois <nova>` (esperado: só os 33 erros mudam, "Sintoma não reconhecido" 189 → 156 e `H_infra_llm` + 33) e o
+    `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 532 erros, 108 padrões, 24 recorrentes — o
+    `Connection error.` passava na régua —, 0 divergências).
+- **Resultado no ambiente da base (11/11):**
+  - **base 2:** `conferir_versao` igual (14 de 14). O `audit_recompute6.py` dava DIFERE porque a cópia da base 2 tinha o
+    caminho do trace editado; o certo é copiar o da base 1 sem mudança e passar o trace da base 2 com `--trace <arquivo>`
+    (o `conferir_versao` só ignora `TRACE` e `BASE_ID` no `base_pipeline.py`);
+  - **base 3, rodada nova `ed138b1815816ea3`.** `comparar_rodadas.py --antes 13b0d026242de2dc`: mesma fonte; mudou
+    só o código do `base_pipeline.py` da base 3; no resumo, só "sintomas não reconhecidos" 189 → 156 (erros
+    estruturados 30.141, pendentes 749, unidades 19 e candidatas 10 iguais); as conferências da rodada nova, `ok`.
+    O veredito do script é "NÃO FECHA", o esperado num Ajuste: ele sai com 1 sempre que um número muda. O critério aqui
+    é outro — mudou só o que o Ajuste prevê. As linhas diferentes dos 12 artefatos foram abertas no ambiente
+    (`[assistido]`, um leitor): todas são de `H_infra_llm` (família Infra / LLM upstream 4 → 37), de
+    `X_sintoma_nao_reconhecido` (−33), da assinatura e do submecanismo novos (33 erros) e do papel AgenteEstruturador.
+    Na tabela do que vem depois do erro mudam também linhas de `U_tipo_retorno` e `U_sandbox`: a coluna da unidade do
+    erro seguinte (`mineracao_observada.py`, `depois_por_unidade`) passa a dizer `H_infra_llm` quando o seguinte é um
+    dos 33 — o erro dessas unidades não mudou;
+  - **resíduo da rodada nova:** 532 erros (causa sem regra 250, código mal escrito 126, sintoma não reconhecido 156),
+    **108 padrões, 24 recorrentes**, 2 sem impressão digital, 64 de uma execução; conferências `ok`. Auditoria: 532 ·
+    108 · 24, chaves na fonte 532/532. Encontro: **0 divergências**. Ajuste 35 verificado.
+- **O que ficou aberto no grupo (próximas decisões, uma por vez):**
+  - **ferramenta** (16 erros): conteúdo inválido devolvido (11, todos `enterprise_web_search` devolvendo `None`, só em
+    agosto, ContestacaoCivel: incidente da ferramenta) e `RecoverableToolError` (5, CalculoProprios, mai–ago: 2
+    Tracebacks da ferramenta, 3 "Nenhum documento do tipo inicial"; nos 5 o agente mudou de caminho);
+  - **a "recusa do LLM" não é política de conteúdo** (5 erros, 2 execuções, abril, `orquestrador_papel`): a mensagem é
+    um 400 do Azure que o litellm rotula `ContentPolicyViolationError`, mas os sinais do filtro (`content_filter`,
+    `ResponsibleAI`, as categorias) dão 0 e os de limite (`token`, `length`, `limit`, `exceed`) dão 5 de 5. A primeira
+    leitura (`politica_conteudo`, 5 de 5) e a primeira contagem estavam erradas: o `content.?policy` casava o próprio
+    nome da classe. Uma releitura do mesmo leitor apontou o limite, e a contagem confirmou. Lição: **o nome da exceção
+    pode mentir sobre a causa quando uma biblioteca intermediária a reembrulha**; conte os sinais da mensagem, não o
+    rótulo.
+    **Fechado (11/11), fica em observação** (o antigo "cobertura"). A mensagem crua, lida no ambiente da base, confirma: o limite é o de tokens
+    de entrada, 272.000, e a requisição foi com 285.148 (+13.148, +4,8%); o mesmo número volta nos casos — a mesma
+    entrada reenviada, que um retry não resolveria (por isso não é `H_infra_llm`). A correção, se vier, pode ser do
+    harness (dividir ou resumir antes da chamada aninhada) ou do agente (não mandar tudo); com 2 execuções num mês, abaixo
+    da régua, nenhum lado tem base para uma unidade. Os 5 continuam no resíduo com o motivo escrito (`decisoes.md`,
+    11/11) e voltam se reaparecerem. Com isso o grupo infra / LLM (54) fecha: 33 + 16 saíram do resíduo, 5 ficam.
+- **O que a máscara mostrou (§4 deste livro, item 2, e o racional do resíduo §2):** um mecanismo só, três padrões —
+  "Connection error." com e sem a frase de troubleshooting, e "Nenhum documento… processo FQ `<n>`" × "…processo
+  `<n>`". No grupo da recusa, o corte em 90 caracteres deixou no padrão só o embrulho do litellm e escondeu a causa.
+  Nada muda agora: as regras novas leem o nome da exceção, não o padrão.
+
+### Ajuste 36 — a ferramenta que sai do próprio contrato ganha uma unidade, `H_contrato_ferramenta` (11/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `ed138b1815816ea3`), grupo "infra / LLM", o segundo
+  grupo depois do Ajuste 35: 16 erros em que a ferramenta chamada pelo agente falhou, no balde "sintoma não reconhecido".
+- **Evidência:** a contagem por script (`validacao/contar_infra_residuo.py`, grupos `ferramenta_conteudo` e
+  `ferramenta_recuperavel`) e a leitura dos casos (`[assistido]`, um leitor; uma segunda leitura no ambiente da base chegou
+  às mesmas três causas):
+  - **retorno fora do contrato** (11 erros, 11 execuções, ContestacaoCivel, só agosto/2026): `enterprise_web_search`
+    devolveu `None` onde o próprio esquema exige objeto ("Invalid structured content returned by tool …"); depois, o agente
+    mudou de caminho em 5, seguiu em 5 e repetiu em 1. Cara de incidente: uma ferramenta, um mês;
+  - **erro interno vazado** (2, CalculoProprios, `get_infos_pasta_calculo_proprios`): `RecoverableToolError` com um
+    Traceback dentro;
+  - **ausência como exceção** (3, CalculoProprios, `get_docs_calculo_proprios`): `RecoverableToolError` "Nenhum documento
+    do tipo inicial encontrado…". Nos 5 de CalculoProprios o agente mudou de caminho.
+  As regras de motivo das falhas silenciosas (`motivo_da_falha`) não reconhecem nenhuma das três (dão `nao_reconhecido`):
+  elas leem o formato `Error calling tool '<nome>'`.
+- **Decisão (Rafael, 11/11):** separar na causa e agrupar na correção, como no Ajuste 35. Uma unidade de não-memória, a
+  correção é da ferramenta (validar a saída contra o esquema, trocar o Traceback por erro com código e contexto, devolver
+  "sem documento" como resposta de negócio). A primeira proposta deixava a ausência como cobertura ("não é falha", por
+  analogia com o `sem_resultado` das silenciosas); a segunda leitura mostrou que a analogia conta ao contrário: lá a
+  ausência chega como resposta vazia, aqui como exceção — a diferença é a semântica de erro da ferramenta, que tem
+  correção. Três unidades (uma por causa) foram descartadas: fragmentam 16 erros e a correção é a mesma. O nome
+  `H_contrato_ferramenta` foi escolhido por Rafael (o primeiro, `H_ferramenta`, não dizia o que aconteceu). Dono, SLA e
+  medição semanal ficam fora do pipeline. O gatilho de monitoramento da unidade é decisão separada.
+- **Mudança:** nos `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base), como
+  **últimas** regras, depois da do Ajuste 35 — só alcançam o que hoje é resíduo:
+  - `classify()`, família `Infra / ferramenta` (a do timeout de ferramenta): `Invalid structured content returned by tool
+    \w+` → "Ferramenta devolveu conteúdo fora do próprio esquema"; `RecoverableToolError` … `Traceback` → "Erro interno
+    da ferramenta vazou como Traceback"; `RecoverableToolError` … `nenhum` … `encontrad` (sem caixa) → "Ausência de dado
+    sinalizada como exceção". O Traceback vem antes da ausência: com os dois, conta como erro interno;
+  - `submecanismo()`: as mesmas expressões → `retorno_fora_do_contrato`, `erro_interno_ferramenta`,
+    `ausencia_como_excecao`; `SUB2UNI` → `H_contrato_ferramenta`; a unidade nova em `UNI` (tipo não-memória);
+  - base 3: os três entram nas regras que decidem só pela mensagem (`_mecanismo_com_evidencia`): observáveis;
+  - `genealogia_sankey.py` (bases 1 e 3): o rótulo curto "contrato da ferramenta" (sem ele, o diagrama usa o título
+    longo);
+  - auditoria nº 6 (`audit_recompute6.py`): as três regras reescritas à parte (`submecanismo_spec`, `SUB2UNI`,
+    `classify_sig_local`). O manifesto do kit foi gerado de novo; a `VERSAO` não muda.
+- **Verificação:** `analysis/tests/test_contrato_ferramenta.py` (5 testes: as duas bases classificam igual; Traceback e
+  ausência juntos contam como erro interno; outro `RecoverableToolError` continua no resíduo; o timeout continua no
+  timeout; observável na base 3; a auditoria nº 6 reescreve as regras); suíte 387 testes, OK. Base 1: o trace não tem
+  nenhuma das três mensagens (0), nenhum número muda. `conferir_versao.py analysis/2026-09-trace-law-flow`: antes de
+  gerar o manifesto, PARAR (2 arquivos); depois, igual.
+- **Replicar no ambiente da base** (os arquivos de código que mudaram, copiados sem edição):
+  - `analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py` e `…/genealogia_sankey.py`;
+  - `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` e `…/genealogia_sankey.py`;
+  - `analysis/2026-09-trace-law-flow/audit/scripts/audit_recompute6.py`;
+  - `.claude/skills/mineracao-base/manifesto.json` → no ambiente, `.github/skills/mineracao-base/manifesto.json`;
+  - **base 2 (não esquecer):** copiar o `base_pipeline.py` da base 1 por cima do da pasta `-second`, restaurar `TRACE` e
+    `BASE_ID`; o `audit_recompute6.py` também, sem mudança (o trace vai por `--trace`); `conferir_versao.py
+    analysis/2026-09-trace-law-flow-second` → igual;
+  - **base 3:** `executar.py analisar` (rodada nova; não apagar a `ed138b1815816ea3`), `comparar_rodadas.py --antes
+    ed138b1815816ea3 --depois <nova>` (esperado: só os 16 erros mudam, sintoma não reconhecido 156 → 140,
+    `H_contrato_ferramenta` com 16 — e uma unidade a mais na triagem, 19 → 20), e o `residuo.py`, a auditoria e o
+    encontro na rodada nova (esperado: 516 erros, 0 divergências).
+- **Resultado no ambiente da base (11/11):**
+  - **base 2:** `conferir_versao` igual (14 de 14; o `base_pipeline.py` da `-second`, sem a camada da base, tem o hash do
+    manifesto, `ca6100ec5aba6a40`);
+  - **base 3, rodada nova `7f146976cf5c74ed`.** `comparar_rodadas.py --antes ed138b1815816ea3`: mesma fonte; mudaram
+    os dois arquivos previstos (`base_pipeline.py`, `genealogia_sankey.py`); no resumo, só "sintomas não reconhecidos"
+    156 → 140 e "unidades observáveis" 19 → 20 (erros 30.141, pendentes 749, candidatas 10 iguais); a triagem ganhou
+    uma linha (19 → 20); as conferências da rodada nova, `ok` (o gasto por unidade fecha com a triagem nas 20
+    unidades). "NÃO FECHA" é o veredito esperado num Ajuste;
+  - **resíduo da rodada nova:** 516 erros (causa sem regra 250, código mal escrito 126, sintoma não reconhecido 140),
+    **104 padrões, 24 recorrentes**, 2 sem impressão digital, 63 de uma execução; conferências `ok`. Os 16 erros estavam
+    em 4 padrões (o `None` fora do esquema, os dois do "Nenhum documento…" e o do Traceback), nenhum passava na régua:
+    a recorrência não muda. Auditoria: 516 · 104 · 24, chaves na fonte 516/516. Encontro: **0 divergências**. Ajuste 36
+    verificado.
+
+### Ajuste 37 — o nome de ferramenta usado como variável ganha uma unidade, `U_nome_ferramenta_como_variavel` (11/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `7f146976cf5c74ed`), o maior padrão do balde "sintoma
+  não reconhecido": 49 erros `InterpreterError` "Cannot assign to name '<nome>': doing this would erase the existing
+  tool!".
+- **Evidência:**
+  - **contagem do grupo** (`validacao/contar_nome_ferramenta_residuo.py`, no ambiente da base): 49 erros, 49 execuções,
+    7 meses, 4 papéis, 2,09 mi de tokens. Por papel e nome: OBFCivel · `final_answer` 37, CalculoTrabalhista ·
+    `calculo_horas_extras` 5 e `calculo_enquadramento` 1, RespostaBacen · `resposta_final` 4, JoogleAnalytics · `exp` 2.
+    Forma da linha: outro valor 45 (os 41 de `final_answer`/`resposta_final` são todos um dict literal),
+    `x = x(...)` 4 (os de `calculo_*`). Nenhuma execução repete o erro no mesmo papel;
+  - **fechamento no ambiente da base** (um prompt ao agente de lá, só contagens): a regex pega 49 em todos os erros da
+    base 3 (0 mensagens "Cannot assign" fora dela) e 0 na base 2. Na base 2 (trace completo), nos 4 papéis, os nomes são
+    ferramentas declaradas (`def <nome>(` em 100% dos prompts), `exp` não é declarado (JoogleAnalytics, 10 de 10), a regra
+    "same name as a tool" está em 100% dos prompts e nenhum prompt atribui `final_answer =`. Na base 3, nenhum dos 41
+    dicts chama `get_final_answer_schema` no mesmo bloco; o passo seguinte também falha em 32 dos 49
+    (`AgentExecutionError`, erro ainda não classificado). A taxa no OBFCivel, por execução com erro: 1 em 275 (abr–jun),
+    36 em 1.968 (jul–ago). A base 3 não tem prompt de sistema (`sysprompt` `nao_exportado`) e a versão do agente é
+    sempre "0";
+  - **base 1, aqui** (`validacao/contar_regra_nome_ferramenta_prompt.py`): 0 ocorrências da mensagem; a regra
+    "Don't name any new variable with the same name as a tool: for instance don't name a variable 'final_answer'." em
+    1.550 de 1.550 prompts (o número muda entre 5, 6 e 7 conforme a versão do modelo). É o prompt padrão do smolagents
+    (as regras 1–11 são as do modelo do framework; o texto do papel vem depois da regra 11, no espaço das
+    `instructions`).
+- **Decisão (Rafael, 11/11):** erro do agente, unidade nova de fato do ambiente; destino **memória de reforço** (a memória
+  repetiria a regra 7), não sinal de harness (o prompt proíbe, o interpretador protege e explica; nenhum prompt induz) →
+  `decisoes.md`. O nome `U_nome_ferramenta_como_variavel` foi o sugerido pela leitura no ambiente da base. O `exp` (função
+  embutida, não declarada) fica na mesma unidade: é a mesma correção (renomear a variável).
+- **Mudança:** nos `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base), como
+  **últimas** regras, depois das do Ajuste 36:
+  - `classify()`: `Cannot assign to name '[^']*': doing this would erase the existing tool` → família
+    `Ambiente & sandbox`, "Nome de ferramenta usado como variável";
+  - `submecanismo()`: a mesma expressão → `nome_de_ferramenta_atribuido`; `SUB2UNI` →
+    `U_nome_ferramenta_como_variavel`; a unidade nova em `UNI` (factual · ambiente);
+  - base 3: o submecanismo entra nas regras que decidem só pela mensagem (`_mecanismo_com_evidencia`): observável;
+  - `genealogia_sankey.py` (bases 1 e 3): o rótulo curto "nome de ferramenta";
+  - auditoria nº 6 (`audit_recompute6.py`): a regra reescrita à parte (`submecanismo_spec`, `SUB2UNI`,
+    `classify_sig_local` → `nome_ferramenta_variavel`). Manifesto do kit gerado de novo; `VERSAO` 0.19.0.
+- **Verificação:** `analysis/tests/test_nome_ferramenta_variavel.py` (5 testes: as duas bases classificam igual para o
+  dict, o `x = x(...)` e o `exp`; uma mensagem parecida sem a proteção continua no resíduo; o timeout continua no
+  timeout; observável na base 3; a auditoria nº 6 reescreve a regra) e
+  `analysis/tests/test_contar_regra_nome_ferramenta_prompt.py`; suíte 395 testes, OK. Base 1: o trace não tem a mensagem
+  (0), nenhum número muda.
+- **Replicar no ambiente da base** (os arquivos de código que mudaram, copiados sem edição):
+  - `analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py` e `…/genealogia_sankey.py`;
+  - `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` e `…/genealogia_sankey.py`;
+  - `analysis/2026-09-trace-law-flow/audit/scripts/audit_recompute6.py`;
+  - `.claude/skills/mineracao-base/manifesto.json` e `VERSAO` → no ambiente, `.github/skills/mineracao-base/`;
+  - **base 2 (não esquecer):** copiar o `base_pipeline.py` da base 1 por cima do da pasta `-second`, restaurar `TRACE` e
+    `BASE_ID`; o `audit_recompute6.py` também, sem mudança (o trace vai por `--trace`); `conferir_versao.py
+    analysis/2026-09-trace-law-flow-second` → igual;
+  - **base 3:** `executar.py analisar` (rodada nova; não apagar a `7f146976cf5c74ed`), `comparar_rodadas.py --antes
+    7f146976cf5c74ed --depois <nova>` (esperado: só os 49 erros mudam, sintoma não reconhecido 140 → 91,
+    `U_nome_ferramenta_como_variavel` com 49 como candidata — uma unidade a mais na triagem, 20 → 21, e candidatas
+    10 → 11), e o `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 467 erros, 0 divergências).
+- **Resultado no ambiente da base (11/11):**
+  - **base 2:** `conferir_versao` igual;
+  - **base 3, rodada nova `2db46d963c549710`.** `comparar_rodadas.py --antes 7f146976cf5c74ed`: mesma fonte; mudaram
+    os dois arquivos previstos (`base_pipeline.py`, `genealogia_sankey.py`); no resumo, só candidatas 10 → 11,
+    sintomas não reconhecidos 140 → 91 e unidades observáveis 20 → 21 (erros 30.141, pendentes 749 iguais); a triagem
+    ganhou uma linha (20 → 21) e as famílias trocaram 49 erros de "Sintoma não reconhecido" para "Ambiente & sandbox"
+    (11 famílias); as conferências da rodada nova, `ok` (o gasto por unidade fecha com a triagem nas 21 unidades).
+    "NÃO FECHA" é o veredito esperado num Ajuste;
+  - **resíduo da rodada nova:** 467 erros (causa sem regra 250, código mal escrito 126, sintoma não reconhecido 91),
+    **103 padrões, 23 recorrentes**, 2 sem impressão digital, 63 de uma execução; conferências `ok`. Os 49 erros eram
+    um padrão só (a máscara troca o nome entre aspas por `<q>`), e ele passava na régua: sai um recorrente. Auditoria:
+    467 · 103 · 23, chaves na fonte 467/467. Encontro: **0 divergências**. Ajuste 37 verificado.
+
+### Ajuste 38 — a sintaxe que o interpretador não implementa vai para o inventário do sandbox, `U_sandbox` (12/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `2db46d963c549710`), grupo 2 do balde "sintoma não
+  reconhecido": 49 erros `InterpreterError` "<Nó> is not supported." e "Re-raise is not supported without an active
+  exception", mais 2 "Cannot unpack non-tuple value".
+- **Evidência:**
+  - **contagem do grupo** (`validacao/contar_limites_interpretador_residuo.py --casos`, no ambiente da base): 49 erros,
+    46 execuções, 6 meses, 8 papéis, 1,52 mi de tokens. `NoneType` 21 (19 execuções, 6 meses, 4 papéis; **21 de 21 são
+    `{**x}` num dicionário literal**, lido pela árvore sintática da linha), `NamedExpr` 13 (só RoteadorCivel, jul 11 e ago
+    2), `Global` 11 (só ContestacaoCivel, jul 10 e ago 1; a linha que falhou não tem `global`), unpack 2 (1 execução),
+    `Nonlocal` 1, `Re-raise` 1. O mesmo limite se repete na mesma execução-papel em 3 de 46;
+  - **o interpretador** (`validacao/testar_sandbox_construtos.py`, código sintético, smolagents 1.15.0, 1.20.0, 1.21.0,
+    1.22.0, 1.24.0 e 1.26.0, a mais nova): as cinco construções rodam no Python normal e o interpretador recusa todas,
+    em todas as versões, com a mensagem do trace. O `global` falha na linha que **chama** a função (o corpo só roda na
+    chamada); o `raise` sozinho falha mesmo dentro do `except`. Os consertos resolvem em todas as versões — `dict(a)` +
+    `d['k'] = v`/`update`, `a | b`, atribuir antes, a função recebe e devolve, o dicionário mutável, `raise e` —, menos
+    `dict(a, **b)`, que falha até a 1.20 ("keywords must be strings"). O unpack falha também no Python normal
+    (`ValueError`). Contraste: `globals()` é barrada pelo nome em todas; o `next()` sobre gerador falha até a 1.20 e
+    funciona da 1.21;
+  - **o passo seguinte** (`--fonte`, no ambiente): `{**x}` 18 trocam e dão certo, 2 trocam e caem em outro erro, 1
+    repete; `:=` 13 de 13 trocam e dão certo; `global` 6 dão certo, 5 caem em outro `InterpreterError`; `nonlocal` dá
+    certo; `raise` cai num `ValueError` e o passo depois dá certo. A versão do agente não muda nos picos de julho;
+  - **o `global` não é a instrução de verificação do ContestacaoCivel** (`sinais_verificacao`, no ambiente): a função
+    com `global` está no próprio passo em 11 de 11; 0 testam a variável e a preenchem com o retorno de uma chamada, 5 só
+    testam, 6 outro uso; 0 com nome de verificação ou estado; 1 com `globals()`/`except NameError`. O `raise` não está
+    num `except NameError`;
+  - **o prompt** (`--trace`, base 1): 0 de 1.550 prompts citam `:=`, `global`, `nonlocal`, `{**` ou "not supported", e
+    0 os usam nos exemplos.
+- **Decisão (Rafael, 12/11):** erro do agente (não sabe antes, aprende na hora); destino o **inventário do sandbox**, e
+  não uma unidade nova nem a do `next()` → `decisoes.md`. O unpack fica no resíduo.
+- **Mudança:** nos `base_pipeline.py` das bases 1 e 3 (a base 2 é cópia do da base 1 no ambiente da base), como
+  **últimas** regras, depois das do Ajuste 37:
+  - a expressão `SINTAXE_NAO_SUPORTADA` (`InterpreterError: ` seguido de `<Nó> is not supported.` ou da mensagem do
+    `Re-raise`; o prefixo deixa de fora o "is not supported" das bibliotecas);
+  - `classify()`: família `Ambiente & sandbox`, "Sintaxe que o interpretador não implementa";
+  - `submecanismo()`: `sintaxe_nao_suportada`; `SUB2UNI` → `U_sandbox`; o texto da memória do inventário (`UNI`) ganha
+    os consertos testados;
+  - base 3: o submecanismo entra nas regras que decidem só pela mensagem (`_mecanismo_com_evidencia`): observável;
+  - `genealogia_sankey.py`: sem mudança (o inventário já tem rótulo);
+  - auditoria nº 6 (`audit_recompute6.py`): a regra reescrita à parte (`InterpreterError: \S+ is not supported`).
+    Manifesto do kit gerado de novo; `VERSAO` 0.20.0.
+- **Verificação:** `analysis/tests/test_sintaxe_nao_suportada.py` (5 testes: as duas bases classificam igual as cinco
+  mensagens; o unpack e um "is not supported" de biblioteca continuam fora; o Ajuste 37 e a função barrada não mudam;
+  observável na base 3; a auditoria reescreve a regra); suíte 409 testes, OK. **Base 1** (ensaio pela porta da query,
+  `fonte_base1_v1`): 498 erros iguais; resíduo 8 → 7 (o único `NoneType`, um `{**x}`, sai do "sintoma não
+  reconhecido"); inventário do sandbox 16 → 17. O resíduo publicado da base 1 (`residuo_padroes.csv`) tem o mesmo
+  padrão: muda 1 erro. Base 2: nenhum padrão "is not supported" no resíduo (8 padrões, Ajuste 8): nada deve mudar.
+- **Replicar no ambiente da base** (os arquivos de código que mudaram, copiados sem edição):
+  - `analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py`;
+  - `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py`;
+  - `analysis/2026-09-trace-law-flow/audit/scripts/audit_recompute6.py`;
+  - `.claude/skills/mineracao-base/manifesto.json` e `VERSAO` → no ambiente, `.github/skills/mineracao-base/`;
+  - **base 2 (não esquecer):** copiar o `base_pipeline.py` da base 1 por cima do da pasta `-second`, restaurar `TRACE` e
+    `BASE_ID`; o `audit_recompute6.py` também, sem mudança (o trace vai por `--trace`); `conferir_versao.py
+    analysis/2026-09-trace-law-flow-second` → igual;
+  - **base 3:** `executar.py analisar` (rodada nova; não apagar a `2db46d963c549710`), `comparar_rodadas.py --antes
+    2db46d963c549710 --depois <nova>` (esperado: só os 47 erros mudam, sintoma não reconhecido 91 → 44, o inventário do
+    sandbox +47, a triagem com as mesmas 21 unidades, as famílias trocando 47 erros de "Sintoma não reconhecido" para
+    "Ambiente & sandbox"), e o `residuo.py`, a auditoria e o encontro na rodada nova (esperado: 420 erros; se cada
+    limite for um padrão, 98 padrões e 20 recorrentes; 0 divergências);
+  - **a re-entrada** (12/11; procedimento `16`, "Re-entrada"): `especificas/reentrada.py --todas --rodada <nova>`
+    (esperado: inventário do sandbox `descoberto`, 47 erros sem parte — hoje é a única unidade da base 3 com memória no catálogo; podem aparecer também `revisar` ou `mudou_de_parte`, pelos Ajustes desde a mineração de 21/10) →
+    b3 #64.
+- **Resultado no ambiente da base (12/11):**
+  - **base 2:** `conferir_versao` igual ao manifesto (14 de 14).
+  - **base 3, rodada nova `c2e5e8b31f297d21`.** `comparar_rodadas.py --antes 2db46d963c549710`: mesma fonte (extração
+    v2); mudou só o código do `base_pipeline.py` da base 3; no resumo do manifesto, 1 campo diferente de 29, "sintomas
+    não reconhecidos" 91 → 44 (erros estruturados 30.141, pendentes 749, unidades 21 e candidatas 11 iguais); 15
+    artefatos com conteúdo diferente, 9 iguais, 1 só na ordem das linhas; as tabelas novas da rodada, todas `ok`. O
+    veredito "NÃO FECHA" é o esperado num Ajuste (sai com 1 sempre que um número muda).
+  - **O resíduo na rodada nova:** `residuo.py` → 420 erros, 98 padrões, 20 que passam na recorrência (2 sem impressão
+    digital, 61 de uma execução); causa sem regra 250, código mal escrito 126, sintoma não reconhecido 44; as três
+    conferências internas, `ok`. `audit_residuo_base3.py` → 420 erros, 98 padrões, 20 passam, chaves na fonte 420/420.
+    `comparar_auditoria.py` → **0 divergências**, padrão a padrão, nos totais e nas conferências. Bate com a previsão.
+  - **A re-entrada (`reentrada.py --todas`):** o inventário do sandbox, foto `99e032ad3a8528d8` (1.100 erros) →
+    rodada `c2e5e8b31f297d21` (1.147): **entraram 47, saíram 0, mudaram de parte 5**; estado `descoberto` e
+    `mudou_de_parte`; nenhum `revisar`. Cobertura dos 52 (entraram + mudaram): **todos sem parte**. Por papel:
+    RoteadorCivel 13, CalculoTrabalhista 12, ContestacaoCivel 12, OBFCivel 8, JoogleAnalytics 4, RecursoCivel 1,
+    RespostaBacen 1, RespostaOficios 1; por mês: 2025-12 2, 2026-01 5, 2026-02 2, 2026-05 9, 2026-07 24, 2026-08 10.
+    Os 47 que entraram são os do Ajuste. **Os 5 que "mudaram de parte" eram um defeito da re-entrada**, achado pelo
+    agente do ambiente (um prompt de uso único, apagado depois): os 5 (JoogleAnalytics 4,
+    CalculoTrabalhista 1; `sem_nome`, `InterpreterError`) já estavam **sem memória na foto** e continuam sem memória
+    agora; o estado da mensagem é íntegro nos 5 e nos 1.095 de controle, e o hash do `mineracao_U_sandbox.py` é o
+    mesmo na foto e hoje. O vazio da foto volta do CSV como NaN, e NaN ≠ NaN contava como mudança. **Correção**
+    (`especificas/reentrada.py`): dois vazios (None, NaN ou "") são a mesma parte, e a contagem por memória
+    ignora o vazio; teste novo com a foto lida de CSV (`test_reentrada.py`, 10 testes; suíte 419, OK). O ensaio da
+    base 1 não pegou o defeito porque a foto dele não tem erro sem memória; repetido com o script corrigido, dá o
+    mesmo (1 entrou, sem parte). **Esperado ao rodar de novo no ambiente:** entraram 47, mudaram de parte 0, os 47
+    sem parte, estado só `descoberto`.

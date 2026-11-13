@@ -33,11 +33,12 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 | `U_campo_inexistente` | Campo inexistente no retorno estruturado | o agente pede uma chave que o retorno não tem |
 | `U_texto_solto` | Explicação nunca solta no bloco de código | o agente escreve explicação em prosa dentro do bloco de código |
 | `U_arg_nomeado` | Ferramentas só aceitam argumento nomeado | chamada posicional numa ferramenta que exige `nome=valor` |
-| `U_sandbox` | Inventário do sandbox | uso de módulo ou função que o ambiente bloqueia |
+| `U_sandbox` | Inventário do sandbox | uso de módulo, função ou sintaxe que o ambiente não roda (a sintaxe — `{**x}`, `:=`, `global`, `nonlocal`, `raise` sozinho — entrou no Ajuste 38, submecanismo `sintaxe_nao_suportada`) |
 | `U_next_gerador` | `next()` sobre expressão geradora falha no sandbox | um idioma de Python que o ambiente não aceita |
 | `U_estado_perdido` | Após step com erro, o que ele definiria não existe | o agente usa uma variável que o step com erro nunca chegou a criar |
 | `U_nome_inventado` | Nome usado sem ter sido definido | o agente usa um nome (variável ou função) que não existe |
 | `U_verificacao_existencia` | Verificação de existência de variável (instruída pelo prompt) | o prompt manda checar se uma variável já existe antes de chamar a ferramenta, e o sandbox barra as duas formas: `'x' in globals()` (proibida) e `except NameError` (não pega o erro do sandbox); destino harness. Era `U_verificacao_try_nameerror` (Ajuste 17), renomeada e ampliada à introspecção no Ajuste 21 |
+| `U_nome_ferramenta_como_variavel` | Nome de ferramenta não serve de variável | o agente dá a uma variável o nome de uma ferramenta declarada (ex.: `final_answer = {...}`) ou de uma função embutida do interpretador (ex.: `exp`), e o interpretador barra ("Cannot assign to name … would erase the existing tool"); erro do agente, memória de reforço — o prompt padrão do framework já proíbe (Ajuste 37, 11/11/2026) |
 | `U_ferramenta_nao_declarada` | Ferramenta citada no prompt e não declarada | o prompt manda usar uma ferramenta que não está entre as declaradas (os `def` do prompt), e o agente tenta importá-la; sinal de harness — o conserto é declarar a ferramenta ou tirar a menção (Ajuste 26, 20/10/2026; hoje só `get_document_text`, no OBFCivel) |
 | `U_verificacao_try_nameerror` | — | nome antigo de `U_verificacao_existencia`, até o Ajuste 21 (19/10/2026); aparece nos documentos de antes |
 | `U_repr_colado` | Não colar retorno impresso de volta no código | o agente copia o print de um retorno para dentro do código em vez de usar a variável |
@@ -45,7 +46,8 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 | `U_resultado_bruto` | Não entregar o resultado bruto de uma ferramenta na resposta final | o agente põe o retorno inteiro da ferramenta no `final_answer` e estoura o tempo |
 | `H_bloco_code` | Protocolo do harness | a resposta do modelo veio sem o bloco `<code>…</code>` que o harness exige (família própria, docs 10–12) |
 | `H_timeout_ferramenta` | Ferramenta excedeu o timeout | a ferramenta demorou mais que o limite — conserto na plataforma |
-| `H_infra_llm` | Falha do LLM upstream | o serviço do modelo falhou — política de retry |
+| `H_contrato_ferramenta` | A ferramenta saiu do próprio contrato | a ferramenta não cumpriu o contrato de retorno ou de erro — devolveu conteúdo fora do próprio esquema, deixou vazar um Traceback ou sinalizou a ausência de um dado como exceção (Ajuste 36) — conserto na ferramenta |
+| `H_infra_llm` | Falha do LLM upstream | o serviço do modelo falhou — na geração do próprio agente ou numa chamada aninhada a outro agente (Ajuste 35) — política de retry |
 | `C_limite_passos` | Limite de passos atingido | a execução morreu sem se recuperar ("erro crítico") |
 | `X_causa_nao_identificada` | Causa não identificada | o sintoma é conhecido, a causa não tem regra |
 | `X_sintoma_nao_reconhecido` | Sintoma não reconhecido | nenhuma regra reconhece a mensagem — cobertura |

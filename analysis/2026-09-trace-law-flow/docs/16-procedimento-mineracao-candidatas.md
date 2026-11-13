@@ -437,6 +437,77 @@ Contexto isolado: ele não participou da investigação nem escreveu o script. E
 - a lição muda de linha no funil;
 - uma entrada vai para o livro-razão.
 
+## Re-entrada: a unidade mudou depois de minerada (decidido com o Rafael em 12/11/2026)
+
+**O problema.** Uma unidade minerada guarda, na pasta da mineração, quem era a população de cada memória naquele dia.
+Depois disso, um Ajuste (ou uma fonte nova) pode mudar a unidade: entram erros que antes estavam no resíduo ou em
+outra unidade, saem erros, um erro muda de parte. A triagem e os gráficos passam a contar os erros novos na unidade e
+no destino dela, mas **nenhuma memória do catálogo os cobre** até alguém conferir: cada memória tem a regra da sua
+parte, e o erro novo pode não caber em nenhuma. O primeiro caso foi o Ajuste 38: 47 erros de sintaxe que o
+interpretador não implementa entraram no inventário do sandbox, cujas partes (C, B, D, E, F) leem só nomes de módulo e
+de função.
+
+**A conferência, por script e idempotente.** Na base 3:
+
+```bash
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/especificas/reentrada.py --todas --rodada <rodada nova>
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/especificas/reentrada.py <unidade> --rodada <rodada nova> [--mineracao <pasta da foto>]
+```
+
+Para cada unidade com memória no catálogo (`analysis/registros/memorias.json`):
+1. **a foto:** o `erros_lidos.csv` da pasta da mineração (um erro por linha, com o `step_ref` e o `memoria_id` do dia
+   da mineração) e a rodada dela (`passo1_rodada.json`);
+2. **agora:** a população da unidade na rodada nova, lida pela **mesma** parte específica da mineração (o `medir` do
+   `mineracao_<unidade>.py`), que diz o `memoria_id` de cada erro hoje;
+3. **o delta pelo `step_ref`** (o hash do passo, que não muda entre rodadas da mesma fonte): os erros que entraram,
+   saíram ou mudaram de parte;
+4. **a cobertura de cada erro que entrou ou mudou:** `memoria_no_catalogo` (a parte dele tem memória fechada),
+   `parte_decidida_sem_memoria` (a parte já existia, com destino que não é memória), `parte_nova` (a regra dá uma parte
+   que a foto não tinha, por exemplo um papel novo numa parte por papel) ou `sem_parte` (a regra não lê o erro);
+5. **por memória do catálogo:** os erros na foto e agora, e `revisar` se a variação passa da régua (`LIMIAR_REVISAR`,
+   20%, proposta a confirmar).
+
+A mesma rodada, com a mesma foto e o mesmo catálogo, grava sempre os mesmos arquivos (`delta.csv`, `descobertos.csv`,
+`por_memoria.csv`, `resumo.json` em `resultados/mineracao/reentrada/<unidade>/`, sem data dentro). Rodar de novo não
+muda nada. Saída 0: nada a fazer; 1: re-entrada pendente; 2: não deu para conferir.
+
+**Quando rodar:**
+- **no fim de todo Ajuste**, na rodada nova, junto com o `comparar_rodadas.py` (`--todas`);
+- **antes de minerar de novo uma unidade que já tem memória no catálogo** (o passo 0 da mineração).
+
+**O que fazer com cada estado:**
+
+| Estado | O que quer dizer | O que fazer |
+|---|---|---|
+| `igual` | nada entrou, saiu ou mudou de parte | nada |
+| `cresceu_coberto` | os erros novos caem em partes que já existem | nada agora; as contagens das memórias sobem na próxima mineração |
+| `descoberto` | há erros `sem_parte` ou `parte_nova` | **a re-entrada dos erros novos** (abaixo) |
+| `encolheu` | saíram erros da unidade | conferir se cada memória afetada ainda se sustenta (a recorrência e o escopo dela) |
+| `mudou_de_parte` | um erro que ficou mudou de parte (a regra da lição mudou) | conferir a regra; é uma mudança da mineração, com entrada no livro-razão |
+| `revisar` | uma memória do catálogo variou mais que a régua | refazer o degrau 3 (revisada) dessa memória (`17`) |
+
+**A re-entrada dos erros novos (estado `descoberto`).** Não se minera a unidade inteira de novo: lê-se **só o delta**.
+1. Os erros descobertos estão em `descobertos.csv`. A amostra sai dele por regra fixa
+   (`montar_evidencia.py --de mineracao/reentrada/<unidade>/descobertos.csv`), e a leitura segue o roteiro de candidata
+   da investigação (`/investigar`).
+2. **Se os erros cabem numa parte que já existe** (a regra só não os lia), a correção é na regra da parte específica:
+   uma mudança da mineração, com entrada no livro-razão, e a memória não muda de degrau por isso.
+3. **Se pedem uma parte nova** (o caso do Ajuste 38: a parte "sintaxe que o interpretador não implementa" no inventário
+   do sandbox), é uma **emenda pré-registrada** ao racional da lição (`propostas/<unidade>/racional.md`), como as emendas
+   4 e 9 do sandbox, a parte nova no script e os degraus **só para ela** (minerada → conferida → revisada → validada).
+4. O livro-razão registra de que delta veio a parte ou a mudança da regra (unidade, rodada da foto, rodada nova).
+
+**Cuidados:**
+- **A foto é a pasta da mineração que fechou o catálogo.** Minerar de novo a unidade na pasta padrão sobrescreve a foto.
+  Para minerar de novo, use `--saida` com uma pasta nova. O resumo avisa quando a foto não é dessa mineração (a rodada
+  dela não é nenhuma das do catálogo, ou uma memória do catálogo não tem erro na foto).
+- **Só unidades mineradas por script** têm foto (`erros_lidos.csv` do passo 4). Uma unidade minerada por investigação
+  para com saída 2: a conferência dela é à mão, pelos casos da investigação.
+- **Fonte nova:** o `step_ref` pode não se repetir entre extrações diferentes; o resumo traz o `fonte_id` da foto e o de
+  agora, e avisa quando diferem.
+- **Nas bases 1 e 2** não há o script: a mesma pergunta se faz à mão, comparando a população da unidade antes e depois
+  do Ajuste.
+
 ## Depois da mineração: a validação
 
 A mineração termina numa **candidata** (degrau 1). O caminho até **memória validada** — conferida contra o ambiente e
