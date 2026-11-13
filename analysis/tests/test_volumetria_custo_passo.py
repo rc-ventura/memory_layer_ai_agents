@@ -65,6 +65,19 @@ class TestCustoPasso(unittest.TestCase):
         self.assertEqual(len(vc.volumetria_por_rodada(tri, cont())[0]), 2)   # sem filtro: todas as unidades
         self.assertFalse({"exec_id", "step_ref", "role"} & set(out.columns))
 
+    def test_achar_rodada(self):
+        import os, tempfile
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            for nome, t in (("observada_aaaa", 100), ("observada_bbbb", 200), ("observada_cccc", 300)):
+                (d / nome / "perfis" / "U_x").mkdir(parents=True)
+                (d / nome / "manifesto.json").write_text("{}")
+                os.utime(d / nome / "manifesto.json", (t, t))
+            (d / "observada_aaaa" / "perfis" / "U_x" / "casos.csv").write_text("a")
+            (d / "observada_bbbb" / "perfis" / "U_x" / "casos.csv").write_text("a")   # a cccc é a mais nova, mas sem o perfil
+            self.assertEqual(vc.achar_rodada(d, "perfis/U_x/casos.csv").name, "observada_bbbb")
+            self.assertIsNone(vc.achar_rodada(d, "perfis/U_y/casos.csv"))
+
     def test_saida_sem_identificador(self):
         por_mes, resumo, _ = vc.volumetria_unidade(casos(), cont(), "U_x")
         out, _ = vc.custo_por_memoria(erros(), casos())

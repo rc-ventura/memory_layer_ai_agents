@@ -27,6 +27,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import volumetria_memorias as vm   # noqa: E402
 
 
+def achar_rodada(pasta_resultados, arquivo):
+    """A rodada mais recente (`observada_*`, pela data do manifesto) que tem `arquivo` (caminho relativo à rodada).
+
+    Existe porque o perfil de uma unidade só está nas rodadas que o pediram: o id da rodada certa não é o mesmo para tudo."""
+    cand = [d for d in Path(pasta_resultados).glob("observada_*") if (d / arquivo).is_file()]
+    if not cand:
+        return None
+    return max(cand, key=lambda d: ((d / "manifesto.json").stat().st_mtime if (d / "manifesto.json").is_file()
+                                    else (d / arquivo).stat().st_mtime))
+
+
 def resumo_custo(g):
     """Mediana e p90 de tokens e de segundos do passo com erro; `n_sem_valor` conta os erros sem o dado."""
     tok, dur = pd.to_numeric(g.tok_tot, errors="coerce"), pd.to_numeric(g.dur_s, errors="coerce")
@@ -118,16 +129,31 @@ def volumetria_por_rodada(tri, cont, unidades=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--casos-sandbox", type=Path)
+    ap.add_argument("--casos-sandbox", type=Path, nargs="?", const=Path("auto"),
+                    help="casos.csv do perfil U_sandbox; sem valor, procura na rodada mais recente que o tenha")
     ap.add_argument("--erros-lidos", type=Path, default=vm.ERROS_LIDOS)
     ap.add_argument("--casos-unidade", type=Path)
     ap.add_argument("--nome", default="unidade")
-    ap.add_argument("--rodada", type=Path, help="pasta da rodada (tem o triagem_por_papel.csv); serve a qualquer unidade")
+    ap.add_argument("--rodada", type=Path, nargs="?", const=Path("auto"),
+                    help="pasta da rodada (tem o triagem_por_papel.csv); sem valor, a mais recente; serve a qualquer unidade")
     ap.add_argument("--unidade", action="append", default=[], help="com --rodada: só esta unidade (repetível)")
     ap.add_argument("--contagens", type=Path, default=vm.CONTAGENS)
     a = ap.parse_args(argv)
     if not a.casos_sandbox and not a.casos_unidade and not a.rodada:
         raise SystemExit("passe --rodada (qualquer unidade), --casos-sandbox (com --erros-lidos) e/ou --casos-unidade (com --nome)")
+    resultados = Path(vm.PIPELINE) / "resultados"
+    if a.casos_sandbox == Path("auto"):
+        r = achar_rodada(resultados, "perfis/U_sandbox/casos.csv")
+        if r is None:
+            raise SystemExit("nenhuma rodada em resultados/ tem perfis/U_sandbox/casos.csv (o perfil não foi gerado)")
+        a.casos_sandbox = r / "perfis" / "U_sandbox" / "casos.csv"
+        print(f"rodada com o perfil do sandbox: {r.name}")
+    if a.rodada == Path("auto"):
+        r = achar_rodada(resultados, "triagem_por_papel.csv")
+        if r is None:
+            raise SystemExit("nenhuma rodada em resultados/ tem triagem_por_papel.csv")
+        a.rodada = r
+        print(f"rodada usada: {r.name}")
     pd.set_option("display.width", 250)
     pd.set_option("display.max_columns", 40)
     pd.set_option("display.max_rows", 300)

@@ -31,10 +31,10 @@ A segunda linha copia **dois arquivos**; a branch em que você está não muda. 
 ## Passo 2 — o custo do passo com erro, por memória e papel
 
 ```
-uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-sandbox analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21/perfis/U_sandbox/casos.csv
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-sandbox
 ```
 
-Se der `não achei casos do sandbox`: procure o arquivo e me devolva **só os caminhos que achar**:
+O script procura sozinho a rodada mais recente que tem o perfil do sandbox e imprime o nome dela. Se der `nenhuma rodada em resultados/ tem perfis/U_sandbox/casos.csv`: **não gere o perfil.** Me devolva **só os caminhos que achar**:
 ```
 git ls-files --others --ignored --exclude-standard -- analysis/2026-10-trace-law-flow-third | findstr "perfis"
 ```
@@ -43,10 +43,10 @@ Não rode a mineração por conta própria.
 ## Passo 3 — a incidência de todas as unidades (qualquer uma, minerada ou não)
 
 ```
-uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --rodada analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --rodada
 ```
 
-Se der `não achei triagem_por_papel.csv da rodada`: **não gere nada.** Me devolva só os nomes dos arquivos que existem na raiz da pasta `analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21`.
+O script usa a rodada mais recente que tenha o `triagem_por_papel.csv` e imprime o nome dela. Se der `nenhuma rodada em resultados/ tem triagem_por_papel.csv`: **não gere nada.** Me devolva só os nomes das pastas dentro de `analysis/2026-10-trace-law-flow-third/pipeline/resultados` e, para cada uma, os nomes dos arquivos na raiz dela.
 
 ## Passo 4 — o que me devolver
 
