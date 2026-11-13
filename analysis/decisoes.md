@@ -578,5 +578,21 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   julho e agosto (24%), mais de 99% na versão v1 (a versão não explica; falta medir se é só volume); em 2 dos 3 erros
   de "etapa já executada" a linha que falhou chama `RuntimeError(...)` (o código do passo levanta o erro: conferir no
   prompt do papel). → b3 #5.
+- **13/11, o PDF fecha no resíduo, com uma pista de harness, sem unidade nem Ajuste** (decisão do Rafael, opção 1 de
+  três, depois da leitura dos 13 casos no ambiente, `[assistido]`, um leitor). A leitura: o conteúdo da linha grande
+  vem de variável de passo anterior em 10 e é escrito no próprio passo em 3 (o tipo não se viu em 7); a tabela é
+  sempre a de 5 colunas (2 a 14 linhas), com a linha mais alta de 690 a 8058 pontos para 716,5 disponíveis; nos 9 em que
+  a ferramenta volta, 4 encurtam o texto e 5 mudam outra coisa sem relação com o tamanho (nenhum divide, trunca, remove
+  ou troca o formato); dos 4 `final_answer`, 2 admitem que não geraram o documento e 2 não o mencionam (**nenhum afirma
+  que gerou**: a falha silenciosa no sentido forte não aparece). Fecha no resíduo porque a causa é mista (3 de texto
+  escrito pelo agente, 10 de origem não determinada), a leitura de um leitor deixou o tipo sem ver em 7 e o ganho é
+  pequeno (13 erros, um papel sem atividade depois de maio, cerca de 80 mil tokens). **Pista de harness, para quem
+  cuida da ferramenta:** `orquestrador_eletronico` (8) e `orquestrador_papel` (5) levantam `LayoutError` quando a linha
+  mais alta da tabela passa da página; a correção natural é na ferramenta (partir a linha ou tratar o erro). **Não é
+  unidade:** a evidência é mista e não há reparo único que o agente aprenda. Dois cuidados da leitura: o "sem medir o
+  tamanho no meio, 11 de 13" do agente é consequência de só 2 casos terem passo no meio, e o "falha silenciosa apoia,
+  2 de 4" veio de uma redação minha do prompt ("ou nem menciona a falha" × a categoria lida, "não menciona o
+  documento"). **O balde "sintoma não reconhecido" fecha:** os 44 têm destino (decisões de 11/11 e 13/11) e nenhum
+  vira Ajuste. Isso libera a re-entrada (decisão de 12/11): a emenda ao racional do sandbox com a parte nova (b3 #64).
 
 ---

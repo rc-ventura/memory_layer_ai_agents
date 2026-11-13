@@ -472,9 +472,14 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `final_answer` no passo seguinte (candidatos a falha silenciosa). **Hipótese de destino (a testar, não achado):**
   harness — a ferramenta devia partir a linha ou tratar o erro (o erro nasce dentro dela, o conteúdo do papel chega
   por variável, 0 divisões e 3 reações diferentes), com possível falha silenciosa nos 4; memória é a menos provável
-  (o agente não vê o tamanho; só uma memória de recuperação ajudaria os 4). Falta a leitura dos 13 casos no
-  ambiente (`propostas/residuo/prompt_pdf_leitura.md`: o que há na linha grande, o que o agente muda nos 9, o que o
-  `final_answer` dos 4 diz), a interpretação (R2) e, se passar, o Ajuste. **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
+  (o agente não vê o tamanho; só uma memória de recuperação ajudaria os 4). **Leitura dos 13 casos** (ambiente,
+  13/11, `[assistido]`, um leitor): conteúdo da linha grande de variável de passo anterior em 10 e escrito no
+  próprio passo em 3 (tipo não visto em 7); tabela sempre de 5 colunas, linha mais alta de 690 a 8058 pontos para
+  716,5 disponíveis; nos 9 que voltam, 4 encurtam e 5 mudam outra coisa sem relação com o tamanho; dos 4
+  `final_answer`, 2 admitem que não geraram e 2 não mencionam o documento (nenhum afirma que gerou).
+  **Decisão (13/11, `decisoes.md`, opção 1):** o PDF fecha no resíduo com uma pista de harness (a ferramenta devia
+  partir a linha ou tratar o `LayoutError`), sem unidade nem Ajuste. **O balde "sintoma não reconhecido" fecha**:
+  os 44 têm destino, nenhum vira Ajuste; segue a re-entrada (#64). **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
   420 (24%), mais de 99% na versão v1 (medir se é só volume); "etapa já executada" pode ser código do passo
   levantando `RuntimeError` (conferir no prompt do papel).
   **Depois:** os maiores de causa sem regra.
@@ -533,8 +538,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   "mudaram de parte" da primeira execução eram um defeito da re-entrada (vazio × vazio), achado pelo agente do
   ambiente e corrigido em 12/11; **(1b) rodar de novo
   com o `reentrada.py` corrigido** (esperado: mudaram de parte 0, estado só `descoberto`); (2) a emenda ao racional do sandbox com a parte nova
-  "sintaxe que o interpretador não implementa" e os degraus só para ela, **quando o balde "sintoma não reconhecido"
-  fechar** (`decisoes.md`, 12/11); (3) a régua de `revisar` (20%, proposta,
+  "sintaxe que o interpretador não implementa" e os degraus só para ela, **(o balde "sintoma não reconhecido" fechou em
+  13/11; `decisoes.md`)**; (3) a régua de `revisar` (20%, proposta,
   decisão do Rafael).
 
 ## Fora de escopo / adiado
