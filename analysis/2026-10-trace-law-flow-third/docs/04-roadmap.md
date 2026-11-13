@@ -490,6 +490,18 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   barra no fim da linha 32, `round` sobre texto 24, "Número inválido: deve conter n dígitos" 23, formato
   desconhecido 20, construtor de DataFrame 19; o papel ContestacaoCivel em jul/ago concentra 99 dos 420 erros do
   resíduo (24%; medir se é só volume).
+  **Recorrência medida no ambiente (13/11):** 20 famílias (375 de 376 cobertos; `outro` 1 erro); 14 passam a régua e
+  12 têm um padrão que recorre sozinho; passam só somando `sintaxe_outra` (12) e `data_ou_hora` (9); não passam
+  (1 mês) "Número inválido" 23, JSON ausente 13 e índice de lista com texto 7. **Pistas que atravessam famílias:**
+  (A) `round`/formato em texto (45, todos CalculoTrabalhista) e a soma entre tipos (41 de 52 do mesmo papel) têm 31
+  erros cada em agosto: valor numérico que chega como texto (cerca de 86 erros, 6 milhões de tokens); (B) barra
+  invertida no código do ContestacaoCivel em jul/ago: barra no fim da linha 32 (30 do papel) + f-string + 8 do
+  `decodificar_barra` do balde do sintoma (cerca de 45); (C) `invalid syntax` 75 erros e 3,37 milhões de tokens, o
+  único em que o agente quase não se corrige (33% dos passos seguintes sem erro); (D) construtor de DataFrame 19
+  (JoogleAnalytics, 84% se corrigem); (E) `object is not callable` 7, com nomes de ferramenta na linha (pode ser o
+  Ajuste 37). Cuidado: agosto teve mais execuções e taxa de erro por ActionStep de 6,7% → 15,7%, então parte das
+  rajadas é volume. Próximo: o agente do ambiente testa a tabela de decisão
+  (`propostas/residuo/prompt_causa_leitura.md`), depois a decisão em lote.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
