@@ -1,6 +1,6 @@
 # literature/ — fichamentos que sustentam o experimento do degrau 4
 
-Fichamentos dos artigos em que o [plano do experimento](../plano-experimento-validacao-memorias.md) se apoia. É o
+Fichamentos dos artigos em que o [plano do experimento](../experimento-degrau-4/01-plano-geral.md) se apoia. É o
 equivalente, para as POCs, da pasta [`analysis/literature/`](../../analysis/literature/README.md), que sustenta a análise
 do trace. A regra é a mesma: **o que o plano afirma com base num artigo tem de passar por um fichamento que diz o que o
 artigo de fato diz.**

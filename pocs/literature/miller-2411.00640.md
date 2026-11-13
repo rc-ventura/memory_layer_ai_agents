@@ -93,7 +93,7 @@ Entradas: nível de significância `α`, poder `1−β` e **efeito mínimo detec
 
 ## Como o plano do experimento usa este paper, e o que estava impreciso
 
-O plano ([`plano-experimento-validacao-memorias.md`](../plano-experimento-validacao-memorias.md)) cita o Miller em três pontos. Conferido contra o texto:
+O plano ([`01-plano-geral.md`](../experimento-degrau-4/01-plano-geral.md)) cita o Miller em três pontos. Conferido contra o texto:
 
 | O plano diz | O paper diz | Veredicto |
 |---|---|---|

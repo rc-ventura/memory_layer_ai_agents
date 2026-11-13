@@ -1,8 +1,8 @@
-> **Sub-atividade:** 1.6 / 1.7 · **Tipo:** Adendo de braço ao [plano do experimento](plano-experimento-validacao-memorias.md) · **Braço:** memória consultada no erro (middleware) · **Status:** rascunho · **Data:** 12/11/2026
+> **Sub-atividade:** 1.6 / 1.7 · **Tipo:** Adendo de braço ao [plano do experimento](../01-plano-geral.md) · **Braço:** memória consultada no erro (middleware) · **Status:** rascunho · **Data:** 12/11/2026
 
 # Adendo B — Memória consultada quando o erro aparece (middleware)
 
-Este adendo é diferente do [adendo do sandbox](plano-experimento-adendo-sandbox.md): aquele preenche o plano para **uma
+Este adendo é diferente do [adendo do sandbox](A-inventario-sandbox.md): aquele preenche o plano para **uma
 unidade**; este detalha **um braço** do plano, o que vale para toda unidade. Ele existe porque o braço pede uma medida
 própria e uma condição de poder que não cabem no corpo do plano, e porque, no plano principal, ele é
 **confirmatório** (hipótese 5), com a condição de poder de B.5.

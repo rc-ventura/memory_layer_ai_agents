@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.6 / 1.7 · **Tipo:** Adendo de unidade ao [plano do experimento](plano-experimento-validacao-memorias.md) (ficha do §16) · **Unidade:** Inventário do sandbox · **Status:** rascunho · **Data:** 12/11/2026
+> **Sub-atividade:** 1.6 / 1.7 · **Tipo:** Adendo de unidade ao [plano do experimento](../01-plano-geral.md) (ficha do §16) · **Unidade:** Inventário do sandbox · **Status:** rascunho · **Data:** 12/11/2026
 
 # Adendo A — Inventário do sandbox
 
@@ -7,10 +7,10 @@ módulos e barra certas funções. A unidade reúne os erros em que o agente **u
 `repr`) ou **esquece de importar algo que o ambiente aceita** (por exemplo, `json`). É a primeira unidade que fechou no
 degrau 3 da validação.
 
-> Tudo o que está aqui é específico desta unidade; o protocolo é o do [plano](plano-experimento-validacao-memorias.md),
-> e os números de seção (§8.2, §9.2…) apontam para ele. Os termos do projeto estão no [glossário](../analysis/glossario.md).
-> A fonte de cada fato é o [dossiê do sandbox](../analysis/2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md)
-> e o catálogo [`memorias.json`](../analysis/registros/memorias.json); o identificador de cada memória no catálogo vem
+> Tudo o que está aqui é específico desta unidade; o protocolo é o do [plano](../01-plano-geral.md),
+> e os números de seção (§8.2, §9.2…) apontam para ele. Os termos do projeto estão no [glossário](../../../analysis/glossario.md).
+> A fonte de cada fato é o [dossiê do sandbox](../../../analysis/2026-10-trace-law-flow-third/propostas/U_sandbox/dossie_base3.md)
+> e o catálogo [`memorias.json`](../../../analysis/registros/memorias.json); o identificador de cada memória no catálogo vem
 > entre parênteses.
 
 ## A.1 Unidade e memórias (ficha 16.1)
@@ -42,7 +42,7 @@ só o `pandas` e caem no `json` não definido (99 na população). O bilhete "im
 primeiro erro. Por isso as duas são testadas como par (dossiê §2h, 31).
 
 **Por que as outras 13 ficam fora dos braços confirmatórios.** Ficaram no degrau 1, monitoradas, não injetadas, por
-dois motivos (decisões de 20/10 e 22/10, [`decisoes.md`](../analysis/decisoes.md)):
+dois motivos (decisões de 20/10 e 22/10, [`decisoes.md`](../../../analysis/decisoes.md)):
 
 - **11 de reforço — repetiriam o prompt.** As 10 da parte D: a lista de imports autorizados já está no prompt de cada
   papel ("You can use imports in your code, but only from the following list of modules: [...]"), e o agente importa
@@ -75,10 +75,10 @@ de propósito (roadmap da base 3, #51).
 | do pandas (`pd`) | **JoogleAnalytics 231** (de 233 de `pd` na base 3; os outros 2 são do CalculoTrabalhista) | dossiê §1, parte C; catálogo |
 | das funções proibidas | concentrada no **ContestacaoCivel** (450 de 523 na leitura do dossiê de 19/10, antes dos ajustes seguintes) e, nos outros papéis, `repr` e `dir` em depuração; 92% dos erros são inspeção de valor | dossiê §2e–§2h, 26/10 |
 
-**Medido em 12/11/2026:** a incidência por papel e mês está no [plano da fase 1, §4.6](plano-fase-1-a-memoria-mitiga-o-erro.md) (JoogleAnalytics: 35% no pandas e 22% no `json` em julho–agosto, com queda forte em agosto; ContestacaoCivel: 1,9% nas funções proibidas, com 254 execuções com esse erro; RoteadorCivel: 0,5% nos imports).
+**Medido em 12/11/2026:** a incidência por papel e mês está no [plano da fase 1, §4.6](../02-fase-1-mitiga-erro.md) (JoogleAnalytics: 35% no pandas e 22% no `json` em julho–agosto, com queda forte em agosto; ContestacaoCivel: 1,9% nas funções proibidas, com 254 execuções com esse erro; RoteadorCivel: 0,5% nos imports).
 
 **Medido em 13/11/2026:** os tokens e a duração do passo com erro, por memória e papel
-([relatório da volumetria](relatorio-volumetria-fase-1.md), Tabela 3). Mediana de tokens do passo com erro: `pandas` do
+([relatório da volumetria](../04-relatorio-volumetria.md), Tabela 3). Mediana de tokens do passo com erro: `pandas` do
 JoogleAnalytics 8.065; imports do CalculoTrabalhista 41.792; funções proibidas do ContestacaoCivel 26.246 (p90 de 99.610);
 imports do RoteadorCivel 3.477. Eficácia mínima para a memória pagar: 6%, 20%, 33% e "não paga", nessa ordem.
 

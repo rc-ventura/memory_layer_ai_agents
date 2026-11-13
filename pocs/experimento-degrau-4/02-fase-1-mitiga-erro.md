@@ -2,13 +2,13 @@
 
 # Fase 1 — a memória, de fato, mitiga o erro? (agentes reais)
 
-> Os termos do projeto (degrau da validação, unidade, memória de reforço) estão no [glossário](../analysis/glossario.md).
+> Os termos do projeto (degrau da validação, unidade, memória de reforço) estão no [glossário](../../analysis/glossario.md).
 > Este documento usa nomes, não códigos. Os conceitos (replay, Holm, intervalos, quantas execuções para o erro aparecer)
-> estão explicados à parte em [`conceitos-do-experimento.md`](conceitos-do-experimento.md).
+> estão explicados à parte em [`03-conceitos.md`](03-conceitos.md).
 
 ## 0. Onde este documento entra
 
-O [plano geral](plano-experimento-validacao-memorias.md) trata de **como** entregar a memória (nativa, por ferramenta, no
+O [plano geral](01-plano-geral.md) trata de **como** entregar a memória (nativa, por ferramenta, no
 erro), **quem** a produz (revisada × autogerada) e **o que** ela diz (novo × reforço). Antes de qualquer uma dessas
 perguntas existe uma mais básica, que este documento responde:
 
@@ -17,7 +17,7 @@ perguntas existe uma mais básica, que este documento responde:
 | Fase | Pergunta | Agentes | Documento |
 |---|---|---|---|
 | **1 (este)** | a memória mitiga o erro? a que custo? | **os agentes reais**, com **inputs reais** de produção | este |
-| 2 | qual entrega, qual origem, qual conteúdo | primeiro os agentes reais; os agentes-espelho do plano geral servem de ensaio e de reserva | [plano geral](plano-experimento-validacao-memorias.md) |
+| 2 | qual entrega, qual origem, qual conteúdo | primeiro os agentes reais; os agentes-espelho do plano geral servem de ensaio e de reserva | [plano geral](01-plano-geral.md) |
 
 Só depois de a fase 1 dizer que a memória mitiga vale gastar execuções comparando formas de entrega, origens e conteúdos.
 **O que já foi escrito não é descartado:** o núcleo estatístico do plano geral (§8 medidas, §9 amostra, §9.3 K e N, §12
@@ -79,7 +79,7 @@ execução que teve o erro (JoogleAnalytics 1,43; ContestacaoCivel 1,02; Roteado
 
 **Como estas medidas se ligam ao critério (§9, bloco 7).** A eficácia medida é comparada com o efeito mínimo que paga o
 custo, `e_min = c ÷ (π · s)`: cerca de 6% no JoogleAnalytics e 33% no ContestacaoCivel, com o custo do passo com erro medido
-(§4.6, Tabela 3 do [relatório da volumetria](relatorio-volumetria-fase-1.md)). O custo medido é comparado com a previsão da
+(§4.6, Tabela 3 do [relatório da volumetria](04-relatorio-volumetria.md)). O custo medido é comparado com a previsão da
 compensação. Onde o erro é raro e o passo é barato, nenhuma eficácia paga: no RoteadorCivel a memória precisaria evitar 360%
 dos erros.
 
@@ -188,7 +188,7 @@ taxas históricas).
 1. **A versão de jul–ago do agente** (reconstituir modelo, prompt e código da época). Não decide nenhuma etapa desta fase —
    a memória é injetada no agente de hoje, e a entrada de cada par se decide com a taxa de hoje, medida acima. A pergunta
    diagnóstica que ela responderia ("o histórico se reproduz? a queda de agosto foi a troca de versão?") é da fase 2 e foi
-   registrada em [`discussion/open-questions.md`](../discussion/open-questions.md).
+   registrada em [`discussion/open-questions.md`](../../discussion/open-questions.md).
 2. **"Rodar até sair o erro".** Parar quando o erro aparecer `k` vezes enviesa o estimador e pede a correção da amostragem
    binomial inversa, que este plano não adota. Usa-se `n` fixo, decidido antes, e o intervalo de Wilson — a mesma medida, sem
    regra de parada adaptativa.
@@ -397,7 +397,7 @@ piloto.**
 
 ### 4.6 A volumetria medida (base 3, 12/11/2026)
 
-> O método, os intervalos de confiança e o racional de cada tabela estão no [relatório da volumetria](relatorio-volumetria-fase-1.md); o que falta medir, no §9 dele.
+> O método, os intervalos de confiança e o racional de cada tabela estão no [relatório da volumetria](04-relatorio-volumetria.md); o que falta medir, no §9 dele.
 
 **De onde vem.** O script `execucao/volumetria_memorias.py`, rodado na máquina 2, sobre a mineração do sandbox (1.100 erros lidos) e as contagens
 (71.894 linhas), com a rodada `observada_c2e5e8b31f297d21`. Nenhum aviso de papel sem correspondente. Só contagens saíram.
@@ -433,7 +433,7 @@ No sentido contrário, no ContestacaoCivel o erro das funções proibidas **subi
 no RoteadorCivel o dos imports caiu (0,7% para 0,2%).
 
 **Achado 2 — a conta de compensação muda de papel para papel.** O passo perdido custa o que o passo que errou custou:
-**medido em 13/11** (mediana de tokens, no [relatório da volumetria](relatorio-volumetria-fase-1.md), Tabela 3). A memória
+**medido em 13/11** (mediana de tokens, no [relatório da volumetria](04-relatorio-volumetria.md), Tabela 3). A memória
 custa o seu tamanho (hipótese, estimado: 20 tokens a dos imports, 35 o par, 80 a das funções proibidas) em cada passo.
 
 | Agente · memória | Custo de injetar `c` | Economia por erro evitado `s` | Incidência de equilíbrio | Incidência jul–ago | Eficácia mínima para pagar |
@@ -538,7 +538,7 @@ de checagem de generalidade. Fica **fora do Holm**.
 **Como se reporta.** Para cada par, uma tabela única: taxa do erro sem e com memória (Wilson), redução relativa e absoluta
 com intervalo, número a tratar (`1 ÷ redução absoluta`), tokens e tempo (mediana, p90, bootstrap), passos, outros erros,
 qualidade. **Médias de tokens e tempo nunca aparecem sozinhas.** Os termos (mediana, p90, bootstrap, pareado) estão em
-[`conceitos-do-experimento.md`](conceitos-do-experimento.md) §6.
+[`03-conceitos.md`](03-conceitos.md) §6.
 
 **Compensação.** A compensação em tokens e segundos (`c`, `s`, `π`, §8.2 e §8.3 do plano geral) continua, com o custo do passo
 com erro medido (§4.6).
@@ -565,7 +565,7 @@ mineração reimplementado — que o confirmatório precisa de qualquer forma. R
 3. **O replay de passo como triagem.** Em passos em que o erro aconteceu, repete-se **só aquele passo**, com a mesma
    entrada, `K` vezes sem e com memória — uma chamada de LLM por repetição, muito menos que uma execução inteira; no erro do
    sandbox, o erro se lê no código, sem rodar ferramenta. O conceito e os limites estão em
-   [`conceitos-do-experimento.md`](conceitos-do-experimento.md) §4. O replay **decide com regra declarada no pré-registro**:
+   [`03-conceitos.md`](03-conceitos.md) §4. O replay **decide com regra declarada no pré-registro**:
    *sem sinal no par (o erro volta na mesma proporção com e sem memória) → o par é adiado antes do confirmatório.* Ele não
    decide o veredito ("mitiga" ou não) — decide só se vale rodar o instrumento completo, que é onde custo, dano e cascata
    se medem.
@@ -726,10 +726,10 @@ comparação fica enviesada e isso se declara.
 
 **Onde entra o replay.** O **replay de passo** virou instrumento de triagem da **porta zero** (§6.1): é barato (um passo é
 uma chamada de LLM) e decide, com regra declarada no pré-registro, se o par segue para o confirmatório. O conceito, os
-precedentes (DoVer, AgentDebug) e os limites estão em [`conceitos-do-experimento.md`](conceitos-do-experimento.md) §4. O
+precedentes (DoVer, AgentDebug) e os limites estão em [`03-conceitos.md`](03-conceitos.md) §4. O
 que decide o veredito é sempre a **execução ao vivo** — única que mede erro, custo e dano juntos — e rodar de novo o mesmo
 input sem memória é a base do conjunto gatilho (§4.3). **Congelar também as respostas do LLM não serve**: a memória age
-sobre o LLM, e a resposta dele já estaria fixa (`conceitos-do-experimento.md` §4).
+sobre o LLM, e a resposta dele já estaria fixa (`03-conceitos.md` §4).
 
 **Falhas de infraestrutura** (rede, limite de requisições do gateway, timeout, ferramenta fora do ar) se **separam, se
 classificam** (as 8 causas do Eval Engineering) e **se repetem fora da nota**. **Conta-se por braço**: se um braço falha mais,
@@ -778,7 +778,7 @@ analista — e a régua deixaria de ser regra.
 **Como a correção é feita (decidido em 13/11/2026, bloco 7).** "Mitiga" exige duas comparações por par (contra sem memória e
 contra placebo), então o teste é de **interseção-união** (Berger, 1982): o `p` do par é o **maior** dos dois, sem correção
 dentro do par, e o **Holm** corrige entre os **três** pares (limites 1,7%, 2,5% e 5%, do menor `p` ao maior, parando no
-primeiro que falha; [`literature/holm-1979.md`](literature/holm-1979.md)). É a **opção A'** (a B, com as seis comparações
+primeiro que falha; [`literature/holm-1979.md`](../literature/holm-1979.md)). É a **opção A'** (a B, com as seis comparações
 juntas no Holm, pede cerca de 180 por braço contra cerca de 160, e fica como reserva). **Condição:** os textos de Holm (1979) e
 Berger (1982) não foram obtidos; o apoio é de fontes secundárias. **Antes do pré-registro**, o Rafael lê Berger e Hsu (1996,
 acesso aberto, [página](https://projecteuclid.org/euclid.ss/1032280304)); se não sustentar a A', troca-se pela B.
@@ -864,7 +864,7 @@ cada fonte está na coluna da direita; nenhuma foi lida pelo Rafael.
 | Fonte | O que mede, e o que levamos | Nível |
 |---|---|---|
 | **Mishra e Mishra (2026), *When Does Memory Help? A Cost-Aware Evaluation of Long-Term Memory in Tool-Using LLM Agents*** (arXiv:2609.05441) | sucesso em tarefas que dependem da memória, com linha de base sem memória; **utilidade marginal por dólar** (variação do sucesso ÷ variação do custo, e o "valor de equilíbrio da tarefa"); **taxa de uso da memória recuperada** (*Ignore Rate*); **dano por memória errada**; comparações pareadas, bootstrap agrupado e Holm. Levamos: a linha de base sem memória, a utilidade por dólar, a taxa de uso e o dano. Limite: tarefas sintéticas, três domínios, latência não medida | 📝 lido pela página do arXiv por um modelo pequeno (não pelo método de texto completo) |
-| **Gloaguen et al. (2026), *Evaluating AGENTS.md*** (arXiv:2602.11988) | sem contexto × gerado por LLM × escrito por humano; sucesso, passos, custo e se o agente segue as instruções; testes estratificados | 📝🔎 página do arXiv lida por um modelo pequeno (ver [`literature/`](literature/README.md)) |
+| **Gloaguen et al. (2026), *Evaluating AGENTS.md*** (arXiv:2602.11988) | sem contexto × gerado por LLM × escrito por humano; sucesso, passos, custo e se o agente segue as instruções; testes estratificados | 📝🔎 página do arXiv lida por um modelo pequeno (ver [`literature/`](../literature/README.md)) |
 | **SkillsBench (2026)** (arXiv:2602.12670) | taxa de acerto e ganho normalizado; skills curadas ajudam, as autogeradas não; skills focadas, com no máximo três módulos, superam pacotes maiores; algumas tarefas pioram. Levamos a **robustez entre inputs** | 📝 só resumos |
 | **Hu, Wang e McAuley (2025), MemoryAgentBench** (arXiv:2507.05257) | quatro competências (recuperação exata, aprendizado em tempo de teste, entendimento de longo alcance, seleção do que esquecer); aprendizado em tempo de teste é a mais próxima | 📝 só resumo |
 | **Wei et al. (2025), Evo-Memory** (arXiv:2511.20857) | memória em fluxo de tarefas; a memória ajuda mas é frágil em estabilidade e reuso procedural. Reforça medir **estabilidade** | 📝 só resumo |
@@ -872,7 +872,7 @@ cada fonte está na coluna da direita; nenhuma foi lida pelo Rafael.
 | **Xiong et al. (2025), gestão de memória** (arXiv:2505.16067) | o agente copia o que está na memória; erro guardado se propaga. É a razão do braço de dano e do gate | 📝 só resumo |
 | **Kapoor et al. (2024)** (arXiv:2407.01502) · **Erol et al. (2025)** (arXiv:2504.13359) · **Yao et al. (2024)** (arXiv:2406.12045) | custo e acerto juntos, custo por acerto, `pass^k` | 📝 só resumos |
 | **Guo et al. (2024), StableToolBench** (arXiv:2403.07714) | servidor de API virtual com cache e simulador, para repetir avaliações sem depender de ferramenta real. Base do §3.3 | 📝 só resumo |
-| **Miller (2024)** (arXiv:2411.00640) | a estatística: decomposição da variância, K e N, pareamento | 🔎 ([`literature/miller-2411.00640.md`](literature/miller-2411.00640.md)); falta o ✅ |
+| **Miller (2024)** (arXiv:2411.00640) | a estatística: decomposição da variância, K e N, pareamento | 🔎 ([`literature/miller-2411.00640.md`](../literature/miller-2411.00640.md)); falta o ✅ |
 
 **O que a literatura não resolve, e é nosso:** o agente real, com input real e ferramenta real, e a medida da qualidade
 da resposta sem verdade conhecida (§5). Vale uma busca mais dirigida, e provavelmente um fichamento do MERIT em texto
@@ -912,7 +912,7 @@ ajustes estão no texto onde valem; aqui fica o registro:
    decide sem regra pré-fixada — o mesmo defeito corrigido no cego.
 4. **Baseline B removido (§2.4):** reconstituir a versão de jul–ago não decide nenhuma etapa da fase 1 (a memória é
    injetada no agente de hoje, e a entrada se decide com a taxa de hoje). A pergunta diagnóstica foi para
-   [`open-questions.md`](../discussion/open-questions.md), como assunto da fase 2.
+   [`open-questions.md`](../../discussion/open-questions.md), como assunto da fase 2.
 5. **"Rodar até k erros" removido (§2.4):** o estimador da binomial inversa não estava conferido em fonte; o baseline usa
    `n` fixo e intervalo de Wilson.
 6. **Cego sem poder de veredito improvisado (§5, §9 condição 3):** só decide se a regra (fração de pares com piora,
@@ -943,7 +943,7 @@ um bloco por vez**, com o contexto; cada bloco aprovado entra no texto do plano.
 | 8. O piloto e o pré-registro | portas, o que se congela antes dos dados (§6) | **aprovado em 13/11/2026** |
 
 
-**Decididas** (o porquê de cada uma está nas seções indicadas e no [relatório da volumetria](relatorio-volumetria-fase-1.md)):
+**Decididas** (o porquê de cada uma está nas seções indicadas e no [relatório da volumetria](04-relatorio-volumetria.md)):
 
 | # | Decisão | O que foi decidido | Por quê (o achado) |
 |---|---|---|---|
@@ -1036,7 +1036,7 @@ no primeiro que falha**. Com a regra simples (1,67% para todos), o 0,021 seria b
 **O que está e o que não está verificado.** Conferem com Abdi (2010), lido inteiro: a conta dos 14,3%, os limites e a regra de
 parar. **Não conferi no texto de Holm (1979)**, que não consegui obter: a prova de que o conjunto fica em 5% e a afirmação de
 que vale sem supor nada sobre a dependência. A explicação do "melhor de k" é a usual, não está em Abdi. Ver o fichamento
-[`literature/holm-1979.md`](literature/holm-1979.md).
+[`literature/holm-1979.md`](../literature/holm-1979.md).
 
 ### Decidido (bloco 7): como o placebo entra na correção
 

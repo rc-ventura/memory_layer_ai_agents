@@ -2,7 +2,7 @@
 
 # Conceitos do experimento, em linguagem simples
 
-Este texto explica, em ordem, as ideias que o [plano da fase 1](plano-fase-1-a-memoria-mitiga-o-erro.md) usa. Os números
+Este texto explica, em ordem, as ideias que o [plano da fase 1](02-fase-1-mitiga-erro.md) usa. Os números
 dos exemplos são contas minhas de 12/11/2026, e os valores de cada agente real só saem das contagens da máquina 2.
 
 ## 1. O experimento ideal, em um comando
@@ -168,8 +168,8 @@ Para cada par (agente, memória), uma tabela com **esta forma**:
 ## 7. O que é Holm
 
 > **Atualização de 13/11/2026.** Na fase 1 a família tem **três pares** (não cinco). A explicação mais simples, com a moeda, o
-> `p` e a ideia do "melhor de k tentativas", está no §14 do [plano da fase 1](plano-fase-1-a-memoria-mitiga-o-erro.md); a
-> verificação contra a fonte, em [`literature/holm-1979.md`](literature/holm-1979.md). O texto abaixo vale como visão geral.
+> `p` e a ideia do "melhor de k tentativas", está no §14 do [plano da fase 1](02-fase-1-mitiga-erro.md); a
+> verificação contra a fonte, em [`literature/holm-1979.md`](../literature/holm-1979.md). O texto abaixo vale como visão geral.
 
 O problema: se você faz **vários testes** (cinco pares de agente e memória), a chance de um deles dar "significativo" **só
 por sorte** sobe. Com cinco testes e limite de 5% em cada, a chance de pelo menos um falso positivo passa de 20%.
@@ -224,7 +224,7 @@ Nenhum foi lido por você. O nível de cada um está na última coluna (📝 res
 
 | Artigo | O que é | O que levamos | Nível |
 |---|---|---|---|
-| **Miller (2024)** — *Adding Error Bars to Evals* | estatística de avaliação de LLMs | erro-padrão, intervalo, pareamento, quantas repetições (§3 do plano geral) | 🔎 ([fichamento](literature/miller-2411.00640.md)) |
+| **Miller (2024)** — *Adding Error Bars to Evals* | estatística de avaliação de LLMs | erro-padrão, intervalo, pareamento, quantas repetições (§3 do plano geral) | 🔎 ([fichamento](../literature/miller-2411.00640.md)) |
 | **Holm (1979)** | regra para vários testes | o §7 acima | 📝 só referência |
 | **Barnett et al. (2005)** — regressão à média | selecionar casos extremos engana: eles tendem ao meio sozinhos | o braço sem memória rodado de novo nos mesmos inputs | 📝 |
 | **Bowyer et al. (2025)** — *Don't use the CLT…* | com poucas centenas de casos, a fórmula normal subestima a incerteza | usar intervalos exatos ou bayesianos em amostras pequenas | 📝 |
@@ -238,4 +238,4 @@ Nenhum foi lido por você. O nível de cada um está na última coluna (📝 res
 | **Kapoor et al. (2024)** · **Erol et al. (2025)** · **Yao et al. (2024)** | custo e acerto juntos; custo por acerto; `pass^k` | a compensação e a estabilidade | 📝 |
 
 Os fichamentos completos que faltam, **em ordem de prioridade**: MERIT, Gloaguen e SkillsBench (os que sustentam as
-medidas e as hipóteses). A fila está em [`literature/README.md`](literature/README.md).
+medidas e as hipóteses). A fila está em [`literature/README.md`](../literature/README.md).

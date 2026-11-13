@@ -2,9 +2,9 @@
 
 # Relatório — volumetria das memórias por agente, para a fase 1
 
-> Este relatório explica os números que entraram no §4.6 do [plano da fase 1](plano-fase-1-a-memoria-mitiga-o-erro.md):
+> Este relatório explica os números que entraram no §4.6 do [plano da fase 1](02-fase-1-mitiga-erro.md):
 > de onde vieram, como foram calculados, o que cada tabela diz e o que eu concluí delas. Os conceitos (intervalo de
-> confiança, Holm, replay) estão em linguagem simples em [`conceitos-do-experimento.md`](conceitos-do-experimento.md).
+> confiança, Holm, replay) estão em linguagem simples em [`03-conceitos.md`](03-conceitos.md).
 > Cada afirmação vem marcada como **fato** (contado nos dados) ou **hipótese** (suposição minha, a medir).
 
 ## 1. Resumo

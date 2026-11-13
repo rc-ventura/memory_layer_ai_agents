@@ -3,12 +3,12 @@
 # Plano do experimento — a memória injetada reduz o erro e compensa o custo?
 
 > Os termos do projeto (degrau da validação, unidade, sinal de harness, memória de reforço) estão explicados no
-> [glossário](../analysis/glossario.md). O plano usa nomes; um identificador interno só aparece, entre parênteses, numa
+> [glossário](../../analysis/glossario.md). O plano usa nomes; um identificador interno só aparece, entre parênteses, numa
 > coluna de fonte.
 
 ## 0. O que este documento é
 
-O plano, do início ao fim, do **degrau 4 da validação** ([`17-validacao-memorias.md`](../analysis/2026-09-trace-law-flow/docs/17-validacao-memorias.md)):
+O plano, do início ao fim, do **degrau 4 da validação** ([`17-validacao-memorias.md`](../../analysis/2026-09-trace-law-flow/docs/17-validacao-memorias.md)):
 o experimento que diz se uma memória, injetada, reduz o erro sem criar outro, e se a economia paga o custo de
 injetar (o teste de compensação, que o roadmap da base 3 já previa).
 
@@ -17,13 +17,13 @@ injetar (o teste de compensação, que o roadmap da base 3 já previa).
 
 | Adendo | Unidade | Estado |
 |---|---|---|
-| [A · Inventário do sandbox](plano-experimento-adendo-sandbox.md) | erros por usar algo que o interpretador do agente barra (como `repr`) ou por esquecer um import que ele aceita (como `json`): as 3 memórias que chegaram ao degrau 3 | rascunho; é a primeira rodada |
-| [B · Memória consultada no erro](plano-experimento-adendo-memoria-no-erro.md) | não é uma unidade: é um **braço** (a memória entra por um middleware depois do erro), com medida e poder próprios; vale para toda unidade | rascunho; o braço é confirmatório neste plano, com condição de poder |
+| [A · Inventário do sandbox](adendos/A-inventario-sandbox.md) | erros por usar algo que o interpretador do agente barra (como `repr`) ou por esquecer um import que ele aceita (como `json`): as 3 memórias que chegaram ao degrau 3 | rascunho; é a primeira rodada |
+| [B · Memória consultada no erro](adendos/B-memoria-no-erro.md) | não é uma unidade: é um **braço** (a memória entra por um middleware depois do erro), com medida e poder próprios; vale para toda unidade | rascunho; o braço é confirmatório neste plano, com condição de poder |
 | (próximos) | qualquer unidade cuja memória chegue ao degrau 3 | a escrever pela ficha do §16 |
 
 **Antes dos três experimentos: a fase 1.** A pergunta mais básica é se a memória **mitiga o erro**, rodando os **agentes
 reais** com **inputs reais**. Ela tem a sua própria receita, com volumetria e critério de sucesso, em
-[`plano-fase-1-a-memoria-mitiga-o-erro.md`](plano-fase-1-a-memoria-mitiga-o-erro.md). **Os três experimentos abaixo são a
+[`02-fase-1-mitiga-erro.md`](02-fase-1-mitiga-erro.md). **Os três experimentos abaixo são a
 fase 2**: só rodam para os pares (agente × memória) em que a fase 1 mostrar que a memória mitiga. Nesta ordem, os
 agentes-espelho da trilha 1 (§5) passam a ser **ensaio e reserva**: servem para construir o executor, o registro, a
 análise e o injetor, e para o caso de um agente real não poder rodar. A fase 1 tem dois papéis: **calibrar o instrumento
@@ -50,7 +50,7 @@ Regra de leitura: o que está neste documento vale para toda unidade; um número
 **exemplo declarado**, e o valor medido fica no adendo. Onde uma escolha do protocolo foi feita olhando só a primeira
 unidade, o texto diz que ela é uma hipótese de generalidade (§2.3).
 
-Este plano **não substitui** o [blueprint das POCs](blueprint-m1-pocs-minimos.md). O blueprint lista oito experimentos
+Este plano **não substitui** o [blueprint das POCs](../blueprint-m1-pocs-minimos.md). O blueprint lista oito experimentos
 sobre o mecanismo inteiro. Este plano detalha o primeiro que dá para rodar com o que já existe: memórias revisadas e o
 smolagents. Onde ele entra no blueprint, e onde diverge dele:
 
@@ -93,23 +93,23 @@ são de uma unidade só estão no adendo dela.
 
 | Fato | Fonte | Consequência |
 |---|---|---|
-| Só as memórias no degrau 3 (revisada) estão prontas para o degrau 4; as demais do catálogo são monitoradas, não injetadas | [`memorias.json`](../analysis/registros/memorias.json); [`decisoes.md`](../analysis/decisoes.md) | O teste confirmatório usa só as do degrau 3. O resto entra como exploratório |
+| Só as memórias no degrau 3 (revisada) estão prontas para o degrau 4; as demais do catálogo são monitoradas, não injetadas | [`memorias.json`](../../analysis/registros/memorias.json); [`decisoes.md`](../../analysis/decisoes.md) | O teste confirmatório usa só as do degrau 3. O resto entra como exploratório |
 | Uma memória pode valer só junto com outra (`vale_junto_com`) ou não valer em um papel (`nao_vale_em`) | catálogo; doc 17, Ajustes 30 e 31 | O injetor lê os dois campos. Memórias dependentes são testadas como par, nunca sozinhas, e o papel excluído não recebe a memória |
-| A revisão do degrau 3 vale para o texto exato da memória | [`17`](../analysis/2026-09-trace-law-flow/docs/17-validacao-memorias.md), "O degrau 3 no catálogo" | O texto injetado é o `correction_guidance` literal, sem reescrita |
-| Um passo médio custa ≈ 13.135 tokens; as candidatas somam 387 mi de tokens, 10,4% do gasto (teto, hipótese) | [racionais da base 3, §7](../analysis/2026-10-trace-law-flow-third/docs/01-racionais.md) | A medida de compensação é em tokens, por papel, nunca pelo total |
+| A revisão do degrau 3 vale para o texto exato da memória | [`17`](../../analysis/2026-09-trace-law-flow/docs/17-validacao-memorias.md), "O degrau 3 no catálogo" | O texto injetado é o `correction_guidance` literal, sem reescrita |
+| Um passo médio custa ≈ 13.135 tokens; as candidatas somam 387 mi de tokens, 10,4% do gasto (teto, hipótese) | [racionais da base 3, §7](../../analysis/2026-10-trace-law-flow-third/docs/01-racionais.md) | A medida de compensação é em tokens, por papel, nunca pelo total |
 | A comparação tem de ser por taxa e por papel: a mistura de papéis muda o custo sem mudar a eficiência | racionais §7; roadmap da base 3 (gráfico da taxa por papel e mês, #37) | Análise estratificada por agente; nada de somar agentes diferentes |
-| A classificação do erro é determinística (família → assinatura → mecanismo → unidade) | [`09-metodologia-erro-a-memoria.md`](../analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md) | A medida do experimento usa as mesmas regras: o instrumento que achou o erro é o que mede se ele sumiu |
-| A plataforma trocou de modelo em agosto/2026, e a taxa de um erro de protocolo mudou com a troca (no RoteadorCivel: 0 erros em 381 passos no modelo antigo; 54 em 478 no novo, com o mesmo prompt) | [relatório da base 2, §2](../analysis/2026-09-trace-law-flow-second/docs/02-relatorio-base2.md) | A taxa de erro depende do modelo. Uma memória validada num modelo não está validada no outro: o modelo é um fator do experimento |
-| Agosto/2026 concentra 58% dos erros observáveis da base 3, e a base 3 não exporta o nome do modelo | [relatório da base 3](../analysis/2026-10-trace-law-flow-third/docs/02-relatorio-achados.md), TL;DR; roadmap da base 3, pedido C | Não se sabe, pela base 3, em que modelo cada erro aconteceu. A base 2 pode responder para agosto (§10, etapa 1) |
-| Nenhum conteúdo de trace real entra em prompt de LLM externo | blueprint §7, item 6; [`analysis/README.md`](../analysis/README.md) | Tarefas e retornos de ferramenta são sintéticos |
-| A arquitetura supõe `recall_memory` como ferramenta MCP chamada dentro do loop; o tutor questionou (28/08) se um retrieval elaborado é necessário num escopo tão estreito | [arquitetura, §F](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md); [reflexões de 28/08](../discussion/reflexoes/checkpoint-2026-08-28-reflections.md) | O braço "memória por ferramenta" contra o "injetada" é o teste direto dessa hipótese |
+| A classificação do erro é determinística (família → assinatura → mecanismo → unidade) | [`09-metodologia-erro-a-memoria.md`](../../analysis/2026-09-trace-law-flow/docs/09-metodologia-erro-a-memoria.md) | A medida do experimento usa as mesmas regras: o instrumento que achou o erro é o que mede se ele sumiu |
+| A plataforma trocou de modelo em agosto/2026, e a taxa de um erro de protocolo mudou com a troca (no RoteadorCivel: 0 erros em 381 passos no modelo antigo; 54 em 478 no novo, com o mesmo prompt) | [relatório da base 2, §2](../../analysis/2026-09-trace-law-flow-second/docs/02-relatorio-base2.md) | A taxa de erro depende do modelo. Uma memória validada num modelo não está validada no outro: o modelo é um fator do experimento |
+| Agosto/2026 concentra 58% dos erros observáveis da base 3, e a base 3 não exporta o nome do modelo | [relatório da base 3](../../analysis/2026-10-trace-law-flow-third/docs/02-relatorio-achados.md), TL;DR; roadmap da base 3, pedido C | Não se sabe, pela base 3, em que modelo cada erro aconteceu. A base 2 pode responder para agosto (§10, etapa 1) |
+| Nenhum conteúdo de trace real entra em prompt de LLM externo | blueprint §7, item 6; [`analysis/README.md`](../../analysis/README.md) | Tarefas e retornos de ferramenta são sintéticos |
+| A arquitetura supõe `recall_memory` como ferramenta MCP chamada dentro do loop; o tutor questionou (28/08) se um retrieval elaborado é necessário num escopo tão estreito | [arquitetura, §F](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md); [reflexões de 28/08](../../discussion/reflexoes/checkpoint-2026-08-28-reflections.md) | O braço "memória por ferramenta" contra o "injetada" é o teste direto dessa hipótese |
 | O caminho quente não leva chamada de LLM | arquitetura, §A | Nenhum braço usa LLM para escolher ou reescrever a memória |
-| O Plano define três métricas de desempenho: taxa de sucesso, estabilidade, latência; a arquitetura pede tokens como métrica de primeira classe ao lado delas | [Plano de Trabalho](../docs/work-plan.md), Sub 3.6; [arquitetura, §D](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/06-component-d-commit-gate.md), "custo de LLM" | As quatro entram no experimento, cada uma com definição e análise (§8) |
-| Um update aprovado escreve só na camada de estratégia, nunca no prompt de sistema dos repositórios: prompt que cresce é inchaço de tokens e quebra a revelação progressiva | [arquitetura, "Scope clarification"](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/09-add-trigger-and-scope-clarification.md) | O braço "injetada" não edita o prompt do agente: o harness compõe o contexto na hora, a partir do catálogo, filtrado por papel, e registra o que entrou (§6) |
-| O laço de validação da arquitetura roda num simulador: ferramentas simuladas com respostas gravadas; passa se a assinatura do erro não volta e nenhum caso limpo regride; a verificação é determinística | [arquitetura, §C, 09/09](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/05-component-c-update-engine.md) | Este experimento é a primeira construção desse simulador; as tarefas neutras são os "casos limpos" (§7) |
+| O Plano define três métricas de desempenho: taxa de sucesso, estabilidade, latência; a arquitetura pede tokens como métrica de primeira classe ao lado delas | [Plano de Trabalho](../../docs/work-plan.md), Sub 3.6; [arquitetura, §D](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/06-component-d-commit-gate.md), "custo de LLM" | As quatro entram no experimento, cada uma com definição e análise (§8) |
+| Um update aprovado escreve só na camada de estratégia, nunca no prompt de sistema dos repositórios: prompt que cresce é inchaço de tokens e quebra a revelação progressiva | [arquitetura, "Scope clarification"](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/09-add-trigger-and-scope-clarification.md) | O braço "injetada" não edita o prompt do agente: o harness compõe o contexto na hora, a partir do catálogo, filtrado por papel, e registra o que entrou (§6) |
+| O laço de validação da arquitetura roda num simulador: ferramentas simuladas com respostas gravadas; passa se a assinatura do erro não volta e nenhum caso limpo regride; a verificação é determinística | [arquitetura, §C, 09/09](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis/05-component-c-update-engine.md) | Este experimento é a primeira construção desse simulador; as tarefas neutras são os "casos limpos" (§7) |
 | Quase nenhuma execução da esteira termina em erro (0 de 1.550; 99,3% entregam resposta): a cascata é cara, mas se recupera | arquitetura, §C, 09/09 (base 1) | O sucesso da tarefa está perto do teto. O efeito de uma memória aparece em custo e tempo, não em sucesso: sucesso é guarda, não alvo |
-| "Latência não necessariamente melhora com uma memory layer efetiva: um trace lento pode ser infra instável ou latência do modelo" | [política de promoção](../discussion/hipoteses/promotion-policy-log-to-ltm.md), "Observabilidade" (02/09) | A latência é decomposta e o tempo de ferramenta, controlado; o tempo economizado vem da duração real do passo com erro (§8.3) |
-| Toda execução que falhou se classifica numa de 8 causas (capacidade, informação ausente, harness, ambiente, falsa rejeição, falsa aceitação, vazamento, infraestrutura), e o que não é do agente se conserta antes de usar a nota; o que o projeto mede é o **delta** que a mudança causa, não o desempenho absoluto | [Eval Engineering, conexões §4, §6](../discussion/hipoteses/eval-engineering-skill-architecture-connections.md); [análise da skill](../discussion/hipoteses/langchain-eval-engineering-skill-analysis.md), "What does NOT map" | Etapa 7 (§10) e §13; a medida principal é sempre uma diferença entre braços |
+| "Latência não necessariamente melhora com uma memory layer efetiva: um trace lento pode ser infra instável ou latência do modelo" | [política de promoção](../../discussion/hipoteses/promotion-policy-log-to-ltm.md), "Observabilidade" (02/09) | A latência é decomposta e o tempo de ferramenta, controlado; o tempo economizado vem da duração real do passo com erro (§8.3) |
+| Toda execução que falhou se classifica numa de 8 causas (capacidade, informação ausente, harness, ambiente, falsa rejeição, falsa aceitação, vazamento, infraestrutura), e o que não é do agente se conserta antes de usar a nota; o que o projeto mede é o **delta** que a mudança causa, não o desempenho absoluto | [Eval Engineering, conexões §4, §6](../../discussion/hipoteses/eval-engineering-skill-architecture-connections.md); [análise da skill](../../discussion/hipoteses/langchain-eval-engineering-skill-analysis.md), "What does NOT map" | Etapa 7 (§10) e §13; a medida principal é sempre uma diferença entre braços |
 | O Sub 1.7 pede comparar aprendizado implícito e sinal explícito | Plano, Sub 1.7 | O braço "autogerada" é o polo implícito dentro do smolagents (§6) |
 
 ### 2.1 O papel de cada base no experimento
@@ -134,13 +134,13 @@ Duas consequências:
 
 ### 2.2 O que o experimento testa da arquitetura
 
-| Peça da [arquitetura](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md) | Testada? | Como |
+| Peça da [arquitetura](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md) | Testada? | Como |
 |---|---|---|
 | Leitura da memória (componentes A e F: `recall_memory` × entrega automática) | **sim** | braços "injetada" × "por ferramenta" — a pergunta do recall explícito (blueprint, experimento do recall explícito), sem o Hermes |
 | Valor de uma memória já aprovada (o degrau 4) | **sim** | todos os braços contra "sem memória" e "placebo" |
 | Implícito × explícito (Sub 1.7) | **sim**, no smolagents | "autogerada" (sem gate) × "injetada" (revisada no degrau 3) |
 | Laço de validação no simulador (§C, passos 3–4) | **sim**, a primeira versão | tarefas com ferramentas simuladas, casos limpos como controle |
-| Leitura da STM pelo adapter (opção A de [`open-questions.md`](../discussion/open-questions.md)) | **em parte** | o registro lê `agent.memory.steps` e o grava no formato do trace |
+| Leitura da STM pelo adapter (opção A de [`open-questions.md`](../../discussion/open-questions.md)) | **em parte** | o registro lê `agent.memory.steps` e o grava no formato do trace |
 | Escrita: filtro de anomalia, Update Engine, Commit Gate, esquecimento, consolidação | **não** | §14 |
 
 ### 2.3 O que varia de uma unidade para outra — e o que é hipótese de generalidade
@@ -176,7 +176,7 @@ quatro hipóteses falhar, o §2.3 é atualizado e o adendo registra o desvio.
 
 ## 3. O SDK de memória interno: usar neste experimento?
 
-**Não.** A análise já feita ([`internal-memory-sdk-vs-mechanism.md`](../discussion/hipoteses/internal-memory-sdk-vs-mechanism.md),
+**Não.** A análise já feita ([`internal-memory-sdk-vs-mechanism.md`](../../discussion/hipoteses/internal-memory-sdk-vs-mechanism.md),
 só pela documentação, sem ler o código) dá os motivos, e este experimento acrescenta dois:
 
 1. **Ele guarda outra coisa.** O SDK lembra do cliente (perfil, preferências); as memórias daqui são sobre o trabalho do
@@ -230,7 +230,7 @@ entra no veredito de nenhuma memória (§11): é o resultado comparativo do Sub 
 
 ### 5.1 Duas trilhas, um protocolo
 
-> **Atualização de 12/11/2026.** Com a [fase 1](plano-fase-1-a-memoria-mitiga-o-erro.md), os agentes reais passam a ser o
+> **Atualização de 12/11/2026.** Com a [fase 1](02-fase-1-mitiga-erro.md), os agentes reais passam a ser o
 > caminho principal, e os agentes-espelho, o ensaio e a reserva. O texto abaixo continua valendo para os espelhos.
 
 Hoje não há agente rodando localmente: os reais existem, mas não estão no repositório. Por isso:
@@ -317,7 +317,7 @@ middleware faz a partir da assinatura do erro. O que ele não faz é evitar o pr
 reduzir é o que vem depois: a cascata e os passos perdidos (§8.4). Num par de memórias como o do pandas com os imports,
 a assinatura do primeiro erro dispara a consulta das duas, e o segundo erro some (hipótese S2 do adendo do sandbox).
 
-**O terceiro braço tem a medida e o poder dele no [adendo B](plano-experimento-adendo-memoria-no-erro.md).** A medida é a
+**O terceiro braço tem a medida e o poder dele no [adendo B](adendos/B-memoria-no-erro.md).** A medida é a
 reincidência (dado o primeiro erro, houve um segundo?), e não "teve o erro?". Neste plano ele é confirmatório, dentro
 da família do experimento 1, com a condição de poder do adendo B.
 
@@ -626,7 +626,7 @@ fecha-se na etapa 3, com o número do piloto.
 ### 9.3 Como K (repetições) e N (tarefas) são decididos
 
 > **Status: em discussão (12/11/2026).** Esta seção se apoia no Miller (2024), cujo fichamento é 🔎 e ainda **falta o ✅**
-> do Rafael ([`literature/miller-2411.00640.md`](literature/miller-2411.00640.md)). Depois da leitura dele, a seção é
+> do Rafael ([`literature/miller-2411.00640.md`](../literature/miller-2411.00640.md)). Depois da leitura dele, a seção é
 > fechada ou ajustada, e a discussão continua: o que ainda está aberto está no §15 (decisões 7 a 9). Os valores de
 > partida do §9.2 valem até lá.
 
@@ -885,7 +885,7 @@ As decisões de cada unidade (quais agentes-espelho, quais memórias exploratór
 
 ## 16. Modelo de adendo — a ficha de uma unidade
 
-Para acrescentar uma unidade, copie esta ficha para `pocs/plano-experimento-adendo-<nome-da-unidade>.md` (o nome por extenso, sem o código), preencha cada item
+Para acrescentar uma unidade, copie esta ficha para `pocs/experimento-degrau-4/adendos/<letra>-<nome-da-unidade>.md` (a próxima letra livre e o nome por extenso, sem o código), preencha cada item
 com o fato e a fonte (nada que não tenha vindo do catálogo, da mineração ou do ambiente da base) e acrescente a linha
 na tabela do §0. O que a ficha não preencher fica escrito como "falta".
 
@@ -919,18 +919,18 @@ Para a parte estatística (§9 e §12), o complemento é Miller (2024).
 12/11/2026. Os marcados com † (Reflexion, ExpeL, ReasoningBank, MemGPT, Lost in the Middle, AgentDebug) **não foram
 buscados de novo**: o identificador vem das notas já existentes em `papers/` e da fila de leitura. Só três tiveram mais
 que o resumo lido, por um agente, em 12/11: **Miller (2024)**, o PDF inteiro, com fichamento em
-[`pocs/literature/miller-2411.00640.md`](literature/miller-2411.00640.md); **Gloaguen et al.** (o texto do
+[`pocs/literature/miller-2411.00640.md`](../literature/miller-2411.00640.md); **Gloaguen et al.** (o texto do
 arXiv, quase inteiro: desenho, medidas, estatística e limites conferidos); e o **SkillsBench** (as páginas de resumo da
 v1 e da v4). **Nenhum foi lido pelo Rafael** (o fichamento do Miller está marcado como 🔎, falta o ✅); os outros números
 citados vêm dos resumos.
 
-*Fontes internas que o plano usa:* a [hipótese de arquitetura](../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md)
-(§A, §C, §D, §F, "Scope clarification"), a [política de promoção](../discussion/hipoteses/promotion-policy-log-to-ltm.md),
-as conexões com o [Eval Engineering](../discussion/hipoteses/eval-engineering-skill-architecture-connections.md), a
-[análise do SDK interno](../discussion/hipoteses/internal-memory-sdk-vs-mechanism.md), as
-[reflexões de 28/08](../discussion/reflexoes/checkpoint-2026-08-28-reflections.md), as
-[perguntas abertas](../discussion/open-questions.md), o [doc 17](../analysis/2026-09-trace-law-flow/docs/17-validacao-memorias.md),
-os relatórios das bases 2 e 3 e o [blueprint](blueprint-m1-pocs-minimos.md).
+*Fontes internas que o plano usa:* a [hipótese de arquitetura](../../discussion/hipoteses/knowledge-as-infra-architecture-hypothesis.md)
+(§A, §C, §D, §F, "Scope clarification"), a [política de promoção](../../discussion/hipoteses/promotion-policy-log-to-ltm.md),
+as conexões com o [Eval Engineering](../../discussion/hipoteses/eval-engineering-skill-architecture-connections.md), a
+[análise do SDK interno](../../discussion/hipoteses/internal-memory-sdk-vs-mechanism.md), as
+[reflexões de 28/08](../../discussion/reflexoes/checkpoint-2026-08-28-reflections.md), as
+[perguntas abertas](../../discussion/open-questions.md), o [doc 17](../../analysis/2026-09-trace-law-flow/docs/17-validacao-memorias.md),
+os relatórios das bases 2 e 3 e o [blueprint](../blueprint-m1-pocs-minimos.md).
 
 *Método estatístico e desenho*
 
