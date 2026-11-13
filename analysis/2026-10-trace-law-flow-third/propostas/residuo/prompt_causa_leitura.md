@@ -29,7 +29,7 @@ repositório.** Você pode escrever um script de apoio e os arquivos da leitura,
 | **C** · `sintaxe_invalid_syntax` | 75 | investigar |
 | **D** · `dataframe_construtor` (JoogleAnalytics) | 19 | investigar |
 | **E** · `objeto_nao_chamavel` | 7 | checar se é nome de ferramenta usado como variável (a unidade do Ajuste 37) |
-| ficam no resíduo | 99 | `indexacao_do_interpretador` 34 (15 padrões), `tipo_outro` 16 (9 padrões), `pandas_outro` 11, `sintaxe_outra` 12, `data_ou_hora` 9, `json_nao_serializavel` 6, `comparacao_entre_tipos` 5, o resto da soma entre tipos |
+| ficam no resíduo | 104 | `indexacao_do_interpretador` 34 (15 padrões), `tipo_outro` 16 (9 padrões), `pandas_outro` 11, `sintaxe_outra` 12, `data_ou_hora` 9, `json_nao_serializavel` 6, `comparacao_entre_tipos` 5, o resto da soma entre tipos |
 | em observação (um mês só) | 43 | `numero_invalido_da_ferramenta` 23, `json_ausente_no_retorno` 13, `indice_de_lista_com_texto` 7 |
 
 **Perguntas (responda cada uma com contagens; numere os casos lidos de 1 em diante por pergunta e use só o número):**
