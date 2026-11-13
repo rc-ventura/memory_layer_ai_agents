@@ -482,7 +482,14 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   os 44 têm destino, nenhum vira Ajuste; segue a re-entrada (#64). **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
   420 (24%), mais de 99% na versão v1 (medir se é só volume); "etapa já executada" pode ser código do passo
   levantando `RuntimeError` (conferir no prompt do papel).
-  **Depois:** os maiores de causa sem regra.
+  **Balde "causa não identificada" (376: 250 `causa_sem_regra` + 126 `codigo_mal_escrito`, 13/11):** dos 20 padrões do
+  resíduo que passam na régua, 19 estão aqui. Mesmo caminho do balde do sintoma: medir primeiro a recorrência por
+  família de mecanismo (`validacao/contar_recorrencia_causa_residuo.py`: 19 famílias por regra sobre a mensagem, e
+  se um padrão recorre sozinho ou só somado, com o passo seguinte pela fonte), decidir em lote o que investiga e
+  deixar o resto no resíduo com motivo. Maiores padrões vistos (13/11): `invalid syntax` 75, soma entre tipos 33,
+  barra no fim da linha 32, `round` sobre texto 24, "Número inválido: deve conter n dígitos" 23, formato
+  desconhecido 20, construtor de DataFrame 19; o papel ContestacaoCivel em jul/ago concentra 99 dos 420 erros do
+  resíduo (24%; medir se é só volume).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
