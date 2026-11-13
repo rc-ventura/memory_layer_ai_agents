@@ -459,9 +459,16 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   nome 3, mas só o PDF passa sozinho) e o agente do ambiente testou a tabela de decisão (nenhum grupo tem erro nas
   outras unidades). **Decisão (13/11, `decisoes.md`):** só o PDF vai à investigação (13 erros, 12 execuções, fev a
   abr, AgenteEstruturador, `LayoutError` vindo de uma de duas ferramentas, o agente conserta no passo seguinte em
-  13 de 13); o resto fica no resíduo com motivo, sem Ajuste. Falta: a medida do que o agente muda no passo
-  seguinte (`validacao/contar_pdf_residuo.py`, a rodar no ambiente), a interpretação (R2: agente ou ferramenta) e,
-  se passar, o Ajuste. **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
+  13 de 13); o resto fica no resíduo com motivo, sem Ajuste. **Medida do que o agente muda no passo seguinte**
+  (`validacao/contar_pdf_residuo.py`, rodada no ambiente em 13/11): 8 erros do `orquestrador_eletronico` e 5 do
+  `orquestrador_papel`; o agente **deixa de chamar a ferramenta em 6 de 13**, chama de novo com o código ≥ 20%
+  menor em 4 e muda outra coisa em 3; **divide o conteúdo em várias chamadas em 0**. No `orquestrador_papel` o maior
+  literal do passo que falhou é pequeno (mediana 74 caracteres): o conteúdo grande chega por variável, de passos
+  anteriores. **Correção à leitura anterior:** "13 de 13 sem erro no passo seguinte" não é "o agente corrige": em 6
+  deles o passo seguinte nem chama a ferramenta, e em 9 de 13 a execução acaba logo depois — o PDF pode ter deixado de
+  ser gerado (falha silenciosa). Falta: para onde o agente vai nos 6 (ferramenta irmã? volta no depois? a execução
+  acaba sem PDF?), medido pela extensão do mesmo script (as ferramentas chamadas nos dois passos seguintes); depois
+  a interpretação (R2: agente, ferramenta ou falha silenciosa) e, se passar, o Ajuste. **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
   420 (24%), mais de 99% na versão v1 (medir se é só volume); "etapa já executada" pode ser código do passo
   levantando `RuntimeError` (conferir no prompt do papel).
   **Depois:** os maiores de causa sem regra.

@@ -60,6 +60,62 @@ class TestMudanca(unittest.TestCase):
         self.assertEqual(P.mudanca(FALHOU, seguinte, FERR)[0], "dividiu")
 
 
+class TestPassosSeguintes(unittest.TestCase):
+    def test_ferramentas_sao_so_funcoes_simples_fora_embutidos_e_definidas(self):
+        cod = ("import json\ndef auxiliar(x):\n    return x\n"
+               "r = busca_x(1)\nauxiliar(r)\nprint(len(r))\nr.append(2)\njson.dumps(r)\nbusca_x(2)\nfinal_answer(r)\n")
+        self.assertEqual(P.ferramentas(P._arvore(cod)), ["busca_x", "final_answer"])
+
+    def test_ferramentas_dos_dois_passos_e_se_a_ferramenta_volta(self):
+        seguinte = "x = outra_ferramenta(1)\nprint(x)\n"
+        depois = f"{FERR}(tabela='a')\nfinal_answer('ok')\n"
+        q, m = P.mudanca(FALHOU, seguinte, FERR, depois)
+        self.assertEqual(q, "outra_ferramenta")
+        self.assertEqual(m["ferramentas_seguinte"], "outra_ferramenta")
+        self.assertEqual(m["ferramentas_next2"], f"final_answer {FERR}")
+        self.assertEqual(m["chamadas_next2"], 1)
+        self.assertFalse(m["fim_no_seguinte"])
+
+    def test_a_execucao_termina_no_passo_seguinte(self):
+        q, m = P.mudanca(FALHOU, "final_answer('ok')\n", FERR, None)
+        self.assertEqual(q, "outra_ferramenta")
+        self.assertTrue(m["fim_no_seguinte"])
+        self.assertIsNone(m["chamadas_next2"])
+        # sem passo seguinte não é "terminou no seguinte": o papel nem teve o passo
+        q, m = P.mudanca(FALHOU, None, FERR, None)
+        self.assertEqual(q, "sem_passo")
+        self.assertFalse(m["fim_no_seguinte"])
+
+    def test_seguinte_que_nao_parseia_ainda_diz_as_ferramentas_do_depois(self):
+        q, m = P.mudanca(FALHOU, f"{FERR}(", FERR, f"final_answer(1)\n")
+        self.assertEqual(q, "nao_parseia")
+        self.assertEqual(m["ferramentas_next2"], "final_answer")
+
+    def test_a_linha_de_comando_imprime_para_onde_o_agente_vai(self):
+        import contextlib
+        import io
+        cod = [(FALHOU, "final_answer('ok')\n"),                                   # larga, a execução termina
+               (FALHOU, "busca_x(1)\n"),                                           # larga, e depois a ferramenta volta
+               (FALHOU, f"{FERR}(tabela='{LONGO[:50]}')\n")]                       # encurta
+        f = fonte(cod)
+        f["next2_code_action"] = [None, f"{FERR}(tabela='a')\n", None]
+        with tempfile.TemporaryDirectory() as tmp:
+            c, a = Path(tmp) / "casos.csv", Path(tmp) / "fonte.parquet"
+            casos(3).to_csv(c, index=False)
+            f.to_parquet(a)
+            saida = io.StringIO()
+            with contextlib.redirect_stdout(saida):
+                self.assertEqual(P.main(["--casos", str(c), "--fonte", str(a)]), 0)
+            T = pd.read_csv(Path(tmp) / "pdf_medidas.csv")
+        txt = saida.getvalue()
+        self.assertEqual(list(T.columns), P.COLUNAS)
+        self.assertIn("os que largaram a ferramenta (2)", txt)
+        self.assertIn("a ferramenta volta no depois dele em 1", txt)
+        self.assertIn("a execução termina no passo seguinte em 1", txt)
+        self.assertIn("a ferramenta nunca volta nos dois passos seguintes: 1 de 3; desses, a execução termina no passo "
+                      "seguinte em 1 (sem a ferramenta e sem fim: 0)", txt)
+
+
 def fonte(codigos):
     """A fonte sintética: um passo por erro, com o código que falhou e o do passo seguinte."""
     return pd.DataFrame([{"cod_idef_exeo": f"e{i}", "cod_idef_aget": "1", "papel": "P1", "step_pos": 1,

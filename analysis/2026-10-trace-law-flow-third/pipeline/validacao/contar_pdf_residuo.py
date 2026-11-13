@@ -10,6 +10,9 @@ A medida, por erro, entre o código do passo que falhou e o do passo seguinte (s
   - os caracteres e as linhas do código;
   - quantas vezes a ferramenta da linha que falhou é chamada em cada um (`chamadas`);
   - o maior literal de texto (caracteres) — onde mora o conteúdo que o PDF recebe;
+  - **as ferramentas chamadas** no passo seguinte e no depois dele (nomes chamados como função simples, fora os embutidos
+    do Python e as funções definidas no próprio código; um `from x import y` conta), se a ferramenta que falhou volta a
+    ser chamada no segundo passo e se a execução termina no passo seguinte;
 e o que mudou, por regra e na ordem (a primeira que casa vale):
   sem_passo           o papel não teve passo seguinte;
   nao_parseia         um dos dois códigos não é Python inteiro (só os caracteres contam);
@@ -27,6 +30,8 @@ Grava `pdf_medidas.csv` (um erro por linha, só números, sem identificador) na 
 """
 import argparse
 import ast
+import builtins
+from collections import Counter
 from pathlib import Path
 import statistics
 import sys
@@ -42,7 +47,9 @@ GRUPO = "pdf_layout"
 MUDANCAS = ["sem_passo", "nao_parseia", "outra_ferramenta", "dividiu", "encurtou", "outra_mudanca"]
 ENCURTOU = 0.8      # o código do passo seguinte é pelo menos 20% menor
 COLUNAS = ["role", "mes", "ferramenta", "mudanca", "chars_falhou", "chars_seguinte", "linhas_falhou",
-           "linhas_seguinte", "chamadas_falhou", "chamadas_seguinte", "literal_falhou", "literal_seguinte"]
+           "linhas_seguinte", "chamadas_falhou", "chamadas_seguinte", "literal_falhou", "literal_seguinte",
+           "ferramentas_seguinte", "ferramentas_next2", "chamadas_next2", "fim_no_seguinte"]
+EMBUTIDOS = set(dir(builtins))
 
 
 def _nome(f):
@@ -68,22 +75,37 @@ def chamadas(t, ferramenta):
     return sum(isinstance(n, ast.Call) and _nome(n.func) == ferramenta for n in ast.walk(t))
 
 
+def ferramentas(t):
+    """Os nomes chamados como função simples (não método), fora os embutidos do Python e as funções ou classes definidas
+    no próprio código: as ferramentas que o passo chama. Ordenados, sem repetição."""
+    definidas = {n.name for n in ast.walk(t) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))}
+    return sorted({n.func.id for n in ast.walk(t) if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+                   and n.func.id not in EMBUTIDOS and n.func.id not in definidas})
+
+
 def maior_literal(t):
     """O maior literal de texto da árvore, em caracteres (0 se não houver)."""
     return max((len(n.value) for n in ast.walk(t) if isinstance(n, ast.Constant) and isinstance(n.value, str)),
                default=0)
 
 
-def mudanca(falhou, seguinte, ferramenta):
-    """O que mudou do código que falhou para o do passo seguinte, e as medidas (ver o docstring)."""
+def mudanca(falhou, seguinte, ferramenta, depois=None):
+    """O que mudou do código que falhou para o do passo seguinte, e as medidas (ver o docstring). `depois`: o código do
+    segundo passo seguinte (ou None), para as ferramentas dele e para saber se a ferramenta que falhou volta."""
+    c = _arvore(depois)
     m = {"chars_falhou": 0 if LIM._vazio(falhou) else len(str(falhou)),
          "chars_seguinte": 0 if LIM._vazio(seguinte) else len(str(seguinte)),
          "linhas_falhou": 0 if LIM._vazio(falhou) else len(str(falhou).splitlines()),
          "linhas_seguinte": 0 if LIM._vazio(seguinte) else len(str(seguinte).splitlines()),
-         "chamadas_falhou": None, "chamadas_seguinte": None, "literal_falhou": None, "literal_seguinte": None}
+         "chamadas_falhou": None, "chamadas_seguinte": None, "literal_falhou": None, "literal_seguinte": None,
+         "ferramentas_seguinte": "", "ferramentas_next2": "" if c is None else " ".join(ferramentas(c)),
+         "chamadas_next2": None if c is None else chamadas(c, ferramenta),
+         "fim_no_seguinte": LIM._vazio(depois) and not LIM._vazio(seguinte)}
     if LIM._vazio(seguinte):
         return "sem_passo", m
     a, b = _arvore(falhou), _arvore(seguinte)
+    if b is not None:
+        m["ferramentas_seguinte"] = " ".join(ferramentas(b))
     if a is None or b is None:
         return "nao_parseia", m
     m.update(chamadas_falhou=chamadas(a, ferramenta), chamadas_seguinte=chamadas(b, ferramenta),
@@ -109,7 +131,7 @@ def medir(G, F):
         faltam += l is None
         ferr = INFRA.funcao_na_linha(str(r["mensagem"])).split(".")[-1]
         quem, m = mudanca(*((None, None) if l is None else (l.get("error_code_action"), l.get("next_code_action"))),
-                          ferr)
+                          ferr, None if l is None else l.get("next2_code_action"))
         linhas.append({"role": r["role"], "mes": r["mes"], "ferramenta": ferr, "mudanca": quem, **m})
     return pd.DataFrame(linhas, columns=COLUNAS), faltam
 
@@ -117,6 +139,23 @@ def medir(G, F):
 def _mediana(s):
     s = [x for x in s if x is not None and x == x]
     return int(statistics.median(s)) if s else None
+
+
+def _contar_nomes(serie):
+    return dict(Counter(n for s in serie for n in str(s).split() if s == s and n).most_common())
+
+
+def _depois(g):
+    """Para onde o agente vai: as ferramentas do passo seguinte (nos que largaram a ferramenta) e se ela volta."""
+    larg = g[g.mudanca.eq("outra_ferramenta")]
+    if len(larg):
+        print(f"  os que largaram a ferramenta ({len(larg)}): ferramentas do passo seguinte "
+              f"{_contar_nomes(larg.ferramentas_seguinte)}; do depois dele {_contar_nomes(larg.ferramentas_next2)}; "
+              f"a ferramenta volta no depois dele em {int((larg.chamadas_next2.fillna(0) > 0).sum())}; a execução "
+              f"termina no passo seguinte em {int(larg.fim_no_seguinte.sum())}")
+    print(f"  todos ({len(g)}): a ferramenta volta no passo seguinte em {int((g.chamadas_seguinte.fillna(0) > 0).sum())} "
+          f"e no depois dele em {int((g.chamadas_next2.fillna(0) > 0).sum())}; nunca volta nos dois passos em "
+          f"{int(((g.chamadas_seguinte.fillna(0) == 0) & (g.chamadas_next2.fillna(0) == 0)).sum())}")
 
 
 def _imprimir(T, faltam):
@@ -133,8 +172,13 @@ def _imprimir(T, faltam):
               f"{_mediana(g.literal_seguinte)}")
         print(f"  chamadas da ferramenta (falhou → seguinte): {g.chamadas_falhou.tolist()} → "
               f"{g.chamadas_seguinte.tolist()}")
+        _depois(g)
     d = T.mudanca.value_counts().reindex(MUDANCAS, fill_value=0)
     print(f"\n== resumo: {d[d > 0].to_dict()}")
+    nunca = T[(T.chamadas_seguinte.fillna(0) == 0) & (T.chamadas_next2.fillna(0) == 0)]
+    print(f"   a ferramenta nunca volta nos dois passos seguintes: {len(nunca)} de {len(T)}; desses, a execução termina "
+          f"no passo seguinte em {int(nunca.fim_no_seguinte.sum())} (sem a ferramenta e sem fim: "
+          f"{int((~nunca.fim_no_seguinte).sum())})")
 
 
 def main(argv=None):
