@@ -165,10 +165,10 @@ A mediana subestima o custo, porque execuções com erro são mais longas; o tet
 
 | O que falta | Por que importa | Como fechar |
 |---|---|---|
-| tokens e duração do **passo com erro**, por memória e papel | é a economia `s` da Tabela 3, hoje uma hipótese | o [prompt da máquina 2](prompt-maquina-2-custo-do-erro.md), passo 2 |
-| a volumetria da unidade do **retorno que chega como texto** | decide se vale incluí-la (§10.2) | o mesmo prompt, passo 3 |
-| o **modelo e a versão do prompt de hoje** de cada agente | explicaria a queda de agosto | o mesmo prompt, item 3 (ou a sua leitura do código) |
-| **a taxa de hoje** | a base termina em agosto | o mesmo prompt, item 4 (as execuções dos últimos 30 dias); e, de vez, o piloto da fase 1 |
+| tokens e duração do **passo com erro**, por memória e papel | é a economia `s` da Tabela 3, hoje uma hipótese | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-sandbox analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21/perfis/U_sandbox/casos.csv` |
+| a volumetria da unidade do **retorno que chega como texto** | decide se vale incluí-la (§10.2) | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-unidade analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21/perfis/U_tipo_retorno/casos.csv --nome U_tipo_retorno` |
+| o **modelo e a versão do prompt de hoje** de cada agente | explicaria a queda de agosto | a sua leitura do código dos agentes |
+| **a taxa de hoje** | a base termina em agosto | a data da última execução e as execuções dos últimos 30 dias de cada papel, no banco de traces; e, de vez, o piloto da fase 1 |
 | se o **input de usuário** das execuções com erro pode ser recuperado | sem ele não há conjunto gatilho | sua leitura do código e do banco de traces (§3.1 do plano da fase 1) |
 
 O script novo é `execucao/volumetria_custo_passo.py` (com 3 testes), e lê a tabela de casos que a rodada já guarda (`perfis/<unidade>/casos.csv`, que tem os tokens e a duração de cada passo com erro).

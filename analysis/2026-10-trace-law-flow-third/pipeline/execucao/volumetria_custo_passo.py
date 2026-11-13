@@ -9,7 +9,7 @@ e `dur_s` do passo que errou):
 Só sai contagem, nome de memória, de unidade, de papel e mês, tokens e segundos: nenhum identificador de execução, nenhum
 texto de caso. Fica fora do hash do código da rodada.
 
-Uso, da raiz (os caminhos exatos estão em `pocs/prompt-maquina-2-custo-do-erro.md`):
+Uso, da raiz:
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-sandbox <casos.csv> --erros-lidos <erros_lidos.csv>
     uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-unidade <casos.csv> --nome <U_...>
 """

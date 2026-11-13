@@ -206,10 +206,9 @@ piloto.**
 
 ### 4.6 A volumetria medida (base 3, 12/11/2026)
 
-> O método, os intervalos de confiança e o racional de cada tabela estão no [relatório da volumetria](relatorio-volumetria-fase-1.md); o que falta medir, no [prompt do custo do erro](prompt-maquina-2-custo-do-erro.md).
+> O método, os intervalos de confiança e o racional de cada tabela estão no [relatório da volumetria](relatorio-volumetria-fase-1.md); o que falta medir, no §9 dele.
 
-**De onde vem.** O script `execucao/volumetria_memorias.py`, rodado na máquina 2 pelo
-[prompt da volumetria](prompt-maquina-2-volumetria.md), sobre a mineração do sandbox (1.100 erros lidos) e as contagens
+**De onde vem.** O script `execucao/volumetria_memorias.py`, rodado na máquina 2, sobre a mineração do sandbox (1.100 erros lidos) e as contagens
 (71.894 linhas), com a rodada `observada_c2e5e8b31f297d21`. Nenhum aviso de papel sem correspondente. Só contagens saíram.
 Transcrevi as linhas abaixo e conferi a transcrição: em todas, a incidência impressa bate com a divisão das duas
 contagens. O arquivo de custo por papel não existe na rodada mais recente, então **os tokens do passo com erro não foram
