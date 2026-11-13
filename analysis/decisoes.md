@@ -561,5 +561,22 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   destino para todos os grupos. Porquê: os erros novos de uma unidade já vêm investigados pelo grupo do resíduo que os
   levou (ex.: os 47 do Ajuste 38), e outros Ajustes do mesmo balde podem levar mais erros à mesma lição; uma emenda
   por lição, no fim, roda os degraus uma vez só (b3 #64).
+- **13/11, o que sobrou do balde "sintoma não reconhecido" (44 erros): só o PDF vai à investigação; o resto fica no
+  resíduo com motivo, sem Ajuste** (decisão do Rafael, depois de medir a recorrência por grupo e de o agente do ambiente
+  testar a tabela de decisão; rodada `c2e5e8b31f297d21`). Régua: ≥ 3 execuções e ≥ 2 meses
+  (`validacao/contar_recorrencia_sintoma_residuo.py`). **Investigar:** o PDF (13 erros, 12 execuções, fev a abr, papel
+  AgenteEstruturador; o `LayoutError` vem de uma de duas ferramentas, e o agente conserta no passo seguinte em 13 de
+  13) — recorre sozinho, é o único. **Ficam no resíduo:** dado de tipo errado ou conta (7: 5 padrões, 5 funções, 2
+  papéis), etapa já executada (3: 3 padrões; os 300 mil tokens são de um passo só, não do grupo) e sem nome (3: 2
+  funções, 2 papéis) — passam só somando, são sacolas de mecanismos diferentes; arquivo não achado (2), desempacotar
+  (2) e planilha (1), por baixo volume. **Em observação:** o texto terminado em barra (8: só agosto, só
+  ContestacaoCivel, só a versão v1, 7 funções diferentes) e a recusa do LLM (5; decidida em 11/11): passam na régua se
+  aparecerem em outro mês. Nenhum dos grupos tem erro nas outras unidades nem no outro balde (salvo 1 "sem nome" na
+  causa não identificada), então o tamanho deles é o dos 44. O agente do ambiente rotulou três grupos como "a
+  evidência contradiz"; os números (heterogeneidade) apoiam deixá-los no resíduo, e é assim que a decisão os lê.
+  **Pistas para o resíduo de causa sem regra:** o papel ContestacaoCivel concentra 99 dos 420 erros do resíduo em
+  julho e agosto (24%), mais de 99% na versão v1 (a versão não explica; falta medir se é só volume); em 2 dos 3 erros
+  de "etapa já executada" a linha que falhou chama `RuntimeError(...)` (o código do passo levanta o erro: conferir no
+  prompt do papel). → b3 #5.
 
 ---
