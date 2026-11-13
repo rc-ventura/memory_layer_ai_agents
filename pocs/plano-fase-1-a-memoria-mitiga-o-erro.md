@@ -63,6 +63,10 @@ o RespostaBacen, serve para **verificar dano**: as duas memórias globais (impor
 do mesmo jeito, e o experimento mede se elas atrapalham onde o erro é raro. É parente, não igual, do dano por memória
 errada que o MERIT mede (memória desatualizada, contraditória ou distratora; Mishra e Mishra, 2026).
 
+**Atualização de 12/11/2026:** a volumetria foi medida na máquina 2 e está no §4.6. Ela muda a ordem dos pares: o
+JoogleAnalytics e o ContestacaoCivel são os dois alvos viáveis; o CalculoTrabalhista é caro demais para o confirmatório; o
+RoteadorCivel é barato e serve de caso "mitiga, mas não compensa".
+
 **Regra para um par entrar na fase 1:** o erro precisa aparecer o bastante para a conta do §4 fechar. Um par que não
 fecha vai para "monitorada" e deixa de ser tema desta fase, em vez de rodar sem poder.
 
@@ -199,6 +203,85 @@ Um exemplo, **com valores de hipótese e só para ilustrar**: `p` = 40%, reduç�
 122 execuções com o erro por braço; com `K = 3` e `ρ` = 0, são 41 inputs; dois braços (sem memória e com memória) dão
 cerca de 250 execuções por par no conjunto gatilho; mais o conjunto controle e o placebo. **Os números reais saem do
 piloto.**
+
+### 4.6 A volumetria medida (base 3, 12/11/2026)
+
+> O método, os intervalos de confiança e o racional de cada tabela estão no [relatório da volumetria](relatorio-volumetria-fase-1.md); o que falta medir, no [prompt do custo do erro](prompt-maquina-2-custo-do-erro.md).
+
+**De onde vem.** O script `execucao/volumetria_memorias.py`, rodado na máquina 2 pelo
+[prompt da volumetria](prompt-maquina-2-volumetria.md), sobre a mineração do sandbox (1.100 erros lidos) e as contagens
+(71.894 linhas), com a rodada `observada_c2e5e8b31f297d21`. Nenhum aviso de papel sem correspondente. Só contagens saíram.
+Transcrevi as linhas abaixo e conferi a transcrição: em todas, a incidência impressa bate com a divisão das duas
+contagens. O arquivo de custo por papel não existe na rodada mais recente, então **os tokens do passo com erro não foram
+medidos**; uso a mediana de tokens da execução do papel.
+
+**Os pares, com os dois últimos meses da base (julho e agosto de 2026):**
+
+| Agente · memória | Execuções com o erro (total) | Execuções do papel (total) | Incidência jul–ago | Para ver o erro 1 vez (95%) | Mediana de tokens · passos |
+|---|---:|---:|---:|---:|---|
+| **JoogleAnalytics · pandas** | 231 | 584 | 35,0% (64 de 183) | 7 execuções | 88 mil · 10 |
+| **JoogleAnalytics · imports (`json`)** | 107 | 584 | 22,4% (41 de 183) | 12 | 88 mil · 10 |
+| **ContestacaoCivel · funções proibidas** | 254 | 13.454 | 1,9% (251 de 13.405) | 159 | 35 mil · 2 |
+| CalculoTrabalhista · imports | 41 | 990 | 2,9% (12 de 412) | 102 | **549 mil** · 12 |
+| RoteadorCivel · imports | 241 | 45.271 | 0,5% (167 de 34.978) | 626 | 10 mil · 3 |
+| RespostaBacen · funções proibidas | 5 | 3.044 | 0% (0 de 76) | — | 40 mil · 4 |
+
+**Achado 1 — no JoogleAnalytics o erro despencou em agosto.**
+
+| Mês de 2026 | mar | abr | mai | jun | jul | **ago** |
+|---|---:|---:|---:|---:|---:|---:|
+| pandas | 26% | 41% | 48% | 57% | 49% | **13%** (9 de 70) |
+| imports (`json`) | 11% | 9% | 14% | 35% | 35% | **1,4%** (1 de 70) |
+
+A queda de julho para agosto não é sorte (os intervalos de confiança não se tocam). **O porquê é hipótese:** agosto é o
+mês da troca de modelo em outros papéis (relatório da base 2), e pode ter mudado o modelo ou o prompt deste papel; a base
+2 pode responder, com o modelo de cada execução do JoogleAnalytics em agosto. **A consequência é fato:** a base termina em
+agosto e hoje é novembro. O erro pode já ter sumido na versão atual do agente. A porta "o erro ainda existe hoje" do
+piloto (§6) é a primeira coisa a medir, antes de qualquer outra.
+
+No sentido contrário, no ContestacaoCivel o erro das funções proibidas **subiu** de julho para agosto (1,4% para 2,1%), e
+no RoteadorCivel o dos imports caiu (0,7% para 0,2%).
+
+**Achado 2 — a conta de compensação muda de papel para papel.** Hipótese de trabalho: o passo perdido custa a mediana de
+tokens da execução dividida pela mediana de passos; a memória custa o seu tamanho (estimado: 20 tokens a dos imports, 35 o
+par, 80 a das funções proibidas) em cada passo.
+
+| Agente · memória | Custo de injetar `c` | Economia por erro evitado `s` | Incidência de equilíbrio | Incidência jul–ago | Eficácia mínima para pagar |
+|---|---:|---:|---:|---:|---:|
+| JoogleAnalytics · par | 360 | 17 mil (dois passos) | 2,0% | 35% (13% em agosto) | **6%** (16% com a taxa de agosto) |
+| CalculoTrabalhista · imports | 245 | 45 mil | 0,5% | 2,9% | 19% |
+| ContestacaoCivel · funções proibidas | 160 | 18 mil | 0,9% | 1,9% | **48%** |
+| RoteadorCivel · imports | 60 | 3 mil | 1,8% | 0,5% | **não paga** (precisaria de mais de 100%) |
+
+Leitura: no JoogleAnalytics a memória paga com quase qualquer eficácia; no ContestacaoCivel ela precisa evitar metade dos
+erros para empatar; no RoteadorCivel não paga, porque a execução é pequena (3 passos) e o erro é raro. **Todos esses
+números dependem da hipótese do custo do passo**, e o experimento os mede.
+
+**Achado 3 — quanto custa rodar cada par.** Confirmatório no conjunto gatilho, três braços (sem memória, com memória,
+placebo), `n` de 82 a 122 execuções por braço (taxa de reprodução de 40%, redução de 50%):
+
+| Agente | Execuções | Tokens (mediana) | Inputs com o erro disponíveis |
+|---|---:|---:|---:|
+| JoogleAnalytics | 246 a 366 | 22 a 32 milhões | 231 |
+| ContestacaoCivel | 246 a 366 | 9 a 13 milhões | 254 |
+| RoteadorCivel | 246 a 366 | 2 a 4 milhões | 241 |
+| CalculoTrabalhista | 246 a 366 | **135 a 201 milhões** | 41 (cada input repetido 2 a 3 vezes) |
+
+**O que eu recomendo, com esses números:**
+
+1. **JoogleAnalytics (par imports + pandas) e ContestacaoCivel (funções proibidas) são os dois alvos da fase 1.** Há
+   inputs suficientes, o custo cabe, e as duas contas de compensação são interessantes e diferentes.
+2. **CalculoTrabalhista sai do confirmatório.** Só 41 inputs com o erro e cada execução custa meio milhão de tokens. Fica
+   como exploratório pequeno, ou monitorado.
+3. **RoteadorCivel entra só se você quiser o caso "mitiga, mas não compensa"**: é o mais barato de rodar e a conta prevê
+   que a memória não paga. Não estava na sua lista de agentes.
+4. **RespostaBacen** continua como verificação de dano, mas teve só 76 execuções em julho e agosto: confira se o papel
+   ainda está ativo.
+5. **No JoogleAnalytics, nem é preciso escolher inputs que erraram:** com 13% a 35% de incidência, uma amostra sorteada
+   já mostra o erro (7 a 12 execuções para vê-lo uma vez). Isso elimina o risco de regressão à média nesse par.
+
+**O que continua sem medida:** os tokens e a duração do passo com erro (o arquivo de custo não existe na rodada mais
+recente); o modelo de cada execução; e a taxa de hoje, que só o piloto dá.
 
 ## 5. O que se mede e como
 

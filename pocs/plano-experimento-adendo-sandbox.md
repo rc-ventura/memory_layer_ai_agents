@@ -75,9 +75,10 @@ de propósito (roadmap da base 3, #51).
 | do pandas (`pd`) | **JoogleAnalytics 231** (de 233 de `pd` na base 3; os outros 2 são do CalculoTrabalhista) | dossiê §1, parte C; catálogo |
 | das funções proibidas | concentrada no **ContestacaoCivel** (450 de 523 na leitura do dossiê de 19/10, antes dos ajustes seguintes) e, nos outros papéis, `repr` e `dir` em depuração; 92% dos erros são inspeção de valor | dossiê §2e–§2h, 26/10 |
 
-**Falta (etapa 1):** a incidência `π` por papel e mês (execuções com o erro ÷ execuções do papel); a divisão por papel
-da memória das funções proibidas com os números atuais (317); o teto de economia por papel e memória; a duração mediana
-do passo com erro por papel. Nenhum desses números foi calculado para este plano.
+**Medido em 12/11/2026:** a incidência por papel e mês está no [plano da fase 1, §4.6](plano-fase-1-a-memoria-mitiga-o-erro.md) (JoogleAnalytics: 35% no pandas e 22% no `json` em julho–agosto, com queda forte em agosto; ContestacaoCivel: 1,9% nas funções proibidas, com 254 execuções com esse erro; RoteadorCivel: 0,5% nos imports).
+
+**Ainda falta:** o teto de economia por papel e memória, e os tokens e a duração do passo com erro por papel (o arquivo
+de custo por papel não existe na rodada mais recente).
 
 Fatos sobre o comportamento do erro que moldam o desenho:
 
