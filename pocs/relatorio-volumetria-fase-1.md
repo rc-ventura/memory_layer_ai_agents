@@ -182,9 +182,25 @@ A mediana subestima o custo, porque execuções com erro são mais longas; o tet
 |---|---|---|
 | tokens e duração do **passo com erro**, por memória e papel | **medido** (Tabela 3) | — |
 | a volumetria da unidade do **retorno que chega como texto** | **medida**, do período inteiro (§10.2) | a série mês a mês só sai se a unidade ganhar perfil: `executar.py analisar --perfil-investigacao U_tipo_retorno` e `volumetria_custo_passo.py --casos-unidade` |
-| o **modelo e a versão do prompt de hoje** de cada agente | **não visto**: o agente da máquina 2 respondeu "não vi" para os quatro papéis | a sua leitura do código dos agentes |
+| o **modelo e a versão do prompt de hoje** de cada agente | **parcial**: o agente da máquina 2 triangulou, por `exec_id`, as execuções da base 3 que também estão nas bases 1 e 2 (ver abaixo). É o passado, não o de hoje | a sua leitura do código dos agentes |
 | **a taxa de hoje** | **não responde**: o banco de traces da máquina 2 termina em 29/08/2026 (a execução mais recente de cada papel é de 27 a 29/08) | o piloto da fase 1 |
-| se o **input de usuário** das execuções com erro pode ser recuperado | aberto | sua leitura do código e do banco de traces (§3.1 do plano da fase 1) |
+| se o **input de usuário** das execuções com erro pode ser recuperado | **sim** (resposta do Rafael, 13/11/2026); falta só conferir por papel | a leitura do código e do banco de traces (§3.1 do plano da fase 1) |
+
+**Modelo e versão do prompt, nas execuções das bases 1 e 2 que também estão na base 3** (junção por `exec_id`; só os nomes e as contagens):
+
+| Papel | Execuções trianguladas (base 1 · base 2) | Modelo | Versões do prompt |
+|---|---|---|---|
+| ContestacaoCivel | 3 · 224 | `gpt-5.2-2025-12-11` (uma variante com sufixo `-gs` em 22) | **quatro** na base 2: 152, 51, 20 e 1 execuções |
+| RespostaBacen | 24 · 56 | `azure/o4-mini-2025-04-16` (alguns sem registro) | uma só |
+| JoogleAnalytics | 1 · 10 | `gpt-4.1-2025-04-14` (2 sem registro) | uma só |
+| CalculoTrabalhista | 8 · 12 | `gpt-4.1-2025-04-14` (alguns sem registro) | uma só |
+
+**O que isso diz e o que não diz.** **Fato:** o ContestacaoCivel teve quatro versões de prompt na base 2, então o prompt
+desse agente muda; o experimento precisa **fixar e registrar** o modelo e a versão do prompt. **Não diz nada sobre a queda de
+agosto no JoogleAnalytics:** só 11 execuções dele foram trianguladas, todas com o mesmo modelo e o mesmo prompt, e isso não
+cobre julho nem agosto. **Hipótese minha:** o mesmo código de versão (`b0f37eea`) aparece em três agentes diferentes, o que
+sugere que ele identifica um prompt-base compartilhado e não o prompt do agente; a leitura do código confirma ou não. Nada
+disso é "de hoje".
 
 **Execuções nos "últimos 30 dias" do banco da máquina 2** (a contagem é relativa ao fim da base, em agosto, e não a hoje):
 ContestacaoCivel 8.880 (a última em 29/08), RespostaBacen 72 (27/08), JoogleAnalytics 75 (29/08), CalculoTrabalhista 360
@@ -207,7 +223,7 @@ Sem valor, `--casos-sandbox` e `--rodada` procuram a rodada mais recente que ten
 **A pergunta da fase 1 é "a memória mitiga o erro, e a que custo?".** A autogerada pergunta outra coisa: "a taxonomia vale
 como produtora de memória, ou o agente aprende sozinho?". As duas importam, mas não devem se misturar no veredito.
 
-**O que eu recomendo:** incluir a autogerada **como um quarto braço, exploratório, só no JoogleAnalytics**.
+**Decidido em 13/11/2026 (Rafael):** incluir a autogerada **como um quarto braço, exploratório, só no JoogleAnalytics**.
 
 - **Por que lá:** é o par em que o erro aparece mais (mais lições geradas no piloto) e o mais barato de testar com sorteio.
   O braço a mais custa cerca de 131 execuções e ~12 milhões de tokens, mais uma chamada de LLM por execução com erro do

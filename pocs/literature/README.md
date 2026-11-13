@@ -26,6 +26,7 @@ do paper traz a página.
 | Arquivo | Paper | Nível | Para que serve no plano |
 |---|---|---|---|
 | [`miller-2411.00640.md`](miller-2411.00640.md) | **Miller** — *Adding Error Bars to Evals*, Anthropic (arXiv, 2024) | 🔎, **falta o ✅** | A estatística do plano: decomposição da variância (quantas repetições por tarefa, e por que muitas tarefas), pareamento por tarefa, erro-padrão agrupado e a fórmula de tamanho de amostra (§9 e §12 do plano). |
+| [`holm-1979.md`](holm-1979.md) | **Holm** — *A simple sequentially rejective multiple test procedure* (Scandinavian J. of Statistics, 1979) | 📝 do artigo (texto não obtido); fonte secundária lida inteira (Abdi, 2010); **falta o ✅** | A correção para vários pares (§9 e §12 do plano da fase 1): o procedimento, o que a fonte confirma e a opção do placebo que a verificação derrubou. |
 
 ## Correções que estes fichamentos produziram no plano
 
@@ -36,6 +37,10 @@ do paper traz a página.
    empilhadas. Corrigido no §9.1 e no §12 do plano.
 2. **Miller (12/11/2026).** O "3 a 5 repetições por tarefa" do plano **não é um número do paper**: o paper dá o critério
    (`E[σ²]/K ≪ Var(x)`), e o piloto escolhe o `K`. Corrigido na tabela do §0 e no §9.1.
+3. **Holm (13/11/2026).** A explicação que eu tinha dado da "opção A" do placebo (testar o placebo só nos pares aprovados,
+   com o Holm continuando em três testes e sem custo) **não se sustenta**: a comparação com o placebo é outro conjunto de testes,
+   e controlar o erro da família nesse caso é o problema dos portões (*gatekeeping*), que não é trivial. Retirada do
+   que ia para o plano; a alternativa é o teste de interseção-união por par, com Holm entre os pares (a confirmar em Berger, 1982).
 
 ## Na fila — citados no plano, ainda sem fichamento
 

@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.6 / 1.7 (alimenta 2.4 e 3.6) · **Tipo:** Receita passo a passo, com racionais · **Status:** rascunho para discussão · **Data:** 12/11/2026
+> **Sub-atividade:** 1.6 / 1.7 (alimenta 2.4 e 3.6) · **Tipo:** Receita passo a passo, com racionais · **Status:** desenho aprovado bloco a bloco em 13/11/2026 (os oito blocos e o 1-B; estado no §14); falta ler Berger e Hsu e fazer o pré-registro depois do piloto · **Data:** 12/11/2026
 
 # Fase 1 — a memória, de fato, mitiga o erro? (agentes reais)
 
@@ -24,51 +24,193 @@ Só depois de a fase 1 dizer que a memória mitiga vale gastar execuções compa
 análise) é reaproveitado aqui, e o plano geral continua valendo para a fase 2. A diferença é que a fase 1 roda no agente
 real, e isso cria problemas que o espelho não tinha (§3 e §13).
 
-## 1. A pergunta, e o que "mitiga" quer dizer
+## 1. A pergunta e a medida
 
-**Estimando principal.** Para cada par (agente, memória): a probabilidade de uma execução ter o erro-alvo **com** a
-memória, comparada com a probabilidade **sem** ela, nos mesmos inputs. A redução relativa do risco é a medida de eficácia.
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 1 do desenho).**
 
-Há **quatro resultados possíveis**, e todos são resposta:
+**A pergunta.** A memória que já temos mitiga o erro que ela descreve, quando injetada num agente real? E a que custo?
+
+**A unidade de observação** é uma **execução**: o agente recebe um input e trabalha até a resposta final.
+
+**Medida principal de eficácia: sim ou não por execução.** O erro-alvo aconteceu pelo menos uma vez nesta execução? Quem
+responde é o classificador determinístico da taxonomia, a mesma regra da mineração, sem LLM. Ele é reimplementado sobre os
+registros novos e conferido por uma segunda implementação.
+
+- A **taxa de erro** de um braço é a fração de execuções com "sim".
+- A **eficácia** é a **redução relativa**: `1 − (taxa com memória ÷ taxa sem memória)`. Exemplo: 35% e 17,5% dão 50%. A
+  diferença absoluta (17,5 pontos) é reportada ao lado.
+- Os **mesmos inputs** rodam nos dois braços (comparação pareada).
+
+**Por que contar execuções e não passos com erro.** A execução é a unidade independente. Os passos da mesma execução
+compartilham input e contexto, e o agente costuma repetir o mesmo erro, então contá-los como observações separadas faz o `p`
+sair pequeno demais. O denominador também mudaria com a memória (uma execução mais curta teria menos passos). O que se perde é
+a gravidade (uma execução com cinco erros conta igual a uma com um), mas nos erros do sandbox a média é de 1,0 a 1,4 erro por
+execução que teve o erro (JoogleAnalytics 1,43; ContestacaoCivel 1,02; RoteadorCivel 1,00).
+
+**Segunda medida: o custo.** Os **tokens totais** (entrada e saída) e a **duração em segundos** de cada execução.
+
+- **Custo líquido** = tokens médios com memória − tokens médios sem memória. Negativo quer dizer que a memória economiza.
+- O **placebo** também adiciona tokens, do mesmo tamanho; a diferença entre memória e placebo isola a economia dos passos
+  poupados.
+- A distribuição tem cauda longa (execuções com erro são mais longas): reporto a média, a mediana e o p90, com intervalo por
+  bootstrap.
+- O tempo é **reportado**, não é condição de sucesso. O dinheiro é tokens × o preço do gateway.
+
+**Medidas secundárias, só descritivas (fora do veredito):** erros por execução e passos até a resposta final.
+
+**Os seis resultados possíveis, e todos são resposta:**
 
 | Resultado | Leitura | Consequência |
 |---|---|---|
-| **mitiga e compensa** | o erro cai e a economia paga o custo de injetar | a memória vai para a fase 2 e para o piloto real |
+| **mitiga e compensa** | o erro cai e a economia paga o custo de injetar | a memória vai para a fase 2 |
 | **mitiga, mas não compensa** | o erro cai, mas o erro é raro demais, ou a memória cara demais | fica monitorada até a incidência crescer |
-| **não mitiga** | o erro fica igual | volta ao degrau 3: a causa não era a suposta |
+| **não mitiga** | o erro fica igual, **e o intervalo da redução exclui o `e_min`** (senão é "inconclusivo", §9) | volta ao degrau 3: a causa não era a suposta |
 | **piora** | o erro sobe, ou aparece outro | não injetar; investigar o texto |
+| **não testável hoje** | o erro não aparece mais no agente de hoje, então não há o que comparar | fica monitorada; **a memória não foi julgada** |
+| **inconclusivo** | o intervalo da redução ainda inclui efeitos acima do `e_min`: a amostra não bastou para afirmar que não mitiga (§9) | repetir o par com mais inputs |
 
-**Uma consequência que muda o desenho.** Uma memória só paga se a incidência do erro passar de `c ÷ s` (custo de injetar ÷
-economia de um erro evitado). Com valores de hipótese (memória de 20 tokens lida em 7 passos ≈ 140 tokens; um passo
-perdido ≈ 13.135 tokens, a média da base 3), isso dá **cerca de 1% das execuções**: abaixo disso nenhuma memória paga,
-nem com 100% de eficácia. No RoteadorCivel, em agosto, o erro dos imports apareceu em 0,8% das execuções **que tiveram algum erro** (dossiê do
-sandbox, item 16); sobre todas as execuções do papel a taxa é ainda menor. **Nesse mês e nesse papel, a conta não
-fecharia.** Esses dois valores são hipóteses; o custo real
-de injetar e de um passo perdido por papel é uma das medidas da fase.
+**Como estas medidas se ligam ao critério (§9, bloco 7).** A eficácia medida é comparada com o efeito mínimo que paga o
+custo, `e_min = c ÷ (π · s)`: cerca de 6% no JoogleAnalytics e 33% no ContestacaoCivel, com o custo do passo com erro medido
+(§4.6, Tabela 3 do [relatório da volumetria](relatorio-volumetria-fase-1.md)). O custo medido é comparado com a previsão da
+compensação. Onde o erro é raro e o passo é barato, nenhuma eficácia paga: no RoteadorCivel a memória precisaria evitar 360%
+dos erros.
 
-## 2. Quais pares (agente × memória)
+**Limite conhecido.** A regra que define o erro é a mesma que o mede. Se a memória mudar *como* o erro aparece, a medida pode
+errar. O §1.1 diz como isso se detecta.
 
-O catálogo tem 3 memórias no degrau 3. Cruzadas com os quatro agentes que você indicou, **só o que o repositório sustenta**:
+### 1.1 A confiabilidade da medida
 
-| Agente | Memória que mira o erro dele | O que se sabe (fonte) | O que falta |
-|---|---|---|---|
-| **ContestacaoCivel** | memória das funções proibidas (inspeção de valores com `repr`, `dir`, `__name__`) | foi o papel de maior volume dessa lição na leitura de 19/10 (450 de 523 antes dos ajustes seguintes; dossiê do sandbox) | o número **atual** por papel (317 no total) e por mês |
-| **JoogleAnalytics** | par: memória dos imports + memória do pandas | 231 erros de `pandas` e 105 de `json`, na mesma linha; na base 2, 3 de 10 execuções (a base 2 tem só 10 execuções desse papel) | o denominador por mês na base 3 |
-| **CalculoTrabalhista** | memória dos imports (`json`) | 41 erros de `json` na base 3 | o denominador; se a memória das funções proibidas também vale |
-| **RespostaBacen** | **nenhuma do degrau 3 mira o erro dele** | os erros dele são de outras unidades (campo inexistente, protocolo, retorno-string); as memórias do sandbox dele são raras (1 erro) ou de reforço (5 erros) | — |
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 1-B do desenho).**
 
-**O que isso diz sobre o desenho.** Dos quatro agentes, **três são candidatos a alvo** (o erro acontece e a memória mira nele; a volumetria do §4 decide quais
-sobram) e um,
-o RespostaBacen, serve para **verificar dano**: as duas memórias globais (imports e funções proibidas) são injetadas nele
-do mesmo jeito, e o experimento mede se elas atrapalham onde o erro é raro. É parente, não igual, do dano por memória
-errada que o MERIT mede (memória desatualizada, contraditória ou distratora; Mishra e Mishra, 2026).
+**O problema: o número pode estar errado de quatro jeitos.** O experimento conta, em cada braço, as execuções em que o
+classificador diz "sim". Se o classificador erra, a contagem erra:
 
-**Atualização de 12/11/2026:** a volumetria foi medida na máquina 2 e está no §4.6. Ela muda a ordem dos pares: o
-JoogleAnalytics e o ContestacaoCivel são os dois alvos viáveis; o CalculoTrabalhista é caro demais para o confirmatório; o
-RoteadorCivel é barato e serve de caso "mitiga, mas não compensa".
+| # | O que acontece | Efeito no número |
+|---|---|---|
+| a | a regra **não casa** um erro que existe (um erro da mesma unidade com outro padrão) | a contagem **subestima** |
+| b | a regra **casa** algo que não é o erro-alvo | a contagem **superestima** |
+| c | a memória **muda a forma** do erro, e ele passa a aparecer num padrão que a regra não reconhece | a **queda é falsa**: o erro migrou |
+| d | a execução **falha antes** de chegar ao ponto em que o erro seria possível | o erro não podia acontecer, e a taxa por execução mistura isso com "a memória funcionou" |
 
-**Regra para um par entrar na fase 1:** o erro precisa aparecer o bastante para a conta do §4 fechar. Um par que não
-fecha vai para "monitorada" e deixa de ser tema desta fase, em vez de rodar sem poder.
+**O que o problema estraga e o que não estraga.** Se a regra erra **do mesmo jeito nos dois braços**, o número absoluto fica
+errado, mas a **redução relativa continua certa**. Exemplo: os valores verdadeiros são 20 e 10 erros em 1.000 execuções; se a
+regra só enxerga 60% dos erros nos dois braços, aparece 12 e 6, e a redução é 50% nos dois casos. O perigo é a falha que
+**difere entre os braços**, o caso (c). Por isso a proteção principal não é refinar a regra, e sim **detectar o deslocamento**.
+
+**As proteções, e por que cada uma.**
+
+1. **Medir o próprio classificador.** Uma amostra de execuções é lida **sem saber o braço**, e o rótulo do programa é
+   comparado com o do leitor. A **sensibilidade** (dos erros que existem, quantos ele acha) e a **precisão** (dos que ele
+   marcou, quantos eram erro) saem com intervalo de confiança. Dois leitores independentes, com a concordância medida
+   (kappa), a mesma lógica dos degraus de revisão. *Proposta de tamanho, a fixar no piloto:* 30 execuções com o rótulo "sim"
+   e 30 com "não", por braço. Sem isso não se sabe quanto confiar no número absoluto.
+2. **O piloto é o momento de corrigir a regra, e só ele.** No piloto se leem todos os erros marcados e uma amostra dos
+   limpos, para achar o que a regra perdeu. Depois o classificador é **congelado por hash**, antes do confirmatório. Ajustar a
+   regra depois de ver o resultado seria escolher a medida para dar o resultado (a razão de existir o pré-registro; Nosek et
+   al., 2018).
+3. **Contar o resíduo da unidade nos dois braços.** Além do padrão-alvo, contam-se os erros da mesma unidade que a regra
+   **não** reconhece (a unidade de sandbox inteira, mais ampla que o padrão) e a taxa de **qualquer outro erro**. Se a
+   memória empurra o erro para o resíduo, ele **cresce** no braço com memória e o resultado é sinalizado como "deslocamento",
+   não como mitigação. É a única forma de ver o caso (c).
+4. **Análise de sensibilidade.** O resultado é refeito com uma regra **estrita** e com uma **ampla**. Se as conclusões
+   coincidem, a medida é robusta; se não, o resultado é reportado como não robusto.
+5. **Números absolutos sempre com intervalo.** O "20 contra 10" nunca aparece sozinho. O veredito se apoia na comparação
+   pareada, que usa os inputs em que o resultado **difere** entre os braços.
+6. **Convergência com o replay de passo (§8.2).** Se a execução inteira (realista) e o replay do passo (causal) apontam para o
+   mesmo lado, a evidência é mais forte; se divergem, é sinal para investigar.
+7. **Ler uma execução inteira de cada braço** (§10, passo 13): pega o que nenhuma regra prevê.
+
+**Dois cuidados específicos.**
+
+- **A memória pode fazer o agente evitar a situação** (escrever o código de outro jeito, sem `json`) **e a resposta piorar**:
+  sem erro, mas com qualidade pior. Isso é tratado como guarda de dano (bloco 6).
+- **O erro só é possível se o agente chega ao passo que o pede.** A taxa **por execução** é a principal (é a do bloco 1 e a
+  que o custo acompanha). A taxa **por oportunidade** (execuções que chegaram a um passo que usa o objeto da lição) é
+  reportada como conferência. Se a memória faz o agente **falhar antes**, por outro motivo, isso aparece como piora, não
+  como mitigação.
+
+**O que isso não resolve.** Um padrão de erro que ninguém previu e que nenhuma amostra lida mostrou; e o julgamento dos
+leitores (se os dois concordam mas estão errados do mesmo jeito, o kappa não vê). **Quem são os leitores** é questão técnica:
+os agentes de leitura do kit de mineração, ou o Rafael, e quantos casos.
+
+## 2. Os pares: o que se testa, e por que esses
+
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 2 do desenho).**
+
+### 2.1 O que é um par, e por que o teste é por par
+
+Uma memória não "funciona em geral": ela mira um erro de um agente específico, e o efeito depende da frequência desse erro,
+do custo do passo e do modelo. Por isso a unidade de teste é uma **comparação-alvo**: *um agente, um erro-alvo e a memória
+injetada*. Cada comparação tem a sua própria taxa de erro, o seu próprio tamanho de amostra e o seu próprio veredito.
+
+### 2.2 Como se escolhem os candidatos: três critérios
+
+1. **A memória existe e foi revisada** (degrau 3 do catálogo). Testar uma lição que ninguém conferiu misturaria duas
+   perguntas: "a memória mitiga?" e "a lição está certa?".
+2. **A memória mira um erro daquele agente.** Uma memória injetada em quem não tem o erro só mede custo e dano.
+3. **O erro é frequente e caro o bastante** para o teste ser viável. Sem isso, o experimento gasta tokens sem poder de
+   enxergar efeito.
+
+### 2.3 Os candidatos
+
+| # | Agente | Memória injetada | Erro-alvo | Incidência histórica, jul–ago |
+|---|---|---|---|---:|
+| 1 | **JoogleAnalytics** | o par: memória dos imports + memória do `pandas`, **juntas** | `pandas` | 35,0% (28,4 a 42,1) |
+| 2 | **JoogleAnalytics** | o mesmo par | imports (`json`) | 22,4% (17,0 a 29,0) |
+| 3 | **ContestacaoCivel** | memória das funções proibidas | funções proibidas | 1,87% (1,66 a 2,12) |
+
+No JoogleAnalytics, a memória do `pandas` só vale junto com a dos imports (campo `vale_junto_com` do catálogo), então se
+injeta o par. As comparações 1 e 2 vêm das **mesmas execuções**; o que muda é qual erro se conta. Os números históricos
+servem só para **escolher onde olhar**: são da base 3, que termina em agosto, e não são o baseline do experimento.
+
+### 2.4 O baseline é medido no início, não herdado do histórico
+
+**O problema.** O erro pode ter mudado desde agosto: o JoogleAnalytics caiu de 49% para 13% (`pandas`) e de 35% para 1,4%
+(`json`) de julho para agosto, e isso pode ser troca de modelo ou de prompt. O experimento precisa da taxa do agente **que vai
+ser testado**.
+
+**A solução.** O experimento começa medindo o baseline, que é o próprio **piloto** (só o braço sem memória). Há duas versões:
+
+| | **A. A versão de hoje** (principal) | **B. A versão de jul–ago** (diagnóstico) |
+|---|---|---|
+| O que é | rodar o agente como está hoje, sem memória, sobre inputs reais, até acumular execuções com o padrão do erro | reconstituir o agente do período (modelo, prompt e código) e medir a mesma coisa |
+| Para que serve | é a taxa que importa: a memória será injetada no agente de hoje | testa se o histórico se reproduz e se a queda de agosto foi a troca de versão |
+| O que decide | se a comparação entra, o `n` necessário, o efeito mínimo `e_min` (recalculado com a taxa de hoje) | explica o histórico; **não decide a entrada** |
+| Custo | o piloto que já existe | mais um conjunto, e depende de conseguir reconstituir a versão |
+
+**"Rodar até sair o erro".** Roda-se o agente sem memória e contam-se as execuções até ver o erro `k` vezes, com um teto de
+orçamento. Parar assim, naïvemente, **superestima** a taxa; o estimador correto para esse desenho é `(k − 1) ÷ (n − 1)`, o da
+amostragem binomial inversa (**não conferido numa fonte**). Para só confirmar que o erro existe, bastam poucas execuções (com
+95% de confiança, 7 para o `pandas`, 12 para o `json` e 159 para as funções proibidas, pelas taxas históricas).
+
+**Dois tipos de baseline.** *Por sorteio* (JoogleAnalytics): a taxa de erro de execuções sorteadas da produção. *Por conjunto
+gatilho* (ContestacaoCivel): o erro é raro (1,9%), então se parte de inputs que já erraram e se mede a **taxa de reprodução**.
+
+### 2.5 O que fica fora do confirmatório, e por quê
+
+**O que é o confirmatório.** É a parte do experimento cuja hipótese, tamanho e critério são **fixados antes dos dados** (o
+pré-registro) e cujo resultado vale como veredito. O que fica fora pode rodar como **exploratório**: procura padrões, não dá
+veredito.
+
+| Agente | Por que fora |
+|---|---|
+| **CalculoTrabalhista** | **Duas razões.** Custo: cada execução gasta cerca de meio milhão de tokens, e os três braços custariam de 135 a 200 milhões. Escassez: só 41 execuções tiveram o erro, e cada input seria repetido 2 ou 3 vezes, o que enfraquece o resultado. A memória dele **se paga** (eficácia mínima de 20%); o problema é rodar o teste. |
+| **RoteadorCivel** | **A conta não fecha.** O passo com erro custa 3,5 mil tokens, a memória custa 60 por execução e o erro aparece em 0,5% das execuções: para pagar, a memória precisaria evitar 360% dos erros. É o caso "mitiga, mas não compensa", que pode rodar barato como exploratório (2 a 4 milhões de tokens). |
+| **RespostaBacen** | **Não há erro para reduzir** (0 de 76 execuções em jul–ago), então não dá para testar mitigação. Serve à **verificação de dano**: uma memória global injetada onde o erro é raro piora algo? |
+
+### 2.6 O escopo do que se conclui
+
+Cada resultado vale para **aquele agente, aquele modelo, aquela versão do prompt e aquela família de inputs**. Os dois alvos
+rodam modelos diferentes (JoogleAnalytics em `gpt-4.1`, ContestacaoCivel em `gpt-5.2`, segundo as execuções cruzadas das
+bases 1 e 2). Nada se conclui sobre outros agentes ou outros modelos.
+
+### 2.7 Questões técnicas em aberto (do Rafael, ao executar)
+
+Nenhuma muda o desenho; cada uma precisa de um jeito de contornar: (1) reconstituir a versão de jul–ago (modelo, hash do
+prompt, commit do código); (2) fixar a versão de hoje (o modelo pode mudar por trás do mesmo nome no gateway); (3) recuperar o
+input de usuário das execuções históricas (possível, segundo o Rafael); (4) onde roda e como (aprovações, gateway, orçamento,
+homologação, bancos locais, caminho das ferramentas); (5) o teto de execuções do baseline "até sair o erro"; (6) memória
+própria da plataforma desligada ou isolada.
 
 ## 3. Antes de rodar qualquer coisa: o que o agente real impõe
 
@@ -119,7 +261,9 @@ agente real).
 ### 4.1 Quantas execuções com o erro, por braço
 
 Detectar uma redução relativa do risco, poder de 80%, teste bilateral. A coluna "a = 0,01" é a de uma família de cerca de
-cinco pares corrigida por Holm (um teste por par, §11). As contas são de 12/11/2026 e usam a fórmula de duas proporções
+cinco pares corrigida por Holm (um teste por par, §11). **Depois da decisão de 13/11 (§14) a família tem três pares**
+(JoogleAnalytics `pandas`, JoogleAnalytics imports e ContestacaoCivel funções proibidas), e o primeiro limite sobe de 1% para
+1,7%: os `n` desta tabela ficam conservadores. As contas são de 12/11/2026 e usam a fórmula de duas proporções
 independentes, que é conservadora quando os braços rodam os mesmos inputs (a fórmula pareada do Miller, com os valores do
 piloto, refina isso, §9.3 do plano geral).
 
@@ -154,30 +298,66 @@ Para o JoogleAnalytics, com 231 execuções com o erro de `pandas` em 6 meses, a
 denominador (quantas execuções o papel teve) é o que falta para a incidência. **Sorteio puro não é viável para erros de
 1% ou menos**: o número de execuções chega a dezenas de milhares.
 
-### 4.3 O desenho que torna isso viável: dois conjuntos de inputs
+### 4.3 Os inputs: com quê se roda
 
-Como o plano geral já fazia com as tarefas-gatilho e as neutras, a fase 1 usa dois conjuntos de **inputs reais**:
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 3 do desenho).**
 
-| Conjunto | O que é | Para que serve | Como se monta |
+**O que é um input, e por que tem de ser real.** Um **input** é a mensagem que chega ao agente, como na produção. Num agente
+real o erro depende de como o input é: com tarefas inventadas, o erro pode nem aparecer, ou aparecer com outra frequência.
+Por isso os inputs são **reais**, recuperados do banco de traces do ambiente, e **ficam dentro do ambiente** (são dados
+jurídicos; só saem contagens).
+
+**O problema: o erro precisa aparecer.** Para testar a memória, o erro precisa acontecer nas execuções sem memória. Se
+aparece em 35% das execuções, basta sortear inputs. Se aparece em 1,9%, **sorteando** gastaríamos milhares de execuções
+para vê-lo (cerca de 3.258 por braço, só para uma comparação; §4.2 e Tabela 4 do relatório da volumetria). Daí os dois
+jeitos, um por agente:
+
+| Jeito | Como se monta | Quando se usa | Agente |
 |---|---|---|---|
-| **gatilho** | inputs cuja execução original **teve** o erro | medir a **eficácia**: aqui o erro tem chance alta de aparecer | os identificadores das execuções com o erro (a base 3 os tem; o input vem do banco de traces) |
-| **controle** | amostra sorteada de inputs do papel, sem olhar o erro | medir o **custo de injetar** onde o erro não acontece, o **dano** e a incidência de hoje | sorteio das execuções do papel |
+| **Sorteio** | inputs sorteados da produção do papel, **sem olhar** se erraram | o erro é frequente | JoogleAnalytics |
+| **Conjunto gatilho** | inputs cuja execução original **teve** o erro | o erro é raro | ContestacaoCivel |
 
-**O risco desse desenho, e o controle.** Selecionar inputs porque erraram uma vez traz **regressão à média**: parte deles
-não erra de novo, só por acaso (Barnett et al., 2005). Por isso o **braço sem memória é rodado de novo nos mesmos inputs**
-e a comparação é entre os dois re-rodados, nunca entre "antes" e "depois". Além disso, a pergunta central do piloto
-(§6) é **a taxa de reprodução**: dado que o input errou na produção, com que frequência ele erra de novo hoje, sem
-memória? É ela que vira a "taxa do erro sem memória" da tabela 4.1.
+Os dois levam também um **conjunto controle**: inputs sorteados do papel, sem olhar o erro, para medir o **custo de
+injetar** a memória onde o erro não acontece, o **dano** e a **incidência de hoje**. (No gatilho, os identificadores das
+execuções com o erro vêm da base 3; o input vem do banco de traces.)
+
+**O risco do conjunto gatilho, e a defesa.** Escolher inputs **porque erraram** traz a **regressão à média**: parte deles
+erraria de novo só por acaso (se erraram por azar, tendem a errar menos na próxima). Se comparássemos "a execução
+original, que errou" com "a nova, com memória", a memória ganharia crédito pelo azar que passou (Barnett et al., 2005). A
+defesa: o **braço sem memória é rodado de novo nos mesmos inputs**, e a comparação é entre os dois re-rodados (sem memória
+contra com memória), **nunca entre "antes" e "depois"**. A pergunta do piloto (§6) é a **taxa de reprodução**: dado que o
+input errou na produção, com que frequência ele erra de novo hoje, sem memória? É ela que vira a "taxa do erro sem
+memória" desse par (tabela 4.1). Se for baixa, o par não é viável.
+
+**Regras de higiene dos inputs.**
+
+- **Os inputs do piloto ficam fora do confirmatório.** Usar os mesmos contaminaria o resultado.
+- **Sem inputs quase iguais** em braços diferentes, para as repetições serem de fato independentes. A comparação agrupa por
+  input (ou por família).
+- **Os mesmos inputs rodam em todos os braços** (comparação pareada), e as duas listas ficam congeladas por **hash** antes
+  do confirmatório.
+- Cada resultado vale para a **família de inputs** que o conjunto representa (§2.6).
+
+**Questões técnicas em aberto (do Rafael, ao executar).** (1) Recuperar o input das execuções históricas no banco de
+traces. (2) O mundo mudou desde o input original: um input histórico pode depender de documentos ou dados que a ferramenta
+devolvia naquela época e que hoje são diferentes; a saída é "gravar e repetir" as respostas das ferramentas (§3.3).
+(3) Como detectar inputs quase duplicados. (4) O que define uma "família" de inputs em cada agente. (5) O tamanho do pool:
+o JoogleAnalytics tem 584 execuções históricas na base 3 e o ContestacaoCivel tem 254 com o erro; o par é viável se o pool
+tem inputs para fechar `N`.
 
 ### 4.4 Quantos inputs, e quantas repetições de cada (K e N)
 
-Cada input é repetido `K` vezes (o agente erra num dia e acerta no outro), e há `N` inputs. O número de execuções com o
-erro por braço é `N × K`, mas as repetições do mesmo input se parecem, e o ganho de repetir cai conforme a parte da
-variação que é do input (`ρ`). A regra do plano geral (§9.3) vale aqui sem mudança: `N = n · (1 + (K − 1)·ρ) / K`.
+**Por que repetir o mesmo input.** O agente é estocástico: o mesmo input erra num dia e acerta no outro. Então cada input é
+repetido `K` vezes, e há `N` inputs. O número de execuções com o erro por braço é `N × K`, mas as repetições do mesmo input
+se parecem, e o ganho de repetir depende de `ρ` (a parte da variação que é do input):
 
-**Por que o caso dos agentes reais é favorável.** Você disse que as tarefas deles são geralmente fechadas, quase a mesma
-tarefa. Isso sugere que o erro depende **pouco do input** e muito da sorte da execução, isto é, `ρ` perto de zero. Se for
-assim, repetir o mesmo input rende tanto quanto trocar de input, e `N × K` é o que conta. Para `n = 116` por braço (com 122, os números sobem cerca de 5%):
+- `ρ` perto de **0**: o erro depende da **sorte da execução**, não do input. Repetir o mesmo input rende tanto quanto trocar
+  de input.
+- `ρ` perto de **1**: alguns inputs sempre erram e outros nunca. Repetir pouco ajuda, e são precisos muitos inputs
+  diferentes.
+
+A relação é `N = n · (1 + (K − 1)·ρ) ÷ K` (Miller, 2024; plano geral §9.3), com `n` o número de execuções por braço que a
+estatística pede (bloco 7). Para `n = 116` (com 122, os números sobem cerca de 5%):
 
 | K | N com ρ = 0 | N com ρ = 0,5 |
 |---:|---:|---:|
@@ -185,11 +365,13 @@ assim, repetir o mesmo input rende tanto quanto trocar de input, e `N × K` é o
 | 3 | 39 | 78 |
 | 5 | 24 | 70 |
 
-O `ρ` se mede no piloto. Se for alto, são poucos inputs que sempre erram e muitos que nunca erram, e a eficácia só vale
-para o tipo de input que erra: o resultado fica restrito a essa família (§13).
+**O caso dos agentes reais.** O Rafael disse que as tarefas desses agentes são geralmente fechadas, quase a mesma tarefa.
+Isso sugere um `ρ` baixo, mas é **hipótese**, e o piloto mede. Se `ρ` for alto, a eficácia só vale para o tipo de input que
+erra, e o resultado fica restrito a essa família (§13). Inputs quase iguais se comportam como grupos de perguntas
+relacionadas (Miller, 2024, §2.2), e a análise agrupa por família (§11).
 
-**Uma ressalva sobre "tarefa fechada".** Inputs quase iguais se comportam como grupos de perguntas relacionadas
-(Miller, 2024, §2.2). Tudo vale para a **família de inputs do agente**, e a análise agrupa por família (§11).
+**`K` e `N` não se decidem agora.** O piloto mede `ρ`, e `K` e `N` saem dele (plano geral §9.3). O critério, segundo Miller,
+é que a variação dentro do input, dividida por `K`, seja bem menor que a variação entre inputs.
 
 ### 4.5 A conta, resumida, para cada par
 
@@ -283,63 +465,140 @@ placebo), `n` de 82 a 122 execuções por braço (taxa de reprodução de 40%, r
 **O que continua sem medida:** os tokens e a duração do passo com erro (o arquivo de custo não existe na rodada mais
 recente); o modelo de cada execução; e a taxa de hoje, que só o piloto dá.
 
-## 5. O que se mede e como
+## 5. O que se mede além do erro
 
-Tudo o que não for julgamento é calculado por script, sobre o registro da execução. A base é o §8 do plano geral; aqui só
-o que muda ou se acrescenta por causa do agente real.
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 6 do desenho).**
 
-| O que | Definição | Por que |
+O §1 definiu as **duas medidas principais**: o erro-alvo (sim ou não por execução) e o custo (tokens e segundos). Este bloco
+define **tudo o que se mede além delas**, e para que serve. A pergunta é: **como saber que a memória não estragou outra
+coisa?** Uma memória que zera o erro mas faz o agente entregar respostas piores, ou travar em outro lugar, é pior que
+nenhuma. Tudo o que não for julgamento é calculado por script, sobre o registro da execução (base: §8 do plano geral).
+
+**Grupo 1: o custo em detalhe.**
+
+| O que | Definição | Por quê |
 |---|---|---|
-| **eficácia (principal)** | a execução teve o erro-alvo? (sim ou não), classificado pelas regras do pipeline | é a pergunta da fase |
-| **custo em tokens** | tokens de entrada e saída da execução inteira, com × sem memória | a memória custa leitura em todo passo |
-| **custo em tempo** | duração decomposta em modelo, ferramenta e interpretador | a ferramenta real tem latência; o espelho não tinha |
-| **passos por execução e tamanho da cascata** | número de passos e de erros seguidos | o ganho por erro evitado |
-| **adesão à lição (taxa de uso da memória)** | quando a memória estava lá e o erro era possível, o código fez o que ela diz? (por AST) | separa "o agente ignorou a memória" de "a memória não funciona". O MERIT chama a fração em que o agente não usa a memória certa de *Ignore Rate* e mediu cerca de 45% nos casos difíceis |
-| **outros erros** | taxa de qualquer erro fora da unidade, com × sem memória | "sem criar outro" |
-| **qualidade da resposta final** | ver abaixo | guarda: a memória não pode piorar o que o agente entrega |
-| **robustez entre inputs** | fração dos inputs em que a memória melhora, não muda ou piora | uma média boa pode esconder inputs que pioram; no SkillsBench, 16 de 84 tarefas pioraram com skills curadas (resumo da v1) |
-| **estabilidade** | fração dos inputs em que todas as `K` repetições passam (`pass^k`, Yao et al., 2024) | a métrica de estabilidade do Plano de Trabalho |
+| **tokens por execução** | entrada e saída, execução inteira, **mediana, média e p90**, com intervalo por bootstrap | tokens têm cauda longa; a média mente (§1) |
+| **tempo por execução** | duração decomposta em modelo, ferramenta e interpretador | a ferramenta real tem latência; reportado, **não é condição** |
+| **passos e tamanho da cascata** | número de passos e de erros seguidos | é onde está o ganho por erro evitado |
 
-**A qualidade da resposta final é o ponto difícil.** Num agente real não há resposta certa conhecida. Quatro níveis, do
-mais barato ao mais caro, e nenhum usa um LLM como juiz, porque um juiz sem calibração é o risco que o projeto já
-registrou (o melhor juiz do TRAIL alcança 11% de acerto conjunto; perguntas abertas):
+**Grupo 2: o que pode ter piorado (guardas de dano).**
 
-1. **Estrutural:** a execução terminou com resposta final, no formato pedido, sem falha silenciosa.
-2. **Presença (determinístico):** os números, datas e identificadores da resposta final aparecem nas observações da
-   mesma execução (a medida "groundedness-as-presence" do roadmap da base 1).
-3. **Pareado e cego, em amostra:** especialistas do domínio comparam, sem saber qual é qual, as respostas dos dois braços
-   para o mesmo input. Uma amostra pequena por agente.
-4. **Equivalência com a resposta original da produção**, onde ela existir. É apenas uma referência, não é verdade:
-   a execução original pode estar errada.
+| O que | Definição | Por quê |
+|---|---|---|
+| **outros erros** | taxa de qualquer erro fora da unidade, com × sem memória | "mitigou sem criar outro"; também defende o caso (c) do §1.1 |
+| **falhas de infraestrutura por braço** | rede, timeout e limite, contados por braço (§8.2) | se o texto maior causa mais timeout, isso é resultado |
+| **qualidade da resposta final** | quatro níveis, abaixo | a memória não pode piorar o que o agente entrega |
 
-**Custos que o plano geral já tinha e continuam:** a compensação em tokens e em segundos (`c`, `s`, `π`, §8.2 e §8.3 do
-plano geral), com a duração real do passo com erro vinda da base 3.
+**Grupo 3: o mecanismo (explica o resultado, não o decide).**
 
-## 6. O piloto (só o braço sem memória)
+| O que | Definição | Por quê |
+|---|---|---|
+| **adesão à lição** | quando a memória estava lá e o erro era possível, o código fez o que ela diz? (por AST) | separa "o agente ignorou a memória" de "a memória não funciona". O MERIT chama a fração em que o agente não usa a memória certa de *Ignore Rate* e mediu cerca de 45% nos casos difíceis |
+| **replay de passo** | exploratório (§8.2) | evidência do mecanismo |
 
-O piloto não testa a memória: **mede o terreno**. É o passo que decide se cada par é viável, e com que `K` e `N`.
+**Grupo 4: a distribuição (o que a média esconde).**
+
+| O que | Definição | Por quê |
+|---|---|---|
+| **robustez entre inputs** | fração dos inputs em que a memória melhora, não muda ou piora | uma média boa pode esconder inputs que pioram (no SkillsBench, 16 de 84 tarefas pioraram com skills curadas; resumo da v1) |
+| **estabilidade** (`pass^k`, Yao et al., 2024) | fração dos inputs em que todas as `K` repetições passam | métrica do Plano de Trabalho; **secundária, não confirmatória** (decisão 7 do §14) |
+
+**A qualidade da resposta final é o ponto difícil.** Num agente real não há resposta certa conhecida. Quatro níveis, do mais
+barato ao mais caro, e **nenhum usa um LLM como juiz**, porque um juiz sem calibração é o risco que o projeto já registrou (o
+melhor juiz do TRAIL alcança 11% de acerto conjunto):
+
+1. **Estrutural:** a execução terminou com resposta final, no formato pedido, sem falha silenciosa. Por script.
+2. **Presença (determinístico):** os números, datas e identificadores da resposta final aparecem nas observações da mesma
+   execução (a medida "groundedness-as-presence" do roadmap da base 1). Por script.
+3. **Pareado e cego, em amostra:** especialistas do domínio comparam, **sem saber qual é qual**, as respostas dos dois braços
+   para o mesmo input. Amostra pequena por agente (proposta: cerca de 20 pares). **Exploratório, não decide** (decisão 4 do
+   §14): uma medida difícil de padronizar não deve decidir o veredito.
+4. **Equivalência com a resposta original da produção**, onde existir. Só referência: a execução original pode estar errada.
+
+**O que decide e o que só sinaliza.** Os níveis 1 e 2, por script, entram no veredito. O nível 3 só sinaliza; mas se o cego
+mostrar piora clara, o resultado é reportado como **"piora"** (um dos seis desfechos do §1), mesmo que o erro-alvo tenha caído.
+
+**O RespostaBacen como verificação de dano.** Quase não tem o erro (0 de 76), então **não testa mitigação**. Roda a memória
+das funções proibidas **só para ver que não piora** (outros erros, custo, qualidade), em outro modelo (o4-mini), o que serve
+de checagem de generalidade. Fica **fora do Holm**.
+
+**Como se reporta.** Para cada par, uma tabela única: taxa do erro sem e com memória (Wilson), redução relativa e absoluta
+com intervalo, número a tratar (`1 ÷ redução absoluta`), tokens e tempo (mediana, p90, bootstrap), passos, outros erros,
+qualidade. **Médias de tokens e tempo nunca aparecem sozinhas.** Os termos (mediana, p90, bootstrap, pareado) estão em
+[`conceitos-do-experimento.md`](conceitos-do-experimento.md) §6.
+
+**Compensação.** A compensação em tokens e segundos (`c`, `s`, `π`, §8.2 e §8.3 do plano geral) continua, com o custo do passo
+com erro medido (§4.6).
+
+**Questões técnicas em aberto (do Rafael, ao executar):** (1) quem são os especialistas do cego (proposta: 1 a 2 por agente,
+cerca de 20 pares cada); (2) como implementar a adesão à lição por AST em cada agente; (3) como separar o tempo em modelo,
+ferramenta e interpretador, se o trace não o tem (a base 3 tem só os passos com erro).
+
+## 6. O piloto e o pré-registro
+
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 8 do desenho).**
+
+A sequência é: **piloto (só sem memória) → portas → decidir `K` e `N` → pré-registro → confirmatório → análise.**
+
+### 6.1 O piloto: mede o terreno, não testa a memória
+
+O piloto roda **só o braço sem memória**, na versão **atual** do agente, e responde seis perguntas:
 
 | O que se mede | Como | Decide |
 |---|---|---|
-| **o erro ainda existe hoje?** | o conjunto gatilho, sem memória, na **versão atual** do agente | se não existe mais, a memória descreve um erro do passado: o par fica monitorado |
-| **a taxa de reprodução `p`** | fração das execuções do conjunto gatilho que erram de novo | a linha da tabela 4.1 |
-| **a incidência de hoje `π`** | fração das execuções do conjunto controle com o erro | a conta de compensação (§1) |
-| **o `ρ`** | análise de variância entre e dentro dos inputs (plano geral, §9.3) | `K` e `N` |
-| **tokens e tempo por execução**, por papel | média e mediana | a conta de custo e o orçamento |
-| **a taxa de recaída do ambiente** | quantas execuções falham por motivo que não é do agente (ferramenta fora do ar, tempo-limite) | as falhas de infraestrutura se separam e se repetem, fora da nota |
+| **o erro ainda existe hoje?** | o conjunto gatilho, sem memória, na versão atual | se não existe, desfecho **"não testável hoje"** (§1) |
+| **a taxa de reprodução `p`** | fração das execuções do gatilho que erram de novo | a linha da tabela 4.1 |
+| **a incidência de hoje `π`** | fração das execuções do controle com o erro | o `e_min` (§9) e a porta do JoogleAnalytics |
+| **o `ρ`** | análise de variância entre e dentro dos inputs (plano geral, §9.3) | `K` e `N` (§4.4) |
+| **tokens e tempo por execução**, por papel | mediana, média e p90 | a conta de custo e o orçamento |
+| **a taxa de falhas de infraestrutura** | execuções que falham por motivo que não é do agente | quanto repetir fora da nota |
 
-**Tamanho do piloto, por par:** 20 inputs do conjunto gatilho × 5 repetições mais 20 inputs do conjunto controle × 3
-repetições = 160 execuções (a mesma ordem do plano geral, que estima o `ρ` com erro de cerca de ±0,10). Com quatro a cinco pares,
-de 640 a 800 execuções reais.
+**Tamanho, por par:** 20 inputs do gatilho × 5 repetições mais 20 do controle × 3 repetições = **160 execuções** (480 nos
+três pares), a ordem do plano geral, que estima o `ρ` com erro de cerca de ±0,10. Com cerca de 90 mil tokens por execução do
+JoogleAnalytics (42 mi ÷ 468), o piloto dele custa cerca de 14 mi de tokens. **O baseline** (§2.4) se mede aqui: a versão de
+hoje (A) e, se der, a de jul-ago (B), "rodar até k erros", com teto de execuções.
 
-**Portas de decisão do piloto** (escritas antes dos dados):
+**Além de medir, o piloto fecha cinco coisas:** (1) o **classificador é corrigido e congelado por hash** (§1.1), só aqui; (2)
+o **texto do placebo** (proposta do Claude, aprovada pelo Rafael; §8.1); (3) o **limite da "fração relevante de inputs que
+pioram"** (condição 3 do §9), olhando a variação natural entre inputs; (4) o **tamanho da amostra de leitura às cegas** do
+classificador (30 + 30 por braço, a fixar); (5) o **`e_min` recalculado** com o `π` medido.
+
+**Portas de decisão** (escritas antes dos dados):
 
 | Porta | Regra | Se falhar |
 |---|---|---|
-| erro ainda existe | o limite inferior do intervalo da taxa de reprodução `p` é maior que zero | par monitorado |
-| viável | inputs do conjunto gatilho × `K` × `p` ≥ `n` da tabela 4.1 | par monitorado ou exploratório |
-| seguro | todas as ferramentas do agente foram classificadas e a saída do §3.3 está definida | não roda |
-| orçamento | execuções × tokens médios ≤ o teto fixado com a plataforma | reduz pares ou `K` |
+| **o erro ainda existe** | o limite inferior do intervalo de `p` é maior que zero | **"não testável hoje"**: a memória fica monitorada e **não foi julgada** |
+| **viável** | inputs do gatilho × `K` × `p` ≥ `n` da tabela 4.1 | par monitorado ou exploratório |
+| **seguro** | todas as ferramentas classificadas e a saída do §3.3 definida | **não roda** |
+| **orçamento** | execuções × tokens médios ≤ o teto fixado com a plataforma | reduz pares ou `K` |
+| **entrada do JoogleAnalytics** | taxa de hoje ≥ 25% (§9) | sai do confirmatório |
+
+Se **nenhum** par passar, o resultado da fase 1 é "nada testável hoje". É um resultado legítimo, **não** uma falha do
+experimento.
+
+### 6.2 O pré-registro
+
+É um documento escrito **depois do piloto e antes do confirmatório**, para impedir que a medida, a regra ou o critério sejam
+ajustados depois de ver o resultado (Nosek et al., 2018).
+
+**O que ele congela, por hash:** os pares que passaram nas portas (e os que saíram, com o motivo); as listas de inputs
+(gatilho e controle), que **ficam no ambiente** (só o hash sai); os textos das memórias e dos placebos; o classificador (regra
+estrita e ampla); `K`, `N`, o tamanho da amostra e a redução de referência (50%); o `e_min` recalculado e o orçamento; **o
+plano de análise inteiro** (pareamento e bootstrap por input, as quatro condições do §9 com o limite de dano, a ordem do
+Holm e a forma da correção, A' ou B); e a **regra de parada**: o tamanho é fixo, **não se olha o resultado antes de todas as
+execuções terminarem** (olhar no meio e parar quando "dá certo" infla os falsos positivos). **Fora do hash:** o conteúdo
+jurídico dos inputs, que não sai do ambiente.
+
+**Depois do congelamento.** Qualquer mudança vira um **desvio declarado**, datado, com o motivo, e aparece no relatório;
+nada é reescrito. Tudo o que não estiver no pré-registro (replay, cego, autogerada, adesão) é **exploratório** e não entra no
+veredito. O pré-registro precisa do **ok do Rafael** e, para rodar, das aprovações do §3 (onde roda, gateway, orçamento,
+homologação), que são do Rafael e do tutor.
+
+**Questões técnicas em aberto (do Rafael, ao executar):** (1) quando o piloto pode rodar (depende da leitura do código, §3.1,
+e das aprovações, §3.2); (2) onde o pré-registro é guardado e como o hash sai do ambiente; (3) o teto de execuções do
+baseline "até sair o erro" e o orçamento do piloto; (4) os comandos literais para o ambiente saem **depois** que os scripts
+dos passos 4, 6 e 9 da receita (§10) existirem e forem testados na base 1.
 
 ## 7. As memórias e o injetor
 
@@ -356,28 +615,121 @@ quais memórias entraram e qual a versão do texto.
 
 ## 8. O experimento
 
-**Braços (fase 1):** (1) sem memória; (2) memória nativa (a região `<memory>`); (3) placebo (a mesma região, texto do mesmo
-tamanho, verdadeiro e sem relação com a tarefa), para separar o efeito do conteúdo do efeito de "mais texto". O placebo
-custa cerca de metade a mais de execuções; **é uma decisão sua** (§14) se roda em todos os pares ou só nos de maior
-volume. Sem o placebo, "a memória mitiga" não se separa de "mexer no prompt mitiga".
+### 8.1 Os braços: o que se compara
 
-**Regras de execução** (as do plano geral, §13, mais as do agente real):
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 4 do desenho).**
 
-- os braços de um mesmo input rodam juntos, em **ordem sorteada**, para a deriva do provedor cair igual em todos;
-- **sessão nova** a cada execução; memória própria da plataforma desligada ou isolada (§3.1);
-- o **mesmo modelo, a mesma versão do agente e os mesmos parâmetros** em todos os braços; a versão e o modelo ficam
-  registrados;
-- o **pré-registro** (§10) congela os pares, os conjuntos de inputs (por hash), os textos das memórias, `K`, `N`, as
-  medidas e os critérios **antes** do confirmatório;
-- os inputs do piloto ficam **fora** do confirmatório;
-- falhas de infraestrutura se separam, se classificam (as 8 causas do Eval Engineering) e se repetem fora da nota.
+Um **braço** é uma maneira de rodar o mesmo agente, com os mesmos inputs, o mesmo modelo e a mesma versão do prompt. **Só
+muda o que entra no prompt.** Cada braço responde a uma pergunta diferente; sem eles, "o erro caiu" não diz o que o fez cair.
+
+**Os três braços do veredito** (nos dois alvos):
+
+| Braço | O que o agente recebe | Pergunta que responde |
+|---|---|---|
+| **sem memória** | o agente como ele é hoje | qual é a taxa do erro sem a memória? É a régua de comparação |
+| **com memória** | o agente mais a região `<memory>` com o texto aprovado no degrau 3, **sem reescrita** | a memória reduz o erro? É o tratamento |
+| **placebo** | a mesma região `<memory>`, o mesmo invólucro, com texto verdadeiro, do mesmo tamanho e **sem relação com a tarefa** | a redução vem do conteúdo da memória, ou só de ter mais texto no prompt? |
+
+A região `<memory>` é **idêntica em formato** nos dois braços que a têm (o mesmo rótulo, a mesma frase de abertura, o mesmo
+formato de itens): qualquer diferença entre eles é de conteúdo, não de forma. A região entra pelo parâmetro de instruções
+extras do agente (§7), sem alterar o prompt do repositório, e o injetor registra, em cada execução, quais memórias entraram e
+qual a versão do texto.
+
+**Por que o placebo é indispensável.** Acrescentar texto ao prompt já muda o comportamento do modelo, e o erro pode cair por
+isso, sem que a lição tenha papel nenhum. Sem o placebo, "a memória mitiga" não se separa de "mexer no prompt mitiga". O
+custo é cerca de metade a mais de execuções. **Decidido em 13/11: roda nos dois alvos** (§14).
+
+**Como o placebo é escrito.** Um texto por memória, **do mesmo tamanho (±10%)** do texto correspondente (o custo em tokens e
+o efeito de "mais texto" dependem do tamanho); verdadeiro, mas sem relação com a tarefa do agente e sem lição de código;
+**congelado por hash** no pré-registro, junto com os textos das memórias.
+
+**O que entra em cada alvo.** No JoogleAnalytics, **as duas memórias juntas** (imports e `pandas`), como uma unidade (§2); o
+placebo tem o tamanho do par. No ContestacaoCivel, a memória das funções proibidas; o placebo tem o tamanho dela.
+
+**Os braços fora do veredito.**
+
+| Braço | O que é | Por que fica fora |
+|---|---|---|
+| **autogerada** | a mesma região, com lições que o **próprio agente escreveu**, sem taxonomia | exploratória, **só no JoogleAnalytics** (erro frequente, braço barato); não entra no Holm, para o veredito ficar limpo (§14) |
+| **por ferramenta** (`recall_memory`) | o agente decide se consulta | outra pergunta (recuperação), é do experimento seguinte |
+| **no erro** (middleware) | a memória só entra depois do erro | outra pergunta (reincidência), é do experimento seguinte |
+
+A fase 1 pergunta só **"a memória entregue ao agente reduz o erro?"**; como a memória chega é assunto das fases seguintes.
+
+**Qual comparação decide, e qual só descreve.** "Este par mitiga" exige **duas condições ao mesmo tempo**: com memória melhor
+que sem memória **e** melhor que o placebo. Quando a afirmação exige as duas, o teste é de **interseção-união**: o `p` do par é
+o **maior** dos dois, sem correção entre as partes, e o Holm corrige entre os três pares (§9; a escolha entre as formas A' e
+B é do bloco 7). A comparação **placebo contra sem memória** é só descritiva: se o placebo já reduzir o erro, o ganho da
+memória sobre ele passa a ser a medida que importa.
+
+**Fecham no piloto:** o texto do placebo de cada alvo (proposta minha, **aprovada pelo Rafael antes do congelamento por hash**)
+e o tamanho real do texto da memória, que fixa o do placebo.
+
+### 8.2 A execução: como se roda para a comparação ser justa
+
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 5 do desenho).**
+
+Os blocos anteriores dizem **o que** se compara (pares, inputs, braços). Este diz **como** se roda, para que a diferença
+entre os braços seja da memória e não de outra coisa.
+
+**O que fica igual em todos os braços.**
+
+- **O mesmo modelo, a mesma versão do agente e os mesmos parâmetros**; modelo e versão ficam registrados em cada execução. O
+  erro já mudou com a troca de modelo em agosto/2026, então um modelo diferente entre braços invalidaria a comparação.
+- **Sessão nova a cada execução**, com a memória própria da plataforma (checkpoints, memória nativa do Hermes) **desligada ou
+  isolada** (§3.1). Se o agente lembrasse de uma execução anterior, as repetições deixariam de ser independentes.
+- **O mesmo input** em todos os braços (pareado, §4.3).
+
+**O que se sorteia.** Os braços de um mesmo input rodam juntos, em **ordem sorteada**. O provedor do modelo muda de
+comportamento ao longo do dia e da semana; se um braço rodasse sempre antes, a deriva cairia só nele.
+
+**Ferramentas com efeito colateral.** Rodar o agente real de novo pode expedir ofício, gravar no banco ou enviar mensagem. A
+regra (decisão 6 do §14): **se houver homologação, roda-se ao vivo nela; se não, as ferramentas que escrevem usam gravar e
+repetir (as respostas vêm do trace original) e só as de leitura rodam ao vivo** (§3.3). Limite: o gravar e repetir falha
+quando o agente chama a ferramenta de outro jeito, e é o que a memória pode provocar. Por isso precisa de uma **política para
+"não achei a resposta gravada"**, e **se registra quantas vezes isso ocorreu, por braço**: se ocorrer mais num braço, a
+comparação fica enviesada e isso se declara.
+
+**Onde entra o replay.** Três níveis, cada um para uma coisa:
+
+| Nível | O que é | Para que serve | Entra no veredito? |
+|---|---|---|---|
+| **execução ao vivo** | o agente roda inteiro, do input à resposta | baseline e confirmatório; única que mede erro, custo e dano **juntos** | **sim** |
+| **rodar de novo o mesmo input** | o mesmo input roda várias vezes sem memória | o conjunto gatilho, para erros raros: mede a taxa de reprodução (§4.3) | **sim**, como base do gatilho |
+| **replay de passo** | pega um passo em que o erro aconteceu e repete **só aquele passo**, com a mesma entrada, `K` vezes sem e com memória | **triagem barata** e evidência do mecanismo | **não**, é exploratório |
+
+O replay de passo é barato porque um passo é uma chamada de LLM, bem menos que uma execução inteira; no erro do sandbox, o
+erro aparece **no código que o modelo escreve**, então se detecta lendo o código, sem rodar ferramenta. Há precedente (DoVer e
+AgentDebug intervêm no passo da falha; Ma et al., 2025; Zhu et al., 2025). **Não entra no veredito** por quatro limites: (1)
+mede só a probabilidade do erro **naquele passo**, e a memória entra no meio do trace, então não mostra o efeito na cascata,
+nos tokens e no tempo; (2) precisa do **trace completo** (o banco de traces do ambiente o tem; a base 3 não); (3) passos
+escolhidos por terem errado sofrem **regressão à média**; (4) a leitura estática precisa ser conferida contra o classificador
+(§1.1). **Na prática:** antes de gastar um confirmatório caro, um replay com e sem memória mostra se há sinal (se o erro volta
+igual nos dois, poupa-se o confirmatório); depois, dá evidência do mecanismo no passo. Qualquer explicação do mecanismo
+fica **como hipótese** até aparecer assim. **Congelar também as respostas do LLM não serve**: a memória age sobre o LLM, e a
+resposta dele já estaria fixa (`conceitos-do-experimento.md` §4).
+
+**Falhas de infraestrutura** (rede, limite de requisições do gateway, timeout, ferramenta fora do ar) se **separam, se
+classificam** (as 8 causas do Eval Engineering) e **se repetem fora da nota**. **Conta-se por braço**: se um braço falha mais,
+isso pode ser efeito da memória (texto maior, mais tempo, mais timeout), e então se reporta como resultado. A execução que
+falha antes da chance de errar não conta como "sem erro" (quarta forma do §1.1).
+
+**O que é congelado antes do confirmatório** (pré-registro, §6.2): os pares, as listas de inputs (por hash), os textos
+das memórias e dos placebos, `K`, `N`, as medidas e os critérios. Os inputs do piloto ficam **fora** do confirmatório.
+
+**Questões técnicas em aberto (do Rafael, ao executar):** (1) há homologação para cada agente; (2) quais ferramentas de cada
+agente escrevem e quais só leem; (3) a política para "não achei a resposta gravada"; (4) como desligar ou isolar a memória
+própria da plataforma; (5) o teto de execuções do baseline "até sair o erro" (§2.4); (6) como detectar a deriva do provedor,
+para registrá-la.
 
 ## 9. Critério de sucesso
+
+> **Aprovado pelo Rafael em 13/11/2026 (bloco 7 do desenho).**
 
 Uma memória "**mitiga**" num agente se as quatro condições valerem:
 
 1. **Eficácia.** A taxa do erro-alvo com a memória é menor que sem ela, com p < 0,05 depois do ajuste de Holm sobre os
-   pares (cerca de 0,01 por par, numa família de cinco), e o intervalo de 95% da redução relativa **não inclui zero**.
+   pares (a família tem três pares: os limites são 1,7%, 2,5% e 5%, do menor `p` ao maior), e o intervalo de 95% da redução relativa **não inclui zero**.
 2. **Especificidade.** A memória é melhor que o placebo na mesma medida.
 3. **Sem dano.** A estrutura da resposta final não piora; a presença não piora; a taxa de outros erros não sobe; o
    resultado do cego, se feito, não favorece o braço sem memória; e nenhuma fração relevante dos inputs piora (a
@@ -389,10 +741,38 @@ Ela "**compensa**" se, além disso, a **incidência de equilíbrio** `c ÷ (c + 
 agente, com o limite superior do intervalo ainda abaixo de `π`. A conta é em **tokens**, em **segundos** (reportada, não
 condição, porque a velocidade do provedor da plataforma é outra) e em **dinheiro** (tokens × o preço do gateway).
 
-**Há um outro jeito de fixar a régua de eficácia**, mais rigoroso, que eu sugiro discutir: em vez de "reduz mais que
-zero", exigir que a redução seja **maior que o efeito mínimo que paga o custo**, `e_min = c ÷ (π · s)`. Com os valores de
-hipótese do §1, isso vai de 5% da redução (incidência de 20%) a mais de 100% (incidência de 1%, o caso em que nenhuma
-memória paga). Ele liga a eficácia ao custo, mas exige mais amostra; é a **decisão 3 do §14**.
+**A régua de eficácia, decidida em 13/11:** além da condição 1 (redução real, com Holm), a redução **estimada** precisa ser
+maior que o efeito mínimo que paga o custo, `e_min = c ÷ (π · s)`. Com o custo do passo medido (relatório da volumetria,
+Tabela 3): cerca de 6% no JoogleAnalytics e 33% no ContestacaoCivel. O `e_min` é **recalculado no pré-registro** com a taxa de hoje
+(`π`) medida no piloto. A versão mais rigorosa, que exige o **limite inferior** do intervalo acima do `e_min`, pede muito
+mais amostra e **não foi adotada**; fica como opção se o piloto mostrar amostra sobrando.
+
+**Como a correção é feita (decidido em 13/11/2026, bloco 7).** "Mitiga" exige duas comparações por par (contra sem memória e
+contra placebo), então o teste é de **interseção-união** (Berger, 1982): o `p` do par é o **maior** dos dois, sem correção
+dentro do par, e o **Holm** corrige entre os **três** pares (limites 1,7%, 2,5% e 5%, do menor `p` ao maior, parando no
+primeiro que falha; [`literature/holm-1979.md`](literature/holm-1979.md)). É a **opção A'** (a B, com as seis comparações
+juntas no Holm, pede cerca de 180 por braço contra cerca de 160, e fica como reserva). **Condição:** os textos de Holm (1979) e
+Berger (1982) não foram obtidos; o apoio é de fontes secundárias. **Antes do pré-registro**, o Rafael lê Berger e Hsu (1996,
+acesso aberto, [página](https://projecteuclid.org/euclid.ss/1032280304)); se não sustentar a A', troca-se pela B.
+
+**O efeito para o qual se dimensiona.** A amostra é calculada para detectar uma redução de **50%** (a das tabelas do §4),
+maior que o `e_min` dos dois alvos (6% e 33%). Se a redução real for menor, o experimento não terá poder, e o resultado
+volta como **inconclusivo**, não como "não mitiga".
+
+**O sexto desfecho: inconclusivo.** Um teste que não rejeita **não prova** que a memória não funciona (pode ser amostra
+pequena). Por isso **"não mitiga" só se declara quando o intervalo de confiança da redução exclui o `e_min`**. Se o
+intervalo ainda inclui efeitos acima do `e_min`, o desfecho é **"inconclusivo: amostra insuficiente"**, e o par pode ser
+repetido com mais inputs. Os desfechos do §1 passam a seis.
+
+**Porta de entrada do JoogleAnalytics, por orçamento.** Com A' e redução de 50%, o sorteio custa por braço: 156 (taxa de hoje
+35%), 194 (30%), 242 (25%), 317 (20%), 517 (13%), isto é, de cerca de 42 a 138 milhões de tokens nos três braços. **Entra se a
+taxa de hoje for ≥ 25%** (cerca de 65 milhões de tokens); abaixo disso, sai do confirmatório e fica monitorado, a menos que o
+Rafael aceite o orçamento maior. O limite final é fixado no pré-registro, com o orçamento que o Rafael aceitar gastar.
+
+**Fora do Holm** (e do veredito): RespostaBacen, CalculoTrabalhista, RoteadorCivel, a autogerada, o replay de passo e o cego.
+
+**Questões em aberto (do Rafael):** (1) ler Berger e Hsu (1996); (2) o limite da "fração relevante dos inputs que pioram"
+(condição 3), a fixar no piloto, olhando a variação natural entre inputs; (3) o orçamento de execuções.
 
 **Quais custos além de tokens e latência** (a pergunta sobre critérios de sucesso):
 
@@ -482,18 +862,157 @@ completo, antes de fixar o §5.
 | Dados jurídicos reais fora do ambiente | tudo roda dentro; de lá só saem contagens e hashes |
 | O agente de verificação de dano (RespostaBacen) não tem o erro, então a medida principal não existe nele | ali se mede **dano**, não eficácia |
 
-## 14. Decisões que dependem do Rafael (uma por vez)
+## 14. Decisões do Rafael (13/11/2026)
 
-1. **O placebo roda em todos os pares, só nos de maior volume, ou fica para a fase 2?** Custa cerca de metade a mais de
-   execuções; sem ele, "mitiga" não se separa de "mexer no prompt".
-2. **A saída para as ferramentas com efeito colateral** (§3.3): ao vivo em homologação, gravar e repetir, ou só leitura
-   ao vivo. Depende da leitura do código (passo 1).
-3. **A régua de eficácia:** "reduz mais que zero" (o §9, condição 1) ou "reduz mais que o efeito mínimo que paga o
-   custo" (`e_min`). A segunda é mais rigorosa e exige mais amostra.
-4. **A qualidade da resposta final:** quem faz o cego pareado (quais especialistas, quantos casos por agente)?
-5. **O papel do RespostaBacen:** verificação de dano (como proposto) ou fora da fase 1?
-6. **A família de inputs:** o que define uma família em cada agente (o tipo de processo, o conjunto de campos)? Sai da
-   leitura do código.
+### O estado da aprovação do desenho, bloco a bloco
+
+As decisões da tabela seguinte foram tomadas em 13/11, mas sem o contexto completo. Por isso o desenho está sendo **reaprovado
+um bloco por vez**, com o contexto; cada bloco aprovado entra no texto do plano.
+
+| Bloco | O que decide | Estado |
+|---|---|---|
+| 1. A pergunta e a medida | o que se mede em cada execução (§1) | **aprovado em 13/11/2026** |
+| 1-B. A confiabilidade da medida | como se sabe que o classificador é confiável (§1.1) | **aprovado em 13/11/2026** |
+| 2. Os pares | em quais agentes e memórias se testa (§2) | **aprovado em 13/11/2026** |
+| 3. Os inputs | de onde vêm (sorteio, gatilho, controle), `K` e `N` (§4.3 e 4.4) | **aprovado em 13/11/2026** |
+| 4. Os braços | sem memória, com memória, placebo, autogerada (§8.1) | **aprovado em 13/11/2026** |
+| 5. A execução | as regras para a comparação ser justa (§8.2) | **aprovado em 13/11/2026** |
+| 6. O que se mede além do erro | dano, estabilidade, qualidade da resposta final (§5) | **aprovado em 13/11/2026** |
+| 7. A decisão | `p`, Holm, interseção-união, efeito mínimo (§9) | **aprovado em 13/11/2026** (opção A', condicionada à leitura de Berger e Hsu) |
+| 8. O piloto e o pré-registro | portas, o que se congela antes dos dados (§6) | **aprovado em 13/11/2026** |
+
+
+**Decididas** (o porquê de cada uma está nas seções indicadas e no [relatório da volumetria](relatorio-volumetria-fase-1.md)):
+
+| # | Decisão | O que foi decidido | Por quê (o achado) |
+|---|---|---|---|
+| 1 | **Alvos** | **JoogleAnalytics** (as memórias do `pandas` e dos imports, **por sorteio**) e **ContestacaoCivel** (funções proibidas, por **conjunto gatilho**). Ficam fora do confirmatório: CalculoTrabalhista, RoteadorCivel e RespostaBacen | JoogleAnalytics: erro em 35% e 22% das execuções, experimento barato, a memória paga com eficácia de 6%. ContestacaoCivel: erro raro (1,9%) mas de alto volume e passo caro (26 mil tokens); precisa de 33% de eficácia; o input é recuperável (resposta do Rafael). CalculoTrabalhista: meio milhão de tokens por execução e só 41 com o erro. RoteadorCivel: a memória não paga (360%). RespostaBacen: 0 de 76 |
+| 2 | **Placebo** | roda **nos dois alvos** | sem ele, "mitiga" não se separa de "mexer no prompt"; os custos da Tabela 5 do relatório já incluem esse braço |
+| 3 | **Régua de eficácia** | condição 1 (Holm, 5%) **e** redução estimada acima do `e_min` do par (§9); o `e_min` é recalculado com a taxa de hoje | liga a eficácia ao custo sem exigir a amostra da versão mais rigorosa |
+| 4 | **Qualidade da resposta final (cego pareado)** | **verificação de dano, exploratória**, amostra pequena; não é condição de sucesso | evita que uma medida difícil de padronizar decida o veredito |
+| 5 | **RespostaBacen** | **só verificação de dano**, para ver que a memória não piora | quase não tem erro (0 de 76), então não testa mitigação; roda em outro modelo, o que serve de checagem de generalidade |
+| 6 | **Ferramentas com efeito colateral** | **regra:** se houver homologação, rodar ao vivo nela; se não, gravar e repetir as respostas das ferramentas que escrevem e rodar ao vivo só as de leitura | o replay precisa ser repetível sem tocar em sistema real |
+| 7 | **Estabilidade** (`pass^k`) | medida **secundária**, não confirmatória | repetir o mesmo input várias vezes custa muito e o §9 já exige robustez entre metades |
+| 8 | **Autogerada** | **quarto braço exploratório, só no JoogleAnalytics** (relatório, §10.1) | é onde o erro é frequente e o braço é barato; o veredito da fase 1 fica limpo |
+
+### O contexto de cada decisão
+
+**O experimento, em três linhas.** Um agente, de vez em quando, comete um erro específico (por exemplo, gerar um import que
+o sandbox bloqueia). A memória é um texto curto que ensina o agente a evitá-lo. O experimento roda os mesmos inputs sem a
+memória e com ela, e mede **se o erro diminui** e **se a memória gasta menos tokens do que economiza**.
+
+1. **Alvos.** Cada execução gasta tokens, e só serve de teste se o erro puder acontecer nela. Há dois jeitos de montar os
+   inputs: **sorteio** da produção (funciona quando o erro é frequente) e **conjunto gatilho**, com os inputs que já erraram
+   (funciona quando o erro é raro, mas exige recuperar o input original). O JoogleAnalytics erra em 35% e 22% das execuções:
+   sorteio, barato. O ContestacaoCivel erra em 1,9%: por sorteio seriam 3.258 execuções por braço, pelo gatilho cerca de 120
+   (o input é recuperável, resposta do Rafael). O CalculoTrabalhista fica fora por **custo e escassez** (meio milhão de
+   tokens por execução, 41 com o erro), não porque a memória não valha. O RoteadorCivel fica fora porque a memória custa mais
+   do que economiza; o RespostaBacen, porque quase não tem o erro. Uma ressalva do gatilho: ele só vale se o mesmo input
+   voltar a errar (a taxa de reprodução, uma hipótese de 40% que o piloto mede), e inputs escolhidos por terem errado
+   tendem a melhorar sozinhos (regressão à média), por isso o braço sem memória é indispensável.
+2. **Placebo.** Se o braço com memória melhorar, pode ser só porque o prompt mudou de tamanho. O placebo é um texto do
+   mesmo tamanho, verdadeiro e sem relação com a tarefa: se a memória o vencer, o efeito é da lição. Custa cerca de metade a
+   mais de execuções.
+3. **Régua.** "O erro diminuiu" pode ser verdade e ainda assim dar prejuízo: a memória do ContestacaoCivel custa 160 tokens por
+   execução e, para se pagar, precisa evitar 33% dos erros; se evitasse 5%, com certeza estatística, a redução seria real e a
+   memória seria um prejuízo. Por isso a régua exige as duas coisas: redução real (Holm) **e** estimativa acima do `e_min`.
+   A versão mais rigorosa (limite inferior do intervalo acima do `e_min`) pede muito mais execuções e ficou como opção.
+4. **Cego pareado.** A memória pode evitar o erro de código e piorar o texto da resposta final, que uma contagem de erros não
+   vê. Especialistas comparariam pares de respostas, com e sem memória, sem saber qual é qual. É difícil de padronizar, então
+   fica como verificação exploratória e não decide o veredito. Os danos que se medem sozinhos (estrutura da resposta, outros
+   erros que sobem) continuam na condição 3 do §9.
+5. **RespostaBacen.** Quase não tem o erro (0 de 76), então não testa mitigação. Serve a outra pergunta: uma memória
+   injetada onde o erro é raro piora algo ou só gasta tokens? E roda em outro modelo (`o4-mini`), o que ajuda a ver se o
+   resultado generaliza.
+6. **Efeito colateral.** Se uma ferramenta grava ou envia algo, repetir execuções centenas de vezes pode mexer num sistema
+   real. Opções: rodar ao vivo numa homologação, gravar as respostas das ferramentas e repeti-las, ou rodar ao vivo só as de
+   leitura. A regra escolhida cobre os três casos; a parte técnica (bancos locais, caminho das ferramentas) é do Rafael.
+7. **Estabilidade (`pass^k`).** Um agente que erra 1 vez em 10 parece bom na média e falha num caso real. Medir estabilidade é
+   repetir o mesmo input `k` vezes e só contar sucesso se todas passarem; multiplica o custo por `k`, então é secundária.
+8. **Autogerada.** A memória normal vem do pipeline de mineração e revisão; a autogerada é o agente escrevendo a lição no fim da
+   execução. A pergunta é se o pipeline vale o trabalho ou se o agente aprende sozinho. Só no JoogleAnalytics, onde o erro é
+   frequente e o braço é barato, e exploratória para não misturar com o veredito.
+
+### O `p`, o limite de 5% e o Holm, em linguagem simples
+
+**O `p`.** Com uma moeda: 10 lançamentos, 9 caras. Se a moeda fosse justa, só 22 das 1.024 sequências possíveis seriam tão
+extremas (9 ou mais caras, ou 9 ou mais coroas): 22 ÷ 1.024 ≈ **2%**. Esse é o `p`: a chance de o acaso produzir algo tão
+extremo **se não houvesse efeito nenhum**. No experimento, a "moeda justa" é a memória que não faz nada, e o `p` diz com que
+frequência o acaso daria uma diferença tão grande entre os braços "com memória" e "sem memória".
+
+**O limite de 5%.** O `p` sozinho não decide nada: é preciso escolher, **antes**, o quão raro é raro o bastante. A convenção é
+5%: declaro o efeito real se `p` < 5%, e aceito me enganar 1 vez em 20 quando não há efeito.
+
+**O problema dos três testes.** A fase 1 testa três pares. Se as três memórias não fizerem nada e cada teste usar 5%, a chance
+de **pelo menos um** me enganar é `1 − 0,95³` = **14,3%** (1 vez em 7, não 1 em 20). Supõe testes independentes; com
+dependência o valor real fica abaixo (Abdi, 2010, §2.1 e §4). Os três bilhetes de loteria têm mais chance de ganhar algo do
+que um.
+
+**Dividir o limite (Bonferroni).** Como os riscos de cada teste se somam, mais ou menos, uso 5% ÷ 3 = **1,67%** em cada um:
+3 × 1,67% = 5%. (Conferido: 1 − 0,9833³ = 4,9%.) Fica seguro, mas duro para todos.
+
+**O Holm: o "melhor de k tentativas".** O menor `p` dos três é o *melhor de três tentativas*, e entre três é mais fácil
+alguém ter sorte. Por isso ele é comparado a um limite mais duro. Depois que ele passa e é declarado real, só dois ficam
+em dúvida, e o seguinte é o melhor de duas. O limite de cada passo é 5% ÷ (quantos testes ainda estão em dúvida):
+
+| Quantos restam | Com 5%, o melhor deles me engana em | Limite que traz de volta a 5% | Conferência |
+|---:|---:|---:|---|
+| 3 | 14,3% | **1,67%** (5% ÷ 3) | 1 − 0,9833³ = 4,9% |
+| 2 | 9,8% | **2,5%** (5% ÷ 2) | 1 − 0,975² = 4,9% |
+| 1 | 5% | **5%** (5% ÷ 1) | 5% |
+
+Exemplo com `p` = 0,004; 0,021; 0,06 (inventados; o 0,021 vem de 29 contra 15 erros em 131 execuções por braço):
+
+| Ordem | `p` | Limite | `p` ajustado (`(3 − ordem + 1) × p`) | Resultado |
+|---:|---:|---:|---:|---|
+| 1 | 0,004 | 1,67% | 0,012 | passa |
+| 2 | 0,021 | 2,5% | 0,042 | passa |
+| 3 | 0,06 | 5% | 0,06 | **barrado** |
+
+**Passar** é declarar o efeito real; **barrar** é não declarar, o que não é o mesmo que "não funciona". O procedimento **para
+no primeiro que falha**. Com a regra simples (1,67% para todos), o 0,021 seria barrado.
+
+**O que está e o que não está verificado.** Conferem com Abdi (2010), lido inteiro: a conta dos 14,3%, os limites e a regra de
+parar. **Não conferi no texto de Holm (1979)**, que não consegui obter: a prova de que o conjunto fica em 5% e a afirmação de
+que vale sem supor nada sobre a dependência. A explicação do "melhor de k" é a usual, não está em Abdi. Ver o fichamento
+[`literature/holm-1979.md`](literature/holm-1979.md).
+
+### Decidido (bloco 7): como o placebo entra na correção
+
+Cada par tem duas comparações: memória contra **sem memória** e memória contra **placebo**. A afirmação "este par mitiga"
+exige as duas.
+
+- **Opção A', teste de interseção-união por par e Holm entre os pares.** O `p` do par é o **maior** dos dois `p`; cada parte é
+  testada sem correção dentro do par, e o Holm corrige só entre os **três** pares (Berger, 1982; **não obtive o texto**,
+  apoio em fontes secundárias). A "opção A" anterior (testar o placebo só nos pares aprovados, mantendo a família em três)
+  foi **retirada**: o controle do erro nesse caso é um problema de testes em portões (*gatekeeping*) e eu não o verifiquei.
+- **Opção B, as seis comparações juntas no Holm.** Limites de 0,83%, 1%, 1,25%, 1,7%, 2,5% e 5%.
+
+**Custo em execuções, por simulação** (13/11/2026; JoogleAnalytics, 35% sem memória, memória a 17,5% (redução de 50%), placebo
+sem efeito; teste de duas proporções, primeiro passo do Holm, 200 mil simulações; aproximado):
+
+| Opção | Passar numa comparação, com 131 por braço | Passar nas **duas**, com 131 por braço | Por braço para 80% nas duas |
+|---|---:|---:|---:|
+| A' (cada parte a 1,67%) | 81% | 69% | cerca de **160** |
+| B (cada parte a 0,83%) | 73% | 60% | cerca de **180** |
+
+O poder de 80% do plano valia **para uma comparação**. Para passar **nas duas**, preciso de cerca de 160 por braço (+22%) na
+A' e de 180 (+37%) na B. Com a A' e redução de 50%, o `n` por braço sobe com a queda da taxa sem memória: 156 (35%), 194 (30%),
+242 (25%), 317 (20%), 517 (13%).
+
+**Em aberto, e vai ficando por conta do Rafael, ao executar** (com o desenho aprovado, o que resta são estas questões técnicas e a leitura de Berger e Hsu; a porta do JoogleAnalytics e o texto do placebo já têm regra, nos §9 e §8.1) (questões técnicas; nenhuma muda o desenho acima):
+
+| O que | Onde se fecha |
+|---|---|
+| Quais ferramentas de cada alvo têm efeito colateral, e se há homologação; como apontar para bancos locais ou trocar o caminho de uma ferramenta | a leitura do código (passo 1 da receita, §10) |
+| O que define uma **família de inputs** em cada agente (tipo de processo, conjunto de campos) | a leitura do código; entra no pré-registro |
+| **Modelo e versão do prompt de hoje** dos dois alvos | o piloto os registra; o experimento os **fixa** (o prompt do ContestacaoCivel teve quatro versões na base 2) |
+| Quem são os especialistas do cego e quantos casos por agente (proposta: 1 a 2 especialistas, cerca de 20 pares por agente) | o Rafael, antes do pré-registro |
+| Como a memória entra no prompt (a região `<memory>` ou o equivalente mais simples) | a leitura do código |
+| **A porta de entrada do JoogleAnalytics:** a taxa de hoje abaixo da qual o sorteio fica caro demais (435 execuções por braço com 13%, 131 com 35%) e ele sai do confirmatório | definida no pré-registro, com o orçamento de execuções que o Rafael aceitar gastar |
+
+**Dúvidas técnicas de cada etapa da receita (§10)** são tratadas pelo Rafael ao executar. Cada ajuste entra aqui, datado,
+com o que mudou e por quê.
 
 ## 15. O que este documento reaproveita, e o que muda no plano geral
 

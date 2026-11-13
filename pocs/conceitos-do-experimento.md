@@ -167,6 +167,10 @@ Para cada par (agente, memória), uma tabela com **esta forma**:
 
 ## 7. O que é Holm
 
+> **Atualização de 13/11/2026.** Na fase 1 a família tem **três pares** (não cinco). A explicação mais simples, com a moeda, o
+> `p` e a ideia do "melhor de k tentativas", está no §14 do [plano da fase 1](plano-fase-1-a-memoria-mitiga-o-erro.md); a
+> verificação contra a fonte, em [`literature/holm-1979.md`](literature/holm-1979.md). O texto abaixo vale como visão geral.
+
 O problema: se você faz **vários testes** (cinco pares de agente e memória), a chance de um deles dar "significativo" **só
 por sorte** sobe. Com cinco testes e limite de 5% em cada, a chance de pelo menos um falso positivo passa de 20%.
 
