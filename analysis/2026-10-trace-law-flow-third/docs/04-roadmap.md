@@ -500,8 +500,21 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   único em que o agente quase não se corrige (33% dos passos seguintes sem erro); (D) construtor de DataFrame 19
   (JoogleAnalytics, 84% se corrigem); (E) `object is not callable` 7, com nomes de ferramenta na linha (pode ser o
   Ajuste 37). Cuidado: agosto teve mais execuções e taxa de erro por ActionStep de 6,7% → 15,7%, então parte das
-  rajadas é volume. Próximo: o agente do ambiente testa a tabela de decisão
-  (`propostas/residuo/prompt_causa_leitura.md`), depois a decisão em lote.
+  rajadas é volume.
+  **Primeira leitura no ambiente (13/11, `[assistido]`, um leitor):** (A) 86 erros: o valor em texto vem de retorno
+  de ferramenta em 79, de arquivo ou JSON em 5 e é escrito pelo agente em 2; formato com símbolo de moeda 43, com
+  ponto 36, com vírgula 5; no passo seguinte o agente converte o texto em 68; só 1 execução tem as duas famílias
+  (round/formato e soma); a taxa de agosto no CalculoTrabalhista é 3,3 vezes a dos outros meses (1,305% × 0,393%).
+  (B) 44 erros: o texto com barra é literal escrito pelo agente em 20 de 20; barra: 11 escape digitado, 7 regex, 2
+  caminho; nenhuma execução com mais de uma ponta; 40 de 44 no ContestacaoCivel em jul/ago e nenhum antes de julho
+  (começo em julho, não efeito de volume). (C) 75 `invalid syntax`: a regra de forma concordou em 7 de 15 com a
+  leitura e 45 ficaram em "outra": falta leitura aberta. (D) 19 DataFrame: "passou uma string" = 0; 10 de
+  variável de passo anterior, 9 "outra". (E) 7 `not callable`: 0 de 7 com atribuição local, 7 de 7 "não deu
+  para ver" (a fonte só guarda um passo para trás): inconclusivo, não contradiz. O agente sugeriu subir a indexação
+  sem evidência nova (só a recorrência). **Proposta (tabela aprovada como hipótese de trabalho):** A, B e C a
+  investigar; D, E, "ficam" e "em observação" como estavam. **Para fechar o A:** cada ferramenta devolve sempre o
+  mesmo formato (memória: o formato de retorno) ou mistura (harness: o contrato da ferramenta)? Continuação:
+  `propostas/residuo/prompt_causa_continuacao.md` (A por ferramenta e mês, B por mês, leitura aberta do C).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
