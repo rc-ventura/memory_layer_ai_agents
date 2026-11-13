@@ -13,13 +13,16 @@
    (incidência de 35% e 22% em julho–agosto), e o ContestacaoCivel, com a memória das funções proibidas (1,9%). **Fato.**
 2. **No JoogleAnalytics o erro caiu muito em agosto** (do `pandas`: 49% em julho, 13% em agosto). A queda não é sorte.
    A base termina em agosto: o erro pode já ter sumido na versão de hoje do agente. **Fato a queda; hipótese a causa.**
-3. **A memória paga com eficácia baixa no JoogleAnalytics** (6% a 20%), precisa de cerca de metade dos erros evitados no
-   ContestacaoCivel, e **não paga no RoteadorCivel**. **Hipótese:** depende do custo do passo com erro, que ainda não foi
-   medido; o prompt da §9 o mede.
+3. **A memória paga com eficácia baixa no JoogleAnalytics** (6% a 22%), precisa de cerca de um terço dos erros evitados
+   no ContestacaoCivel (33%, com o custo do passo com erro **medido** em 13/11) e **não paga no RoteadorCivel**
+   (precisaria de 360%). **Fato** a conta com o custo medido; **hipótese** os passos perdidos por erro e o tamanho da memória.
 4. **O CalculoTrabalhista é caro demais para o confirmatório** (meio milhão de tokens por execução e só 41 execuções com o
    erro). **Fato.**
-5. **A unidade do retorno que chega como texto pode baratear a fase 1** (o erro aparece com mais frequência no
-   ContestacaoCivel), mas ela ainda não foi minerada nem revisada (§10.2).
+5. **A unidade do retorno que chega como texto pode baratear a fase 1.** Medido: no ContestacaoCivel o erro aparece em
+   10,9% das execuções (cerca de 6 vezes mais que o das funções proibidas), mas a unidade ainda não foi minerada nem
+   revisada (§10.2). **Fato** a incidência; ela é do período inteiro, não do mês.
+6. **A base que a máquina 2 tem termina em 29/08/2026.** Ela não diz nada sobre a taxa de hoje, e o modelo e a versão do
+   prompt dos agentes continuam **não vistos** (§9).
 
 ## 2. De onde vêm os dados
 
@@ -28,6 +31,9 @@
   mês) e as contagens de todas as execuções da base 3 (71.894 linhas, uma por execução, agente e papel). Rodada
   `observada_c2e5e8b31f297d21`.
 - **O que saiu da máquina 2:** só contagens, nomes de memória, de papel e meses. Nenhum identificador nem texto de caso.
+- **Segunda rodada de medidas (13/11/2026):** o custo do passo com erro (tokens e segundos, por memória e papel; lido do
+  perfil `U_sandbox` da mesma rodada) e a incidência de **todas** as unidades por papel (`triagem_por_papel.csv`).
+  O script é `execucao/volumetria_custo_passo.py`.
 - **Conferência da transcrição:** em todas as linhas usadas aqui, recalculei a incidência dividindo as duas contagens e
   ela bateu com a que o script imprimiu.
 - **O período:** de novembro de 2025 a agosto de 2026, a janela da base 3. "Julho–agosto" são os dois últimos meses.
@@ -91,40 +97,49 @@ exporta o modelo. A base 2 pode responder, e o prompt da §9 pede o modelo de ho
 **A consequência — fato:** a base termina em agosto e estamos em novembro. A taxa de hoje pode ser a de agosto (13%), a de
 julho (49%) ou outra. **O piloto da fase 1 mede isso primeiro**, antes de qualquer outra coisa.
 
-## 6. Tabela 3 — a conta de compensação (a "tabela 2" do resumo anterior)
-
-No resumo que eu te mandei antes, a segunda tabela era esta. Aqui ela ganha número próprio, as colunas explicadas e os
-cenários.
+## 6. Tabela 3 — a conta de compensação
 
 **O que é:** para cada par, **quanto a memória precisa funcionar para pagar o que ela custa**. A memória custa tokens em
 todo passo de toda execução (porque fica no contexto) e só economiza nas execuções em que o erro aconteceria.
 
-| Agente · memória | Custo de injetar `c` (tokens por execução) | Economia por erro evitado `s` | Incidência `π` (jul–ago) | Eficácia mínima para pagar `c ÷ (π · s)` — cenário base | Faixa (otimista a pessimista) |
-|---|---:|---:|---:|---:|---:|
-| JoogleAnalytics · par | ~360 | ~17 mil (2 passos) | 35% (13% em agosto) | **6%** (16% com a taxa de agosto) | 6% a 20% |
-| CalculoTrabalhista · imports | ~245 | ~45 mil (1 passo) | 2,9% | **19%** | 9% a 42% |
-| ContestacaoCivel · funções proibidas | ~160 | ~18 mil (1 passo) | 1,9% | **48%** | 24% a 64% |
-| RoteadorCivel · imports | ~60 | ~3 mil (1 passo) | 0,5% | **não paga** (precisaria de 384%) | 192% a 864% |
+**O que mudou em 13/11:** a economia `s` deixou de ser hipótese. Agora é o custo **medido** do passo que errou (mediana
+de tokens, nos erros lidos da mineração do sandbox). O custo de injetar `c` e os passos perdidos continuam hipótese.
+
+| Agente · memória | Custo de injetar `c` (tokens por execução, hipótese) | Passo com erro `s` medido: tokens, mediana (p90) | Passos perdidos (hipótese) | Incidência `π` (jul–ago) | Eficácia mínima para pagar `c ÷ (π · s)`, cenário base | Faixa | Antes da medida |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| JoogleAnalytics · `pandas` (o par) | ~360 | 8.065 (9.971) | 2 | 35% (13% em agosto) | **6%** (17% com a taxa de agosto) | 6% a 22% | 6% |
+| CalculoTrabalhista · imports | ~245 | 41.792 (62.190) | 1 | 2,9% | **20%** | 10% a 45% | 19% |
+| ContestacaoCivel · funções proibidas | ~160 | 26.246 (99.610) | 1 | 1,9% | **33%** | 16% a 43% | 48% |
+| RoteadorCivel · imports | ~60 | 3.477 (4.053) | 1 | 0,5% | **não paga** (precisaria de 360%) | 180% a 810% | 384% |
 
 **Cada coluna:**
 
 - **`c`** = tamanho da memória × mediana de passos da execução do papel. Tamanho da memória (hipótese, estimado pelo
   texto): 20 tokens a dos imports, 35 o par, 80 a das funções proibidas. Passos: a mediana medida (JoogleAnalytics 10,
   ContestacaoCivel 2, CalculoTrabalhista 12, RoteadorCivel 3).
-- **`s`** = tokens de um passo × passos perdidos por erro. **Hipótese:** um passo custa a mediana de tokens da execução
-  dividida pela mediana de passos (88 mil ÷ 10 no JoogleAnalytics). Passos perdidos: um por erro, porque em 9 de cada 10
-  erros o agente se corrige no passo seguinte (dossiê do sandbox, item 16); dois no par do JoogleAnalytics, porque a
-  linha que falha esquece os dois imports.
-- **Cenários:** otimista = dois passos perdidos; pessimista = um passo perdido e a memória com 25 tokens a mais (o
-  invólucro da região `<memory>`).
+- **`s`** = tokens do passo que errou (**medido**) × passos perdidos por erro. Passos perdidos (hipótese): um por erro,
+  porque em 9 de cada 10 erros o agente se corrige no passo seguinte (dossiê do sandbox, item 16); dois no par do
+  JoogleAnalytics, porque a linha que falha esquece os dois imports. O que se mediu é só o passo com erro; o passo de
+  correção não entrou.
+- **Cenários:** otimista = dois passos perdidos; pessimista = um passo perdido e a memória com 25 tokens a mais por passo
+  (o invólucro da região `<memory>`).
 
-**O que ela diz:** a conta depende de três coisas, e o RoteadorCivel mostra todas: execução pequena (passo barato), erro
-raro e memória lida em todo passo. Onde o erro é frequente (JoogleAnalytics), quase qualquer efeito paga; onde é raro e
-o passo é barato (RoteadorCivel), nenhum efeito paga.
+**O que ela diz — fato, com o custo medido:**
 
-**O que falta para virar fato:** o custo **real** do passo que errou. A primeira volumetria não o mediu (o arquivo de custo
-por papel não existe na rodada mais recente). O prompt da §9 mede os tokens e a duração do próprio passo com erro, e a
-tabela é refeita com eles.
+- **O JoogleAnalytics e o RoteadorCivel não mudaram de resposta.** O passo do JoogleAnalytics custa 8 a 9 mil tokens, bem
+  perto da hipótese de 8,8 mil; a memória paga com eficácia de 6%. O do RoteadorCivel custa 3,5 mil: a memória não paga.
+- **O ContestacaoCivel ficou mais fácil:** o passo com erro custa 26 mil tokens (a hipótese era 18 mil), e a eficácia
+  mínima caiu de 48% para 33%. A cauda é longa: o p90 é de 100 mil tokens, quase quatro vezes a mediana; com ele a
+  eficácia mínima seria de 9%. A mediana é a conta conservadora.
+- **A duração tem cauda ainda maior no ContestacaoCivel:** mediana de 31 segundos, p90 de 618 (mais de 10 minutos). Nos
+  outros pares o passo com erro dura de 3 a 8 segundos de mediana, então a latência quase não pesa lá.
+- **O CalculoTrabalhista continua caro demais** para o confirmatório (o passo com erro custa 42 mil tokens e só há 41
+  execuções com o erro).
+
+**A mesma tabela, para todas as memórias do sandbox** (tokens do passo com erro, mediana; só as com mais de 40 erros):
+imports do RoteadorCivel 3.477; imports do JoogleAnalytics (`json`) 9.223; `pandas` do JoogleAnalytics 8.065; imports do
+CalculoTrabalhista 41.792; funções proibidas do ContestacaoCivel 26.246; funções proibidas do OBFCivel 13.395. O arquivo
+completo, com os p90 e os segundos, fica na máquina 2 (`custo_do_erro_por_memoria.csv`).
 
 ## 7. Tabela 4 — quantas execuções o experimento precisa
 
@@ -163,15 +178,27 @@ A mediana subestima o custo, porque execuções com erro são mais longas; o tet
 
 ## 9. O que não foi medido, e como fechar
 
-| O que falta | Por que importa | Como fechar |
+| O que faltava | Estado (13/11/2026) | Como fechar o que resta |
 |---|---|---|
-| tokens e duração do **passo com erro**, por memória e papel | é a economia `s` da Tabela 3, hoje uma hipótese | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-sandbox analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21/perfis/U_sandbox/casos.csv` |
-| a volumetria da unidade do **retorno que chega como texto** | decide se vale incluí-la (§10.2) | `uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --rodada analysis/2026-10-trace-law-flow-third/pipeline/resultados/observada_c2e5e8b31f297d21 --unidade U_tipo_retorno` (qualquer unidade, sem perfil; dá o total do período, não o mês a mês) |
-| o **modelo e a versão do prompt de hoje** de cada agente | explicaria a queda de agosto | a sua leitura do código dos agentes |
-| **a taxa de hoje** | a base termina em agosto | a data da última execução e as execuções dos últimos 30 dias de cada papel, no banco de traces; e, de vez, o piloto da fase 1 |
-| se o **input de usuário** das execuções com erro pode ser recuperado | sem ele não há conjunto gatilho | sua leitura do código e do banco de traces (§3.1 do plano da fase 1) |
+| tokens e duração do **passo com erro**, por memória e papel | **medido** (Tabela 3) | — |
+| a volumetria da unidade do **retorno que chega como texto** | **medida**, do período inteiro (§10.2) | a série mês a mês só sai se a unidade ganhar perfil: `executar.py analisar --perfil-investigacao U_tipo_retorno` e `volumetria_custo_passo.py --casos-unidade` |
+| o **modelo e a versão do prompt de hoje** de cada agente | **não visto**: o agente da máquina 2 respondeu "não vi" para os quatro papéis | a sua leitura do código dos agentes |
+| **a taxa de hoje** | **não responde**: o banco de traces da máquina 2 termina em 29/08/2026 (a execução mais recente de cada papel é de 27 a 29/08) | o piloto da fase 1 |
+| se o **input de usuário** das execuções com erro pode ser recuperado | aberto | sua leitura do código e do banco de traces (§3.1 do plano da fase 1) |
 
-O script novo é `execucao/volumetria_custo_passo.py` (com 3 testes), e lê a tabela de casos que a rodada já guarda (`perfis/<unidade>/casos.csv`, que tem os tokens e a duração de cada passo com erro).
+**Execuções nos "últimos 30 dias" do banco da máquina 2** (a contagem é relativa ao fim da base, em agosto, e não a hoje):
+ContestacaoCivel 8.880 (a última em 29/08), RespostaBacen 72 (27/08), JoogleAnalytics 75 (29/08), CalculoTrabalhista 360
+(28/08). Isso confere com a Tabela 2 (agosto, JoogleAnalytics: 70 execuções).
+
+**Para repetir as duas medidas** (da raiz, na máquina da base; o primeiro comando só é preciso se o perfil do sandbox ainda não existir):
+
+```
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/executar.py analisar --perfil U_sandbox
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --casos-sandbox
+uv run python analysis/2026-10-trace-law-flow-third/pipeline/execucao/volumetria_custo_passo.py --rodada
+```
+
+Sem valor, `--casos-sandbox` e `--rodada` procuram a rodada mais recente que tenha o arquivo e imprimem o nome dela.
 
 ## 10. As duas perguntas que você fez
 
@@ -199,11 +226,24 @@ como produtora de memória, ou o agente aprende sozinho?". As duas importam, mas
 execuções, 17 papéis, 10 meses; o ContestacaoCivel tem 2.385 desses erros (45%); cada erro custa cerca de 39 mil tokens (o
 dobro da média); o pico foi em agosto (2.664 erros).
 
-**Sua intuição está certa num ponto:** no ContestacaoCivel, esse erro deve aparecer com mais frequência que o das funções
-proibidas. **Estimativa (hipótese):** com 2.385 erros em 13.454 execuções do papel, a incidência é no máximo 17,7% (se cada
-erro estivesse numa execução diferente); com a média de 1,5 erro por execução da unidade, seria cerca de 12%. Seria **cerca
-de 6 vezes mais frequente** que o das funções proibidas (1,9%), e o experimento precisaria de **cerca de 7 vezes menos
-execuções** sorteadas (cerca de 475 por braço, contra 3.258). E como cada erro custa o dobro em tokens, a conta de compensação ficaria mais fácil.
+**Medido em 13/11 — fato (período inteiro, não o mês a mês):** a incidência da unidade por papel.
+
+| Papel | Erros | Execuções com a unidade | Execuções do papel | Incidência | Execuções até ver o erro (95%) | Tokens do passo com erro (média) |
+|---|---:|---:|---:|---:|---:|---:|
+| ContestacaoCivel | 2.385 | 1.465 | 13.454 | **10,9%** | 26 | 57.920 |
+| RespostaBacen | 889 | 730 | 3.044 | 24,0% | 11 | 11.922 |
+| CalculoTrabalhista | 680 | 499 | 990 | 50,4% | 5 | 50.564 |
+| OBFCivel | 638 | 443 | 5.658 | 7,8% | 37 | 14.844 |
+| JoogleAnalytics | 576 | 224 | 584 | 38,4% | 7 | 12.545 |
+
+**O que isso muda.** A estimativa que eu tinha dado (cerca de 12% no ContestacaoCivel) se confirmou: 10,9%. É **cerca de 6
+vezes** a incidência das funções proibidas (1,9%), e ver o erro leva 26 execuções, contra cerca de 160. Para o experimento
+sorteado, isso é perto de 7 vezes menos execuções. E o passo com erro custa o dobro (a média é de 58 mil tokens contra 26 mil
+de mediana nas funções proibidas; atenção: uma é média e a outra mediana). O RespostaBacen, que ficou de fora da fase 1 por
+quase não rodar mais, tem 24% de incidência nessa unidade, mas só 72 execuções no último mês da base.
+
+**O que o número não é.** A contagem vem da regra automática que agrupa os erros, não de uma lição conferida: pode misturar
+causas. E é do período inteiro: o pico foi em agosto (2.664 erros), então a taxa recente do ContestacaoCivel pode ser maior.
 
 **O que pesa contra, agora:**
 
@@ -225,9 +265,12 @@ execuções** sorteadas (cerca de 475 por braço, contra 3.258). E como cada err
 ## 11. Limites deste relatório
 
 - **A base termina em agosto de 2026.** Toda incidência é histórica; a de hoje só o piloto mede.
-- **A Tabela 3 depende de duas hipóteses** (custo do passo e tamanho da memória). O prompt da §9 fecha a primeira; a
-  segunda se mede contando os tokens do texto injetado.
+- **A Tabela 3 ainda depende de duas hipóteses:** os passos perdidos por erro e o tamanho da memória. O custo do passo com
+  erro agora é medido, mas só o do passo que errou, sem o passo de correção. O tamanho da memória se mede contando os
+  tokens do texto injetado.
 - **A Tabela 4 é conservadora:** a fórmula ignora que os braços rodam os mesmos inputs. Com os dados do piloto, a fórmula
   pareada do Miller dá um número menor.
 - **"Inputs disponíveis" supõe que o input de cada execução com erro pode ser recuperado.** Não está confirmado.
-- **Os números da §10.2 são estimativa**, a confirmar pelo passo 3 do prompt.
+- **Os números da §10.2 são medidos, mas do período inteiro e por regra automática**, não por lição conferida.
+- **A média e a mediana não se comparam:** a Tabela 3 usa a mediana do passo com erro; a §10.2, a média (é o que a tabela da
+  rodada guarda).

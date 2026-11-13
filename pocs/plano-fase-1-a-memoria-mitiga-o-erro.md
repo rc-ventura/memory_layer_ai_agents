@@ -241,20 +241,21 @@ piloto (§6) é a primeira coisa a medir, antes de qualquer outra.
 No sentido contrário, no ContestacaoCivel o erro das funções proibidas **subiu** de julho para agosto (1,4% para 2,1%), e
 no RoteadorCivel o dos imports caiu (0,7% para 0,2%).
 
-**Achado 2 — a conta de compensação muda de papel para papel.** Hipótese de trabalho: o passo perdido custa a mediana de
-tokens da execução dividida pela mediana de passos; a memória custa o seu tamanho (estimado: 20 tokens a dos imports, 35 o
-par, 80 a das funções proibidas) em cada passo.
+**Achado 2 — a conta de compensação muda de papel para papel.** O passo perdido custa o que o passo que errou custou:
+**medido em 13/11** (mediana de tokens, no [relatório da volumetria](relatorio-volumetria-fase-1.md), Tabela 3). A memória
+custa o seu tamanho (hipótese, estimado: 20 tokens a dos imports, 35 o par, 80 a das funções proibidas) em cada passo.
 
 | Agente · memória | Custo de injetar `c` | Economia por erro evitado `s` | Incidência de equilíbrio | Incidência jul–ago | Eficácia mínima para pagar |
 |---|---:|---:|---:|---:|---:|
-| JoogleAnalytics · par | 360 | 17 mil (dois passos) | 2,0% | 35% (13% em agosto) | **6%** (16% com a taxa de agosto) |
-| CalculoTrabalhista · imports | 245 | 45 mil | 0,5% | 2,9% | 19% |
-| ContestacaoCivel · funções proibidas | 160 | 18 mil | 0,9% | 1,9% | **48%** |
-| RoteadorCivel · imports | 60 | 3 mil | 1,8% | 0,5% | **não paga** (precisaria de mais de 100%) |
+| JoogleAnalytics · par | 360 | 16 mil (8.065 × dois passos) | 2,2% | 35% (13% em agosto) | **6%** (17% com a taxa de agosto) |
+| CalculoTrabalhista · imports | 245 | 42 mil | 0,6% | 2,9% | 20% |
+| ContestacaoCivel · funções proibidas | 160 | 26 mil | 0,6% | 1,9% | **33%** |
+| RoteadorCivel · imports | 60 | 3,5 mil | 1,7% | 0,5% | **não paga** (precisaria de 360%) |
 
-Leitura: no JoogleAnalytics a memória paga com quase qualquer eficácia; no ContestacaoCivel ela precisa evitar metade dos
-erros para empatar; no RoteadorCivel não paga, porque a execução é pequena (3 passos) e o erro é raro. **Todos esses
-números dependem da hipótese do custo do passo**, e o experimento os mede.
+Leitura: no JoogleAnalytics a memória paga com quase qualquer eficácia; no ContestacaoCivel ela precisa evitar um terço dos
+erros para empatar (a cauda é longa: com o p90 do passo, 9%); no RoteadorCivel não paga, porque a execução é pequena
+(3 passos) e o erro é raro. **O custo do passo agora é medido; seguem hipótese os passos perdidos e o tamanho da memória**,
+e o experimento os mede.
 
 **Achado 3 — quanto custa rodar cada par.** Confirmatório no conjunto gatilho, três braços (sem memória, com memória,
 placebo), `n` de 82 a 122 execuções por braço (taxa de reprodução de 40%, redução de 50%):

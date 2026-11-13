@@ -77,8 +77,13 @@ de propósito (roadmap da base 3, #51).
 
 **Medido em 12/11/2026:** a incidência por papel e mês está no [plano da fase 1, §4.6](plano-fase-1-a-memoria-mitiga-o-erro.md) (JoogleAnalytics: 35% no pandas e 22% no `json` em julho–agosto, com queda forte em agosto; ContestacaoCivel: 1,9% nas funções proibidas, com 254 execuções com esse erro; RoteadorCivel: 0,5% nos imports).
 
-**Ainda falta:** o teto de economia por papel e memória, e os tokens e a duração do passo com erro por papel (o arquivo
-de custo por papel não existe na rodada mais recente).
+**Medido em 13/11/2026:** os tokens e a duração do passo com erro, por memória e papel
+([relatório da volumetria](relatorio-volumetria-fase-1.md), Tabela 3). Mediana de tokens do passo com erro: `pandas` do
+JoogleAnalytics 8.065; imports do CalculoTrabalhista 41.792; funções proibidas do ContestacaoCivel 26.246 (p90 de 99.610);
+imports do RoteadorCivel 3.477. Eficácia mínima para a memória pagar: 6%, 20%, 33% e "não paga", nessa ordem.
+
+**Ainda falta:** a taxa de hoje (o banco da máquina 2 termina em 29/08/2026), o modelo e a versão do prompt de cada agente,
+os passos perdidos por erro (hoje hipótese) e o tamanho real da memória injetada.
 
 Fatos sobre o comportamento do erro que moldam o desenho:
 
