@@ -1,4 +1,4 @@
-> **Sub-atividade:** 1.6 / 1.7 (alimenta 2.4 e 3.6) · **Tipo:** Receita passo a passo, com racionais · **Status:** desenho aprovado bloco a bloco em 13/11/2026 (os oito blocos e o 1-B; estado no §14); falta ler Berger e Hsu e fazer o pré-registro depois do piloto · **Data:** 12/11/2026
+> **Sub-atividade:** 1.6 / 1.7 (alimenta 2.4 e 3.6) · **Tipo:** Receita passo a passo, com racionais · **Status:** desenho aprovado bloco a bloco em 13/11/2026 (os oito blocos e o 1-B; estado no §14); **revisto na auditoria de 13/11/2026** (§14, "Revisão de 13/11"): porta zero antes do injetor, replay reposicionado como triagem, baseline histórico removido, sete desfechos; falta ler Berger e Hsu e fazer o pré-registro depois do piloto · **Data:** 12/11/2026
 
 # Fase 1 — a memória, de fato, mitiga o erro? (agentes reais)
 
@@ -23,6 +23,13 @@ Só depois de a fase 1 dizer que a memória mitiga vale gastar execuções compa
 **O que já foi escrito não é descartado:** o núcleo estatístico do plano geral (§8 medidas, §9 amostra, §9.3 K e N, §12
 análise) é reaproveitado aqui, e o plano geral continua valendo para a fase 2. A diferença é que a fase 1 roda no agente
 real, e isso cria problemas que o espelho não tinha (§3 e §13).
+
+**O que a fase 1 é, e o que ela não é.** Ela faz duas coisas: (a) **calibra o instrumento experimental** que a fase 2
+inteira vai reutilizar — a taxa de hoje, o classificador reimplementado, o injetor, o `ρ`, o custo real por execução e as
+aprovações de ambiente; e (b) responde à pergunta-gate: *a memória revisada mitiga o erro que descreve, a um custo que
+compensa?* O que ela **não** decide é a tese do mecanismo — gate de promoção, esquecimento auditável, destino memória ×
+harness —, que mora na fase 2 e no que este plano deliberadamente não testa. Um desfecho legítimo da fase 1 é "nada
+testável hoje" (§6, porta zero).
 
 ## 1. A pergunta e a medida
 
@@ -58,11 +65,12 @@ execução que teve o erro (JoogleAnalytics 1,43; ContestacaoCivel 1,02; Roteado
 
 **Medidas secundárias, só descritivas (fora do veredito):** erros por execução e passos até a resposta final.
 
-**Os seis resultados possíveis, e todos são resposta:**
+**Os sete resultados possíveis, e todos são resposta:**
 
 | Resultado | Leitura | Consequência |
 |---|---|---|
 | **mitiga e compensa** | o erro cai e a economia paga o custo de injetar | a memória vai para a fase 2 |
+| **mitiga, compensação incerta** | a redução é real e a estimativa passa do `e_min`, mas o intervalo da eficácia inclui valores abaixo dele (§9) | vai para a fase 2 com a ressalva declarada; a versão rigorosa da régua decide se a amostra fecha |
 | **mitiga, mas não compensa** | o erro cai, mas o erro é raro demais, ou a memória cara demais | fica monitorada até a incidência crescer |
 | **não mitiga** | o erro fica igual, **e o intervalo da redução exclui o `e_min`** (senão é "inconclusivo", §9) | volta ao degrau 3: a causa não era a suposta |
 | **piora** | o erro sobe, ou aparece outro | não injetar; investigar o texto |
@@ -116,9 +124,9 @@ regra só enxerga 60% dos erros nos dois braços, aparece 12 e 6, e a redução 
    coincidem, a medida é robusta; se não, o resultado é reportado como não robusto.
 5. **Números absolutos sempre com intervalo.** O "20 contra 10" nunca aparece sozinho. O veredito se apoia na comparação
    pareada, que usa os inputs em que o resultado **difere** entre os braços.
-6. **Convergência com o replay de passo (§8.2).** Se a execução inteira (realista) e o replay do passo (causal) apontam para o
-   mesmo lado, a evidência é mais forte; se divergem, é sinal para investigar.
-7. **Ler uma execução inteira de cada braço** (§10, passo 13): pega o que nenhuma regra prevê.
+6. **Convergência qualitativa com o replay de passo (§6, porta zero).** Se a triagem de passo e a execução inteira
+   apontarem para lados opostos, é sinal para investigar antes do confirmatório — sem pretensão de prova.
+7. **Ler uma execução inteira de cada braço** (§10, passo 14): pega o que nenhuma regra prevê.
 
 **Dois cuidados específicos.**
 
@@ -169,19 +177,21 @@ servem só para **escolher onde olhar**: são da base 3, que termina em agosto, 
 (`json`) de julho para agosto, e isso pode ser troca de modelo ou de prompt. O experimento precisa da taxa do agente **que vai
 ser testado**.
 
-**A solução.** O experimento começa medindo o baseline, que é o próprio **piloto** (só o braço sem memória). Há duas versões:
+**A solução.** O baseline é o próprio **piloto**: rodar o agente **como está hoje**, sem memória, sobre inputs reais, com um
+`n` fixo decidido com o orçamento, e medir a taxa com intervalo de Wilson. É essa taxa que decide a entrada do par, o `n`
+necessário do confirmatório e o efeito mínimo `e_min` (recalculado com a taxa de hoje). Para só confirmar que o erro existe,
+bastam poucas execuções (com 95% de confiança, 7 para o `pandas`, 12 para o `json` e 159 para as funções proibidas, pelas
+taxas históricas).
 
-| | **A. A versão de hoje** (principal) | **B. A versão de jul–ago** (diagnóstico) |
-|---|---|---|
-| O que é | rodar o agente como está hoje, sem memória, sobre inputs reais, até acumular execuções com o padrão do erro | reconstituir o agente do período (modelo, prompt e código) e medir a mesma coisa |
-| Para que serve | é a taxa que importa: a memória será injetada no agente de hoje | testa se o histórico se reproduz e se a queda de agosto foi a troca de versão |
-| O que decide | se a comparação entra, o `n` necessário, o efeito mínimo `e_min` (recalculado com a taxa de hoje) | explica o histórico; **não decide a entrada** |
-| Custo | o piloto que já existe | mais um conjunto, e depende de conseguir reconstituir a versão |
+**O que ficou de fora — duas peças, e por quê.**
 
-**"Rodar até sair o erro".** Roda-se o agente sem memória e contam-se as execuções até ver o erro `k` vezes, com um teto de
-orçamento. Parar assim, naïvemente, **superestima** a taxa; o estimador correto para esse desenho é `(k − 1) ÷ (n − 1)`, o da
-amostragem binomial inversa (**não conferido numa fonte**). Para só confirmar que o erro existe, bastam poucas execuções (com
-95% de confiança, 7 para o `pandas`, 12 para o `json` e 159 para as funções proibidas, pelas taxas históricas).
+1. **A versão de jul–ago do agente** (reconstituir modelo, prompt e código da época). Não decide nenhuma etapa desta fase —
+   a memória é injetada no agente de hoje, e a entrada de cada par se decide com a taxa de hoje, medida acima. A pergunta
+   diagnóstica que ela responderia ("o histórico se reproduz? a queda de agosto foi a troca de versão?") é da fase 2 e foi
+   registrada em [`discussion/open-questions.md`](../discussion/open-questions.md).
+2. **"Rodar até sair o erro".** Parar quando o erro aparecer `k` vezes enviesa o estimador e pede a correção da amostragem
+   binomial inversa, que este plano não adota. Usa-se `n` fixo, decidido antes, e o intervalo de Wilson — a mesma medida, sem
+   regra de parada adaptativa.
 
 **Dois tipos de baseline.** *Por sorteio* (JoogleAnalytics): a taxa de erro de execuções sorteadas da produção. *Por conjunto
 gatilho* (ContestacaoCivel): o erro é raro (1,9%), então se parte de inputs que já erraram e se mede a **taxa de reprodução**.
@@ -206,11 +216,10 @@ bases 1 e 2). Nada se conclui sobre outros agentes ou outros modelos.
 
 ### 2.7 Questões técnicas em aberto (do Rafael, ao executar)
 
-Nenhuma muda o desenho; cada uma precisa de um jeito de contornar: (1) reconstituir a versão de jul–ago (modelo, hash do
-prompt, commit do código); (2) fixar a versão de hoje (o modelo pode mudar por trás do mesmo nome no gateway); (3) recuperar o
-input de usuário das execuções históricas (possível, segundo o Rafael); (4) onde roda e como (aprovações, gateway, orçamento,
-homologação, bancos locais, caminho das ferramentas); (5) o teto de execuções do baseline "até sair o erro"; (6) memória
-própria da plataforma desligada ou isolada.
+Nenhuma muda o desenho; cada uma precisa de um jeito de contornar: (1) fixar a versão de hoje (o modelo pode mudar por trás
+do mesmo nome no gateway); (2) recuperar o input de usuário das execuções históricas (possível, segundo o Rafael); (3) onde
+roda e como (aprovações, gateway, orçamento, homologação, bancos locais, caminho das ferramentas); (4) o `n` e o teto de
+orçamento do baseline; (5) memória própria da plataforma desligada ou isolada.
 
 ## 3. Antes de rodar qualquer coisa: o que o agente real impõe
 
@@ -495,7 +504,7 @@ nenhuma. Tudo o que não for julgamento é calculado por script, sobre o registr
 | O que | Definição | Por quê |
 |---|---|---|
 | **adesão à lição** | quando a memória estava lá e o erro era possível, o código fez o que ela diz? (por AST) | separa "o agente ignorou a memória" de "a memória não funciona". O MERIT chama a fração em que o agente não usa a memória certa de *Ignore Rate* e mediu cerca de 45% nos casos difíceis |
-| **replay de passo** | exploratório (§8.2) | evidência do mecanismo |
+| **replay de passo** | triagem da porta zero (§6.1) | adiar um par antes de gastar o confirmatório; evidência qualitativa do mecanismo |
 
 **Grupo 4: a distribuição (o que a média esconde).**
 
@@ -516,8 +525,11 @@ melhor juiz do TRAIL alcança 11% de acerto conjunto):
    §14): uma medida difícil de padronizar não deve decidir o veredito.
 4. **Equivalência com a resposta original da produção**, onde existir. Só referência: a execução original pode estar errada.
 
-**O que decide e o que só sinaliza.** Os níveis 1 e 2, por script, entram no veredito. O nível 3 só sinaliza; mas se o cego
-mostrar piora clara, o resultado é reportado como **"piora"** (um dos seis desfechos do §1), mesmo que o erro-alvo tenha caído.
+**O que decide e o que só sinaliza.** Os níveis 1 e 2, por script, entram no veredito. O nível 3 (cego) **sinaliza e dispara
+investigação**; ele só pode virar desfecho ("piora") se a regra de decisão — a fração de pares com piora e o critério de
+concordância dos especialistas — estiver **fixada no pré-registro, antes dos dados**. Sem regra pré-fixada, uma medida
+exploratória não muda o veredito: "se o cego piorar, é piora", decidido depois de olhar o resultado, seria escolher o
+critério para dar o desfecho — exatamente o que o pré-registro existe para impedir (§6.3).
 
 **O RespostaBacen como verificação de dano.** Quase não tem o erro (0 de 76), então **não testa mitigação**. Roda a memória
 das funções proibidas **só para ver que não piora** (outros erros, custo, qualidade), em outro modelo (o4-mini), o que serve
@@ -539,11 +551,32 @@ ferramenta e interpretador, se o trace não o tem (a base 3 tem só os passos co
 
 > **Aprovado pelo Rafael em 13/11/2026 (bloco 8 do desenho).**
 
-A sequência é: **piloto (só sem memória) → portas → decidir `K` e `N` → pré-registro → confirmatório → análise.**
+A sequência é: **porta zero (a triagem mínima, sem injetor) → piloto → portas → decidir `K` e `N` → pré-registro → confirmatório → análise.**
 
-### 6.1 O piloto: mede o terreno, não testa a memória
+### 6.1 A porta zero: a triagem que decide se o resto existe
 
-O piloto roda **só o braço sem memória**, na versão **atual** do agente, e responde seis perguntas:
+Roda **antes de o injetor e a infraestrutura serem construídos** (receita, passo 8 do §10), com o mínimo indispensável: o
+agente **na versão atual, sem memória**, sobre os conjuntos gatilho e controle já montados, lido pelo classificador da
+mineração reimplementado — que o confirmatório precisa de qualquer forma. Responde, na ordem de custo crescente:
+
+1. **O erro existe hoje?** É a primeira porta da tabela abaixo, e bastam poucas execuções (§2.4).
+2. **A taxa de reprodução `p`, em ordem de grandeza**, no conjunto gatilho: afina a linha da tabela 4.1 antes de o piloto
+   completo medir o resto.
+3. **O replay de passo como triagem.** Em passos em que o erro aconteceu, repete-se **só aquele passo**, com a mesma
+   entrada, `K` vezes sem e com memória — uma chamada de LLM por repetição, muito menos que uma execução inteira; no erro do
+   sandbox, o erro se lê no código, sem rodar ferramenta. O conceito e os limites estão em
+   [`conceitos-do-experimento.md`](conceitos-do-experimento.md) §4. O replay **decide com regra declarada no pré-registro**:
+   *sem sinal no par (o erro volta na mesma proporção com e sem memória) → o par é adiado antes do confirmatório.* Ele não
+   decide o veredito ("mitiga" ou não) — decide só se vale rodar o instrumento completo, que é onde custo, dano e cascata
+   se medem.
+
+Se **nenhum** par passa na porta zero, a fase 1 encerra aqui com "nada testável hoje" — e o custo total foi o da porta,
+não o do experimento.
+
+### 6.2 O piloto: mede o terreno, não testa a memória
+
+O piloto roda **só o braço sem memória**, na versão **atual** do agente, e responde seis perguntas (as duas primeiras já
+vêm aferidas em ordem de grandeza pela porta zero; o piloto completo as refina com o tamanho planejado):
 
 | O que se mede | Como | Decide |
 |---|---|---|
@@ -556,8 +589,8 @@ O piloto roda **só o braço sem memória**, na versão **atual** do agente, e r
 
 **Tamanho, por par:** 20 inputs do gatilho × 5 repetições mais 20 do controle × 3 repetições = **160 execuções** (480 nos
 três pares), a ordem do plano geral, que estima o `ρ` com erro de cerca de ±0,10. Com cerca de 90 mil tokens por execução do
-JoogleAnalytics (42 mi ÷ 468), o piloto dele custa cerca de 14 mi de tokens. **O baseline** (§2.4) se mede aqui: a versão de
-hoje (A) e, se der, a de jul-ago (B), "rodar até k erros", com teto de execuções.
+JoogleAnalytics (42 mi ÷ 468), o piloto dele custa cerca de 14 mi de tokens. **O baseline** (§2.4) se mede aqui: a versão
+de hoje, com `n` fixo e o intervalo de Wilson.
 
 **Além de medir, o piloto fecha cinco coisas:** (1) o **classificador é corrigido e congelado por hash** (§1.1), só aqui; (2)
 o **texto do placebo** (proposta do Claude, aprovada pelo Rafael; §8.1); (3) o **limite da "fração relevante de inputs que
@@ -568,7 +601,8 @@ classificador (30 + 30 por braço, a fixar); (5) o **`e_min` recalculado** com o
 
 | Porta | Regra | Se falhar |
 |---|---|---|
-| **o erro ainda existe** | o limite inferior do intervalo de `p` é maior que zero | **"não testável hoje"**: a memória fica monitorada e **não foi julgada** |
+| **o erro ainda existe** *(porta zero)* | o limite inferior do intervalo de `p` é maior que zero | **"não testável hoje"**: a memória fica monitorada e **não foi julgada** |
+| **a triagem de passo tem sinal** *(porta zero)* | no replay, a memória reduz a volta do erro (regra fixada no pré-registro, §6.1) | o par é **adiado** antes de gastar o confirmatório |
 | **viável** | inputs do gatilho × `K` × `p` ≥ `n` da tabela 4.1 | par monitorado ou exploratório |
 | **seguro** | todas as ferramentas classificadas e a saída do §3.3 definida | **não roda** |
 | **orçamento** | execuções × tokens médios ≤ o teto fixado com a plataforma | reduz pares ou `K` |
@@ -577,7 +611,7 @@ classificador (30 + 30 por braço, a fixar); (5) o **`e_min` recalculado** com o
 Se **nenhum** par passar, o resultado da fase 1 é "nada testável hoje". É um resultado legítimo, **não** uma falha do
 experimento.
 
-### 6.2 O pré-registro
+### 6.3 O pré-registro
 
 É um documento escrito **depois do piloto e antes do confirmatório**, para impedir que a medida, a regra ou o critério sejam
 ajustados depois de ver o resultado (Nosek et al., 2018).
@@ -595,10 +629,10 @@ nada é reescrito. Tudo o que não estiver no pré-registro (replay, cego, autog
 veredito. O pré-registro precisa do **ok do Rafael** e, para rodar, das aprovações do §3 (onde roda, gateway, orçamento,
 homologação), que são do Rafael e do tutor.
 
-**Questões técnicas em aberto (do Rafael, ao executar):** (1) quando o piloto pode rodar (depende da leitura do código, §3.1,
-e das aprovações, §3.2); (2) onde o pré-registro é guardado e como o hash sai do ambiente; (3) o teto de execuções do
-baseline "até sair o erro" e o orçamento do piloto; (4) os comandos literais para o ambiente saem **depois** que os scripts
-dos passos 4, 6 e 9 da receita (§10) existirem e forem testados na base 1.
+**Questões técnicas em aberto (do Rafael, ao executar):** (1) quando a porta zero e o piloto podem rodar (depende da leitura do código, §3.1,
+e das aprovações, §3.2); (2) onde o pré-registro é guardado e como o hash sai do ambiente; (3) o `n` e o orçamento do
+baseline e do piloto; (4) os comandos literais para o ambiente saem **depois** que os scripts
+dos passos 4, 6 e 10 da receita (§10) existirem e forem testados na base 1.
 
 ## 7. As memórias e o injetor
 
@@ -690,36 +724,24 @@ quando o agente chama a ferramenta de outro jeito, e é o que a memória pode pr
 "não achei a resposta gravada"**, e **se registra quantas vezes isso ocorreu, por braço**: se ocorrer mais num braço, a
 comparação fica enviesada e isso se declara.
 
-**Onde entra o replay.** Três níveis, cada um para uma coisa:
-
-| Nível | O que é | Para que serve | Entra no veredito? |
-|---|---|---|---|
-| **execução ao vivo** | o agente roda inteiro, do input à resposta | baseline e confirmatório; única que mede erro, custo e dano **juntos** | **sim** |
-| **rodar de novo o mesmo input** | o mesmo input roda várias vezes sem memória | o conjunto gatilho, para erros raros: mede a taxa de reprodução (§4.3) | **sim**, como base do gatilho |
-| **replay de passo** | pega um passo em que o erro aconteceu e repete **só aquele passo**, com a mesma entrada, `K` vezes sem e com memória | **triagem barata** e evidência do mecanismo | **não**, é exploratório |
-
-O replay de passo é barato porque um passo é uma chamada de LLM, bem menos que uma execução inteira; no erro do sandbox, o
-erro aparece **no código que o modelo escreve**, então se detecta lendo o código, sem rodar ferramenta. Há precedente (DoVer e
-AgentDebug intervêm no passo da falha; Ma et al., 2025; Zhu et al., 2025). **Não entra no veredito** por quatro limites: (1)
-mede só a probabilidade do erro **naquele passo**, e a memória entra no meio do trace, então não mostra o efeito na cascata,
-nos tokens e no tempo; (2) precisa do **trace completo** (o banco de traces do ambiente o tem; a base 3 não); (3) passos
-escolhidos por terem errado sofrem **regressão à média**; (4) a leitura estática precisa ser conferida contra o classificador
-(§1.1). **Na prática:** antes de gastar um confirmatório caro, um replay com e sem memória mostra se há sinal (se o erro volta
-igual nos dois, poupa-se o confirmatório); depois, dá evidência do mecanismo no passo. Qualquer explicação do mecanismo
-fica **como hipótese** até aparecer assim. **Congelar também as respostas do LLM não serve**: a memória age sobre o LLM, e a
-resposta dele já estaria fixa (`conceitos-do-experimento.md` §4).
+**Onde entra o replay.** O **replay de passo** virou instrumento de triagem da **porta zero** (§6.1): é barato (um passo é
+uma chamada de LLM) e decide, com regra declarada no pré-registro, se o par segue para o confirmatório. O conceito, os
+precedentes (DoVer, AgentDebug) e os limites estão em [`conceitos-do-experimento.md`](conceitos-do-experimento.md) §4. O
+que decide o veredito é sempre a **execução ao vivo** — única que mede erro, custo e dano juntos — e rodar de novo o mesmo
+input sem memória é a base do conjunto gatilho (§4.3). **Congelar também as respostas do LLM não serve**: a memória age
+sobre o LLM, e a resposta dele já estaria fixa (`conceitos-do-experimento.md` §4).
 
 **Falhas de infraestrutura** (rede, limite de requisições do gateway, timeout, ferramenta fora do ar) se **separam, se
 classificam** (as 8 causas do Eval Engineering) e **se repetem fora da nota**. **Conta-se por braço**: se um braço falha mais,
 isso pode ser efeito da memória (texto maior, mais tempo, mais timeout), e então se reporta como resultado. A execução que
 falha antes da chance de errar não conta como "sem erro" (quarta forma do §1.1).
 
-**O que é congelado antes do confirmatório** (pré-registro, §6.2): os pares, as listas de inputs (por hash), os textos
+**O que é congelado antes do confirmatório** (pré-registro, §6.3): os pares, as listas de inputs (por hash), os textos
 das memórias e dos placebos, `K`, `N`, as medidas e os critérios. Os inputs do piloto ficam **fora** do confirmatório.
 
 **Questões técnicas em aberto (do Rafael, ao executar):** (1) há homologação para cada agente; (2) quais ferramentas de cada
 agente escrevem e quais só leem; (3) a política para "não achei a resposta gravada"; (4) como desligar ou isolar a memória
-própria da plataforma; (5) o teto de execuções do baseline "até sair o erro" (§2.4); (6) como detectar a deriva do provedor,
+própria da plataforma; (5) o `n` e o orçamento do baseline (§2.4); (6) como detectar a deriva do provedor,
 para registrá-la.
 
 ## 9. Critério de sucesso
@@ -732,8 +754,8 @@ Uma memória "**mitiga**" num agente se as quatro condições valerem:
    pares (a família tem três pares: os limites são 1,7%, 2,5% e 5%, do menor `p` ao maior), e o intervalo de 95% da redução relativa **não inclui zero**.
 2. **Especificidade.** A memória é melhor que o placebo na mesma medida.
 3. **Sem dano.** A estrutura da resposta final não piora; a presença não piora; a taxa de outros erros não sobe; o
-   resultado do cego, se feito, não favorece o braço sem memória; e nenhuma fração relevante dos inputs piora (a
-   robustez do §5, com limite fixado no pré-registro).
+   resultado do cego, **se a sua regra de decisão foi pré-registrada** (§5), não favorece o braço sem memória; e nenhuma
+   fração relevante dos inputs piora (a robustez do §5, com limite fixado no pré-registro).
 4. **Robustez.** O resultado vale nas duas metades dos inputs (primeira e segunda metade, ou duas famílias) e, se o
    piloto rodou em dois modelos, nos dois.
 
@@ -746,6 +768,12 @@ maior que o efeito mínimo que paga o custo, `e_min = c ÷ (π · s)`. Com o cus
 Tabela 3): cerca de 6% no JoogleAnalytics e 33% no ContestacaoCivel. O `e_min` é **recalculado no pré-registro** com a taxa de hoje
 (`π`) medida no piloto. A versão mais rigorosa, que exige o **limite inferior** do intervalo acima do `e_min`, pede muito
 mais amostra e **não foi adotada**; fica como opção se o piloto mostrar amostra sobrando.
+
+**A faixa intermediária tem nome.** Se a redução é real (condições 1 e 2 passam) e a estimativa pontual passa do `e_min`,
+mas o intervalo de 95% da eficácia **inclui valores abaixo dele**, o desfecho é **"mitiga, compensação incerta"** (o sétimo
+do §1): o par vai para a fase 2 com a ressalva declarada — e, se a amostra permitir, a versão rigorosa da régua fecha a
+questão. Sem o sétimo desfecho, essa faixa cairia ora em "mitiga e compensa", ora em "inconclusivo", conforme a vontade do
+analista — e a régua deixaria de ser regra.
 
 **Como a correção é feita (decidido em 13/11/2026, bloco 7).** "Mitiga" exige duas comparações por par (contra sem memória e
 contra placebo), então o teste é de **interseção-união** (Berger, 1982): o `p` do par é o **maior** dos dois, sem correção
@@ -762,14 +790,15 @@ volta como **inconclusivo**, não como "não mitiga".
 **O sexto desfecho: inconclusivo.** Um teste que não rejeita **não prova** que a memória não funciona (pode ser amostra
 pequena). Por isso **"não mitiga" só se declara quando o intervalo de confiança da redução exclui o `e_min`**. Se o
 intervalo ainda inclui efeitos acima do `e_min`, o desfecho é **"inconclusivo: amostra insuficiente"**, e o par pode ser
-repetido com mais inputs. Os desfechos do §1 passam a seis.
+repetido com mais inputs. Os desfechos do §1 passam a sete (o sétimo é o "mitiga, compensação incerta" da régua acima).
 
 **Porta de entrada do JoogleAnalytics, por orçamento.** Com A' e redução de 50%, o sorteio custa por braço: 156 (taxa de hoje
 35%), 194 (30%), 242 (25%), 317 (20%), 517 (13%), isto é, de cerca de 42 a 138 milhões de tokens nos três braços. **Entra se a
 taxa de hoje for ≥ 25%** (cerca de 65 milhões de tokens); abaixo disso, sai do confirmatório e fica monitorado, a menos que o
 Rafael aceite o orçamento maior. O limite final é fixado no pré-registro, com o orçamento que o Rafael aceitar gastar.
 
-**Fora do Holm** (e do veredito): RespostaBacen, CalculoTrabalhista, RoteadorCivel, a autogerada, o replay de passo e o cego.
+**Fora do Holm** (e do veredito): RespostaBacen, CalculoTrabalhista, RoteadorCivel, a autogerada e o cego. (O replay de
+passo não é um braço: é a triagem da porta zero, §6.1.)
 
 **Questões em aberto (do Rafael):** (1) ler Berger e Hsu (1996); (2) o limite da "fração relevante dos inputs que pioram"
 (condição 3), a fixar no piloto, olhando a variação natural entre inputs; (3) o orçamento de execuções.
@@ -799,17 +828,21 @@ só contagens, como nas outras bases) e **o que sai**. As durações são estima
 | 4 | **Contar a volumetria**: por agente e por mês, execuções, execuções com cada erro, passos, tokens, duração, modelo (§4) | Claude escreve e testa na base 1; Rafael roda | a tabela de volumetria (só contagens) | números conferidos por uma segunda implementação | 2 |
 | 5 | **Fechar os pares** viáveis e os inputs disponíveis (§2, §4.3) | Rafael e Claude | a lista de pares, com o tamanho do conjunto gatilho | cada par tem inputs suficientes, ou vai a monitorada | 1 |
 | 6 | **Montar os conjuntos de inputs** (gatilho e controle), sem repetir inputs quase iguais, com hash (§4.3) | Rafael, no ambiente | os conjuntos, **dentro do ambiente** | hash gravado | 1 |
-| 7 | **O injetor**: a região `<memory>`, o registro, os filtros do catálogo (§7) | Claude escreve e testa; Rafael integra no agente | o injetor testado | uma execução de cada braço lida inteira | 3 |
-| 8 | **O registro e o classificador** do erro-alvo, com segunda implementação (§5) | Claude | o código testado na base 1 | as duas implementações batem | 2 |
-| 9 | **O piloto** (só sem memória), §6 | Rafael | taxa de reprodução, incidência, `ρ`, tokens, tempo | as portas de decisão aplicadas | 2 |
-| 10 | **Decidir `K` e `N`** por par (§4.4 e §9.3 do plano geral) e **pré-registrar** | Rafael e Claude | o pré-registro com hash | aprovação do Rafael | 1 |
-| 11 | **O confirmatório** (§8) | Rafael | os registros crus + o manifesto | todas as execuções previstas existem | 3–5 |
-| 12 | **Análise e auditoria independente** (§11) | Claude escreve; Rafael roda | tabelas e o veredito por par | as duas implementações batem | 3 |
-| 13 | **Leitura de uma execução inteira por braço**, e do cego, se houver | Rafael | o relato | — | 1–2 |
-| 14 | **Fechamento:** o degrau 4 no catálogo, o relatório, e o que passa para a fase 2 | Rafael e Claude | os documentos | gate do pesquisador | 2 |
+| 7 | **O classificador** do erro-alvo reimplementado sobre os registros novos, com segunda implementação (§1.1) — **sem injetor** | Claude | o código testado na base 1 | as duas implementações batem | 2 |
+| 8 | **A porta zero** (§6.1): só sem memória, na versão atual, no gatilho e no controle; e o replay de passo no gatilho | Rafael | o erro existe hoje? a taxa de reprodução em ordem de grandeza; o sinal do replay | as portas zero aplicadas; **se nenhum par passa, a fase 1 encerra aqui** | 2 |
+| 9 | **O injetor**: a região `<memory>`, o registro, os filtros do catálogo (§7) | Claude escreve e testa; Rafael integra no agente | o injetor testado | uma execução de cada braço lida inteira | 3 |
+| 10 | **O piloto completo** (§6.2) | Rafael | incidência de hoje, `ρ`, tokens, tempo; classificador corrigido e congelado por hash | o restante das portas de decisão aplicadas | 2 |
+| 11 | **Decidir `K` e `N`** por par (§4.4 e §9.3 do plano geral) e **pré-registrar** | Rafael e Claude | o pré-registro com hash | aprovação do Rafael | 1 |
+| 12 | **O confirmatório** (§8) | Rafael | os registros crus + o manifesto | todas as execuções previstas existem | 3–5 |
+| 13 | **Análise e auditoria independente** (§11) | Claude escreve; Rafael roda | tabelas e o veredito por par | as duas implementações batem | 3 |
+| 14 | **Leitura de uma execução inteira por braço**, e do cego, se houver | Rafael | o relato | — | 1–2 |
+| 15 | **Fechamento:** o degrau 4 no catálogo, o relatório, e o que passa para a fase 2 | Rafael e Claude | os documentos | gate do pesquisador | 2 |
+
+Os passos 7–8 são **descartáveis e baratos**: usam só o agente como ele é e o classificador que o confirmatório vai
+reusar. O injetor (9) e o resto da infraestrutura só existem **depois** que a porta zero mostra que há o que medir.
 
 **Os comandos literais para o ambiente** (linhas completas, sem variáveis) saem **depois** que os scripts dos passos 4, 6
-e 9 existirem e forem testados na base 1; até lá, este documento é o plano, não o roteiro de comandos.
+e 10 existirem e forem testados na base 1; até lá, este documento é o plano, não o roteiro de comandos.
 
 ## 11. Análise
 
@@ -863,6 +896,34 @@ completo, antes de fixar o §5.
 | O agente de verificação de dano (RespostaBacen) não tem o erro, então a medida principal não existe nele | ali se mede **dano**, não eficácia |
 
 ## 14. Decisões do Rafael (13/11/2026)
+
+### Revisão de 13/11/2026 (auditoria do desenho)
+
+Depois da aprovação bloco a bloco, o desenho passou por uma auditoria de método experimental (13/11/2026, noite). Os
+ajustes estão no texto onde valem; aqui fica o registro:
+
+1. **A fase 1 reenquadrada (§0):** calibração do instrumento experimental + pergunta-gate. A tese do mecanismo (gate,
+   esquecimento, destino memória × harness) se decide na fase 2 — a fase 1 não a prova nem no melhor cenário.
+2. **Porta zero criada (§6.1, passo 8 da receita):** a triagem mínima — versão atual, sem memória, gatilho e controle,
+   com o replay de passo — roda **antes** de o injetor e da infraestrutura serem construídos. Se nenhum par passa, a fase 1
+   encerra ali, pelo custo da porta.
+3. **Replay de passo reposicionado (§6.1, §8.2):** de braço exploratório solto para **instrumento de triagem da porta
+   zero, com regra de decisão declarada no pré-registro** ("sem sinal → o par é adiado"). Instrumento exploratório não
+   decide sem regra pré-fixada — o mesmo defeito corrigido no cego.
+4. **Baseline B removido (§2.4):** reconstituir a versão de jul–ago não decide nenhuma etapa da fase 1 (a memória é
+   injetada no agente de hoje, e a entrada se decide com a taxa de hoje). A pergunta diagnóstica foi para
+   [`open-questions.md`](../discussion/open-questions.md), como assunto da fase 2.
+5. **"Rodar até k erros" removido (§2.4):** o estimador da binomial inversa não estava conferido em fonte; o baseline usa
+   `n` fixo e intervalo de Wilson.
+6. **Cego sem poder de veredito improvisado (§5, §9 condição 3):** só decide se a regra (fração de pares com piora,
+   concordância dos especialistas) estiver no pré-registro; sem ela, sinaliza e dispara investigação.
+7. **Sétimo desfecho (§1, §9):** "mitiga, compensação incerta" — redução real e estimativa acima do `e_min`, com o
+   intervalo incluindo eficácias abaixo dele.
+8. **Simulação de poder versionada (abaixo, bloco 7):** o script entra no repositório antes do pré-registro; número sem
+   script não entra no pré-registro.
+
+Os blocos 1–8 permanecem aprovados; estes ajustes detalham, reordenam ou removem, sem mudar a pergunta, os pares-alvo,
+os três braços do veredito nem a correção (A' + Holm).
 
 ### O estado da aprovação do desenho, bloco a bloco
 
@@ -999,6 +1060,10 @@ sem efeito; teste de duas proporções, primeiro passo do Holm, 200 mil simulaç
 O poder de 80% do plano valia **para uma comparação**. Para passar **nas duas**, preciso de cerca de 160 por braço (+22%) na
 A' e de 180 (+37%) na B. Com a A' e redução de 50%, o `n` por braço sobe com a queda da taxa sem memória: 156 (35%), 194 (30%),
 242 (25%), 317 (20%), 517 (13%).
+
+**Reprodutibilidade (decidido na revisão de 13/11, item 8):** o script desta simulação — e o de qualquer refinamento de
+poder — entra no repositório **antes do pré-registro**, em `analysis/…/pipeline/execucao/` (fora do hash da rodada), com os
+parâmetros no cabeçalho. Número sem script não entra no pré-registro.
 
 **Em aberto, e vai ficando por conta do Rafael, ao executar** (com o desenho aprovado, o que resta são estas questões técnicas e a leitura de Berger e Hsu; a porta do JoogleAnalytics e o texto do placebo já têm regra, nos §9 e §8.1) (questões técnicas; nenhuma muda o desenho acima):
 

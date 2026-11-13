@@ -26,7 +26,10 @@ reais** com **inputs reais**. Ela tem a sua própria receita, com volumetria e c
 [`plano-fase-1-a-memoria-mitiga-o-erro.md`](plano-fase-1-a-memoria-mitiga-o-erro.md). **Os três experimentos abaixo são a
 fase 2**: só rodam para os pares (agente × memória) em que a fase 1 mostrar que a memória mitiga. Nesta ordem, os
 agentes-espelho da trilha 1 (§5) passam a ser **ensaio e reserva**: servem para construir o executor, o registro, a
-análise e o injetor, e para o caso de um agente real não poder rodar.
+análise e o injetor, e para o caso de um agente real não poder rodar. A fase 1 tem dois papéis: **calibrar o instrumento
+experimental** (a taxa de hoje, o classificador, o injetor, o `ρ`, o custo real por execução), que os experimentos abaixo
+reutilizam, e responder à pergunta-gate — é aqui, na fase 2, que as perguntas da tese (entrega, origem, conteúdo) se
+decidem.
 
 **Os três experimentos (fase 2).** As perguntas se organizam em três eixos independentes, cada um com a sua pergunta, os seus
 braços e a sua família de comparações. Eles compartilham o núcleo (tarefas, medidas, estatística, piloto) e a linha de
