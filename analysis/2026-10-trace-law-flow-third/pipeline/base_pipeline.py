@@ -188,6 +188,7 @@ def explodir_memoria(df):
             if not isinstance(steps, list): continue
             acts = [s for s in steps if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
             obs_ant = ""   # observações dos steps anteriores deste papel — só para sinais_de_parsing(), não sai daqui
+            codes_ant = []   # o código dos steps anteriores deste papel — só para retorno_numero_declarado()
             for i, st in enumerate(acts):
                 tu, tm = st.get("token_usage") or {}, st.get("timing") or {}
                 err = st.get("error") or {}
@@ -216,9 +217,12 @@ def explodir_memoria(df):
                                                                       st.get("code_action"), sysp),
                        "final_answer_sem_laco": final_answer_sem_laco(str(err.get("message") or ""),
                                                                       st.get("code_action")),
+                       "retorno_numero_declarado": retorno_numero_declarado(str(err.get("message") or ""),
+                                                                            codes_ant + [st.get("code_action")], sysp),
                        "is_final": bool(st.get("is_final_answer"))}
                 rows.append(rec)
                 obs_ant += str(st.get("observations") or "")
+                codes_ant.append(st.get("code_action"))
                 raw.append({**rec, "code": st.get("code_action") or "",
                             "thought": str(st.get("model_output") or ""),
                             "sysprompt": sysp,
@@ -241,6 +245,57 @@ def explodir_memoria(df):
 # das bibliotecas; o "Cannot unpack non-tuple value" não entra (falha também no Python normal) (Ajuste 38)
 SINTAXE_NAO_SUPORTADA = re.compile(
     r"InterpreterError: (?:[A-Z]\w* is not supported\.|Re-raise is not supported without an active exception)")
+
+
+# um valor de texto entrou numa conta, num round ou num formato de número: a mensagem diz o tipo (`'str'`). Só operadores
+# de conta com um número do outro lado — o `'function' | 'str'` da base 1 não é conta (Ajuste 39)
+_NUMERO = r"(?:int|float|Decimal)"
+TEXTO_NUMA_CONTA = re.compile(
+    rf"unsupported operand type\(s\) for (?:\*\*|//|[-+*/%])=?: (?:'{_NUMERO}' and 'str'|'str' and '{_NUMERO}')"
+    r"|can only concatenate str \(not \"(?:int|float)\"\) to str"
+    r"|type str doesn't define __round__ method"
+    r"|Unknown format code '\w' for object of type 'str'"
+    r"|must be real number, not str")
+_TIPOS_NUMERO = {"float", "int", "number", "integer", "decimal"}
+_LINHA_DA_FALHA = re.compile(r"failed at line '(.*?)' due to", re.S)
+# contratos de retorno lidos no system prompt da base 2 (16/11, `decisoes.md`), para onde o trace não traz o prompt (base
+# 3): as duas ferramentas de correção monetária declaram `Returns: float` e, nos erros, entregam texto. Provisório: se o
+# contrato de uma delas mudar, esta lista erra sem aviso — conferir no prompt a cada extração nova (Ajuste 39)
+CONTRATOS_DE_RETORNO_CONHECIDOS = {"calcular_correcao_monetaria": "float", "indice_correcao_monetaria": "float"}
+
+
+def tipo_de_retorno_declarado(ferramenta, sysp):
+    """O tipo de retorno que o system prompt declara para a ferramenta: (a assinatura `-> X`, o primeiro token depois de
+    `Returns:` no docstring — que costuma vir na linha de baixo), em minúsculas; None se a ferramenta não está no prompt.
+    Na base 1 a assinatura é `-> object` em todas e o tipo está no `Returns:`. Sem o stub no prompt (a base 3 não tem
+    prompt), o contrato registrado em CONTRATOS_DE_RETORNO_CONHECIDOS, se houver (Ajuste 39)."""
+    d = re.search(rf"def\s+{re.escape(ferramenta)}\s*\(.*?\)\s*->\s*(\w+)\s*:\s*\"\"\"(.*?)\"\"\"", sysp or "", re.S)
+    if not d:
+        conhecido = CONTRATOS_DE_RETORNO_CONHECIDOS.get(ferramenta)
+        return (None, conhecido) if conhecido else None
+    r = re.search(r"Returns?:\s*(\w+)", d.group(2))
+    return d.group(1).lower(), (r.group(1).lower() if r else None)
+
+
+def retorno_numero_declarado(m, codes, sysp):
+    """Só em texto numa conta: uma variável da linha que falhou foi atribuída pela chamada de uma ferramenta que o system
+    prompt declara devolver número (na assinatura ou no `Returns:`)? Se sim, a ferramenta entregou texto onde prometeu
+    número: contrato descumprido, correção na ferramenta. Se não, o agente supôs número e era texto. Sem o prompt (base
+    3), vale o contrato registrado em CONTRATOS_DE_RETORNO_CONHECIDOS. `codes`: o código dos passos do papel até o que
+    falhou (Ajuste 39)."""
+    if not TEXTO_NUMA_CONTA.search(m or ""):
+        return False
+    lf = _LINHA_DA_FALHA.search(m)
+    if not lf:
+        return False
+    nomes = set(re.findall(r"\b([A-Za-z_]\w*)\b", lf.group(1)))
+    for c in codes:
+        for var, ferramenta in re.findall(r"\b([A-Za-z_]\w*)\s*=(?!=)\s*([A-Za-z_]\w*)\s*\(", str(c or "")):
+            if var in nomes:
+                t = tipo_de_retorno_declarado(ferramenta, sysp)
+                if t and (t[0] in _TIPOS_NUMERO or t[1] in _TIPOS_NUMERO):
+                    return True
+    return False
 
 
 def classify(m):
@@ -598,7 +653,8 @@ def verificacao_no_papel_da_instrucao(m, papel):
 
 
 def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False,
-                 fa_sem_laco=False, verifica_e_cria=False):
+                 fa_sem_laco=False, verifica_e_cria=False,
+                 retorno_numero=False):
     if "regex pattern" in m:
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
@@ -685,6 +741,12 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
     # do inventário do sandbox ("o ambiente não roda X; use Y"). No fim, para só alcançar o resíduo (Ajuste 38)
     if SINTAXE_NAO_SUPORTADA.search(m):
         return "sintaxe_nao_suportada"
+    # um texto entrou numa conta. Se a variável veio de uma ferramenta que o prompt declara devolver número, a ferramenta
+    # descumpriu o contrato (harness); senão, o agente supôs número e era texto (memória, a unidade do tipo de retorno).
+    # Sem o prompt (base 3), o contrato vem de CONTRATOS_DE_RETORNO_CONHECIDOS (lido na base 2). No fim, para só alcançar
+    # o resíduo (Ajuste 39)
+    if TEXTO_NUMA_CONTA.search(m):
+        return "tipo_de_retorno_descumprido" if retorno_numero else "tipo_real_do_retorno"
     return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
 
 
@@ -703,7 +765,7 @@ SUB2UNI = {
     "ferramenta_nao_declarada": "U_ferramenta_nao_declarada",
     "repr_colado": "U_repr_colado",
     "infra_llm": "H_infra_llm", "conexao_llm_aninhada": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
-    "retorno_fora_do_contrato": "H_contrato_ferramenta", "erro_interno_ferramenta": "H_contrato_ferramenta",
+    "retorno_fora_do_contrato": "H_contrato_ferramenta", "tipo_de_retorno_descumprido": "H_contrato_ferramenta", "erro_interno_ferramenta": "H_contrato_ferramenta",
     "ausencia_como_excecao": "H_contrato_ferramenta",
     "nome_de_ferramenta_atribuido": "U_nome_ferramenta_como_variavel",
     "sintaxe_nao_suportada": "U_sandbox",
@@ -725,7 +787,8 @@ UNI = {
     "U_campo_inexistente": ("Campo inexistente no retorno estruturado", FACT,
                             "Acessar só chaves observadas no retorno (ex.: o verificador de sigilo devolve vazamento_sigilo/justificativa — não existe quebra_sigilo); na dúvida, inspecionar r.keys()."),
     "U_tipo_retorno": ("Retorno pode chegar como string", ESTR,
-                       "Antes de indexar por chave, fazer conta ou json.loads, checar se o retorno é str (JSON serializado ou texto de erro da ferramenta)."),
+                       "Antes de indexar por chave, fazer conta ou json.loads, checar se o retorno é str (JSON serializado ou texto de erro da ferramenta); "
+                       "para a conta, converter com float() depois de tirar 'R$' e o ponto de milhar e trocar a vírgula por ponto (Ajuste 39)."),
     "U_texto_literal": ("Texto longo nunca dentro de literal de string", ESTR,
                         "Montar relatório/documento em variáveis ou lista de partes e só então chamar final_answer; não colar markdown, tabela ou texto de documento entre aspas."),
     "U_texto_solto": ("Explicação nunca solta no bloco de código", ESTR,
@@ -766,7 +829,8 @@ UNI = {
                               "próprio esquema (None onde exige objeto), deixou vazar um Traceback, ou sinalizou a "
                               "ausência de um dado como exceção em vez de resposta. A correção é na ferramenta: validar a "
                               "saída contra o esquema, trocar o Traceback por erro com código e contexto, devolver 'sem "
-                              "documento' como resposta de negócio. Não é lição do agente (Ajuste 36)."),
+                              "documento' como resposta de negócio, entregar o tipo que o contrato declara (texto onde o "
+                              "Returns: promete número, Ajuste 39). Não é lição do agente (Ajuste 36)."),
     "U_nome_ferramenta_como_variavel": ("Nome de ferramenta não serve de variável", FACT,
                                         "Guardar a resposta em outro nome (resposta = {...}) e entregar com "
                                         "final_answer(resposta). Nenhum nome de ferramenta declarada, nem de função "
@@ -810,12 +874,13 @@ def montar_unidades(E):
     EU["seguidor"] = EU.groupby(["exec_id", "role"])["idx"].shift().eq(EU["idx"] - 1)
     EU["cascata"] = (~EU["seguidor"]).cumsum()
     col = lambda c, v: EU[c] if c in EU else pd.Series(v, index=EU.index)
-    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl), bool(vc))
-                          for m, l, k, fa, cf, fsl, vc in
+    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl), bool(vc), bool(rn))
+                          for m, l, k, fa, cf, fsl, vc, rn in
                           zip(EU["err_msg"], col("linha_codigo_erro", "").fillna(""),
                               col("chaves_vistas_antes", 0).fillna(0), col("em_final_answer", False).fillna(False),
                               col("chama_ferramenta", False).fillna(False),
-                              col("final_answer_sem_laco", False).fillna(False), col("verifica_e_cria", False).fillna(False))]
+                              col("final_answer_sem_laco", False).fillna(False), col("verifica_e_cria", False).fillna(False),
+                              col("retorno_numero_declarado", False).fillna(False))]
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
     # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece
@@ -847,6 +912,13 @@ def _mecanismo_com_evidencia(r, carga, ctx, incoming, byref):
     full_code = code is not None and r["code_estado"] == "sem_corte_sql"
     # Preview não decide unidade: serve para reconhecer qual ramo exige sinais.
     preview = submecanismo(m)
+    # texto numa conta: a variável da linha que falhou saiu, neste passo ou no anterior, de uma ferramenta cujo contrato
+    # declara número? A base 3 não tem prompt: vale CONTRATOS_DE_RETORNO_CONHECIDOS (Ajuste 39)
+    if preview == "tipo_real_do_retorno" and TEXTO_NUMA_CONTA.search(m):
+        anterior = ctx.get((ref, -1))
+        codes = [anterior.get("code") if anterior is not None and pd.notna(anterior.get("code")) else "", code or ""]
+        if retorno_numero_declarado(m, codes, ""):
+            return "tipo_de_retorno_descumprido", "observavel", "regra_por_mensagem_e_codigo"
     if preview in {"harness_bloco_code", "infra_llm", "conexao_llm_aninhada", "timeout_ferramenta", "limite_de_passos",
                    "verificacao_try_nameerror", "retorno_fora_do_contrato", "erro_interno_ferramenta",
                    "ausencia_como_excecao", "nome_de_ferramenta_atribuido", "sintaxe_nao_suportada"}:

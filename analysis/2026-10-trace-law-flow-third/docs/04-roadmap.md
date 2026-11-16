@@ -630,6 +630,12 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (harness: o contrato diz `float` e a ferramenta entrega texto) e 37 para `U_tipo_retorno` (memória: o contrato
   diz `str` no docstring e o agente não converteu, 22; retorno sem `Returns:` ou de contrato desconhecido, 7; o
   valor veio de arquivo, JSON ou do próprio agente, 8). Interpretação de cada Ajuste antes do código.
+  **Ajuste 39 (implementado, 16/11; livro-razão):** texto numa conta no fim do `submecanismo()` (só alcança o resíduo):
+  `H_contrato_ferramenta` (`tipo_de_retorno_descumprido`) quando a variável veio de uma ferramenta cujo contrato
+  declara número — no prompt (bases 1 e 2) ou, na base 3, em `CONTRATOS_DE_RETORNO_CONHECIDOS` (as duas ferramentas de
+  correção monetária, provisório) —, `U_tipo_retorno` no resto. Ensaio na base 1: 0 de 498 mudam. Falta a rodada no
+  ambiente (esperado: cerca de 48 a 49 para harness, o resto do texto numa conta para memória, resíduo de 420 para
+  cerca de 334). Depois: o Ajuste dos 17 do `invalid syntax` (`H_bloco_code`).
   **Terceira rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi
   apagado):** nos 53 do grupo-alvo (marcador 20, outra linguagem 20, texto ou rótulo 13), a linha do erro começa com
   letra em 43, tem uma tag no meio em 5 e começa com símbolo ou fecha-tag em 5; as tags achadas são todas `code` (6).

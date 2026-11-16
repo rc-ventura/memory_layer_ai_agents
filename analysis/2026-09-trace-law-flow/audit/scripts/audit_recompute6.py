@@ -79,7 +79,7 @@ def retorno_colado(l, m, code, obs_ant):
         if linhas[j].lstrip().startswith("final_answer("): return False
     return True
 
-def submecanismo_spec(m, code="", obs_ant="", sysp=""):
+def submecanismo_spec(m, code="", obs_ant="", sysp="", codigos=()):
     # Escrito a partir do §7 Passo 2 dos racionais (prosa), mesma ordem descrita lá.
     if "regex pattern" in m: return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
@@ -133,7 +133,46 @@ def submecanismo_spec(m, code="", obs_ant="", sysp=""):
     if "Cannot assign to name '" in m and "would erase the existing tool" in m: return "nome_de_ferramenta_atribuido"
     # Ajuste 38: Python válido que o interpretador não implementa ({**x}, :=, global, nonlocal, raise sozinho) — por último
     if re.search(r"InterpreterError: \S+ is not supported", m): return "sintaxe_nao_suportada"
+    # Ajuste 39: texto numa conta (soma, round ou formato de número com 'str') — por último. Harness se a variável da linha
+    # que falhou saiu de uma ferramenta que o system prompt declara devolver número; senão, memória (tipo de retorno)
+    if texto_em_conta(m):
+        return "tipo_de_retorno_descumprido" if veio_de_ferramenta_numerica(m, codigos, sysp) else "tipo_real_do_retorno"
     return "causa_sem_regra"
+
+
+def texto_em_conta(m):
+    """Escrita à parte da regra do pipeline: um 'str' de um lado e um número do outro, num operador de conta; ou a
+    concatenação de texto com número; ou round/formato numérico aplicado a texto."""
+    for op in re.findall(r"unsupported operand type\(s\) for ([^:]+): '(\w+)' and '(\w+)'", m):
+        simbolo, a, b = op
+        if simbolo.rstrip("=") in {"+", "-", "*", "/", "//", "%", "**"} and {a, b} & {"str"} and ({a, b} - {"str"}) <= {"int", "float", "Decimal"} and a != b:
+            return True
+    if re.search(r'can only concatenate str \(not "(int|float)"\) to str', m): return True
+    if "type str doesn't define __round__ method" in m: return True
+    if re.search(r"Unknown format code '.' for object of type 'str'", m): return True
+    return "must be real number, not str" in m
+
+
+def veio_de_ferramenta_numerica(m, codigos, sysp):
+    """A linha que falhou usa uma variável que alguma linha `variavel = ferramenta(` dos códigos do papel atribuiu, e o
+    stub dessa ferramenta no system prompt diz número na assinatura ou no Returns (o tipo pode vir na linha de baixo). Sem o
+    stub no prompt, os dois contratos lidos no prompt da base 2 (decisões de 16/11): correção monetária devolve float."""
+    lidos_na_base2 = {"calcular_correcao_monetaria", "indice_correcao_monetaria"}
+    lf = re.search(r"failed at line '(.*?)' due to", m, re.S)
+    if not lf: return False
+    usadas = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", lf.group(1)))
+    numero = {"float", "int", "number", "integer", "decimal"}
+    for cod in codigos:
+        for linha in str(cod or "").splitlines():
+            a = re.match(r"\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(", linha)
+            if not a or a.group(1) not in usadas: continue
+            stub = re.search(r"def " + re.escape(a.group(2)) + r"\(.*?\) -> (\w+):\s*\"\"\"(.*?)\"\"\"", sysp or "", re.S)
+            if not stub:
+                if a.group(2) in lidos_na_base2: return True
+                continue
+            ret = re.search(r"Returns?:\s*(\w+)", stub.group(2))
+            if stub.group(1).lower() in numero or (ret and ret.group(1).lower() in numero): return True
+    return False
 
 SUB2UNI = {
     "dict_indexado_por_posicao":"U_contrato_dict", "dict_iterado_como_lista":"U_contrato_dict",
@@ -146,7 +185,7 @@ SUB2UNI = {
     "retorno_fora_do_contrato":"H_contrato_ferramenta", "erro_interno_ferramenta":"H_contrato_ferramenta",
     "ausencia_como_excecao":"H_contrato_ferramenta",
     "nome_de_ferramenta_atribuido":"U_nome_ferramenta_como_variavel",
-    "sintaxe_nao_suportada":"U_sandbox",
+    "sintaxe_nao_suportada":"U_sandbox", "tipo_de_retorno_descumprido":"H_contrato_ferramenta",
     "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "resultado_bruto_na_resposta":"U_resultado_bruto", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code",
     "codigo_mal_escrito":"X_causa_nao_identificada", "causa_sem_regra":"X_causa_nao_identificada",
     "sintoma_nao_reconhecido":"X_sintoma_nao_reconhecido",
@@ -175,6 +214,7 @@ with abrir_trace(TRACE) as rdr:
             if not isinstance(stps, list): continue
             acts = [s for s in stps if isinstance(s, dict) and s.get("__class__")=="ActionStep"]
             obs_ant = ""
+            codigos_ant = []
             for i, st in enumerate(acts):
                 tu = st.get("token_usage") or {}
                 tt = tu.get("total_tokens") or 0
@@ -193,8 +233,9 @@ with abrir_trace(TRACE) as rdr:
                 e = st.get("error")
                 if e:
                     errors.append(dict(eid=eid, role=role, idx=i, em=str(e.get("message") or ""), mes=mes, tok=tt,
-                                       code=code, obs_ant=obs_ant, sysp=sysp))
+                                       code=code, obs_ant=obs_ant, sysp=sysp, codigos=codigos_ant + [code]))
                 obs_ant += str(st.get("observations") or "")
+                codigos_ant.append(code)
 
 # --------------------------------------------- comparação erro-a-erro com o CSV
 csv_rows = list(csv.DictReader(open(EM_CSV, encoding="utf-8")))
@@ -237,7 +278,7 @@ csv_map = {(r["exec_id"], r["role"], int(r["idx"])): r for r in csv_rows}
 mine_map = {}
 diffs = []
 for e in errors:
-    sub = submecanismo_spec(e["em"], e["code"], e["obs_ant"], e["sysp"])
+    sub = submecanismo_spec(e["em"], e["code"], e["obs_ant"], e["sysp"], e["codigos"])
     # split nome_nao_definido por seguidor (precisa do step anterior — do traj)
     if sub == "nome_nao_definido":
         seq = traj[(e["eid"], e["role"])]

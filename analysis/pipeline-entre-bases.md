@@ -2022,3 +2022,74 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     base 1 não pegou o defeito porque a foto dele não tem erro sem memória; repetido com o script corrigido, dá o
     mesmo (1 entrou, sem parte). **Esperado ao rodar de novo no ambiente:** entraram 47, mudaram de parte 0, os 47
     sem parte, estado só `descoberto`.
+
+### Ajuste 39 — texto numa conta: memória (`U_tipo_retorno`) ou contrato de retorno descumprido (`H_contrato_ferramenta`) (16/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`, rodada `c2e5e8b31f297d21`), balde "causa não identificada",
+  grupo A: 86 erros do papel CalculoTrabalhista em que um valor que é **texto** entra numa conta, num `round` ou num
+  formato de número (famílias "round ou formato em texto", 45, e "soma ou concatenação entre tipos" do papel, 41).
+- **Evidência** (três rodadas no ambiente, `[assistido]`, um leitor; b3 #5):
+  - **o tipo do valor** é texto: a própria mensagem do Python diz `'str'` (sólido);
+  - **de onde veio** (leitura): retorno de ferramenta em 78 (79 na leitura; a tabela por ferramenta soma 78), de arquivo
+    ou JSON em 5, escrito pelo próprio agente em 2, não deu para ver em 1; o agente converte o texto no passo seguinte em
+    68 de 86, e em 16 dos outros 18 inspeciona o tipo antes;
+  - **o contrato que o agente vê** (prompt do papel nas bases 1 e 2): a assinatura é `-> object` em todas as ferramentas;
+    o tipo está no `Returns:` do docstring (o tipo vem na linha de baixo do `Returns:`; uma primeira leitura por script
+    errou isso e foi refeita). `Returns: str` em `calculadora_de_pedido` 7, `validador_calculo` 7, `metadados_processo` 5,
+    `calculo_horas_extras` 2, `calculo_vale_alimentacao_refeicao` 1 (22 erros); **`Returns: float` em
+    `calcular_correcao_monetaria` 43 (só na base 2) e `indice_correcao_monetaria` 6** (49 erros; a primeira substituiu a
+    segunda entre junho e agosto); sem `Returns:` em `envia_excel_para_usuario` 1; fora dos prompts das bases 1 e 2,
+    `corrigir_e_salvar` 4, `corrigir_pela_selic_ajustada` 1, `gera_boxplot_calculo` 1. O prompt do papel não tem nenhum
+    aviso sobre o tipo de retorno;
+  - **quem transformou o número em texto** nos 49 (por script, no código do passo e do anterior): a variável da conta veio
+    **direto do retorno da ferramenta** em 48, de um campo do retorno em 0, **passou por formatação do agente em 0**, não
+    deu para ver em 1 — a ferramenta promete `float` e entrega texto.
+- **Decisão (Rafael, 16/11):** o contrato diz texto com clareza e o agente trata como número → **memória**; o contrato
+  promete um tipo e a ferramenta entrega outro → **harness** ("esses 49 devem ser harness porque contradizem o
+  contrato"). Memória, não reforço: o prompt não traz instrução sobre o tipo. Os 8 que não vêm de ferramenta entram na
+  memória porque o erro e a cura são os mesmos e a regra da unidade é pela mensagem.
+- **Mudança** (nos `base_pipeline.py` das bases 1 e 3; a base 2 é cópia do da base 1 no ambiente da base):
+  - `TEXTO_NUMA_CONTA`: "unsupported operand type(s) for <op de conta>: '<int|float|Decimal>' and 'str'" (e o inverso),
+    "can only concatenate str (not "int"/"float") to str", "type str doesn't define __round__ method", "Unknown format
+    code '<c>' for object of type 'str'", "must be real number, not str". Só operadores de conta com um número do outro
+    lado (o `'function' | 'str'` da base 1 fica de fora);
+  - `tipo_de_retorno_declarado(ferramenta, sysp)`: a assinatura e o primeiro token depois do `Returns:` no stub do
+    prompt; sem o stub, `CONTRATOS_DE_RETORNO_CONHECIDOS` (as duas ferramentas de correção monetária, `float`, lidas no
+    prompt da base 2 — **provisório**: se o contrato mudar, a lista erra sem aviso; conferir a cada extração nova);
+  - `retorno_numero_declarado(m, codes, sysp)`: uma variável da linha que falhou foi atribuída (`v = ferramenta(`) por uma
+    ferramenta que declara número? Na base 1 (trace inteiro) com o código dos passos do papel até o erro e o prompt do
+    passo (`explodir_memoria`, coluna `retorno_numero_declarado`); na base 3 (janelas, sem prompt) com o código do passo
+    e do anterior e só a lista registrada (`_mecanismo_com_evidencia`, razão `regra_por_mensagem_e_codigo`);
+  - no fim do `submecanismo()` (só alcança o resíduo): texto numa conta → `tipo_de_retorno_descumprido`
+    (`H_contrato_ferramenta`) se o contrato declara número, senão `tipo_real_do_retorno` (`U_tipo_retorno`). A regra
+    antiga da unidade ("could not convert string to float", "JSON object must be str"…) não muda;
+  - os textos das duas unidades: `U_tipo_retorno` ganha "para a conta, converter com `float()` depois de tirar 'R$' e o
+    ponto de milhar e trocar a vírgula por ponto"; `H_contrato_ferramenta` ganha "entregar o tipo que o contrato declara";
+  - `audit_recompute6.py`: a regra reescrita à parte (`texto_em_conta`, `veio_de_ferramenta_numerica`), com o código dos
+    passos anteriores do papel; manifesto do kit regenerado; `VERSAO` 0.22.0.
+- **Verificação:** `analysis/tests/test_texto_numa_conta.py` (11 testes: as sete mensagens nas duas bases; o que não é
+  conta com número fica no resíduo; a regra antiga não muda; contrato lido no prompt, inclusive o `Returns:` na linha de
+  baixo e a assinatura `number`; o stub no prompt vale mais que a lista; ponta a ponta na base 1 com a atribuição no
+  passo anterior e no mesmo passo; base 3 observada: ferramenta sem contrato registrado → memória, registrada → harness,
+  inclusive pelo passo anterior; a auditoria nº 6 reescreve as duas saídas); suíte 475 testes, OK. **Ensaio na base 1:**
+  0 de 498 erros mudam (a base 1 não tem texto numa conta com número; o único `'str'` é o `'function' | 'str'`, fora da
+  regra). **Auditoria nº 6 na base 1:** 1 divergência, **anterior a este Ajuste** (a versão de antes dá a mesma): um erro
+  de verificação de existência do papel ContestacaoCivel (regra do Ajuste 27, por papel) que a auditoria não reimplementa.
+  **O que o ramo de harness move hoje:** só os erros da base 3 que chamam as duas ferramentas registradas; nas bases 1 e
+  2 não há erro desse tipo (base 2: 0 em cerca de 115 chamadas), então lá ele só está verificado pelos testes.
+- **Pistas para quem cuida das ferramentas:** `calcular_correcao_monetaria` e `indice_correcao_monetaria` prometem `float`
+  e entregam texto; a assinatura `-> object` não declara o tipo em nenhuma ferramenta; `calculadora_de_pedido` e
+  `calculo_horas_extras` chamam de "valor" o resultado que o `Returns:` declara `str`.
+- **Replicar no ambiente da base** (os arquivos de código que mudaram, copiados sem edição):
+  - `analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py`;
+  - `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py`;
+  - `analysis/2026-09-trace-law-flow/audit/scripts/audit_recompute6.py`;
+  - `.claude/skills/mineracao-base/manifesto.json` e `VERSAO` → no ambiente, `.github/skills/mineracao-base/`;
+  - **base 2 (não esquecer):** copiar o `base_pipeline.py` da base 1 por cima do da pasta `-second`, restaurar `TRACE` e
+    `BASE_ID`; o `audit_recompute6.py` também, sem mudança; `conferir_versao.py analysis/2026-09-trace-law-flow-second`
+    → igual;
+  - **base 3:** `executar.py analisar` (rodada nova; não apagar a `c2e5e8b31f297d21`), `comparar_rodadas.py --antes
+    c2e5e8b31f297d21 --depois <nova>` (esperado: só mudam os erros de texto numa conta do resíduo — pelo menos os 86 do
+    grupo A, mais o que as outras somas com texto trouxerem; cerca de 48 a 49 para `H_contrato_ferramenta` e o resto para
+    `U_tipo_retorno`; a triagem com as mesmas unidades), e o `residuo.py`, a auditoria e o encontro na rodada nova
+    (esperado: o resíduo cai de 420 para cerca de 334; 0 divergências); depois, a re-entrada (`reentrada.py --todas`).

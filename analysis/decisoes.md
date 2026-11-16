@@ -653,5 +653,19 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   `-> object` não diz o tipo em nenhuma ferramenta. **Cuidados:** leituras e scripts de um leitor no ambiente; a regra
   dos 49 é pelo nome das duas ferramentas e envelhece se o contrato mudar. **Antes de cada Ajuste:** a interpretação
   (regra exata, escopo, falso positivo) é aprovada antes do código. → b3 #5.
+- **16/11, a regra do Ajuste 39: harness pela evidência do contrato, memória no resto; na base 3, o contrato das duas
+  ferramentas fica registrado no código** (decisões do Rafael, nesta ordem: aprovou a interpretação do grupo A; pediu
+  uma regra sem o nome da ferramenta — "quando não casa na memória vai para o harness, ou vice-versa"; aprovou a opção
+  "padrão memória"; depois a reviu: "esses 49 devem ser harness porque contradizem o contrato"). **A regra:** texto
+  numa conta vai para `H_contrato_ferramenta` quando há evidência de contrato descumprido — a variável da linha que
+  falhou foi atribuída por uma ferramenta que declara número (na assinatura ou no `Returns:`) — e para `U_tipo_retorno`
+  em todo o resto. **Onde está a evidência:** no prompt de sistema, que as bases 1 e 2 têm e a base 3 não tem. Sem o
+  prompt, só uma lista fixa leva os 49 a harness: `CONTRATOS_DE_RETORNO_CONHECIDOS` (`calcular_correcao_monetaria` e
+  `indice_correcao_monetaria`, `float`, lidos no prompt da base 2). O stub no prompt, quando existe, vale mais que a lista.
+  **Por que a revisão:** o padrão memória deixava os 49 dentro de `U_tipo_retorno` na base 3 (57% dos 86) — a memória
+  cobre o sintoma, mas contradiz o contrato que o agente lê, infla a unidade e tira o harness dos números; a pista ficaria
+  só no texto. **O custo aceito:** a lista é provisória e envelhece em silêncio se o contrato de uma das duas ferramentas
+  mudar; conferir no prompt a cada extração nova (e, se a base 3 trouxer o prompt, a lista deixa de ser usada). Livro-
+  razão, Ajuste 39; → b3 #5.
 
 ---
