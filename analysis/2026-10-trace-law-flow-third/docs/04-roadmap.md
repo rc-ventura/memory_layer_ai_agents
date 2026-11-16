@@ -560,9 +560,7 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   erro é raro (40 em 30,9 mil passos, 0,13%) e 7 dos 40 são regex: presença da instrução, não prova da causa.
   **Proposta (decisão 2, pendente):** destino memória para o A, com a pista de harness (declarar o tipo de retorno e
   corrigir as descrições incoerentes). **Próximo:** uma rodada para cada decisão
-  (`propostas/residuo/prompt_rodada2_contrato_base2.md`: formato, estabilidade, taxa de erro por chamada, mudança do
-  bloco de ferramentas, cobertura e replicação do `invalid syntax` na base 2; a do `invalid syntax` na base 3 já
-  rodou, abaixo), com o critério de decisão fixado antes dos números (memória × harness × resíduo).
+  (as duas já rodaram, abaixo), com o critério de decisão fixado antes dos números (memória × harness × resíduo).
   **Segunda rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor):** derruba a regra por traços e o plano
   de estender `U_texto_solto`. Erro na 1ª linha do bloco: 37 de 75 (marcador 17 de 20, deslize 15 de 17, outra linguagem 3
   de 20, texto ou rótulo 0 de 13, aspas 2 de 4, cortado 0 de 1). Bloco com marcador de formato: 20 de 20 do marcador e 0
@@ -579,6 +577,44 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   (hipóteses: H-a um texto longo em HTML ou markdown dentro de um literal de string mal fechado; H-b uma tag solta fora
   de string; H-c outra), por script, com a classe da linha apontada, se ela está dentro de uma string aberta, o literal
   longo antes dela e a repetição no passo seguinte (`propostas/residuo/prompt_rodada3_invalid_syntax.md`).
+  **Rodada do contrato na base 2 (ambiente, 17/11, `[assistido]`, um leitor; o prompt, de uso único, foi apagado):**
+  (1) a `calcular_correcao_monetaria` devolve, nas 16 chamadas bem-sucedidas (todas em agosto), "só dígitos e um ponto
+  decimal", sem "R$"; mas o formato vem do que foi **impresso** no log, e um número e um texto impressos são iguais;
+  a base 3 achou "R$" em 23 dos 43 erros da mesma ferramenta (não explicado). (2) `validador_calculo` e
+  `metadados_processo` têm sempre a mesma estrutura; a `calculadora_de_pedido` "varia" nas 47 chamadas, mas é um texto
+  livre ("o valor calculado e o racional") e "outra" quer dizer "o script não reconheceu": **não é evidência de
+  contrato instável**. (3) taxa de erro de valor em texto por chamada na base 2: zero em cerca de 115 chamadas (45 em
+  agosto; 16 da ferramenta principal): **sem valor**, a amostra é pequena (0 de 16 é compatível com uma taxa de até
+  uns 19%; com 1% por passo, esperaria-se menos de 1 erro). (4) sem erro, o agente quase nunca converte o valor (1 em
+  cerca de 74 chamadas) e só imprime na maioria; 21 usam o valor direto numa conta sem erro (classificador
+  heurístico). (5) o bloco de ferramentas muda por **troca de ferramentas**, não por mudança de descrição: jan e fev
+  para jun entram `buscar_salario_legado`, `calculo_correcoes_monetarias`, `formatar_calculo_trabalhista` e
+  `gera_boxplot_calculo_trabalhista` e saem `calculo_PLRPR` e `envia_excel_para_usuario`; jun para ago entram
+  `buscar_salario` e `calcular_correcao_monetaria` e saem `buscar_salario_legado` e `indice_correcao_monetaria` (a
+  ferramenta de 43 erros **substitui** outra); nenhuma das 11 ferramentas do A mudou de descrição. (6) a base 2 tem 9
+  meses (dez/2025 a ago/2026, de 4 a 454 execuções por mês); março e julho existem. (7) `invalid syntax` na base 2: 14
+  erros, todos em fev/2026 e no CalculoCivel; a 1ª linha é Python em 13 e rótulo em 1; o trace **guarda a resposta crua
+  antes do parser** (14 de 14) e em 0 há cerca, rótulo ou SQL dentro do `<code>`: **não replica** o padrão da base 3
+  (75 erros, 10 papéis, 9 meses). **Correções registradas (17/11):** (a) o "64% sem tipo de retorno declarado" é o
+  resultado de um script que só conhecia `object`, `str`, `float_ou_int` e `dict`: o `smolagents` aceita `string`,
+  `number`, `object`, `any` e outros (`def f(x: string) -> string:`); as 5 ferramentas em "outro" (a principal e
+  `corrigir_e_salvar`, `envia_excel_para_usuario`, `corrigir_pela_selic_ajustada`, `gera_boxplot_calculo`) podem ser
+  `string` (contrato claro) — **não provado**; (b) "formas diferentes" e "nasceu sem contrato" eram leituras minhas
+  sem evidência e foram retiradas; (c) a evidência sólida é a mensagem do Python (`'str'`, `__round__`), e a
+  recuperação do agente (84 de 86: 68 convertem, 16 inspecionam o tipo antes) é leitura de um leitor.
+  **Critério do Rafael (17/11) para o destino do A:** o contrato diz texto com clareza e o agente trata como número →
+  **memória** (unidade `U_tipo_retorno`), e consertar a ferramenta não faz sentido; contrato **ambíguo** ou
+  contraditório sobre o tipo, ou ferramenta que devolve tipo diferente do declarado → sinal de **harness**; o agente
+  erra, entende e se recupera → evidência forte de memória. **Aplicação aos 86:** contrato diz texto sem ambiguidade 15
+  (`metadados_processo` 5, `calculo_horas_extras` 2, `validador_calculo` 7, `calculo_vale_alimentacao_refeicao` 1);
+  ambíguo sobre o tipo 7 (`calculadora_de_pedido`: "valor calculado" × `Returns: str`, lido na base 1); declara
+  número e devolveu texto 6 (`indice_correcao_monetaria`, só em janeiro, não verificado); **dependem do tipo exato**
+  50 (a principal 43 e 3 ferramentas com 6 erros, ausentes do prompt da base 2); não vêm de ferramenta 8 (arquivo ou
+  JSON 5, escrito pelo agente 2, outro 1). Fora da regra: uma unidade tem um destino só (os 13 de possível harness
+  ficam na memória, com a pista por ferramenta); escopo da regra (exigir `'str'` na mensagem; exigir que o valor tenha
+  vindo de ferramenta, pela função que já rastreia a origem da variável). **Próximo:** checagem do tipo exato na
+  assinatura e da linha de retorno das 11 ferramentas na base 2 (e na base 1)
+  (`propostas/residuo/prompt_rodada3_contrato_tipos.md`); depois a decisão 2 e, se memória, a interpretação do Ajuste.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
