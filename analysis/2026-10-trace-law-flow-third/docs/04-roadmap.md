@@ -561,9 +561,24 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   **Proposta (decisão 2, pendente):** destino memória para o A, com a pista de harness (declarar o tipo de retorno e
   corrigir as descrições incoerentes). **Próximo:** uma rodada para cada decisão
   (`propostas/residuo/prompt_rodada2_contrato_base2.md`: formato, estabilidade, taxa de erro por chamada, mudança do
-  bloco de ferramentas, cobertura e replicação do `invalid syntax` na base 2;
-  `propostas/residuo/prompt_rodada2_invalid_syntax.md`: marcador, linguagem, cruzamento por script e regra v0), com o
-  critério de decisão fixado antes dos números (memória × harness × resíduo).
+  bloco de ferramentas, cobertura e replicação do `invalid syntax` na base 2; a do `invalid syntax` na base 3 já
+  rodou, abaixo), com o critério de decisão fixado antes dos números (memória × harness × resíduo).
+  **Segunda rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor):** derruba a regra por traços e o plano
+  de estender `U_texto_solto`. Erro na 1ª linha do bloco: 37 de 75 (marcador 17 de 20, deslize 15 de 17, outra linguagem 3
+  de 20, texto ou rótulo 0 de 13, aspas 2 de 4, cortado 0 de 1). Bloco com marcador de formato: 20 de 20 do marcador e 0
+  das demais. Os 20 do marcador: **0 cercas markdown, 0 rótulos tipo `Thought:`, 4 tags e 16 "outro"**; a posição é o
+  **meio** do bloco em 20 de 20 (nunca a 1ª linha). Os 20 de outra linguagem: HTML ou XML 9, SQL 3, outra 8; em 0 deles a
+  1ª linha mostra a linguagem. "Termina no meio" (20): outra linguagem 15, texto ou rótulo 3, marcador 1, cortado 1 (é
+  um traço do bloco, não a categoria "código cortado"). **Regra v0** (1ª linha: cerca markdown, rótulo de 1 a 2
+  palavras com dois-pontos ou palavra SQL inicial): pega **2 dos 53** e 0 dos 22 restantes (zero falso positivo
+  trivial, porque quase não pega nada). Dos 14 marcadores que repetem a mesma família, **13 repetem o mesmo marcador**
+  no passo seguinte. **Leitura:** o teste sintético no harness (cerca, rótulo ou SQL **no começo** do `<code>` dão
+  `invalid syntax` na linha 1) mostra que o mecanismo existe, mas **não é o que aconteceu nos casos reais**, porque o
+  marcador está no meio do bloco; a regra por 1ª linha não separa; e a cura comum que sustentava juntar os 53 não está
+  provada. **Decisão 1 (Rafael, 16/11): mais uma leitura (opção b)**, para dizer **o que** está no meio do bloco
+  (hipóteses: H-a um texto longo em HTML ou markdown dentro de um literal de string mal fechado; H-b uma tag solta fora
+  de string; H-c outra), por script, com a classe da linha apontada, se ela está dentro de uma string aberta, o literal
+  longo antes dela e a repetição no passo seguinte (`propostas/residuo/prompt_rodada3_invalid_syntax.md`).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
