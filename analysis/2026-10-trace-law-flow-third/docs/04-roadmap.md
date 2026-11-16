@@ -530,8 +530,40 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   de 11 dos rótulos (7 migram para outra família).
   **Decisão (14/11, `decisoes.md`):** o A vira ajuste de regra em `U_tipo_retorno`; o C vai à leitura dos 75
   (hipótese: `e_texto` não pega rótulo curto nem texto em inglês). O contrato das ferramentas do A e a barra do B
-  esperam a base 2 (`propostas/residuo/prompt_causa_contrato.md`); o do C é
-  `propostas/residuo/prompt_invalid_syntax_leitura.md`.
+  esperam a base 2.
+  **Leitura do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor):** reproduz 75 erros, 54 execuções, 9 meses,
+  10 papéis. A hipótese de que a regra `e_texto` deixava passar texto em português **caiu**: só 13 de 75 (17%) são
+  texto ou rótulo (o corte era um terço), 0 parecem português e 12 parecem inglês; relaxar a regra pegaria 23 dos 75.
+  Categorias lidas (erros · tokens · passo seguinte): outra linguagem 20 · 0,75 mi · 14 mudam de erro; marcador de
+  formato 20 · 0,92 mi · **14 repetem o mesmo erro**; deslize de Python 17 · 1,15 mi · 11 acertam; texto ou rótulo 13 ·
+  0,24 mi · 8 mudam de erro; aspas ou fora do ASCII 4 · 0,29 mi; código cortado 1. Traços do script: erro na 1ª linha do
+  bloco em 37, bloco com marcador de formato em 20, repetição na mesma execução em 21. Qualidade: o mesmo leitor releu
+  15 casos às cegas e concordou em 14 (não é segundo leitor); 17 casos com confiança baixa; o traço "termina no meio"
+  (20) não bate com o "código cortado" lido (1). **Teste no harness** (código sintético, `smolagents` 1.20.0, 1.22.0,
+  1.24.0 e 1.26.0): cerca markdown, rótulo (`Thought:`, `Resposta:`) ou SQL dentro de `<code>` ficam no código
+  executado e dão `invalid syntax` na linha 1; a cerca **sem** `<code>` o harness remove. **Proposta (decisão 1,
+  pendente):** juntar pela cura (doc 09 §3, "causas diferentes, mesma cura") marcador, outra linguagem e texto ou
+  rótulo (até 53 erros, 1,9 mi de tokens, 57%) estendendo `U_texto_solto` ("o bloco de código contém só Python");
+  deslize de Python, aspas e cortado (22) ficam no resíduo.
+  **Leitura do contrato (base 2, CalculoTrabalhista, 16/11):** os 4 prompts distintos do papel não têm instrução
+  específica do papel, e o aviso de que o retorno é texto está em 0. Dos 78 erros do A atribuídos a uma ferramenta: 50
+  (64%) a ferramenta **não declara o tipo de retorno** (`calcular_correcao_monetaria` 43, `corrigir_e_salvar` 4, três
+  com 1), 15 declaram `str` com descrição incoerente (`calculadora_de_pedido` 7, `validador_calculo` 7,
+  `calculo_vale_alimentacao_refeicao` 1), 7 declaram `str` coerente (`metadados_processo` 5, `calculo_horas_extras` 2) e 6
+  declaram `float_ou_int` e devolveram texto (`indice_correcao_monetaria`). Base 1 × base 2: 9 de 11 ferramentas
+  iguais; `calcular_correcao_monetaria` só existe na base 2 (e só em agosto: 16 chamadas, "string com ponto" em 16 de
+  16); 3 ferramentas não estão em nenhuma das duas. As declarações `Returns:` não mudam entre os meses, mas o hash do
+  bloco de ferramentas muda (fev para jun, jun para ago): o "sem mudança em agosto" do agente vale só para a
+  declaração. A base 2 cobre jan, fev, jun e ago. Pontas soltas: o formato (base 2 "com ponto" 16 de 16 × base 3
+  "com símbolo de moeda" 23 de 43) e a estabilidade do formato (quase tudo "não deu para ver"). **B:** o prompt do
+  ContestacaoCivel (25 prompts) instrui `\n` e traz 50 exemplos de sequência de escape, 450 de caminho e 0 de regex; o
+  erro é raro (40 em 30,9 mil passos, 0,13%) e 7 dos 40 são regex: presença da instrução, não prova da causa.
+  **Proposta (decisão 2, pendente):** destino memória para o A, com a pista de harness (declarar o tipo de retorno e
+  corrigir as descrições incoerentes). **Próximo:** uma rodada para cada decisão
+  (`propostas/residuo/prompt_rodada2_contrato_base2.md`: formato, estabilidade, taxa de erro por chamada, mudança do
+  bloco de ferramentas, cobertura e replicação do `invalid syntax` na base 2;
+  `propostas/residuo/prompt_rodada2_invalid_syntax.md`: marcador, linguagem, cruzamento por script e regra v0), com o
+  critério de decisão fixado antes dos números (memória × harness × resíduo).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
