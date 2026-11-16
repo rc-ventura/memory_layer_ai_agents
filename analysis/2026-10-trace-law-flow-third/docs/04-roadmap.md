@@ -576,8 +576,8 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   provada. **Decisão 1 (Rafael, 16/11): mais uma leitura (opção b)**, para dizer **o que** está no meio do bloco
   (hipóteses: H-a um texto longo em HTML ou markdown dentro de um literal de string mal fechado; H-b uma tag solta fora
   de string; H-c outra), por script, com a classe da linha apontada, se ela está dentro de uma string aberta, o literal
-  longo antes dela e a repetição no passo seguinte (`propostas/residuo/prompt_rodada3_invalid_syntax.md`).
-  **Rodada do contrato na base 2 (ambiente, 17/11, `[assistido]`, um leitor; o prompt, de uso único, foi apagado):**
+  longo antes dela e a repetição no passo seguinte (resultado abaixo).
+  **Rodada do contrato na base 2 (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi apagado):**
   (1) a `calcular_correcao_monetaria` devolve, nas 16 chamadas bem-sucedidas (todas em agosto), "só dígitos e um ponto
   decimal", sem "R$"; mas o formato vem do que foi **impresso** no log, e um número e um texto impressos são iguais;
   a base 3 achou "R$" em 23 dos 43 erros da mesma ferramenta (não explicado). (2) `validador_calculo` e
@@ -595,14 +595,14 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   meses (dez/2025 a ago/2026, de 4 a 454 execuções por mês); março e julho existem. (7) `invalid syntax` na base 2: 14
   erros, todos em fev/2026 e no CalculoCivel; a 1ª linha é Python em 13 e rótulo em 1; o trace **guarda a resposta crua
   antes do parser** (14 de 14) e em 0 há cerca, rótulo ou SQL dentro do `<code>`: **não replica** o padrão da base 3
-  (75 erros, 10 papéis, 9 meses). **Correções registradas (17/11):** (a) o "64% sem tipo de retorno declarado" é o
+  (75 erros, 10 papéis, 9 meses). **Correções registradas (16/11):** (a) o "64% sem tipo de retorno declarado" é o
   resultado de um script que só conhecia `object`, `str`, `float_ou_int` e `dict`: o `smolagents` aceita `string`,
   `number`, `object`, `any` e outros (`def f(x: string) -> string:`); as 5 ferramentas em "outro" (a principal e
   `corrigir_e_salvar`, `envia_excel_para_usuario`, `corrigir_pela_selic_ajustada`, `gera_boxplot_calculo`) podem ser
   `string` (contrato claro) — **não provado**; (b) "formas diferentes" e "nasceu sem contrato" eram leituras minhas
   sem evidência e foram retiradas; (c) a evidência sólida é a mensagem do Python (`'str'`, `__round__`), e a
   recuperação do agente (84 de 86: 68 convertem, 16 inspecionam o tipo antes) é leitura de um leitor.
-  **Critério do Rafael (17/11) para o destino do A:** o contrato diz texto com clareza e o agente trata como número →
+  **Critério do Rafael (16/11) para o destino do A:** o contrato diz texto com clareza e o agente trata como número →
   **memória** (unidade `U_tipo_retorno`), e consertar a ferramenta não faz sentido; contrato **ambíguo** ou
   contraditório sobre o tipo, ou ferramenta que devolve tipo diferente do declarado → sinal de **harness**; o agente
   erra, entende e se recupera → evidência forte de memória. **Aplicação aos 86:** contrato diz texto sem ambiguidade 15
@@ -612,9 +612,40 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   50 (a principal 43 e 3 ferramentas com 6 erros, ausentes do prompt da base 2); não vêm de ferramenta 8 (arquivo ou
   JSON 5, escrito pelo agente 2, outro 1). Fora da regra: uma unidade tem um destino só (os 13 de possível harness
   ficam na memória, com a pista por ferramenta); escopo da regra (exigir `'str'` na mensagem; exigir que o valor tenha
-  vindo de ferramenta, pela função que já rastreia a origem da variável). **Próximo:** checagem do tipo exato na
-  assinatura e da linha de retorno das 11 ferramentas na base 2 (e na base 1)
-  (`propostas/residuo/prompt_rodada3_contrato_tipos.md`); depois a decisão 2 e, se memória, a interpretação do Ajuste.
+  vindo de ferramenta, pela função que já rastreia a origem da variável) — o filtro de origem foi depois descartado
+  (abaixo). **Checagem do tipo exato (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi
+  apagado):** a assinatura é `-> object` em todas as ferramentas presentes no prompt, nas bases 1 e 2. A primeira
+  versão marcou a linha de retorno como "não diz" porque o tipo fica na linha de baixo do `Returns:`; refeita lendo
+  o primeiro token da linha seguinte, bate com a base 1 lida diretamente: `Returns: str` em `calculadora_de_pedido`,
+  `validador_calculo`, `metadados_processo`, `calculo_horas_extras` e `calculo_vale_alimentacao_refeicao`;
+  **`Returns: float` em `indice_correcao_monetaria` e em `calcular_correcao_monetaria`** (só na base 2); sem linha
+  de retorno em `envia_excel_para_usuario`; `corrigir_e_salvar`, `corrigir_pela_selic_ajustada` e
+  `gera_boxplot_calculo` não estão no prompt das bases 1 e 2 nem como chamada na base 2 (há uma
+  `gera_boxplot_calculo_trabalhista`). A descrição chama o resultado de "valor" em `calculadora_de_pedido`,
+  `calcular_correcao_monetaria` e `calculo_horas_extras`. **Quem transformou o número em texto** (base 3, por
+  script, nos 49 erros das duas ferramentas que declaram `float`): a variável da conta veio **direto do retorno da
+  ferramenta** em 48 (`calcular_correcao_monetaria` 42: mar 2, jul 8, ago 32; `indice_correcao_monetaria` 6: jan 4,
+  fev 2), de um campo do retorno em 0, **passou por formatação do agente em 0**, não deu para ver em 1; "R$" aparece
+  em outra parte do código em 18 dos 48. **Decisão 2 (16/11, `decisoes.md`):** 49 para `H_contrato_ferramenta`
+  (harness: o contrato diz `float` e a ferramenta entrega texto) e 37 para `U_tipo_retorno` (memória: o contrato
+  diz `str` no docstring e o agente não converteu, 22; retorno sem `Returns:` ou de contrato desconhecido, 7; o
+  valor veio de arquivo, JSON ou do próprio agente, 8). Interpretação de cada Ajuste antes do código.
+  **Terceira rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi
+  apagado):** nos 53 do grupo-alvo (marcador 20, outra linguagem 20, texto ou rótulo 13), a linha do erro começa com
+  letra em 43, tem uma tag no meio em 5 e começa com símbolo ou fecha-tag em 5; as tags achadas são todas `code` (6).
+  **H-a caiu:** a linha está dentro de uma string aberta em 1 dos 53 e em 1 dos 22 de controle (não separa). Texto
+  longo antes da linha: 9 de 53. **O bloco contém `<code>` ou `</code>` como texto em 17 dos 53** (marcador 5, outra
+  linguagem 9, texto ou rótulo 3; o controle não foi contado neste traço); `final_answer` depois da linha do erro em
+  13. Dos 13 que repetem o marcador, 12 repetem a mesma classe de linha no passo seguinte. A reclassificação dos 24
+  sem nome só deu classes de forma ("começa com letra, fora de string"), não causa. **Divergência entre rodadas:** a
+  posição "1ª linha" deu marcador 17 e outra linguagem 3 de 20 na rodada 2, e 8 e 14 na rodada 3 — os traços de
+  posição não são confiáveis. **Teste no harness** (`smolagents` 1.26.0, código sintético): o modelo esquece de fechar
+  um bloco e abre outro (`<code>` … texto … `<code>` … `</code>`); o harness pega do primeiro `<code>` ao primeiro
+  `</code>` e cola tudo: `invalid syntax` na linha de texto do meio, fora de string, com a tag no código extraído e o
+  `final_answer` depois — o retrato medido; com os dois blocos fechados, roda. **Decisão 1 (16/11, `decisoes.md`):**
+  os 17 com a tag no código viram candidatos a um 7º mecanismo de `H_bloco_code` ("bloco mal fechado", harness;
+  regra sem leitura: o código que falhou contém `<code>` ou `</code>`); os outros 58 ficam no resíduo com motivo.
+  Antes do Ajuste, a interpretação conta a regra nos 75 e nos erros das outras unidades (falso positivo).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

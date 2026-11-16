@@ -613,5 +613,45 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   fica no resíduo (a taxa é estável, de um papel novo, e o prompt do papel na base 2 ainda não foi lido); D, E, as
   sacolas e os de um mês só ficam; a indexação (34), o D (19), o índice de lista (7) e a comparação (5) foram
   propostos para a mesma leitura do contrato. → b3 #5.
+- **16/11, o `invalid syntax` (75) do balde "causa não identificada": 17 viram candidatos a `H_bloco_code`
+  ("bloco mal fechado", harness) e 58 ficam no resíduo** (recomendação do Claude, aprovada pelo Rafael: "perfeito,
+  então decida isso"). **Os 17:** o código que falhou contém `<code>` ou `</code>` como texto (17 dos 53 do grupo-alvo
+  da leitura, 6 com a tag na própria linha do erro, `final_answer` depois da linha em 13). O teste no `smolagents`
+  1.26.0 reproduz o retrato: o modelo esquece de fechar um bloco e abre outro, o harness cola os dois e o Python acusa
+  `invalid syntax` numa linha de texto no meio do bloco. A regra não depende de leitura. A família `H_bloco_code`
+  ("Protocolo do harness": a resposta não traz o bloco de código que o harness exige) tem a mesma cura — o harness
+  tratar o formato da resposta —, e o agente não se recupera (13 de 14 repetem o mesmo marcador no passo seguinte).
+  **Os 58 ficam no resíduo:** 22 são erro comum de código (deslize de Python 17, que o agente corrige sozinho em 11;
+  aspas ou fora do ASCII 4; cortado 1), sem fato do ambiente para ensinar nem harness para consertar; 36 (texto ou
+  rótulo, outra linguagem e marcador sem a tag) têm forma conhecida mas nenhuma regra os separa sem leitura — a regra
+  atual de texto solto pega 0 dos 75, a relaxada pega 23 com 10 de outra categoria, a da 1ª linha pega 2 dos 53 e a da
+  string aberta pega 1 dos 53 e 1 dos 22. Reabrem se a extração da base 3 trouxer a resposta crua do modelo antes do
+  parser (a base 2 tem, mas só 14 erros de `invalid syntax`, num mês e num papel). **Cuidados:** leitura de um leitor;
+  os traços de posição divergem entre as rodadas; os 17 vêm só dos 53 (o controle não foi contado). **Antes do
+  Ajuste:** a interpretação conta a regra nos 75 e nos erros das outras unidades (falso positivo) e é aprovada antes do
+  código. → b3 #5.
+- **16/11, o valor numérico em texto (grupo A, 86 erros do balde "causa não identificada"): 49 para
+  `H_contrato_ferramenta` (harness) e 37 para `U_tipo_retorno` (memória)** (decisão do Rafael, depois de três
+  rodadas no ambiente). Substitui a decisão de 14/11 ("o A vira ajuste de regra em `U_tipo_retorno`, destino em
+  aberto"). **O critério (Rafael):** o contrato da ferramenta diz texto com clareza e o agente trata como número →
+  **memória**; contrato que promete um tipo e a ferramenta entrega outro, ou contrato ambíguo → **harness**; o agente
+  erra, entende e se recupera → evidência de memória. **Memória de reforço** só quando o próprio prompt traz a
+  instrução; aqui o prompt do papel não tem aviso sobre o tipo de retorno (bases 1 e 2), então é memória, não reforço.
+  **O contrato** (prompt das bases 1 e 2): a assinatura é `-> object` em todas; o tipo está no `Returns:` do docstring.
+  **Os 49:** `calcular_correcao_monetaria` (43) e `indice_correcao_monetaria` (6), que a substituiu entre junho e
+  agosto, declaram `Returns: float`; nos erros, a variável da conta veio direto do retorno da ferramenta em 48 e passou
+  por formatação do agente em 0 — a ferramenta promete número e entrega texto. **Os 37:** `Returns: str` no docstring
+  e o agente não converteu (22: `validador_calculo` 7, `calculadora_de_pedido` 7, `metadados_processo` 5,
+  `calculo_horas_extras` 2, `calculo_vale_alimentacao_refeicao` 1; em `calculadora_de_pedido` e
+  `calculo_horas_extras` a descrição chama o resultado de "valor", ambiguidade leve registrada como pista); retorno
+  de `envia_excel_para_usuario`, sem `Returns:` (1), e de três ferramentas fora dos prompts conhecidos (6); e 8 em que
+  o valor veio de arquivo ou JSON (5), foi escrito como texto pelo próprio agente (2) ou não deu para ver (1). Os 8
+  entram porque o erro e a cura são os mesmos ("o agente supôs número, dicionário ou JSON e era texto") e a regra da
+  unidade já é pela mensagem, sem olhar a origem do valor (argumento do Rafael); os 2 escritos pelo agente são o
+  ruído conhecido. **Pistas para quem cuida das ferramentas:** `calcular_correcao_monetaria` e
+  `indice_correcao_monetaria` prometem `float` e devolvem texto (corrigir o retorno ou o `Returns:`); a assinatura
+  `-> object` não diz o tipo em nenhuma ferramenta. **Cuidados:** leituras e scripts de um leitor no ambiente; a regra
+  dos 49 é pelo nome das duas ferramentas e envelhece se o contrato mudar. **Antes de cada Ajuste:** a interpretação
+  (regra exata, escopo, falso positivo) é aprovada antes do código. → b3 #5.
 
 ---
