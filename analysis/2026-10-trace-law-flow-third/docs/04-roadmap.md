@@ -513,8 +513,25 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   para ver" (a fonte só guarda um passo para trás): inconclusivo, não contradiz. O agente sugeriu subir a indexação
   sem evidência nova (só a recorrência). **Proposta (tabela aprovada como hipótese de trabalho):** A, B e C a
   investigar; D, E, "ficam" e "em observação" como estavam. **Para fechar o A:** cada ferramenta devolve sempre o
-  mesmo formato (memória: o formato de retorno) ou mistura (harness: o contrato da ferramenta)? Continuação:
-  `propostas/residuo/prompt_causa_continuacao.md` (A por ferramenta e mês, B por mês, leitura aberta do C).
+  mesmo formato (memória: o formato de retorno) ou mistura (harness: o contrato da ferramenta)?
+  **Continuação da leitura no ambiente (14/11, `[assistido]`, um leitor; o prompt, de uso único, foi apagado):**
+  (A) as ferramentas do retorno em texto: `calcular_correcao_monetaria` 43 (0 em jan, 2 em mar, 8 em jul, 33 em
+  ago), `calculadora_de_pedido` 7, `validador_calculo` 7, `indice_correcao_monetaria` 6 (só em jan),
+  `metadados_processo` 5, `corrigir_e_salvar` 4 e mais cinco com 1 a 2; o formato do valor mistura dentro de 6
+  das 11 ferramentas (na `calcular_correcao_monetaria`: moeda 23, ponto 16, vírgula 3, outro 1) — pode ser por
+  campo, não por chamada (não medido); o formato "outro" só aparece em agosto; dos 18 "outra" do passo seguinte,
+  16 inspecionam o tipo ou a estrutura antes (o agente não sabia) e 2 migram para outro erro. (B) o
+  ContestacaoCivel só tem ActionSteps a partir de junho (196), 8.205 em julho e 22.501 em agosto: a taxa de B é
+  0,158% em julho e 0,120% em agosto, ou seja, **é volume de um papel novo, não rajada** (isso derruba a pista
+  "o ContestacaoCivel concentra o resíduo"); classe da barra: jul 11 escape digitado, 0 regex, 2 caminho; ago 16,
+  7, 4; dos 11 de escape lidos, 10 são `\n` em aspas duplas. (C) das 45 "outra": 29 "linha fragmentada com
+  sintaxe inconsistente", 11 "rótulo isolado sem expressão válida", 4 operador lógico no fim, 1 marcador de
+  markup (validação do mesmo leitor 10 de 10); o passo seguinte vem sem erro em 14 de 29 das fragmentadas e em 3
+  de 11 dos rótulos (7 migram para outra família).
+  **Decisão (14/11, `decisoes.md`):** o A vira ajuste de regra em `U_tipo_retorno`; o C vai à leitura dos 75
+  (hipótese: `e_texto` não pega rótulo curto nem texto em inglês). O contrato das ferramentas do A e a barra do B
+  esperam a base 2 (`propostas/residuo/prompt_causa_contrato.md`); o do C é
+  `propostas/residuo/prompt_invalid_syntax_leitura.md`.
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 

@@ -594,5 +594,24 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   2 de 4" veio de uma redação minha do prompt ("ou nem menciona a falha" × a categoria lida, "não menciona o
   documento"). **O balde "sintoma não reconhecido" fecha:** os 44 têm destino (decisões de 11/11 e 13/11) e nenhum
   vira Ajuste. Isso libera a re-entrada (decisão de 12/11): a emenda ao racional do sandbox com a parte nova (b3 #64).
+- **14/11, balde "causa não identificada" (376): o valor numérico em texto (86) vira ajuste de regra em
+  `U_tipo_retorno` e o `invalid syntax` (75) vai à leitura** (decisão do Rafael: "para a A faz sentido"; "invalid
+  syntax vale a pena investigar, a recorrência é forte e podemos ler os casos"). **A:** 86 erros do CalculoTrabalhista
+  em que um valor que é texto entra numa conta, num `round` ou num formato (45 de `round`/formato e 41 de soma); em 79
+  o valor vem do retorno de uma ferramenta e o agente o converte no passo seguinte em 68; só 1 execução tem as duas
+  famílias; a taxa de agosto no papel é 3,3 vezes a dos outros meses (1,305% × 0,393%), então não é só volume. É o
+  mesmo mecanismo da unidade `U_tipo_retorno` ("retorno pode chegar como string"): o que falta é a **regra** (hoje ela
+  reconhece só duas mensagens de conta com texto; as do A caem em causa sem regra), e não unidade ou texto novo. **O
+  destino (memória de reforço ou harness) fica em aberto** até ler o contrato das ferramentas na base 2: o prompt dela
+  diz ao agente o tipo do retorno? (assinatura `-> object`, documentação `Returns:` e aviso no prompt são três coisas
+  diferentes; na base 1 só a documentação existe, `str` em 2 ferramentas, e não há aviso). A regra e o escopo (a soma
+  tem 11 erros de outros papéis, e nem todo `unsupported operand` envolve texto) saem na interpretação, que vem
+  **antes** do código, como no Ajuste 38. **C:** o maior custo do balde (3,37 milhões de tokens, 54 execuções, 9 meses)
+  e o único em que o agente quase não se corrige (33%); a primeira leitura só deu categorias genéricas, e a hipótese
+  a testar é que a regra `e_texto` (3 palavras ou mais e 15% de stopwords do português) deixa passar rótulo curto e
+  texto em inglês, o que o ligaria à unidade de texto solto. **Não decididos ainda** (hipótese de trabalho): B (36)
+  fica no resíduo (a taxa é estável, de um papel novo, e o prompt do papel na base 2 ainda não foi lido); D, E, as
+  sacolas e os de um mês só ficam; a indexação (34), o D (19), o índice de lista (7) e a comparação (5) foram
+  propostos para a mesma leitura do contrato. → b3 #5.
 
 ---
