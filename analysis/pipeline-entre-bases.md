@@ -2093,3 +2093,28 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     grupo A, mais o que as outras somas com texto trouxerem; cerca de 48 a 49 para `H_contrato_ferramenta` e o resto para
     `U_tipo_retorno`; a triagem com as mesmas unidades), e o `residuo.py`, a auditoria e o encontro na rodada nova
     (esperado: o resíduo cai de 420 para cerca de 334; 0 divergências); depois, a re-entrada (`reentrada.py --todas`).
+- **Resultado no ambiente da base (16–17/11):**
+  - **base 3, rodada nova `c1e1b338fe6b9cd4`.** `comparar_rodadas.py --antes c2e5e8b31f297d21`: mesma fonte (extração v2);
+    mudou só o código do `base_pipeline.py`; **resumo do manifesto: 0 de 29 campos diferentes** (o balde do sintoma não
+    muda); genealogia com 30.141 erros nas 4 etapas e **as 11 famílias com os mesmos erros** (muda só a unidade); a
+    triagem segue com 21 unidades e 3 linhas mudam (`U_tipo_retorno`, `H_contrato_ferramenta`,
+    `X_causa_nao_identificada`); mecanismos 29 → 30 (entra `tipo_de_retorno_descumprido`); as tabelas novas da rodada,
+    `ok`. Os 8 artefatos "removidos" são o perfil do `U_sandbox`, que a rodada anterior tinha (`--perfil U_sandbox`) e
+    esta não (não é efeito do Ajuste). O veredito "NÃO FECHA" é o esperado num Ajuste. (Uma primeira comparação foi feita
+    contra a `2db46d963c549710`, anterior ao Ajuste 38, e misturava os dois Ajustes; descartada.)
+  - **as unidades** (`triagem_visivel_observada.csv` da rodada nova): `H_contrato_ferramenta` 62 erros, 61 execuções, 7
+    meses, 3 papéis (eram os 16 do Ajuste 36: **+46**); `X_causa_nao_identificada` 293 (era 376: **−83**); logo
+    `U_tipo_retorno` **+37** (5.356 erros na rodada nova). Dos 49 erros das duas ferramentas que declaram `float`, a regra
+    levou 46 a harness (94%); os outros 3 não têm a atribuição visível no passo ou no anterior (a leitura achou 48 "direto
+    do retorno", olhando também passos mais antigos).
+  - **o resíduo** (`residuo.py`): **337 erros** (causa sem regra 250 → 167; código mal escrito 126 e sintoma 44 iguais),
+    94 padrões, 16 recorrentes; as conferências internas, `ok`. `audit_residuo_base3.py` → 337 erros, 94 padrões, 16
+    passam, chaves na fonte 337/337; `comparar_auditoria.py` → **0 divergências**. Previsto: cerca de 334.
+  - **o que ficou nas duas famílias** (`padroes_causa.csv`): "round ou formato em texto" 45 → 1 (`type dict doesn't
+    define __round__`: um dict, não texto — fica de fora, como deve); "soma ou concatenação entre tipos" 52 → 13: `can
+    only concatenate list (not <q>) to list` 6 (lista, não texto), e `unsupported operand type(s) for +, / ou +=: <q> and
+    <q>` 7, com os tipos mascarados no padrão (não dá para dizer, pelo padrão, se algum lado é `str`). Os 3 do grupo A
+    que não saíram estão entre esses: a família "soma" do grupo A (41) foi contada por uma regra sem exigir `'str'`.
+  - **a re-entrada** (`reentrada.py --todas`): `U_sandbox`, foto `99e032ad3a8528d8` (1.100) → `c1e1b338fe6b9cd4` (1.147),
+    estado `descoberto`, **entraram 47, saíram 0, mudaram de parte 0**, os 47 sem parte — a correção da re-entrada
+    (12/11) confirmada no ambiente.

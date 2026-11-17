@@ -633,9 +633,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   **Ajuste 39 (implementado, 16/11; livro-razão):** texto numa conta no fim do `submecanismo()` (só alcança o resíduo):
   `H_contrato_ferramenta` (`tipo_de_retorno_descumprido`) quando a variável veio de uma ferramenta cujo contrato
   declara número — no prompt (bases 1 e 2) ou, na base 3, em `CONTRATOS_DE_RETORNO_CONHECIDOS` (as duas ferramentas de
-  correção monetária, provisório) —, `U_tipo_retorno` no resto. Ensaio na base 1: 0 de 498 mudam. Falta a rodada no
-  ambiente (esperado: cerca de 48 a 49 para harness, o resto do texto numa conta para memória, resíduo de 420 para
-  cerca de 334). Depois: o Ajuste dos 17 do `invalid syntax` (`H_bloco_code`).
+  correção monetária, provisório) —, `U_tipo_retorno` no resto. Ensaio na base 1: 0 de 498 mudam. **Rodada
+  `c1e1b338fe6b9cd4` (16–17/11):** só os erros de texto numa conta mudaram (resumo do manifesto igual, as 11 famílias
+  com os mesmos erros); `H_contrato_ferramenta` +46 (16 → 62), `U_tipo_retorno` +37; resíduo **420 → 337** (94
+  padrões, 16 recorrentes); encontro: 0 divergências; re-entrada do sandbox: entraram 47, mudaram de parte 0.
+  Depois: o Ajuste dos 17 do `invalid syntax` (`H_bloco_code`).
   **Terceira rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi
   apagado):** nos 53 do grupo-alvo (marcador 20, outra linguagem 20, texto ou rótulo 13), a linha do erro começa com
   letra em 43, tem uma tag no meio em 5 e começa com símbolo ou fecha-tag em 5; as tags achadas são todas `code` (6).
