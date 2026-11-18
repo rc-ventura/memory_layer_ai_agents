@@ -2184,3 +2184,25 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
     no código — pelo menos os 17 do resíduo, mais os que hoje estão em `U_texto_solto` e `U_texto_literal` com a tag —
     todos para `H_bloco_code`; o novo número é o que a rodada medir), e o `residuo.py`, a auditoria e o encontro na rodada
     nova (esperado: o resíduo cai de 337 para cerca de 320; 0 divergências).
+- **Resultado no ambiente da base (18/11):**
+  - **base 2:** `conferir_versao.py` → igual ao manifesto.
+  - **base 3, rodada nova `dbd40c0f4d3604b1`.** `comparar_rodadas.py --antes c1e1b338fe6b9cd4`: mesma fonte (extração v2);
+    mudaram só o `base_pipeline.py` e o `paleta.py`; **resumo do manifesto: 0 de 29 campos diferentes**; genealogia com
+    30.141 erros nas 4 etapas e **as 11 famílias com os mesmos erros**; mecanismos 30 → 31; as tabelas novas da rodada,
+    `ok`. O veredito "NÃO FECHA" é o esperado num Ajuste.
+  - **as unidades** (`triagem_visivel_observada.csv`, as 4 linhas que mudaram; erros · execuções · tokens):
+
+    | Unidade | Antes | Depois | Erros |
+    |---|---|---|---|
+    | `H_bloco_code` | 4.592 · 4.030 · 34,79 mi | 4.787 · 4.069 · 42,44 mi | **+195** |
+    | `U_texto_solto` | 190 · 76 · 8,27 mi | 31 · 15 · 2,10 mi | **−159** |
+    | `U_texto_literal` | 152 · 140 · 3,56 mi | 139 · 127 · 3,08 mi | **−13** |
+    | `X_causa_nao_identificada` | 293 · 230 · 11,36 mi | 270 · 217 · 10,35 mi | **−23** |
+
+    As saídas somam as entradas, em erros (159 + 13 + 23 = 195) e em tokens (7.654.820). **O efeito maior não foi no
+    resíduo:** `U_texto_solto` perde 84% dos erros e 75% dos tokens. Segue candidata (31 erros, 15 execuções, 7 meses, 6
+    papéis), e a mineração dela deve partir destes números. O previsto eram "pelo menos 17" do resíduo: os 17 vinham só
+    dos 53 lidos, e a regra alcançou 23.
+  - **o resíduo** (`residuo.py`): **314 erros** (causa sem regra 167, código mal escrito 126 → 103, sintoma 44), 92
+    padrões, 16 recorrentes; as conferências internas, `ok`. `audit_residuo_base3.py` → 314 erros, 92 padrões, 16 passam,
+    chaves na fonte 314/314; `comparar_auditoria.py` → **0 divergências**.

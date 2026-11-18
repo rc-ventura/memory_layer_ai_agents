@@ -641,8 +641,17 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   **Ajuste 40 (implementado, 17/11; livro-razão):** todo erro de sintaxe com `<code>`/`</code>` no código vai para
   `H_bloco_code` (`bloco_mal_fechado`), nas bases 1 e 3 (decisão de 17/11: na base 1 o mesmo erro estava em
   `U_texto_solto`). Ensaio na base 1: 23 de 498 mudam (`U_texto_solto` 33 → 10, `H_bloco_code` 33 → 56); a regex do
-  harness reproduzida na resposta do modelo dá o código que falhou em 23 de 23. **Falta:** a rodada nova no ambiente
-  (`comparar_rodadas.py --antes c1e1b338fe6b9cd4`; esperado: o resíduo cai de 337 para cerca de 320).
+  harness reproduzida na resposta do modelo dá o código que falhou em 23 de 23. **Rodada `dbd40c0f4d3604b1` (18/11):**
+  resumo do manifesto igual, as 11 famílias com os mesmos erros; 195 erros entram em `H_bloco_code` (4.592 → 4.787):
+  159 de `U_texto_solto` (**190 → 31**, segue candidata), 13 de `U_texto_literal` (152 → 139) e 23 do resíduo; resíduo
+  **337 → 314** (92 padrões, 16 recorrentes; `codigo_mal_escrito` 126 → 103); encontro: 0 divergências.
+  **Próxima leitura (aprovada pelo Rafael, 18/11):** indexação recusada (34), barra invertida com f-string (38) e construtor
+  de DataFrame (19). **Critério fixado antes dos resultados, por subgrupo (um grupo pode ter vários destinos):** unidade que
+  já existe, se um sinal observável por script reproduz a leitura em pelo menos 80% do subgrupo; harness, se o contrato promete
+  um tipo e a ferramenta entrega outro, se o contrato é ambíguo ou se o agente repete sem se recuperar; memória nova, se o
+  subgrupo tem 3 execuções, 2 meses e uma cura só; reforço, só se o prompt traz a instrução; sem sinal observável, fica no
+  resíduo com o motivo. **Os outros 124 erros** (fora esses 91 e os 55 do `invalid syntax`) não têm destino decidido: os
+  padrões deles serão comparados com as unidades que já existem.
   **Terceira rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi
   apagado):** nos 53 do grupo-alvo (marcador 20, outra linguagem 20, texto ou rótulo 13), a linha do erro começa com
   letra em 43, tem uma tag no meio em 5 e começa com símbolo ou fecha-tag em 5; as tags achadas são todas `code` (6).
