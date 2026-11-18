@@ -667,5 +667,16 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   só no texto. **O custo aceito:** a lista é provisória e envelhece em silêncio se o contrato de uma das duas ferramentas
   mudar; conferir no prompt a cada extração nova (e, se a base 3 trouxer o prompt, a lista deixa de ser usada). Livro-
   razão, Ajuste 39; → b3 #5.
+- **17/11, o bloco mal fechado: todo erro de sintaxe com a tag `<code>`/`</code>` no código vai para `H_bloco_code`,
+  nas bases 1 e 3** (opção 1 de três, recomendação do Claude, escolhida pelo Rafael). Completa a decisão de 16/11 sobre
+  os 17 do `invalid syntax`. **O que mudou a pergunta:** na base 1, o mesmo erro (23, out/2025, `managerAgent`) já
+  estava em `U_texto_solto`, como memória; mandar só os 17 da base 3 ao harness daria ao mesmo erro dois destinos. **Por
+  que harness:** a regex do harness reproduzida na resposta do modelo dá o código que falhou em 23 de 23 (um bloco aberto
+  sem fechar leva a narração e a tag do seguinte); cada erro vem logo depois de outro erro do protocolo ou do mesmo bloco
+  mal fechado; o agente repete e não se recupera (base 1: 17 de 23; base 3: 13 de 14) — pela regra do Rafael, sinal de
+  harness. É o M6 do protocolo (`10` §4). **As opções recusadas:** os 17 para `U_texto_solto` (a memória "escreva só
+  Python" não resolve um bloco que o harness colou); só os 17 para o harness (inconsistente). **O custo aceito:** muda
+  número publicado da base 1 — `U_texto_solto` 33 → 10 erros (segue candidata), `H_bloco_code` 33 → 56, ocorrências
+  437 → 432, cobertura das candidatas 88% → 84% dos erros e 91% → 82% dos tokens. Livro-razão, Ajuste 40; → b3 #5.
 
 ---

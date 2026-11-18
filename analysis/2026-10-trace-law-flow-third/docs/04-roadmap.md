@@ -638,6 +638,11 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   com os mesmos erros); `H_contrato_ferramenta` +46 (16 → 62), `U_tipo_retorno` +37; resíduo **420 → 337** (94
   padrões, 16 recorrentes); encontro: 0 divergências; re-entrada do sandbox: entraram 47, mudaram de parte 0.
   Depois: o Ajuste dos 17 do `invalid syntax` (`H_bloco_code`).
+  **Ajuste 40 (implementado, 17/11; livro-razão):** todo erro de sintaxe com `<code>`/`</code>` no código vai para
+  `H_bloco_code` (`bloco_mal_fechado`), nas bases 1 e 3 (decisão de 17/11: na base 1 o mesmo erro estava em
+  `U_texto_solto`). Ensaio na base 1: 23 de 498 mudam (`U_texto_solto` 33 → 10, `H_bloco_code` 33 → 56); a regex do
+  harness reproduzida na resposta do modelo dá o código que falhou em 23 de 23. **Falta:** a rodada nova no ambiente
+  (`comparar_rodadas.py --antes c1e1b338fe6b9cd4`; esperado: o resíduo cai de 337 para cerca de 320).
   **Terceira rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi
   apagado):** nos 53 do grupo-alvo (marcador 20, outra linguagem 20, texto ou rótulo 13), a linha do erro começa com
   letra em 43, tem uma tag no meio em 5 e começa com símbolo ou fecha-tag em 5; as tags achadas são todas `code` (6).

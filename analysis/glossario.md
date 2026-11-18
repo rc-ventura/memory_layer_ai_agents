@@ -44,7 +44,7 @@ memória), `X_` = resíduo sem regra (revisar), `C_` = erro crítico (a execuç�
 | `U_repr_colado` | Não colar retorno impresso de volta no código | o agente copia o print de um retorno para dentro do código em vez de usar a variável |
 | `U_codigo_lento` | Não rodar laço pesado dentro do bloco de código | o tempo do interpretador estoura num laço sem ferramenta |
 | `U_resultado_bruto` | Não entregar o resultado bruto de uma ferramenta na resposta final | o agente põe o retorno inteiro da ferramenta no `final_answer` e estoura o tempo |
-| `H_bloco_code` | Protocolo do harness | a resposta do modelo veio sem o bloco `<code>…</code>` que o harness exige (família própria, docs 10–12) |
+| `H_bloco_code` | Protocolo do harness | a resposta do modelo veio sem o bloco `<code>…</code>` que o harness exige (família própria, docs 10–12); desde o Ajuste 40, também o *bloco mal fechado* (`bloco_mal_fechado`): um erro de sintaxe com a tag `<code>` ou `</code>` dentro do código, porque o agente abriu um bloco sem fechar e o harness colou a narração e a tag do bloco seguinte |
 | `H_timeout_ferramenta` | Ferramenta excedeu o timeout | a ferramenta demorou mais que o limite — conserto na plataforma |
 | `H_contrato_ferramenta` | A ferramenta saiu do próprio contrato | a ferramenta não cumpriu o contrato de retorno ou de erro — devolveu conteúdo fora do próprio esquema, deixou vazar um Traceback ou sinalizou a ausência de um dado como exceção (Ajuste 36) — conserto na ferramenta |
 | `H_infra_llm` | Falha do LLM upstream | o serviço do modelo falhou — na geração do próprio agente ou numa chamada aninhada a outro agente (Ajuste 35) — política de retry |

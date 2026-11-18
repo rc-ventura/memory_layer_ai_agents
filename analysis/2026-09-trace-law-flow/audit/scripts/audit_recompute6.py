@@ -6,7 +6,7 @@ Audita o que a auditoria de 08/09 ainda não cobria (foi criado em 15/09):
      prosa em docs/01-racionais.md §7 Passo 2 (não copiada do notebook), comparada
      erro a erro contra pipeline/resultados/erros_mecanismo.csv;
   b) a regra de cascata (erros consecutivos do mesmo papel na mesma execução)
-     e o agregado 498 erros → 437 ocorrências;
+     e o agregado 498 erros → 432 ocorrências (437 até o Ajuste 40, 17/11/2026);
   c) a tabela de unidades (14 linhas: ocorrências, erros, execuções, meses, papéis,
      tokens) vs. docs/02-relatorio-achados.md §6 e o CSV candidatos_memoria.csv;
   d) a cobertura 447/498 (90%) e 92% dos tokens;
@@ -100,6 +100,9 @@ def submecanismo_spec(m, code="", obs_ant="", sysp="", codigos=()):
         l = linha_rejeitada(m, code)
         if re.search(r"truncad", l, re.I): return "repr_colado"
         if retorno_colado(l, m, code, obs_ant): return "repr_colado"
+        # a marca de abertura ou de fechamento do bloco ficou dentro do código extraído: dois blocos colados pelo
+        # harness (Ajuste 40)
+        if "<code>" in (code or "") or "</code>" in (code or ""): return "bloco_mal_fechado"
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or abre_string(l):
             return "texto_em_literal"
         if e_texto_pt(l): return "texto_solto_no_codigo"
@@ -186,7 +189,7 @@ SUB2UNI = {
     "ausencia_como_excecao":"H_contrato_ferramenta",
     "nome_de_ferramenta_atribuido":"U_nome_ferramenta_como_variavel",
     "sintaxe_nao_suportada":"U_sandbox", "tipo_de_retorno_descumprido":"H_contrato_ferramenta",
-    "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "resultado_bruto_na_resposta":"U_resultado_bruto", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code",
+    "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "resultado_bruto_na_resposta":"U_resultado_bruto", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code", "bloco_mal_fechado":"H_bloco_code",
     "codigo_mal_escrito":"X_causa_nao_identificada", "causa_sem_regra":"X_causa_nao_identificada",
     "sintoma_nao_reconhecido":"X_sintoma_nao_reconhecido",
 }
@@ -324,7 +327,7 @@ for k2, rr in by_key.items():
         row["cascata"] = cid
         row["ocorrencia"] = f'{cid}|{row["uni"]}'
 n_oc = len({r["ocorrencia"] for r in rows})
-print(f"B. cascatas={len({r['cascata'] for r in rows})} · ocorrências (cascata×unidade)={n_oc} (esp. 437) · seguidores={sum(1 for r in rows if r['seguidor'])}")
+print(f"B. cascatas={len({r['cascata'] for r in rows})} · ocorrências (cascata×unidade)={n_oc} (esp. 432) · seguidores={sum(1 for r in rows if r['seguidor'])}")
 
 # ------------------------------------------ agregado por unidade vs. relatório/CSV
 agg = defaultdict(lambda: dict(oc=set(), err=0, ex=set(), me=set(), pa=set(), tok=0))
@@ -353,7 +356,7 @@ for u in sorted(agg, key=lambda x: -agg[x]["tok"]):
     mine = (len(a["oc"]), a["err"], len(a["ex"]), len(a["me"]), len(a["pa"]), a["tok"])
     if c.get("decisão") == "candidato": tot_cand_err += a["err"]; tot_cand_tok += a["tok"]
     print(f"   {u:22s} {UNI_NOME.get(u,'')[:44]:46s} oc={mine[0]:3d} err={mine[1]:3d} ex={mine[2]:3d} me={mine[3]} pa={mine[4]} tok={mine[5]:>9,} {ok}")
-print(f"   cobertura candidatas: {tot_cand_err}/498 = {tot_cand_err/498:.1%} (esp. 440/88,4% desde o Ajuste 5) · tokens {tot_cand_tok/tot_tok_err:.1%} (esp. 91%)")
+print(f"   cobertura candidatas: {tot_cand_err}/498 = {tot_cand_err/498:.1%} (esp. 417/83,7% desde o Ajuste 40; +1 é a divergência do Ajuste 27 da parte A) · tokens {tot_cand_tok/tot_tok_err:.1%} (esp. 82%)")
 # destino decidido pela mineração (07 §6.1), escrito à parte: harness → a triagem não a chama de candidata
 DESTINO_SPEC = {"U_contrato_dict": "memória", "U_campo_inexistente": "harness"}
 sinal_csv = sorted(u for u, c in cand_csv.items() if c.get("decisão") == "sinal de harness")
@@ -403,8 +406,8 @@ own = sum(1 for oc, mm in oc_meses.items() if mm and not ("202510" in mm and len
 # ^ ocorrências que não ficam só em out/2025 (o mês do incidente de protocolo) — não impresso; o que vale é o "por mês"
 own_mes = defaultdict(list)
 for oc, mm in oc_meses.items(): own_mes[len(mm)].append(oc)
-print(f"E. 'Explicação solta': {len(dz)}/{len(ru)} erros em out/2025 ({tok_dz/tok_ru:.0%} dos tokens) (esp. 25/33, 90%)")
-print(f"   ocorrências={len(seen_oc)} (esp. 12) · logo após erros de protocolo: {oc_after} (esp. 7)")
+print(f"E. 'Explicação solta': {len(dz)}/{len(ru)} erros em out/2025 ({tok_dz/tok_ru:.0%} dos tokens) (esp. 2/10, 15%; 25/33 e 90% até o Ajuste 40)")
+print(f"   ocorrências={len(seen_oc)} (esp. 7) · logo após erros de protocolo: {oc_after} (esp. 2)")
 mesq = Counter()
 seen=set()
 for r in sorted(ru, key=lambda x:(x["eid"],x["role"],x["idx"])):

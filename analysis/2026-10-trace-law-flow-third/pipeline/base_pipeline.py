@@ -219,6 +219,7 @@ def explodir_memoria(df):
                                                                       st.get("code_action")),
                        "retorno_numero_declarado": retorno_numero_declarado(str(err.get("message") or ""),
                                                                             codes_ant + [st.get("code_action")], sysp),
+                       "tag_do_bloco": bloco_mal_fechado(str(err.get("message") or ""), st.get("code_action")),
                        "is_final": bool(st.get("is_final_answer"))}
                 rows.append(rec)
                 obs_ant += str(st.get("observations") or "")
@@ -258,6 +259,22 @@ TEXTO_NUMA_CONTA = re.compile(
     r"|must be real number, not str")
 _TIPOS_NUMERO = {"float", "int", "number", "integer", "decimal"}
 _LINHA_DA_FALHA = re.compile(r"failed at line '(.*?)' due to", re.S)
+
+
+# Ajuste 40 (17/11/2026): a tag do bloco (`<code>` ou `</code>`) escrita como texto no código de um erro de sintaxe — o
+# M6 do protocolo do harness (narração com delimitadores capturada como código), na face em que a tag chega ao código. O
+# agente abre um bloco e não fecha; o harness pega cada trecho de um `<code>` até o `</code>` seguinte e junta todos, e o
+# trecho aberto vai até o fechamento do bloco seguinte, levando a narração e a tag dele (smolagents 1.20–1.26). Base 1: a
+# regex reproduzida na resposta do modelo dá o código que falhou em 23 de 23; os 23 estavam em texto solto; cada um vem logo
+# depois de outro erro (5 do "resposta sem bloco de código", 17 de outro bloco mal fechado); nenhum passo sem erro tem a
+# tag. Base 3: 17 no resíduo, 13 de 14 repetem no passo seguinte (decisoes.md, 16–17/11)
+TAG_DO_BLOCO = re.compile(r"</?code>")
+
+
+def bloco_mal_fechado(m, code):
+    """Erro de sintaxe com a tag do bloco (`<code>`/`</code>`) no código que o harness extraiu?"""
+    return (("Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m)
+            and TAG_DO_BLOCO.search(str(code or "")) is not None)
 # contratos de retorno lidos no system prompt da base 2 (16/11, `decisoes.md`), para onde o trace não traz o prompt (base
 # 3): as duas ferramentas de correção monetária declaram `Returns: float` e, nos erros, entregam texto. Provisório: se o
 # contrato de uma delas mudar, esta lista erra sem aviso — conferir no prompt a cada extração nova (Ajuste 39)
@@ -654,7 +671,7 @@ def verificacao_no_papel_da_instrucao(m, papel):
 
 def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False,
                  fa_sem_laco=False, verifica_e_cria=False,
-                 retorno_numero=False):
+                 retorno_numero=False, tag_do_bloco=False):
     if "regex pattern" in m:
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
@@ -678,6 +695,10 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         # mandavam para texto_em_literal (base 1) ou texto_solto (base 2) — evidência A6_repr_colado
         if (len(set(PAR_CHAVE_TEXTO.findall(l))) >= 2 and chaves_vistas_antes >= 2 and not em_final_answer):
             return "repr_colado"
+        # a tag do bloco no código: o harness colou dois blocos (Ajuste 40). Antes do texto em literal e do texto solto,
+        # que pegavam a linha do meio do bloco colado
+        if tag_do_bloco:
+            return "bloco_mal_fechado"
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or LITERAL_INICIO.match(l):
             return "texto_em_literal"
         if e_texto(l):
@@ -772,7 +793,7 @@ SUB2UNI = {
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
     "resultado_bruto_na_resposta": "U_resultado_bruto",
     "limite_de_passos": "C_limite_passos",
-    "harness_bloco_code": "H_bloco_code",
+    "harness_bloco_code": "H_bloco_code", "bloco_mal_fechado": "H_bloco_code",
     "codigo_mal_escrito": "X_causa_nao_identificada", "causa_sem_regra": "X_causa_nao_identificada",
     "sintoma_nao_reconhecido": "X_sintoma_nao_reconhecido",
 }
@@ -874,13 +895,14 @@ def montar_unidades(E):
     EU["seguidor"] = EU.groupby(["exec_id", "role"])["idx"].shift().eq(EU["idx"] - 1)
     EU["cascata"] = (~EU["seguidor"]).cumsum()
     col = lambda c, v: EU[c] if c in EU else pd.Series(v, index=EU.index)
-    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl), bool(vc), bool(rn))
-                          for m, l, k, fa, cf, fsl, vc, rn in
+    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl), bool(vc), bool(rn), bool(tb))
+                          for m, l, k, fa, cf, fsl, vc, rn, tb in
                           zip(EU["err_msg"], col("linha_codigo_erro", "").fillna(""),
                               col("chaves_vistas_antes", 0).fillna(0), col("em_final_answer", False).fillna(False),
                               col("chama_ferramenta", False).fillna(False),
                               col("final_answer_sem_laco", False).fillna(False), col("verifica_e_cria", False).fillna(False),
-                              col("retorno_numero_declarado", False).fillna(False))]
+                              col("retorno_numero_declarado", False).fillna(False),
+                              col("tag_do_bloco", False).fillna(False))]
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
     # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece
@@ -1009,7 +1031,10 @@ def _mecanismo_com_evidencia(r, carga, ctx, incoming, byref):
             # Com <2 chaves, regra do histórico não pode casar: fa/observações
             # não alteram o ramo de parsing; usar o mesmo classificador.
             signs = {"chaves_vistas_antes": 0, "em_final_answer": False}
-        return submecanismo(m, lc, signs["chaves_vistas_antes"], signs["em_final_answer"]), "observavel", "sinais_suficientes_para_regra_de_parsing"
+        # a tag do bloco no código do passo (Ajuste 40): um código cortado ainda mostra a tag que tem
+        return (submecanismo(m, lc, signs["chaves_vistas_antes"], signs["em_final_answer"],
+                             tag_do_bloco=bloco_mal_fechado(m, code)),
+                "observavel", "sinais_suficientes_para_regra_de_parsing")
     return preview, "observavel", "regra_por_mensagem_elegivel"
 
 

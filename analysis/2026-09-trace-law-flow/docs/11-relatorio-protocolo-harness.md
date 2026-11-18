@@ -29,8 +29,10 @@ leituras do Rafael (nenhum texto de caso sai de lá).
 ### 1.1 Quando e onde
 
 33 erros: **out/2025 24, nov 1, dez 7, fev 1**; zero desde mar/2026. Forma: 31 texto sem marcador de código, 2 em
-```` ``` ````. Recuperação: 33/33. Logo depois (`protocolo` [6]): 25 seguidos de step sem erro, 7 `U_texto_solto` e 1
-`U_estado_perdido` (cascata; o `U_estado_perdido` faltava aqui até a ressalva B da auditoria de 02/10).
+```` ``` ````. Recuperação: 33/33. Logo depois (`protocolo` [6]): 25 seguidos de step sem erro, 5 `H_bloco_code` (o bloco mal
+fechado), 2 `U_texto_solto` e 1 `U_estado_perdido` (cascata; o `U_estado_perdido` faltava aqui até a ressalva B da
+auditoria de 02/10). Até o Ajuste 40 (17/11/2026) eram "7 `U_texto_solto`": em 5 deles, o código tem a tag do bloco, e o
+erro é o M6 (`10` §4), não texto solto do agente.
 
 ### 1.2 A camada — modo e contrato
 

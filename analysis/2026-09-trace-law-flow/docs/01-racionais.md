@@ -730,14 +730,18 @@ rejeitou**. Sem LLM, regras em ordem:
   impresso colado de volta*. (2) A linha tem ≥2 pares `"chave": "texto"`, ≥2 dessas chaves já apareceram impressas
   como chave numa observação anterior do mesmo papel e a instrução não é um `final_answer(` → o mesmo *retorno
   colado*, agora inteiro (sem "truncado"): o dado vira **entrada** de outro código em vez de usar a variável que o
-  guardava; dentro do `final_answer` o texto é o relatório, e cai em *texto dentro de literal*. (3) A linha
+  guardava; dentro do `final_answer` o texto é o relatório, e cai em *texto dentro de literal*. (3) O código do
+  step (`code_action`) contém a tag do bloco, `<code>` ou `</code>` → *bloco mal fechado* (`bloco_mal_fechado`,
+  unidade `H_bloco_code`): o agente abriu um bloco sem fechar e o harness entregou ao interpretador a narração e a
+  tag do bloco seguinte. É o protocolo do harness, não texto do agente (Ajuste 40, 17/11/2026). (4) A linha
   rejeitada abre uma string (`final_answer("...`, `x = """...`, chave de dict entre aspas) ou o erro é
-  `unterminated` / `never closed` / `forgot a comma` → *texto dentro de literal*. (4) A linha é texto em português
+  `unterminated` / `never closed` / `forgot a comma` → *texto dentro de literal*. (5) A linha é texto em português
   ou markdown (começa com `|`, `#`, `**`, `- `, `1)`; tem crase; ou ≥15% das palavras são stopwords do português)
-  → *texto solto no código*. (5) Nenhuma das anteriores → *código Python mal escrito* (`codigo_mal_escrito`).
-  A regra (2) vem antes das palavras-chave da mensagem, que a escondiam (Ajuste 2.2, 25/09/2026). Quando a
+  → *texto solto no código*. (6) Nenhuma das anteriores → *código Python mal escrito* (`codigo_mal_escrito`).
+  A regra (2) vem antes das palavras-chave da mensagem, que a escondiam (Ajuste 2.2, 25/09/2026). A regra (3) vem
+  antes das (4) e (5), que pegavam a linha do meio do bloco colado. Quando a
   mensagem vem no **formato novo** (`... on line N due to: SyntaxError: <motivo>`, numa linha e sem o código —
-  `RoteadorCivel` desde jun/2026), a linha rejeitada é a linha N do `code_action` (Ajuste 2.1). Os dois ajustes
+  `RoteadorCivel` desde jun/2026), a linha rejeitada é a linha N do `code_action` (Ajuste 2.1). Os ajustes
   estão em [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).
 - **Erros de execução.** `KeyError: 0` num dict → *dict indexado por posição*; `string indices must be integers`
   → *string tratada como dict*; `KeyError: 'campo'` → *campo inexistente*; `'list' object is not an iterator` →
@@ -792,9 +796,12 @@ executável (uma função ou API nova), o que muda o harness — direção v2; *
 episódio, e as unidades aqui são entre execuções por construção.
 
 **Passo 4 — ocorrência, não erro: a cascata.** Contar erros infla as unidades que o agente repete em sequência:
-numa execução de out/2025 o `managerAgent` errou 10 steps seguidos escrevendo explicação em prosa no lugar do
-código. A regra: erros em steps **consecutivos** do mesmo papel na mesma execução formam uma **cascata**; dentro
-dela, a mesma unidade repetida conta **uma ocorrência**. Resultado: 498 erros → 437 ocorrências. O princípio de
+numa execução de out/2025 o `managerAgent` errou 10 steps seguidos com a tag do bloco dentro do código, logo
+depois de uma resposta sem bloco de código. Até o Ajuste 40 (17/11/2026), esses erros contavam como explicação em
+prosa no lugar do código; hoje são o bloco mal fechado, a cascata inteira em `H_bloco_code`. A regra: erros em steps
+**consecutivos** do mesmo papel na mesma execução formam uma **cascata**; dentro
+dela, a mesma unidade repetida conta **uma ocorrência**. Resultado: 498 erros → 432 ocorrências (437 até o Ajuste
+40: as 5 cascatas do bloco mal fechado contavam uma ocorrência de cada unidade). O princípio de
 focar a causa-raiz e não o sintoma de superfície é do AgentDebug (arXiv 2509.25370, p. 2 e p. 8, confirmado por
 ablação); **a operacionalização por cascata é nossa**, não do paper.
 
@@ -852,8 +859,9 @@ critério "causa única, conteúdo numa frase" continua certo — o erro era apl
 erro.
 
 **Passo 7 — o resultado.** 15 unidades: **10 candidatas** (4 factual · ambiente, 6 experiencial · estratégia),
-**1 sinal de harness** (a nº10, pós-mineração), 2 não-memória e 2 a revisar (resíduo). As candidatas cobrem 440 dos
-498 erros (88%) e 91% dos tokens gastos em steps com erro. (Até 28/09/2026 a nº10 contava como candidata: 11
+**1 sinal de harness** (a nº10, pós-mineração), 2 não-memória e 2 a revisar (resíduo). As candidatas cobrem 417 dos
+498 erros (84%) e 82% dos tokens gastos em steps com erro (440, 88% e 91% até o Ajuste 40, 17/11/2026, que levou os
+23 erros do bloco mal fechado do texto solto para o protocolo do harness). (Até 28/09/2026 a nº10 contava como candidata: 11
 candidatas, 450 erros, 90%, 92% dos tokens.)
 (Até 25/09/2026 eram 10 candidatas, 447 erros e 1 unidade "fora": "Não colar retorno impresso" tinha 2 erros; o
 Ajuste 2.2 passou a reconhecer o retorno colado inteiro, ela foi a 6 erros em 4 meses e virou candidata — e a

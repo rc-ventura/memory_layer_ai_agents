@@ -35,7 +35,7 @@ ESPERADO = {
     "base1": dict(erros=33, por_mes={"2025-10": 24, "2025-11": 1, "2025-12": 7, "2026-02": 1},
                   formas={"frase ou texto (sem código)": 31, "bloco em ``` em vez de <code>": 2},
                   papel_entregou_depois=33, execucao_com_resposta=33,
-                  proximo={"(step sem erro)": 25, "U_texto_solto": 7, "U_estado_perdido": 1},
+                  proximo={"(step sem erro)": 25, "H_bloco_code": 5, "U_texto_solto": 2, "U_estado_perdido": 1},   # Ajuste 40: 5 dos 7 "texto solto" são o bloco mal fechado
                   versoes={"82de8f07": (130, 21), "2f96aa69": (83, 3), "b0f37eea": (193, 9)}),
 }.get(args.base, {})
 DIVERG = []

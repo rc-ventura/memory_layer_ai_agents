@@ -2118,3 +2118,69 @@ Frases ou números que circularam e foram corrigidos; à esquerda, o que foi dit
   - **a re-entrada** (`reentrada.py --todas`): `U_sandbox`, foto `99e032ad3a8528d8` (1.100) → `c1e1b338fe6b9cd4` (1.147),
     estado `descoberto`, **entraram 47, saíram 0, mudaram de parte 0**, os 47 sem parte — a correção da re-entrada
     (12/11) confirmada no ambiente.
+
+### Ajuste 40 — o bloco mal fechado: a tag do bloco no código vai para o protocolo do harness (`H_bloco_code`) (17/11/2026)
+
+- **Gatilho:** a mineração do resíduo da base 3 (`b3 #5`), balde "causa não identificada", o `invalid syntax` (75): em 17
+  dos 53 lidos, o código que falhou contém `<code>` ou `</code>` como texto (decisão de 16/11, `decisoes.md`).
+- **Evidência:**
+  - **base 3** (leitura no ambiente, `[assistido]`, um leitor): 17 de 53; o agente repete o erro, com a tag, no passo
+    seguinte em 13 de 14; a reprodução no `smolagents` 1.20–1.26 dá o retrato (um bloco aberto sem fechar e outro
+    aberto depois: o harness junta os trechos de cada `<code>` até o `</code>` seguinte, e o trecho aberto leva a
+    narração e a tag do bloco seguinte);
+  - **base 1** (trace inteiro, por script): **23 erros** com a tag no código, **todos já em `U_texto_solto`**
+    (`texto_solto_no_codigo`: lá a linha colada é prosa em português e a regra do texto solto pega); 5 execuções,
+    out/2025, `managerAgent`; nenhum passo sem erro tem a tag. A resposta do modelo tem 2 a 4 `<code>` e menos `</code>`
+    do que `<code>` nos 23, e **a regex do harness reproduzida nela dá exatamente o código que falhou em 23 de 23
+    [conferido]**. Cada um vem logo depois de outro erro: 5 do "resposta sem bloco de código" (`harness_bloco_code`), 17
+    de outro bloco mal fechado, 1 de `nome_de_step_que_falhou`. É o M6 do protocolo (`10` §4, "narração com
+    delimitadores capturada como código"), na face em que a tag chega ao código.
+- **Decisão (Rafael, 17/11):** opção 1 de três — **todo** erro de sintaxe com a tag no código vai para `H_bloco_code`, nas
+  duas bases (consistente entre as bases, pela regra do Rafael: o agente repete e não se recupera → harness); as outras
+  eram levar os 17 da base 3 para `U_texto_solto` (contra a evidência) ou só os 17 para o harness (o mesmo erro com dois
+  destinos). Custo aceito: muda número publicado da base 1.
+- **Mudança** (nos `base_pipeline.py` das bases 1 e 3; a base 2 é cópia do da base 1 no ambiente da base):
+  - `TAG_DO_BLOCO` e `bloco_mal_fechado(m, code)`: erro de sintaxe (`Code parsing failed`, `SyntaxError`,
+    `IndentationError`) com `<code>` ou `</code>` no código do passo;
+  - `submecanismo(..., tag_do_bloco=False)`: no ramo de parsing, depois das duas regras do retorno colado e **antes** do
+    texto em literal e do texto solto (que pegavam a linha do meio do bloco colado) → `bloco_mal_fechado`, `SUB2UNI` →
+    `H_bloco_code`;
+  - base 1: coluna `tag_do_bloco` em `explodir_memoria`, passada em `montar_unidades`; base 3 (modo observado,
+    `_mecanismo_com_evidencia`): o sinal sai do código do passo na chamada final do ramo de parsing (um código cortado
+    ainda mostra a tag que tem; o que fica pendente antes disso continua pendente);
+  - `paleta.py` (as duas bases): o nome legível "Bloco mal fechado (a tag no código)";
+  - `audit_recompute6.py`: a regra reescrita à parte, na mesma posição; o esperado das ocorrências 437 → 432;
+    `audit_recompute10.py`: o "que vem logo depois" publicado passa a 25 sem erro, 5 `H_bloco_code`, 2 `U_texto_solto`, 1
+    `U_estado_perdido`;
+  - docs da base 1 (a regra de coerência da §2): `01` §7 Passos 2, 4 e 7; `02` §6 (linhas 4 e "Protocolo do harness",
+    cobertura); `09`; `10` §4 (M6: a primeira regra automática); `11` §1.1; `schema-e-taxonomia-de-erros.md`; glossário;
+    a Sankey (`09-genealogia-sankey.png`); o notebook da esteira e o da consolidação refeitos; manifesto do kit
+    regenerado, `VERSAO` 0.23.0.
+- **Verificação:** `analysis/tests/test_bloco_mal_fechado.py` (7 testes: a tag leva texto solto, texto em literal e
+  código mal escrito ao harness nas duas bases; sem a tag nada muda; o retorno colado vem antes; o sinal só existe no
+  erro de sintaxe; ponta a ponta na base 1; base 3 observada com e sem a tag; a auditoria nº 6 reescreve a regra).
+  **Ensaio na base 1:** **23 de 498 erros mudam**, todos `texto_solto_no_codigo`/`U_texto_solto` →
+  `bloco_mal_fechado`/`H_bloco_code`, e nenhum outro. `U_texto_solto` 33 → 10 erros (ocorrências 12 → 7, execuções 12 → 7,
+  5 meses, 3 papéis, 1,39M → 0,16M tokens; continua candidata, e o aviso "90% dos tokens em out/2025" deixa de valer:
+  out/2025 é 15% do que sobra); `H_bloco_code` 33 → 56 erros, **as mesmas 33 ocorrências** (os 23 entram como reincidência
+  em cascatas que já começavam com um erro do protocolo), 0,81M → 2,04M tokens. Ocorrências 437 → 432; as 10 candidatas
+  cobrem 417 dos 498 erros (84%; eram 440, 88%) e 82% dos tokens (eram 91%). A triagem não muda de decisão (as mesmas
+  10 candidatas; sensibilidade ≥5 execuções e ≥3 meses: só a nº 9 cai, como antes); por papel, as mesmas 18 células
+  candidatas e 8 que caem na régua estrita (`managerAgent` × `U_texto_solto` 9 → 4 execuções). **Auditoria nº 6** (agora inteira, com o
+  `candidatos_memoria.csv` da consolidação refeita): os 23 batem; ocorrências 432; a mesma 1 divergência anterior
+  (Ajuste 27), que aparece também na linha do `U_sandbox` (18 contra 17) e na cobertura (418 contra 417); esperados da
+  cobertura e da seção "explicação solta" atualizados. **Auditoria nº 10 (protocolo):** 0 divergências com o esperado
+  novo. **O gatilho de reabertura do `H_bloco_code`** ("≥2 casos num mês ou taxa > 1/1k steps") passa a contar também o
+  bloco mal fechado; na base 1 não muda nada (os 23 são de out/2025, mês que já passava).
+- **Replicar no ambiente da base** (os arquivos de código que mudaram, copiados sem edição):
+  - `analysis/2026-10-trace-law-flow-third/pipeline/base_pipeline.py` e `paleta.py`;
+  - `analysis/2026-09-trace-law-flow/pipeline/base_pipeline.py` e `paleta.py`;
+  - `analysis/2026-09-trace-law-flow/audit/scripts/audit_recompute6.py` e `audit_recompute10.py`;
+  - `.claude/skills/mineracao-base/manifesto.json` e `VERSAO` → no ambiente, `.github/skills/mineracao-base/`;
+  - **base 2 (não esquecer):** copiar o `base_pipeline.py` e o `paleta.py` da base 1 por cima dos da pasta `-second`,
+    restaurar `TRACE` e `BASE_ID`; `conferir_versao.py analysis/2026-09-trace-law-flow-second` → igual;
+  - **base 3:** `executar.py analisar` (rodada nova; não apagar a `c1e1b338fe6b9cd4`), `comparar_rodadas.py --antes
+    c1e1b338fe6b9cd4 --depois <nova>` (esperado: as 11 famílias com os mesmos erros; mudam só erros de sintaxe com a tag
+    no código — pelo menos os 17 do resíduo, mais os que hoje estão em `U_texto_solto` e `U_texto_literal` com a tag —
+    todos para `H_bloco_code`; o novo número é o que a rodada medir), e o `residuo.py`, a auditoria e o encontro na rodada
+    nova (esperado: o resíduo cai de 337 para cerca de 320; 0 divergências).
