@@ -678,5 +678,22 @@ O que fazer agora **não** fica aqui: está no roadmap de cada análise (o schem
   Python" não resolve um bloco que o harness colou); só os 17 para o harness (inconsistente). **O custo aceito:** muda
   número publicado da base 1 — `U_texto_solto` 33 → 10 erros (segue candidata), `H_bloco_code` 33 → 56, ocorrências
   437 → 432, cobertura das candidatas 88% → 84% dos erros e 91% → 82% dos tokens. Livro-razão, Ajuste 40; → b3 #5.
+- **18/11, o resíduo da base 3 fecha em 314 erros: os 215 lidos no balde "causa não identificada" ficam no resíduo, sem
+  Ajuste** (recomendação do Claude, aprovada pelo Rafael). Os 314 são 270 de causa não identificada (os 215 lidos e os 55
+  do `invalid syntax`, decididos em 16/11) e 44 de sintoma não reconhecido (decididos em 13/11), na rodada
+  `dbd40c0f4d3604b1`: 92 padrões, 16 recorrentes, 1,0% dos 30.141 erros. **O que foi lido:** indexação recusada 34, barra
+  invertida com f-string 38, construtor de DataFrame 19 e os outros 124, em duas leituras completas no ambiente
+  (`[assistido]`, um leitor). **Por que nada muda de destino:** o critério fixado antes dos resultados manda ficar no
+  resíduo o que não tem sinal observável, e nenhuma categoria teve sinal válido: os sinais da segunda leitura usam a
+  exceção final `AgentExecutionError`, presente nos 270 (cobertura de 100%, precisão de 1,1% a 7%). **A leitura não é
+  estável:** o mesmo modelo, relendo às cegas, repetiu a categoria em 4 de 15 casos na Parte A e em 2 de 15 na Parte B; entre
+  as duas leituras, `U_tipo_retorno` foi de 62 erros para 1 e `H_contrato_ferramenta` de 23 para 1. **A conferência de forma
+  passou e não bastou:** o trecho de evidência costuma ser a primeira linha do código, que não sustenta a categoria; 75
+  erros foram marcados como "mesma causa" de uma unidade, mas só 11 dos 124 têm unidade candidata; e nenhum dos 38 erros de
+  barra invertida foi reproduzido com `ast.parse`. **Hipóteses abertas, não achados:** (1) lista fora do tamanho, o resultado
+  mais estável (22 erros na primeira leitura e 18 na segunda, em 6 ou mais meses; na segunda, o passo seguinte vem sem erro
+  em 13 de 18); (2) "Número inválido: deve conter n dígitos" (23 erros, 19 execuções, 1 mês): a primeira leitura apontou a
+  ferramenta e a segunda o agente (20 de 23), e só uma leitura humana desses casos separa as duas. **Reabre se** um
+  método passar na releitura às cegas e der um sinal que separe o subgrupo. → b3 #5.
 
 ---

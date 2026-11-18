@@ -62,12 +62,6 @@ o que vai à plataforma. O que é de uma base fica no roadmap dela:
 - [ ] **#6 · Etapa C — as regras determinísticas da família do protocolo** (4.8) — *depois.* Regras M1–M6 + notebook
   `mineracao_protocolo_harness.ipynb`; a família se abre nos mecanismos nas figuras. A regra do M2 já entrou (Ajuste
   16). Usa as fronteiras de chamada (#3).
-- [ ] **#8 · Skill de resíduo** (4.14, passo 3). **Feito em 09/11 (branch `2026-11-09-mineracao-residual`):** o
-  racional e o procedimento saíram do `01` e do `03` para o `18` e o `19`; a tabela de padrões da base 3
-  (`pipeline/especificas/residuo.py`, fora do hash da rodada), a auditoria independente (`audit/scripts/audit_residuo_base3.py`),
-  o encontro e a skill `mineracao-residuo`, com o roteiro `residuo` (R1–R3) da investigação; ensaio na base 1: 8 erros,
-  6 padrões, 1 recorrente, 0 divergências. **Falta:** a primeira rodada no ambiente da base 3 (os 565 erros, `b3 #5`) e,
-  dela, os Ajustes um por vez.
 - [ ] **#9 · Skill de erro crítico** (4.14, passo 4). Antes, o racional de método e o procedimento (hoje só existe a
   decisão: `01`, #5). **Depende de:** #3.
 - [ ] **#10 · Skill de apresentação para stakeholders** (4.14, passo 5; formato a decidir: HTML ou slides). Mostra os
@@ -90,6 +84,14 @@ o que vai à plataforma. O que é de uma base fica no roadmap dela:
 Cada linha: o que foi feito → o commit ou o documento (a prova). Itens dos §2 do plano antigo que são do método ou do
 kit; os de uma base estão no roadmap dela.
 
+- [x] **#8 · Skill de resíduo** (4.14, passo 3). **Feito em 09/11 (branch `2026-11-09-mineracao-residual`):** o
+  racional e o procedimento saíram do `01` e do `03` para o `18` e o `19`; a tabela de padrões da base 3
+  (`pipeline/especificas/residuo.py`, fora do hash da rodada), a auditoria independente (`audit/scripts/audit_residuo_base3.py`),
+  o encontro e a skill `mineracao-residuo`, com o roteiro `residuo` (R1–R3) da investigação; ensaio na base 1: 8 erros,
+  6 padrões, 1 recorrente, 0 divergências. **Falta:** a primeira rodada no ambiente da base 3 (os 565 erros, `b3 #5`) e,
+  dela, os Ajustes um por vez.
+  **Fechado em 18/11:** a rodada no ambiente e os Ajustes 34 a 40 levaram o resíduo da base 3 de 565 a 314 erros (`b3 #5`,
+  [`decisoes.md`](decisoes.md), 18/11).
 - [x] **#13 · O trace em parquet** (plano antigo 4.10) — leitor único `analysis/leitor_trace.py` → `bd3db6b`;
   `analysis/README.md` (intake).
 - [x] **#14 · O kit de mineração** (4.12): silenciosas, protocolo, investigação e candidatas, de 0.1 a 0.6.0 →

@@ -7,7 +7,7 @@
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
-[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, noite
+[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 18/11/2026 (branch `2026-11-09-mineracao-residual`): **#5 fechado**, o resíduo fica em 314 erros com motivo. Antes, em 16/10/2026, noite
 (branch `2026-10-16-base3-comparar-rodadas`): esquema da memória 0.2, o localizador da base 3 (#44, Ajuste 19); a parte específica da mineração vira script (Ajuste 20); **#42 fechado**: no ambiente da base a `96958e65…` não muda
 nenhum número da `609c…` (o arquivo que parecia ausente era um caminho de 260 caracteres que o script não abria).
 **A ordem do que falta** (decisões antes da rodada nova, conferência no ambiente da base, gráficos migráveis, pedido ao tutor,
@@ -421,7 +421,76 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#3** **Protocolo do harness:** resposta sem bloco de código (`H_bloco_code`, 4.592 erros em 4.030 execuções, 14
   papéis, 10 meses). Racionais, relatório e procedimento próprios, como na base 1.
 - [ ] **#4** **Críticos:** as 25 execuções que esgotaram os passos (`C_limite_passos`) — o caminho de erros até o fim de cada uma.
-- [ ] **#5** **Resíduos:** os 565 erros de causa ou sintoma não reconhecidos (376 + 189, rodada `609c…`; eram 538 na
+- [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
+  ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
+
+- [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
+  trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
+- [ ] **#45** **O que sobrou da auditoria dos gráficos (#36, #40) e não é desenho:** (a) **o asterisco do papel × unidade** marca "candidata dentro do papel" (destino), num gráfico de volume — tirar? (proposta de 16/10, a decidir); (b) **OBPCivel × OBFCivel** — papel real ou nome cortado na origem (como "ontestacaoCivel")? Se for corte, entra no mapa de exibição; (c) a genealogia tem "Protocolo do harness" 4.591 e `H_bloco_code` 4.592 — contar por família as arestas que chegam em `harness_bloco_code`; (d) a composição dos erros dos papéis pequenos de taxa alta (AnaliseProcessual 44%, AgenteProcuracoes 25,5%: unidade e pendentes); (e) quantas trajetórias terminam num passo com erro (`recovery_signal = NO_NEXT_ACTION`); (f) a amostra de ≈ 20 casos do campo inexistente na base 1, para as hipóteses da "resposta final alta" (a aprovar). (g) ajustes gerais de forma nos gráficos (o Rafael lista ao rever o relatório da rodada `96958e65`, 16/10). São contagens no ambiente da base ou decisões; nenhuma muda gráfico sem passar pelo Rafael.
+- [ ] **#46** **Ajuste 21 — a introspecção usada para verificar a variável vai para a unidade do `try/except`** (renomeada
+  `U_verificacao_existencia`, destino harness). Evidência: a instrução "verifique se a variável existe" do prompt do
+  ContestacaoCivel causa a introspecção barrada (prompt antigo, sem dizer como: 36 de 127 na base 2; 1.527 + 709 na base 3)
+  e o `try/except NameError` (prompt novo: 97 de 97 na base 2; 5.667 em ago na base 3). **Aprovado em 19/10** (regra (b),
+  condicionada ao teste; nome novo; nas três bases; monitoramento junto; aviso adiado — `decisoes.md`). Teste da regra (b)
+  na base 3: 2.218 instruídas no ContestacaoCivel, 0 nos outros papéis; resíduo de 157 aceito (19/10). **Implementado**
+  (livro-razão, Ajuste 21; ensaio na base 1: 1 erro muda). **Rodada nova na base 3** (`observada_85706f1e94f88f59`):
+  conferida — só a mudança esperada (2.217 erros; resumo do manifesto igual). **Falta:** a replicação na base 2 e a nova
+  mineração do sandbox →
+  [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
+- [ ] **#59** **Automatizar a checagem "uma causa só" do degrau 2 (aberto em 30/10).** Hoje nenhum script grava `causas`, a
+  checagem sai "não verificável" e o pesquisador a decide com a evidência; a confirmação independente é a leitura do
+  degrau 3. Para automatizar: (1) a regra de classificação de causa nasce da investigação (leitura aberta, segundo leitor,
+  `testar_regra.py`, concordância ≥ 90%), não do minerador; (2) `causas` é registrada na granularidade da lição da memória (a
+  lição é o que a memória carrega; causas com a mesma lição levam o mesmo rótulo), o que mantém o `conferir_memorias.py` como está (falha com
+  mais de uma causa distinta); (3) o script específico grava `causas` e a auditoria independente a recalcula no encontro;
+  (4) se `causas` virar campo do esquema, o `esquema-memoria.json` está na lista do hash e pede rodada nova no ambiente da
+  base 3. Decisão do Rafael em `decisoes.md`, 30/10 → [doc 17](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md).
+- [ ] **#61** **Ler os erros que vêm depois do import: os `TypeError` "não module" e os `JSONDecodeError` (aberto em 04/11, depois do #50).** No
+  passo seguinte ao import, a C.JoogleAnalytics tem `TypeError` "o objeto JSON deve ser str…, não module" 7 e `JSONDecodeError`
+  12, e a C tem `JSONDecodeError` 25; só a mensagem foi contada, nenhum caso foi lido com esse foco. Duas perguntas: (1) qual é o
+  mecanismo dos 7? (2) os 37 `JSONDecodeError` vêm do retorno de ferramenta que chega como texto (hipótese, não verificada) e têm
+  dono em alguma unidade? Não trava o fechamento do sandbox: esses erros vêm depois do import e não mudam a causa nem o texto das
+  duas memórias. Serve também para saber o que esperar delas: 78 dos 231 erros da C.JoogleAnalytics têm outro erro no passo
+  seguinte sem relação com import (inferência da contagem; quem mede é o degrau 4). Limite: a contagem olha só o passo seguinte →
+  dossiê do sandbox §2h, 31 e 39; decisão do Rafael (04/11).
+- [ ] **#62** **Rodada nova da base 3 depois do Ajuste 33 (aberto em 09/11).** O vocabulário mudou em dois arquivos da lista de
+  hash (`base_pipeline.py` e `validacao/validar_observada.py`, só comentários), e a rodada atual passa a ser recusada. No
+  ambiente da base: `git pull`, `executar.py conferir` e `executar.py relatorio --rodada <a nova>`; os números devem sair
+  iguais. Não mexe no catálogo: as 3 memórias do sandbox continuam no degrau 3; se o sandbox for minerado de novo, rodar o
+  degrau 2 e o `--revisar` outra vez (Ajuste 33) → [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md); decisão do
+  Rafael (09/11).
+- [ ] **#63** **Os rótulos de exibição fora da lista de hash (aberto em 09/11, ligado ao #45 b).** Hoje o nome que aparece nas
+  figuras (unidades, assinaturas, papéis cortados na origem, como "ontestacaoCivel") vive em `base_pipeline.py`, `paleta.py` e
+  `genealogia_sankey.py`, os três na lista de hash da rodada: trocar um rótulo invalida a rodada, e por isso não dá para ajustar
+  uma figura direto no ambiente da base. Proposta: um arquivo de rótulos de exibição (por exemplo
+  `pipeline/execucao/rotulos.py`) lido só pelas figuras e fora da lista de hash, como as outras figuras da rodada
+  (`execucao/figuras_*.py`). Mudar um rótulo ali não mexe na rodada. Pergunta antes de fazer: quais rótulos hoje estão nos três
+  arquivos e quais figuras os leem? A regra do ambiente da base está no `AGENTS.md` (decisão do Rafael, 09/11).
+- [ ] **#64** **A re-entrada do inventário do sandbox depois do Ajuste 38 (aberto em 12/11).** O script e o procedimento
+  existem (`especificas/reentrada.py`; base 1 `16`, "Re-entrada"; `decisoes.md`, 12/11); ensaio na base 1: 1 erro
+  entra (o `NoneType`), sem parte, estado `descoberto`, e duas execuções gravam os mesmos arquivos. Falta, no ambiente
+  da base: (1) rodar `reentrada.py --todas` na rodada do Ajuste 38 (esperado no inventário do sandbox: `descoberto`, 47
+  sem parte; a foto é a pasta `resultados/mineracao/U_sandbox/` da mineração que fechou o catálogo, rodada
+  `99e032ad3a8528d8`; se ela foi sobrescrita, o resumo avisa) — **feito em 12/11**, rodada `c2e5e8b31f297d21`:
+  1.100 → 1.147 erros, entraram 47, saíram 0, os 47 sem parte, estado `descoberto` (livro-razão, Ajuste 38). Os 5
+  "mudaram de parte" da primeira execução eram um defeito da re-entrada (vazio × vazio), achado pelo agente do
+  ambiente e corrigido em 12/11; **(1b) rodar de novo
+  com o `reentrada.py` corrigido** (esperado: mudaram de parte 0, estado só `descoberto`); (2) a emenda ao racional do sandbox com a parte nova
+  "sintaxe que o interpretador não implementa" e os degraus só para ela, **(o balde "sintoma não reconhecido" fechou em
+  13/11; `decisoes.md`)**; (3) a régua de `revisar` (20%, proposta,
+  decisão do Rafael).
+
+## Fora de escopo / adiado
+
+- **Aviso a quem cuida do harness** sobre o `try/except NameError` (`transversal #7`): decisão de 14/10 de não fazer agora;
+  a evidência está em [`02` §7.9–7.10](02-relatorio-achados.md#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310).
+- **Se o parágrafo da instrução já estava no prompt de julho** (base 2): é do [`b2 #3`](../../2026-09-trace-law-flow-second/docs/04-roadmap.md).
+
+## Fechado
+
+Cada linha: o que foi feito → o commit ou o documento (a prova).
+
+- [x] **#5** **Resíduos:** os 565 erros de causa ou sintoma não reconhecidos (376 + 189, rodada `609c…`; eram 538 na
   v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases). **O instrumento existe desde
   09/11** (`transversal #8`): `especificas/residuo.py --rodada <id>` grava a tabela de padrões, a auditoria
   `audit_residuo_base3.py` e o encontro conferem, e a skill `mineracao-residuo` monta o relatório
@@ -668,75 +737,10 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   os 17 com a tag no código viram candidatos a um 7º mecanismo de `H_bloco_code` ("bloco mal fechado", harness;
   regra sem leitura: o código que falhou contém `<code>` ou `</code>`); os outros 58 ficam no resíduo com motivo.
   Antes do Ajuste, a interpretação conta a regra nos 75 e nos erros das outras unidades (falso positivo).
-- [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
-  ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
-
-- [ ] **#43** **Gráficos da base 1 que já têm dado:** duração por assinatura, global × papel (tabela) e posição na
-  trajetória (depois de conferir o `step_number` na base 1) → [Etapa 3](#etapa-3--gráficos-da-base-1-que-ainda-não-migraram-mas-já-têm-dado-43).
-- [ ] **#45** **O que sobrou da auditoria dos gráficos (#36, #40) e não é desenho:** (a) **o asterisco do papel × unidade** marca "candidata dentro do papel" (destino), num gráfico de volume — tirar? (proposta de 16/10, a decidir); (b) **OBPCivel × OBFCivel** — papel real ou nome cortado na origem (como "ontestacaoCivel")? Se for corte, entra no mapa de exibição; (c) a genealogia tem "Protocolo do harness" 4.591 e `H_bloco_code` 4.592 — contar por família as arestas que chegam em `harness_bloco_code`; (d) a composição dos erros dos papéis pequenos de taxa alta (AnaliseProcessual 44%, AgenteProcuracoes 25,5%: unidade e pendentes); (e) quantas trajetórias terminam num passo com erro (`recovery_signal = NO_NEXT_ACTION`); (f) a amostra de ≈ 20 casos do campo inexistente na base 1, para as hipóteses da "resposta final alta" (a aprovar). (g) ajustes gerais de forma nos gráficos (o Rafael lista ao rever o relatório da rodada `96958e65`, 16/10). São contagens no ambiente da base ou decisões; nenhuma muda gráfico sem passar pelo Rafael.
-- [ ] **#46** **Ajuste 21 — a introspecção usada para verificar a variável vai para a unidade do `try/except`** (renomeada
-  `U_verificacao_existencia`, destino harness). Evidência: a instrução "verifique se a variável existe" do prompt do
-  ContestacaoCivel causa a introspecção barrada (prompt antigo, sem dizer como: 36 de 127 na base 2; 1.527 + 709 na base 3)
-  e o `try/except NameError` (prompt novo: 97 de 97 na base 2; 5.667 em ago na base 3). **Aprovado em 19/10** (regra (b),
-  condicionada ao teste; nome novo; nas três bases; monitoramento junto; aviso adiado — `decisoes.md`). Teste da regra (b)
-  na base 3: 2.218 instruídas no ContestacaoCivel, 0 nos outros papéis; resíduo de 157 aceito (19/10). **Implementado**
-  (livro-razão, Ajuste 21; ensaio na base 1: 1 erro muda). **Rodada nova na base 3** (`observada_85706f1e94f88f59`):
-  conferida — só a mudança esperada (2.217 erros; resumo do manifesto igual). **Falta:** a replicação na base 2 e a nova
-  mineração do sandbox →
-  [dossiê](../propostas/U_sandbox/dossie_base3.md), "A evidência, achado por achado".
-- [ ] **#59** **Automatizar a checagem "uma causa só" do degrau 2 (aberto em 30/10).** Hoje nenhum script grava `causas`, a
-  checagem sai "não verificável" e o pesquisador a decide com a evidência; a confirmação independente é a leitura do
-  degrau 3. Para automatizar: (1) a regra de classificação de causa nasce da investigação (leitura aberta, segundo leitor,
-  `testar_regra.py`, concordância ≥ 90%), não do minerador; (2) `causas` é registrada na granularidade da lição da memória (a
-  lição é o que a memória carrega; causas com a mesma lição levam o mesmo rótulo), o que mantém o `conferir_memorias.py` como está (falha com
-  mais de uma causa distinta); (3) o script específico grava `causas` e a auditoria independente a recalcula no encontro;
-  (4) se `causas` virar campo do esquema, o `esquema-memoria.json` está na lista do hash e pede rodada nova no ambiente da
-  base 3. Decisão do Rafael em `decisoes.md`, 30/10 → [doc 17](../../2026-09-trace-law-flow/docs/17-validacao-memorias.md).
-- [ ] **#61** **Ler os erros que vêm depois do import: os `TypeError` "não module" e os `JSONDecodeError` (aberto em 04/11, depois do #50).** No
-  passo seguinte ao import, a C.JoogleAnalytics tem `TypeError` "o objeto JSON deve ser str…, não module" 7 e `JSONDecodeError`
-  12, e a C tem `JSONDecodeError` 25; só a mensagem foi contada, nenhum caso foi lido com esse foco. Duas perguntas: (1) qual é o
-  mecanismo dos 7? (2) os 37 `JSONDecodeError` vêm do retorno de ferramenta que chega como texto (hipótese, não verificada) e têm
-  dono em alguma unidade? Não trava o fechamento do sandbox: esses erros vêm depois do import e não mudam a causa nem o texto das
-  duas memórias. Serve também para saber o que esperar delas: 78 dos 231 erros da C.JoogleAnalytics têm outro erro no passo
-  seguinte sem relação com import (inferência da contagem; quem mede é o degrau 4). Limite: a contagem olha só o passo seguinte →
-  dossiê do sandbox §2h, 31 e 39; decisão do Rafael (04/11).
-- [ ] **#62** **Rodada nova da base 3 depois do Ajuste 33 (aberto em 09/11).** O vocabulário mudou em dois arquivos da lista de
-  hash (`base_pipeline.py` e `validacao/validar_observada.py`, só comentários), e a rodada atual passa a ser recusada. No
-  ambiente da base: `git pull`, `executar.py conferir` e `executar.py relatorio --rodada <a nova>`; os números devem sair
-  iguais. Não mexe no catálogo: as 3 memórias do sandbox continuam no degrau 3; se o sandbox for minerado de novo, rodar o
-  degrau 2 e o `--revisar` outra vez (Ajuste 33) → [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md); decisão do
-  Rafael (09/11).
-- [ ] **#63** **Os rótulos de exibição fora da lista de hash (aberto em 09/11, ligado ao #45 b).** Hoje o nome que aparece nas
-  figuras (unidades, assinaturas, papéis cortados na origem, como "ontestacaoCivel") vive em `base_pipeline.py`, `paleta.py` e
-  `genealogia_sankey.py`, os três na lista de hash da rodada: trocar um rótulo invalida a rodada, e por isso não dá para ajustar
-  uma figura direto no ambiente da base. Proposta: um arquivo de rótulos de exibição (por exemplo
-  `pipeline/execucao/rotulos.py`) lido só pelas figuras e fora da lista de hash, como as outras figuras da rodada
-  (`execucao/figuras_*.py`). Mudar um rótulo ali não mexe na rodada. Pergunta antes de fazer: quais rótulos hoje estão nos três
-  arquivos e quais figuras os leem? A regra do ambiente da base está no `AGENTS.md` (decisão do Rafael, 09/11).
-- [ ] **#64** **A re-entrada do inventário do sandbox depois do Ajuste 38 (aberto em 12/11).** O script e o procedimento
-  existem (`especificas/reentrada.py`; base 1 `16`, "Re-entrada"; `decisoes.md`, 12/11); ensaio na base 1: 1 erro
-  entra (o `NoneType`), sem parte, estado `descoberto`, e duas execuções gravam os mesmos arquivos. Falta, no ambiente
-  da base: (1) rodar `reentrada.py --todas` na rodada do Ajuste 38 (esperado no inventário do sandbox: `descoberto`, 47
-  sem parte; a foto é a pasta `resultados/mineracao/U_sandbox/` da mineração que fechou o catálogo, rodada
-  `99e032ad3a8528d8`; se ela foi sobrescrita, o resumo avisa) — **feito em 12/11**, rodada `c2e5e8b31f297d21`:
-  1.100 → 1.147 erros, entraram 47, saíram 0, os 47 sem parte, estado `descoberto` (livro-razão, Ajuste 38). Os 5
-  "mudaram de parte" da primeira execução eram um defeito da re-entrada (vazio × vazio), achado pelo agente do
-  ambiente e corrigido em 12/11; **(1b) rodar de novo
-  com o `reentrada.py` corrigido** (esperado: mudaram de parte 0, estado só `descoberto`); (2) a emenda ao racional do sandbox com a parte nova
-  "sintaxe que o interpretador não implementa" e os degraus só para ela, **(o balde "sintoma não reconhecido" fechou em
-  13/11; `decisoes.md`)**; (3) a régua de `revisar` (20%, proposta,
-  decisão do Rafael).
-
-## Fora de escopo / adiado
-
-- **Aviso a quem cuida do harness** sobre o `try/except NameError` (`transversal #7`): decisão de 14/10 de não fazer agora;
-  a evidência está em [`02` §7.9–7.10](02-relatorio-achados.md#79--a-causa-uma-instrução-do-prompt-que-o-ambiente-de-execução-não-suporta-base-2-1310).
-- **Se o parágrafo da instrução já estava no prompt de julho** (base 2): é do [`b2 #3`](../../2026-09-trace-law-flow-second/docs/04-roadmap.md).
-
-## Fechado
-
-Cada linha: o que foi feito → o commit ou o documento (a prova).
-
+  **Fechado em 18/11:** o resíduo fica em **314 erros** (270 de causa não identificada e 44 de sintoma não reconhecido;
+  rodada `dbd40c0f4d3604b1`, 92 padrões, 16 recorrentes). Os 215 lidos ficam no resíduo, sem Ajuste: nenhuma categoria teve
+  sinal observável e a releitura às cegas repetiu a categoria em 4 de 15 (Parte A) e 2 de 15 (Parte B). Hipóteses abertas:
+  lista fora do tamanho e "Número inválido" → [`decisoes.md`](../../decisoes.md) (18/11).
 - [x] **#55** **O degrau 2 e as funções embutidas** — fechado em 21/10 (Ajuste 28). O `conferir_memorias.py` lê, em
     `--funcoes`, as funções embutidas testadas uma a uma no interpretador (`pipeline/validacao/historico/testar_sandbox_funcoes.py`
     → `analysis/registros/funcoes_sandbox.json`; smolagents 1.26.0: 111 funcionam, 40 barradas); a memória E passa na
