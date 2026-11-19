@@ -188,6 +188,7 @@ def explodir_memoria(df):
             if not isinstance(steps, list): continue
             acts = [s for s in steps if isinstance(s, dict) and s.get("__class__") == "ActionStep"]
             obs_ant = ""   # observações dos steps anteriores deste papel — só para sinais_de_parsing(), não sai daqui
+            codes_ant = []   # o código dos steps anteriores deste papel — só para retorno_numero_declarado()
             for i, st in enumerate(acts):
                 tu, tm = st.get("token_usage") or {}, st.get("timing") or {}
                 err = st.get("error") or {}
@@ -216,9 +217,13 @@ def explodir_memoria(df):
                                                                       st.get("code_action"), sysp),
                        "final_answer_sem_laco": final_answer_sem_laco(str(err.get("message") or ""),
                                                                       st.get("code_action")),
+                       "retorno_numero_declarado": retorno_numero_declarado(str(err.get("message") or ""),
+                                                                            codes_ant + [st.get("code_action")], sysp),
+                       "tag_do_bloco": bloco_mal_fechado(str(err.get("message") or ""), st.get("code_action")),
                        "is_final": bool(st.get("is_final_answer"))}
                 rows.append(rec)
                 obs_ant += str(st.get("observations") or "")
+                codes_ant.append(st.get("code_action"))
                 raw.append({**rec, "code": st.get("code_action") or "",
                             "thought": str(st.get("model_output") or ""),
                             "sysprompt": sysp,
@@ -233,6 +238,81 @@ def explodir_memoria(df):
              tok_tot=("tok_tot","sum"), dur_s=("dur_s","sum"), tem_final=("is_final","any")).reset_index())
     execs["com_erro"] = execs["n_err"] > 0
     return steps, RAW, execs
+
+
+# o interpretador não implementa a construção de Python que o agente escreveu (`{**x}` num dicionário, `:=`, `global`,
+# `nonlocal`, `raise` sozinho): Python válido, recusado da 1.15 à 1.26 do smolagents
+# (`validacao/testar_sandbox_construtos.py` da base 3). O prefixo `InterpreterError:` deixa de fora o "is not supported"
+# das bibliotecas; o "Cannot unpack non-tuple value" não entra (falha também no Python normal) (Ajuste 38)
+SINTAXE_NAO_SUPORTADA = re.compile(
+    r"InterpreterError: (?:[A-Z]\w* is not supported\.|Re-raise is not supported without an active exception)")
+
+
+# um valor de texto entrou numa conta, num round ou num formato de número: a mensagem diz o tipo (`'str'`). Só operadores
+# de conta com um número do outro lado — o `'function' | 'str'` da base 1 não é conta (Ajuste 39)
+_NUMERO = r"(?:int|float|Decimal)"
+TEXTO_NUMA_CONTA = re.compile(
+    rf"unsupported operand type\(s\) for (?:\*\*|//|[-+*/%])=?: (?:'{_NUMERO}' and 'str'|'str' and '{_NUMERO}')"
+    r"|can only concatenate str \(not \"(?:int|float)\"\) to str"
+    r"|type str doesn't define __round__ method"
+    r"|Unknown format code '\w' for object of type 'str'"
+    r"|must be real number, not str")
+_TIPOS_NUMERO = {"float", "int", "number", "integer", "decimal"}
+_LINHA_DA_FALHA = re.compile(r"failed at line '(.*?)' due to", re.S)
+
+
+# Ajuste 40 (17/11/2026): a tag do bloco (`<code>` ou `</code>`) escrita como texto no código de um erro de sintaxe — o
+# M6 do protocolo do harness (narração com delimitadores capturada como código), na face em que a tag chega ao código. O
+# agente abre um bloco e não fecha; o harness pega cada trecho de um `<code>` até o `</code>` seguinte e junta todos, e o
+# trecho aberto vai até o fechamento do bloco seguinte, levando a narração e a tag dele (smolagents 1.20–1.26). Base 1: a
+# regex reproduzida na resposta do modelo dá o código que falhou em 23 de 23; os 23 estavam em texto solto; cada um vem logo
+# depois de outro erro (5 do "resposta sem bloco de código", 17 de outro bloco mal fechado); nenhum passo sem erro tem a
+# tag. Base 3: 17 no resíduo, 13 de 14 repetem no passo seguinte (decisoes.md, 16–17/11)
+TAG_DO_BLOCO = re.compile(r"</?code>")
+
+
+def bloco_mal_fechado(m, code):
+    """Erro de sintaxe com a tag do bloco (`<code>`/`</code>`) no código que o harness extraiu?"""
+    return (("Code parsing failed" in m or "SyntaxError" in m or "IndentationError" in m)
+            and TAG_DO_BLOCO.search(str(code or "")) is not None)
+# contratos de retorno lidos no system prompt da base 2 (16/11, `decisoes.md`), para onde o trace não traz o prompt (base
+# 3): as duas ferramentas de correção monetária declaram `Returns: float` e, nos erros, entregam texto. Provisório: se o
+# contrato de uma delas mudar, esta lista erra sem aviso — conferir no prompt a cada extração nova (Ajuste 39)
+CONTRATOS_DE_RETORNO_CONHECIDOS = {"calcular_correcao_monetaria": "float", "indice_correcao_monetaria": "float"}
+
+
+def tipo_de_retorno_declarado(ferramenta, sysp):
+    """O tipo de retorno que o system prompt declara para a ferramenta: (a assinatura `-> X`, o primeiro token depois de
+    `Returns:` no docstring — que costuma vir na linha de baixo), em minúsculas; None se a ferramenta não está no prompt.
+    Na base 1 a assinatura é `-> object` em todas e o tipo está no `Returns:`. Sem o stub no prompt (a base 3 não tem
+    prompt), o contrato registrado em CONTRATOS_DE_RETORNO_CONHECIDOS, se houver (Ajuste 39)."""
+    d = re.search(rf"def\s+{re.escape(ferramenta)}\s*\(.*?\)\s*->\s*(\w+)\s*:\s*\"\"\"(.*?)\"\"\"", sysp or "", re.S)
+    if not d:
+        conhecido = CONTRATOS_DE_RETORNO_CONHECIDOS.get(ferramenta)
+        return (None, conhecido) if conhecido else None
+    r = re.search(r"Returns?:\s*(\w+)", d.group(2))
+    return d.group(1).lower(), (r.group(1).lower() if r else None)
+
+
+def retorno_numero_declarado(m, codes, sysp):
+    """Só em texto numa conta: uma variável da linha que falhou foi atribuída pela chamada de uma ferramenta que o system
+    prompt declara devolver número (na assinatura ou no `Returns:`)? Se sim, a ferramenta entregou texto onde prometeu
+    número: contrato descumprido, correção na ferramenta. Se não, o agente supôs número e era texto. Sem o prompt (base
+    3), vale o contrato registrado em CONTRATOS_DE_RETORNO_CONHECIDOS. `codes`: o código dos passos do papel até o que
+    falhou (Ajuste 39)."""
+    if not TEXTO_NUMA_CONTA.search(m or ""):
+        return False
+    lf = _LINHA_DA_FALHA.search(m)
+    if not lf:
+        return False
+    nomes = set(re.findall(r"\b([A-Za-z_]\w*)\b", lf.group(1)))
+    for c in codes:
+        for var, ferramenta in re.findall(r"\b([A-Za-z_]\w*)\s*=(?!=)\s*([A-Za-z_]\w*)\s*\(", str(c or "")):
+            if var in nomes:
+                t = tipo_de_retorno_declarado(ferramenta, sysp)
+                if t and (t[0] in _TIPOS_NUMERO or t[1] in _TIPOS_NUMERO):
+                    return True
+    return False
 
 
 def classify(m):
@@ -272,6 +352,25 @@ def classify(m):
     if 'TypeError' in m:            return ('Contrato de retorno da ferramenta','Tipo diferente do esperado')
     if 'ValueError' in m:           return ('Suposição sobre dados','Formato/valor inválido')
     if 'IndexError' in m:           return ('Contrato de retorno da ferramenta','Retorno vazio indexado')
+    # conexão perdida numa chamada a outro agente/LLM feita de dentro do código; última regra, para só alcançar o
+    # que nenhuma outra reconhece (Ajuste 35)
+    if re.search(r'\bAPI(?:Connection|Status)Error\b', m):
+        return ('Infra / LLM upstream', 'Conexão perdida na chamada aninhada ao LLM')
+    # a ferramenta saiu do próprio contrato de retorno ou de erro; últimas regras, para só alcançar o que nenhuma outra
+    # reconhece (Ajuste 36). O Traceback vem antes da ausência: com os dois, conta como erro interno
+    if re.search(r'Invalid structured content returned by tool \w+', m):
+        return ('Infra / ferramenta', 'Ferramenta devolveu conteúdo fora do próprio esquema')
+    if re.search(r'\bRecoverableToolError\b[\s\S]*\bTraceback\b', m):
+        return ('Infra / ferramenta', 'Erro interno da ferramenta vazou como Traceback')
+    if re.search(r'\bRecoverableToolError\b[\s\S]*\bnenhum\b[\s\S]*\bencontrad', m, re.I):
+        return ('Infra / ferramenta', 'Ausência de dado sinalizada como exceção')
+    # o agente deu a uma variável o nome de uma ferramenta (ou de função embutida do interpretador) e o interpretador
+    # barrou; última regra, para só alcançar o que nenhuma outra reconhece (Ajuste 37)
+    if re.search(r"Cannot assign to name '[^']*': doing this would erase the existing tool", m):
+        return ('Ambiente & sandbox', 'Nome de ferramenta usado como variável')
+    # o interpretador não implementa a sintaxe (Ajuste 38); última regra, como a do Ajuste 37
+    if SINTAXE_NAO_SUPORTADA.search(m):
+        return ('Ambiente & sandbox', 'Sintaxe que o interpretador não implementa')
     return ('Sintoma não reconhecido', 'Sintoma não reconhecido')  # nenhuma regra de sintoma casou: erro novo para a taxonomia
 
 
@@ -571,7 +670,8 @@ def verificacao_no_papel_da_instrucao(m, papel):
 
 
 def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=False, chama_ferramenta=False,
-                 fa_sem_laco=False, verifica_e_cria=False):
+                 fa_sem_laco=False, verifica_e_cria=False,
+                 retorno_numero=False, tag_do_bloco=False):
     if "regex pattern" in m:
         return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
@@ -595,6 +695,10 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         # mandavam para texto_em_literal (base 1) ou texto_solto (base 2) — evidência A6_repr_colado
         if (len(set(PAR_CHAVE_TEXTO.findall(l))) >= 2 and chaves_vistas_antes >= 2 and not em_final_answer):
             return "repr_colado"
+        # a tag do bloco no código: o harness colou dois blocos (Ajuste 40). Antes do texto em literal e do texto solto,
+        # que pegavam a linha do meio do bloco colado
+        if tag_do_bloco:
+            return "bloco_mal_fechado"
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or LITERAL_INICIO.match(l):
             return "texto_em_literal"
         if e_texto(l):
@@ -637,6 +741,33 @@ def submecanismo(m, linha_codigo="", chaves_vistas_antes=0, em_final_answer=Fals
         return "verificacao_try_nameerror"
     if v:
         return "nome_nao_definido"
+    # conexão perdida numa chamada a outro agente/LLM de dentro do código (orquestrador_*): a mesma correção da
+    # infra_llm, em outra camada; no fim, para só alcançar o que hoje é resíduo (Ajuste 35)
+    if re.search(r"\bAPI(?:Connection|Status)Error\b", m):
+        return "conexao_llm_aninhada"
+    # a ferramenta saiu do próprio contrato: devolveu conteúdo fora do esquema, deixou vazar um Traceback ou sinalizou
+    # a ausência de um dado como exceção. A correção é na ferramenta; no fim, para só alcançar o resíduo (Ajuste 36)
+    if re.search(r"Invalid structured content returned by tool \w+", m):
+        return "retorno_fora_do_contrato"
+    if re.search(r"\bRecoverableToolError\b[\s\S]*\bTraceback\b", m):
+        return "erro_interno_ferramenta"
+    if re.search(r"\bRecoverableToolError\b[\s\S]*\bnenhum\b[\s\S]*\bencontrad", m, re.I):
+        return "ausencia_como_excecao"
+    # o agente atribuiu a um nome de ferramenta declarada (ex.: final_answer = {...}) ou de função embutida do
+    # interpretador (ex.: exp); a regra 7 do prompt padrão do framework já proíbe. No fim, para só alcançar o resíduo
+    # (Ajuste 37)
+    if re.search(r"Cannot assign to name '[^']*': doing this would erase the existing tool", m):
+        return "nome_de_ferramenta_atribuido"
+    # Python válido que o interpretador não implementa ({**x}, :=, global, nonlocal, raise sozinho): a mesma correção
+    # do inventário do sandbox ("o ambiente não roda X; use Y"). No fim, para só alcançar o resíduo (Ajuste 38)
+    if SINTAXE_NAO_SUPORTADA.search(m):
+        return "sintaxe_nao_suportada"
+    # um texto entrou numa conta. Se a variável veio de uma ferramenta que o prompt declara devolver número, a ferramenta
+    # descumpriu o contrato (harness); senão, o agente supôs número e era texto (memória, a unidade do tipo de retorno).
+    # Sem o prompt (base 3), o contrato vem de CONTRATOS_DE_RETORNO_CONHECIDOS (lido na base 2). No fim, para só alcançar
+    # o resíduo (Ajuste 39)
+    if TEXTO_NUMA_CONTA.search(m):
+        return "tipo_de_retorno_descumprido" if retorno_numero else "tipo_real_do_retorno"
     return "causa_sem_regra"   # nenhuma regra de causa casou; montar_unidades separa o que nem o sintoma reconhece
 
 
@@ -654,11 +785,15 @@ SUB2UNI = {
     "verificacao_try_nameerror": "U_verificacao_existencia", "verificacao_introspeccao": "U_verificacao_existencia",
     "ferramenta_nao_declarada": "U_ferramenta_nao_declarada",
     "repr_colado": "U_repr_colado",
-    "infra_llm": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
+    "infra_llm": "H_infra_llm", "conexao_llm_aninhada": "H_infra_llm", "timeout_ferramenta": "H_timeout_ferramenta",
+    "retorno_fora_do_contrato": "H_contrato_ferramenta", "tipo_de_retorno_descumprido": "H_contrato_ferramenta", "erro_interno_ferramenta": "H_contrato_ferramenta",
+    "ausencia_como_excecao": "H_contrato_ferramenta",
+    "nome_de_ferramenta_atribuido": "U_nome_ferramenta_como_variavel",
+    "sintaxe_nao_suportada": "U_sandbox",
     "timeout_interpretador": "H_timeout_ferramenta", "codigo_lento": "U_codigo_lento",
     "resultado_bruto_na_resposta": "U_resultado_bruto",
     "limite_de_passos": "C_limite_passos",
-    "harness_bloco_code": "H_bloco_code",
+    "harness_bloco_code": "H_bloco_code", "bloco_mal_fechado": "H_bloco_code",
     "codigo_mal_escrito": "X_causa_nao_identificada", "causa_sem_regra": "X_causa_nao_identificada",
     "sintoma_nao_reconhecido": "X_sintoma_nao_reconhecido",
 }
@@ -673,7 +808,8 @@ UNI = {
     "U_campo_inexistente": ("Campo inexistente no retorno estruturado", FACT,
                             "Acessar só chaves observadas no retorno (ex.: o verificador de sigilo devolve vazamento_sigilo/justificativa — não existe quebra_sigilo); na dúvida, inspecionar r.keys()."),
     "U_tipo_retorno": ("Retorno pode chegar como string", ESTR,
-                       "Antes de indexar por chave, fazer conta ou json.loads, checar se o retorno é str (JSON serializado ou texto de erro da ferramenta)."),
+                       "Antes de indexar por chave, fazer conta ou json.loads, checar se o retorno é str (JSON serializado ou texto de erro da ferramenta); "
+                       "para a conta, converter com float() depois de tirar 'R$' e o ponto de milhar e trocar a vírgula por ponto (Ajuste 39)."),
     "U_texto_literal": ("Texto longo nunca dentro de literal de string", ESTR,
                         "Montar relatório/documento em variáveis ou lista de partes e só então chamar final_answer; não colar markdown, tabela ou texto de documento entre aspas."),
     "U_texto_solto": ("Explicação nunca solta no bloco de código", ESTR,
@@ -682,7 +818,10 @@ UNI = {
                       "Chamar as ferramentas com argumentos nomeados e só com os nomes da assinatura declarada: "
                       "f(arg=valor); nenhuma aceita posicional, e o final_answer só recebe a resposta."),
     "U_sandbox": ("Inventário do sandbox", FACT,
-                  "repr/eval/globals/dir e imports fora da lista (ex.: ast) são proibidos; json/datetime exigem import explícito; openpyxl ausente — usar envia_excel_para_usuario."),
+                  "repr/eval/globals/dir e imports fora da lista (ex.: ast) são proibidos; json/datetime exigem import explícito; openpyxl ausente — usar envia_excel_para_usuario. "
+                  "Sintaxe que o interpretador não implementa: {**a, 'k': v} → d = dict(a); d['k'] = v (nunca dict(a, **b)); "
+                  "x := f() → x = f() na linha antes; global/nonlocal → a função recebe e devolve o valor; "
+                  "raise sozinho → except ... as e: raise e."),
     "U_next_gerador": ("next() sobre expressão geradora falha no sandbox", FACT,
                        "Usar list comprehension com [0] (ou for + break) em vez de next(x for x in ...)."),
     "U_estado_perdido": ("Após step com erro, o que ele definiria não existe", ESTR,
@@ -703,7 +842,21 @@ UNI = {
                       "dentro do código; se a ferramenta pede JSON, converter a variável com json.dumps(...), nunca "
                       "com str(...)."),
     "H_infra_llm": ("Falha do LLM upstream — política de retry", NAO,
-                    "AgentGenerationError/422: retry com backoff e circuit breaker por subagente."),
+                    "AgentGenerationError/422 (a geração do próprio agente) e conexão perdida numa chamada aninhada a "
+                    "outro agente (APIConnectionError/APIStatusError, Ajuste 35): retry com backoff e circuit breaker "
+                    "por subagente."),
+    "H_contrato_ferramenta": ("A ferramenta saiu do próprio contrato — correção na ferramenta", NAO,
+                              "A ferramenta não cumpriu o contrato de retorno ou de erro: devolveu conteúdo fora do "
+                              "próprio esquema (None onde exige objeto), deixou vazar um Traceback, ou sinalizou a "
+                              "ausência de um dado como exceção em vez de resposta. A correção é na ferramenta: validar a "
+                              "saída contra o esquema, trocar o Traceback por erro com código e contexto, devolver 'sem "
+                              "documento' como resposta de negócio, entregar o tipo que o contrato declara (texto onde o "
+                              "Returns: promete número, Ajuste 39). Não é lição do agente (Ajuste 36)."),
+    "U_nome_ferramenta_como_variavel": ("Nome de ferramenta não serve de variável", FACT,
+                                        "Guardar a resposta em outro nome (resposta = {...}) e entregar com "
+                                        "final_answer(resposta). Nenhum nome de ferramenta declarada, nem de função "
+                                        "embutida do interpretador (ex.: exp), pode receber valor. Repete a regra 7 do "
+                                        "prompt padrão do framework: memória de reforço (Ajuste 37)."),
     # tipo=NAO reflete só a base 1 (o incidente de out/2025 morre a partir de mar/2026 NESTA base).
     # Gatilho de reabertura (≥2 casos/mês ou taxa > 1/1k steps) foi acionado na base 2 — ver diário
     # de campo 22/09/2026 e `04-roadmap.md` §Monitoramento. Reclassificar (tipo/decisão) quando a
@@ -742,12 +895,14 @@ def montar_unidades(E):
     EU["seguidor"] = EU.groupby(["exec_id", "role"])["idx"].shift().eq(EU["idx"] - 1)
     EU["cascata"] = (~EU["seguidor"]).cumsum()
     col = lambda c, v: EU[c] if c in EU else pd.Series(v, index=EU.index)
-    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl), bool(vc))
-                          for m, l, k, fa, cf, fsl, vc in
+    EU["submecanismo"] = [submecanismo(m, l, int(k), bool(fa), bool(cf), bool(fsl), bool(vc), bool(rn), bool(tb))
+                          for m, l, k, fa, cf, fsl, vc, rn, tb in
                           zip(EU["err_msg"], col("linha_codigo_erro", "").fillna(""),
                               col("chaves_vistas_antes", 0).fillna(0), col("em_final_answer", False).fillna(False),
                               col("chama_ferramenta", False).fillna(False),
-                              col("final_answer_sem_laco", False).fillna(False), col("verifica_e_cria", False).fillna(False))]
+                              col("final_answer_sem_laco", False).fillna(False), col("verifica_e_cria", False).fillna(False),
+                              col("retorno_numero_declarado", False).fillna(False),
+                              col("tag_do_bloco", False).fillna(False))]
     sel = EU["submecanismo"].eq("nome_nao_definido")
     EU.loc[sel, "submecanismo"] = np.where(EU.loc[sel, "seguidor"], "nome_de_step_que_falhou", "nome_nunca_definido")
     # causa sem regra E sintoma não reconhecido pelo classify() = erro que a taxonomia não conhece
@@ -779,7 +934,16 @@ def _mecanismo_com_evidencia(r, carga, ctx, incoming, byref):
     full_code = code is not None and r["code_estado"] == "sem_corte_sql"
     # Preview não decide unidade: serve para reconhecer qual ramo exige sinais.
     preview = submecanismo(m)
-    if preview in {"harness_bloco_code", "infra_llm", "timeout_ferramenta", "limite_de_passos", "verificacao_try_nameerror"}:
+    # texto numa conta: a variável da linha que falhou saiu, neste passo ou no anterior, de uma ferramenta cujo contrato
+    # declara número? A base 3 não tem prompt: vale CONTRATOS_DE_RETORNO_CONHECIDOS (Ajuste 39)
+    if preview == "tipo_real_do_retorno" and TEXTO_NUMA_CONTA.search(m):
+        anterior = ctx.get((ref, -1))
+        codes = [anterior.get("code") if anterior is not None and pd.notna(anterior.get("code")) else "", code or ""]
+        if retorno_numero_declarado(m, codes, ""):
+            return "tipo_de_retorno_descumprido", "observavel", "regra_por_mensagem_e_codigo"
+    if preview in {"harness_bloco_code", "infra_llm", "conexao_llm_aninhada", "timeout_ferramenta", "limite_de_passos",
+                   "verificacao_try_nameerror", "retorno_fora_do_contrato", "erro_interno_ferramenta",
+                   "ausencia_como_excecao", "nome_de_ferramenta_atribuido", "sintaxe_nao_suportada"}:
         return preview, "observavel", "regra_por_mensagem_elegivel"
     if preview in {"codigo_lento", "timeout_interpretador", "resultado_bruto_na_resposta"}:
         return None, "pendente", "timeout_requer_prompt_declarado_e_codigo"
@@ -867,7 +1031,10 @@ def _mecanismo_com_evidencia(r, carga, ctx, incoming, byref):
             # Com <2 chaves, regra do histórico não pode casar: fa/observações
             # não alteram o ramo de parsing; usar o mesmo classificador.
             signs = {"chaves_vistas_antes": 0, "em_final_answer": False}
-        return submecanismo(m, lc, signs["chaves_vistas_antes"], signs["em_final_answer"]), "observavel", "sinais_suficientes_para_regra_de_parsing"
+        # a tag do bloco no código do passo (Ajuste 40): um código cortado ainda mostra a tag que tem
+        return (submecanismo(m, lc, signs["chaves_vistas_antes"], signs["em_final_answer"],
+                             tag_do_bloco=bloco_mal_fechado(m, code)),
+                "observavel", "sinais_suficientes_para_regra_de_parsing")
     return preview, "observavel", "regra_por_mensagem_elegivel"
 
 
@@ -927,9 +1094,12 @@ def analisar_mecanismos_observaveis(carga, sintomas=None):
 
 
 def mascarar(frase):
-    """Texto entre aspas → <q>, entre crases → <id>, números → <n>. Sobra só o texto padrão da exceção do Python."""
+    """Texto entre aspas → <q>, entre crases → <id>, endereço de memória (`0x…`) → <id>, números → <n>. Sobra só o
+    texto padrão da exceção do Python. O endereço entra antes dos números: sem isso, as letras dele sobram e o mesmo
+    erro vira um padrão por execução (Ajuste 34)."""
     frase = re.sub(r"'[^']*'|\"[^\"]*\"", "<q>", frase)
     frase = re.sub(r"`[^`]*`", "<id>", frase)
+    frase = re.sub(r"\b0x[0-9a-fA-F]+\b", "<id>", frase)
     return re.sub(r"\d+", "<n>", frase).strip()
 
 
@@ -949,9 +1119,11 @@ def padrao_residuo(m, sub, err_type=None):
         motivo = re.sub(r"\s*\(<unknown>, line <n>\)", "", motivo)
         motivo = re.sub(r"\s+on line <n>", "", motivo)
         return f"{classe}: {motivo}".rstrip(": ")
-    k = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]{0,90})", m)
+    # a frase é mascarada inteira e só depois cortada em 90 caracteres: cortada antes, o mesmo erro com números de
+    # tamanhos diferentes saía com fins diferentes, e o corte podia cair dentro de aspas e deixá-las sem máscara (Ajuste 34)
+    k = re.findall(r"(\b\w+(?:Error|Exception)\b):\s*([^\n]*)", m)
     if k:
-        return f"{k[-1][0]}: {mascarar(k[-1][1])}"
+        return f"{k[-1][0]}: {mascarar(k[-1][1])[:90].strip()}"
     classe = re.findall(r"\b\w+(?:Error|Exception)\b", m)
     # sem nome de exceção na mensagem: a chave diz o tipo do erro e NÃO conta como padrão recorrente — juntaria erros
     # diferentes (na base 2, o antigo "?" juntava tempo do interpretador e limite de passos — Ajuste 8)

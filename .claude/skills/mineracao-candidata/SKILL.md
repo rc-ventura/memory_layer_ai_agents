@@ -38,6 +38,10 @@ racional genérico (`docs/*racionais-mineracao-candidatas*.md`) e o que é da li
 | 8 · Arquivo final | monta um arquivo por memória (uma por parte, quando a lição tem partes) e valida cada um (`validar_memoria.py`) | reprovado |
 | 9 · Saída | manifesto, relatório, o catálogo das memórias fechadas (`catalogar_memoria.py`; depois `--registrar` em `analysis/registros/memorias.json`), versão que sai (varrida) e o resumo | o varredor acha algo |
 
+0. **A unidade já tem memória no catálogo** (`analysis/registros/memorias.json`)? Então antes rode a re-entrada,
+   `<pasta-da-analise>/pipeline/especificas/reentrada.py <u> --rodada <rodada_id>`, e leve o estado ao pesquisador. A
+   pasta da mineração anterior é a foto dessa conferência: minere de novo com `--saida` numa pasta nova, nunca por cima
+   (procedimento da análise, "Re-entrada").
 1. **Rodada:** a pedida; se não vier, pergunte (o comando não escolhe a mais recente sozinho).
 2. **Rode, da raiz do repositório,** todos os passos de uma vez:
    ```

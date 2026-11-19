@@ -171,6 +171,22 @@ do alarme de cobertura de 5%. Com o texto inteiro, a causa não identificada gan
 1. Os dois baldes têm padrão recorrente (≥3 execuções, ≥2 meses), por isso estão em "revisar — prioridade": é trabalho
 de taxonomia, não de memória ([roadmap](04-roadmap.md) #5). Fonte: `<rodada>/triagem_visivel_observada.csv`.
 
+**A mineração do resíduo (desde 10/11) já mudou esses números.** O Ajuste 35 levou para `H_infra_llm` os 33 erros de
+conexão perdida numa chamada aninhada a outro agente, o Ajuste 36 levou para a unidade nova `H_contrato_ferramenta`
+os 16 em que a ferramenta saiu do próprio contrato, o Ajuste 37 levou para a unidade nova
+`U_nome_ferramenta_como_variavel` os 49 em que o agente deu a uma variável o nome de uma ferramenta,
+o Ajuste 38 levou para o inventário do sandbox os 47 em que o agente usou uma sintaxe que o interpretador não
+implementa, o Ajuste 39 separou 83 erros de texto numa conta entre `H_contrato_ferramenta` (46) e `U_tipo_retorno` (37)
+e o Ajuste 40 levou para `H_bloco_code` os 23 com a tag do bloco no código ([livro-razão](../../pipeline-entre-bases.md)).
+Na rodada `dbd40c0f4d3604b1` (18/11) o resíduo é **314 erros** (270 de causa não identificada e 44 de sintoma não
+reconhecido), 92 padrões, 16 recorrentes, 1,0% dos 30.141 erros. O resto deste relatório segue a rodada
+`609c947b15295c84`.
+
+**A mineração do resíduo fecha nesses 314 (18/11).** Os 215 erros que ainda não tinham decisão foram lidos duas vezes e
+ficam no resíduo, sem Ajuste: nenhuma categoria teve um sinal observável por script, e o mesmo modelo, relendo às cegas,
+repetiu a categoria em só 6 de 30 casos. Ficam duas hipóteses abertas, que não são achados: lista fora do tamanho e
+"Número inválido" ([decisões, 18/11](../../decisoes.md)).
+
 ## 6 · Limitações que afetam a leitura
 
 Medidas no [procedimento §4](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Em resumo: o corte da

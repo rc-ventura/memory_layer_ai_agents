@@ -1,4 +1,10 @@
-# Degrau 3 do sandbox — os dois leitores no ambiente da base (roteiro para a segunda, 02/11/2026)
+# Degrau 3 do sandbox — os dois leitores no ambiente da base (roteiro de 02/11/2026; concluído em 09/11/2026)
+
+> **Estado:** este é o protocolo que produziu a evidência do degrau 3 do sandbox: as hipóteses (escritas antes de ler), a lista
+> de categorias (aprovada em 03/11, com as definições de 09/11), os prompts e os comandos de cada leitura. Os resultados
+> estão no [dossiê](dossie_base3.md), §2h, 33–42 (C 30 de 30, C.JoogleAnalytics 30 de 30, E 27 de 30), e a decisão em
+> [`decisoes.md`](../../../decisoes.md), 09/11. Não se edita para outra leitura: o próximo degrau 3 (por exemplo, o do `b3 #51`)
+> ganha o seu próprio arquivo, a partir deste e do roteiro `candidata` do kit.
 
 O que falta para as três memórias que vão para o agente chegarem ao degrau 3 (revisada: "a causa é mesmo a que a regra
 supõe?", [`17`](../../../2026-09-trace-law-flow/docs/17-validacao-memorias.md)): dois leitores, cada um às cegas, sobre a
@@ -24,7 +30,7 @@ modelo de cada leitor e use a mesma dupla nas três memórias. Os leitores não 
 | `U_sandbox.C.JoogleAnalytics` (30 de 231) | esqueceu o `import pandas as pd` — **e o `import json` na mesma linha** (§2h, 31: `json` na linha em 231 de 231) | o `pandas` existia antes e sumiu; o agente achava que o `pd` vinha pronto |
 | `U_sandbox.E` (30 de 317) | chamou uma função ou atributo barrado para **inspecionar um valor** (ver tipo ou conteúdo) | outro uso: executar texto (`exec`), abrir arquivo (`open`), importar por nome (`__import__`), outro |
 
-## A lista de categorias (a aprovar)
+## A lista de categorias (aprovada em 03/11)
 
 Uma categoria por coluna, por caso. `indeterminado` quando o caso não deixa ver; `outra:<rótulo>` quando nenhuma serve.
 
@@ -36,7 +42,7 @@ Uma categoria por coluna, por caso. `indeterminado` quando o caso não deixa ver
 - **`licao_livre`**: a lição em uma frase, com as próprias palavras, em termos gerais (sem nome, número ou trecho do caso)
 
 **Definições que faltaram na primeira leitura (09/11; dossiê §2h, 41 e 42).** Na leitura da E, os leitores divergiram onde a
-lista não dizia o limite:
+lista não dizia o limite (a de `conserto` está também no roteiro `candidata` do kit, L3):
 - **`inspecionar_valor`**: o agente queria ver o tipo, a forma ou o conteúdo de um valor que existe. Perguntar se um nome
   existe (`dir()`, `globals()`, `locals()`, `"x" in ...`) **não** é inspecionar: é `outra:verificar_existencia`.
 - **`corrigiu_a_licao`**: no passo seguinte, o agente faz o que a lição diz (na E: vê o valor com uma função permitida,

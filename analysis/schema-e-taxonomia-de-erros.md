@@ -161,7 +161,7 @@ iterações; o destino natural é "fora do escopo de memória", não uma unidade
 | Sintoma não reconhecido | 1 | — |
 
 E o nível mais específico — as **15 unidades de memória** (triagem: conteúdo único + ≥3 execuções +
-≥2 meses; as 10 candidatas cobrem 88% dos erros e 91% dos tokens em steps com erro):
+≥2 meses; as 10 candidatas cobrem 84% dos erros e 82% dos tokens em steps com erro — 88% e 91% até o Ajuste 40):
 
 | Unidade | Erros | Execs | Meses | Decisão |
 |---|---:|---:|---:|---|
@@ -169,14 +169,14 @@ E o nível mais específico — as **15 unidades de memória** (triagem: conteú
 | Retorno das ferramentas de documento é dict | 96 | 87 | 8 | candidato |
 | Retorno pode chegar como string | 47 | 36 | 9 | candidato |
 | Ferramentas só aceitam argumento nomeado | 36 | 23 | 11 | candidato |
-| Explicação nunca solta no bloco de código | 33 | 12 | 5 | candidato |
+| Explicação nunca solta no bloco de código | 10 | 7 | 5 | candidato (33 erros até o Ajuste 40, 17/11/2026: 23 eram o bloco mal fechado) |
 | Inventário do sandbox | 17 | 17 | 8 | candidato |
 | next() sobre gerador falha no sandbox | 13 | 11 | 8 | candidato |
 | Campo inexistente no retorno estruturado | 10 | 10 | 6 | **sinal de harness** (passa na triagem; a mineração decidiu `destino = harness`) |
 | Nome usado sem ter sido definido | 5 | 5 | 4 | candidato |
 | Após step com erro, o que ele definiria não existe | 5 | 4 | 3 | candidato |
 | Não colar retorno impresso no código | 6 | 6 | 4 | candidato (era "fora" até 25/09/2026 — `pipeline-entre-bases.md`) |
-| Protocolo do harness | 33 | 24 | 4 | não-memória (base 1) — reaberto na base 2, 22/09/2026 |
+| Protocolo do harness | 56 | 24 | 4 | não-memória (base 1) — reaberto na base 2, 22/09/2026; com o bloco mal fechado (Ajuste 40) |
 | Falha do LLM upstream (retry) | 7 | 7 | 3 | não-memória |
 | Causa não identificada (nenhuma regra de causa reconheceu o erro) | 7 | 7 | 5 | revisar — prioridade (1 padrão recorrente) |
 | Sintoma não reconhecido (erro que a taxonomia não conhece) | 1 | 1 | 1 | revisar — baixa prioridade |

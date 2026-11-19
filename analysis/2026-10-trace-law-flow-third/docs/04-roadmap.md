@@ -7,7 +7,7 @@
 > base 3**; de fora, cite como `b3 #N` (o "roadmap #N" sem prefixo, nos docs antigos, é o da base 1).
 
 Contexto: [relatório](02-relatorio-achados.md) da rodada `observada_609c947b15295c84` (14/10, a v2, depois do Ajuste 18; na v1, `3f9c…`, `b4fcc77…` e `0d23103…`) e
-[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 16/10/2026, noite
+[limitações medidas](03-procedimento-validacao.md#4--limitações-da-extração-v1-medidas). Atualizado em 18/11/2026 (branch `2026-11-09-mineracao-residual`): **#5 fechado**, o resíduo fica em 314 erros com motivo. Antes, em 16/10/2026, noite
 (branch `2026-10-16-base3-comparar-rodadas`): esquema da memória 0.2, o localizador da base 3 (#44, Ajuste 19); a parte específica da mineração vira script (Ajuste 20); **#42 fechado**: no ambiente da base a `96958e65…` não muda
 nenhum número da `609c…` (o arquivo que parecia ausente era um caminho de 260 caracteres que o script não abria).
 **A ordem do que falta** (decisões antes da rodada nova, conferência no ambiente da base, gráficos migráveis, pedido ao tutor,
@@ -320,6 +320,19 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   `erros_mecanismo.csv` das bases 1 e 2; na base 3 o passo 0 fica "não conferido". Ensinar o script do kit a ler as
   tabelas da base 3 (outro formato: só erros, do parquet), com teste e `VERSAO` nova; vale para toda unidade, não só o
   sandbox. Decisão do Rafael (20/10): item próprio, fora do fechamento do sandbox (#50) → [`decisoes.md`](../../decisoes.md).
+  **Junto (11/11), os monitoramentos que esperam este item** — cada um entra no `monitoramento.json` quando o script ler a
+  base 3, com linha de base e gatilho:
+  - **os padrões do resíduo em observação** (o filtro precisa de expressão na mensagem, `coluna~regex`, que o
+    `aplicar_onde` ainda não tem; a população é o `casos.csv` do `especificas/residuo.py`): o primeiro é a "recusa do
+    LLM" (5 erros, 2 execuções, abril; gatilho: a régua, ≥3 execuções e ≥2 meses) → `decisoes.md` 11/11;
+  - **o `try/except NameError`** (#28);
+  - **o gatilho da `H_contrato_ferramenta`** (Ajuste 36: ficou como decisão separada);
+  - **a memória de reforço da `U_nome_ferramenta_como_variavel`** (Ajuste 37; tipo "memória de reforço", gatilho
+    "triplicou"): linha de base a escolher, porque a taxa do OBFCivel já subiu de 0,4% (abr–jun) para 1,8% (jul–ago);
+  - **os gatilhos que só estão no texto das unidades** e não no registro: `H_timeout_ferramenta` e `H_bloco_code` ("≥2
+    casos num mês ou > 1/1k steps") — conferir se entram;
+  - um item sem tabela na base não pode parar o passo 0 das outras bases (hoje todo item lê as tabelas das bases 1 e 2,
+    e a base 3 sai com "falta tabela").
 - [ ] **#51** **Uma memória "como verificar se uma variável existe, no sandbox" (aberto em 20/10, depois do #50).** Ideia do
   Rafael na decisão 2 do fechamento do sandbox: quando o prompt manda verificar sem dizer como, uma memória pode dizer
   como — `try/except Exception`, ou `x = None` no primeiro passo e `if x is None` depois; nunca `globals()` nem
@@ -408,8 +421,6 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 - [ ] **#3** **Protocolo do harness:** resposta sem bloco de código (`H_bloco_code`, 4.592 erros em 4.030 execuções, 14
   papéis, 10 meses). Racionais, relatório e procedimento próprios, como na base 1.
 - [ ] **#4** **Críticos:** as 25 execuções que esgotaram os passos (`C_limite_passos`) — o caminho de erros até o fim de cada uma.
-- [ ] **#5** **Resíduos:** os 565 erros de causa ou sintoma não reconhecidos (376 + 189, rodada `609c…`; eram 538 na
-  v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases).
 - [ ] **#6** **Conferir o timeout de ferramenta** (`H_timeout_ferramenta`: 1.117 erros num mês e num papel) — incidente pontual
   ou padrão. O gráfico linha do tempo (item 9) já mostra o mês.
 
@@ -448,6 +459,26 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
   iguais. Não mexe no catálogo: as 3 memórias do sandbox continuam no degrau 3; se o sandbox for minerado de novo, rodar o
   degrau 2 e o `--revisar` outra vez (Ajuste 33) → [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md); decisão do
   Rafael (09/11).
+- [ ] **#63** **Os rótulos de exibição fora da lista de hash (aberto em 09/11, ligado ao #45 b).** Hoje o nome que aparece nas
+  figuras (unidades, assinaturas, papéis cortados na origem, como "ontestacaoCivel") vive em `base_pipeline.py`, `paleta.py` e
+  `genealogia_sankey.py`, os três na lista de hash da rodada: trocar um rótulo invalida a rodada, e por isso não dá para ajustar
+  uma figura direto no ambiente da base. Proposta: um arquivo de rótulos de exibição (por exemplo
+  `pipeline/execucao/rotulos.py`) lido só pelas figuras e fora da lista de hash, como as outras figuras da rodada
+  (`execucao/figuras_*.py`). Mudar um rótulo ali não mexe na rodada. Pergunta antes de fazer: quais rótulos hoje estão nos três
+  arquivos e quais figuras os leem? A regra do ambiente da base está no `AGENTS.md` (decisão do Rafael, 09/11).
+- [ ] **#64** **A re-entrada do inventário do sandbox depois do Ajuste 38 (aberto em 12/11).** O script e o procedimento
+  existem (`especificas/reentrada.py`; base 1 `16`, "Re-entrada"; `decisoes.md`, 12/11); ensaio na base 1: 1 erro
+  entra (o `NoneType`), sem parte, estado `descoberto`, e duas execuções gravam os mesmos arquivos. Falta, no ambiente
+  da base: (1) rodar `reentrada.py --todas` na rodada do Ajuste 38 (esperado no inventário do sandbox: `descoberto`, 47
+  sem parte; a foto é a pasta `resultados/mineracao/U_sandbox/` da mineração que fechou o catálogo, rodada
+  `99e032ad3a8528d8`; se ela foi sobrescrita, o resumo avisa) — **feito em 12/11**, rodada `c2e5e8b31f297d21`:
+  1.100 → 1.147 erros, entraram 47, saíram 0, os 47 sem parte, estado `descoberto` (livro-razão, Ajuste 38). Os 5
+  "mudaram de parte" da primeira execução eram um defeito da re-entrada (vazio × vazio), achado pelo agente do
+  ambiente e corrigido em 12/11; **(1b) rodar de novo
+  com o `reentrada.py` corrigido** (esperado: mudaram de parte 0, estado só `descoberto`); (2) a emenda ao racional do sandbox com a parte nova
+  "sintaxe que o interpretador não implementa" e os degraus só para ela, **(o balde "sintoma não reconhecido" fechou em
+  13/11; `decisoes.md`)**; (3) a régua de `revisar` (20%, proposta,
+  decisão do Rafael).
 
 ## Fora de escopo / adiado
 
@@ -459,6 +490,257 @@ resultado é uma lista determinística dos nomes bloqueados, sem LLM na classifi
 
 Cada linha: o que foi feito → o commit ou o documento (a prova).
 
+- [x] **#5** **Resíduos:** os 565 erros de causa ou sintoma não reconhecidos (376 + 189, rodada `609c…`; eram 538 na
+  v1) — padrões recorrentes e regra nova, se houver (regra nova só olhando as duas bases). **O instrumento existe desde
+  09/11** (`transversal #8`): `especificas/residuo.py --rodada <id>` grava a tabela de padrões, a auditoria
+  `audit_residuo_base3.py` e o encontro conferem, e a skill `mineracao-residuo` monta o relatório
+  (procedimento: base 1 `docs/19`). **Próximo:** rodar no ambiente da base, na rodada vigente, e trazer a tabela de
+  padrões (mascarada) e o encontro; a ordem dos padrões a investigar e cada Ajuste são decisões do Rafael.
+  **Primeira rodada (10/11, `5d2098f6d706bd3b`):** 565 erros, 120 padrões, 23 recorrentes; encontro: 0 divergências.
+  **Ajuste 34** (a máscara do padrão: endereço de memória e corte depois da máscara): rodada `13b0d026242de2dc`
+  (10/11), 111 padrões, 25 recorrentes; encontro: 0 divergências; `comparar_rodadas.py` contra a `5d2098…` (recriada,
+  11/11): nenhuma divergência.
+  **Grupo infra / LLM (54 erros, 10/11):** contado por script (`validacao/contar_infra_residuo.py`) e lido inteiro
+  (`[assistido]`, um leitor). **Ajuste 35** (aprovado): a conexão perdida na chamada aninhada a outro agente (rede e
+  API, 33) → `H_infra_llm`, submecanismo `conexao_llm_aninhada`. Rodada `ed138b1815816ea3` (11/11): só os 33
+  mudaram (sintoma não reconhecido 189 → 156); resíduo **532 erros, 108 padrões, 24 recorrentes**; encontro: 0
+  divergências. **Ajuste 36** (aprovado, 11/11): a ferramenta que sai do próprio contrato (16: `None` fora do esquema,
+  11; Traceback vazado, 2; ausência como exceção, 3) → unidade nova `H_contrato_ferramenta`. Rodada `7f146976cf5c74ed`
+  (11/11): só os 16 mudaram (sintoma não reconhecido 156 → 140, 20 unidades); resíduo **516 erros, 104 padrões, 24
+  recorrentes**; encontro: 0 divergências. A "recusa do LLM" (5) **fica em observação** (11/11): estouro do limite
+  de tokens de entrada (285.148 contra 272.000) com rótulo de política de conteúdo, 2 execuções num mês
+  (`decisoes.md`). **O grupo infra / LLM fecha:** 33 + 16 saíram do resíduo, 5 ficam com motivo.
+  **Grupo nome de ferramenta usado como variável (49, 11/11):** contado por script
+  (`validacao/contar_nome_ferramenta_residuo.py`) e fechado no ambiente da base (bases 2 e 3) e aqui (base 1, o prompt:
+  `validacao/contar_regra_nome_ferramenta_prompt.py`). **Ajuste 37** (aprovado): unidade nova
+  `U_nome_ferramenta_como_variavel`, erro do agente, destino memória de reforço (o prompt padrão já proíbe; não é sinal
+  de harness → `decisoes.md`). Rodada `2db46d963c549710` (11/11): só os 49 mudaram (sintoma não reconhecido
+  140 → 91, 21 unidades, 11 candidatas); resíduo **467 erros, 103 padrões, 23 recorrentes**; encontro: 0 divergências.
+  **Grupo sintaxe que o interpretador não implementa (47, 12/11):** contado por script
+  (`validacao/contar_limites_interpretador_residuo.py`; teste no interpretador:
+  `validacao/testar_sandbox_construtos.py`); o agente troca a construção no passo seguinte em 46 de 47. **Ajuste 38**
+  (aprovado): estende o inventário do sandbox (`U_sandbox`), submecanismo `sintaxe_nao_suportada`, erro do agente,
+  destino memória. Rodada `c2e5e8b31f297d21` (12/11): só os 47 mudaram (sintoma não reconhecido 91 → 44, 21
+  unidades, 11 candidatas); resíduo **420 erros, 98 padrões, 20 recorrentes**; encontro: 0 divergências. A
+  re-entrada do sandbox segue no #64.
+  **O que sobrou do balde "sintoma não reconhecido" (44, 12–13/11):** medida a recorrência por grupo
+  (`validacao/contar_recorrencia_sintoma_residuo.py`: passam o PDF 13, dado/conta 7, etapa já executada 3 e sem
+  nome 3, mas só o PDF passa sozinho) e o agente do ambiente testou a tabela de decisão (nenhum grupo tem erro nas
+  outras unidades). **Decisão (13/11, `decisoes.md`):** só o PDF vai à investigação (13 erros, 12 execuções, fev a
+  abr, AgenteEstruturador, `LayoutError` vindo de uma de duas ferramentas, o agente conserta no passo seguinte em
+  13 de 13); o resto fica no resíduo com motivo, sem Ajuste. **Medida do que o agente muda no passo seguinte**
+  (`validacao/contar_pdf_residuo.py`, rodada no ambiente em 13/11): 8 erros do `orquestrador_eletronico` e 5 do
+  `orquestrador_papel`; o agente **deixa de chamar a ferramenta em 6 de 13**, chama de novo com o código ≥ 20%
+  menor em 4 e muda outra coisa em 3; **divide o conteúdo em várias chamadas em 0**. No `orquestrador_papel` o maior
+  literal do passo que falhou é pequeno (mediana 74 caracteres): o conteúdo grande chega por variável, de passos
+  anteriores. **Correção à leitura anterior:** "13 de 13 sem erro no passo seguinte" não é "o agente corrige": em 6
+  deles o passo seguinte nem chama a ferramenta, e em 9 de 13 a execução acaba logo depois — o PDF pode ter deixado de
+  ser gerado (falha silenciosa). **Para onde o agente vai** (extensão do script, 13/11): nenhum vai para a
+  ferramenta irmã; 9 de 13 chamam a ferramenta de novo (7 no passo seguinte, 2 no depois dele) e o erro não se repete
+  no passo seguinte em nenhum; 4 de 13 (1 do eletronico, 3 do papel) nunca chamam de novo e terminam com
+  `final_answer` no passo seguinte (candidatos a falha silenciosa). **Hipótese de destino (a testar, não achado):**
+  harness — a ferramenta devia partir a linha ou tratar o erro (o erro nasce dentro dela, o conteúdo do papel chega
+  por variável, 0 divisões e 3 reações diferentes), com possível falha silenciosa nos 4; memória é a menos provável
+  (o agente não vê o tamanho; só uma memória de recuperação ajudaria os 4). **Leitura dos 13 casos** (ambiente,
+  13/11, `[assistido]`, um leitor): conteúdo da linha grande de variável de passo anterior em 10 e escrito no
+  próprio passo em 3 (tipo não visto em 7); tabela sempre de 5 colunas, linha mais alta de 690 a 8058 pontos para
+  716,5 disponíveis; nos 9 que voltam, 4 encurtam e 5 mudam outra coisa sem relação com o tamanho; dos 4
+  `final_answer`, 2 admitem que não geraram e 2 não mencionam o documento (nenhum afirma que gerou).
+  **Decisão (13/11, `decisoes.md`, opção 1):** o PDF fecha no resíduo com uma pista de harness (a ferramenta devia
+  partir a linha ou tratar o `LayoutError`), sem unidade nem Ajuste. **O balde "sintoma não reconhecido" fecha**:
+  os 44 têm destino, nenhum vira Ajuste; segue a re-entrada (#64). **Pistas para o balde de causa sem regra:** ContestacaoCivel em jul/ago concentra 99 dos
+  420 (24%), mais de 99% na versão v1 (medir se é só volume); "etapa já executada" pode ser código do passo
+  levantando `RuntimeError` (conferir no prompt do papel).
+  **Balde "causa não identificada" (376: 250 `causa_sem_regra` + 126 `codigo_mal_escrito`, 13/11):** dos 20 padrões do
+  resíduo que passam na régua, 19 estão aqui. Mesmo caminho do balde do sintoma: medir primeiro a recorrência por
+  família de mecanismo (`validacao/contar_recorrencia_causa_residuo.py`: 19 famílias por regra sobre a mensagem, e
+  se um padrão recorre sozinho ou só somado, com o passo seguinte pela fonte), decidir em lote o que investiga e
+  deixar o resto no resíduo com motivo. Maiores padrões vistos (13/11): `invalid syntax` 75, soma entre tipos 33,
+  barra no fim da linha 32, `round` sobre texto 24, "Número inválido: deve conter n dígitos" 23, formato
+  desconhecido 20, construtor de DataFrame 19; o papel ContestacaoCivel em jul/ago concentra 99 dos 420 erros do
+  resíduo (24%; medir se é só volume).
+  **Recorrência medida no ambiente (13/11):** 20 famílias (375 de 376 cobertos; `outro` 1 erro); 14 passam a régua e
+  12 têm um padrão que recorre sozinho; passam só somando `sintaxe_outra` (12) e `data_ou_hora` (9); não passam
+  (1 mês) "Número inválido" 23, JSON ausente 13 e índice de lista com texto 7. **Pistas que atravessam famílias:**
+  (A) `round`/formato em texto (45, todos CalculoTrabalhista) e a soma entre tipos (41 de 52 do mesmo papel) têm 31
+  erros cada em agosto: valor numérico que chega como texto (cerca de 86 erros, 6 milhões de tokens); (B) barra
+  invertida no código do ContestacaoCivel em jul/ago: barra no fim da linha 32 (30 do papel) + f-string + 8 do
+  `decodificar_barra` do balde do sintoma (cerca de 45); (C) `invalid syntax` 75 erros e 3,37 milhões de tokens, o
+  único em que o agente quase não se corrige (33% dos passos seguintes sem erro); (D) construtor de DataFrame 19
+  (JoogleAnalytics, 84% se corrigem); (E) `object is not callable` 7, com nomes de ferramenta na linha (pode ser o
+  Ajuste 37). Cuidado: agosto teve mais execuções e taxa de erro por ActionStep de 6,7% → 15,7%, então parte das
+  rajadas é volume.
+  **Primeira leitura no ambiente (13/11, `[assistido]`, um leitor):** (A) 86 erros: o valor em texto vem de retorno
+  de ferramenta em 79, de arquivo ou JSON em 5 e é escrito pelo agente em 2; formato com símbolo de moeda 43, com
+  ponto 36, com vírgula 5; no passo seguinte o agente converte o texto em 68; só 1 execução tem as duas famílias
+  (round/formato e soma); a taxa de agosto no CalculoTrabalhista é 3,3 vezes a dos outros meses (1,305% × 0,393%).
+  (B) 44 erros: o texto com barra é literal escrito pelo agente em 20 de 20; barra: 11 escape digitado, 7 regex, 2
+  caminho; nenhuma execução com mais de uma ponta; 40 de 44 no ContestacaoCivel em jul/ago e nenhum antes de julho
+  (começo em julho, não efeito de volume). (C) 75 `invalid syntax`: a regra de forma concordou em 7 de 15 com a
+  leitura e 45 ficaram em "outra": falta leitura aberta. (D) 19 DataFrame: "passou uma string" = 0; 10 de
+  variável de passo anterior, 9 "outra". (E) 7 `not callable`: 0 de 7 com atribuição local, 7 de 7 "não deu
+  para ver" (a fonte só guarda um passo para trás): inconclusivo, não contradiz. O agente sugeriu subir a indexação
+  sem evidência nova (só a recorrência). **Proposta (tabela aprovada como hipótese de trabalho):** A, B e C a
+  investigar; D, E, "ficam" e "em observação" como estavam. **Para fechar o A:** cada ferramenta devolve sempre o
+  mesmo formato (memória: o formato de retorno) ou mistura (harness: o contrato da ferramenta)?
+  **Continuação da leitura no ambiente (14/11, `[assistido]`, um leitor; o prompt, de uso único, foi apagado):**
+  (A) as ferramentas do retorno em texto: `calcular_correcao_monetaria` 43 (0 em jan, 2 em mar, 8 em jul, 33 em
+  ago), `calculadora_de_pedido` 7, `validador_calculo` 7, `indice_correcao_monetaria` 6 (só em jan),
+  `metadados_processo` 5, `corrigir_e_salvar` 4 e mais cinco com 1 a 2; o formato do valor mistura dentro de 6
+  das 11 ferramentas (na `calcular_correcao_monetaria`: moeda 23, ponto 16, vírgula 3, outro 1) — pode ser por
+  campo, não por chamada (não medido); o formato "outro" só aparece em agosto; dos 18 "outra" do passo seguinte,
+  16 inspecionam o tipo ou a estrutura antes (o agente não sabia) e 2 migram para outro erro. (B) o
+  ContestacaoCivel só tem ActionSteps a partir de junho (196), 8.205 em julho e 22.501 em agosto: a taxa de B é
+  0,158% em julho e 0,120% em agosto, ou seja, **é volume de um papel novo, não rajada** (isso derruba a pista
+  "o ContestacaoCivel concentra o resíduo"); classe da barra: jul 11 escape digitado, 0 regex, 2 caminho; ago 16,
+  7, 4; dos 11 de escape lidos, 10 são `\n` em aspas duplas. (C) das 45 "outra": 29 "linha fragmentada com
+  sintaxe inconsistente", 11 "rótulo isolado sem expressão válida", 4 operador lógico no fim, 1 marcador de
+  markup (validação do mesmo leitor 10 de 10); o passo seguinte vem sem erro em 14 de 29 das fragmentadas e em 3
+  de 11 dos rótulos (7 migram para outra família).
+  **Decisão (14/11, `decisoes.md`):** o A vira ajuste de regra em `U_tipo_retorno`; o C vai à leitura dos 75
+  (hipótese: `e_texto` não pega rótulo curto nem texto em inglês). O contrato das ferramentas do A e a barra do B
+  esperam a base 2.
+  **Leitura do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor):** reproduz 75 erros, 54 execuções, 9 meses,
+  10 papéis. A hipótese de que a regra `e_texto` deixava passar texto em português **caiu**: só 13 de 75 (17%) são
+  texto ou rótulo (o corte era um terço), 0 parecem português e 12 parecem inglês; relaxar a regra pegaria 23 dos 75.
+  Categorias lidas (erros · tokens · passo seguinte): outra linguagem 20 · 0,75 mi · 14 mudam de erro; marcador de
+  formato 20 · 0,92 mi · **14 repetem o mesmo erro**; deslize de Python 17 · 1,15 mi · 11 acertam; texto ou rótulo 13 ·
+  0,24 mi · 8 mudam de erro; aspas ou fora do ASCII 4 · 0,29 mi; código cortado 1. Traços do script: erro na 1ª linha do
+  bloco em 37, bloco com marcador de formato em 20, repetição na mesma execução em 21. Qualidade: o mesmo leitor releu
+  15 casos às cegas e concordou em 14 (não é segundo leitor); 17 casos com confiança baixa; o traço "termina no meio"
+  (20) não bate com o "código cortado" lido (1). **Teste no harness** (código sintético, `smolagents` 1.20.0, 1.22.0,
+  1.24.0 e 1.26.0): cerca markdown, rótulo (`Thought:`, `Resposta:`) ou SQL dentro de `<code>` ficam no código
+  executado e dão `invalid syntax` na linha 1; a cerca **sem** `<code>` o harness remove. **Proposta (decisão 1,
+  pendente):** juntar pela cura (doc 09 §3, "causas diferentes, mesma cura") marcador, outra linguagem e texto ou
+  rótulo (até 53 erros, 1,9 mi de tokens, 57%) estendendo `U_texto_solto` ("o bloco de código contém só Python");
+  deslize de Python, aspas e cortado (22) ficam no resíduo.
+  **Leitura do contrato (base 2, CalculoTrabalhista, 16/11):** os 4 prompts distintos do papel não têm instrução
+  específica do papel, e o aviso de que o retorno é texto está em 0. Dos 78 erros do A atribuídos a uma ferramenta: 50
+  (64%) a ferramenta **não declara o tipo de retorno** (`calcular_correcao_monetaria` 43, `corrigir_e_salvar` 4, três
+  com 1), 15 declaram `str` com descrição incoerente (`calculadora_de_pedido` 7, `validador_calculo` 7,
+  `calculo_vale_alimentacao_refeicao` 1), 7 declaram `str` coerente (`metadados_processo` 5, `calculo_horas_extras` 2) e 6
+  declaram `float_ou_int` e devolveram texto (`indice_correcao_monetaria`). Base 1 × base 2: 9 de 11 ferramentas
+  iguais; `calcular_correcao_monetaria` só existe na base 2 (e só em agosto: 16 chamadas, "string com ponto" em 16 de
+  16); 3 ferramentas não estão em nenhuma das duas. As declarações `Returns:` não mudam entre os meses, mas o hash do
+  bloco de ferramentas muda (fev para jun, jun para ago): o "sem mudança em agosto" do agente vale só para a
+  declaração. A base 2 cobre jan, fev, jun e ago. Pontas soltas: o formato (base 2 "com ponto" 16 de 16 × base 3
+  "com símbolo de moeda" 23 de 43) e a estabilidade do formato (quase tudo "não deu para ver"). **B:** o prompt do
+  ContestacaoCivel (25 prompts) instrui `\n` e traz 50 exemplos de sequência de escape, 450 de caminho e 0 de regex; o
+  erro é raro (40 em 30,9 mil passos, 0,13%) e 7 dos 40 são regex: presença da instrução, não prova da causa.
+  **Proposta (decisão 2, pendente):** destino memória para o A, com a pista de harness (declarar o tipo de retorno e
+  corrigir as descrições incoerentes). **Próximo:** uma rodada para cada decisão
+  (as duas já rodaram, abaixo), com o critério de decisão fixado antes dos números (memória × harness × resíduo).
+  **Segunda rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor):** derruba a regra por traços e o plano
+  de estender `U_texto_solto`. Erro na 1ª linha do bloco: 37 de 75 (marcador 17 de 20, deslize 15 de 17, outra linguagem 3
+  de 20, texto ou rótulo 0 de 13, aspas 2 de 4, cortado 0 de 1). Bloco com marcador de formato: 20 de 20 do marcador e 0
+  das demais. Os 20 do marcador: **0 cercas markdown, 0 rótulos tipo `Thought:`, 4 tags e 16 "outro"**; a posição é o
+  **meio** do bloco em 20 de 20 (nunca a 1ª linha). Os 20 de outra linguagem: HTML ou XML 9, SQL 3, outra 8; em 0 deles a
+  1ª linha mostra a linguagem. "Termina no meio" (20): outra linguagem 15, texto ou rótulo 3, marcador 1, cortado 1 (é
+  um traço do bloco, não a categoria "código cortado"). **Regra v0** (1ª linha: cerca markdown, rótulo de 1 a 2
+  palavras com dois-pontos ou palavra SQL inicial): pega **2 dos 53** e 0 dos 22 restantes (zero falso positivo
+  trivial, porque quase não pega nada). Dos 14 marcadores que repetem a mesma família, **13 repetem o mesmo marcador**
+  no passo seguinte. **Leitura:** o teste sintético no harness (cerca, rótulo ou SQL **no começo** do `<code>` dão
+  `invalid syntax` na linha 1) mostra que o mecanismo existe, mas **não é o que aconteceu nos casos reais**, porque o
+  marcador está no meio do bloco; a regra por 1ª linha não separa; e a cura comum que sustentava juntar os 53 não está
+  provada. **Decisão 1 (Rafael, 16/11): mais uma leitura (opção b)**, para dizer **o que** está no meio do bloco
+  (hipóteses: H-a um texto longo em HTML ou markdown dentro de um literal de string mal fechado; H-b uma tag solta fora
+  de string; H-c outra), por script, com a classe da linha apontada, se ela está dentro de uma string aberta, o literal
+  longo antes dela e a repetição no passo seguinte (resultado abaixo).
+  **Rodada do contrato na base 2 (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi apagado):**
+  (1) a `calcular_correcao_monetaria` devolve, nas 16 chamadas bem-sucedidas (todas em agosto), "só dígitos e um ponto
+  decimal", sem "R$"; mas o formato vem do que foi **impresso** no log, e um número e um texto impressos são iguais;
+  a base 3 achou "R$" em 23 dos 43 erros da mesma ferramenta (não explicado). (2) `validador_calculo` e
+  `metadados_processo` têm sempre a mesma estrutura; a `calculadora_de_pedido` "varia" nas 47 chamadas, mas é um texto
+  livre ("o valor calculado e o racional") e "outra" quer dizer "o script não reconheceu": **não é evidência de
+  contrato instável**. (3) taxa de erro de valor em texto por chamada na base 2: zero em cerca de 115 chamadas (45 em
+  agosto; 16 da ferramenta principal): **sem valor**, a amostra é pequena (0 de 16 é compatível com uma taxa de até
+  uns 19%; com 1% por passo, esperaria-se menos de 1 erro). (4) sem erro, o agente quase nunca converte o valor (1 em
+  cerca de 74 chamadas) e só imprime na maioria; 21 usam o valor direto numa conta sem erro (classificador
+  heurístico). (5) o bloco de ferramentas muda por **troca de ferramentas**, não por mudança de descrição: jan e fev
+  para jun entram `buscar_salario_legado`, `calculo_correcoes_monetarias`, `formatar_calculo_trabalhista` e
+  `gera_boxplot_calculo_trabalhista` e saem `calculo_PLRPR` e `envia_excel_para_usuario`; jun para ago entram
+  `buscar_salario` e `calcular_correcao_monetaria` e saem `buscar_salario_legado` e `indice_correcao_monetaria` (a
+  ferramenta de 43 erros **substitui** outra); nenhuma das 11 ferramentas do A mudou de descrição. (6) a base 2 tem 9
+  meses (dez/2025 a ago/2026, de 4 a 454 execuções por mês); março e julho existem. (7) `invalid syntax` na base 2: 14
+  erros, todos em fev/2026 e no CalculoCivel; a 1ª linha é Python em 13 e rótulo em 1; o trace **guarda a resposta crua
+  antes do parser** (14 de 14) e em 0 há cerca, rótulo ou SQL dentro do `<code>`: **não replica** o padrão da base 3
+  (75 erros, 10 papéis, 9 meses). **Correções registradas (16/11):** (a) o "64% sem tipo de retorno declarado" é o
+  resultado de um script que só conhecia `object`, `str`, `float_ou_int` e `dict`: o `smolagents` aceita `string`,
+  `number`, `object`, `any` e outros (`def f(x: string) -> string:`); as 5 ferramentas em "outro" (a principal e
+  `corrigir_e_salvar`, `envia_excel_para_usuario`, `corrigir_pela_selic_ajustada`, `gera_boxplot_calculo`) podem ser
+  `string` (contrato claro) — **não provado**; (b) "formas diferentes" e "nasceu sem contrato" eram leituras minhas
+  sem evidência e foram retiradas; (c) a evidência sólida é a mensagem do Python (`'str'`, `__round__`), e a
+  recuperação do agente (84 de 86: 68 convertem, 16 inspecionam o tipo antes) é leitura de um leitor.
+  **Critério do Rafael (16/11) para o destino do A:** o contrato diz texto com clareza e o agente trata como número →
+  **memória** (unidade `U_tipo_retorno`), e consertar a ferramenta não faz sentido; contrato **ambíguo** ou
+  contraditório sobre o tipo, ou ferramenta que devolve tipo diferente do declarado → sinal de **harness**; o agente
+  erra, entende e se recupera → evidência forte de memória. **Aplicação aos 86:** contrato diz texto sem ambiguidade 15
+  (`metadados_processo` 5, `calculo_horas_extras` 2, `validador_calculo` 7, `calculo_vale_alimentacao_refeicao` 1);
+  ambíguo sobre o tipo 7 (`calculadora_de_pedido`: "valor calculado" × `Returns: str`, lido na base 1); declara
+  número e devolveu texto 6 (`indice_correcao_monetaria`, só em janeiro, não verificado); **dependem do tipo exato**
+  50 (a principal 43 e 3 ferramentas com 6 erros, ausentes do prompt da base 2); não vêm de ferramenta 8 (arquivo ou
+  JSON 5, escrito pelo agente 2, outro 1). Fora da regra: uma unidade tem um destino só (os 13 de possível harness
+  ficam na memória, com a pista por ferramenta); escopo da regra (exigir `'str'` na mensagem; exigir que o valor tenha
+  vindo de ferramenta, pela função que já rastreia a origem da variável) — o filtro de origem foi depois descartado
+  (abaixo). **Checagem do tipo exato (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi
+  apagado):** a assinatura é `-> object` em todas as ferramentas presentes no prompt, nas bases 1 e 2. A primeira
+  versão marcou a linha de retorno como "não diz" porque o tipo fica na linha de baixo do `Returns:`; refeita lendo
+  o primeiro token da linha seguinte, bate com a base 1 lida diretamente: `Returns: str` em `calculadora_de_pedido`,
+  `validador_calculo`, `metadados_processo`, `calculo_horas_extras` e `calculo_vale_alimentacao_refeicao`;
+  **`Returns: float` em `indice_correcao_monetaria` e em `calcular_correcao_monetaria`** (só na base 2); sem linha
+  de retorno em `envia_excel_para_usuario`; `corrigir_e_salvar`, `corrigir_pela_selic_ajustada` e
+  `gera_boxplot_calculo` não estão no prompt das bases 1 e 2 nem como chamada na base 2 (há uma
+  `gera_boxplot_calculo_trabalhista`). A descrição chama o resultado de "valor" em `calculadora_de_pedido`,
+  `calcular_correcao_monetaria` e `calculo_horas_extras`. **Quem transformou o número em texto** (base 3, por
+  script, nos 49 erros das duas ferramentas que declaram `float`): a variável da conta veio **direto do retorno da
+  ferramenta** em 48 (`calcular_correcao_monetaria` 42: mar 2, jul 8, ago 32; `indice_correcao_monetaria` 6: jan 4,
+  fev 2), de um campo do retorno em 0, **passou por formatação do agente em 0**, não deu para ver em 1; "R$" aparece
+  em outra parte do código em 18 dos 48. **Decisão 2 (16/11, `decisoes.md`):** 49 para `H_contrato_ferramenta`
+  (harness: o contrato diz `float` e a ferramenta entrega texto) e 37 para `U_tipo_retorno` (memória: o contrato
+  diz `str` no docstring e o agente não converteu, 22; retorno sem `Returns:` ou de contrato desconhecido, 7; o
+  valor veio de arquivo, JSON ou do próprio agente, 8). Interpretação de cada Ajuste antes do código.
+  **Ajuste 39 (implementado, 16/11; livro-razão):** texto numa conta no fim do `submecanismo()` (só alcança o resíduo):
+  `H_contrato_ferramenta` (`tipo_de_retorno_descumprido`) quando a variável veio de uma ferramenta cujo contrato
+  declara número — no prompt (bases 1 e 2) ou, na base 3, em `CONTRATOS_DE_RETORNO_CONHECIDOS` (as duas ferramentas de
+  correção monetária, provisório) —, `U_tipo_retorno` no resto. Ensaio na base 1: 0 de 498 mudam. **Rodada
+  `c1e1b338fe6b9cd4` (16–17/11):** só os erros de texto numa conta mudaram (resumo do manifesto igual, as 11 famílias
+  com os mesmos erros); `H_contrato_ferramenta` +46 (16 → 62), `U_tipo_retorno` +37; resíduo **420 → 337** (94
+  padrões, 16 recorrentes); encontro: 0 divergências; re-entrada do sandbox: entraram 47, mudaram de parte 0.
+  Depois: o Ajuste dos 17 do `invalid syntax` (`H_bloco_code`).
+  **Ajuste 40 (implementado, 17/11; livro-razão):** todo erro de sintaxe com `<code>`/`</code>` no código vai para
+  `H_bloco_code` (`bloco_mal_fechado`), nas bases 1 e 3 (decisão de 17/11: na base 1 o mesmo erro estava em
+  `U_texto_solto`). Ensaio na base 1: 23 de 498 mudam (`U_texto_solto` 33 → 10, `H_bloco_code` 33 → 56); a regex do
+  harness reproduzida na resposta do modelo dá o código que falhou em 23 de 23. **Rodada `dbd40c0f4d3604b1` (18/11):**
+  resumo do manifesto igual, as 11 famílias com os mesmos erros; 195 erros entram em `H_bloco_code` (4.592 → 4.787):
+  159 de `U_texto_solto` (**190 → 31**, segue candidata), 13 de `U_texto_literal` (152 → 139) e 23 do resíduo; resíduo
+  **337 → 314** (92 padrões, 16 recorrentes; `codigo_mal_escrito` 126 → 103); encontro: 0 divergências.
+  **Próxima leitura (aprovada pelo Rafael, 18/11):** indexação recusada (34), barra invertida com f-string (38) e construtor
+  de DataFrame (19). **Critério fixado antes dos resultados, por subgrupo (um grupo pode ter vários destinos):** unidade que
+  já existe, se um sinal observável por script reproduz a leitura em pelo menos 80% do subgrupo; harness, se o contrato promete
+  um tipo e a ferramenta entrega outro, se o contrato é ambíguo ou se o agente repete sem se recuperar; memória nova, se o
+  subgrupo tem 3 execuções, 2 meses e uma cura só; reforço, só se o prompt traz a instrução; sem sinal observável, fica no
+  resíduo com o motivo. **Os outros 124 erros** (fora esses 91 e os 55 do `invalid syntax`) não têm destino decidido: os
+  padrões deles serão comparados com as unidades que já existem.
+  **Terceira rodada do `invalid syntax` (ambiente, 16/11, `[assistido]`, um leitor; o prompt, de uso único, foi
+  apagado):** nos 53 do grupo-alvo (marcador 20, outra linguagem 20, texto ou rótulo 13), a linha do erro começa com
+  letra em 43, tem uma tag no meio em 5 e começa com símbolo ou fecha-tag em 5; as tags achadas são todas `code` (6).
+  **H-a caiu:** a linha está dentro de uma string aberta em 1 dos 53 e em 1 dos 22 de controle (não separa). Texto
+  longo antes da linha: 9 de 53. **O bloco contém `<code>` ou `</code>` como texto em 17 dos 53** (marcador 5, outra
+  linguagem 9, texto ou rótulo 3; o controle não foi contado neste traço); `final_answer` depois da linha do erro em
+  13. Dos 13 que repetem o marcador, 12 repetem a mesma classe de linha no passo seguinte. A reclassificação dos 24
+  sem nome só deu classes de forma ("começa com letra, fora de string"), não causa. **Divergência entre rodadas:** a
+  posição "1ª linha" deu marcador 17 e outra linguagem 3 de 20 na rodada 2, e 8 e 14 na rodada 3 — os traços de
+  posição não são confiáveis. **Teste no harness** (`smolagents` 1.26.0, código sintético): o modelo esquece de fechar
+  um bloco e abre outro (`<code>` … texto … `<code>` … `</code>`); o harness pega do primeiro `<code>` ao primeiro
+  `</code>` e cola tudo: `invalid syntax` na linha de texto do meio, fora de string, com a tag no código extraído e o
+  `final_answer` depois — o retrato medido; com os dois blocos fechados, roda. **Decisão 1 (16/11, `decisoes.md`):**
+  os 17 com a tag no código viram candidatos a um 7º mecanismo de `H_bloco_code` ("bloco mal fechado", harness;
+  regra sem leitura: o código que falhou contém `<code>` ou `</code>`); os outros 58 ficam no resíduo com motivo.
+  Antes do Ajuste, a interpretação conta a regra nos 75 e nos erros das outras unidades (falso positivo).
+  **Fechado em 18/11:** o resíduo fica em **314 erros** (270 de causa não identificada e 44 de sintoma não reconhecido;
+  rodada `dbd40c0f4d3604b1`, 92 padrões, 16 recorrentes). Os 215 lidos ficam no resíduo, sem Ajuste: nenhuma categoria teve
+  sinal observável e a releitura às cegas repetiu a categoria em 4 de 15 (Parte A) e 2 de 15 (Parte B). Hipóteses abertas:
+  lista fora do tamanho e "Número inválido" → [`decisoes.md`](../../decisoes.md) (18/11).
 - [x] **#55** **O degrau 2 e as funções embutidas** — fechado em 21/10 (Ajuste 28). O `conferir_memorias.py` lê, em
     `--funcoes`, as funções embutidas testadas uma a uma no interpretador (`pipeline/validacao/historico/testar_sandbox_funcoes.py`
     → `analysis/registros/funcoes_sandbox.json`; smolagents 1.26.0: 111 funcionam, 40 barradas); a memória E passa na

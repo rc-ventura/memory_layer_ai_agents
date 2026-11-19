@@ -375,7 +375,7 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 1 | **Texto longo nunca dentro de literal de string** — montar em variáveis, depois `final_answer` | experiencial · estratégia | 169 | 182 | 145 | 10 | 5 | 4,00M |
 | 2 | **Retorno das ferramentas de documento é dict** — `r['result'][0]`, nunca `r[0]` | factual · ambiente | 87 | 96 | 87 | 8 | 1 | 2,99M |
 | 3 | **Retorno pode chegar como string** — checar `str` antes de indexar ou `json.loads` | experiencial · estratégia | 42 | 47 | 36 | 9 | 7 | 2,11M |
-| 4 | **Explicação nunca solta no bloco de código** — ⚠️ 90% dos tokens em out/2025 | experiencial · estratégia | 12 | 33 | 12 | 5 | 3 | 1,39M |
+| 4 | **Explicação nunca solta no bloco de código** — até o Ajuste 40 (17/11/2026) tinha 33 erros e o aviso "⚠️ 90% dos tokens em out/2025": os 23 de out/2025 com a tag do bloco no código eram o bloco mal fechado e foram para o protocolo do harness | experiencial · estratégia | 7 | 10 | 7 | 5 | 3 | 0,16M |
 | 5 | **Inventário do sandbox** — builtins e imports proibidos; `json`/`datetime` explícitos; sem `openpyxl` | factual · ambiente | 16 | 16 | 16 | 7 | 5 | 0,87M |
 | 6 | **Ferramentas só aceitam argumento nomeado** — `f(arg=v)`, nunca posicional, e só os nomes da assinatura | factual · ambiente | 25 | 36 | 23 | 11 | 7 | 0,39M |
 | 7 | **`next()` sobre expressão geradora falha no sandbox** — usar `[...][0]` | factual · ambiente | 11 | 13 | 11 | 8 | 2 | 0,34M |
@@ -383,18 +383,20 @@ causa-raiz vem do AgentDebug (arXiv 2509.25370, p. 2 e p. 8); a operacionalizaç
 | 9 | **Após step com erro, o que ele definiria não existe** — limítrofe | experiencial · estratégia | 5 | 5 | 4 | 3 | 2 | 0,21M |
 | 11 | **Não colar retorno impresso de volta no código** — referenciar a variável que guardou o retorno (truncado ou inteiro) e, se a ferramenta pede JSON, converter com `json.dumps(...)`, nunca `str(...)` (lição estendida no Ajuste 12, 04/10, que soma o canal silencioso: 6 → 12 ocorrências); candidata desde 25/09/2026 | experiencial · estratégia | 6 | 6 | 6 | 4 | 2 | 0,09M |
 | — | **Sinal de harness — Campo inexistente no retorno estruturado** (a nº10: `quebra_sigilo` 7×; erro do agente, mas a mineração decidiu `destino = harness` — o prompt declara o mesmo nome de campo para o retorno e para o JSON final, 9/21 respostas com campo inválido, §6.2 do `07`) | factual · ambiente | 10 | 10 | 10 | 6 | 2 | 0,19M |
-| — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)**; mecanismos e destinos em `11-relatorio-protocolo-harness.md` | não-memória* | 33 | 33 | 24 | 4 | 4 | 0,81M |
+| — | **Protocolo do harness** — não-memória na base 1; **gatilho de reabertura acionado na base 2 (22/09/2026)**; mecanismos e destinos em `11-relatorio-protocolo-harness.md`; com o bloco mal fechado (23 erros, Ajuste 40) | não-memória* | 33 | 56 | 24 | 4 | 4 | 2,04M |
 | — | `AgentGenerationError` + HTTP 422 → **retry com backoff**, não memória | não-memória | 7 | 7 | 7 | 3 | 2 | 0,12M |
 | — | **Causa não identificada** (nenhuma regra de causa reconheceu o erro) — revisar, prioridade | — | 7 | 7 | 7 | 5 | 2 | 0,10M |
 | — | **Sintoma não reconhecido** (erro que a taxonomia não conhece) — revisar, baixa prioridade | — | 1 | 1 | 1 | 1 | 1 | 0,01M |
 
-As 10 candidatas cobrem 440 dos 498 erros (88%) e 91% dos tokens em steps com erro. Sensibilidade: com ≥5
+As 10 candidatas cobrem 417 dos 498 erros (84%) e 82% dos tokens em steps com erro. Sensibilidade: com ≥5
 execuções e ≥3 meses, só a nº 9 deixa de passar. *(Até 25/09/2026 eram 10 candidatas e 447 erros: a nº 11 estava
 "fora, sem recorrência", com 2 erros em 1 mês, porque a regra só reconhecia o retorno colado quando o print vinha
 truncado; reconhecendo o inteiro — Ajuste 2.2, [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md) — 4 erros
 saíram da nº 1, de 186 para 182, e a nº 11 passou a 6 erros em 4 meses. No Ajuste 3, o erro do `final_answer`
 com argumento inexistente saiu do resíduo para a nº 6: 35 → 36 erros, 449 → 450 cobertos. No Ajuste 5 (28/09), a
-nº10 saiu das candidatas para "sinal de harness", a decisão da mineração: 11 → 10 candidatas, 450 → 440 cobertos.)*
+nº10 saiu das candidatas para "sinal de harness", a decisão da mineração: 11 → 10 candidatas, 450 → 440 cobertos. No
+Ajuste 40 (17/11/2026), os 23 erros com a tag do bloco no código saíram da nº 4 para o protocolo do harness: 440 → 417
+cobertos, 91% → 82% dos tokens; a nº 4 continua candidata, com 7 execuções em 5 meses.)*
 
 **O que a triagem mudou** (detalhe em [`01-racionais.md`](01-racionais.md) §7 Passos 6–7):
 

@@ -80,10 +80,10 @@ de relance, da esquerda para a direita:
    fecham `U_sandbox · 17`;
 3. **decide** — a última coluna nomeia o destino de cada unidade (1:1, sem
    nova fusão): `MEM <título>` para as 10 unidades que viram candidata a
-   memória (440 erros, 88%), `SINAL-HARNESS <título>` para a 1 que é erro do agente
+   memória (417 erros, 84%), `SINAL-HARNESS <título>` para a 1 que é erro do agente
    mas cujo conserto a mineração pôs no ambiente (a nº10, 10 erros — Ajuste 5 de
    `pipeline-entre-bases.md`), `HARNESS <título>` para as 2 que apontam
-   correção de harness/infra (40 erros) e `REVISAR <título>` para os 2 baldes
+   correção de harness/infra (63 erros) e `REVISAR <título>` para os 2 baldes
    de resíduo (8 erros — a fila de trabalho da taxonomia: falta escrever a
    regra de causa/sintoma). `FORA <motivo>` nomearia uma unidade descartada por
    falta de recorrência; a base 1 não tem nenhuma desde 25/09/2026 (a que
@@ -95,7 +95,7 @@ de relance, da esquerda para a direita:
    que a triagem já decide.
 
 Ressalva: a figura conta **erros**; a `triagem()` decide sobre **ocorrências**
-(437, dedup de cascata) — os thresholds são aplicados lá, não aqui.
+(432, dedup de cascata) — os thresholds são aplicados lá, não aqui.
 
 ![Sankey da genealogia dos 498 erros: família → assinatura → mecanismo → unidade → destino](../assets/09-genealogia-sankey.png)
 
@@ -304,7 +304,10 @@ conta); os destinos dela vêm da triagem do visível, que dá as mesmas decisõe
 
 Duas medidas convivem e não se confundem: **contagem de erros** (frequência —
 "o que mais ocorre") × **soma de tokens** (custo — "o que mais dói").
-`U_texto_solto`: 33 erros (frequência média) mas 1,39M tokens (3º mais caro).
+`U_arg_nomeado` tem 36 erros e 0,39M tokens; `U_sandbox` tem menos da metade dos erros (17) e mais que o dobro dos
+tokens (0,88M). Até o Ajuste 40 (17/11/2026), o exemplo aqui era `U_texto_solto`: 33 erros e 1,39M tokens, o 3º mais
+caro. 23 desses erros eram o bloco mal fechado do protocolo do harness, e com eles saíram 1,23M tokens. O custo alto
+vinha das cascatas de out/2025.
 
 ## 8. Terminologia fixada
 

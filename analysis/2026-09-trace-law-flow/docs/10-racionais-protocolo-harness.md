@@ -186,7 +186,8 @@ entra aqui.
   - o erro que sai é de sintaxe ou "variável não definida" (`name 'e' is not defined`).
 - **O que ele esconde:** os rótulos que o pipeline dá hoje — `U_texto_solto`, `U_estado_perdido`, `U_nome_inventado`,
   `X_causa_nao_identificada` — tratam como erro de código do agente o que é o **harness executando narração**. Contar
-  só o `H_bloco_code` subestima o alcance desta família.
+  só o `H_bloco_code` subestima o alcance desta família. Desde o Ajuste 40, o erro de sintaxe com a tag no código já vai
+  para o `H_bloco_code` (o Status, abaixo).
 - **Gatilho:** um erro de protocolo anterior (o LLM tenta explicar o formato e repete os delimitadores) e o parser que
   junta todos os blocos achados.
 - **Destino (proposta):** **sinal de harness** — o parser deveria rejeitar delimitadores no pensamento ou blocos
@@ -195,6 +196,14 @@ entra aqui.
   fica **candidata, não promovida**: um caso só.
 - **Status:** 1 execução (base 2, CalculoCivel, a do erro crítico; `11` §2.5), 12 steps. A regex reproduzida bate com o
   `code_action` nos 12 (conferido no ambiente da base). Frequência nas duas bases: a medir.
+- **A primeira regra automática (Ajuste 40, 17/11/2026),** para a face em que **a tag chega ao código**: um erro de
+  sintaxe com `<code>` ou `</code>` no `code_action` é o submecanismo `bloco_mal_fechado`, na unidade `H_bloco_code`. O
+  agente abre um bloco e não fecha; o harness junta os trechos de cada `<code>` até o `</code>` seguinte, e o trecho
+  aberto leva a narração e a tag do bloco seguinte. **Base 1:** 23 erros, 5 execuções, out/2025, `managerAgent`. Todos
+  estavam em `U_texto_solto`. A regex reproduzida na resposta do modelo dá o código que falhou em 23 de 23
+  **[conferido]**, e cada erro vem logo depois de outro: 5 do "resposta sem bloco de código" e 17 de outro bloco mal
+  fechado. **Base 3:** 17 no resíduo da leitura de 16/11. O resto do mecanismo continua sem regra e com os rótulos de
+  antes: a narração sem a tag no código e o "variável não definida" (`name 'e'`).
 
 ## 5 · Quem corrige, e por que (quase) nunca é memória
 

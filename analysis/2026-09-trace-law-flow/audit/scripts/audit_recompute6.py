@@ -6,7 +6,7 @@ Audita o que a auditoria de 08/09 ainda não cobria (foi criado em 15/09):
      prosa em docs/01-racionais.md §7 Passo 2 (não copiada do notebook), comparada
      erro a erro contra pipeline/resultados/erros_mecanismo.csv;
   b) a regra de cascata (erros consecutivos do mesmo papel na mesma execução)
-     e o agregado 498 erros → 437 ocorrências;
+     e o agregado 498 erros → 432 ocorrências (437 até o Ajuste 40, 17/11/2026);
   c) a tabela de unidades (14 linhas: ocorrências, erros, execuções, meses, papéis,
      tokens) vs. docs/02-relatorio-achados.md §6 e o CSV candidatos_memoria.csv;
   d) a cobertura 447/498 (90%) e 92% dos tokens;
@@ -79,7 +79,7 @@ def retorno_colado(l, m, code, obs_ant):
         if linhas[j].lstrip().startswith("final_answer("): return False
     return True
 
-def submecanismo_spec(m, code="", obs_ant="", sysp=""):
+def submecanismo_spec(m, code="", obs_ant="", sysp="", codigos=()):
     # Escrito a partir do §7 Passo 2 dos racionais (prosa), mesma ordem descrita lá.
     if "regex pattern" in m: return "harness_bloco_code"
     if "AgentGenerationError" in m or "internally hosted" in m or "Error code: 422" in m or "UnprocessableEntity" in m:
@@ -100,6 +100,9 @@ def submecanismo_spec(m, code="", obs_ant="", sysp=""):
         l = linha_rejeitada(m, code)
         if re.search(r"truncad", l, re.I): return "repr_colado"
         if retorno_colado(l, m, code, obs_ant): return "repr_colado"
+        # a marca de abertura ou de fechamento do bloco ficou dentro do código extraído: dois blocos colados pelo
+        # harness (Ajuste 40)
+        if "<code>" in (code or "") or "</code>" in (code or ""): return "bloco_mal_fechado"
         if "unterminated" in m or "forgot a comma" in m or "never closed" in m or abre_string(l):
             return "texto_em_literal"
         if e_texto_pt(l): return "texto_solto_no_codigo"
@@ -123,7 +126,56 @@ def submecanismo_spec(m, code="", obs_ant="", sysp=""):
     if f and not hasattr(builtins, f.group(1)): return "nome_nao_definido"
     if f or re.search(r"Import (of|from) ", m) or "ModuleNotFound" in m or "Forbidden" in m: return "inventario_sandbox"
     if v: return "nome_nao_definido"
+    # Ajuste 35 (livro-razão): a conexão com outro agente/LLM caiu dentro do código — por último, só o que sobra
+    if re.search(r"\bAPI(Connection|Status)Error\b", m): return "conexao_llm_aninhada"
+    # Ajuste 36: a ferramenta saiu do próprio contrato (retorno ou erro) — por último; Traceback antes da ausência
+    if "Invalid structured content returned by tool" in m: return "retorno_fora_do_contrato"
+    if "RecoverableToolError" in m and "Traceback" in m: return "erro_interno_ferramenta"
+    if "RecoverableToolError" in m and re.search(r"nenhum.*encontrad", m, re.I | re.S): return "ausencia_como_excecao"
+    # Ajuste 37: atribuição a nome de ferramenta (ou de função embutida) barrada pelo interpretador — por último
+    if "Cannot assign to name '" in m and "would erase the existing tool" in m: return "nome_de_ferramenta_atribuido"
+    # Ajuste 38: Python válido que o interpretador não implementa ({**x}, :=, global, nonlocal, raise sozinho) — por último
+    if re.search(r"InterpreterError: \S+ is not supported", m): return "sintaxe_nao_suportada"
+    # Ajuste 39: texto numa conta (soma, round ou formato de número com 'str') — por último. Harness se a variável da linha
+    # que falhou saiu de uma ferramenta que o system prompt declara devolver número; senão, memória (tipo de retorno)
+    if texto_em_conta(m):
+        return "tipo_de_retorno_descumprido" if veio_de_ferramenta_numerica(m, codigos, sysp) else "tipo_real_do_retorno"
     return "causa_sem_regra"
+
+
+def texto_em_conta(m):
+    """Escrita à parte da regra do pipeline: um 'str' de um lado e um número do outro, num operador de conta; ou a
+    concatenação de texto com número; ou round/formato numérico aplicado a texto."""
+    for op in re.findall(r"unsupported operand type\(s\) for ([^:]+): '(\w+)' and '(\w+)'", m):
+        simbolo, a, b = op
+        if simbolo.rstrip("=") in {"+", "-", "*", "/", "//", "%", "**"} and {a, b} & {"str"} and ({a, b} - {"str"}) <= {"int", "float", "Decimal"} and a != b:
+            return True
+    if re.search(r'can only concatenate str \(not "(int|float)"\) to str', m): return True
+    if "type str doesn't define __round__ method" in m: return True
+    if re.search(r"Unknown format code '.' for object of type 'str'", m): return True
+    return "must be real number, not str" in m
+
+
+def veio_de_ferramenta_numerica(m, codigos, sysp):
+    """A linha que falhou usa uma variável que alguma linha `variavel = ferramenta(` dos códigos do papel atribuiu, e o
+    stub dessa ferramenta no system prompt diz número na assinatura ou no Returns (o tipo pode vir na linha de baixo). Sem o
+    stub no prompt, os dois contratos lidos no prompt da base 2 (decisões de 16/11): correção monetária devolve float."""
+    lidos_na_base2 = {"calcular_correcao_monetaria", "indice_correcao_monetaria"}
+    lf = re.search(r"failed at line '(.*?)' due to", m, re.S)
+    if not lf: return False
+    usadas = set(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", lf.group(1)))
+    numero = {"float", "int", "number", "integer", "decimal"}
+    for cod in codigos:
+        for linha in str(cod or "").splitlines():
+            a = re.match(r"\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([A-Za-z_][A-Za-z0-9_]*)\s*\(", linha)
+            if not a or a.group(1) not in usadas: continue
+            stub = re.search(r"def " + re.escape(a.group(2)) + r"\(.*?\) -> (\w+):\s*\"\"\"(.*?)\"\"\"", sysp or "", re.S)
+            if not stub:
+                if a.group(2) in lidos_na_base2: return True
+                continue
+            ret = re.search(r"Returns?:\s*(\w+)", stub.group(2))
+            if stub.group(1).lower() in numero or (ret and ret.group(1).lower() in numero): return True
+    return False
 
 SUB2UNI = {
     "dict_indexado_por_posicao":"U_contrato_dict", "dict_iterado_como_lista":"U_contrato_dict",
@@ -132,8 +184,12 @@ SUB2UNI = {
     "argumento_posicional":"U_arg_nomeado", "argumento_inexistente":"U_arg_nomeado", "inventario_sandbox":"U_sandbox", "modulo_sem_import":"U_sandbox",
     "next_sobre_gerador":"U_next_gerador", "nome_de_step_que_falhou":"U_estado_perdido",
     "nome_nunca_definido":"U_nome_inventado", "repr_colado":"U_repr_colado",
-    "infra_llm":"H_infra_llm", "timeout_ferramenta":"H_timeout_ferramenta",
-    "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "resultado_bruto_na_resposta":"U_resultado_bruto", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code",
+    "infra_llm":"H_infra_llm", "conexao_llm_aninhada":"H_infra_llm", "timeout_ferramenta":"H_timeout_ferramenta",
+    "retorno_fora_do_contrato":"H_contrato_ferramenta", "erro_interno_ferramenta":"H_contrato_ferramenta",
+    "ausencia_como_excecao":"H_contrato_ferramenta",
+    "nome_de_ferramenta_atribuido":"U_nome_ferramenta_como_variavel",
+    "sintaxe_nao_suportada":"U_sandbox", "tipo_de_retorno_descumprido":"H_contrato_ferramenta",
+    "timeout_interpretador":"H_timeout_ferramenta", "codigo_lento":"U_codigo_lento", "resultado_bruto_na_resposta":"U_resultado_bruto", "limite_de_passos":"C_limite_passos", "harness_bloco_code":"H_bloco_code", "bloco_mal_fechado":"H_bloco_code",
     "codigo_mal_escrito":"X_causa_nao_identificada", "causa_sem_regra":"X_causa_nao_identificada",
     "sintoma_nao_reconhecido":"X_sintoma_nao_reconhecido",
 }
@@ -161,6 +217,7 @@ with abrir_trace(TRACE) as rdr:
             if not isinstance(stps, list): continue
             acts = [s for s in stps if isinstance(s, dict) and s.get("__class__")=="ActionStep"]
             obs_ant = ""
+            codigos_ant = []
             for i, st in enumerate(acts):
                 tu = st.get("token_usage") or {}
                 tt = tu.get("total_tokens") or 0
@@ -179,8 +236,9 @@ with abrir_trace(TRACE) as rdr:
                 e = st.get("error")
                 if e:
                     errors.append(dict(eid=eid, role=role, idx=i, em=str(e.get("message") or ""), mes=mes, tok=tt,
-                                       code=code, obs_ant=obs_ant, sysp=sysp))
+                                       code=code, obs_ant=obs_ant, sysp=sysp, codigos=codigos_ant + [code]))
                 obs_ant += str(st.get("observations") or "")
+                codigos_ant.append(code)
 
 # --------------------------------------------- comparação erro-a-erro com o CSV
 csv_rows = list(csv.DictReader(open(EM_CSV, encoding="utf-8")))
@@ -211,13 +269,19 @@ def classify_sig_local(m):
     if 'TypeError' in m: return 'tipo'
     if 'ValueError' in m: return 'valor'
     if 'IndexError' in m: return 'ret_vazio'
+    if re.search(r'\bAPI(Connection|Status)Error\b', m): return 'conexao_llm'   # Ajuste 35
+    if 'Invalid structured content returned by tool' in m: return 'ferramenta_fora_esquema'   # Ajuste 36
+    if 'RecoverableToolError' in m and 'Traceback' in m: return 'ferramenta_traceback'
+    if 'RecoverableToolError' in m and re.search(r'nenhum.*encontrad', m, re.I | re.S): return 'ferramenta_ausencia'
+    if "Cannot assign to name '" in m and 'would erase the existing tool' in m: return 'nome_ferramenta_variavel'   # Ajuste 37
+    if re.search(r'InterpreterError: \S+ is not supported', m): return 'sintaxe_nao_suportada'   # Ajuste 38
     return 'NC'
 
 csv_map = {(r["exec_id"], r["role"], int(r["idx"])): r for r in csv_rows}
 mine_map = {}
 diffs = []
 for e in errors:
-    sub = submecanismo_spec(e["em"], e["code"], e["obs_ant"], e["sysp"])
+    sub = submecanismo_spec(e["em"], e["code"], e["obs_ant"], e["sysp"], e["codigos"])
     # split nome_nao_definido por seguidor (precisa do step anterior — do traj)
     if sub == "nome_nao_definido":
         seq = traj[(e["eid"], e["role"])]
@@ -263,7 +327,7 @@ for k2, rr in by_key.items():
         row["cascata"] = cid
         row["ocorrencia"] = f'{cid}|{row["uni"]}'
 n_oc = len({r["ocorrencia"] for r in rows})
-print(f"B. cascatas={len({r['cascata'] for r in rows})} · ocorrências (cascata×unidade)={n_oc} (esp. 437) · seguidores={sum(1 for r in rows if r['seguidor'])}")
+print(f"B. cascatas={len({r['cascata'] for r in rows})} · ocorrências (cascata×unidade)={n_oc} (esp. 432) · seguidores={sum(1 for r in rows if r['seguidor'])}")
 
 # ------------------------------------------ agregado por unidade vs. relatório/CSV
 agg = defaultdict(lambda: dict(oc=set(), err=0, ex=set(), me=set(), pa=set(), tok=0))
@@ -292,7 +356,7 @@ for u in sorted(agg, key=lambda x: -agg[x]["tok"]):
     mine = (len(a["oc"]), a["err"], len(a["ex"]), len(a["me"]), len(a["pa"]), a["tok"])
     if c.get("decisão") == "candidato": tot_cand_err += a["err"]; tot_cand_tok += a["tok"]
     print(f"   {u:22s} {UNI_NOME.get(u,'')[:44]:46s} oc={mine[0]:3d} err={mine[1]:3d} ex={mine[2]:3d} me={mine[3]} pa={mine[4]} tok={mine[5]:>9,} {ok}")
-print(f"   cobertura candidatas: {tot_cand_err}/498 = {tot_cand_err/498:.1%} (esp. 440/88,4% desde o Ajuste 5) · tokens {tot_cand_tok/tot_tok_err:.1%} (esp. 91%)")
+print(f"   cobertura candidatas: {tot_cand_err}/498 = {tot_cand_err/498:.1%} (esp. 417/83,7% desde o Ajuste 40; +1 é a divergência do Ajuste 27 da parte A) · tokens {tot_cand_tok/tot_tok_err:.1%} (esp. 82%)")
 # destino decidido pela mineração (07 §6.1), escrito à parte: harness → a triagem não a chama de candidata
 DESTINO_SPEC = {"U_contrato_dict": "memória", "U_campo_inexistente": "harness"}
 sinal_csv = sorted(u for u, c in cand_csv.items() if c.get("decisão") == "sinal de harness")
@@ -342,8 +406,8 @@ own = sum(1 for oc, mm in oc_meses.items() if mm and not ("202510" in mm and len
 # ^ ocorrências que não ficam só em out/2025 (o mês do incidente de protocolo) — não impresso; o que vale é o "por mês"
 own_mes = defaultdict(list)
 for oc, mm in oc_meses.items(): own_mes[len(mm)].append(oc)
-print(f"E. 'Explicação solta': {len(dz)}/{len(ru)} erros em out/2025 ({tok_dz/tok_ru:.0%} dos tokens) (esp. 25/33, 90%)")
-print(f"   ocorrências={len(seen_oc)} (esp. 12) · logo após erros de protocolo: {oc_after} (esp. 7)")
+print(f"E. 'Explicação solta': {len(dz)}/{len(ru)} erros em out/2025 ({tok_dz/tok_ru:.0%} dos tokens) (esp. 2/10, 15%; 25/33 e 90% até o Ajuste 40)")
+print(f"   ocorrências={len(seen_oc)} (esp. 7) · logo após erros de protocolo: {oc_after} (esp. 2)")
 mesq = Counter()
 seen=set()
 for r in sorted(ru, key=lambda x:(x["eid"],x["role"],x["idx"])):

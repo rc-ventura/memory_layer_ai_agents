@@ -62,6 +62,7 @@ NOME_ERRO = {
     "ferramenta_nao_declarada": "Import de ferramenta citada e não declarada",
     "repr_colado": "Retorno impresso colado no código",
     "harness_bloco_code": "Resposta sem bloco de código",
+    "bloco_mal_fechado": "Bloco mal fechado (a tag no código)",
     "infra_llm": "Falha do LLM upstream",
     "timeout_ferramenta": "Ferramenta excedeu o timeout",
     "timeout_interpretador": "Ferramenta excedeu o tempo do interpretador",

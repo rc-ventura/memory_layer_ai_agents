@@ -38,6 +38,14 @@ o destino.
 ### L3 · O agente se corrige?
 - **Use primeiro o G4,** o que vem depois (determinístico). Leia só para separar "corrigiu entendendo" de "contornou".
 - **Categorias** (`conserto`): `corrigiu_a_licao` · `contornou` · `repetiu` · `desistiu` · `indeterminado`.
+- **Definições** (sem elas, os dois leitores divergem; a primeira leitura do degrau 3 do sandbox mostrou isso, 09/11):
+  - `corrigiu_a_licao`: no passo seguinte, o agente faz o que a lição diz (por exemplo, importa o módulo que faltava, ou
+    vê o valor com uma função permitida);
+  - `contornou`: o agente segue sem o erro, mas não pelo que a lição diz: tira a chamada, troca de abordagem ou desiste só
+    daquela parte;
+  - `repetiu`: o mesmo erro de novo; `desistiu`: abandona a tarefa ou entrega sem resolver.
+  Escreva essas definições na lista de categorias da leitura **antes** do primeiro leitor, junto com o limite de cada
+  categoria de `causa` da memória (o que conta e o que não conta).
 
 ### L4 · É memória ou sinal de harness?
 - **A regra do `06` §9 Passo 7/8:**

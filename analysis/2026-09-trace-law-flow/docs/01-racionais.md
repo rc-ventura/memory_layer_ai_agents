@@ -730,14 +730,18 @@ rejeitou**. Sem LLM, regras em ordem:
   impresso colado de volta*. (2) A linha tem ≥2 pares `"chave": "texto"`, ≥2 dessas chaves já apareceram impressas
   como chave numa observação anterior do mesmo papel e a instrução não é um `final_answer(` → o mesmo *retorno
   colado*, agora inteiro (sem "truncado"): o dado vira **entrada** de outro código em vez de usar a variável que o
-  guardava; dentro do `final_answer` o texto é o relatório, e cai em *texto dentro de literal*. (3) A linha
+  guardava; dentro do `final_answer` o texto é o relatório, e cai em *texto dentro de literal*. (3) O código do
+  step (`code_action`) contém a tag do bloco, `<code>` ou `</code>` → *bloco mal fechado* (`bloco_mal_fechado`,
+  unidade `H_bloco_code`): o agente abriu um bloco sem fechar e o harness entregou ao interpretador a narração e a
+  tag do bloco seguinte. É o protocolo do harness, não texto do agente (Ajuste 40, 17/11/2026). (4) A linha
   rejeitada abre uma string (`final_answer("...`, `x = """...`, chave de dict entre aspas) ou o erro é
-  `unterminated` / `never closed` / `forgot a comma` → *texto dentro de literal*. (4) A linha é texto em português
+  `unterminated` / `never closed` / `forgot a comma` → *texto dentro de literal*. (5) A linha é texto em português
   ou markdown (começa com `|`, `#`, `**`, `- `, `1)`; tem crase; ou ≥15% das palavras são stopwords do português)
-  → *texto solto no código*. (5) Nenhuma das anteriores → *código Python mal escrito* (`codigo_mal_escrito`).
-  A regra (2) vem antes das palavras-chave da mensagem, que a escondiam (Ajuste 2.2, 25/09/2026). Quando a
+  → *texto solto no código*. (6) Nenhuma das anteriores → *código Python mal escrito* (`codigo_mal_escrito`).
+  A regra (2) vem antes das palavras-chave da mensagem, que a escondiam (Ajuste 2.2, 25/09/2026). A regra (3) vem
+  antes das (4) e (5), que pegavam a linha do meio do bloco colado. Quando a
   mensagem vem no **formato novo** (`... on line N due to: SyntaxError: <motivo>`, numa linha e sem o código —
-  `RoteadorCivel` desde jun/2026), a linha rejeitada é a linha N do `code_action` (Ajuste 2.1). Os dois ajustes
+  `RoteadorCivel` desde jun/2026), a linha rejeitada é a linha N do `code_action` (Ajuste 2.1). Os ajustes
   estão em [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).
 - **Erros de execução.** `KeyError: 0` num dict → *dict indexado por posição*; `string indices must be integers`
   → *string tratada como dict*; `KeyError: 'campo'` → *campo inexistente*; `'list' object is not an iterator` →
@@ -755,37 +759,15 @@ rejeitou**. Sem LLM, regras em ordem:
   steps" → *limite de passos*, que não é causa: é o desfecho de uma cascata (ver Passo 5, erro crítico). (`Import from` e o argumento inexistente entraram em
   25/09/2026, Ajuste 3; o timeout, no Ajuste 4 — [`pipeline-entre-bases.md`](../../pipeline-entre-bases.md).)
 
-**Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** Duas funções leem a mesma
-mensagem de erro, com papéis diferentes. O `classify()` dá o **sintoma** (família e assinatura, §2 do relatório) e
-não decide nada: descreve. O `submecanismo()` dá a **causa**, e é ela que leva o erro a uma unidade. Cada uma tem
-a sua sobra, e cair em cada uma diz uma coisa diferente:
-
-| Balde | Classe (submecanismo) | Quando cai | O que pode significar |
-|---|---|---|---|
-| **Causa não identificada** (`X_causa_nao_identificada`) | **Código Python mal escrito** (`codigo_mal_escrito`) | erro de sintaxe ou indentação em que a linha rejeitada não é texto colado, literal de texto nem retorno colado | código mal formado de verdade (parêntese, indentação, operador): ruído, até se provar que se repete |
-| | **Erro conhecido, causa sem regra** (`causa_sem_regra`) | o `classify()` reconhece o sintoma, mas nenhuma regra de causa casa — inclusive "Could not index" fora dos três padrões | o sintoma tem nome, a causa não: **candidato a regra nova** se recorrer (ex.: o argumento nomeado que não existe no `final_answer` — virou regra em 25/09/2026, ao reaparecer na base 2) |
-| **Sintoma não reconhecido** (`X_sintoma_nao_reconhecido`) | **Erro que a taxonomia não conhece** (`sintoma_nao_reconhecido`) | nem o `classify()` nem o `submecanismo()` reconhecem a mensagem | **erro novo**: tipo que a taxonomia nunca viu, versão nova da esteira ou do smolagents, ou algo que não é erro de código (ex.: `AgentMaxStepsError`, exaustão de iterações). É o sinal de cobertura: onde ele cresce, as regras não alcançam |
-
-Na prática, as duas leituras se combinam **num só ponto** — `montar_unidades()` — e **só para o resíduo**:
-
-| O sintoma foi reconhecido? (`classify()`) | A causa foi identificada? (`submecanismo()`) | Vai para |
-|---|---|---|
-| sim | sim | uma unidade normal (ex.: `U_contrato_dict`) |
-| sim | não | **Causa não identificada** — classe *Código Python mal escrito* (erro de sintaxe) ou *Erro conhecido, causa sem regra* |
-| não | não | **Sintoma não reconhecido** — classe *Erro que a taxonomia não conhece* |
-| não | sim | uma unidade normal; só a coluna de família fica "Sintoma não reconhecido" (raro; 0 casos na base 1) |
-
-**Não há sobreposição:** cada erro vai para exatamente uma unidade; um erro nunca está nos dois baldes. "Sintoma
-não reconhecido" aparece em dois lugares — como **família** (coluna do `classify()`) e como **unidade** — e quase
-sempre coincidem (base 1: 1 = 1); divergem só na última linha da tabela.
-
-**Esta é a única exceção à regra "o sintoma não decide".** O `submecanismo()` continua sem ler o `classify()`; é o
-`montar_unidades()` que usa a família, e apenas para separar os dois baldes, que nunca viram memória. Nenhuma
-candidata depende disso — testado: as 10 candidatas (e o sinal de harness) da base 1 saem idênticas com ou sem a separação.
-
-O nome "causa não identificada" diz o que aconteceu com a regra, não com o erro: **não quer dizer que o erro
-aconteceu uma vez só** (até 23/09/2026 o balde chamava "erros pontuais", o que sugeria isso sem que a regra
-conferisse). Os casos da base 1 estão em `03-procedimento-validacao.md` §1.13.
+**Os dois baldes de resíduo — o que sobra quando nenhuma regra reconhece o erro.** O `classify()` dá o **sintoma** e
+não decide nada; o `submecanismo()` dá a **causa**, que leva o erro a uma unidade. Cada um tem a sua sobra:
+**causa não identificada** (`X_causa_nao_identificada`, o sintoma tem nome e a causa não: classes *Código Python mal
+escrito* e *Erro conhecido, causa sem regra*) e **sintoma não reconhecido** (`X_sintoma_nao_reconhecido`, o erro que a
+taxonomia não conhece). As duas leituras se combinam num ponto só, o `montar_unidades()`, e só para separar os dois
+baldes, que nunca viram memória. Cada erro está em exatamente uma unidade. A tabela das classes, a combinação das
+duas leituras, o padrão e a recorrência por padrão estão em [`18-racionais-residuo.md`](18-racionais-residuo.md) §1–§3
+(movidos para lá em 09/11/2026); o roteiro, em [`19-procedimento-residuo.md`](19-procedimento-residuo.md); os casos
+da base 1, em `03-procedimento-validacao.md` §1.13.
 
 Cada submecanismo aponta para uma **unidade** (um conteúdo). O CSV `triagem_assinaturas.csv` mostra, para cada
 assinatura da §2, em quantas unidades ela se divide e quanto cai na dominante.
@@ -814,9 +796,12 @@ executável (uma função ou API nova), o que muda o harness — direção v2; *
 episódio, e as unidades aqui são entre execuções por construção.
 
 **Passo 4 — ocorrência, não erro: a cascata.** Contar erros infla as unidades que o agente repete em sequência:
-numa execução de out/2025 o `managerAgent` errou 10 steps seguidos escrevendo explicação em prosa no lugar do
-código. A regra: erros em steps **consecutivos** do mesmo papel na mesma execução formam uma **cascata**; dentro
-dela, a mesma unidade repetida conta **uma ocorrência**. Resultado: 498 erros → 437 ocorrências. O princípio de
+numa execução de out/2025 o `managerAgent` errou 10 steps seguidos com a tag do bloco dentro do código, logo
+depois de uma resposta sem bloco de código. Até o Ajuste 40 (17/11/2026), esses erros contavam como explicação em
+prosa no lugar do código; hoje são o bloco mal fechado, a cascata inteira em `H_bloco_code`. A regra: erros em steps
+**consecutivos** do mesmo papel na mesma execução formam uma **cascata**; dentro
+dela, a mesma unidade repetida conta **uma ocorrência**. Resultado: 498 erros → 432 ocorrências (437 até o Ajuste
+40: as 5 cascatas do bloco mal fechado contavam uma ocorrência de cada unidade). O princípio de
 focar a causa-raiz e não o sintoma de superfície é do AgentDebug (arXiv 2509.25370, p. 2 e p. 8, confirmado por
 ablação); **a operacionalização por cascata é nossa**, não do paper.
 
@@ -833,7 +818,7 @@ ablação); **a operacionalização por cascata é nossa**, não do paper.
    Algum padrão passa → **revisar — prioridade**; nenhum passa → **revisar — baixa prioridade** (continua na lista:
    é sinal de cobertura). **Alarme de cobertura:** se o "Sintoma não reconhecido" passar de 5% de todos os erros da
    base (`ALARME_COBERTURA`), ele sobe para prioridade mesmo sem padrão recorrente — a taxonomia não cobre aquela
-   base. O que fazer com cada decisão: `03-procedimento-validacao.md` Frente 3. A máscara é aproximação declarada — pode juntar erros que diferem só dentro das aspas, ou
+   base. O que fazer com cada decisão: `03-procedimento-validacao.md` Frente 3; o resíduo, padrão por padrão, em `19-procedimento-residuo.md` (o porquê em `18`). A máscara é aproximação declarada — pode juntar erros que diferem só dentro das aspas, ou
    separar o mesmo erro se a frase fora das aspas variar; por isso a tabela por padrão fica visível (notebook 9.2,
    `resultados/residuo_padroes.csv`) para conferência humana antes de escrever a regra. "Revisar" não é
    não-memória: lá a causa é conhecida e a correção vive fora do agente; aqui a causa não é conhecida.
@@ -874,8 +859,9 @@ critério "causa única, conteúdo numa frase" continua certo — o erro era apl
 erro.
 
 **Passo 7 — o resultado.** 15 unidades: **10 candidatas** (4 factual · ambiente, 6 experiencial · estratégia),
-**1 sinal de harness** (a nº10, pós-mineração), 2 não-memória e 2 a revisar (resíduo). As candidatas cobrem 440 dos
-498 erros (88%) e 91% dos tokens gastos em steps com erro. (Até 28/09/2026 a nº10 contava como candidata: 11
+**1 sinal de harness** (a nº10, pós-mineração), 2 não-memória e 2 a revisar (resíduo). As candidatas cobrem 417 dos
+498 erros (84%) e 82% dos tokens gastos em steps com erro (440, 88% e 91% até o Ajuste 40, 17/11/2026, que levou os
+23 erros do bloco mal fechado do texto solto para o protocolo do harness). (Até 28/09/2026 a nº10 contava como candidata: 11
 candidatas, 450 erros, 90%, 92% dos tokens.)
 (Até 25/09/2026 eram 10 candidatas, 447 erros e 1 unidade "fora": "Não colar retorno impresso" tinha 2 erros; o
 Ajuste 2.2 passou a reconhecer o retorno colado inteiro, ela foi a 6 erros em 4 meses e virou candidata — e a
