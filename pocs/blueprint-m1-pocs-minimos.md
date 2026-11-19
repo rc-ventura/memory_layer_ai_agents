@@ -2,6 +2,15 @@
 
 # Blueprint — POCs de agentes mínimos do Entregável M1
 
+> **Atualização de 12/11/2026.** O primeiro experimento a rodar está detalhado no
+> [plano do experimento](experimento-degrau-4/01-plano-geral.md) (genérico) e no
+> [adendo do inventário do sandbox](experimento-degrau-4/adendos/A-inventario-sandbox.md): o degrau 4 da validação das memórias já
+> revisadas. Ele cobre parte do EX-1 (sem o Hermes), a comparação final do EX-2, a Q4 (com um braço de memória
+> autogerada) e o EX-8 como exploratório. A tabela do §0 do plano diz, item a item, onde ele segue este blueprint e onde
+> diverge (a suíte de tarefas por unidade em vez dos grupos A–D; repetições por tarefa; a memória congelada). O resto
+> deste blueprint continua valendo como está, e as decisões da E0 (Harbor × runner próprio, nome da pasta) seguem
+> abertas — o plano as lista no §15.
+
 ## 0. O que este documento é
 
 Plano executável para a pendência central do **Entregável 1** (Macroatividade 1, prazo formal 30/10/2026; data de trabalho interna 30/11/2026):
